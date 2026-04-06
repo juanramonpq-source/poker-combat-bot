@@ -5102,10 +5102,24 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
   state.transitionLock = true;
   render();
   scrollToPlayerPanel(defenderIndex, 'smooth');
-  showDefensePrompt(defenderIndex, () => {
-    state.transitionLock = false;
-    render();
-  });
+
+  // CRITICAL FIX: In multiplayer, don't auto-close defense window
+  // The Guest needs time to receive the state and respond with confirmDefense/skipDefense
+  if (_ol.active && _ol.role === 'host') {
+    console.log('[ONLINE] Host in defense window - waiting for Guest response, NOT auto-closing');
+    // In multiplayer, keep transitionLock = true until Guest responds via confirmDefense/skipDefense
+    // Those functions will set transitionLock = false and resolve the attack
+    showDefensePrompt(defenderIndex, () => {
+      // Just show the prompt without auto-resolving
+      // The Guest action handlers will resolve when they respond
+    });
+  } else {
+    // Single player: auto-close after timeout
+    showDefensePrompt(defenderIndex, () => {
+      state.transitionLock = false;
+      render();
+    });
+  }
 }
 
 function confirmAttack(projectileOnly=false){
