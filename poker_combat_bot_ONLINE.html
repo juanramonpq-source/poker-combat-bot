@@ -4817,6 +4817,13 @@ function finishModifyTurn(){
 }
 
 function drawWithTwoFigures(){
+  // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
+  if (_ol.active && _ol.role === 'guest') {
+    console.log('[ONLINE] Guest drawWithTwoFigures: sending action to Host instead of executing locally');
+    olSendAction({ type: 'drawWithTwoFigures', selected: state.selected.slice() });
+    return;
+  }
+
   const playerIdx = state.currentPlayer;
   const player = state.players[playerIdx];
   if(state.transitionLock || state.pendingDefense || state.winner) return;
@@ -6601,6 +6608,11 @@ function olProcessGuestAction(action) {
     case 'drawWithDiamond':
       state.selected = olConvertCardIdsToObjects(action.selected, 'hand') || [];
       drawWithDiamond();
+      break;
+    case 'drawWithTwoFigures':
+      state.selected = olConvertCardIdsToObjects(action.selected, 'hand') || [];
+      console.log('[ONLINE] olProcessGuestAction drawWithTwoFigures - selected cards:', state.selected.length);
+      drawWithTwoFigures();
       break;
     case 'passTurn':
       state.selected = olConvertCardIdsToObjects(action.selected, 'hand') || [];
