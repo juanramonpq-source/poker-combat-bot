@@ -4417,6 +4417,13 @@ function notifyFullModuleIfNeeded(player, playerIdx, zone){
 }
 
 function modifyMecha(){
+  // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
+  if (_ol.active && _ol.role === 'guest') {
+    console.log('[ONLINE] Guest modifyMecha: sending action to Host instead of executing locally');
+    olSendAction({ type: 'modifyMecha', selected: state.selected.slice() });
+    return;
+  }
+
   pulseButton('actionAddBtn');
   const playerIdx = state.currentPlayer;
   const player = state.players[playerIdx];
@@ -4853,6 +4860,13 @@ function drawWithTwoFigures(){
 }
 
 function drawWithDiamond(){
+  // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
+  if (_ol.active && _ol.role === 'guest') {
+    console.log('[ONLINE] Guest drawWithDiamond: sending action to Host instead of executing locally');
+    olSendAction({ type: 'drawWithDiamond', selected: state.selected.slice() });
+    return;
+  }
+
   pulseButton('actionDrawDiamondBtn');
   if(state.pendingDefense) return;
   const playerIdx = state.currentPlayer;
@@ -4896,6 +4910,13 @@ function drawWithDiamond(){
 }
 
 function passTurn(){
+  // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
+  if (_ol.active && _ol.role === 'guest') {
+    console.log('[ONLINE] Guest passTurn: sending action to Host instead of executing locally');
+    olSendAction({ type: 'passTurn', selected: state.selected.slice() });
+    return;
+  }
+
   pulseButton('actionPassBtn');
   if(state.pendingDefense) return;
   const player = state.players[state.currentPlayer];
@@ -5081,6 +5102,13 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
 }
 
 function confirmAttack(projectileOnly=false){
+  // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
+  if (_ol.active && _ol.role === 'guest') {
+    console.log('[ONLINE] Guest confirmAttack: sending action to Host instead of executing locally');
+    olSendAction({ type: projectileOnly ? 'projectileOnly' : 'confirmAttack', selected: state.selected.slice(), projectile: state.projectileMode });
+    return;
+  }
+
   pulseButton(projectileOnly ? 'projectileOnlyBtn' : 'confirmAttackBtn');
   if(state.transitionLock) return;
   if(state.pendingDefense) return;
@@ -5196,6 +5224,13 @@ function resolveAttackAfterDefense(defenseCard){
 }
 
 function confirmDefense(){
+  // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
+  if (_ol.active && _ol.role === 'guest') {
+    console.log('[ONLINE] Guest confirmDefense: sending action to Host instead of executing locally');
+    olSendAction({ type: 'confirmDefense', selected: state.selected.slice() });
+    return;
+  }
+
   pulseButton('confirmDefenseBtn');
   if(state.transitionLock) return;
   if(!state.pendingDefense) return;
@@ -5214,6 +5249,13 @@ function confirmDefense(){
   resolveAttackAfterDefense(defense[0]);
 }
 function skipDefense(){
+  // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
+  if (_ol.active && _ol.role === 'guest') {
+    console.log('[ONLINE] Guest skipDefense: sending action to Host instead of executing locally');
+    olSendAction({ type: 'skipDefense' });
+    return;
+  }
+
   pulseButton('skipDefenseBtn');
   if(state.transitionLock) return;
   if(!state.pendingDefense) return;
