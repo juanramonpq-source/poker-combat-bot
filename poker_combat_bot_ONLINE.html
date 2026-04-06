@@ -4267,7 +4267,10 @@ function zoneLabel(zone){
 }
 
 function toggleSelect(id){
-  if(state.transitionLock) return;
+  // CRITICAL FIX: Allow selection during defense even if transitionLock is true
+  // The defender needs to select cards to respond to the attack
+  if(state.transitionLock && !state.pendingDefense) return;
+
   const all = flattenCollectionsForInteractivePlayer();
   const found = all.find(c => c.id===id);
   if(!found) return;
