@@ -4170,16 +4170,21 @@ function applyDynamicFlexToLimits(player, counts, copilotTarget=null, boosterTar
 
 function findBestFlexAssignment(player, countsOverride=null){
   const counts = countsOverride || getModuleCountsSnapshot(player);
+  console.log('[DEBUG-FLEX] findBestFlexAssignment - counts:', counts);
 
   const copilotChoices = (player.core.copilot && ['J','Q','K'].includes(player.core.copilot.rank) && player.core.copilot.suit==='diamonds')
     ? [null, ...MODULE_KEYS]
     : [null];
+  console.log('[DEBUG-FLEX]   Copilot choices:', copilotChoices);
 
   let best = null;
   const currentPref = player.flexTargets || { copilot:null, booster:null };
 
   for(const copilotTarget of copilotChoices){
     const result = applyDynamicFlexToLimits(player, counts, copilotTarget, null);
+    console.log('[DEBUG-FLEX]   Copilot target:', copilotTarget);
+    console.log('[DEBUG-FLEX]   Limits:', result.limits);
+    console.log('[DEBUG-FLEX]   Overflow:', result.overflow, 'Total:', result.totalOverflow);
     const spareCapacity = MODULE_KEYS.reduce((sum, m) => sum + Math.max(0, result.limits[m].max - counts[m]), 0);
     const tieScore =
       (copilotTarget === currentPref.copilot ? 0 : 1) +
@@ -4192,6 +4197,7 @@ function findBestFlexAssignment(player, countsOverride=null){
       (result.totalOverflow === best.totalOverflow && tieScore < best.tieScore)
     ){
       best = { ...result, tieScore };
+      console.log('[DEBUG-FLEX]   New best result with overflow:', best.totalOverflow);
     }
   }
 
@@ -4221,14 +4227,36 @@ function coreSelectionTargets(card, player){
   return options;
 }
 function allowedModuleTargets(card, player){
-  if(['J','Q','K'].includes(card.rank)) return [];
-  if(card.suit==='diamonds'&&card.rank!=='A')return['fuel'];if(card.rank==='A'&&card.suit==='diamonds')return[];
-  if(!(card.suit in SUIT_TO_MODULE)) return [];
+  console.log('[DEBUG-TARGETS] allowedModuleTargets for:', card.rank + card.suit);
+  if(['J','Q','K'].includes(card.rank)) {
+    console.log('[DEBUG-TARGETS]   Figure detected - no module targets');
+    return [];
+  }
+  if(card.suit==='diamonds'&&card.rank!=='A') {
+    console.log('[DEBUG-TARGETS]   Diamond (non-Ace) - fuel target');
+    return['fuel'];
+  }
+  if(card.rank==='A'&&card.suit==='diamonds') {
+    console.log('[DEBUG-TARGETS]   Ace of diamonds - no targets');
+    return [];
+  }
+  if(!(card.suit in SUIT_TO_MODULE)) {
+    console.log('[DEBUG-TARGETS]   Suit not in SUIT_TO_MODULE - no targets');
+    return [];
+  }
   const module = SUIT_TO_MODULE[card.suit];
+  console.log('[DEBUG-TARGETS]   Suit', card.suit, 'maps to module:', module);
   const counts = getModuleCountsSnapshot(player);
+  console.log('[DEBUG-TARGETS]   Current counts:', counts);
   counts[module] += 1;
+  console.log('[DEBUG-TARGETS]   Counts after simulating placement:', counts);
   const best = findBestFlexAssignment(player, counts);
-  if(best.totalOverflow === 0) return [module];
+  console.log('[DEBUG-TARGETS]   Overflow result:', { totalOverflow: best.totalOverflow, overflow: best.overflow });
+  if(best.totalOverflow === 0) {
+    console.log('[DEBUG-TARGETS]   No overflow - module is valid target');
+    return [module];
+  }
+  console.log('[DEBUG-TARGETS]   Overflow detected - no valid targets');
   return [];
 }
 
@@ -4345,31 +4373,65 @@ function pushCardToZone(player, zone, card){
 }
 
 function chooseAutomaticTarget(player, card){
+  console.log('[DEBUG-AUTO] chooseAutomaticTarget for:', card.rank + card.suit);
   const coreTargets = coreSelectionTargets(card, player);
-  if(coreTargets.length === 1) return coreTargets[0];
+  console.log('[DEBUG-AUTO]   Core targets:', coreTargets);
+  if(coreTargets.length === 1) {
+    console.log('[DEBUG-AUTO]   Returning single core target');
+    return coreTargets[0];
+  }
   if(coreTargets.length > 1){
-    if(coreTargets.includes('core-pilot')) return 'core-pilot';
+    if(coreTargets.includes('core-pilot')) {
+      console.log('[DEBUG-AUTO]   Returning core-pilot');
+      return 'core-pilot';
+    }
+    console.log('[DEBUG-AUTO]   Returning first core target');
     return coreTargets[0];
   }
   const moduleTargets = allowedModuleTargets(card, player);
-  if(moduleTargets.length === 1) return moduleTargets[0];
+  console.log('[DEBUG-AUTO]   Module targets:', moduleTargets);
+  if(moduleTargets.length === 1) {
+    console.log('[DEBUG-AUTO]   Returning single module target');
+    return moduleTargets[0];
+  }
+  console.log('[DEBUG-AUTO]   No valid targets found');
   return null;
 }
 function placeCardOnBoard(player, card, preferredZone=null){
+  console.log('[DEBUG-PLACE] placeCardOnBoard called for:', card.rank + card.suit);
   let zone = preferredZone;
-  if(!zone) zone = chooseAutomaticTarget(player, card);
+  if(!zone) {
+    console.log('[DEBUG-PLACE]   No preferred zone, choosing automatic target...');
+    zone = chooseAutomaticTarget(player, card);
+    console.log('[DEBUG-PLACE]   Automatic target:', zone);
+  }
   if(!zone){
     if(['J','Q','K'].includes(card.rank) && player.core.pilot && player.core.copilot){
-      return { ok:false, reason:'Esa figura no puede ir a módulos. Debes sustituir al piloto o al copiloto.' };
+      const reason = 'Esa figura no puede ir a módulos. Debes sustituir al piloto o al copiloto.';
+      console.log('[DEBUG-PLACE]   ERROR:', reason);
+      return { ok:false, reason };
     }
-    return { ok:false, reason:`No hay hueco legal para ${cardText(card)}.` };
+    const reason = `No hay hueco legal para ${cardText(card)}.`;
+    console.log('[DEBUG-PLACE]   ERROR:', reason);
+    return { ok:false, reason };
   }
   const coreTargets = coreSelectionTargets(card, player);
-  if(zone.startsWith('core') && !coreTargets.includes(zone)) return { ok:false, reason:`No puedes colocar ${cardText(card)} en ${zoneLabel(zone)}.` };
-  if(MODULE_KEYS.includes(zone) || zone==='fuel'){
-    const moduleTargets = allowedModuleTargets(card, player);
-    if(!moduleTargets.includes(zone)) return { ok:false, reason:`Ese módulo no tiene hueco libre para ${cardText(card)}.` };
+  if(zone.startsWith('core') && !coreTargets.includes(zone)) {
+    const reason = `No puedes colocar ${cardText(card)} en ${zoneLabel(zone)}.`;
+    console.log('[DEBUG-PLACE]   ERROR:', reason);
+    return { ok:false, reason };
   }
+  if(MODULE_KEYS.includes(zone) || zone==='fuel'){
+    console.log('[DEBUG-PLACE]   Module/fuel placement - checking targets');
+    const moduleTargets = allowedModuleTargets(card, player);
+    console.log('[DEBUG-PLACE]   Allowed targets:', moduleTargets);
+    if(!moduleTargets.includes(zone)) {
+      const reason = `Ese módulo no tiene hueco libre para ${cardText(card)}.`;
+      console.log('[DEBUG-PLACE]   ERROR:', reason);
+      return { ok:false, reason };
+    }
+  }
+  console.log('[DEBUG-PLACE]   Validation passed, pushing card to', zone);
   pushCardToZone(player, zone, card);
   setBestFlexTargets(player);
   return { ok:true, zone };
@@ -4427,6 +4489,7 @@ function modifyMecha(){
     return;
   }
 
+  console.log('[DEBUG-MODIFY] === Starting modifyMecha ===');
   pulseButton('actionAddBtn');
   const playerIdx = state.currentPlayer;
   const player = state.players[playerIdx];
@@ -4434,6 +4497,11 @@ function modifyMecha(){
   const handCards = state.selected.filter(s => s.zone==='hand');
   const boardCards = state.selected.filter(s => s.zone!=='hand');
   const operations = handCards.length + boardCards.length;
+
+  console.log('[DEBUG-MODIFY] Selected cards:');
+  console.log('[DEBUG-MODIFY]   - Hand cards:', handCards.map(c => c.rank + c.suit));
+  console.log('[DEBUG-MODIFY]   - Board cards:', boardCards.map(c => c.rank + c.suit + ' from ' + c.zone));
+  console.log('[DEBUG-MODIFY]   - Total operations:', operations, '(limit:', opsLimit, ')');
 
   if(operations===0) return notifySelection('Selecciona cartas de la mano para colocar o cartas del panel para descartar/cambiar.');
   if(operations>opsLimit) return notifySelection(`Máximo ${opsLimit} operaciones de modificación en este turno.`);
@@ -4485,18 +4553,30 @@ function modifyMecha(){
   }
 
   const removedCards = [];
+  console.log('[DEBUG-MODIFY] Discarding board cards...');
   moduleDiscardCards.forEach(card => {
+    console.log('[DEBUG-MODIFY]   Removing:', card.rank + card.suit, 'from', card.zone);
+    console.log('[DEBUG-MODIFY]   Before remove -', card.zone + ':', player[card.zone].length);
     const removed = popCardFromZone(player, card.zone, card.id);
     if(removed){
+      console.log('[DEBUG-MODIFY]   After remove -', card.zone + ':', player[card.zone].length);
       removedCards.push({ card:removed, zone:card.zone });
       state.discard.push(removed);
+    } else {
+      console.log('[DEBUG-MODIFY]   ERROR: Card not found in zone!');
     }
   });
 
   const placementResults = [];
+  console.log('[DEBUG-MODIFY] Placing hand cards...');
   for(const card of handCards){
+    console.log('[DEBUG-MODIFY]   Removing from hand:', card.rank + card.suit);
+    console.log('[DEBUG-MODIFY]   Hand before remove:', player.hand.length);
     removeById(player.hand, card.id);
+    console.log('[DEBUG-MODIFY]   Hand after remove:', player.hand.length);
+    console.log('[DEBUG-MODIFY]   Attempting placement...');
     const result = placeCardOnBoard(player, card);
+    console.log('[DEBUG-MODIFY]   Placement result:', result);
     if(!result.ok){
       player.hand.push(card);
       placementResults.forEach(p => {

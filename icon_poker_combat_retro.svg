@@ -1,0 +1,152 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo degradado retro -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="pixelGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="512" height="512" fill="url(#bgGradient)"/>
+
+  <!-- Marco retro -->
+  <rect x="20" y="20" width="472" height="472" fill="none" stroke="#FF6B00" stroke-width="8"/>
+  <rect x="32" y="32" width="448" height="448" fill="none" stroke="#3A7BC8" stroke-width="2"/>
+
+  <!-- MECHA IZQUIERDA (Rojo/Naranja) -->
+  <g transform="translate(100, 180)">
+    <!-- Cabeza/Cockpit -->
+    <rect x="0" y="0" width="40" height="40" fill="#FF4444" stroke="#FFAA00" stroke-width="2"/>
+    <rect x="8" y="8" width="24" height="24" fill="#FFD700" stroke="#FF6B00" stroke-width="1"/>
+    <!-- Visor -->
+    <rect x="12" y="12" width="16" height="16" fill="#00FF00" opacity="0.8" filter="url(#glow)"/>
+
+    <!-- Cuerpo/Torso -->
+    <rect x="5" y="42" width="30" height="50" fill="#CC3333" stroke="#FFAA00" stroke-width="2"/>
+    <!-- Módulo central -->
+    <rect x="10" y="50" width="20" height="20" fill="#FF8800" stroke="#FFAA00" stroke-width="1"/>
+    <!-- Indicador de energía -->
+    <rect x="12" y="52" width="16" height="4" fill="#00FF00" filter="url(#glow)"/>
+    <rect x="12" y="58" width="14" height="4" fill="#00AA00"/>
+    <rect x="12" y="64" width="12" height="4" fill="#00AA00"/>
+
+    <!-- Brazo izquierdo (arma) -->
+    <rect x="-8" y="50" width="8" height="28" fill="#AA0000" stroke="#FFAA00" stroke-width="2"/>
+    <polygon points="-8,50 -16,45 -16,55" fill="#FF0000" stroke="#FFAA00" stroke-width="1"/>
+
+    <!-- Brazo derecho -->
+    <rect x="35" y="55" width="8" height="25" fill="#AA0000" stroke="#FFAA00" stroke-width="2"/>
+
+    <!-- Piernas -->
+    <rect x="8" y="94" width="8" height="30" fill="#CC3333" stroke="#FFAA00" stroke-width="1"/>
+    <rect x="24" y="94" width="8" height="30" fill="#CC3333" stroke="#FFAA00" stroke-width="1"/>
+    <!-- Botas -->
+    <rect x="6" y="124" width="12" height="6" fill="#FF8800" stroke="#FFAA00" stroke-width="1"/>
+    <rect x="22" y="124" width="12" height="6" fill="#FF8800" stroke="#FFAA00" stroke-width="1"/>
+  </g>
+
+  <!-- MECHA DERECHA (Azul) -->
+  <g transform="translate(280, 180)">
+    <!-- Cabeza/Cockpit -->
+    <rect x="0" y="0" width="40" height="40" fill="#3366FF" stroke="#00AAFF" stroke-width="2"/>
+    <rect x="8" y="8" width="24" height="24" fill="#00DDFF" stroke="#0088FF" stroke-width="1"/>
+    <!-- Visor -->
+    <rect x="12" y="12" width="16" height="16" fill="#00FF00" opacity="0.8" filter="url(#glow)"/>
+
+    <!-- Cuerpo/Torso -->
+    <rect x="5" y="42" width="30" height="50" fill="#1144CC" stroke="#00AAFF" stroke-width="2"/>
+    <!-- Módulo central -->
+    <rect x="10" y="50" width="20" height="20" fill="#0088FF" stroke="#00AAFF" stroke-width="1"/>
+    <!-- Indicador de energía -->
+    <rect x="12" y="52" width="16" height="4" fill="#00FF00" filter="url(#glow)"/>
+    <rect x="12" y="58" width="14" height="4" fill="#00AA00"/>
+    <rect x="12" y="64" width="12" height="4" fill="#00AA00"/>
+
+    <!-- Brazo izquierdo -->
+    <rect x="-8" y="55" width="8" height="25" fill="#0055CC" stroke="#00AAFF" stroke-width="2"/>
+
+    <!-- Brazo derecho (arma) -->
+    <rect x="35" y="50" width="8" height="28" fill="#0055CC" stroke="#00AAFF" stroke-width="2"/>
+    <polygon points="43,50 51,45 51,55" fill="#0088FF" stroke="#00AAFF" stroke-width="1"/>
+
+    <!-- Piernas -->
+    <rect x="8" y="94" width="8" height="30" fill="#1144CC" stroke="#00AAFF" stroke-width="1"/>
+    <rect x="24" y="94" width="8" height="30" fill="#1144CC" stroke="#00AAFF" stroke-width="1"/>
+    <!-- Botas -->
+    <rect x="6" y="124" width="12" height="6" fill="#0088FF" stroke="#00AAFF" stroke-width="1"/>
+    <rect x="22" y="124" width="12" height="6" fill="#0088FF" stroke="#00AAFF" stroke-width="1"/>
+  </g>
+
+  <!-- EFECTO DE COMBATE (Chispas entre mechas) -->
+  <g filter="url(#pixelGlow)">
+    <!-- Líneas de energía -->
+    <line x1="220" y1="240" x2="260" y2="220" stroke="#FFD700" stroke-width="3" opacity="0.7"/>
+    <line x1="260" y1="240" x2="220" y2="220" stroke="#FFD700" stroke-width="3" opacity="0.7"/>
+    <line x1="230" y1="260" x2="250" y2="260" stroke="#00FF00" stroke-width="2" opacity="0.6"/>
+
+    <!-- Chispas -->
+    <rect x="235" y="230" width="4" height="4" fill="#FF0000"/>
+    <rect x="245" y="235" width="4" height="4" fill="#FFAA00"/>
+    <rect x="240" y="245" width="4" height="4" fill="#FFD700"/>
+    <rect x="250" y="240" width="4" height="4" fill="#FF0000"/>
+    <rect x="232" y="250" width="4" height="4" fill="#FFAA00"/>
+  </g>
+
+  <!-- CARTAS DE POKER ESQUINAS -->
+  <!-- Carta superior izquierda (As de Picas) -->
+  <g transform="translate(40, 60)">
+    <rect x="0" y="0" width="35" height="50" fill="#FFFFFF" stroke="#000000" stroke-width="2" rx="2"/>
+    <text x="4" y="14" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#000000">A</text>
+    <text x="4" y="32" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#000000">♠</text>
+  </g>
+
+  <!-- Carta superior derecha (As de Corazones) -->
+  <g transform="translate(437, 60)">
+    <rect x="0" y="0" width="35" height="50" fill="#FFFFFF" stroke="#000000" stroke-width="2" rx="2"/>
+    <text x="4" y="14" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FF0000">A</text>
+    <text x="4" y="32" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#FF0000">♥</text>
+  </g>
+
+  <!-- Carta inferior izquierda (Rey de Diamantes) -->
+  <g transform="translate(40, 402)">
+    <rect x="0" y="0" width="35" height="50" fill="#FFFFFF" stroke="#000000" stroke-width="2" rx="2"/>
+    <text x="4" y="14" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FF6B00">K</text>
+    <text x="4" y="32" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#FF6B00">♦</text>
+  </g>
+
+  <!-- Carta inferior derecha (Reina de Tréboles) -->
+  <g transform="translate(437, 402)">
+    <rect x="0" y="0" width="35" height="50" fill="#FFFFFF" stroke="#000000" stroke-width="2" rx="2"/>
+    <text x="4" y="14" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#000000">Q</text>
+    <text x="4" y="32" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#000000">♣</text>
+  </g>
+
+  <!-- TÍTULO EN RETRO ARCADE STYLE -->
+  <g transform="translate(256, 420)">
+    <!-- Sombra del texto -->
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="#000000" opacity="0.5">POKER COMBAT</text>
+    <!-- Texto principal -->
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="#FF6B00" stroke="#FFAA00" stroke-width="1">POKER COMBAT</text>
+  </g>
+
+  <!-- Decoración inferior (línea retro) -->
+  <rect x="80" y="465" width="352" height="3" fill="#FF6B00" opacity="0.8"/>
+  <rect x="80" y="468" width="352" height="1" fill="#3A7BC8" opacity="0.6"/>
+</svg>
