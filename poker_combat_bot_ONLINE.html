@@ -6584,7 +6584,11 @@ function olApplyState(data) {
   // CRITICAL: Do NOT sync state.selected between players
   // state.selected is local UI state for card selection and should never be received from Host
   // Each player manages their own selection independently
-  state.selected = [];
+  // IMPORTANT: Only clear selection if it's Host's turn (currentPlayer === 0)
+  // If it's Guest's turn (currentPlayer === 1), preserve selection so Guest can select cards to play
+  if (state.currentPlayer === 0) {
+    state.selected = [];
+  }
 
   console.log('[ONLINE] Guest applied state, now currentPlayer:', state.currentPlayer);
   render();
