@@ -3897,7 +3897,7 @@ function initPlayers(){
     armor:[],
     fuel:[],
     flexTargets:{ copilot:null, booster:null },
-    flags:{ mounted:false, combatReady:false, lastOwnAction:null, figureBurstButtonUnlocked:false, figureBurstPromptShown:false, attackReadyPromptTurn:0 },
+    flags:{ mounted:false, combatReady:false, lastOwnAction:null, figureBurstButtonUnlocked:false, figureBurstPromptShown:false, attackReadyPromptTurn:0, firstAttackComplete:false },
   }));
 }
 
@@ -4095,11 +4095,8 @@ function syncMilestones(playerIdx){
     playUiSound('alert');
     triggerScreenRipple('cyan');
 
-    if(!state.projectileUnlocked){
-      state.projectileUnlocked = true;
-      log('🚀 Proyectiles desbloqueados para la partida.');
-      addToast('Proyectiles desbloqueados', 'ok');
-    }
+    // FIXED: Projectiles are no longer unlocked here
+    // They will be unlocked after the FIRST COMPLETE ATTACK (see confirmAttack function)
   }
   if(!build.combatReady) player.flags.combatReady = false;
 }
@@ -5036,7 +5033,22 @@ function playerCanAttack(player){
   return countSuit(stats, player.core.pilot.suit) >= 3;
 }
 function refreshProjectileUnlock(){
-  return;
+  // This function is called after attacks to check if projectiles should be unlocked
+  // Projectiles are unlocked only after the FIRST complete attack
+  if(!state.players || state.players.length === 0) return;
+  if(state.projectileUnlocked) return; // Already unlocked, nothing to do
+
+  // Check if any player has completed their first attack
+  const currentPlayer = state.players[state.currentPlayer];
+  if(!currentPlayer) return;
+
+  // If this player completed their first attack, unlock projectiles for everyone
+  if(currentPlayer.flags && currentPlayer.flags.firstAttackComplete){
+    state.projectileUnlocked = true;
+    log('🚀 Proyectiles desbloqueados para toda la partida.');
+    addToast('Proyectiles desbloqueados', 'ok');
+    playUiSound('alert');
+  }
 }
 function scrollToTopArea(behavior='smooth'){
   window.scrollTo({ top: 0, behavior });
@@ -5284,6 +5296,13 @@ function confirmAttack(projectileOnly=false){
   state.tutorialStep = Math.max(state.tutorialStep, 4);
   state.lastActionType = 'attack';
   state.players[state.currentPlayer].flags.lastOwnAction = 'attack';
+
+  // FIXED BUG #2: Mark first attack as complete (for projectile unlock)
+  if(!state.players[state.currentPlayer].flags.firstAttackComplete){
+    state.players[state.currentPlayer].flags.firstAttackComplete = true;
+    refreshProjectileUnlock();
+  }
+
   beginDefenseWindow(totalAttack, projectileOnly || !!projectileValue);
 }
 
