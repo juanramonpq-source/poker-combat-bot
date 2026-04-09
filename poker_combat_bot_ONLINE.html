@@ -2263,7 +2263,10 @@ body.victory .frame{
   z-index:1;
 }
 @media (max-width: 760px){
-  .intro-screen{ align-items:flex-start; }
+  .intro-screen{
+    align-items:center;
+    padding-block:16px;
+  }
   .intro-screen::before{
     opacity:.74;
     inset:-8%;
@@ -2283,7 +2286,7 @@ body.victory .frame{
       radial-gradient(circle at 50% 14%, rgba(35,216,255,.18), transparent 30%),
       radial-gradient(circle at 50% 100%, rgba(255,178,46,.10), transparent 42%);
   }
-  .intro-card{ padding:16px 13px 14px; max-height:calc(100dvh - 8px); width:min(430px, 100%); }
+  .intro-card{ padding:16px 13px 14px; max-height:calc(100dvh - 32px); width:min(430px, 100%); }
   .intro-panels{
     display:grid;
     grid-template-columns:repeat(2, minmax(0, 1fr));
