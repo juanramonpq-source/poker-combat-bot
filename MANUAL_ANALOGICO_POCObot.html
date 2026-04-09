@@ -407,6 +407,8 @@
       letter-spacing:.06em;
       text-align:right;
     }
+    .secret-link{opacity:.52;text-decoration:none;border-bottom:1px dotted rgba(142,244,255,.34);transition:opacity .16s ease, border-color .16s ease}
+    .secret-link:hover{opacity:.92;border-bottom-color:rgba(255,212,94,.5)}
     @media (max-width:1080px){
       .hero{grid-template-columns:1fr}
       .cards-4,.cards-3,.cards-2,.needs-grid,.mat-grid,.rule-grid,.flow-row{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -457,6 +459,7 @@
       .secret-reward strong,.hero-art-caption strong{color:#6e4300}
       .hero-point strong,.panel-card h3,.rule-card h3,.tip-card h3,.flow-step h3,.mat-card h3,.need-card h3,.quick-card h3,.flow-step strong,.mat-player strong,.zone,.footer-card strong{color:#123263}
       .rules-table th,.rules-table td::before{color:#6e4300}
+      .secret-link{opacity:1;color:#123263;border-bottom-color:#123263}
       .panel-card [style*="color:var(--white)"]{color:#123263 !important}
     }
   </style>
@@ -476,6 +479,7 @@
           <button class="primary" type="button" onclick="window.print()">Imprimir o guardar PDF</button>
           <a class="download" href="MANUAL_ANALOGICO_POCObot.pdf" download>Descargar PDF</a>
           <a href="MANUAL_USUARIO.html">Manual digital</a>
+          <a href="mailto:autores@factordual.com">Contacta con el autor</a>
           <a href="/">Volver al juego</a>
         </div>
         <nav class="manual-nav">
@@ -789,7 +793,7 @@
     <section class="footer-card">
       <div>
         <strong>Créditos</strong>
-        <p>Poker Combat-Bot ha sido diseñado y desarrollado por <strong>Juan Ramón Pérez Quintanar</strong>. Esta adaptación de mesa es también un guiño personal a quien se detiene, explora y encuentra secretos: mismas reglas, mismo nervio y exactamente la misma satisfacción cuando el rival se queda sin defensa.</p>
+        <p>Poker Combat-Bot ha sido diseñado y desarrollado por <strong>Juan Ramón Pérez Quintanar</strong>. <a class="secret-link" href="mailto:autores@factordual.com">Contacta con el autor</a>. Esta adaptación de mesa es también un guiño personal a quien se detiene, explora y encuentra secretos: mismas reglas, mismo nervio y exactamente la misma satisfacción cuando el rival se queda sin defensa.</p>
       </div>
       <div class="footer-quote">Curiosidad recompensada. Combate desbloqueado.</div>
     </section>

@@ -2262,10 +2262,22 @@ body.victory .frame{
   position:relative;
   z-index:1;
 }
+.intro-note a{
+  color:#ffcf68;
+  text-decoration:none;
+  font-weight:900;
+  border-bottom:1px dotted rgba(255,207,104,.38);
+}
+.intro-note a:hover{
+  color:#fff4c2;
+  border-bottom-color:rgba(255,244,194,.7);
+}
 @media (max-width: 760px){
   .intro-screen{
+    justify-content:center;
     align-items:center;
-    padding-block:16px;
+    padding-block:20px;
+    overflow:hidden;
   }
   .intro-screen::before{
     opacity:.74;
@@ -2286,13 +2298,18 @@ body.victory .frame{
       radial-gradient(circle at 50% 14%, rgba(35,216,255,.18), transparent 30%),
       radial-gradient(circle at 50% 100%, rgba(255,178,46,.10), transparent 42%);
   }
-  .intro-card{ padding:16px 13px 14px; max-height:calc(100dvh - 32px); width:min(430px, 100%); }
+  .intro-card{
+    padding:18px 14px 16px;
+    max-height:calc(100dvh - 40px);
+    width:min(452px, 100%);
+    margin-block:auto;
+  }
   .intro-panels{
     display:grid;
     grid-template-columns:repeat(2, minmax(0, 1fr));
-    max-width:360px;
+    max-width:376px;
     gap:6px;
-    margin:5px auto 9px;
+    margin:8px auto 10px;
   }
   .intro-enter{ min-width:0; width:100%; padding:12px 16px; font-size:.88rem; }
   .intro-buttons-group{ flex-direction:column; gap:8px; }
@@ -2308,30 +2325,30 @@ body.victory .frame{
     gap:8px;
   }
   .intro-tutorial{ min-width:0; width:100%; padding:12px 16px; font-size:.88rem; }
-  .intro-mecha-img{ width:68px; height:68px; }
-  .intro-vs{ font-size:1.26rem; margin:0 9px 11px; }
-  .intro-title{ width:min(350px, 92%); margin:0 auto -46px; }
-  .brand-title-image.intro{ max-width:350px; max-height:102px; transform:translateY(0); }
-  .intro-subtitle{ font-size:.74rem; line-height:1.16; max-width:332px; margin-top:4px; }
+  .intro-mecha-img{ width:72px; height:72px; }
+  .intro-vs{ font-size:1.32rem; margin:0 10px 12px; }
+  .intro-title{ width:min(392px, 96%); margin:0 auto -52px; }
+  .brand-title-image.intro{ max-width:392px; max-height:118px; transform:translateY(0); }
+  .intro-subtitle{ font-size:.78rem; line-height:1.18; max-width:352px; margin-top:6px; }
   .intro-pill{ padding:7px 7px 8px; font-size:.61rem; line-height:1.08; border-radius:13px; }
   .intro-pill strong{ font-size:.53rem; margin-bottom:2px; letter-spacing:.1em; }
-  .intro-menu-copy{ font-size:.69rem; line-height:1.14; max-width:350px; margin:0 auto; }
-  .intro-note{ font-size:.66rem; line-height:1.14; max-width:350px; margin:6px auto 0; }
+  .intro-menu-copy{ font-size:.72rem; line-height:1.18; max-width:362px; margin:0 auto; }
+  .intro-note{ font-size:.69rem; line-height:1.2; max-width:362px; margin:8px auto 0; }
   #introButtonsMain .intro-enter,
   #introButtonsMain .intro-tutorial,
   .intro-card[data-menu="local"] .intro-enter,
   .intro-card[data-menu="local"] .intro-tutorial{
     min-width:0;
     width:100%;
-    font-size:.82rem;
+    font-size:.84rem;
     line-height:1.12;
     letter-spacing:.09em;
-    padding:11px 10px;
+    padding:12px 10px;
   }
 }
 @media (max-width: 430px){
   .intro-panels{
-    max-width:330px;
+    max-width:344px;
     gap:5px;
   }
   .intro-pill{
@@ -2343,15 +2360,17 @@ body.victory .frame{
     font-size:.5rem;
     letter-spacing:.08em;
   }
-  .intro-mecha-img{ width:62px; height:62px; }
-  .intro-vs{ font-size:1.12rem; margin:0 8px 9px; }
-  .intro-subtitle{ max-width:310px; }
+  .intro-mecha-img{ width:66px; height:66px; }
+  .intro-vs{ font-size:1.16rem; margin:0 8px 10px; }
+  .intro-title{ width:min(372px, 96%); margin:0 auto -48px; }
+  .brand-title-image.intro{ max-width:372px; max-height:112px; }
+  .intro-subtitle{ max-width:326px; }
   #introButtonsMain .intro-enter,
   #introButtonsMain .intro-tutorial,
   .intro-card[data-menu="local"] .intro-enter,
   .intro-card[data-menu="local"] .intro-tutorial{
-    font-size:.77rem;
-    padding:10px 8px;
+    font-size:.79rem;
+    padding:11px 8px;
   }
 }
 @media (max-height: 920px){
@@ -2369,16 +2388,21 @@ body.victory .frame{
   .intro-note{ margin-top:8px; }
 }
 @media (max-height: 760px){
-  .intro-screen{ align-items:flex-start; }
+  .intro-screen{
+    justify-content:center;
+    align-items:center;
+    overflow:auto;
+    padding-block:14px;
+  }
   .intro-card{
     width:min(640px, 100%);
-    max-height:calc(100dvh - 10px);
-    padding:16px 14px 14px;
+    max-height:calc(100dvh - 24px);
+    padding:16px 14px 15px;
     border-radius:22px;
   }
   .intro-kicker{ font-size:.66rem; letter-spacing:.18em; margin-bottom:4px; }
-  .intro-title{ width:min(320px, 92%); margin:0 auto -34px; }
-  .brand-title-image.intro{ max-width:320px; max-height:82px; transform:translateY(0); }
+  .intro-title{ width:min(356px, 94%); margin:0 auto -40px; }
+  .brand-title-image.intro{ max-width:356px; max-height:96px; transform:translateY(0); }
   .intro-subtitle{ font-size:.74rem; line-height:1.16; max-width:460px; }
   .intro-arena{ margin:4px 0 0; }
   .intro-mecha-img{ width:54px; height:54px; }
@@ -2390,9 +2414,9 @@ body.victory .frame{
   .intro-menu-stack{ gap:8px; }
   .intro-menu{ gap:6px; }
   .intro-menu-label{ font-size:.66rem; }
-  .intro-menu-copy{ display:none; }
+  .intro-menu-copy{ display:block; font-size:.68rem; line-height:1.12; max-width:340px; margin:0 auto; }
   .intro-enter, .intro-tutorial{ padding:10px 12px; font-size:.8rem; border-radius:14px; }
-  .intro-note{ display:none; }
+  .intro-note{ display:block; font-size:.65rem; line-height:1.12; max-width:338px; margin:6px auto 0; }
 }
 
 .brand-title-image{
@@ -2402,16 +2426,16 @@ body.victory .frame{
   pointer-events:none;
 }
 .intro-title{
-  width:min(460px, 82%);
-  margin:0 auto -58px;
+  width:min(520px, 88%);
+  margin:0 auto -66px;
   display:flex;
   justify-content:center;
   align-items:center;
 }
 .brand-title-image.intro{
   width:100%;
-  max-width:460px;
-  max-height:126px;
+  max-width:520px;
+  max-height:142px;
   object-fit:contain;
   transform:translateY(0);
   filter:drop-shadow(0 0 18px rgba(35,216,255,.2));
@@ -3648,7 +3672,7 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
         <div class="intro-menu-copy">Aquí eliges si quieres jugar contra la CPU en dos dificultades o compartir pantalla con otro jugador en el mismo dispositivo.</div>
       </div>
     </div>
-    <div class="intro-note">Local: 1 jugador o pantalla compartida • Online: creación de sala en red. • <a href="MANUAL_USUARIO.html" target="_blank" style="color: #ff8c42; text-decoration: none; font-weight: bold;">📖 Abrir Manual</a></div>
+    <div class="intro-note">Local: 1 jugador o pantalla compartida • Online: creación de sala en red • <a href="MANUAL_USUARIO.html" target="_blank">📖 Abrir Manual</a> • <a href="mailto:autores@factordual.com">Contacta con el autor</a></div>
   </div>
 </div>
 
@@ -7986,7 +8010,7 @@ function attachButtonAnimations(){
     btn.addEventListener('click', () => {
       if(btn.disabled) return;
       pulseButton(btn);
-      playUiSound('tap');
+      if(!btn.closest('#introScreen')) playUiSound('tap');
       spawnElementSparks(btn, btn.id==='confirmAttackBtn' || btn.id==='projectileOnlyBtn' ? 16 : 8, btn.classList.contains('warn') ? 'amber' : 'cyan');
     });
   });
@@ -8528,7 +8552,6 @@ function startTutorialMode(){
   ensureAudio();
   ensureMusicElements();
   syncMusicToState();
-  playUiSound('alert');
   stopOnlineModeUi();
   resetTutorialSession();
   state.gameMode = 'tutorial';
@@ -8567,7 +8590,6 @@ function startLocalMode(){
   ensureAudio();
   ensureMusicElements();
   syncMusicToState();
-  playUiSound('alert');
   primeOfflineMode('local');
   hideIntroScreen();
   newGame();
@@ -8577,19 +8599,16 @@ function startSinglePlayerMode(difficulty){
   ensureAudio();
   ensureMusicElements();
   syncMusicToState();
-  playUiSound('alert');
   primeOfflineMode('single', difficulty);
   hideIntroScreen();
   newGame();
 }
 
 document.getElementById('localModeBtn').addEventListener('click', () => {
-  playUiSound('tap');
   showIntroMenu('local');
 });
 
 document.getElementById('localBackBtn').addEventListener('click', () => {
-  playUiSound('tap');
   showIntroMenu('root');
 });
 
@@ -9157,7 +9176,7 @@ console.log('[DEBUG] ========== CÓDIGO ONLINE CARGADO COMPLETAMENTE =========='
 </script>
 
   <footer style="margin:18px auto 8px; text-align:center; color:#dffcff; font-size:.9rem; font-weight:700; letter-spacing:.02em; opacity:.92;">
-    Poker Combat-bot: Juego creado por Juan Ramón Pérez Quintanar
+    Poker Combat-bot: Juego creado por Juan Ramón Pérez Quintanar · <a href="mailto:autores@factordual.com" style="color:#ffcf68; text-decoration:none; border-bottom:1px dotted rgba(255,207,104,.45);">Contacta con el autor</a>
   </footer>
 </body>
 </html>
