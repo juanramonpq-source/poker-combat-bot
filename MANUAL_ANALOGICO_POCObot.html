@@ -171,6 +171,31 @@
       line-height:1.48;
       box-shadow:inset 0 0 18px rgba(255,212,94,.05);
     }
+    .secret-reward{
+      display:grid;
+      gap:8px;
+      margin-top:16px;
+      padding:16px 18px;
+      border-radius:22px;
+      background:
+        linear-gradient(180deg, rgba(255,212,94,.12), rgba(85,212,255,.08)),
+        rgba(10,18,34,.72);
+      border:1px solid rgba(255,212,94,.26);
+      box-shadow:inset 0 0 18px rgba(255,212,94,.08);
+    }
+    .secret-reward strong{
+      color:var(--gold);
+      font-size:.86rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .secret-reward p{
+      margin:0;
+      color:var(--white);
+      font-size:.95rem;
+      line-height:1.58;
+      max-width:62ch;
+    }
     .hero-points{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
     .hero-point{padding:14px;border-radius:18px;background:rgba(5,10,18,.38);border:1px solid rgba(255,255,255,.08)}
     .hero-point strong{display:block;color:var(--gold);font-size:1.04rem;margin-bottom:4px}
@@ -185,6 +210,14 @@
       box-shadow:0 18px 34px rgba(0,0,0,.26), inset 0 0 24px rgba(85,212,255,.08);
     }
     .hero-art-card img{width:min(460px, 100%);margin:0 auto}
+    .hero-art-caption{
+      margin-top:12px;
+      text-align:center;
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.45;
+    }
+    .hero-art-caption strong{color:var(--gold)}
     .section{
       margin-top:22px;
       padding:26px;
@@ -419,6 +452,9 @@
       .hero h1,.section-header h2,.footer-quote{color:#0f2240}
       .hero-point,.panel-card,.rule-card,.tip-card,.flow-step,.mat-card,.need-card,.quick-card,.battle-mat,.mat-player,.zone{background:#f8fbff}
       .fun-pullquote{color:#1b2430;background:#fff4d0;border-color:#e8c665;box-shadow:none}
+      .secret-reward{background:#fff8e8;border-color:#e8c665;box-shadow:none}
+      .secret-reward p,.hero-art-caption{color:#26374c}
+      .secret-reward strong,.hero-art-caption strong{color:#6e4300}
       .hero-point strong,.panel-card h3,.rule-card h3,.tip-card h3,.flow-step h3,.mat-card h3,.need-card h3,.quick-card h3,.flow-step strong,.mat-player strong,.zone,.footer-card strong{color:#123263}
       .rules-table th,.rules-table td::before{color:#6e4300}
       .panel-card [style*="color:var(--white)"]{color:#123263 !important}
@@ -431,8 +467,8 @@
       <div class="manual-brand">
         <img src="android-chrome-192x192.png" alt="PoCoBOT icono">
         <div class="manual-brand-copy">
-          <strong>Manual de Mesa</strong>
-          <span>Versión analógica oficial para jugar con una baraja real</span>
+          <strong>Archivo secreto encontrado</strong>
+          <span>Edición analógica desbloqueada para pilotos que exploraron un poco más</span>
         </div>
       </div>
       <div style="display:grid;gap:10px;justify-items:end;">
@@ -454,11 +490,15 @@
 
     <section class="hero">
       <div class="hero-copy">
-        <span class="kicker">PoCoBOT fuera de la pantalla</span>
+        <span class="kicker">Acceso reservado · desbloqueado</span>
         <img class="hero-logo" src="assets/pocobot_title.png" alt="Poker Combat Bot">
-        <h1>La misma batalla, pero con una baraja en la mano.</h1>
-        <p>Este documento traduce <strong>Poker Combat-Bot</strong> al modo mesa manteniendo el ADN de la versión digital: mismo núcleo, mismos módulos, mismo combustible, misma defensa, mismos proyectiles y la misma victoria al romper la <strong>Defensa</strong> del rival.</p>
-        <div class="fun-pullquote">La idea no es “inspirarse” en el videojuego. La idea es poder jugarlo de verdad en una mesa, con una baraja de póker, dos zonas de jugador y bastante mala leche táctica.</div>
+        <h1>Has encontrado el cuaderno secreto de mesa de PoCoBOT.</h1>
+        <p>Este documento traslada <strong>Poker Combat-Bot</strong> al modo mesa sin traicionar ni una gota de su ADN digital: mismo núcleo, mismos módulos, mismo combustible, misma defensa, mismos proyectiles y la misma victoria al romper la <strong>Defensa</strong> del rival.</p>
+        <div class="fun-pullquote">Esto no estaba pensado para aparecer a la primera. Es un premio a la curiosidad: un regalo de <strong>Juan Ramón</strong> para quien decidió seguir explorando y descubrir cómo late PoCoBOT lejos de la pantalla.</div>
+        <div class="secret-reward">
+          <strong>Recompensa para pilotos curiosos</strong>
+          <p>Si has llegado hasta aquí, ya no solo estás jugando a PoCoBOT: has descubierto una pieza escondida de su universo. Este manual existe para que puedas montarlo y combatirlo de verdad en una mesa, con una baraja de póker, dos zonas de combate y exactamente la misma mala leche táctica que en la versión digital.</p>
+        </div>
         <div class="hero-points">
           <div class="hero-point">
             <strong>1 baraja</strong>
@@ -476,7 +516,8 @@
       </div>
       <div class="hero-art">
         <div class="hero-art-card">
-          <img src="official-icon-pack/source/pocobot-official-master-1024.png" alt="Arte oficial de PoCoBOT">
+          <img src="assets/image_19.png" alt="Mecha oficial de PoCoBOT">
+          <p class="hero-art-caption"><strong>Documento reservado.</strong> Si estás leyendo esto, has encontrado el pequeño premio escondido para quienes disfrutan descubriendo secretos y quieren llevar PoCoBOT fuera de la pantalla.</p>
         </div>
       </div>
     </section>
@@ -748,9 +789,9 @@
     <section class="footer-card">
       <div>
         <strong>Créditos</strong>
-        <p>Poker Combat-Bot ha sido diseñado y desarrollado por <strong>Juan Ramón Pérez Quintanar</strong>. Esta adaptación de mesa busca que el juego siga respirando igual de bien fuera de la pantalla: mismas reglas, mismo nervio y exactamente la misma satisfacción cuando el rival se queda sin defensa.</p>
+        <p>Poker Combat-Bot ha sido diseñado y desarrollado por <strong>Juan Ramón Pérez Quintanar</strong>. Esta adaptación de mesa es también un guiño personal a quien se detiene, explora y encuentra secretos: mismas reglas, mismo nervio y exactamente la misma satisfacción cuando el rival se queda sin defensa.</p>
       </div>
-      <div class="footer-quote">Baraja. Núcleo. Fuel. Combate.</div>
+      <div class="footer-quote">Curiosidad recompensada. Combate desbloqueado.</div>
     </section>
   </div>
 </body>
