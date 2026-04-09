@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PoCoBOT - Manual de Piloto</title>
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg-2:#0b1730;
+      --panel:#0f1c34;
+      --panel-2:#14274a;
+      --line:#4f78da;
+      --line-soft:rgba(113,152,255,.26);
+      --cyan:#8ef4ff;
+      --gold:#ffd45e;
+      --orange:#ff9a45;
+      --red:#ff6d64;
+      --white:#edf8ff;
+      --muted:#b8d7ee;
+      --ink:#08101b;
+      --shadow:0 22px 60px rgba(0,0,0,.36);
+      --grid:linear-gradient(rgba(142,244,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(142,244,255,.07) 1px, transparent 1px);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Trebuchet MS","Avenir Next",Verdana,sans-serif;
+      color:var(--white);
+      background:
+        radial-gradient(circle at top, rgba(85,212,255,.18), transparent 24%),
+        radial-gradient(circle at 82% 10%, rgba(255,154,69,.12), transparent 18%),
+        linear-gradient(180deg, #06101c 0%, #081426 52%, #091a31 100%);
+      min-height:100vh;
+    }
+    img{max-width:100%;display:block}
+    a{color:inherit}
+    .manual-shell{
+      width:min(1240px, calc(100% - 28px));
+      margin:0 auto;
+      padding:22px 0 48px;
+    }
+    .manual-topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      padding:12px 18px;
+      margin-bottom:18px;
+      border:1px solid var(--line-soft);
+      border-radius:28px;
+      background:rgba(7,17,31,.84);
+      backdrop-filter:blur(12px);
+      box-shadow:0 12px 32px rgba(0,0,0,.2);
+    }
+    .manual-brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .manual-brand img{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      box-shadow:0 0 0 2px rgba(255,212,94,.18), 0 10px 24px rgba(0,0,0,.28);
+    }
+    .manual-brand-copy strong{
+      display:block;
+      font-size:.88rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .manual-brand-copy span{
+      display:block;
+      font-size:.74rem;
+      color:var(--muted);
+    }
+    .manual-topbar-controls{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      gap:12px;
+      flex:1 1 auto;
+    }
+    .manual-search{
+      min-width:min(340px, 100%);
+      flex:1 1 320px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border:1px solid rgba(142,244,255,.18);
+      border-radius:999px;
+      background:rgba(4,12,22,.58);
+      box-shadow:inset 0 0 18px rgba(85,212,255,.05);
+    }
+    .manual-search input{
+      width:100%;
+      border:0;
+      outline:none;
+      background:transparent;
+      color:var(--white);
+      font:inherit;
+      font-size:.88rem;
+    }
+    .manual-search input::placeholder{color:#8eb3d4}
+    .search-icon{color:var(--cyan);font-size:1rem;line-height:1}
+    .manual-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+    .manual-nav a,
+    .manual-actions a,
+    .manual-actions button{
+      border:1px solid var(--line-soft);
+      border-radius:999px;
+      padding:10px 14px;
+      background:linear-gradient(180deg, rgba(19,35,64,.9), rgba(11,23,48,.95));
+      color:var(--white);
+      font:inherit;
+      font-size:.77rem;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      text-decoration:none;
+      cursor:pointer;
+      transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+    .manual-nav a:hover,
+    .manual-actions a:hover,
+    .manual-actions button:hover{
+      transform:translateY(-1px);
+      border-color:rgba(142,244,255,.44);
+      box-shadow:0 8px 22px rgba(85,212,255,.16);
+    }
+    .hero{
+      position:relative;
+      overflow:hidden;
+      padding:32px;
+      border-radius:36px;
+      background:
+        linear-gradient(180deg, rgba(23,41,75,.96), rgba(11,21,40,.98)),
+        var(--grid);
+      background-size:auto, 24px 24px, 24px 24px;
+      border:1px solid rgba(142,244,255,.22);
+      box-shadow:var(--shadow);
+      display:grid;
+      grid-template-columns:1.14fr .86fr;
+      gap:26px;
+      align-items:center;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:auto -12% -16% auto;
+      width:320px;
+      height:320px;
+      background:radial-gradient(circle, rgba(255,212,94,.18), transparent 68%);
+      pointer-events:none;
+    }
+    .hero-copy,
+    .hero-art{position:relative;z-index:1}
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(142,244,255,.08);
+      border:1px solid rgba(142,244,255,.22);
+      color:var(--cyan);
+      font-size:.76rem;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    .hero-logo{width:min(620px, 100%);margin:18px 0 10px;filter:drop-shadow(0 10px 24px rgba(0,0,0,.28))}
+    .hero h1{
+      margin:0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:clamp(2rem, 4vw, 3.45rem);
+      line-height:.94;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+    }
+    .hero-lead{display:grid;gap:12px;margin-top:10px}
+    .hero p{margin:0;max-width:64ch;color:var(--muted);font-size:1rem;line-height:1.55}
+    .fun-pullquote{
+      padding:14px 16px;
+      border-radius:20px;
+      background:linear-gradient(180deg, rgba(255,212,94,.10), rgba(85,212,255,.06));
+      border:1px solid rgba(255,212,94,.18);
+      color:#fff6d1;
+      font-size:.94rem;
+      line-height:1.48;
+      box-shadow:inset 0 0 18px rgba(255,212,94,.05);
+    }
+    .hero-points{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
+    .hero-point{padding:14px;border-radius:18px;background:rgba(5,10,18,.38);border:1px solid rgba(255,255,255,.08)}
+    .hero-point strong{display:block;color:var(--gold);font-size:1.12rem;margin-bottom:4px}
+    .hero-point span{color:var(--muted);font-size:.8rem;line-height:1.35}
+    .manual-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+    .manual-actions .primary{background:linear-gradient(180deg, #ffd560, #ff9e45);color:var(--ink);border-color:rgba(255,212,94,.5);box-shadow:0 12px 24px rgba(255,154,69,.22)}
+    .manual-actions .download{background:linear-gradient(180deg, #eafcff, #abebff 52%, #61d7ff);color:#123263;border-color:rgba(146,245,255,.34)}
+    .search-status{margin-top:14px;color:var(--muted);font-size:.76rem;font-weight:700;line-height:1.4}
+    .search-status strong{color:var(--gold)}
+    .search-shortcuts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .search-chip{
+      border:1px solid rgba(142,244,255,.18);
+      border-radius:999px;
+      padding:8px 12px;
+      background:rgba(7,17,31,.42);
+      color:var(--white);
+      font:inherit;
+      font-size:.74rem;
+      font-weight:800;
+      letter-spacing:.06em;
+      cursor:pointer;
+      transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease,background .16s ease;
+    }
+    .search-chip:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,212,94,.34);
+      box-shadow:0 8px 18px rgba(255,212,94,.12);
+      background:rgba(255,212,94,.08);
+    }
+    .hero-art{display:grid;gap:14px;justify-items:center}
+    .hero-mecha-card{
+      width:min(390px, 100%);
+      padding:18px 18px 12px;
+      border-radius:28px;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(85,212,255,.18), transparent 35%),
+        linear-gradient(180deg, rgba(17,31,58,.96), rgba(8,16,31,.98));
+      border:1px solid rgba(142,244,255,.2);
+      box-shadow:0 18px 34px rgba(0,0,0,.26), inset 0 0 24px rgba(85,212,255,.08);
+    }
+    .hero-mecha-card img{width:min(280px, 82%);margin:0 auto;filter:drop-shadow(0 12px 20px rgba(0,0,0,.32))}
+    .hero-suits{display:flex;justify-content:center;gap:14px;font-size:1.4rem;opacity:.92;margin-top:8px}
+    .heart,.diamond{color:var(--red)}
+    .spade,.club{color:var(--white)}
+    .section{margin-top:22px;padding:26px;border-radius:30px;background:linear-gradient(180deg, rgba(15,28,52,.96), rgba(9,18,34,.98));border:1px solid rgba(142,244,255,.16);box-shadow:var(--shadow);transition:opacity .18s ease, filter .18s ease, border-color .18s ease, box-shadow .18s ease}
+    .section-header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .section-header h2{margin:0;font-family:"Arial Black","Impact",sans-serif;font-size:clamp(1.3rem, 2vw, 2rem);letter-spacing:.05em;text-transform:uppercase}
+    .section-header p{margin:8px 0 0;color:var(--muted);max-width:68ch;line-height:1.5}
+    .section-tag{flex:0 0 auto;padding:8px 12px;border-radius:999px;background:rgba(255,212,94,.12);border:1px solid rgba(255,212,94,.24);color:var(--gold);font-size:.74rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+    .search-dim{opacity:.34;filter:saturate(.7)}
+    .search-hit{border-color:rgba(255,212,94,.28);box-shadow:0 0 0 1px rgba(255,212,94,.18), 0 0 24px rgba(255,212,94,.08)}
+    .match-highlight{background:rgba(255,212,94,.22);color:#fff7c9;padding:0 .14em;border-radius:.2em;box-shadow:0 0 0 1px rgba(255,212,94,.16)}
+    .cards-2,.cards-3,.cards-4{display:grid;gap:14px}
+    .cards-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cards-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .cards-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .panel-card,.mode-card,.rule-card,.tip-card,.formula-card,.quick-card{
+      padding:16px;border-radius:22px;background:linear-gradient(180deg, rgba(22,39,73,.9), rgba(11,22,42,.94));border:1px solid rgba(255,255,255,.08);min-width:0;transition:opacity .18s ease, filter .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .panel-card h3,.mode-card h3,.rule-card h3,.tip-card h3,.formula-card h3,.quick-card h3{margin:0 0 8px;font-size:1rem;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan)}
+    .panel-card p,.mode-card p,.rule-card p,.tip-card p,.formula-card p,.quick-card p,.quick-card li,.list-note li{margin:0;color:var(--muted);line-height:1.48;font-size:.92rem}
+    .mini-label{display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;color:var(--gold);font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+    .quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .mode-card{position:relative;overflow:hidden}
+    .mode-card::after{content:"";position:absolute;inset:auto -18% -18% auto;width:110px;height:110px;background:radial-gradient(circle, rgba(255,212,94,.12), transparent 70%);pointer-events:none}
+    .mode-chip{display:inline-block;margin-bottom:10px;padding:6px 10px;border-radius:999px;background:rgba(142,244,255,.1);color:var(--cyan);font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    .analog-easter-egg{display:none;margin-top:16px}
+    .analog-easter-egg.revealed{display:block}
+    .diagram-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:18px;align-items:start}
+    .cockpit-map{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;padding:16px;border-radius:24px;background:linear-gradient(180deg, rgba(23,41,75,.9), rgba(9,18,36,.96)), var(--grid);background-size:auto, 22px 22px, 22px 22px;border:1px solid rgba(142,244,255,.18);min-height:360px}
+    .map-stage,.map-console,.map-radars{position:relative;padding:14px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(8,16,32,.52)}
+    .map-stage{min-height:180px}
+    .map-radars{min-height:180px}
+    .map-console{min-height:132px;grid-column:1 / span 2}
+    .map-stage h3,.map-console h3,.map-radars h3{margin:0 0 8px;font-size:.86rem;color:var(--gold);letter-spacing:.08em;text-transform:uppercase}
+    .map-stage p,.map-console p,.map-radars p{margin:0;color:var(--muted);font-size:.84rem;line-height:1.4}
+    .map-orbit{position:absolute;inset:56px 28px 20px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+    .dial{width:132px;height:132px;margin:auto;border-radius:50%;border:12px solid rgba(85,212,255,.22);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+    .vs-chip{padding:10px 12px;border-radius:999px;background:rgba(255,154,69,.14);color:var(--gold);font-weight:900;letter-spacing:.12em}
+    .radar-stack{display:grid;gap:12px;margin-top:10px}
+    .radar-dot{height:74px;border-radius:18px;background:radial-gradient(circle at center, rgba(255,109,100,.55), rgba(120,28,28,.4) 42%, rgba(31,15,18,.6) 66%);border:1px solid rgba(255,109,100,.24)}
+    .console-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+    .console-grid span{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:16px;background:linear-gradient(180deg, rgba(242,248,255,.95), rgba(189,210,255,.82));color:#193568;font-size:.8rem;font-weight:900;text-align:center;padding:8px}
+    .schematic-notes{display:grid;gap:12px}
+    .note-list{display:grid;gap:12px}
+    .note-item{padding:14px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);transition:opacity .18s ease, filter .18s ease, border-color .18s ease, box-shadow .18s ease}
+    .note-item strong{display:block;margin-bottom:6px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;font-size:.78rem}
+    .note-item span{color:var(--muted);font-size:.9rem;line-height:1.42}
+    .mecha-band{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}
+    .mecha-tile{padding:14px;border-radius:20px;background:linear-gradient(180deg, rgba(18,31,58,.94), rgba(10,19,35,.96));border:1px solid rgba(255,255,255,.08);text-align:center}
+    .mecha-tile img{height:120px;object-fit:contain;margin:0 auto 10px}
+    .mecha-tile strong{display:block;margin-bottom:6px;color:var(--cyan);font-size:.88rem;text-transform:uppercase;letter-spacing:.06em}
+    .mecha-tile span{color:var(--muted);font-size:.86rem;line-height:1.38}
+    .suit-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+    .suit-card{padding:16px;border-radius:22px;background:linear-gradient(180deg, rgba(22,39,73,.9), rgba(11,22,42,.94));border:1px solid rgba(255,255,255,.08)}
+    .suit-icon{font-size:1.8rem;margin-bottom:8px;display:inline-block}
+    .suit-card h3{margin:0 0 6px;font-size:1rem;color:var(--white);letter-spacing:.04em;text-transform:uppercase}
+    .suit-card p{margin:0;color:var(--muted);line-height:1.45;font-size:.88rem}
+    .rules-table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:20px;background:rgba(7,17,31,.52);border:1px solid rgba(255,255,255,.08)}
+    .rules-table th,.rules-table td{padding:14px 12px;text-align:left;vertical-align:top;border-bottom:1px solid rgba(255,255,255,.08);font-size:.9rem;line-height:1.42}
+    .rules-table th{color:var(--gold);font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.03)}
+    .rules-table td{color:var(--muted)}
+    .flow-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:16px}
+    .flow-step{position:relative;padding:16px;border-radius:20px;background:linear-gradient(180deg, rgba(19,35,64,.94), rgba(10,19,35,.96));border:1px solid rgba(255,255,255,.08);min-height:150px}
+    .flow-step:not(:last-child)::after{content:"→";position:absolute;right:-13px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:1.2rem;font-weight:900}
+    .flow-step strong{display:block;margin-bottom:8px;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;font-size:.76rem}
+    .flow-step h3{margin:0 0 8px;font-size:1rem;color:var(--white)}
+    .flow-step p{margin:0;color:var(--muted);font-size:.88rem;line-height:1.42}
+    .formula-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+    .formula-badge{display:inline-block;margin-bottom:8px;padding:6px 10px;border-radius:999px;background:rgba(255,212,94,.12);color:var(--gold);font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    .formula{margin:10px 0;padding:12px 14px;border-radius:16px;background:rgba(5,10,18,.45);color:var(--white);font-weight:900;font-size:1rem}
+    .tips-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .tip-card ul,.quick-card ol{margin:0;padding-left:18px}
+    .tip-card li,.quick-card li{margin:7px 0 0}
+    .faq-grid{display:grid;gap:12px}
+    details{border-radius:18px;background:linear-gradient(180deg, rgba(18,31,58,.94), rgba(10,19,35,.96));border:1px solid rgba(255,255,255,.08);overflow:hidden;transition:opacity .18s ease, filter .18s ease, border-color .18s ease, box-shadow .18s ease}
+    summary{list-style:none;cursor:pointer;padding:16px 18px;font-weight:900;letter-spacing:.03em;color:var(--white)}
+    summary::-webkit-details-marker{display:none}
+    details p{margin:0;padding:0 18px 18px;color:var(--muted);line-height:1.52}
+    .footer-card{margin-top:22px;padding:22px 24px;border-radius:28px;background:linear-gradient(180deg, rgba(15,28,52,.96), rgba(9,18,34,.98));border:1px solid rgba(142,244,255,.16);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:18px;color:var(--muted)}
+    .footer-card strong{display:block;color:var(--gold);margin-bottom:6px;font-size:.86rem;letter-spacing:.08em;text-transform:uppercase}
+    .footer-card p{margin:0;line-height:1.5}
+    .footer-quote{font-family:"Arial Black","Impact",sans-serif;color:var(--white);font-size:1.1rem;text-transform:uppercase;letter-spacing:.06em;text-align:right}
+    .secret-link{opacity:.35;text-decoration:none;border-bottom:1px dotted rgba(142,244,255,.34);transition:opacity .16s ease, border-color .16s ease}
+    .secret-link:hover{opacity:.88;border-bottom-color:rgba(255,212,94,.5)}
+    @media (max-width:1080px){
+      .hero,.diagram-grid{grid-template-columns:1fr}
+      .cards-4,.quick-grid,.suit-grid,.flow-row,.tips-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .flow-step:not(:last-child)::after{display:none}
+    }
+    @media (max-width:760px){
+      .manual-shell{width:min(100% - 16px, 100%);padding-top:14px}
+      .manual-topbar{border-radius:26px;flex-direction:column}
+      .manual-topbar-controls{width:100%;justify-content:flex-start}
+      .manual-search{min-width:0;width:100%}
+      .manual-nav{justify-content:flex-start}
+      .hero{padding:22px 18px;border-radius:28px}
+      .hero-points,.cards-3,.cards-2,.cards-4,.quick-grid,.suit-grid,.flow-row,.formula-grid,.tips-grid,.mecha-band{grid-template-columns:1fr}
+      .section{padding:18px;border-radius:24px}
+      .section-header{display:block}
+      .rules-table,.rules-table tbody,.rules-table tr,.rules-table td,.rules-table th{display:block;width:100%}
+      .rules-table thead{display:none}
+      .rules-table tr{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+      .rules-table td{padding:8px 0;border:0}
+      .rules-table td::before{content:attr(data-label);display:block;color:var(--gold);font-size:.72rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+      .cockpit-map{grid-template-columns:1fr}
+      .map-console{grid-column:auto}
+      .console-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .footer-card{display:block}
+      .footer-quote{text-align:left;margin-top:12px}
+    }
+    @media print{
+      @page{size:A4;margin:12mm}
+      html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      body{background:#fff;color:#101520}
+      .manual-shell{width:100%;padding:0}
+      .manual-topbar{display:none}
+      .hero,.section,.footer-card{box-shadow:none;background:#fff;border:1px solid #c8d6e6;color:#101520;break-inside:avoid}
+      .hero p,.section-header p,.panel-card p,.mode-card p,.rule-card p,.tip-card p,.formula-card p,.quick-card p,.quick-card li,.note-item span,.flow-step p,.suit-card p,.footer-card p,details p,.rules-table td,.mecha-tile span,.hero-point span,.map-stage p,.map-console p,.map-radars p{color:#26374c}
+      .manual-actions{display:none}
+      .section-tag,.kicker,.mode-chip,.formula-badge,.mini-label{color:#8a5d00;background:#fff8e1;border-color:#f1cf6a}
+      .hero h1,.section-header h2,.footer-quote,summary{color:#0f2240}
+      .hero-point,.panel-card,.mode-card,.rule-card,.tip-card,.formula-card,.quick-card,.suit-card,.mecha-tile,.flow-step,.note-item,.cockpit-map,.map-stage,.map-radars,.map-console{background:#f8fbff}
+      .hero-point strong,.panel-card h3,.mode-card h3,.rule-card h3,.tip-card h3,.formula-card h3,.quick-card h3,.flow-step strong,.mecha-tile strong,.suit-card h3,.map-stage h3,.map-console h3,.map-radars h3,.formula,.console-grid span{color:#123263}
+      .note-item strong,.rules-table th,.rules-table td::before,.footer-card strong{color:#6e4300}
+      .formula{background:#eef5ff;border:1px solid #c8d6e6}
+      .match-highlight{background:#ffe69a;color:#1f2940;box-shadow:none}
+      .fun-pullquote{color:#1b2430;background:#fff4d0;border-color:#e8c665;box-shadow:none}
+      .fun-pullquote strong{color:#7a4b00}
+      .secret-link{opacity:1;color:#123263;border-bottom-color:#123263}
+      .search-dim{opacity:1;filter:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="manual-shell">
+    <div class="manual-topbar">
+      <div class="manual-brand">
+        <img src="android-chrome-192x192.png" alt="PoCoBOT icono">
+        <div class="manual-brand-copy">
+          <strong>Manual de Piloto</strong>
+          <span>Guía visual oficial, compacta y sin relleno</span>
+        </div>
+      </div>
+      <div class="manual-topbar-controls">
+        <label class="manual-search" aria-label="Buscar en el manual">
+          <span class="search-icon">⌕</span>
+          <input id="manualSearchInput" type="search" placeholder="Busca: proyectil, As♦, baraja, online, defensa..." autocomplete="off">
+        </label>
+        <nav class="manual-nav">
+          <a href="#inicio">Inicio</a>
+          <a href="#modos">Modos</a>
+          <a href="#cabina">Cabina</a>
+          <a href="#construccion">Construcción</a>
+          <a href="#combate">Combate</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+      </div>
+    </div>
+
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <span class="kicker">Guía de piloto oficial</span>
+        <img class="hero-logo" src="assets/pocobot_title.png" alt="Poker Combat Bot">
+        <h1>Construye. Decide. Dispara. Repite.</h1>
+        <div class="hero-lead">
+          <p>Este manual resume el juego real que tienes hoy en pantalla: portada renovada, tutorial guiado, modo local, modo online y un modo de 1 jugador contra CPU. La idea es sencilla: que aprender <strong>PoCoBOT</strong> se sienta como descubrir una cabina secreta, no como tragarte un ladrillo técnico.</p>
+          <div class="fun-pullquote">Piensa en esto como el cuaderno que un piloto veterano te desliza antes del combate: “lee lo justo, entiende lo importante y no tires el <strong>As♦</strong> a la ligera”.</div>
+        </div>
+        <div class="hero-points">
+          <div class="hero-point">
+            <strong>4 modos</strong>
+            <span>Tutorial, 1 Jugador, Multijugador Local y Online. Cada uno entra por una ruta clara.</span>
+          </div>
+          <div class="hero-point">
+            <strong>1 cockpit</strong>
+            <span>Todo se decide desde un panel de control retro cargado de información táctica y lecturas rápidas.</span>
+          </div>
+          <div class="hero-point">
+            <strong>0 humo</strong>
+            <span>Las reglas de esta guía están ajustadas a la build actual del juego, no a versiones viejas.</span>
+          </div>
+        </div>
+        <div class="manual-actions">
+          <button class="primary" type="button" onclick="window.print()">Imprimir o guardar PDF</button>
+          <a class="download" href="MANUAL_PILOTO_POCObot.pdf" download>Descargar PDF</a>
+          <a href="MANUAL_USUARIO.pdf" target="_blank">Ver PDF clásico</a>
+          <a href="/">Volver al juego</a>
+        </div>
+        <div class="search-status" id="searchStatus">Pulsa <strong>Ctrl/Cmd + K</strong> para saltar al buscador. Si buscas bien, puede que encuentres algo extra.</div>
+        <div class="search-shortcuts" aria-label="Búsquedas rápidas">
+          <button class="search-chip" type="button" data-search="fuel">Fuel</button>
+          <button class="search-chip" type="button" data-search="proyectil">Proyectil</button>
+          <button class="search-chip" type="button" data-search="As♦">As♦</button>
+          <button class="search-chip" type="button" data-search="online">Online</button>
+          <button class="search-chip" type="button" data-search="baraja">Baraja</button>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="hero-mecha-card">
+          <img src="assets/image_19.png" alt="Mecha listo para combate">
+          <div class="hero-suits">
+            <span class="heart">♥</span>
+            <span class="spade">♠</span>
+            <span class="diamond">♦</span>
+            <span class="club">♣</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="arranque">
+      <div class="section-header">
+        <div>
+          <h2>Arranque Rápido</h2>
+          <p>Si quieres sentarte y jugar en tres minutos, sigue este orden. Es la versión “me subo al mecha y salgo andando”.</p>
+        </div>
+        <span class="section-tag">Primera partida</span>
+      </div>
+      <div class="quick-grid">
+        <article class="quick-card">
+          <span class="mini-label">Paso 01</span>
+          <h3>Elige modo</h3>
+          <ol>
+            <li><strong>Tutorial</strong> si quieres una partida guiada paso a paso.</li>
+            <li><strong>Local</strong> para 1 Jugador o Multijugador Local.</li>
+            <li><strong>Online</strong> para crear o unirte a una sala.</li>
+          </ol>
+        </article>
+        <article class="quick-card">
+          <span class="mini-label">Paso 02</span>
+          <h3>Monta el mecha</h3>
+          <ol>
+            <li>Coloca <strong>Piloto</strong>, <strong>Copiloto</strong> y <strong>Booster</strong> en el núcleo.</li>
+            <li>Llena <strong>Ataque</strong>, <strong>Defensa</strong> y <strong>Armadura</strong>.</li>
+            <li>Añade <strong>Fuel</strong> con diamantes numéricos.</li>
+          </ol>
+        </article>
+        <article class="quick-card">
+          <span class="mini-label">Paso 03</span>
+          <h3>Activa el combate</h3>
+          <ol>
+            <li>Tu piloto exige <strong>3 cartas</strong> del palo de su módulo.</li>
+            <li>Sin esa condición, el mecha no puede lanzar ataque principal.</li>
+            <li>La consola y el cuadro de bloqueo te lo indican, así que no necesitas adivinar nada.</li>
+          </ol>
+        </article>
+        <article class="quick-card">
+          <span class="mini-label">Paso 04</span>
+          <h3>Gana la partida</h3>
+          <ol>
+            <li>Usa <strong>Fuel × 2</strong> para habilitar tu ataque con picas.</li>
+            <li>El rival se defiende con <strong>1 diamante numérico</strong> desde la mano.</li>
+            <li>Gana quien deja la <strong>Defensa</strong> rival a cero.</li>
+          </ol>
+        </article>
+      </div>
+      <div class="analog-easter-egg" id="analogEasterEgg">
+        <article class="mode-card">
+          <span class="mode-chip">Protocolo oculto</span>
+          <h3>Modo de mesa encontrado</h3>
+          <p>Si has llegado hasta aquí buscando <strong>baraja</strong>, <strong>mesa</strong> o <strong>analógico</strong>, sí: existe una guía paralela para jugar PoCoBOT con una baraja real. No estaba a simple vista por accidente.</p>
+          <div class="manual-actions">
+            <a href="MANUAL_ANALOGICO_POCObot.html" target="_blank">Abrir manual de mesa</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="modos">
+      <div class="section-header">
+        <div>
+          <h2>Modos de Juego</h2>
+          <p>La portada ahora está ordenada por intención de juego. Cada entrada te lleva a un flujo distinto y bien separado.</p>
+        </div>
+        <span class="section-tag">Pantalla principal</span>
+      </div>
+      <div class="cards-4">
+        <article class="mode-card">
+          <span class="mode-chip">Tutorial</span>
+          <h3>Aprende jugando</h3>
+          <p>El tutorial guiado prepara una situación real de partida y te enseña <strong>montaje, fuel, ataque, defensa, robo con diamantes y proyectiles</strong> sin soltarte en medio del caos.</p>
+        </article>
+        <article class="mode-card">
+          <span class="mode-chip">1 Jugador</span>
+          <h3>CPU Fácil o Difícil</h3>
+          <p>Desde <strong>Local</strong> puedes elegir una partida contra la máquina. <strong>Fácil</strong> te deja respirar; <strong>Difícil</strong> castiga mejor los huecos de montaje y fuel.</p>
+        </article>
+        <article class="mode-card">
+          <span class="mode-chip">Multijugador Local</span>
+          <h3>Mismo dispositivo</h3>
+          <p>Ideal para compartir pantalla. La partida mantiene todas las reglas normales y puedes salir de vuelta al inicio con el botón <strong>Volver</strong> de la consola.</p>
+        </article>
+        <article class="mode-card">
+          <span class="mode-chip">Online</span>
+          <h3>Sala con código</h3>
+          <p>Entras directamente al lobby, escribes tu nombre, creas sala o introduces un código de 4 caracteres. El host sincroniza el estado y el rival recibe solo la información que debe ver.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="cabina">
+      <div class="section-header">
+        <div>
+          <h2>Mapa de la Cabina</h2>
+          <p>El juego gana muchísimo cuando entiendes para qué sirve cada bloque del cockpit. Este esquema te ahorra ese momento de “vale, ¿y ahora dónde miro?”.</p>
+        </div>
+        <span class="section-tag">Esquema visual</span>
+      </div>
+      <div class="diagram-grid">
+        <div class="cockpit-map">
+          <div class="map-stage">
+            <h3>Pantalla táctica</h3>
+            <p>Muestra el estado general del combate, los dos diales de progreso y la fase actual.</p>
+            <div class="map-orbit">
+              <div class="dial"></div>
+              <div class="vs-chip">VS</div>
+              <div class="dial"></div>
+            </div>
+          </div>
+          <div class="map-radars">
+            <h3>Radares</h3>
+            <p>Feedback rápido de actividad ofensiva y estado de los dos jugadores.</p>
+            <div class="radar-stack">
+              <div class="radar-dot"></div>
+              <div class="radar-dot"></div>
+            </div>
+          </div>
+          <div class="map-console">
+            <h3>Consola de acciones</h3>
+            <p>Aquí viven las acciones del turno. Es el bloque más importante para aprender a jugar.</p>
+            <div class="console-grid">
+              <span>Nueva partida</span>
+              <span>Modificar</span>
+              <span>Abrir ataque</span>
+              <span>Robar con ♦</span>
+              <span>Pasar</span>
+              <span>Confirmar ataque</span>
+              <span>Confirmar defensa</span>
+              <span>Volver</span>
+            </div>
+          </div>
+        </div>
+        <div class="schematic-notes">
+          <div class="note-list">
+            <div class="note-item">
+              <strong>Diales circulares</strong>
+              <span>Sirven como lectura rápida del progreso de montaje y del estado de cada mecha. Son tu vistazo “de reojo”.</span>
+            </div>
+            <div class="note-item">
+              <strong>Panel del jugador</strong>
+              <span>Contiene núcleo, módulos, fuel, mano y el cuadro de <strong>Bloqueo de piloto</strong>, que te dice si el mecha ya puede atacar o aún está haciendo ruido pero no disparando nada.</span>
+            </div>
+            <div class="note-item">
+              <strong>Zona Fuel</strong>
+              <span>Los diamantes numéricos del panel alimentan el ataque principal. Su valor total se multiplica por dos.</span>
+            </div>
+            <div class="note-item">
+              <strong>Consola</strong>
+              <span>Todo se ejecuta aquí: modificar, abrir ataque, pasar, defender, usar proyectil o volver al menú principal.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="construccion">
+      <div class="section-header">
+        <div>
+          <h2>Construcción del Mecha</h2>
+          <p>La base de la partida no es solo tener cartas: es distribuirlas con criterio. Un mecha mal montado parece impresionante hasta que intentas disparar y no responde.</p>
+        </div>
+        <span class="section-tag">Fase de montaje</span>
+      </div>
+      <div class="mecha-band">
+        <article class="mecha-tile">
+          <img src="assets/image_11.png" alt="Piloto">
+          <strong>Piloto</strong>
+          <span>Debe ser <strong>J, Q o K</strong> y <strong>no puede ser ♦</strong>. Su palo determina qué módulo necesita llegar a <strong>3 cartas</strong> para habilitar el combate.</span>
+        </article>
+        <article class="mecha-tile">
+          <img src="assets/image_12.png" alt="Copiloto">
+          <strong>Copiloto</strong>
+          <span>También es una figura. Si es normal, amplía a 3 el módulo de su palo. Si es <strong>copiloto ♦</strong>, es dinámico y puede permitir que cualquier módulo único llegue a 3.</span>
+        </article>
+        <article class="mecha-tile">
+          <img src="assets/image_17.png" alt="Booster">
+          <strong>Booster</strong>
+          <span>Siempre es un <strong>As</strong>. Un As normal amplía a <strong>4</strong> el módulo de su palo. <strong>As♦</strong> no amplía ningún módulo: permite gastar <strong>♣ armadura como fuel</strong>. Poder caro, pero precioso.</span>
+        </article>
+      </div>
+      <div class="suit-grid">
+        <article class="suit-card">
+          <span class="suit-icon spade">♠</span>
+          <h3>Ataque</h3>
+          <p>Las picas del módulo Ataque son tu daño principal. También alimentan los proyectiles cuando ya están desbloqueados.</p>
+        </article>
+        <article class="suit-card">
+          <span class="suit-icon heart">♥</span>
+          <h3>Defensa</h3>
+          <p>La defensa del panel es la última capa antes de perder. Si este módulo queda vacío, la partida termina.</p>
+        </article>
+        <article class="suit-card">
+          <span class="suit-icon club">♣</span>
+          <h3>Armadura</h3>
+          <p>Absorbe el impacto antes que la defensa. Mientras quede una sola carta de armadura, el daño no puede pasar a defensa.</p>
+        </article>
+        <article class="suit-card">
+          <span class="suit-icon diamond">♦</span>
+          <h3>Fuel</h3>
+          <p>Solo los diamantes numéricos del panel cuentan como combustible. Su suma se multiplica por 2 para fijar el límite de ataque con ♠.</p>
+        </article>
+      </div>
+      <table class="rules-table">
+        <thead>
+          <tr>
+            <th>Elemento</th>
+            <th>Regla real</th>
+            <th>Consejo práctico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Elemento"><strong>Primer turno</strong></td>
+            <td data-label="Regla real">Puedes colocar hasta <strong>3 cartas por módulo</strong>. En turnos posteriores, sin piloto principal, el límite baja a <strong>2</strong>.</td>
+            <td data-label="Consejo práctico">Aprovecha el primer turno para no quedarte corto de estructura.</td>
+          </tr>
+          <tr>
+            <td data-label="Elemento"><strong>Bloqueo de piloto</strong></td>
+            <td data-label="Regla real">Para atacar necesitas: <strong>Piloto válido</strong>, al menos <strong>1 carta</strong> en Ataque, Defensa y Armadura, y <strong>3 cartas</strong> del palo del piloto en tus estadísticas.</td>
+            <td data-label="Consejo práctico">El cuadro rojo/verde del panel es tu verificación rápida.</td>
+          </tr>
+          <tr>
+            <td data-label="Elemento"><strong>Copiloto ♦</strong></td>
+            <td data-label="Regla real">No amplía un módulo fijo: actúa como flex y permite que un único módulo llegue a 3.</td>
+            <td data-label="Consejo práctico">Es potentísimo cuando tu mano no acompaña el palo del piloto.</td>
+          </tr>
+          <tr>
+            <td data-label="Elemento"><strong>As♦</strong></td>
+            <td data-label="Regla real">No aumenta capacidades. Activa la opción de usar <strong>♣ armadura como combustible</strong> en el ataque.</td>
+            <td data-label="Consejo práctico">Golpeas más fuerte, pero puedes desmontarte en el proceso.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="combate">
+      <div class="section-header">
+        <div>
+          <h2>Sistema de Combate</h2>
+          <p>Estas son las reglas que realmente importan cuando la partida se pone seria. Si dominas esta sección, pasas de “estoy probando botones” a “sé exactamente por qué te he roto el turno”.</p>
+        </div>
+        <span class="section-tag">Resolución de turno</span>
+      </div>
+      <div class="flow-row">
+        <article class="flow-step">
+          <strong>1</strong>
+          <h3>Modificar</h3>
+          <p>Colocas, sustituyes o descartas cartas para afinar el mecha y preparar un turno mejor.</p>
+        </article>
+        <article class="flow-step">
+          <strong>2</strong>
+          <h3>Abrir ataque</h3>
+          <p>Seleccionas fuel y luego picas del módulo Ataque. La consola te dice si la selección es legal.</p>
+        </article>
+        <article class="flow-step">
+          <strong>3</strong>
+          <h3>Ventana de defensa</h3>
+          <p>El defensor puede usar exactamente <strong>1 diamante numérico</strong> de la mano para reducir el daño.</p>
+        </article>
+        <article class="flow-step">
+          <strong>4</strong>
+          <h3>Resolución de daño</h3>
+          <p>Primero cae <strong>Armadura</strong>. Solo si ya no queda armadura, el daño restante puede destruir <strong>Defensa</strong>.</p>
+        </article>
+        <article class="flow-step">
+          <strong>5</strong>
+          <h3>Fin de turno</h3>
+          <p>Se actualizan proyectiles, prompts y paso de turno. Si la defensa rival queda vacía, no hay drama: hay trofeo.</p>
+        </article>
+      </div>
+      <div class="formula-grid">
+        <article class="formula-card">
+          <span class="formula-badge">Ataque principal</span>
+          <h3>Fuel + Picas</h3>
+          <p>El ataque principal necesita combustible del panel y cartas de daño del módulo Ataque.</p>
+          <div class="formula">Valor total de Fuel × 2 = límite máximo de daño con ♠</div>
+          <p>Si superas ese límite, el juego no te deja confirmar. El fuel se descarta al atacar.</p>
+        </article>
+        <article class="formula-card">
+          <span class="formula-badge">Defensa activa</span>
+          <h3>1 diamante numérico</h3>
+          <p>El defensor responde con <strong>una única carta ♦ numérica</strong> de la mano.</p>
+          <div class="formula">Daño final = ataque declarado - valor del ♦ usado</div>
+          <p>Las figuras de diamantes <strong>no</strong> valen para defender.</p>
+        </article>
+        <article class="formula-card">
+          <span class="formula-badge">Proyectiles</span>
+          <h3>Disparo sin fuel</h3>
+          <p>Se desbloquean tras el <strong>primer ataque completo</strong> de la partida. Desde ese momento puedes disparar <strong>1 pica</strong> como proyectil.</p>
+          <div class="formula">Solo proyectil = selecciona exactamente 1 ♠ del módulo Ataque</div>
+          <p>También puedes combinar proyectil con ataque principal para sumar daño extra. Es una forma preciosa de rematar o de asustar.</p>
+        </article>
+        <article class="formula-card">
+          <span class="formula-badge">Robo y economía</span>
+          <h3>Diamantes y figuras</h3>
+          <p><strong>Robar con ♦</strong>: descarta 1 diamante numérico de tu mano y roba tantas cartas como marque su valor. No puedes hacerlo en dos turnos propios seguidos.</p>
+          <div class="formula">2 figuras en mano + piloto + copiloto = roba 4 cartas</div>
+          <p>La acción de <strong>2 Figuras → 4</strong> se corta si el mazo se agota.</p>
+        </article>
+      </div>
+      <div class="cards-2" style="margin-top:14px;">
+        <article class="rule-card">
+          <h3>Regla de impacto</h3>
+          <p>El daño no desgasta parcialmente una carta del panel. Si el valor restante no alcanza para destruir la siguiente carta de armadura o defensa, el impacto se detiene ahí. Nada de “medio romper” una carta.</p>
+        </article>
+        <article class="rule-card">
+          <h3>Condición de victoria</h3>
+          <p>No ganas por vaciar la armadura. Ganas cuando el rival se queda sin <strong>Defensa (♥)</strong>. La armadura es el escudo; la defensa es lo que mantiene al piloto dentro de la partida.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <h2>Consejos de Piloto</h2>
+          <p>Pequeñas decisiones que marcan una diferencia enorme cuando pasas de entender el juego a controlarlo.</p>
+        </div>
+        <span class="section-tag">Buenas prácticas</span>
+      </div>
+      <div class="tips-grid">
+        <article class="tip-card">
+          <h3>Lee el bloqueo del piloto</h3>
+          <ul>
+            <li>Si tu piloto es ♠, debes reunir 3 cartas relacionadas con Ataque.</li>
+            <li>No te obsesiones con llenar todo si sigues bloqueado.</li>
+            <li>El panel te lo pinta en rojo o verde: hazle caso.</li>
+          </ul>
+        </article>
+        <article class="tip-card">
+          <h3>No malgastes diamantes</h3>
+          <ul>
+            <li>Un buen diamante puede ser fuel, defensa o motor de robo.</li>
+            <li>Robar mucho no siempre es correcto si te deja sin respuesta al siguiente ataque.</li>
+            <li>Recuerda que no puedes usar Robar con ♦ en dos turnos propios seguidos.</li>
+          </ul>
+        </article>
+        <article class="tip-card">
+          <h3>Asume el coste del As♦</h3>
+          <ul>
+            <li>Consumir armadura como fuel puede abrir un hueco mortal en tu defensa.</li>
+            <li>Úsalo para cerrar partidas o para un giro fuerte, no por rutina.</li>
+            <li>Si tu armadura queda fina, el siguiente golpe te puede romper medio mecha.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="section-header">
+        <div>
+          <h2>Preguntas Frecuentes</h2>
+          <p>Las dudas que suelen atascar a un jugador nuevo. Están respondidas con la build actual del juego.</p>
+        </div>
+        <span class="section-tag">FAQ</span>
+      </div>
+      <div class="faq-grid">
+        <details>
+          <summary>¿Qué es exactamente un piloto válido?</summary>
+          <p>Una figura <strong>J, Q o K</strong> colocada en el slot de Piloto del núcleo y que <strong>no sea de diamantes</strong>. Sin ese piloto, el mecha no puede realizar ataque principal.</p>
+        </details>
+        <details>
+          <summary>¿El copiloto de diamantes sirve como piloto?</summary>
+          <p>No. El copiloto ♦ es una pieza flexible para ampliar módulos, pero no sustituye el requisito del piloto principal.</p>
+        </details>
+        <details>
+          <summary>¿Cuándo se desbloquea el proyectil?</summary>
+          <p>Cuando se resuelve el <strong>primer ataque completo</strong> de la partida. A partir de ahí queda desbloqueado para toda la partida.</p>
+        </details>
+        <details>
+          <summary>¿Con qué carta me defiendo?</summary>
+          <p>Con <strong>1 diamante numérico</strong> de tu mano. Su valor completo se resta al daño. Las figuras de diamantes no sirven para esa ventana de defensa.</p>
+        </details>
+        <details>
+          <summary>¿Gano al romper la armadura rival?</summary>
+          <p>No. La armadura es solo la primera capa de absorción. La victoria llega cuando el rival se queda sin cartas en el módulo de <strong>Defensa</strong>.</p>
+        </details>
+        <details>
+          <summary>¿Puedo salir de una partida y probar otro modo?</summary>
+          <p>Sí. En el panel de acciones tienes el botón <strong>Volver</strong>. También existe salida al inicio desde el lobby online y desde la cortina de espera del modo online.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="footer-card">
+      <div>
+        <strong>Créditos</strong>
+        <p>Poker Combat-Bot ha sido diseñado y desarrollado por <strong>Juan Ramón Pérez Quintanar</strong>. Esta versión del manual está pensada como guía visual de piloto: más compacta, más clara y bastante más entretenida de leer que un documento lleno de aire muerto.</p>
+      </div>
+      <div class="footer-quote">Construye. Estrategia. Combate. Victoria.<br><a class="secret-link" href="MANUAL_ANALOGICO_POCObot.html" target="_blank">protocolo de mesa</a></div>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      const input = document.getElementById('manualSearchInput');
+      const status = document.getElementById('searchStatus');
+      const easterEgg = document.getElementById('analogEasterEgg');
+      if (!input || !status) return;
+
+      const blocks = [...document.querySelectorAll('.section, .hero, details, .mode-card, .quick-card, .tip-card, .rule-card, .formula-card, .note-item')];
+      const textNodes = [...document.querySelectorAll('h1, h2, h3, p, li, td, summary, .note-item span, .hero-point strong, .hero-point span, .formula, .mode-chip, .section-tag, .mini-label, .footer-quote')];
+
+      textNodes.forEach(node => {
+        node.dataset.originalHtml = node.innerHTML;
+      });
+
+      function escapeRegExp(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+
+      function clearHighlights() {
+        textNodes.forEach(node => {
+          if (node.dataset.originalHtml) node.innerHTML = node.dataset.originalHtml;
+        });
+      }
+
+      function highlight(query) {
+        if (!query) return 0;
+        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        let hits = 0;
+        textNodes.forEach(node => {
+          const source = node.dataset.originalHtml || node.innerHTML;
+          const plain = (node.textContent || '').toLowerCase();
+          if (!plain.includes(query)) return;
+          hits += 1;
+          node.innerHTML = source.replace(regex, '<mark class="match-highlight">$1</mark>');
+        });
+        return hits;
+      }
+
+      function runSearch(rawValue) {
+        const query = rawValue.trim().toLowerCase();
+        clearHighlights();
+
+        blocks.forEach(block => {
+          block.classList.remove('search-dim', 'search-hit');
+          if (block.tagName === 'DETAILS') block.open = false;
+        });
+
+        if (!query) {
+          status.innerHTML = 'Pulsa <strong>Ctrl/Cmd + K</strong> para saltar al buscador. Si buscas bien, puede que encuentres algo extra.';
+          if (easterEgg) easterEgg.classList.remove('revealed');
+          return;
+        }
+
+        const matchedBlocks = [];
+        blocks.forEach(block => {
+          const text = (block.textContent || '').toLowerCase();
+          const matched = text.includes(query);
+          block.classList.toggle('search-dim', !matched);
+          block.classList.toggle('search-hit', matched);
+          if (matched) {
+            matchedBlocks.push(block);
+            if (block.tagName === 'DETAILS') block.open = true;
+          }
+        });
+
+        const highlightHits = highlight(query);
+        const easterTerms = ['baraja', 'analogico', 'analógico', 'mesa', 'cartas reales', 'fisico', 'físico'];
+        const revealAnalog = easterTerms.some(term => query.includes(term));
+        if (easterEgg) easterEgg.classList.toggle('revealed', revealAnalog);
+
+        status.innerHTML = matchedBlocks.length
+          ? `<strong>${matchedBlocks.length}</strong> bloques relevantes encontrados · <strong>${highlightHits}</strong> zonas destacadas.`
+          : 'No he encontrado ese término en el manual. Prueba con <strong>fuel</strong>, <strong>proyectil</strong>, <strong>online</strong> o <strong>baraja</strong>.';
+
+        if (matchedBlocks.length) {
+          matchedBlocks[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+
+      input.addEventListener('input', () => runSearch(input.value));
+      document.querySelectorAll('[data-search]').forEach(button => {
+        button.addEventListener('click', () => {
+          input.value = button.dataset.search || '';
+          input.focus();
+          runSearch(input.value);
+        });
+      });
+      window.addEventListener('keydown', event => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+          event.preventDefault();
+          input.focus();
+          input.select();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

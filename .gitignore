@@ -1,0 +1,23 @@
+.DS_Store
+assets/.DS_Store
+
+# Local working builds and prototypes
+functional-polish-build/
+commercial-online-base-build/
+commercial-retro-build/
+online-commercial-remake/
+online-commercial-remake-candy/
+icon-refresh/
+official-icon-pack/
+release-package/
+
+# Local export / prototype files
+Poker_Combat_Bot_EXPORT_2026-04-07.md
+poker_combat_bot_COMMERCIAL_VISUAL_PROTOTYPE.html
+poker_combat_bot_OK_retro_ui.html
+
+# Card experiments not used by production
+assets/cards/white/
+assets/cards/white-full/
+assets/cards/hayeah-sample/
+assets/cards/english_pattern_cc0_deck.svg
