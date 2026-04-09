@@ -2067,6 +2067,7 @@ body.victory .frame{
   grid-template-columns:repeat(2, 1fr);
   gap:8px;
   max-width:520px;
+  align-items:stretch;
   position:relative;
   z-index:1;
 }
@@ -2263,20 +2264,92 @@ body.victory .frame{
 }
 @media (max-width: 760px){
   .intro-screen{ align-items:flex-start; }
-  .intro-card{ padding:18px 15px 16px; max-height:calc(100dvh - 10px); }
-  .intro-panels{ display:none; }
+  .intro-screen::before{
+    opacity:.74;
+    inset:-8%;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(35,216,255,.14), transparent 18%),
+      radial-gradient(circle at 82% 76%, rgba(255,178,46,.12), transparent 22%),
+      linear-gradient(90deg, rgba(35,216,255,.08) 0 1px, transparent 1px 100%),
+      linear-gradient(0deg, rgba(35,216,255,.07) 0 1px, transparent 1px 100%);
+    background-size:auto, auto, 54px 54px, 54px 54px;
+    mask-image:none;
+    animation:circuitDrift 20s ease-in-out infinite, circuitPulse 5s ease-in-out infinite;
+  }
+  .intro-screen::after{
+    opacity:.48;
+    inset:0;
+    background:
+      radial-gradient(circle at 50% 14%, rgba(35,216,255,.18), transparent 30%),
+      radial-gradient(circle at 50% 100%, rgba(255,178,46,.10), transparent 42%);
+  }
+  .intro-card{ padding:16px 13px 14px; max-height:calc(100dvh - 8px); width:min(430px, 100%); }
+  .intro-panels{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    max-width:360px;
+    gap:6px;
+    margin:5px auto 9px;
+  }
   .intro-enter{ min-width:0; width:100%; padding:12px 16px; font-size:.88rem; }
-  .intro-buttons-group{ flex-direction:column; gap:10px; }
+  .intro-buttons-group{ flex-direction:column; gap:8px; }
+  #introButtonsMain{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px;
+  }
+  #olEnterBtn{ grid-column:1 / -1; }
+  .intro-card[data-menu="local"] .intro-buttons-group{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px;
+  }
   .intro-tutorial{ min-width:0; width:100%; padding:12px 16px; font-size:.88rem; }
-  .intro-mecha-img{ width:72px; height:72px; }
-  .intro-vs{ font-size:1.35rem; margin:0 10px 14px; }
+  .intro-mecha-img{ width:68px; height:68px; }
+  .intro-vs{ font-size:1.26rem; margin:0 9px 11px; }
   .intro-title{ width:min(350px, 92%); margin:0 auto -46px; }
   .brand-title-image.intro{ max-width:350px; max-height:102px; transform:translateY(0); }
-  .intro-subtitle{ font-size:.76rem; line-height:1.2; max-width:360px; }
-  .intro-pill{ padding:8px 8px 9px; font-size:.68rem; line-height:1.18; border-radius:14px; }
-  .intro-pill strong{ font-size:.58rem; margin-bottom:3px; letter-spacing:.12em; }
-  .intro-menu-copy{ font-size:.72rem; line-height:1.2; }
-  .intro-note{ font-size:.72rem; }
+  .intro-subtitle{ font-size:.74rem; line-height:1.16; max-width:332px; margin-top:4px; }
+  .intro-pill{ padding:7px 7px 8px; font-size:.61rem; line-height:1.08; border-radius:13px; }
+  .intro-pill strong{ font-size:.53rem; margin-bottom:2px; letter-spacing:.1em; }
+  .intro-menu-copy{ font-size:.69rem; line-height:1.14; max-width:350px; margin:0 auto; }
+  .intro-note{ font-size:.66rem; line-height:1.14; max-width:350px; margin:6px auto 0; }
+  #introButtonsMain .intro-enter,
+  #introButtonsMain .intro-tutorial,
+  .intro-card[data-menu="local"] .intro-enter,
+  .intro-card[data-menu="local"] .intro-tutorial{
+    min-width:0;
+    width:100%;
+    font-size:.82rem;
+    line-height:1.12;
+    letter-spacing:.09em;
+    padding:11px 10px;
+  }
+}
+@media (max-width: 430px){
+  .intro-panels{
+    max-width:330px;
+    gap:5px;
+  }
+  .intro-pill{
+    padding:6px 6px 7px;
+    font-size:.58rem;
+    line-height:1.05;
+  }
+  .intro-pill strong{
+    font-size:.5rem;
+    letter-spacing:.08em;
+  }
+  .intro-mecha-img{ width:62px; height:62px; }
+  .intro-vs{ font-size:1.12rem; margin:0 8px 9px; }
+  .intro-subtitle{ max-width:310px; }
+  #introButtonsMain .intro-enter,
+  #introButtonsMain .intro-tutorial,
+  .intro-card[data-menu="local"] .intro-enter,
+  .intro-card[data-menu="local"] .intro-tutorial{
+    font-size:.77rem;
+    padding:10px 8px;
+  }
 }
 @media (max-height: 920px){
   .intro-card{ width:min(700px, 100%); }
