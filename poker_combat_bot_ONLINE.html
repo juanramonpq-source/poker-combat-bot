@@ -8801,13 +8801,20 @@ function olApplyState(data) {
   Object.assign(state, data);
   Object.assign(state, keep);
 
-  // CRITICAL: Do NOT sync state.selected between players
-  // state.selected is local UI state for card selection and should never be received from Host
-  // Each player manages their own selection independently
-  // IMPORTANT: Only clear selection if it's Host's turn (currentPlayer === 0)
-  // If it's Guest's turn (currentPlayer === 1), preserve selection so Guest can select cards to play
-  if (state.currentPlayer === 0) {
+  // Keep local selection only if the guest can still interact and the same card ids
+  // still exist in the guest's own zones after the authoritative host update.
+  const interactiveNow = state.pendingDefense
+    ? state.pendingDefense.defenderIndex === _ol.myIndex
+    : state.currentPlayer === _ol.myIndex;
+  if (!interactiveNow) {
     state.selected = [];
+  } else {
+    const selectableById = new Map(
+      flattenCollectionsForInteractivePlayer().map(card => [card.id, card])
+    );
+    state.selected = dedupeSelectedCards(
+      (state.selected || []).map(card => selectableById.get(card.id)).filter(Boolean)
+    );
   }
 
   console.log('[ONLINE] Guest applied state, now currentPlayer:', state.currentPlayer);
