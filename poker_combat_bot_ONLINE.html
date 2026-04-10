@@ -752,7 +752,8 @@ body.victory .frame{
 .radar-core{position:absolute; inset:44%; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px rgba(35,216,255,.45)}
 .radar-fire,
 .radar-projectile,
-.radar-shock{
+.radar-shock,
+.radar-impact-burst{
   position:absolute; inset:0; pointer-events:none; opacity:0;
 }
 .radar-fire::before{
@@ -777,10 +778,25 @@ body.victory .frame{
 .radar-shock::before{
   content:""; position:absolute; inset:20%; border-radius:50%; border:2px solid rgba(255,112,46,.78); opacity:0;
 }
+.radar-impact-burst{
+  inset:18%;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,248,204,.98) 0%, rgba(255,188,84,.86) 24%, rgba(255,112,46,.42) 48%, rgba(255,112,46,0) 74%);
+  transform:scale(.22);
+  filter:blur(.4px);
+}
 .nav-disc.attack-main .radar-fire{animation:radarFire 850ms ease}
 .nav-disc.attack-main .radar-shock{animation:radarShock 850ms ease}
 .nav-disc.attack-projectile .radar-projectile{animation:radarProjectile 900ms ease}
 .nav-disc.attack-hit{box-shadow: inset 0 0 18px rgba(255,112,46,.18), 0 0 16px rgba(255,112,46,.14)}
+.nav-disc.impact-light{box-shadow: inset 0 0 22px rgba(255,146,92,.26), 0 0 20px rgba(255,112,46,.18)}
+.nav-disc.impact-heavy{box-shadow: inset 0 0 28px rgba(255,116,72,.34), 0 0 24px rgba(255,112,46,.24)}
+.nav-disc.impact-light .radar-impact-burst{animation:radarImpactBurst 820ms ease}
+.nav-disc.impact-heavy .radar-impact-burst{animation:radarImpactBurstHeavy 980ms ease}
+.nav-disc.impact-light .radar-shock::before,
+.nav-disc.impact-heavy .radar-shock::before{animation:radarShockRing 850ms ease}
+.nav-disc.impact-light .radar-core{animation:radarCoreImpact 780ms ease}
+.nav-disc.impact-heavy .radar-core{animation:radarCoreImpactHeavy 920ms ease}
 @keyframes radarSweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes radarFire{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
 @keyframes radarProjectile{0%{opacity:0}10%{opacity:1}100%{opacity:0}}
@@ -788,6 +804,101 @@ body.victory .frame{
 .nav-disc.attack-main .radar-shock::before,
 .nav-disc.attack-projectile .radar-shock::before{animation:radarShockRing 850ms ease}
 @keyframes radarShockRing{0%{opacity:.9; transform:scale(.15)}100%{opacity:0; transform:scale(1.2)}}
+@keyframes radarImpactBurst{
+  0%{opacity:0; transform:scale(.18)}
+  20%{opacity:1; transform:scale(.98)}
+  100%{opacity:0; transform:scale(1.28)}
+}
+@keyframes radarImpactBurstHeavy{
+  0%{opacity:0; transform:scale(.14)}
+  18%{opacity:1; transform:scale(1.08)}
+  100%{opacity:0; transform:scale(1.42)}
+}
+@keyframes radarCoreImpact{
+  0%{transform:scale(1); filter:brightness(1)}
+  22%{transform:scale(1.26); filter:brightness(1.55)}
+  100%{transform:scale(1); filter:brightness(1)}
+}
+@keyframes radarCoreImpactHeavy{
+  0%{transform:scale(1); filter:brightness(1)}
+  18%{transform:scale(1.38); filter:brightness(1.8)}
+  100%{transform:scale(1); filter:brightness(1)}
+}
+.nav-readouts{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:6px;
+}
+.radar-stat{
+  min-width:0;
+  padding:5px 6px 6px;
+  border-radius:10px;
+  background:rgba(9,18,30,.62);
+  border:1px solid rgba(35,216,255,.12);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+}
+.radar-stat-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+  margin-bottom:3px;
+}
+.radar-stat-header .left{
+  min-width:0;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:.48rem;
+  font-weight:900;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:#dff9ff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.radar-stat .glyph{
+  font-size:.68rem;
+  line-height:1;
+}
+.radar-stat .value{
+  flex-shrink:0;
+  font-size:.72rem;
+  font-weight:900;
+  line-height:1;
+  color:#fff2c2;
+}
+.radar-stat .sub{
+  font-size:.46rem;
+  line-height:1.08;
+  color:rgba(223,249,255,.78);
+}
+.radar-meter{
+  height:4px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,255,255,.12);
+  margin-top:4px;
+}
+.radar-meter > span{
+  display:block;
+  width:0;
+  height:100%;
+  border-radius:999px;
+  transition:width .2s ease;
+}
+.radar-stat.defense .glyph{color:#ff9c8c}
+.radar-stat.defense .radar-meter > span{background:linear-gradient(90deg, #ffb4a7, #ff7b68)}
+.radar-stat.armor .glyph{color:#9ff5d7}
+.radar-stat.armor .radar-meter > span{background:linear-gradient(90deg, #8cffe2, #4cdab2)}
+.radar-stat.damage-tick{animation:radarStatDamage 760ms ease}
+@keyframes radarStatDamage{
+  0%{transform:scale(1); box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+  28%{transform:scale(1.04); box-shadow:0 0 0 1px rgba(255,255,255,.16), 0 0 16px rgba(255,132,88,.22)}
+  100%{transform:scale(1); box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+}
 
 .shared-controls{
   padding:8px 10px 10px;
@@ -1395,6 +1506,27 @@ body{
   letter-spacing:.14em;
   text-transform:uppercase;
 }
+.nav-readouts{
+  gap:6px;
+}
+.radar-stat{
+  background:rgba(14,24,52,.58);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.radar-stat-header .left{
+  color:#ffe8df;
+}
+.radar-stat .value{
+  color:#fff;
+}
+.radar-stat .sub{
+  color:#d8eaff;
+  opacity:.82;
+}
+.radar-meter{
+  background:rgba(255,255,255,.12);
+}
 .nav-disc{
   border:3px solid rgba(19,37,100,.45) !important;
   background:
@@ -1942,6 +2074,34 @@ body.victory .frame{
   height:72px !important;
   aspect-ratio:1 / 1 !important;
   margin:0 auto !important;
+}
+.nav-readouts{
+  gap:4px !important;
+}
+.radar-stat{
+  padding:4px 5px 5px !important;
+  border-radius:9px !important;
+}
+.radar-stat-header{
+  gap:3px !important;
+  margin-bottom:2px !important;
+}
+.radar-stat-header .left{
+  gap:3px !important;
+  font-size:.42rem !important;
+}
+.radar-stat .glyph{
+  font-size:.58rem !important;
+}
+.radar-stat .value{
+  font-size:.62rem !important;
+}
+.radar-stat .sub{
+  font-size:.4rem !important;
+}
+.radar-meter{
+  height:3px !important;
+  margin-top:3px !important;
 }
 .nav-disc::before{
   inset:21% !important;
@@ -3786,7 +3946,7 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
             <div class="projectile-prompt-card">
               <div class="projectile-prompt-kicker">Sistema de combate</div>
               <div class="projectile-prompt-title">PROYECTILES DISPONIBLES</div>
-              <div class="projectile-prompt-body">A partir de ahora ya pueden utilizarse proyectiles siempre que haya picas disponibles.</div>
+              <div class="projectile-prompt-body">A partir de ahora ya pueden utilizarse proyectiles siempre que haya una carta numérica de picas disponible.</div>
             </div>
           </div>
           <div class="figure-burst-prompt-overlay" id="figureBurstPromptOverlay">
@@ -3831,7 +3991,26 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
                 <div class="radar-fire"></div>
                 <div class="radar-projectile"></div>
                 <div class="radar-shock"></div>
+                <div class="radar-impact-burst"></div>
                 <div class="radar-core"></div>
+              </div>
+              <div class="nav-readouts">
+                <div class="radar-stat defense" id="navDefenseStat-0">
+                  <div class="radar-stat-header">
+                    <span class="left"><span class="glyph">♥</span><span>Defensa</span></span>
+                    <span class="value" id="navDefenseValue-0">0</span>
+                  </div>
+                  <div class="sub" id="navDefenseSub-0">Sin defensa</div>
+                  <div class="radar-meter"><span id="navDefenseMeter-0"></span></div>
+                </div>
+                <div class="radar-stat armor" id="navArmorStat-0">
+                  <div class="radar-stat-header">
+                    <span class="left"><span class="glyph">♣</span><span>Armadura</span></span>
+                    <span class="value" id="navArmorValue-0">0</span>
+                  </div>
+                  <div class="sub" id="navArmorSub-0">Sin armadura</div>
+                  <div class="radar-meter"><span id="navArmorMeter-0"></span></div>
+                </div>
               </div>
             </div>
             <div class="nav-unit">
@@ -3842,7 +4021,26 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
                 <div class="radar-fire"></div>
                 <div class="radar-projectile"></div>
                 <div class="radar-shock"></div>
+                <div class="radar-impact-burst"></div>
                 <div class="radar-core"></div>
+              </div>
+              <div class="nav-readouts">
+                <div class="radar-stat defense" id="navDefenseStat-1">
+                  <div class="radar-stat-header">
+                    <span class="left"><span class="glyph">♥</span><span>Defensa</span></span>
+                    <span class="value" id="navDefenseValue-1">0</span>
+                  </div>
+                  <div class="sub" id="navDefenseSub-1">Sin defensa</div>
+                  <div class="radar-meter"><span id="navDefenseMeter-1"></span></div>
+                </div>
+                <div class="radar-stat armor" id="navArmorStat-1">
+                  <div class="radar-stat-header">
+                    <span class="left"><span class="glyph">♣</span><span>Armadura</span></span>
+                    <span class="value" id="navArmorValue-1">0</span>
+                  </div>
+                  <div class="sub" id="navArmorSub-1">Sin armadura</div>
+                  <div class="radar-meter"><span id="navArmorMeter-1"></span></div>
+                </div>
               </div>
             </div>
           </div>
@@ -4010,26 +4208,26 @@ const TUTORIAL_PHASES = [
   {
     phase: 0,
     title: '¡Bienvenido a Poker Combat-Bot!',
-    content: 'En este tutorial aprenderás a construir y pilotar tu mecha en batalla.\n\nTu objetivo: colocar 3 cartas clave en el CORE del mecha (Piloto, Copiloto, Booster), llenar los 3 MÓDULOS (Ataque, Defensa, Armadura) con al menos 1 carta cada uno, y agregar COMBUSTIBLE para atacar.\n\nLuego entrarás en combate contra tu oponente. ¡Aprenderemos paso a paso!',
+    content: 'En este tutorial aprenderás a construir y pilotar tu mecha en batalla.\n\n🂡 PALOS DEL JUEGO:\n• ♠ Picas = ATAQUE\n• ♥ Corazones = DEFENSA\n• ♣ Tréboles = ARMADURA\n• ♦ Diamantes = COMBUSTIBLE, defensa activa y robo\n\n🂠 NÚCLEO DEL MECHA:\n• J/Q/K = PILOTO o COPILOTO\n• A = BOOSTER\n\nTu objetivo: colocar 3 cartas clave en el CORE del mecha (Piloto, Copiloto, Booster), llenar los 3 MÓDULOS (Ataque, Defensa, Armadura) con al menos 1 carta cada uno, y agregar COMBUSTIBLE para atacar.\n\nLuego entrarás en combate contra tu oponente. ¡Aprenderemos paso a paso!',
     hint: 'Lee esta introducción completa. Tomate tu tiempo para entender.'
   },
   {
     phase: 1,
     title: 'El Piloto - El Corazón del Mecha',
-    content: 'Cada mecha necesita UN PILOTO (una figura: J, Q o K de cualquier palo EXCEPTO diamantes).\n\n⭐ CLAVE: El PALO del piloto determina cuál MÓDULO se amplía a 3 cartas:\n• Piloto de ♠ (Picas) → Módulo ATAQUE a 3 cartas\n• Piloto de ♥ (Corazones) → Módulo DEFENSA a 3 cartas\n• Piloto de ♣ (Tréboles) → Módulo ARMADURA a 3 cartas',
+    content: 'Cada mecha necesita UN PILOTO (una figura: J, Q o K de cualquier palo EXCEPTO diamantes).\n\n⭐ CLAVE: El piloto define la “forma” del mecha. Su palo determina cuál MÓDULO se amplía a 3 cartas y además te obliga a reunir 3 cartas de ese palo en tus estadísticas para poder atacar:\n• Piloto de ♠ (Picas) → Módulo ATAQUE a 3 cartas\n• Piloto de ♥ (Corazones) → Módulo DEFENSA a 3 cartas\n• Piloto de ♣ (Tréboles) → Módulo ARMADURA a 3 cartas\n\nSi cambias el piloto más tarde, el mecha se recalcula con el nuevo palo.',
     hint: 'Coloca una figura (J, Q o K) de cualquier palo (menos diamantes) en el primer slot del Core.'
   },
   {
     phase: 2,
     title: 'El Copiloto - El Asistente',
-    content: 'Ahora coloca UN COPILOTO (una figura: J, Q o K de cualquier palo EXCEPTO diamantes).\n\n⭐ NORMAL: El copiloto amplía su palo a 3 cartas, como el piloto.\n\n⭐ ESPECIAL (Copiloto ♦): Si colocas un copiloto de DIAMANTES (J♦, Q♦, K♦), es DINÁMICO - permite ampliar CUALQUIER módulo a 3, sin elegir al colocarlo. ¡Muy versátil!',
+    content: 'Ahora coloca UN COPILOTO (una figura: J, Q o K de cualquier palo).\n\n⭐ NORMAL: El copiloto es una ventaja táctica. Amplía su palo a 3 cartas, como el piloto, pero no define la condición de combate.\n\n⭐ ESPECIAL (Copiloto ♦): Las figuras de DIAMANTES (J♦, Q♦, K♦) solo pueden ser copiloto, nunca piloto. Su bonus es DINÁMICO: permite ampliar CUALQUIER único módulo a 3 según la configuración actual del mecha, y esa ayuda no queda fijada para toda la partida.',
     hint: 'Coloca una figura (J, Q o K) en el segundo slot del Core. Puede ser ♠, ♥, ♣ o ♦.'
   },
   {
     phase: 3,
     title: 'El Booster - La Potencia Extra',
-    content: 'Ahora coloca UN BOOSTER (un As de cualquier palo EXCEPTO diamantes).\n\n⭐ NORMAL: Un As amplía su módulo a 4 cartas.\n• As♠ → Ataque a 4\n• As♥ → Defensa a 4\n• As♣ → Armadura a 4\n\n⭐ ESPECIAL (As♦): El As de DIAMANTES es ÚNICO - No amplía nada, pero permite usar cartas de ARMADURA (♣) del Core como COMBUSTIBLE extra para atacar. ¡Estrategia poderosa!',
-    hint: 'Coloca un As (cualquier palo menos diamantes normalmente) en el tercer slot del Core.'
+    content: 'Ahora coloca UN BOOSTER (un As de cualquier palo) en el Core.\n\n⭐ REGLA CLAVE: TODOS los ases son potenciadores. No pueden colocarse en Ataque, Defensa, Armadura ni Fuel.\n\n⭐ ESPECIAL (As♦): El As de DIAMANTES es ÚNICO - No amplía nada, pero permite usar cartas de ARMADURA (♣) del Core como COMBUSTIBLE extra para atacar. ¡Estrategia poderosa!',
+    hint: 'Coloca un As en el tercer slot del Core. Los ases solo pueden ir como booster.'
   },
   {
     phase: 4,
@@ -4040,7 +4238,7 @@ const TUTORIAL_PHASES = [
   {
     phase: 5,
     title: 'El Combustible - La Munición',
-    content: 'Los DIAMANTES (♦) son el recurso MÁS VERSÁTIL del juego:\n\n1️⃣ En el Core (Combustible): Cartas numérico (2-10♦) alimentan tus ataques. Cuanto mayor el número, más potencia. Se descartan cuando atacas.\n\n2️⃣ En tu mano (Defensa/Esquiva): Usas 1 Diamante numérico para esquivar ataques enemigos, reduciendo el daño.\n\n3️⃣ En tu mano (Generador de Cartas): Puedes DESCARTAR Diamantes para ROBAR más cartas del mazo. ¡Estrategia clave!',
+    content: 'Los DIAMANTES (♦) son el recurso MÁS VERSÁTIL del juego:\n\n1️⃣ En el Core (Combustible): Cartas numéricas (2-10♦) alimentan tus ataques. Cuanto mayor el número, más potencia. Se descartan cuando atacas.\n\n2️⃣ En tu mano (Defensa/Esquiva): Usas 1 diamante numérico para esquivar ataques enemigos, reduciendo el daño.\n\n3️⃣ En tu mano (Generador de Cartas): Puedes DESCARTAR 1 diamante numérico para ROBAR más cartas del mazo. ¡Estrategia clave!',
     hint: 'Coloca al menos 2 Diamantes numéricos en el COMBUSTIBLE del Core para continuar.'
   },
   {
@@ -4058,8 +4256,8 @@ const TUTORIAL_PHASES = [
   {
     phase: 8,
     title: 'Proyectiles - Ataque sin Combustible',
-    content: 'Los proyectiles se DESBLOQUEAN cuando se resuelve el primer ataque completo de la partida.\n\nDesde ese momento CUALQUIER jugador puede disparar proyectiles, aunque su propio mecha no esté listo para un ataque principal. Solo necesita tener al menos 1 pica (♠) en el módulo Ataque.\n\nPROYECTIL SOLO (botón "Solo proyectil"):\n• Selecciona exactamente 1 pica (♠) del módulo Ataque\n• NO necesita combustible\n• La pica se descarta del módulo al dispararse\n• El daño es el valor de esa carta\n\nATAQUE COMBINADO (botón "Modo proyectil" + ATACAR):\n• Activa el modo proyectil junto a un ataque normal con combustible\n• La última pica seleccionada se usa como proyectil y también se descarta\n• Su valor se SUMA al daño del ataque principal',
-    hint: 'Tras el primer ataque completo de la partida, cualquier jugador puede usar proyectiles con 1 sola pica en Ataque.'
+    content: 'Los proyectiles se DESBLOQUEAN cuando se resuelve el primer ataque completo de la partida.\n\nDesde ese momento CUALQUIER jugador puede disparar proyectiles, aunque su propio mecha no esté listo para un ataque principal. Solo necesita tener al menos 1 carta numérica de picas (♠) en el módulo Ataque.\n\nPROYECTIL SOLO (botón "Solo proyectil"):\n• Selecciona exactamente 1 carta numérica de picas (♠) del módulo Ataque\n• NO necesita combustible\n• Esa carta se descarta del módulo al dispararse\n• El daño es el valor de esa carta\n• Los ases no pueden usarse como proyectil\n\nATAQUE COMBINADO (botón "Modo proyectil" + ATACAR):\n• Activa el modo proyectil junto a un ataque normal con combustible\n• La última carta numérica de picas seleccionada se usa como proyectil y también se descarta\n• Su valor se SUMA al daño del ataque principal',
+    hint: 'Tras el primer ataque completo de la partida, cualquier jugador puede usar proyectiles con 1 carta numérica de picas en Ataque.'
   },
   {
     phase: 9,
@@ -4082,7 +4280,7 @@ const TUTORIAL_PHASES = [
   {
     phase: 12,
     title: '¡Ya Lo Sabes Todo!',
-    content: 'Ahora conoces las mecánicas principales:\n\n📚 RESUMEN DE DIAMANTES (♦):\n• Combustible (Core): Alimentan tus ataques\n• Defensa activa (Mano): Restan su valor completo al daño cuando te atacan\n• Robo (Mano): Descarta ♦ de tu mano para robar más cartas del mazo\n\n🚀 PROYECTILES: Tras el primer ataque completo de la partida, puedes descartar 1 pica del módulo Ataque para disparar sin combustible. Combínalos con ataques normales para más daño.\n\n¡Continúa jugando libremente!',
+    content: 'Ahora conoces las mecánicas principales:\n\n📚 RESUMEN DE DIAMANTES (♦):\n• Combustible (Core): Alimentan tus ataques\n• Defensa activa (Mano): Restan su valor completo al daño cuando te atacan\n• Robo (Mano): Descarta ♦ de tu mano para robar más cartas del mazo\n• As♦: permite usar ♣ armadura del panel como combustible\n\n🚀 PROYECTILES: Tras el primer ataque completo de la partida, puedes descartar 1 carta numérica de picas del módulo Ataque para disparar sin combustible. Los ases no pueden usarse como proyectil.\n\n¡Continúa jugando libremente!',
     hint: 'Pro tip: combina ataque normal + proyectil para maximizar el daño. ¡Sé estratégico!'
   }
 ];
@@ -4275,10 +4473,10 @@ function primeOfflineMode(gameMode, difficulty=null){
 
 const tutorialSteps = [
   'Primer turno: puedes colocar hasta 3 cartas por módulo. A partir del siguiente turno, sin piloto principal el límite baja a 2.',
-  'El piloto principal amplía a 3 el módulo de su palo. El copiloto normal amplía su palo a 3. El copiloto ♦ es dinámico y permite que cualquier único módulo llegue a 3, sin tener que elegirlo al colocarlo.',
-  'Un As del palo de un módulo lo amplía a 4. El As♦ no amplía ningún módulo: únicamente permite usar la armadura (♣) del panel como combustible para atacar.',
+  'El piloto principal define la forma del mecha: amplía a 3 el módulo de su palo y exige reunir 3 cartas de ese palo para poder atacar. El copiloto normal amplía su palo a 3. El copiloto ♦ solo puede ser copiloto, es dinámico y permite que cualquier único módulo llegue a 3 sin fijarlo para toda la partida.',
+  'Todos los ases son potenciadores: solo pueden ir al slot de booster. El As♦ no amplía ningún módulo: únicamente permite usar la armadura (♣) del panel como combustible para atacar.',
   'Modificar cuenta operaciones: colocar, descartar o sustituir.',
-  'Ataca con combustible del panel y picas del módulo de ataque. El defensor solo puede responder con ♦ numéricos. El proyectil se desbloquea cuando aparece el primer mecha completo.',
+  'Ataca con combustible del panel y picas numéricas del módulo de ataque. El defensor solo puede responder con ♦ numéricos. El proyectil consume exactamente 1 carta de picas numérica y hace el daño de esa carta.',
   'No se puede usar robar con diamantes en dos turnos seguidos. Si el mazo se agota durante ese robo, el robo se detiene ahí.'
 ];
 
@@ -4327,9 +4525,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'core-build',
     title: 'Paso 1 · Monta el núcleo',
-    body: 'Arrancamos con un chasis de práctica ya medio montado para ir directos a lo importante. En este primer paso vas a colocar <strong>piloto</strong>, <strong>copiloto</strong> y <strong>booster</strong> en una sola modificación.',
+    body: 'Antes de tocar nada, quédate con este mapa rápido del juego:<br><br><strong>Palos:</strong> ♠ ataque, ♥ defensa, ♣ armadura y ♦ combustible/defensa/robo.<br><strong>Figuras:</strong> J/Q/K solo van al núcleo como <strong>piloto</strong> o <strong>copiloto</strong>.<br><strong>Piloto:</strong> define la “forma” del mecha, porque fija el palo que debe llegar a <strong>3 cartas</strong> para poder atacar.<br><strong>Copiloto:</strong> es una ventaja táctica; añade +1 al límite de su palo. Si es <strong>♦</strong>, no puede ser piloto y su ayuda es <strong>dinámica</strong>: sostiene el módulo que haga falta en cada momento.<br><strong>Reconfiguración:</strong> si cambias piloto o copiloto a mitad de partida, el mecha se recalcula y debes descartar el exceso que ya no quepa.<br><br>Ahora sí: en este primer paso vas a colocar <strong>piloto</strong>, <strong>copiloto</strong> y <strong>booster</strong> en una sola modificación.',
     objective: 'Selecciona <strong>K♠</strong>, <strong>J♦</strong> y <strong>A♦</strong> de tu mano y pulsa <strong>Modificar</strong>.',
-    tip: 'Primer turno: puedes hacer hasta 3 operaciones de modificación.',
+    tip: 'Idea clave: el piloto limita la forma del mecha, el copiloto la mejora y el as lo potencia.',
     allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0Pilot, TUTORIAL_CARD_IDS.p0Copilot, TUTORIAL_CARD_IDS.p0Booster],
     highlightButtons: ['actionAddBtn'],
@@ -4339,7 +4537,7 @@ const TUTORIAL_SCRIPT = [
     id: 'attack-build',
     title: 'Paso 2 · Cumple la exigencia del piloto',
     body: 'Tu piloto es de <strong>♠</strong>. Para poder atacar necesitas reunir <strong>3 picas</strong> entre tus estadísticas; ya tienes una <strong>4♠</strong> montada, así que ahora solo vamos a completar la condición.',
-    objective: 'Selecciona <strong>7♠</strong> y <strong>A♠</strong> de tu mano y pulsa <strong>Modificar</strong>.',
+    objective: 'Selecciona <strong>7♠</strong> y <strong>8♠</strong> de tu mano y pulsa <strong>Modificar</strong>.',
     tip: 'Desde el segundo turno: normalmente solo puedes hacer 2 operaciones.',
     allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackA, TUTORIAL_CARD_IDS.p0AttackB],
@@ -4404,8 +4602,8 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'projectile',
     title: 'Paso 8 · Remata con un proyectil',
-    body: 'Tu primer ataque completo ha desbloqueado los <strong>proyectiles</strong>. Un proyectil consume exactamente una pica del módulo Ataque y no necesita combustible.',
-    objective: 'Selecciona <strong>A♠</strong> en tu módulo Ataque y pulsa <strong>Solo proyectil</strong>.',
+    body: 'Tu primer ataque completo ha desbloqueado los <strong>proyectiles</strong>. Un proyectil consume exactamente una carta numérica de picas del módulo Ataque y no necesita combustible.',
+    objective: 'Selecciona <strong>8♠</strong> en tu módulo Ataque y pulsa <strong>Solo proyectil</strong>.',
     tip: 'Este disparo final debería cerrar el ejercicio.',
     allowedButtons: ['projectileOnlyBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackB],
@@ -4431,6 +4629,19 @@ function rankValue(rank){
   if(rank==='K') return 13;
   if(rank==='A') return 14;
   return parseInt(rank,10);
+}
+function isFigureRank(rank){ return ['J','Q','K'].includes(rank); }
+function isFigureCard(card){ return !!card && isFigureRank(card.rank); }
+function isAceCard(card){ return !!card && card.rank === 'A'; }
+function isNumericCard(card){
+  if(!card || !card.rank) return false;
+  return !isFigureRank(card.rank) && card.rank !== 'A';
+}
+function isNumericDiamondCard(card){
+  return !!card && card.suit === 'diamonds' && isNumericCard(card);
+}
+function isPlayableProjectileCard(card){
+  return !!card && card.suit === 'spades' && isNumericCard(card);
 }
 function createDeck(){
   let id = 0;
@@ -5173,14 +5384,6 @@ function getFixedModuleLimits(player){
     }
   }
 
-  if(player.core.booster && player.core.booster.rank==='A' && player.core.booster.suit!=='diamonds'){
-    const module = SUIT_TO_MODULE[player.core.booster.suit];
-    if(module){
-      limits[module].max = Math.max(limits[module].max, 4);
-      limits[module].sources.push('AS');
-    }
-  }
-
   return limits;
 }
 
@@ -5265,26 +5468,22 @@ function setBestFlexTargets(player){
 
 function coreSelectionTargets(card, player){
   const options = [];
-  if(['J','Q','K'].includes(card.rank)){
+  if(isFigureCard(card)){
     if(!player.core.pilot && card.suit !== 'diamonds') options.push('core-pilot');
     if(!player.core.copilot) options.push('core-copilot');
   }
-  if(card.rank==='A' && !player.core.booster) options.push('core-booster');
+  if(isAceCard(card) && !player.core.booster) options.push('core-booster');
   return options;
 }
 function allowedModuleTargets(card, player){
   console.log('[DEBUG-TARGETS] allowedModuleTargets for:', card.rank + card.suit);
-  if(['J','Q','K'].includes(card.rank)) {
-    console.log('[DEBUG-TARGETS]   Figure detected - no module targets');
+  if(isFigureCard(card) || isAceCard(card)) {
+    console.log('[DEBUG-TARGETS]   Figure/Ace detected - no module targets');
     return [];
   }
-  if(card.suit==='diamonds'&&card.rank!=='A') {
+  if(isNumericDiamondCard(card)) {
     console.log('[DEBUG-TARGETS]   Diamond (non-Ace) - fuel target');
     return['fuel'];
-  }
-  if(card.rank==='A'&&card.suit==='diamonds') {
-    console.log('[DEBUG-TARGETS]   Ace of diamonds - no targets');
-    return [];
   }
   if(!(card.suit in SUIT_TO_MODULE)) {
     console.log('[DEBUG-TARGETS]   Suit not in SUIT_TO_MODULE - no targets');
@@ -5350,8 +5549,8 @@ function dedupeSelectedCards(cards){
 }
 function getCardNaturalZone(card){
   if(!card) return null;
-  if(['J','Q','K'].includes(card.rank)) return null;
-  if(card.suit==='diamonds') return card.rank==='A' ? null : 'fuel';
+  if(isFigureCard(card) || isAceCard(card)) return null;
+  if(card.suit==='diamonds') return 'fuel';
   return SUIT_TO_MODULE[card.suit] || null;
 }
 function zoneLabel(zone){
@@ -5385,9 +5584,9 @@ function toggleSelect(id){
     if(found.zone !== 'hand' || found.suit !== 'diamonds'){
       return notifySelection('En defensa solo puedes seleccionar 1 ♦ numérico de la mano del defensor.');
     }
-    if(['J','Q','K'].includes(found.rank)){
-      addToast('Las figuras no pueden defender', 'warn');
-      return notifySelection('En defensa activa no se pueden usar figuras de diamantes, solo cartas numéricas.');
+    if(!isNumericDiamondCard(found)){
+      addToast('Carta no valida para defender', 'warn');
+      return notifySelection('En defensa activa solo se pueden usar diamantes numéricos (2-10♦).');
     }
     state.selected = [];
     state.selected.push(found);
@@ -6003,10 +6202,14 @@ function showMechaUpdateShowcase(playerIdx, callback){
   }, 1500);
 }
 
-function finishModifyTurn(){
+function triggerModifyFeedbackSequence(playerIdx, callback){
   playUiSound('build');
   triggerScreenRipple('amber');
   pulseVibrate([12, 20, 12]);
+  showMechaUpdateShowcase(playerIdx, callback);
+}
+
+function finishModifyTurn(){
   state.tutorialStep = Math.max(state.tutorialStep, 3);
   state.lastActionType = 'modify';
   state.pendingTurnSfx = 'turn_build';
@@ -6026,7 +6229,7 @@ function finishModifyTurn(){
 
   // IMPORTANT: Do NOT render() before showMechaUpdateShowcase - it destroys the elements!
   // Instead, render() is called inside the callback after animation completes
-  showMechaUpdateShowcase(state.currentPlayer, () => {
+  triggerModifyFeedbackSequence(state.currentPlayer, () => {
     if(callbackExecuted) return; // Safety: don't execute twice
     callbackExecuted = true;
     window.clearTimeout(safetyTimeout);
@@ -6119,9 +6322,9 @@ function drawWithDiamond(){
   if(diamonds.length!==1) return notifySelection('Selecciona exactamente 1 diamante de tu mano para robar cartas.');
   const card = diamonds[0];
   if(!card) return notifySelection('Error: no se pudo procesar la carta seleccionada.');
-  if(['J','Q','K'].includes(card.rank)){
-    addToast('Las figuras no pueden robar cartas', 'warn');
-    return notifySelection('Las figuras de diamantes no pueden utilizarse para robar cartas del mazo.');
+  if(!isNumericDiamondCard(card)){
+    addToast('Carta no valida para robar', 'warn');
+    return notifySelection('Solo los diamantes numéricos (2-10♦) pueden utilizarse para robar cartas del mazo.');
   }
   removeById(player.hand, card.id);
   state.discard.push(card);
@@ -6302,7 +6505,7 @@ function getAttackSelection(){
   const fuel = state.selected.filter(s => s.zone==='fuel');
   const armorFuel = armorAsFuelEnabled ? state.selected.filter(s => s.zone==='armor') : [];
   const fuelCards = [...fuel, ...armorFuel];
-  const attackCards = state.selected.filter(s => s.zone==='attack');
+  const attackCards = state.selected.filter(s => s.zone==='attack' && isPlayableProjectileCard(s));
   const fuelValue = sumCards(fuelCards);
   const limit = fuelValue * 2;
   let projectile = null;
@@ -6329,7 +6532,7 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
   const defenderIndex = 1 - state.currentPlayer;
   const defender = state.players[defenderIndex];
   const diamonds = defender.hand.filter(c => c.suit==='diamonds');
-  const numericDiamonds = diamonds.filter(c => !['J','Q','K'].includes(c.rank));
+  const numericDiamonds = diamonds.filter(isNumericDiamondCard);
 
   state.pendingDefense = {
     attackerIndex: state.currentPlayer,
@@ -6405,8 +6608,8 @@ function confirmAttack(projectileOnly=false){
   let projectileValue = sel.projectileValue;
 
   if(projectileOnly){
-    const projectileCandidates = state.selected.filter(s => s.zone==='attack');
-    if(projectileCandidates.length!==1) return notifySelection('Para atacar solo con proyectil debes seleccionar exactamente 1 pica del panel.');
+    const projectileCandidates = state.selected.filter(s => s.zone==='attack' && isPlayableProjectileCard(s));
+    if(projectileCandidates.length!==1) return notifySelection('Para atacar solo con proyectil debes seleccionar exactamente 1 carta numérica de picas del panel.');
     projectile = projectileCandidates[0];
     projectileValue = projectile.value;
     mainValue = 0;
@@ -6415,7 +6618,7 @@ function confirmAttack(projectileOnly=false){
       ? 'Selecciona combustible del panel o cartas de armadura para habilitar el ataque.'
       : 'Selecciona combustible del panel para habilitar el ataque.');
     if(mainValue > sel.limit) return notifySelection(`Has seleccionado ${mainValue} puntos de ataque, pero el combustible solo habilita ${sel.limit}.`);
-    if(mainValue===0 && !projectile) return notifySelection('Selecciona picas para el ataque principal o una pica como proyectil.');
+    if(mainValue===0 && !projectile) return notifySelection('Selecciona picas numéricas para el ataque principal o 1 carta numérica de picas como proyectil.');
   }
 
   if(!projectileOnly){
@@ -6523,9 +6726,9 @@ function confirmDefense(){
 
   const defense = state.selected.filter(s => s.zone==='hand' && s.suit==='diamonds');
   if(defense.length!==1) return notifySelection('Selecciona exactamente 1 ♦ numérico para confirmar la defensa.');
-  if(['J','Q','K'].includes(defense[0].rank)){
+  if(!isNumericDiamondCard(defense[0])){
     addToast('Defensa no válida', 'warn');
-    return notifySelection('En defensa activa no se pueden usar figuras de diamantes, solo cartas numéricas.');
+    return notifySelection('En defensa activa solo se pueden usar diamantes numéricos (2-10♦).');
   }
   resolveAttackAfterDefense(defense[0]);
 }
@@ -6595,6 +6798,7 @@ function applyAttack(defenderIdx, attackPoints){
     queueFx(`player-panel-${defenderIdx}`, 'damage-flash');
     queueFx(`player-panel-${defenderIdx}`, 'impact-burst');
     queueFx(`mechaDial-${defenderIdx}`, 'impact-burst');
+    triggerSideRadarImpact(defenderIdx, heavyImpact);
     addToast(`Impacto: ${attackPoints} de ataque`, 'danger');
     playUiSound(destroyedDefense.length ? 'heavy' : 'impact');
     triggerScreenShake(heavyImpact ? 'heavy' : 'light');
@@ -6606,10 +6810,12 @@ function applyAttack(defenderIdx, attackPoints){
     triggerImpactFlash(destroyedDefense.length ? 'red' : 'amber');
   }
   if(destroyedArmor.length){
+    pulseRadarStat(defenderIdx, 'armor');
     queueFx(`module-box-armor-${defenderIdx}`, 'zone-pulse');
     addToast(`Armadura dañada x${destroyedArmor.length}`, 'danger');
   }
   if(destroyedDefense.length){
+    pulseRadarStat(defenderIdx, 'defense');
     queueFx(`module-box-defense-${defenderIdx}`, 'zone-pulse');
     addToast(`Defensa dañada x${destroyedDefense.length}`, 'danger');
   }
@@ -7188,16 +7394,23 @@ const MECHA_IMAGES = {
 };
 
 function getMechaPhaseImage(player){if(!player||!player.core)return MECHA_IMAGES.base;const h=!!player.core.pilot,c=!!player.core.copilot,b=!!player.core.booster,a=player.attack&&player.attack.length>0,d=player.defense&&player.defense.length>0,m=player.armor&&player.armor.length>0,f=player.fuel&&player.fuel.length>0,s=[b,a,d,m,f].filter(Boolean).length,full=s>=4||(b&&s>=2);if(full&&c)return MECHA_IMAGES.completo;if(full&&h)return MECHA_IMAGES.piloto_completo;if(full)return MECHA_IMAGES.base_booster;if(c&&b)return MECHA_IMAGES.booster;if(c&&f)return MECHA_IMAGES.combustible;if(c&&m)return MECHA_IMAGES.armadura;if(c&&d)return MECHA_IMAGES.defensa;if(c&&a)return MECHA_IMAGES.ataque;if(c)return MECHA_IMAGES.copiloto;if(h&&b)return MECHA_IMAGES.piloto_booster;if(h&&f)return MECHA_IMAGES.piloto_combustible;if(h&&m)return MECHA_IMAGES.piloto_armadura;if(h&&d)return MECHA_IMAGES.piloto_defensa;if(h&&a)return MECHA_IMAGES.piloto_ataque;if(h)return MECHA_IMAGES.piloto;if(b)return MECHA_IMAGES.base_booster;if(f)return MECHA_IMAGES.base_combustible;if(m)return MECHA_IMAGES.base_armadura;if(d)return MECHA_IMAGES.base_defensa;if(a)return MECHA_IMAGES.base_ataque;return MECHA_IMAGES.base;}
-function maybeQueueProjectilePrompt(){if(!state.projectileUnlocked||state.pendingDefense||state.winner)return;const player=state.players[state.currentPlayer];if(!player)return;if(player.attack&&player.attack.length>0&&state.projectilePromptPlayer!==state.currentPlayer)state.projectilePromptPlayer=state.currentPlayer;}
+function maybeQueueProjectilePrompt(){if(!state.projectileUnlocked||state.pendingDefense||state.winner)return;const player=state.players[state.currentPlayer];if(!player)return;if(player.attack&&player.attack.some(isPlayableProjectileCard)&&state.projectilePromptPlayer!==state.currentPlayer)state.projectilePromptPlayer=state.currentPlayer;}
 
 function renderRadarMecha(){
   if(!state.players || state.players.length === 0) return;
 
   const focusIdx = getFocusPlayerIndex();
+  const radarMeterPercent = total => Math.max(0, Math.min(100, Math.round((total / 18) * 100)));
+  const defenseSummary = count => count === 0 ? 'Sin defensa' : `${count} carta${count===1?'':'s'} activa${count===1?'':'s'}`;
+  const armorSummary = count => count === 0 ? 'Sin armadura' : `${count} placa${count===1?'':'s'} montada${count===1?'':'s'}`;
 
   state.players.forEach((player, idx) => {
     const build = getBuildStatus(player);
     const progress = getDialBuildPercent(player);
+    const defenseValue = sumCards(player.defense || []);
+    const armorValue = sumCards(player.armor || []);
+    const defenseCount = (player.defense || []).length;
+    const armorCount = (player.armor || []).length;
 
     // Update mecha image
     const img = document.getElementById(`mechaImg-${idx}`);
@@ -7236,6 +7449,24 @@ function renderRadarMecha(){
       else if(player.core.pilot) banner.textContent = 'Cabina activa';
       else banner.textContent = 'Montaje en curso';
     }
+
+    const defenseValueEl = document.getElementById(`navDefenseValue-${idx}`);
+    if(defenseValueEl) defenseValueEl.textContent = defenseValue;
+
+    const defenseSubEl = document.getElementById(`navDefenseSub-${idx}`);
+    if(defenseSubEl) defenseSubEl.textContent = defenseSummary(defenseCount);
+
+    const defenseMeterEl = document.getElementById(`navDefenseMeter-${idx}`);
+    if(defenseMeterEl) defenseMeterEl.style.width = `${radarMeterPercent(defenseValue)}%`;
+
+    const armorValueEl = document.getElementById(`navArmorValue-${idx}`);
+    if(armorValueEl) armorValueEl.textContent = armorValue;
+
+    const armorSubEl = document.getElementById(`navArmorSub-${idx}`);
+    if(armorSubEl) armorSubEl.textContent = armorSummary(armorCount);
+
+    const armorMeterEl = document.getElementById(`navArmorMeter-${idx}`);
+    if(armorMeterEl) armorMeterEl.style.width = `${radarMeterPercent(armorValue)}%`;
   });
 
   // Update main status banner
@@ -7331,7 +7562,7 @@ function aiEvaluateCardUtility(card, player){
     if(player.core.pilot && player.core.pilot.suit === card.suit) score += 10;
     if(naturalZone === 'fuel') score += 14;
   }
-  if(card.suit === 'diamonds' && !['J','Q','K'].includes(card.rank)) score += 16;
+  if(isNumericDiamondCard(card)) score += 16;
   return score;
 }
 function aiEvaluateBoardState(player){
@@ -7472,7 +7703,9 @@ function aiChooseBestAttackPlan(player, difficulty){
     ...player.fuel.map(card => ({ ...card, zone:'fuel' })),
     ...(hasDiamondBoosterArmorFuel(player) ? player.armor.map(card => ({ ...card, zone:'armor' })) : [])
   ];
-  const selectableAttack = player.attack.map(card => ({ ...card, zone:'attack' }));
+  const selectableAttack = player.attack
+    .filter(isPlayableProjectileCard)
+    .map(card => ({ ...card, zone:'attack' }));
   const defender = state.players[1 - state.currentPlayer];
   const plans = [];
 
@@ -7535,7 +7768,7 @@ function aiChooseBestAttackPlan(player, difficulty){
   return plans.sort((a,b) => b.score - a.score || b.totalAttack - a.totalAttack)[0];
 }
 function aiChooseDefenseCard(defender, difficulty){
-  const options = defender.hand.filter(card => card.suit === 'diamonds' && !['J','Q','K'].includes(card.rank));
+  const options = defender.hand.filter(isNumericDiamondCard);
   if(!options.length) return null;
   const incoming = state.pendingDefense?.totalAttack || 0;
   const noDefense = aiSimulateAttackOutcome(defender, incoming);
@@ -7558,7 +7791,7 @@ function aiChooseDefenseCard(defender, difficulty){
 }
 function aiChooseDiamondDrawCard(player, difficulty, attackPlan, modifyPlan){
   if(player.flags.lastOwnAction === 'diamondDraw') return null;
-  const diamonds = player.hand.filter(card => card.suit === 'diamonds' && !['J','Q','K'].includes(card.rank));
+  const diamonds = player.hand.filter(isNumericDiamondCard);
   if(!diamonds.length) return null;
   if(attackPlan && attackPlan.outcome && attackPlan.outcome.wouldWin) return null;
   if(modifyPlan && modifyPlan.gain > 18) return null;
@@ -7827,7 +8060,7 @@ function canDrawDiamondNow(){
   if(diamonds.length!==1) return false;
   const card = diamonds[0];
   if(!card) return false;
-  return !['J','Q','K'].includes(card.rank);
+  return isNumericDiamondCard(card);
 }
 function canPassNow(){
   if(state.transitionLock) return false;
@@ -7849,7 +8082,7 @@ function canProjectileOnlyNow(){
   if(state.pendingDefense || state.winner) return false;
   if(!state.projectileUnlocked) return false;
   const player = state.players[state.currentPlayer];
-  return player.attack.length > 0;
+  return player.attack.some(isPlayableProjectileCard);
 }
 function markButtonEnabled(id, enabled, hot=false){
   const btn = document.getElementById(id);
@@ -7866,7 +8099,7 @@ function updateButtons(){
   const cpuOwnsCurrentContext = isSinglePlayerMode() && getInteractivePlayerIndex() < 0;
   const player = state.players[state.currentPlayer] || { hand:[], attack:[] };
   const canAttackMain = playerCanAttack(player);
-  const canAnyProjectile = state.projectileUnlocked && player.attack.length > 0;
+  const canAnyProjectile = state.projectileUnlocked && player.attack.some(isPlayableProjectileCard);
   const tutorialModifyEnabled = tutorialAllowsButton('actionAddBtn') && canModifySelection();
 
   markButtonEnabled('actionAddBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('actionAddBtn') && canModifySelection());
@@ -7880,7 +8113,7 @@ function updateButtons(){
   markButtonEnabled('clearSelectionBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('clearSelectionBtn') && !locked && state.selected.length>0);
   markButtonEnabled('returnHomeBtn', true);
   markButtonEnabled('soundToggleBtn', true, state.soundOn);
-  markButtonEnabled('confirmDefenseBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('confirmDefenseBtn') && !hasWinner && inDefense && state.selected.length===1 && state.selected[0].suit==='diamonds' && !['J','Q','K'].includes(state.selected[0].rank), inDefense && tutorialAllowsButton('confirmDefenseBtn') && !cpuOwnsCurrentContext);
+  markButtonEnabled('confirmDefenseBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('confirmDefenseBtn') && !hasWinner && inDefense && state.selected.length===1 && isNumericDiamondCard(state.selected[0]), inDefense && tutorialAllowsButton('confirmDefenseBtn') && !cpuOwnsCurrentContext);
   markButtonEnabled('skipDefenseBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('skipDefenseBtn') && !hasWinner && inDefense, inDefense && tutorialAllowsButton('skipDefenseBtn') && !cpuOwnsCurrentContext);
 
   document.querySelectorAll('.quick-modify-btn').forEach(btn => {
@@ -7943,11 +8176,28 @@ function syncModeUi(){
 function triggerSideRadarAttack(attackerIdx, withProjectile=false){
   const radar = document.getElementById(`navRadar-${attackerIdx}`);
   if(!radar) return;
-  radar.classList.remove('attack-main','attack-projectile','attack-hit');
+  radar.classList.remove('attack-main','attack-projectile','attack-hit','impact-light','impact-heavy');
   void radar.offsetWidth;
   radar.classList.add('attack-main','attack-hit');
   if(withProjectile) radar.classList.add('attack-projectile');
   setTimeout(() => radar.classList.remove('attack-main','attack-projectile','attack-hit'), 950);
+}
+function triggerSideRadarImpact(defenderIdx, heavy=false){
+  const radar = document.getElementById(`navRadar-${defenderIdx}`);
+  if(!radar) return;
+  radar.classList.remove('impact-light','impact-heavy');
+  void radar.offsetWidth;
+  radar.classList.add(heavy ? 'impact-heavy' : 'impact-light');
+  setTimeout(() => radar.classList.remove('impact-light','impact-heavy'), heavy ? 1040 : 880);
+}
+function pulseRadarStat(defenderIdx, kind){
+  const id = kind === 'armor' ? `navArmorStat-${defenderIdx}` : `navDefenseStat-${defenderIdx}`;
+  const stat = document.getElementById(id);
+  if(!stat) return;
+  stat.classList.remove('damage-tick');
+  void stat.offsetWidth;
+  stat.classList.add('damage-tick');
+  setTimeout(() => stat.classList.remove('damage-tick'), 820);
 }
 function buildSideTowers(){
   const left = document.getElementById('towerLeft');
@@ -8083,7 +8333,7 @@ document.getElementById('cancelAttackBtn').addEventListener('click', () => {
 });
 document.getElementById('toggleProjectileBtn').addEventListener('click', () => {
   if(!canUseInteractiveTurnAction()) return;
-  if(state.pendingDefense || !state.projectileUnlocked || state.players[state.currentPlayer].attack.length<1) return;
+  if(state.pendingDefense || !state.projectileUnlocked || !state.players[state.currentPlayer].attack.some(isPlayableProjectileCard)) return;
   state.projectileMode = !state.projectileMode;
   render();
 });
@@ -8469,7 +8719,7 @@ function tutorialPreparePracticeScenario(){
     tutorialTakeCard(deck, 'J', 'diamonds', TUTORIAL_CARD_IDS.p0Copilot),
     tutorialTakeCard(deck, 'A', 'diamonds', TUTORIAL_CARD_IDS.p0Booster),
     tutorialTakeCard(deck, '7', 'spades', TUTORIAL_CARD_IDS.p0AttackA),
-    tutorialTakeCard(deck, 'A', 'spades', TUTORIAL_CARD_IDS.p0AttackB),
+    tutorialTakeCard(deck, '8', 'spades', TUTORIAL_CARD_IDS.p0AttackB),
     tutorialTakeCard(deck, '8', 'diamonds', TUTORIAL_CARD_IDS.p0FuelA),
     tutorialTakeCard(deck, '3', 'diamonds', TUTORIAL_CARD_IDS.p0DefendDiamond),
     tutorialTakeCard(deck, '2', 'diamonds', TUTORIAL_CARD_IDS.p0DrawDiamond)
@@ -8668,6 +8918,790 @@ window.addEventListener('resize', () => {
   imgL.src = MECHA_IMAGES[keyL];
   imgR.src = MECHA_IMAGES[keyR];
 })();
+
+const DEV_MECHA_PRESET_LABELS = {
+  base: 'Base',
+  piloto: 'Piloto',
+  copiloto: 'Copiloto',
+  ataque: 'Copiloto ataque',
+  defensa: 'Copiloto defensa',
+  armadura: 'Copiloto armadura',
+  combustible: 'Copiloto combustible',
+  booster: 'Copiloto booster',
+  completo: 'Completo',
+  piloto_completo: 'Piloto completo',
+  piloto_ataque: 'Piloto + ataque',
+  piloto_defensa: 'Piloto + defensa',
+  piloto_armadura: 'Piloto + armadura',
+  piloto_combustible: 'Piloto + combustible',
+  piloto_booster: 'Piloto + booster',
+  base_ataque: 'Base + ataque',
+  base_defensa: 'Base + defensa',
+  base_armadura: 'Base + armadura',
+  base_combustible: 'Base + combustible',
+  base_booster: 'Base + booster'
+};
+const DEV_SOUND_KINDS = [
+  { key:'tap', label:'Tap' },
+  { key:'select', label:'Select' },
+  { key:'draw', label:'Robar' },
+  { key:'build', label:'Montar' },
+  { key:'turn_build', label:'Turno build' },
+  { key:'turn_pass', label:'Pasar' },
+  { key:'turn_attack', label:'Aviso ataque' },
+  { key:'attack', label:'Ataque' },
+  { key:'projectile', label:'Proyectil' },
+  { key:'defense', label:'Defensa' },
+  { key:'impact', label:'Impacto' },
+  { key:'heavy', label:'Impacto heavy' },
+  { key:'alert', label:'Alert' },
+  { key:'victory', label:'Victoria' }
+];
+const DEV_MECHA_PRESET_RECIPES = {
+  base: {},
+  piloto: { pilot:['K','spades'] },
+  copiloto: { copilot:['J','diamonds'] },
+  ataque: { copilot:['J','diamonds'], attack:[['7','spades']] },
+  defensa: { copilot:['J','diamonds'], defense:[['7','hearts']] },
+  armadura: { copilot:['J','diamonds'], armor:[['7','clubs']] },
+  combustible: { copilot:['J','diamonds'], fuel:[['7','diamonds']] },
+  booster: { copilot:['J','diamonds'], booster:['A','spades'] },
+  completo: {
+    copilot:['J','diamonds'],
+    attack:[['7','spades']],
+    defense:[['6','hearts']],
+    armor:[['5','clubs']],
+    fuel:[['4','diamonds']]
+  },
+  piloto_completo: {
+    pilot:['K','spades'],
+    attack:[['7','spades']],
+    defense:[['6','hearts']],
+    armor:[['5','clubs']],
+    fuel:[['4','diamonds']]
+  },
+  piloto_ataque: { pilot:['K','spades'], attack:[['7','spades']] },
+  piloto_defensa: { pilot:['K','spades'], defense:[['7','hearts']] },
+  piloto_armadura: { pilot:['K','spades'], armor:[['7','clubs']] },
+  piloto_combustible: { pilot:['K','spades'], fuel:[['7','diamonds']] },
+  piloto_booster: { pilot:['K','spades'], booster:['A','hearts'] },
+  base_ataque: { attack:[['7','spades']] },
+  base_defensa: { defense:[['7','hearts']] },
+  base_armadura: { armor:[['7','clubs']] },
+  base_combustible: { fuel:[['7','diamonds']] },
+  base_booster: { booster:['A','clubs'] }
+};
+const DEV_RULE_PRESETS = [
+  { key:'modify_ready', label:'Modificar listo' },
+  { key:'attack_ready', label:'Ataque listo' },
+  { key:'defense_window', label:'Ventana defensa' },
+  { key:'diamond_draw', label:'Robar con ♦' },
+  { key:'projectile_ready', label:'Proyectil listo' },
+  { key:'ace_diamond', label:'As♦ activo' },
+  { key:'repilot_overflow', label:'Reconfiguración crítica' }
+];
+const DEV_TUTORIAL_PRESETS = [
+  { key:'core-build', label:'Tutorial · Núcleo' },
+  { key:'attack-build', label:'Tutorial · Ataque' },
+  { key:'fuel-build', label:'Tutorial · Fuel' },
+  { key:'first-attack', label:'Tutorial · Primer ataque' },
+  { key:'defend', label:'Tutorial · Defensa' },
+  { key:'draw-diamond', label:'Tutorial · Robar con ♦' },
+  { key:'projectile', label:'Tutorial · Proyectil' },
+  { key:'summary', label:'Tutorial · Resumen' }
+];
+const DEV_ONLINE_PRESETS = [
+  { key:'lobby-host', label:'Online · Lobby host' },
+  { key:'lobby-error', label:'Online · Error sala' },
+  { key:'host-turn', label:'Online · Turno host' },
+  { key:'guest-turn', label:'Online · Turno guest' },
+  { key:'guest-waiting', label:'Online · Esperando rival' },
+  { key:'guest-defense', label:'Online · Defensa guest' }
+];
+let devCardCounter = 0;
+let devModifyPreviewCursor = 0;
+
+function devCreatePlayer(name){
+  return {
+    name,
+    hand:[],
+    core:{ pilot:null, copilot:null, booster:null },
+    attack:[],
+    defense:[],
+    armor:[],
+    fuel:[],
+    flexTargets:{ copilot:null, booster:null },
+    flags:{ mounted:false, combatReady:false, lastOwnAction:null, figureBurstButtonUnlocked:false, figureBurstPromptShown:false, attackReadyPromptTurn:0, firstAttackComplete:false },
+  };
+}
+
+function devMakeCard(rank, suit){
+  return { id:`dev-${devCardCounter++}`, rank, suit, value:rankValue(rank) };
+}
+
+function devApplyRecipeToPlayer(player, recipe={}){
+  if(recipe.pilot) player.core.pilot = devMakeCard(recipe.pilot[0], recipe.pilot[1]);
+  if(recipe.copilot) player.core.copilot = devMakeCard(recipe.copilot[0], recipe.copilot[1]);
+  if(recipe.booster) player.core.booster = devMakeCard(recipe.booster[0], recipe.booster[1]);
+  (recipe.attack || []).forEach(([rank, suit]) => player.attack.push(devMakeCard(rank, suit)));
+  (recipe.defense || []).forEach(([rank, suit]) => player.defense.push(devMakeCard(rank, suit)));
+  (recipe.armor || []).forEach(([rank, suit]) => player.armor.push(devMakeCard(rank, suit)));
+  (recipe.fuel || []).forEach(([rank, suit]) => player.fuel.push(devMakeCard(rank, suit)));
+  return player;
+}
+
+function devBuildPlayerForPreset(key, name){
+  const player = devCreatePlayer(name);
+  return devApplyRecipeToPlayer(player, DEV_MECHA_PRESET_RECIPES[key] || {});
+}
+
+function devBuildCombatPlayers(){
+  const p0 = devCreatePlayer('Jugador 1');
+  const p1 = devCreatePlayer('Jugador 2');
+
+  devApplyRecipeToPlayer(p0, {
+    pilot:['K','spades'],
+    copilot:['J','diamonds'],
+    booster:['A','clubs'],
+    attack:[['7','spades'], ['8','spades']],
+    defense:[['5','hearts'], ['6','hearts']],
+    armor:[['6','clubs'], ['7','clubs']],
+    fuel:[['4','diamonds']]
+  });
+
+  devApplyRecipeToPlayer(p1, {
+    pilot:['Q','hearts'],
+    copilot:['J','clubs'],
+    booster:['A','diamonds'],
+    attack:[['6','spades']],
+    defense:[['5','hearts'], ['7','hearts']],
+    armor:[['4','clubs'], ['8','clubs']],
+    fuel:[['3','diamonds']]
+  });
+
+  return [p0, p1];
+}
+
+function devSelectableCard(playerIdx, zone, matcher){
+  const player = state.players?.[playerIdx];
+  if(!player) return null;
+  let pool = [];
+  if(['hand','attack','defense','armor','fuel'].includes(zone)) pool = player[zone] || [];
+  else if(zone === 'core-pilot' && player.core?.pilot) pool = [player.core.pilot];
+  else if(zone === 'core-copilot' && player.core?.copilot) pool = [player.core.copilot];
+  else if(zone === 'core-booster' && player.core?.booster) pool = [player.core.booster];
+  const card = typeof matcher === 'function' ? pool.find(matcher) : pool.find(entry => entry.id === matcher);
+  return card ? { ...card, zone, owner: playerIdx } : null;
+}
+
+function devSetSelected(cards){
+  state.selected = dedupeSelectedCards((cards || []).filter(Boolean));
+  return state.selected;
+}
+
+function devBuildRulePlayers(){
+  const p0 = devCreatePlayer('Jugador 1');
+  const p1 = devCreatePlayer('Jugador 2');
+
+  p0.hand = [
+    devMakeCard('K', 'spades'),
+    devMakeCard('J', 'diamonds'),
+    devMakeCard('A', 'diamonds'),
+    devMakeCard('Q', 'hearts'),
+    devMakeCard('4', 'diamonds'),
+    devMakeCard('2', 'diamonds')
+  ];
+  p0.core.pilot = devMakeCard('K', 'spades');
+  p0.core.copilot = devMakeCard('J', 'diamonds');
+  p0.core.booster = devMakeCard('A', 'clubs');
+  p0.attack = [devMakeCard('4', 'spades'), devMakeCard('7', 'spades'), devMakeCard('8', 'spades')];
+  p0.defense = [devMakeCard('5', 'hearts'), devMakeCard('6', 'hearts')];
+  p0.armor = [devMakeCard('6', 'clubs'), devMakeCard('7', 'clubs')];
+  p0.fuel = [devMakeCard('8', 'diamonds')];
+
+  p1.hand = [devMakeCard('5', 'diamonds'), devMakeCard('9', 'spades')];
+  p1.core.pilot = devMakeCard('Q', 'hearts');
+  p1.core.copilot = devMakeCard('J', 'clubs');
+  p1.core.booster = devMakeCard('A', 'hearts');
+  p1.attack = [devMakeCard('5', 'spades')];
+  p1.defense = [devMakeCard('4', 'hearts'), devMakeCard('7', 'hearts'), devMakeCard('8', 'hearts')];
+  p1.armor = [devMakeCard('4', 'clubs'), devMakeCard('8', 'clubs')];
+  p1.fuel = [devMakeCard('4', 'diamonds')];
+
+  return [p0, p1];
+}
+
+function devApplyRulePreset(key){
+  devResetEnvironment();
+  const players = devBuildRulePlayers();
+  state.gameMode = 'local';
+  state.turnCount = 3;
+  state.phase = 'Turno';
+  state.projectileUnlocked = false;
+  state.attackMode = false;
+  devSyncPlayers(players, 0, 'Turno');
+
+  switch(key){
+    case 'modify_ready': {
+      state.turnCount = 1;
+      state.phase = 'Montaje';
+      state.players[0].core = { pilot:null, copilot:null, booster:null };
+      state.players[0].attack = [];
+      state.players[0].defense = [];
+      state.players[0].armor = [];
+      state.players[0].fuel = [];
+      devSetSelected([
+        devSelectableCard(0, 'hand', card => card.rank === 'K' && card.suit === 'spades'),
+        devSelectableCard(0, 'hand', card => card.rank === 'J' && card.suit === 'diamonds'),
+        devSelectableCard(0, 'hand', card => card.rank === 'A' && card.suit === 'diamonds')
+      ]);
+      break;
+    }
+    case 'attack_ready': {
+      state.attackMode = true;
+      devSetSelected([
+        devSelectableCard(0, 'fuel', card => card.rank === '8' && card.suit === 'diamonds'),
+        devSelectableCard(0, 'attack', card => card.rank === '4' && card.suit === 'spades'),
+        devSelectableCard(0, 'attack', card => card.rank === '7' && card.suit === 'spades')
+      ]);
+      break;
+    }
+    case 'defense_window': {
+      state.currentPlayer = 0;
+      beginDefenseWindow(9, false);
+      return devGetSnapshot();
+    }
+    case 'diamond_draw': {
+      state.players[0].hand = [
+        devMakeCard('4', 'diamonds'),
+        devMakeCard('K', 'spades'),
+        devMakeCard('5', 'clubs')
+      ];
+      state.players[0].flags.lastOwnAction = null;
+      devSetSelected([
+        devSelectableCard(0, 'hand', card => card.rank === '4' && card.suit === 'diamonds')
+      ]);
+      break;
+    }
+    case 'projectile_ready': {
+      state.projectileUnlocked = true;
+      devSetSelected([
+        devSelectableCard(0, 'attack', card => card.rank === '8' && card.suit === 'spades')
+      ]);
+      break;
+    }
+    case 'ace_diamond': {
+      state.players[0].core.booster = devMakeCard('A', 'diamonds');
+      state.players[0].fuel = [];
+      state.attackMode = true;
+      state.projectileUnlocked = false;
+      devSetSelected([
+        devSelectableCard(0, 'armor', card => card.rank === '6' && card.suit === 'clubs'),
+        devSelectableCard(0, 'attack', card => card.rank === '7' && card.suit === 'spades')
+      ]);
+      break;
+    }
+    case 'repilot_overflow': {
+      state.players[0].core.copilot = null;
+      state.players[0].core.booster = devMakeCard('A', 'diamonds');
+      state.players[0].hand = [
+        devMakeCard('Q', 'hearts'),
+        devMakeCard('5', 'diamonds')
+      ];
+      devSetSelected([
+        devSelectableCard(0, 'core-pilot', card => card.rank === 'K' && card.suit === 'spades'),
+        devSelectableCard(0, 'hand', card => card.rank === 'Q' && card.suit === 'hearts'),
+        devSelectableCard(0, 'attack', card => card.rank === '8' && card.suit === 'spades')
+      ]);
+      break;
+    }
+  }
+
+  devSyncPlayers(state.players, state.currentPlayer, state.phase);
+  render();
+  return devGetSnapshot();
+}
+
+function devTutorialMoveCard(fromZone, toZone, cardId){
+  const player = state.players[0];
+  if(!player) return null;
+  let source = [];
+  if(fromZone === 'hand') source = player.hand;
+  else if(fromZone === 'attack') source = player.attack;
+  else if(fromZone === 'defense') source = player.defense;
+  else if(fromZone === 'armor') source = player.armor;
+  else if(fromZone === 'fuel') source = player.fuel;
+  const idx = source.findIndex(card => card.id === cardId);
+  if(idx < 0) return null;
+  const [card] = source.splice(idx, 1);
+  if(toZone === 'core-pilot') player.core.pilot = card;
+  else if(toZone === 'core-copilot') player.core.copilot = card;
+  else if(toZone === 'core-booster') player.core.booster = card;
+  else if(['attack','defense','armor','fuel'].includes(toZone)) player[toZone].push(card);
+  return card;
+}
+
+function devSetupTutorialPreset(){
+  devResetEnvironment();
+  state.gameMode = 'tutorial';
+  tutorialSystem.enabled = true;
+  tutorialSystem.cards = { ...TUTORIAL_CARD_IDS };
+  tutorialPreparePracticeScenario();
+}
+
+function devTutorialApplyCoreBuild(){
+  devTutorialMoveCard('hand', 'core-pilot', TUTORIAL_CARD_IDS.p0Pilot);
+  devTutorialMoveCard('hand', 'core-copilot', TUTORIAL_CARD_IDS.p0Copilot);
+  devTutorialMoveCard('hand', 'core-booster', TUTORIAL_CARD_IDS.p0Booster);
+}
+
+function devTutorialApplyAttackBuild(){
+  devTutorialApplyCoreBuild();
+  devTutorialMoveCard('hand', 'attack', TUTORIAL_CARD_IDS.p0AttackA);
+  devTutorialMoveCard('hand', 'attack', TUTORIAL_CARD_IDS.p0AttackB);
+}
+
+function devTutorialApplyFuelBuild(){
+  devTutorialApplyAttackBuild();
+  devTutorialMoveCard('hand', 'fuel', TUTORIAL_CARD_IDS.p0FuelA);
+}
+
+function devTutorialApplyFirstAttackAftermath(){
+  devTutorialApplyFuelBuild();
+  const spentFuel = popCardFromZone(state.players[0], 'fuel', TUTORIAL_CARD_IDS.p0FuelA);
+  if(spentFuel) state.discard.push(spentFuel);
+  state.projectileUnlocked = true;
+  state.currentPlayer = 1;
+  state.phase = 'Turno';
+  state.attackMode = false;
+  state.projectileMode = false;
+  state.lastActionType = 'attack';
+  state.players[0].flags.firstAttackComplete = true;
+}
+
+function devTutorialApplyDefenseResolved(){
+  devTutorialApplyFirstAttackAftermath();
+  const spentDefense = removeById(state.players[0].hand, TUTORIAL_CARD_IDS.p0DefendDiamond);
+  if(spentDefense) state.discard.push(spentDefense);
+  state.currentPlayer = 0;
+  state.phase = 'Turno';
+  state.pendingDefense = null;
+  state.lastActionType = 'defense';
+}
+
+function devLoadTutorialPreset(key){
+  devSetupTutorialPreset();
+  state.selected = [];
+
+  switch(key){
+    case 'core-build':
+      tutorialSetStep(0, { renderNow:false });
+      break;
+    case 'attack-build':
+      devTutorialApplyCoreBuild();
+      tutorialSetStep(1, { renderNow:false });
+      break;
+    case 'fuel-build':
+      devTutorialApplyAttackBuild();
+      tutorialSetStep(2, { renderNow:false });
+      break;
+    case 'first-attack':
+      devTutorialApplyFuelBuild();
+      state.attackMode = true;
+      tutorialSetStep(4, { renderNow:false });
+      break;
+    case 'defend':
+      devTutorialApplyFirstAttackAftermath();
+      tutorialSetStep(5, { renderNow:false });
+      state.currentPlayer = 1;
+      beginDefenseWindow(7, false);
+      return devGetSnapshot();
+    case 'draw-diamond':
+      devTutorialApplyDefenseResolved();
+      tutorialSetStep(6, { renderNow:false });
+      break;
+    case 'projectile':
+      devTutorialApplyDefenseResolved();
+      removeById(state.players[0].hand, TUTORIAL_CARD_IDS.p0DrawDiamond);
+      state.currentPlayer = 0;
+      state.phase = 'Turno';
+      state.players[1].armor = [];
+      state.projectileUnlocked = true;
+      tutorialSetStep(7, { renderNow:false });
+      break;
+    case 'summary':
+      devTutorialApplyDefenseResolved();
+      removeById(state.players[0].hand, TUTORIAL_CARD_IDS.p0DrawDiamond);
+      state.currentPlayer = 0;
+      state.phase = 'Turno';
+      state.winner = state.players[0].name;
+      tutorialSetStep(8, { renderNow:false });
+      break;
+    default:
+      tutorialSetStep(0, { renderNow:false });
+      break;
+  }
+
+  devSyncPlayers(state.players, state.currentPlayer, state.phase);
+  render();
+  return devGetSnapshot();
+}
+
+function devApplyOnlineIdentity({ role='guest', myIndex=1, nickname='Cadete', opponentNick='Rival', roomCode='POCO' } = {}){
+  _ol.active = true;
+  _ol.role = role;
+  _ol.myIndex = myIndex;
+  _ol.nickname = nickname;
+  _ol.opponentNick = opponentNick;
+  _ol.roomCode = roomCode;
+  const bar = document.getElementById('olStatusBar');
+  if(bar){
+    bar.textContent = `🌐 ${nickname} vs ${opponentNick}  |  Sala ${roomCode}`;
+    bar.classList.remove('ol-hidden');
+  }
+}
+
+function devBuildOnlinePlayers(){
+  const p0 = devCreatePlayer('Host');
+  const p1 = devCreatePlayer('Guest');
+
+  p0.hand = [devMakeCard('5', 'diamonds'), devMakeCard('J', 'clubs')];
+  p0.core.pilot = devMakeCard('K', 'spades');
+  p0.core.copilot = devMakeCard('J', 'diamonds');
+  p0.core.booster = devMakeCard('A', 'diamonds');
+  p0.attack = [devMakeCard('4', 'spades'), devMakeCard('7', 'spades'), devMakeCard('8', 'spades')];
+  p0.defense = [devMakeCard('5', 'hearts'), devMakeCard('6', 'hearts')];
+  p0.armor = [devMakeCard('6', 'clubs'), devMakeCard('7', 'clubs')];
+  p0.fuel = [devMakeCard('8', 'diamonds')];
+
+  p1.hand = [devMakeCard('3', 'diamonds'), devMakeCard('6', 'diamonds'), devMakeCard('Q', 'spades')];
+  p1.core.pilot = devMakeCard('Q', 'hearts');
+  p1.core.copilot = devMakeCard('J', 'clubs');
+  p1.core.booster = devMakeCard('A', 'clubs');
+  p1.attack = [devMakeCard('5', 'spades')];
+  p1.defense = [devMakeCard('4', 'hearts'), devMakeCard('7', 'hearts'), devMakeCard('8', 'hearts')];
+  p1.armor = [devMakeCard('4', 'clubs'), devMakeCard('8', 'clubs')];
+  p1.fuel = [devMakeCard('4', 'diamonds')];
+
+  return [p0, p1];
+}
+
+function devLoadOnlinePreset(key){
+  devResetEnvironment();
+  state.gameMode = 'online';
+  state.singleDifficulty = null;
+
+  switch(key){
+    case 'lobby-host':
+      olShowLobby();
+      document.getElementById('olNicknameInput').value = 'Host';
+      document.getElementById('olRoomCodeDisplay').classList.remove('ol-hidden');
+      document.getElementById('olRoomCodeSpan').textContent = 'POCO';
+      olSetStatus('Sala creada. Comparte el código con tu rival.');
+      _ol.nickname = 'Host';
+      _ol.roomCode = 'POCO';
+      break;
+    case 'lobby-error':
+      olShowLobby();
+      document.getElementById('olNicknameInput').value = 'Guest';
+      document.getElementById('olJoinCodeInput').value = 'ZZZZ';
+      olSetStatus('Código inválido o sala no disponible.', true);
+      break;
+    case 'host-turn':
+    case 'guest-turn':
+    case 'guest-waiting':
+    case 'guest-defense': {
+      const players = devBuildOnlinePlayers();
+      const role = key === 'host-turn' ? 'host' : 'guest';
+      const myIndex = role === 'host' ? 0 : 1;
+      const currentPlayer = key === 'guest-turn' ? 1 : 0;
+      devSyncPlayers(players, currentPlayer, 'Turno');
+      hideIntroScreen();
+      document.getElementById('olLobbyScreen')?.classList.add('ol-hidden');
+      devApplyOnlineIdentity({
+        role,
+        myIndex,
+        nickname: role === 'host' ? 'Host' : 'Guest',
+        opponentNick: role === 'host' ? 'Guest' : 'Host',
+        roomCode: 'POCO'
+      });
+      if(key === 'guest-defense'){
+        state.currentPlayer = 0;
+        beginDefenseWindow(9, false);
+      } else {
+        render();
+      }
+      olHideOpponentHand();
+      olUpdateWaitingUI();
+      return devGetSnapshot();
+    }
+    default:
+      olShowLobby();
+      break;
+  }
+
+  render();
+  return devGetSnapshot();
+}
+
+function devResetEnvironment(){
+  clearSinglePlayerAiTimer();
+  resetTutorialSession();
+  hideTransientOverlays();
+  stopOnlineModeUi();
+  hideIntroScreen();
+  clearVictoryFx();
+  ensureEnhancedFxDom();
+
+  state.gameStarted = true;
+  state.tutorial = false;
+  state.gameMode = 'local';
+  state.singleDifficulty = null;
+  state.attackMode = false;
+  state.projectileMode = false;
+  state.transitionLock = false;
+  state.pendingDefense = null;
+  state.selected = [];
+  state.phase = 'Turno';
+  state.turnCount = 4;
+  state.winner = null;
+  state.pendingTurnSfx = null;
+  state.projectileUnlocked = true;
+  state.projectilePromptPlayer = null;
+  state.figureBurstPromptPlayer = null;
+  state.figureBurstPromptActive = false;
+  state.attackReadyPromptPlayer = null;
+  state.attackReadyPromptActive = false;
+  state.firstAttackTriggered = false;
+  state.lastActionType = null;
+  state.log = [];
+  state.deck = [];
+  state.discard = [];
+  state.removed = [];
+  state.tutorialRiggedDraws = [];
+  devCardCounter = 0;
+}
+
+function devSyncPlayers(players, currentPlayer=0, phase='Turno'){
+  state.players = players;
+  state.currentPlayer = currentPlayer;
+  state.phase = phase;
+  state.players.forEach(player => {
+    setBestFlexTargets(player);
+    const build = getBuildStatus(player);
+    player.flags.mounted = build.mounted;
+    player.flags.combatReady = build.combatReady;
+    player.flags.lastOwnAction = null;
+    player.flags.figureBurstButtonUnlocked = false;
+    player.flags.figureBurstPromptShown = false;
+    player.flags.attackReadyPromptTurn = 0;
+    player.flags.firstAttackComplete = false;
+  });
+  render();
+}
+
+function devGetMechaPresetCatalog(){
+  return Object.keys(DEV_MECHA_PRESET_RECIPES).map(key => ({
+    key,
+    label: DEV_MECHA_PRESET_LABELS[key] || key,
+    src: MECHA_IMAGES[key] || ''
+  }));
+}
+
+function devGetRulePresetCatalog(){
+  return DEV_RULE_PRESETS.slice();
+}
+
+function devGetTutorialPresetCatalog(){
+  return DEV_TUTORIAL_PRESETS.slice();
+}
+
+function devGetOnlinePresetCatalog(){
+  return DEV_ONLINE_PRESETS.slice();
+}
+
+function devGetSnapshot(){
+  const tutorialStep = tutorialGetCurrentStep();
+  const onlineStatus = document.getElementById('olStatus');
+  return {
+    gameMode: state.gameMode,
+    currentPlayer: state.currentPlayer,
+    phase: state.phase,
+    winner: state.winner,
+    projectileUnlocked: !!state.projectileUnlocked,
+    attackMode: !!state.attackMode,
+    focusPlayer: state.pendingDefense ? state.pendingDefense.defenderIndex : state.currentPlayer,
+    pendingDefense: state.pendingDefense ? { ...state.pendingDefense } : null,
+    tutorial: {
+      enabled: !!tutorialSystem.enabled,
+      completed: !!tutorialSystem.completed,
+      stepId: tutorialStep?.id || null,
+      stepTitle: tutorialStep?.title || null
+    },
+    online: {
+      active: !!_ol.active,
+      role: _ol.role,
+      myIndex: _ol.myIndex,
+      roomCode: _ol.roomCode,
+      lobbyVisible: !document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden'),
+      waitingVisible: !document.getElementById('olWaitingVeil')?.classList.contains('ol-hidden'),
+      statusBarVisible: !document.getElementById('olStatusBar')?.classList.contains('ol-hidden'),
+      lobbyStatus: onlineStatus && !onlineStatus.classList.contains('ol-hidden') ? onlineStatus.textContent : ''
+    },
+    mecha: (state.players || []).map((player, idx) => ({
+      idx,
+      name: player.name,
+      image: getMechaPhaseImage(player),
+      label: DEV_MECHA_PRESET_LABELS[Object.keys(MECHA_IMAGES).find(key => MECHA_IMAGES[key]===getMechaPhaseImage(player))] || getShowcaseStatusText(player),
+      status: getShowcaseStatusText(player),
+      build: getBuildStatus(player),
+      attack: player.attack.length,
+      defense: player.defense.length,
+      armor: player.armor.length,
+      fuel: player.fuel.length
+    }))
+  };
+}
+
+function devBootArena(){
+  devResetEnvironment();
+  devSyncPlayers(devBuildCombatPlayers(), 0, 'Turno');
+  return devGetSnapshot();
+}
+
+function devSetViewerPreset(key, playerIdx=0){
+  if(!state.players || state.players.length<2) devBootArena();
+  const players = state.players.map((player, idx) => idx===playerIdx ? devBuildPlayerForPreset(key, player.name) : player);
+  devSyncPlayers(players, playerIdx, 'Turno');
+  return devGetSnapshot();
+}
+
+function devPreviewModify(playerIdx=0, key=null){
+  if(!state.players || state.players.length<2) devBootArena();
+  const cycle = ['base','piloto','piloto_ataque','piloto_defensa','piloto_armadura','piloto_combustible','piloto_booster','piloto_completo'];
+  const targetKey = key || cycle[devModifyPreviewCursor++ % cycle.length];
+  devSetViewerPreset(targetKey, playerIdx);
+  return new Promise(resolve => {
+    triggerModifyFeedbackSequence(playerIdx, () => {
+      render();
+      resolve(devGetSnapshot());
+    });
+  });
+}
+
+function devPreviewAttack({ attackerIdx=0, withProjectile=false, attackPoints=null } = {}){
+  devBootArena();
+  state.currentPlayer = attackerIdx;
+  render();
+  const resolvedPoints = attackPoints ?? (withProjectile ? 10 : 6);
+  return new Promise(resolve => {
+    runHeaderAttackSequence(attackerIdx, withProjectile, () => {
+      applyAttack(1 - attackerIdx, resolvedPoints);
+      render();
+      resolve(devGetSnapshot());
+    });
+  });
+}
+
+function devPreviewImpact({ defenderIdx=1, attackPoints=4 } = {}){
+  devBootArena();
+  state.currentPlayer = 1 - defenderIdx;
+  applyAttack(defenderIdx, attackPoints);
+  render();
+  return devGetSnapshot();
+}
+
+function devPreviewDefense({ totalAttack=8, withProjectile=false } = {}){
+  devBootArena();
+  state.currentPlayer = 0;
+  beginDefenseWindow(totalAttack, withProjectile);
+  render();
+  return devGetSnapshot();
+}
+
+function devPreviewProjectilePrompt(playerIdx=0){
+  devBootArena();
+  showProjectileUnlockedPrompt(playerIdx, () => {});
+  return devGetSnapshot();
+}
+
+function devSetAttacker(playerIdx=0){
+  if(!state.players || state.players.length<2) devBootArena();
+  state.currentPlayer = playerIdx;
+  render();
+  return devGetSnapshot();
+}
+
+function devPrimeAudio(){
+  ensureAudio();
+  ensureSfxBank();
+  return { soundOn: state.soundOn, ready: true };
+}
+
+window.__pocobotDev = {
+  boot: devBootArena,
+  getSnapshot: devGetSnapshot,
+  getMechaPresets: devGetMechaPresetCatalog,
+  getRulePresets: devGetRulePresetCatalog,
+  getTutorialPresets: devGetTutorialPresetCatalog,
+  getOnlinePresets: devGetOnlinePresetCatalog,
+  getSoundKinds(){ return DEV_SOUND_KINDS.slice(); },
+  setViewerPreset: devSetViewerPreset,
+  loadRulePreset: devApplyRulePreset,
+  loadTutorialPreset: devLoadTutorialPreset,
+  loadOnlinePreset: devLoadOnlinePreset,
+  previewModify: devPreviewModify,
+  previewAttack: devPreviewAttack,
+  previewImpact: devPreviewImpact,
+  previewDefense: devPreviewDefense,
+  previewProjectilePrompt: devPreviewProjectilePrompt,
+  setAttacker: devSetAttacker,
+  playSound(kind='tap'){
+    ensureAudio();
+    playUiSound(kind);
+    return { kind };
+  },
+  startIntroMusic(forceRestart=true){
+    ensureAudio();
+    window.startIntroMusic(forceRestart);
+    return { musicPhase: state.musicPhase };
+  },
+  startBattleMusic(){
+    ensureAudio();
+    window.switchToBattleMusic();
+    return { musicPhase: state.musicPhase };
+  },
+  stopMusic(reset=true){
+    stopAllMusic(reset);
+    state.musicPhase = 'none';
+    return { musicPhase: state.musicPhase };
+  },
+  setSoundEnabled(enabled){
+    state.soundOn = !!enabled;
+    if(state.soundOn) ensureAudio();
+    if(!state.soundOn) stopAllMusic(false);
+    render();
+    return { soundOn: state.soundOn };
+  },
+  primeAudio: devPrimeAudio,
+  toast(message, type='info'){
+    addToast(message, type);
+    return true;
+  },
+  ripple(palette='cyan'){
+    triggerScreenRipple(palette);
+    return true;
+  },
+  sparkPlayer(idx=0, palette='cyan', count=18){
+    spawnElementSparks(document.getElementById(`player-panel-${idx}`), count, palette);
+    return true;
+  },
+  victory(){
+    devBootArena();
+    triggerVictorySequence();
+    return devGetSnapshot();
+  }
+};
 
 render();
 
@@ -8964,7 +9998,7 @@ function olSetupGuestButtons() {
     olSendAction({ type: 'attackModeClose' });
   });
   setupHandler('toggleProjectileBtn', function() {
-    if (state.pendingDefense || !state.projectileUnlocked) return;
+    if (state.pendingDefense || !state.projectileUnlocked || !state.players[state.currentPlayer].attack.some(isPlayableProjectileCard)) return;
     state.projectileMode = !state.projectileMode;
     render();
     olSendAction({ type: 'toggleProjectile' });

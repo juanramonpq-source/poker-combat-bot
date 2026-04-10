@@ -623,14 +623,14 @@
         <article class="mecha-tile">
           <img src="assets/image_17.png" alt="Booster">
           <strong>Booster</strong>
-          <span>Siempre es un <strong>As</strong>. Un As normal amplía a <strong>4</strong> el módulo de su palo. <strong>As♦</strong> no amplía ningún módulo: permite gastar <strong>♣ armadura como fuel</strong>. Poder caro, pero precioso.</span>
+          <span>Siempre es un <strong>As</strong>. Todos los ases van exclusivamente al slot de <strong>Booster</strong>: no pueden entrar en Ataque, Defensa, Armadura ni Fuel. <strong>As♦</strong> no amplía ningún módulo: permite gastar <strong>♣ armadura como fuel</strong>. Poder caro, pero precioso.</span>
         </article>
       </div>
       <div class="suit-grid">
         <article class="suit-card">
           <span class="suit-icon spade">♠</span>
           <h3>Ataque</h3>
-          <p>Las picas del módulo Ataque son tu daño principal. También alimentan los proyectiles cuando ya están desbloqueados.</p>
+          <p>Las picas numéricas del módulo Ataque son tu daño principal. También alimentan los proyectiles cuando ya están desbloqueados.</p>
         </article>
         <article class="suit-card">
           <span class="suit-icon heart">♥</span>
@@ -698,7 +698,7 @@
         <article class="flow-step">
           <strong>2</strong>
           <h3>Abrir ataque</h3>
-          <p>Seleccionas fuel y luego picas del módulo Ataque. La consola te dice si la selección es legal.</p>
+          <p>Seleccionas fuel y luego picas numéricas del módulo Ataque. La consola te dice si la selección es legal.</p>
         </article>
         <article class="flow-step">
           <strong>3</strong>
@@ -729,13 +729,14 @@
           <h3>1 diamante numérico</h3>
           <p>El defensor responde con <strong>una única carta ♦ numérica</strong> de la mano.</p>
           <div class="formula">Daño final = ataque declarado - valor del ♦ usado</div>
-          <p>Las figuras de diamantes <strong>no</strong> valen para defender.</p>
+          <p>Solo valen los diamantes numéricos <strong>2-10♦</strong>. Ni figuras ni ases sirven para defender.</p>
         </article>
         <article class="formula-card">
           <span class="formula-badge">Proyectiles</span>
           <h3>Disparo sin fuel</h3>
-          <p>Se desbloquean tras el <strong>primer ataque completo</strong> de la partida. Desde ese momento puedes disparar <strong>1 pica</strong> como proyectil.</p>
-          <div class="formula">Solo proyectil = selecciona exactamente 1 ♠ del módulo Ataque</div>
+          <p>Se desbloquean tras el <strong>primer ataque completo</strong> de la partida. Desde ese momento puedes disparar <strong>1 carta numérica de picas</strong> como proyectil.</p>
+          <div class="formula">Solo proyectil = selecciona exactamente 1 ♠ numérica del módulo Ataque</div>
+          <p>Los ases nunca cuentan como proyectil: siguen siendo booster.</p>
           <p>También puedes combinar proyectil con ataque principal para sumar daño extra. Es una forma preciosa de rematar o de asustar.</p>
         </article>
         <article class="formula-card">
@@ -816,8 +817,12 @@
           <p>Cuando se resuelve el <strong>primer ataque completo</strong> de la partida. A partir de ahí queda desbloqueado para toda la partida.</p>
         </details>
         <details>
+          <summary>¿Puede un As ir a un módulo o usarse como proyectil?</summary>
+          <p>No. Todos los ases son potenciadores y solo pueden ocupar el slot de <strong>Booster</strong>. El <strong>As♦</strong> además permite usar <strong>♣ armadura</strong> como combustible, pero tampoco puede ir a un módulo ni dispararse como proyectil.</p>
+        </details>
+        <details>
           <summary>¿Con qué carta me defiendo?</summary>
-          <p>Con <strong>1 diamante numérico</strong> de tu mano. Su valor completo se resta al daño. Las figuras de diamantes no sirven para esa ventana de defensa.</p>
+          <p>Con <strong>1 diamante numérico</strong> de tu mano. Su valor completo se resta al daño. Solo sirven los <strong>2-10♦</strong>: ni figuras ni ases valen para esa ventana de defensa.</p>
         </details>
         <details>
           <summary>¿Gano al romper la armadura rival?</summary>

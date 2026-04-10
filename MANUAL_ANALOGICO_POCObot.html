@@ -57,7 +57,7 @@
       backdrop-filter:blur(12px);
       box-shadow:0 12px 32px rgba(0,0,0,.2);
     }
-    .manual-brand{display:flex;align-items:center;gap:12px}
+    .manual-brand{display:flex;align-items:center;gap:12px;position:relative}
     .manual-brand img{
       width:44px;height:44px;border-radius:12px;
       box-shadow:0 0 0 2px rgba(255,212,94,.18), 0 10px 24px rgba(0,0,0,.28);
@@ -73,6 +73,39 @@
       display:block;
       color:var(--muted);
       font-size:.74rem;
+    }
+    .dev-lab-trigger{
+      position:relative;
+      flex:0 0 auto;
+      width:18px;
+      height:18px;
+      margin-left:4px;
+      border:0;
+      border-radius:50%;
+      background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.92), rgba(84,214,255,.95) 45%, rgba(17,73,133,.96));
+      box-shadow:0 0 0 1px rgba(142,244,255,.16), 0 0 0 4px rgba(142,244,255,.05), 0 0 18px rgba(84,214,255,.18);
+      cursor:pointer;
+      transition:transform .16s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    .dev-lab-trigger:hover{
+      transform:translateY(-1px) scale(1.04);
+      box-shadow:0 0 0 1px rgba(255,212,94,.24), 0 0 0 4px rgba(142,244,255,.07), 0 0 22px rgba(84,214,255,.22);
+    }
+    .dev-lab-trigger::after{
+      content:"";
+      position:absolute;
+      inset:4px;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,.26);
+      opacity:.8;
+    }
+    .dev-lab-trigger.armed{
+      box-shadow:0 0 0 1px rgba(255,212,94,.3), 0 0 0 6px rgba(255,212,94,.08), 0 0 26px rgba(255,212,94,.24);
+      filter:saturate(1.15);
+    }
+    .dev-lab-trigger.unlocked{
+      transform:scale(1.08);
+      box-shadow:0 0 0 1px rgba(255,212,94,.44), 0 0 0 10px rgba(255,212,94,.12), 0 0 34px rgba(255,212,94,.34);
     }
     .manual-actions,
     .manual-nav{display:flex;flex-wrap:wrap;gap:8px}
@@ -268,8 +301,54 @@
     .panel-card p,.rule-card p,.tip-card p,.flow-step p,.mat-card p,.need-card p,.quick-card p,.quick-card li,.tip-card li{
       margin:0;color:var(--muted);line-height:1.48;font-size:.92rem
     }
+    .panel-card ul,.rule-card ul,.tip-card ul,.need-card ul,.quick-card ul,
+    .panel-card ol,.rule-card ol,.tip-card ol,.need-card ol,.quick-card ol{
+      margin:10px 0 0;
+      padding-left:18px;
+      color:var(--muted);
+    }
+    .panel-card li,.rule-card li,.tip-card li,.need-card li,.quick-card li{
+      margin:7px 0 0;
+      line-height:1.45;
+    }
     .quick-card ol,.tip-card ul{margin:0;padding-left:18px}
     .quick-card li,.tip-card li{margin:7px 0 0}
+    .formula{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:12px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,212,94,.1);
+      border:1px solid rgba(255,212,94,.22);
+      color:#fff5ce;
+      font-weight:900;
+      letter-spacing:.04em;
+    }
+    .example-box,
+    .ambient-block{
+      margin-top:14px;
+      padding:18px;
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(22,39,73,.9), rgba(11,22,42,.94));
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .example-box strong,
+    .ambient-block strong{
+      display:block;
+      margin-bottom:8px;
+      color:var(--gold);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:.78rem;
+    }
+    .example-box p,
+    .ambient-block p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.55;
+    }
     .mini-label{
       display:inline-flex;
       align-items:center;
@@ -449,7 +528,7 @@
       .manual-topbar{display:none}
       .hero,.section,.footer-card{box-shadow:none;background:#fff;border:1px solid #c8d6e6;color:#101520;break-inside:avoid}
       .hero p,.section-header p,.panel-card p,.rule-card p,.tip-card p,.flow-step p,.mat-card p,.need-card p,.quick-card p,.quick-card li,.tip-card li,.footer-card p,.rules-table td,.hero-point span{color:#26374c}
-      .manual-actions{display:none}
+      .manual-actions,.dev-lab-trigger{display:none}
       .section-tag,.kicker,.mini-label{color:#8a5d00;background:#fff8e1;border-color:#f1cf6a}
       .hero h1,.section-header h2,.footer-quote{color:#0f2240}
       .hero-point,.panel-card,.rule-card,.tip-card,.flow-step,.mat-card,.need-card,.quick-card,.battle-mat,.mat-player,.zone{background:#f8fbff}
@@ -473,11 +552,12 @@
           <strong>Archivo secreto encontrado</strong>
           <span>Edición analógica desbloqueada para pilotos que exploraron un poco más</span>
         </div>
+        <button class="dev-lab-trigger" id="devLabTrigger" type="button" aria-label="Nodo reservado"></button>
       </div>
       <div style="display:grid;gap:10px;justify-items:end;">
         <div class="manual-actions">
           <button class="primary" type="button" onclick="window.print()">Imprimir o guardar PDF</button>
-          <a class="download" href="MANUAL_ANALOGICO_POCObot.pdf" download>Descargar PDF</a>
+          <a class="download" href="MANUAL_JUEGO_MESA_PoCoBOT.pdf" download>Descargar PDF</a>
           <a href="MANUAL_USUARIO.html">Manual digital</a>
           <a href="mailto:autores@factordual.com">Contacta con el autor</a>
           <a href="/">Volver al juego</a>
@@ -494,34 +574,34 @@
 
     <section class="hero">
       <div class="hero-copy">
-        <span class="kicker">Acceso reservado · desbloqueado</span>
+        <span class="kicker">Tesoro secreto · desbloqueado</span>
         <img class="hero-logo" src="assets/pocobot_title.png" alt="Poker Combat Bot">
-        <h1>Has encontrado el cuaderno secreto de mesa de PoCoBOT.</h1>
-        <p>Este documento traslada <strong>Poker Combat-Bot</strong> al modo mesa sin traicionar ni una gota de su ADN digital: mismo núcleo, mismos módulos, mismo combustible, misma defensa, mismos proyectiles y la misma victoria al romper la <strong>Defensa</strong> del rival.</p>
-        <div class="fun-pullquote">Esto no estaba pensado para aparecer a la primera. Es un premio a la curiosidad: un regalo de <strong>Juan Ramón</strong> para quien decidió seguir explorando y descubrir cómo late PoCoBOT lejos de la pantalla.</div>
+        <h1>Has encontrado el manual secreto de mesa de PoCoBOT.</h1>
+        <p><strong>Poker Combat Bot</strong> es un duelo de mechas con baraja de póker. No invocas criaturas. No levantas castillos. Aquí ensamblas una máquina de guerra, instalas proyectiles, refuerzas la armadura, cargas combustible y disparas antes de que el rival haga lo mismo.</p>
+        <div class="fun-pullquote">Esto es un premio a la curiosidad: un regalo de <strong>Juan Ramón</strong> para quien decidió explorar un poco más y descubrir cómo se juega PoCoBOT fuera de la pantalla, con una baraja real entre las manos.</div>
         <div class="secret-reward">
-          <strong>Recompensa para pilotos curiosos</strong>
-          <p>Si has llegado hasta aquí, ya no solo estás jugando a PoCoBOT: has descubierto una pieza escondida de su universo. Este manual existe para que puedas montarlo y combatirlo de verdad en una mesa, con una baraja de póker, dos zonas de combate y exactamente la misma mala leche táctica que en la versión digital.</p>
+          <strong>Archivo reservado para pilotos curiosos</strong>
+          <p>Este documento ya no es una adaptación aproximada: refleja las reglas detalladas del modo analógico para que no haya incoherencias entre la mesa y el videojuego. Si has llegado hasta aquí, has encontrado un pequeño tesoro dentro del universo PoCoBOT.</p>
         </div>
         <div class="hero-points">
           <div class="hero-point">
             <strong>1 baraja</strong>
-            <span>Se usa un mazo estándar de 52 cartas, compartido por ambos jugadores, con descarte y reciclaje.</span>
+            <span>Todo el juego se resuelve con una baraja francesa estándar de 52 cartas.</span>
           </div>
           <div class="hero-point">
-            <strong>2 pilotos</strong>
-            <span>Cada jugador monta su mecha con núcleo, ataque, defensa, armadura y fuel visibles sobre la mesa.</span>
+            <strong>2 jugadores</strong>
+            <span>Cada piloto construye un mecha visible con módulos, tripulación, potenciador y combustible.</span>
           </div>
           <div class="hero-point">
-            <strong>0 pantallas</strong>
-            <span>Todo se resuelve a mano: robo, ataque, defensa, descarte y comprobación de victoria.</span>
+            <strong>1 objetivo</strong>
+            <span>Destruir el mecha rival haciendo caer su último corazón.</span>
           </div>
         </div>
       </div>
       <div class="hero-art">
         <div class="hero-art-card">
           <img src="assets/image_19.png" alt="Mecha oficial de PoCoBOT">
-          <p class="hero-art-caption"><strong>Documento reservado.</strong> Si estás leyendo esto, has encontrado el pequeño premio escondido para quienes disfrutan descubriendo secretos y quieren llevar PoCoBOT fuera de la pantalla.</p>
+          <p class="hero-art-caption"><strong>Documento oculto.</strong> La recompensa para quien quiso saber qué pasaría si PoCoBOT saliera del monitor y se plantara sobre una mesa.</p>
         </div>
       </div>
     </section>
@@ -529,55 +609,39 @@
     <section class="section" id="necesitas">
       <div class="section-header">
         <div>
-          <h2>Qué Necesitas</h2>
-          <p>Lo justo para desplegar la cabina en una mesa sin convertir la partida en una obra logística.</p>
+          <h2>Componentes y Objetivo</h2>
+          <p>Antes de empezar, basta con una mesa despejada, una baraja y ganas de montar algo que pueda explotar.</p>
         </div>
         <span class="section-tag">Material</span>
       </div>
       <div class="needs-grid">
         <article class="need-card">
-          <h3>Baraja estándar</h3>
-          <p>Una baraja francesa de <strong>52 cartas</strong>, sin comodines. Todo el juego analógico está pensado sobre esa base.</p>
+          <h3>Baraja francesa</h3>
+          <p>Una baraja estándar de <strong>52 cartas</strong>, sin comodines.</p>
         </article>
         <article class="need-card">
-          <h3>Mesa con espacio</h3>
-          <p>Cada jugador necesita una zona visible para <strong>Core, Ataque, Defensa, Armadura, Fuel y Mano</strong>.</p>
+          <h3>Espacio de montaje</h3>
+          <p>Cada jugador necesita sitio visible para construir el panel del mecha ante sí.</p>
         </article>
         <article class="need-card">
-          <h3>Marcador opcional</h3>
-          <p>No es obligatorio, pero una hoja pequeña ayuda a anotar turnos, recordar el primer ataque completo o pactar desempates si hacéis variantes caseras.</p>
+          <h3>Objetivo</h3>
+          <p>Destruir el mecha enemigo. Tu robot colapsa cuando pierdes tu <strong>último corazón</strong>.</p>
         </article>
       </div>
-    </section>
-
-    <section class="section">
-      <div class="section-header">
-        <div>
-          <h2>Preparación Rápida</h2>
-          <p>Si vais a jugar ya mismo, esta es la secuencia corta y correcta.</p>
-        </div>
-        <span class="section-tag">Antes del combate</span>
-      </div>
-      <div class="cards-4">
-        <article class="quick-card">
-          <span class="mini-label">Paso 01</span>
-          <h3>Barajad</h3>
-          <p>Mezclad la baraja completa y dejad un <strong>mazo común</strong> boca abajo en el centro.</p>
+      <div class="cards-2" style="margin-top:14px;">
+        <article class="panel-card">
+          <h3>Qué representan los corazones</h3>
+          <p>Los <strong>♥ corazones</strong> son la defensa vital del mecha. Si desaparecen todos, has perdido. No gana quien robe más: gana quien monte mejor su bot, administre mejor sus recursos y sepa exactamente cuándo atacar.</p>
         </article>
-        <article class="quick-card">
-          <span class="mini-label">Paso 02</span>
-          <h3>Robad 5 cartas</h3>
-          <p>Cada jugador roba <strong>5 cartas iniciales</strong> a la mano.</p>
-        </article>
-        <article class="quick-card">
-          <span class="mini-label">Paso 03</span>
-          <h3>Decidid iniciativa</h3>
-          <p>Cada jugador roba 1 carta del mazo. El valor más alto empieza. En empate, repetid.</p>
-        </article>
-        <article class="quick-card">
-          <span class="mini-label">Paso 04</span>
-          <h3>Montad la mesa</h3>
-          <p>Preparad zonas visibles para <strong>Core, Ataque, Defensa, Armadura y Fuel</strong>, y una mano oculta para cada jugador.</p>
+        <article class="panel-card">
+          <h3>El panel del mecha</h3>
+          <ul>
+            <li><strong>♠ Picas</strong> → Proyectiles</li>
+            <li><strong>♥ Corazones</strong> → Defensa</li>
+            <li><strong>♣ Tréboles</strong> → Armadura</li>
+            <li><strong>♦ Diamantes</strong> → Combustible, en una zona separada</li>
+            <li><strong>Piloto</strong>, <strong>Copiloto</strong> y <strong>Potenciador</strong> en espacios especiales</li>
+          </ul>
         </article>
       </div>
     </section>
@@ -586,17 +650,17 @@
       <div class="section-header">
         <div>
           <h2>Tapete Recomendado</h2>
-          <p>No hace falta un tablero impreso, pero sí ayuda tener claro dónde va cada cosa. Este esquema replica la lógica del videojuego.</p>
+          <p>No hace falta tablero impreso, pero sí una estructura clara. Este esquema deja todo visible y evita dudas durante la partida.</p>
         </div>
-        <span class="section-tag">Disposición física</span>
+        <span class="section-tag">Mesa</span>
       </div>
       <div class="battle-mat">
         <div class="battle-mat-stage">
           <div class="mat-player">
             <strong>Jugador 1</strong>
             <div class="zone-strip">
-              <div class="zone core">Core: Piloto · Copiloto · Booster</div>
-              <div class="zone">Ataque ♠</div>
+              <div class="zone core">Piloto · Copiloto · Potenciador</div>
+              <div class="zone">Proyectiles ♠</div>
               <div class="zone">Defensa ♥</div>
               <div class="zone">Armadura ♣</div>
               <div class="zone hand">Mano oculta</div>
@@ -605,8 +669,8 @@
           <div class="mat-player">
             <strong>Jugador 2</strong>
             <div class="zone-strip">
-              <div class="zone core">Core: Piloto · Copiloto · Booster</div>
-              <div class="zone">Ataque ♠</div>
+              <div class="zone core">Piloto · Copiloto · Potenciador</div>
+              <div class="zone">Proyectiles ♠</div>
               <div class="zone">Defensa ♥</div>
               <div class="zone">Armadura ♣</div>
               <div class="zone hand">Mano oculta</div>
@@ -614,106 +678,243 @@
           </div>
         </div>
         <div class="zone-strip">
-          <div class="zone">Fuel ♦</div>
-          <div class="zone">Fuel ♦</div>
-          <div class="zone deck">Mazo común</div>
-          <div class="zone discard">Descarte común</div>
+          <div class="zone">Combustible ♦</div>
+          <div class="zone">Combustible ♦</div>
+          <div class="zone deck">Mazo de robo</div>
+          <div class="zone discard">Descarte</div>
         </div>
+      </div>
+      <div class="example-box">
+        <strong>Qué cartas se colocan</strong>
+        <p>Las cartas numéricas <strong>2–10</strong> van a módulos o combustible según su palo. Las figuras <strong>J, Q, K</strong> son tripulación. Los <strong>Ases</strong> son potenciadores. Los ases nunca van a módulos: siempre ocupan el slot de potenciador.</p>
       </div>
     </section>
 
     <section class="section" id="montaje">
       <div class="section-header">
         <div>
-          <h2>Montaje del Mecha</h2>
-          <p>PoCoBOT empieza de verdad cuando el mecha deja de ser un puñado de cartas y se convierte en una máquina con intención.</p>
+          <h2>Montaje y Límites</h2>
+          <p>El mecha no es una abstracción: su forma, sus huecos y su forma de atacar dependen de la tripulación que le pongas.</p>
         </div>
-        <span class="section-tag">Reglas base</span>
+        <span class="section-tag">Montaje</span>
       </div>
-      <div class="rule-grid">
+      <div class="cards-3">
         <article class="rule-card">
-          <h3>Piloto</h3>
-          <p>Debe ser <strong>J, Q o K</strong> y <strong>no puede ser ♦</strong>. Su palo determina el módulo que debe llegar a <strong>3 cartas</strong> para habilitar el ataque principal.</p>
+          <h3>Cuándo está montado</h3>
+          <ul>
+            <li>Tiene <strong>1 Piloto</strong></li>
+            <li>Tiene al menos <strong>6 cartas en módulos</strong></li>
+            <li>De esas 6, <strong>3 deben ser del palo del Piloto</strong></li>
+          </ul>
+          <p style="margin-top:10px;">No hace falta nada más para considerarlo operativo. Eso sí: para un ataque con combustible necesitas que el mecha esté montado.</p>
         </article>
         <article class="rule-card">
-          <h3>Copiloto</h3>
-          <p>Es otra figura. Si es ♠/♥/♣ amplía su módulo a 3. Si es <strong>♦</strong>, actúa como comodín flexible y permite que un único módulo alcance 3.</p>
+          <h3>Límite básico</h3>
+          <p>Cada módulo puede contener hasta <strong>2 cartas</strong> de base.</p>
         </article>
         <article class="rule-card">
-          <h3>Booster</h3>
-          <p>Siempre es un <strong>As</strong>. Un As normal amplía a 4 su módulo. <strong>As♦</strong> no amplía nada: autoriza gastar <strong>Armadura ♣</strong> como fuel.</p>
-        </article>
-        <article class="rule-card">
-          <h3>Módulos</h3>
-          <p><strong>♠ Ataque</strong>, <strong>♥ Defensa</strong>, <strong>♣ Armadura</strong> y <strong>♦ Fuel</strong> se colocan boca arriba. La mano siempre se mantiene oculta.</p>
+          <h3>Reconfiguración obligatoria</h3>
+          <p>Si cambias Piloto, Copiloto o Potenciador y un módulo queda por encima de su nuevo límite, debes <strong>descartar inmediatamente</strong> cartas de ese módulo hasta ajustarlo.</p>
         </article>
       </div>
-      <table class="rules-table">
+
+      <table class="rules-table" style="margin-top:14px;">
         <thead>
           <tr>
             <th>Elemento</th>
-            <th>Regla analógica</th>
-            <th>Consejo de mesa</th>
+            <th>Efecto</th>
+            <th>Detalle importante</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td data-label="Elemento"><strong>Primer turno</strong></td>
-            <td data-label="Regla analógica">En el primer turno puedes hacer hasta <strong>3 operaciones de modificación</strong>. Después, el límite normal es <strong>2</strong>.</td>
-            <td data-label="Consejo de mesa">Contad “colocar / sustituir / descartar” como operaciones. Así nadie discute a mitad de turno.</td>
+            <td data-label="Elemento"><strong>Piloto principal</strong></td>
+            <td data-label="Efecto">Debe ser figura de <strong>♠, ♥ o ♣</strong>. Su palo define el mecha y amplía ese módulo a <strong>3</strong>.</td>
+            <td data-label="Detalle importante">Además te obliga a tener <strong>3 cartas</strong> de ese palo dentro de los 6 módulos mínimos del mecha montado.</td>
           </tr>
           <tr>
-            <td data-label="Elemento"><strong>Combate listo</strong></td>
-            <td data-label="Regla analógica">Para atacar necesitas: piloto válido, al menos 1 carta en <strong>Ataque</strong>, <strong>Defensa</strong> y <strong>Armadura</strong>, y <strong>3 cartas</strong> del palo del piloto en tus estadísticas.</td>
-            <td data-label="Consejo de mesa">Si hay duda, contad todas las cartas abiertas del mecha y resolvedlo en voz alta.</td>
+            <td data-label="Elemento"><strong>Copiloto</strong></td>
+            <td data-label="Efecto">Puede ser figura de cualquier palo. <strong>♠/♥/♣</strong> suben su módulo a 3.</td>
+            <td data-label="Detalle importante"><strong>♦ Copiloto</strong> elige un único módulo para subirlo a 3. Esa elección puede cambiar si reconfiguras el bot más adelante.</td>
           </tr>
           <tr>
-            <td data-label="Elemento"><strong>Fuel</strong></td>
-            <td data-label="Regla analógica">Solo cuentan los <strong>♦ numéricos</strong> colocados en Fuel. Su suma se multiplica por <strong>2</strong> para fijar el límite del ataque con ♠.</td>
-            <td data-label="Consejo de mesa">Dejad los diamantes de fuel agrupados y visibles. Os ahorrará recalcular.</td>
+            <td data-label="Elemento"><strong>Potenciador</strong></td>
+            <td data-label="Efecto">Solo puede haber <strong>1</strong> activo. <strong>A♠</strong>, <strong>A♥</strong> y <strong>A♣</strong> elevan su módulo a <strong>4</strong>.</td>
+            <td data-label="Detalle importante">Las mejoras nunca se acumulan por encima de 4.</td>
           </tr>
           <tr>
-            <td data-label="Elemento"><strong>Descarte y reciclaje</strong></td>
-            <td data-label="Regla analógica">Cuando el mazo se acaba, barajad el descarte y formad un nuevo mazo común.</td>
-            <td data-label="Consejo de mesa">Hacedlo siempre boca abajo y en presencia de ambos jugadores.</td>
+            <td data-label="Elemento"><strong>A♦</strong></td>
+            <td data-label="Efecto">No aumenta espacios.</td>
+            <td data-label="Detalle importante">Activa la regla especial que permite usar <strong>♣ armadura</strong> ya instalada como combustible.</td>
           </tr>
         </tbody>
       </table>
+
+      <div class="cards-2" style="margin-top:14px;">
+        <article class="tip-card">
+          <h3>Tripulación</h3>
+          <ul>
+            <li>Las figuras representan a la tripulación.</li>
+            <li>Puedes tener Piloto sin Copiloto.</li>
+            <li>No puedes tener Copiloto sin Piloto.</li>
+            <li>Las figuras de <strong>♦</strong> solo pueden ser Copiloto.</li>
+          </ul>
+        </article>
+        <article class="tip-card">
+          <h3>Potenciadores</h3>
+          <ul>
+            <li>Todos los ases son potenciadores.</li>
+            <li>Solo puedes tener <strong>1 Potenciador</strong> activo a la vez.</li>
+            <li>Los ases no pueden colocarse como cartas numéricas.</li>
+          </ul>
+        </article>
+      </div>
     </section>
 
     <section class="section" id="turno">
       <div class="section-header">
         <div>
-          <h2>Secuencia del Turno</h2>
-          <p>El flujo es el mismo que en digital, solo que aquí lo lleváis con las manos y con un poco más de mirada táctica.</p>
+          <h2>Preparación y Estructura del Turno</h2>
+          <p>La partida empieza deprisa, pero el orden importa. Si todos siguen la misma secuencia, el combate se mantiene limpio.</p>
         </div>
-        <span class="section-tag">Turno de jugador</span>
+        <span class="section-tag">Turno</span>
       </div>
-      <div class="flow-row">
+
+      <div class="cards-3">
+        <article class="quick-card">
+          <span class="mini-label">Preparación</span>
+          <h3>Puesta en marcha</h3>
+          <ol>
+            <li>Baraja las 52 cartas.</li>
+            <li>Cada jugador roba 5 cartas.</li>
+            <li>El resto forma el mazo de robo.</li>
+            <li>Cada jugador roba 1 carta extra para decidir el orden.</li>
+            <li>Empieza quien saque la carta más alta.</li>
+            <li>Esas cartas van al descarte.</li>
+          </ol>
+        </article>
+        <article class="quick-card">
+          <span class="mini-label">Reciclaje</span>
+          <h3>Mazo agotado</h3>
+          <p>Si el mazo de robo se agota, <strong>no se repone en ese mismo instante</strong>. Cuando toque volver a robar en un turno posterior, se baraja el descarte para formar un nuevo mazo.</p>
+        </article>
+        <article class="quick-card">
+          <span class="mini-label">Inicio rápido</span>
+          <h3>Turno base</h3>
+          <p>En tu turno robas <strong>1 carta</strong>, eliges <strong>1 acción principal</strong> y tu turno termina. Si no puedes o no quieres hacer nada mejor, debes pasar turno descartando <strong>2 cartas</strong>.</p>
+        </article>
+      </div>
+
+      <div class="flow-row" style="margin-top:14px;">
         <article class="flow-step">
           <strong>1</strong>
-          <h3>Modificar</h3>
-          <p>Colocas, sustituyes o descartas cartas para mejorar el mecha. Esa modificación cierra tu turno si la ejecutas.</p>
+          <h3>Robar</h3>
+          <p>Roba 1 carta del mazo.</p>
         </article>
         <article class="flow-step">
           <strong>2</strong>
-          <h3>Robar con ♦</h3>
-          <p>Puedes descartar 1 diamante numérico de tu mano y robar tantas cartas como su valor. No vale repetir esta acción en dos turnos propios seguidos.</p>
+          <h3>Modificar mecha</h3>
+          <p>Opción de montaje principal. Consiste en hacer exactamente <strong>2 operaciones</strong>.</p>
         </article>
         <article class="flow-step">
           <strong>3</strong>
-          <h3>2 figuras → 4</h3>
-          <p>Si tienes piloto, copiloto y al menos 2 figuras en mano, puedes descartar 2 figuras de la mano para robar 4 cartas.</p>
+          <h3>Robar cartas</h3>
+          <p>Puedes hacerlo quemando <strong>1 ♦</strong> o usando la maniobra de tripulación completa.</p>
         </article>
         <article class="flow-step">
           <strong>4</strong>
-          <h3>Abrir ataque</h3>
-          <p>Seleccionas fuel y luego las ♠ del módulo Ataque. Si el daño total supera tu límite, ese ataque no es legal.</p>
+          <h3>Atacar</h3>
+          <p>Eliges entre ataque con combustible o ataque por proyectil, según el momento de la partida.</p>
         </article>
         <article class="flow-step">
           <strong>5</strong>
-          <h3>Pasar</h3>
-          <p>Si no haces nada mejor, descartas 2 cartas de la mano y termina tu turno. Después robas 1 carta al pasar el turno al rival.</p>
+          <h3>Pasar turno</h3>
+          <p>Si no haces otra cosa, descartas 2 cartas de la mano y terminas tu turno.</p>
+        </article>
+      </div>
+
+      <div class="cards-2" style="margin-top:14px;">
+        <article class="panel-card">
+          <h3>Modificar mecha</h3>
+          <p>Si eliges esta acción, haces exactamente <strong>2 operaciones</strong>. Cada una cuenta por separado.</p>
+          <ul>
+            <li>Colocar una carta numérica en su zona correspondiente</li>
+            <li>Retirar una carta numérica de tu panel</li>
+            <li>Colocar o retirar Piloto principal</li>
+            <li>Colocar o retirar Copiloto</li>
+            <li>Colocar o retirar Potenciador</li>
+          </ul>
+        </article>
+        <article class="panel-card">
+          <h3>Importante</h3>
+          <ul>
+            <li>Retirar una carta = <strong>1 operación</strong></li>
+            <li>Colocar otra carta = <strong>1 operación</strong></li>
+            <li>Sustituir una carta por otra consume las <strong>2 operaciones</strong></li>
+            <li>Toda carta retirada del panel va al descarte, salvo los <strong>♥ perdidos por daño</strong>, que se eliminan de la partida</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <h2>Tripulación, Potenciadores y Robo</h2>
+          <p>Aquí se decide si tu mecha es una estructura torpe o una máquina bien mandada.</p>
+        </div>
+        <span class="section-tag">Núcleo</span>
+      </div>
+
+      <div class="cards-3">
+        <article class="rule-card">
+          <h3>Piloto principal</h3>
+          <p>Es la pieza central del robot. Define el palo principal del mecha y amplía ese módulo a <strong>3</strong>.</p>
+        </article>
+        <article class="rule-card">
+          <h3>Copiloto</h3>
+          <p>Añade una segunda especialización. Si es <strong>♦</strong>, te deja elegir qué módulo sube a 3 y esa elección no tiene por qué ser permanente si reconfiguras el bot.</p>
+        </article>
+        <article class="rule-card">
+          <h3>Tripulación completa</h3>
+          <p>Si ya tienes <strong>Piloto y Copiloto</strong>, puedes descartar <strong>2 figuras</strong> de la mano para robar <strong>4 cartas</strong>. Esta cuenta como la acción principal de <strong>Robar cartas</strong>.</p>
+        </article>
+      </div>
+
+      <div class="cards-2" style="margin-top:14px;">
+        <article class="tip-card">
+          <h3>Potenciadores</h3>
+          <ul>
+            <li><strong>A♠</strong> → Proyectiles a 4</li>
+            <li><strong>A♥</strong> → Defensa a 4</li>
+            <li><strong>A♣</strong> → Armadura a 4</li>
+            <li><strong>A♦</strong> → no da más capacidad; habilita armadura como combustible</li>
+          </ul>
+        </article>
+        <article class="tip-card">
+          <h3>Restricciones del A♦</h3>
+          <ul>
+            <li>El trébol usado como combustible se descarta</li>
+            <li>Pierdes esa armadura</li>
+            <li>No puedes mezclar en un mismo ataque <strong>♦ normales</strong> y <strong>♣ quemados</strong></li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="cards-2" style="margin-top:14px;">
+        <article class="panel-card">
+          <h3>Robar cartas · Opción A</h3>
+          <p>Descarta <strong>1 ♦ de tu mano</strong> y roba tantas cartas como indique su valor.</p>
+          <ul>
+            <li>2♦ → roba 2</li>
+            <li>5♦ → roba 5</li>
+            <li>9♦ → roba 9</li>
+          </ul>
+          <p style="margin-top:10px;">No puedes usar esta forma de robo en <strong>dos turnos seguidos</strong>.</p>
+        </article>
+        <article class="panel-card">
+          <h3>Robar cartas · Opción B</h3>
+          <p>Si tu panel ya tiene <strong>Piloto y Copiloto</strong>, puedes descartar <strong>2 figuras</strong> de tu mano para robar <strong>4 cartas</strong>. No importa el palo de esas figuras.</p>
         </article>
       </div>
     </section>
@@ -721,71 +922,167 @@
     <section class="section" id="combate">
       <div class="section-header">
         <div>
-          <h2>Combate y Defensa</h2>
-          <p>Aquí es donde la partida deja de ser montaje elegante y se convierte en demolición argumentada.</p>
+          <h2>Ataque, Defensa y Resolución</h2>
+          <p>La teoría se acaba aquí. A partir de este punto solo importan los recursos, el orden y el daño que realmente consigue atravesar el casco.</p>
         </div>
-        <span class="section-tag">Resolución manual</span>
+        <span class="section-tag">Combate</span>
       </div>
+
       <div class="cards-2">
         <article class="panel-card">
-          <h3>Ataque principal</h3>
-          <p>Descarta los diamantes de <strong>Fuel</strong> usados y declara las <strong>♠</strong> que disparas desde tu módulo Ataque.</p>
-          <p style="margin-top:10px;"><strong>Fórmula:</strong> <span style="color:var(--white);font-weight:900;">Fuel total × 2 = límite máximo de daño con ♠</span></p>
+          <h3>Ataque con combustible</h3>
+          <p>Es el ataque principal del juego. Para hacerlo necesitas tener un <strong>mecha montado</strong> y usar combustible del panel:</p>
+          <ul>
+            <li><strong>♦ diamantes</strong></li>
+            <li>o <strong>♣ tréboles</strong> si tienes activo <strong>A♦</strong></li>
+          </ul>
+          <div class="formula">1 punto de combustible = hasta 2 puntos de ataque</div>
+          <p style="margin-top:12px;">Las <strong>♠ del panel</strong> no se descartan en este tipo de ataque. Los <strong>♦</strong> o <strong>♣</strong> usados como combustible sí se descartan.</p>
         </article>
         <article class="panel-card">
-          <h3>Defensa</h3>
-          <p>El defensor puede usar <strong>1 diamante numérico</strong> de su mano. Su valor completo se resta al daño antes de resolver el impacto.</p>
-          <p style="margin-top:10px;"><strong>Importante:</strong> las figuras de diamantes no sirven para defender.</p>
+          <h3>Proyectil adicional</h3>
+          <p>Cuando haces un ataque con combustible, puedes añadir <strong>1 única carta de picas</strong> del panel como proyectil extra.</p>
+          <ul>
+            <li>Esa pica adicional sí se descarta</li>
+            <li>Su valor se suma al daño declarado</li>
+            <li>El <strong>As</strong> nunca sirve como proyectil</li>
+          </ul>
         </article>
         <article class="panel-card">
-          <h3>Armadura primero</h3>
-          <p>El daño destruye <strong>Armadura ♣</strong> antes de tocar <strong>Defensa ♥</strong>. Si el daño restante no alcanza el valor de la siguiente carta, se detiene ahí.</p>
+          <h3>Ataque por proyectil</h3>
+          <p>Desde que se produce el <strong>primer ataque de cualquier jugador</strong>, las ♠ instaladas quedan habilitadas como proyectiles para el resto de la partida.</p>
+          <ul>
+            <li>Ya no hace falta un mecha completamente montado</li>
+            <li>Basta con tener una pica numérica en el panel</li>
+            <li>Descartas 1 sola pica y su valor es el ataque</li>
+          </ul>
         </article>
         <article class="panel-card">
-          <h3>Victoria</h3>
-          <p>La partida termina cuando un jugador se queda sin cartas en el módulo de <strong>Defensa</strong>.</p>
+          <h3>Pasar turno</h3>
+          <p>Si eliges pasar turno, debes descartar <strong>2 cartas cualquiera</strong> de tu mano al descarte. Pasar también cuenta como tu acción principal.</p>
         </article>
       </div>
+
       <div class="cards-2" style="margin-top:14px;">
         <article class="tip-card">
-          <h3>Proyectiles</h3>
+          <h3>Defensa</h3>
+          <p>El jugador atacado puede usar <strong>1 única carta de diamantes</strong> desde la mano para reducir el ataque.</p>
           <ul>
-            <li>Se desbloquean tras el <strong>primer ataque completo</strong> de la partida.</li>
-            <li>Desde entonces, una sola ♠ puede dispararse como proyectil.</li>
-            <li>También puede sumarse como extra al ataque principal si la declaras así.</li>
+            <li>Reduce el ataque en su valor</li>
+            <li>Se descarta después</li>
+            <li>Solo sirve como esquiva previa al impacto</li>
           </ul>
         </article>
         <article class="tip-card">
-          <h3>As♦ en mesa</h3>
+          <h3>Orden de absorción</h3>
           <ul>
-            <li>Permite gastar cartas de <strong>Armadura ♣</strong> como combustible.</li>
-            <li>No amplía ningún módulo.</li>
-            <li>Cuando uses esa opción, descarta la armadura consumida antes de resolver el ataque.</li>
+            <li>Primero se pierde <strong>Armadura ♣</strong></li>
+            <li>Después, si aún queda daño, se pierden <strong>Corazones ♥</strong></li>
+            <li>La carta solo se pierde si el daño restante es <strong>superior</strong>, no igual, a su valor</li>
           </ul>
         </article>
+      </div>
+
+      <table class="rules-table" style="margin-top:14px;">
+        <thead>
+          <tr>
+            <th>Paso</th>
+            <th>Resolución</th>
+            <th>Destino de cartas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Paso"><strong>1. Declarar ataque</strong></td>
+            <td data-label="Resolución">El atacante indica el valor total del ataque.</td>
+            <td data-label="Destino de cartas">Todavía no se destruye nada del defensor.</td>
+          </tr>
+          <tr>
+            <td data-label="Paso"><strong>2. Esquiva</strong></td>
+            <td data-label="Resolución">El defensor puede usar 1 diamante de la mano para reducir el daño.</td>
+            <td data-label="Destino de cartas">Ese diamante va al descarte.</td>
+          </tr>
+          <tr>
+            <td data-label="Paso"><strong>3. Armadura</strong></td>
+            <td data-label="Resolución">Se comparan los tréboles del defensor de menor a mayor. Si el daño restante es superior, esa armadura se pierde y se resta su valor.</td>
+            <td data-label="Destino de cartas">Los tréboles perdidos van al descarte.</td>
+          </tr>
+          <tr>
+            <td data-label="Paso"><strong>4. Corazones</strong></td>
+            <td data-label="Resolución">Si aún queda daño, se aplica igual sobre los corazones, también de menor a mayor.</td>
+            <td data-label="Destino de cartas">Los corazones perdidos se eliminan de la partida.</td>
+          </tr>
+          <tr>
+            <td data-label="Paso"><strong>5. Combustible y proyectil</strong></td>
+            <td data-label="Resolución">Los diamantes o tréboles usados como combustible y las picas disparadas como proyectil ya se consideran gastados.</td>
+            <td data-label="Destino de cartas">Van al descarte.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="example-box">
+        <strong>Ejemplo rápido de defensa</strong>
+        <p>Un ataque entra con valor <strong>8</strong>. El defensor tiene Armadura: <strong>2♣, 4♣, 7♣</strong> y Corazones: <strong>3♥, 6♥</strong>. Se resuelve así: 8 es superior a 2, cae <strong>2♣</strong> y quedan 6. 6 es superior a 4, cae <strong>4♣</strong> y quedan 2. 2 no es superior a 7, así que <strong>7♣</strong> sobrevive y el daño termina ahí. Los corazones no se tocan.</p>
       </div>
     </section>
 
     <section class="section" id="referencia">
       <div class="section-header">
         <div>
-          <h2>Referencia Rápida</h2>
-          <p>Este bloque está pensado para tenerlo abierto al lado durante la partida.</p>
+          <h2>Colapso, Claves y Arranque Rápido</h2>
+          <p>La parte corta para tener al lado durante la partida, y la parte atmosférica para recordar que este documento existe porque alguien tuvo curiosidad suficiente para encontrarlo.</p>
         </div>
-        <span class="section-tag">Hoja corta</span>
+        <span class="section-tag">Referencia</span>
       </div>
+
       <div class="cards-3">
         <article class="rule-card">
-          <h3>Palos</h3>
-          <p><strong>♠ Ataque</strong><br><strong>♥ Defensa</strong><br><strong>♣ Armadura</strong><br><strong>♦ Fuel / defensa / robo</strong></p>
+          <h3>Colapso del mecha</h3>
+          <p>Cuando un jugador pierde su <strong>último corazón</strong>, su robot queda destruido y la partida termina de inmediato. No importa cuánto combustible conserve ni cuántos proyectiles le queden.</p>
         </article>
         <article class="rule-card">
-          <h3>Núcleo</h3>
-          <p><strong>Piloto:</strong> J/Q/K no ♦<br><strong>Copiloto:</strong> figura, con ♦ flexible<br><strong>Booster:</strong> A, con As♦ para armadura como fuel</p>
+          <h3>Claves tácticas</h3>
+          <ul>
+            <li><strong>♠</strong> son tu daño</li>
+            <li><strong>♥</strong> son tu vida real</li>
+            <li><strong>♣</strong> protegen esa vida</li>
+            <li><strong>♦</strong> sirven para robar o habilitar ataques</li>
+          </ul>
         </article>
         <article class="rule-card">
-          <h3>Turnos</h3>
-          <p><strong>Modificar</strong> o <strong>Robar</strong> o <strong>Atacar</strong> o <strong>Pasar</strong>. Al cambiar de turno, el siguiente jugador roba 1 carta.</p>
+          <h3>Lectura exprés</h3>
+          <p>Si solo te llevas una idea: monta bien, administra combustible y decide el momento exacto de abrir fuego. PoCoBOT castiga tanto la prisa como la indecisión.</p>
+        </article>
+      </div>
+
+      <div class="ambient-block">
+        <strong>Ambientación</strong>
+        <p>Al principio solo hay piezas sueltas. Una pica aquí. Un trébol allá. Un piloto sin máquina. Una coraza sin cuerpo que proteger. Pero poco a poco el panel se transforma. El mecha empieza a tomar forma. La armadura se tensa. El combustible entra en combustión. Y de pronto, una sola decisión lo cambia todo: <strong>abrir fuego</strong>. En PoCoBOT, cada carta es una pieza, cada palo es un sistema, cada figura es una mente al mando y cada As es una mejora crítica.</p>
+      </div>
+
+      <div class="cards-2" style="margin-top:14px;">
+        <article class="quick-card">
+          <h3>Inicio rápido</h3>
+          <ol>
+            <li>Cada jugador roba 5 cartas.</li>
+            <li>En tu turno robas 1 y haces 1 acción.</li>
+            <li>Tus acciones son: Modificar mecha, Robar cartas, Atacar o Pasar turno.</li>
+            <li>Modificar mecha te da 2 operaciones.</li>
+            <li>El mecha está montado cuando tiene 1 Piloto y 6 cartas en módulos, de las cuales 3 son del palo del Piloto.</li>
+            <li>Para un ataque con combustible, usas combustible del panel para activar picas a razón de 1 a 2.</li>
+            <li>A partir del primer ataque de la partida, ya se puede atacar también descartando 1 sola pica del panel como proyectil.</li>
+          </ol>
+        </article>
+        <article class="quick-card">
+          <h3>Recordatorios de mesa</h3>
+          <ol>
+            <li>Toda carta retirada del panel va al descarte, salvo los corazones perdidos por daño.</li>
+            <li>Los corazones perdidos se eliminan de la partida.</li>
+            <li>Si no puedes hacer otra cosa, debes pasar turno descartando 2 cartas.</li>
+            <li>No puedes usar robo con diamantes dos turnos seguidos.</li>
+            <li>Con <strong>A♦</strong> puedes quemar armadura como combustible, pero no mezclarla con diamantes en el mismo ataque.</li>
+            <li>Si cambias la tripulación o el potenciador y te pasas de hueco, debes descartar de inmediato.</li>
+          </ol>
         </article>
       </div>
     </section>
@@ -793,10 +1090,41 @@
     <section class="footer-card">
       <div>
         <strong>Créditos</strong>
-        <p>Poker Combat-Bot ha sido diseñado y desarrollado por <strong>Juan Ramón Pérez Quintanar</strong>. <a class="secret-link" href="mailto:autores@factordual.com">Contacta con el autor</a>. Esta adaptación de mesa es también un guiño personal a quien se detiene, explora y encuentra secretos: mismas reglas, mismo nervio y exactamente la misma satisfacción cuando el rival se queda sin defensa.</p>
+        <p>Poker Combat-Bot ha sido diseñado y desarrollado por <strong>Juan Ramón Pérez Quintanar</strong>. <a class="secret-link" href="mailto:autores@factordual.com">Contacta con el autor</a>. Este manual secreto de mesa queda aquí como prueba de que la curiosidad también desbloquea recompensas: si has llegado hasta este documento, has encontrado un pequeño tesoro dentro de PoCoBOT.</p>
       </div>
-      <div class="footer-quote">Curiosidad recompensada. Combate desbloqueado.</div>
+      <div class="footer-quote">Tesoro descubierto. Cabina analógica desbloqueada.</div>
     </section>
   </div>
+  <script>
+    (() => {
+      const trigger = document.getElementById('devLabTrigger');
+      if(!trigger) return;
+      let taps = 0;
+      let resetTimer = null;
+      let unlocked = false;
+
+      function resetSequence(){
+        taps = 0;
+        trigger.classList.remove('armed');
+      }
+
+      trigger.addEventListener('click', () => {
+        if(unlocked) return;
+        taps += 1;
+        trigger.classList.add('armed');
+        clearTimeout(resetTimer);
+        if(navigator.vibrate) navigator.vibrate(12);
+        if(taps >= 5){
+          unlocked = true;
+          trigger.classList.add('unlocked');
+          setTimeout(() => {
+            window.location.href = 'MODO_DESARROLLADOR_POCObot.html';
+          }, 180);
+          return;
+        }
+        resetTimer = setTimeout(resetSequence, 2600);
+      });
+    })();
+  </script>
 </body>
 </html>
