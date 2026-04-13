@@ -358,20 +358,27 @@ button.button-live{
   animation:buttonReadyPulse 1.8s ease-in-out infinite;
 }
 #confirmAttackBtn{
-  border-color:rgba(255,108,98,.62);
-  background:linear-gradient(180deg, rgba(104,18,18,.96), rgba(54,10,14,.98));
-  color:#fff4ef;
-  box-shadow:inset 0 0 16px rgba(255,122,92,.16), 0 0 0 1px rgba(255,122,92,.16), 0 0 14px rgba(255,112,46,.08);
+  border-color:rgba(255,213,102,.86);
+  background:linear-gradient(180deg, rgba(255,247,192,.98), rgba(255,206,92,.98) 54%, rgba(255,122,58,.98));
+  color:#542100;
+  text-shadow:none;
+  box-shadow:
+    inset 0 0 22px rgba(255,255,255,.28),
+    0 0 0 1px rgba(255,205,86,.28),
+    0 0 16px rgba(255,164,68,.18);
 }
 #confirmAttackBtn:hover{
-  box-shadow:inset 0 0 18px rgba(255,142,112,.22), 0 0 18px rgba(255,106,84,.18);
+  box-shadow:
+    inset 0 0 24px rgba(255,255,255,.34),
+    0 0 0 1px rgba(255,216,126,.46),
+    0 0 22px rgba(255,160,68,.28);
 }
 #confirmAttackBtn.button-live{
   box-shadow:
-    inset 0 0 18px rgba(255,142,112,.24),
-    0 0 0 1px rgba(255,142,112,.34),
-    0 0 18px rgba(255,96,96,.24),
-    0 0 28px rgba(255,112,46,.18);
+    inset 0 0 22px rgba(255,255,255,.38),
+    0 0 0 2px rgba(255,228,144,.66),
+    0 0 20px rgba(255,191,72,.34),
+    0 0 34px rgba(255,110,46,.24);
   animation:confirmAttackPulse 1.18s ease-in-out infinite;
 }
 button.button-press{ animation:buttonPress .24s ease; }
@@ -3212,53 +3219,104 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
 /* ===== DEFENSE PROMPT / HEADER ATTACK SEQUENCE ===== */
 .defense-prompt-overlay{
   position:fixed;
-  left:24px;
-  top:24px;
+  inset:0;
   z-index:1002;
   opacity:0;
   visibility:hidden;
   pointer-events:none;
-  transform:translateY(8px) scale(.96);
-  transition:opacity .18s ease, visibility .18s ease, transform .18s ease;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:radial-gradient(circle at center, rgba(4,12,24,.12), rgba(4,8,18,.54));
+  backdrop-filter:blur(2px);
+  transform:scale(.98);
+  transition:opacity .2s ease, visibility .2s ease, transform .2s ease;
 }
 .defense-prompt-overlay.show{
   opacity:1;
   visibility:visible;
-  transform:translateY(0) scale(1);
+  transform:scale(1);
 }
 .defense-prompt-card{
-  min-width:280px;
-  max-width:360px;
-  padding:14px 16px 12px;
-  border-radius:18px;
-  border:2px solid rgba(255,128,102,.62);
-  background:linear-gradient(180deg, rgba(48,14,20,.96), rgba(14,10,20,.98));
+  width:min(92vw, 520px);
+  padding:20px 22px 18px;
+  border-radius:24px;
+  border:2px solid rgba(255,178,102,.82);
+  background:
+    radial-gradient(circle at top, rgba(255,188,112,.18), transparent 52%),
+    linear-gradient(180deg, rgba(70,18,18,.98), rgba(17,10,20,.99));
   box-shadow:
-    0 0 0 2px rgba(255,178,46,.12),
-    0 0 26px rgba(255,112,46,.22),
-    inset 0 0 18px rgba(255,122,92,.10);
+    0 0 0 2px rgba(255,178,46,.18),
+    0 0 34px rgba(255,112,46,.28),
+    inset 0 0 24px rgba(255,122,92,.14);
   text-align:center;
+  pointer-events:auto;
+  position:relative;
+  overflow:hidden;
+}
+.defense-prompt-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  border:1px solid rgba(255,236,183,.12);
+  pointer-events:none;
 }
 .defense-prompt-kicker{
   color:#ffcf68;
-  font-size:.72rem;
+  font-size:.76rem;
   font-weight:900;
   text-transform:uppercase;
-  letter-spacing:.16em;
-  margin-bottom:6px;
+  letter-spacing:.2em;
+  margin-bottom:8px;
 }
 .defense-prompt-title{
   color:#fff3ef;
-  font-size:1.02rem;
+  font-size:1.36rem;
   font-weight:1000;
   text-transform:uppercase;
   letter-spacing:.08em;
-  margin-bottom:8px;
+  margin-bottom:10px;
+  line-height:1.15;
 }
 .defense-prompt-body{
   color:#ffe7de;
-  font-size:.84rem;
-  line-height:1.35;
+  font-size:1rem;
+  line-height:1.45;
+  max-width:34ch;
+  margin:0 auto;
+}
+.defense-prompt-actions{
+  margin-top:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.defense-prompt-dismiss{
+  min-width:168px;
+  border-color:rgba(255,214,118,.86);
+  background:linear-gradient(180deg, rgba(255,248,194,.98), rgba(255,210,96,.98) 54%, rgba(255,135,58,.98));
+  color:#582100;
+  box-shadow:
+    inset 0 0 16px rgba(255,255,255,.28),
+    0 0 0 1px rgba(255,214,118,.26),
+    0 0 16px rgba(255,150,72,.18);
+}
+.defense-prompt-dismiss:not(:disabled):hover{
+  box-shadow:
+    inset 0 0 20px rgba(255,255,255,.34),
+    0 0 0 1px rgba(255,228,164,.46),
+    0 0 20px rgba(255,150,72,.26);
+}
+.defense-prompt-note{
+  color:#ffd7ca;
+  font-size:.77rem;
+  font-weight:800;
+  letter-spacing:.05em;
+  text-transform:uppercase;
 }
 
 
@@ -3975,6 +4033,10 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
               <div class="defense-prompt-kicker" id="defensePromptKicker">Defensa activa</div>
               <div class="defense-prompt-title" id="defensePromptTitle">Ataque enemigo previsto</div>
               <div class="defense-prompt-body" id="defensePromptBody">¡ESQUÍVALO con tus diamantes en mano!</div>
+              <div class="defense-prompt-actions">
+                <button class="defense-prompt-dismiss" id="defensePromptSkipBtn" type="button">No defender</button>
+                <div class="defense-prompt-note" id="defensePromptNote">Selecciona 1 ♦ numérico de tu mano o rechaza la esquiva</div>
+              </div>
             </div>
           </div>
           <div class="projectile-prompt-overlay" id="projectilePromptOverlay">
@@ -5232,10 +5294,18 @@ function drawFromDeck(options = {}){
   return state.deck.pop() || null;
 }
 
-function scrollToPlayerPanel(playerIdx, behavior='smooth'){
+function scrollToPlayerPanel(playerIdx, behavior='smooth', align='top'){
   const panel = document.getElementById(`player-panel-${playerIdx}`);
   if(!panel) return;
-  const top = window.scrollY + panel.getBoundingClientRect().top - 18;
+  const rect = panel.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+  let offset = 18;
+  if(align === 'center'){
+    offset = Math.max(18, (viewportHeight - rect.height) / 2);
+  } else if(typeof align === 'number'){
+    offset = align;
+  }
+  const top = window.scrollY + rect.top - offset;
   window.scrollTo({
     top: Math.max(0, top),
     behavior
@@ -6472,42 +6542,8 @@ function scrollToWinnerCup(behavior='smooth'){
 function positionDefensePromptNearPlayer(playerIdx){
   const overlay = document.getElementById('defensePromptOverlay');
   if(!overlay) return;
-  const card = overlay.querySelector('.defense-prompt-card');
-  const tacticalScreen = document.getElementById('tacticalScreen');
-  const anchorBtn = document.querySelector(`.quick-modify-btn[data-quick-modify="${playerIdx}"]`);
-  const playerPanel = document.getElementById(`player-panel-${playerIdx}`);
-  const vw = window.innerWidth || document.documentElement.clientWidth;
-  const vh = window.innerHeight || document.documentElement.clientHeight;
-  const cardWidth = (card ? card.offsetWidth : 340) || 340;
-  const cardHeight = (card ? card.offsetHeight : 150) || 150;
-
-  let left = 24;
-  let top = 24;
-
-  if(tacticalScreen){
-    const rect = tacticalScreen.getBoundingClientRect();
-    left = rect.left + rect.width / 2 - cardWidth / 2;
-    top = rect.top + 18;
-  } else if(anchorBtn){
-    const rect = anchorBtn.getBoundingClientRect();
-    left = rect.left + rect.width / 2 - cardWidth / 2;
-    top = rect.top - cardHeight - 16;
-  } else if(playerPanel){
-    const rect = playerPanel.getBoundingClientRect();
-    left = rect.left + 18;
-    top = rect.top - cardHeight - 10;
-  }
-
-  if(playerPanel){
-    const panelRect = playerPanel.getBoundingClientRect();
-    left = Math.max(panelRect.left + 8, Math.min(left, panelRect.right - cardWidth - 8));
-  }
-
-  left = Math.max(10, Math.min(left, vw - cardWidth - 10));
-  top = Math.max(10, Math.min(top, vh - cardHeight - 10));
-
-  overlay.style.left = `${left}px`;
-  overlay.style.top = `${top}px`;
+  overlay.style.left = '0';
+  overlay.style.top = '0';
 }
 
 function showDefensePrompt(playerIdx, callback){
@@ -6515,8 +6551,10 @@ function showDefensePrompt(playerIdx, callback){
   const kicker = document.getElementById('defensePromptKicker');
   const title = document.getElementById('defensePromptTitle');
   const body = document.getElementById('defensePromptBody');
+  const note = document.getElementById('defensePromptNote');
+  const skipBtn = document.getElementById('defensePromptSkipBtn');
   const player = state.players[playerIdx];
-  if(!overlay || !player || !title || !body || !kicker){
+  if(!overlay || !player || !title || !body || !kicker || !note || !skipBtn){
     if(callback) callback();
     return;
   }
@@ -6524,13 +6562,21 @@ function showDefensePrompt(playerIdx, callback){
   kicker.textContent = cue.kicker;
   title.textContent = cue.title;
   body.textContent = cue.body;
+  note.textContent = 'Selecciona 1 ♦ numérico de tu mano o rechaza la esquiva';
+  const canReject = tutorialAllowsButton('skipDefenseBtn');
+  skipBtn.disabled = !canReject;
+  skipBtn.classList.toggle('button-live', canReject);
   positionDefensePromptNearPlayer(playerIdx);
   overlay.classList.add('show');
-  spawnElementSparks(document.getElementById('tacticalScreen') || document.getElementById(`player-panel-${playerIdx}`), 18, 'cyan');
+  spawnElementSparks(document.getElementById(`player-panel-${playerIdx}`) || document.getElementById('tacticalScreen'), 18, 'cyan');
   window.setTimeout(() => {
     overlay.classList.remove('show');
     if(callback) callback();
-  }, 1500);
+  }, 2100);
+}
+function hideDefensePrompt(){
+  const overlay = document.getElementById('defensePromptOverlay');
+  if(overlay) overlay.classList.remove('show');
 }
 
 function maybeCueDefenseActiveUi(){
@@ -6545,19 +6591,22 @@ function maybeCueDefenseActiveUi(){
   if(key === defenseUiCueKey) return;
   defenseUiCueKey = key;
   const defenderIndex = state.pendingDefense.defenderIndex;
-  scrollToTopArea('smooth');
+  scrollToPlayerPanel(defenderIndex, 'smooth', 'center');
   addToast('Ataque enemigo previsto', 'danger');
   addToast('¡ESQUÍVALO con tus diamantes en mano!', 'warn');
   playUiSound('alert');
   triggerScreenRipple('cyan');
-  showDefensePrompt(defenderIndex, (!_ol.active)
-    ? () => {
-        if(state.pendingDefense){
-          state.transitionLock = false;
-          render();
+  window.setTimeout(() => {
+    if(!state.pendingDefense || state.pendingDefense.defenderIndex !== defenderIndex) return;
+    showDefensePrompt(defenderIndex, (!_ol.active)
+      ? () => {
+          if(state.pendingDefense){
+            state.transitionLock = false;
+            render();
+          }
         }
-      }
-    : null);
+      : null);
+  }, 220);
 }
 
 function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
@@ -6733,6 +6782,7 @@ function confirmAttack(projectileOnly=false){
 function resolveAttackAfterDefense(defenseCard){
   const pending = state.pendingDefense;
   if(!pending) return;
+  hideDefensePrompt();
 
   const defender = state.players[pending.defenderIndex];
   const defenderIdx = pending.defenderIndex;
@@ -6932,6 +6982,10 @@ function advanceTurn(){
   window.setTimeout(() => {
     if(keepTopFocus){
       scrollToTopArea('smooth');
+      window.setTimeout(() => {
+        scrollToPlayerPanel(state.currentPlayer, 'smooth');
+        window.setTimeout(maybeShowAttackReadyPrompt, 420);
+      }, 1100);
       return;
     }
     scrollToPlayerPanel(state.currentPlayer, 'smooth');
@@ -8229,6 +8283,7 @@ function updateButtons(){
   markButtonEnabled('soundToggleBtn', true, state.soundOn);
   markButtonEnabled('confirmDefenseBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('confirmDefenseBtn') && !hasWinner && inDefense && state.selected.length===1 && isNumericDiamondCard(state.selected[0]), inDefense && tutorialAllowsButton('confirmDefenseBtn') && !cpuOwnsCurrentContext);
   markButtonEnabled('skipDefenseBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('skipDefenseBtn') && !hasWinner && inDefense, inDefense && tutorialAllowsButton('skipDefenseBtn') && !cpuOwnsCurrentContext);
+  markButtonEnabled('defensePromptSkipBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('skipDefenseBtn') && !hasWinner && inDefense, inDefense && tutorialAllowsButton('skipDefenseBtn') && !cpuOwnsCurrentContext);
 
   document.querySelectorAll('.quick-modify-btn').forEach(btn => {
     const owner = Number(btn.dataset.quickModify);
@@ -8462,6 +8517,10 @@ document.getElementById('projectileOnlyBtn').addEventListener('click', () => {
 document.getElementById('confirmDefenseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
   confirmDefense();
+});
+document.getElementById('defensePromptSkipBtn').addEventListener('click', () => {
+  if(!canUseInteractiveDefenseAction()) return;
+  skipDefense();
 });
 document.getElementById('skipDefenseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
