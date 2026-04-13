@@ -706,7 +706,7 @@
             <li>Tiene al menos <strong>6 cartas en módulos</strong></li>
             <li>De esas 6, <strong>3 deben ser del palo del Piloto</strong></li>
           </ul>
-          <p style="margin-top:10px;">No hace falta nada más para considerarlo operativo. Eso sí: para un ataque con combustible necesitas que el mecha esté montado.</p>
+          <p style="margin-top:10px;">No hace falta nada más para considerarlo operativo. Eso sí: para un ataque con combustible necesitas que el mecha esté montado. El requisito de 3 cartas del palo del Piloto es una <strong>limitación</strong>, no una ventaja: te obliga a orientar la construcción de tu mecha hacia ese palo.</p>
         </article>
         <article class="rule-card">
           <h3>Límite básico</h3>
@@ -754,10 +754,12 @@
         <article class="tip-card">
           <h3>Tripulación</h3>
           <ul>
+            <li>No importa si la figura es <strong>J</strong>, <strong>Q</strong> o <strong>K</strong>: lo importante es el palo</li>
             <li>Las figuras representan a la tripulación.</li>
             <li>Puedes tener Piloto sin Copiloto.</li>
             <li>No puedes tener Copiloto sin Piloto.</li>
             <li>Las figuras de <strong>♦</strong> solo pueden ser Copiloto.</li>
+            <li>Si Piloto y Copiloto mejoran el mismo módulo, ese módulo sigue en <strong>3</strong>, salvo que además reciba el <strong>As</strong> correspondiente.</li>
           </ul>
         </article>
         <article class="tip-card">
@@ -869,11 +871,11 @@
       <div class="cards-3">
         <article class="rule-card">
           <h3>Piloto principal</h3>
-          <p>Es la pieza central del robot. Define el palo principal del mecha y amplía ese módulo a <strong>3</strong>.</p>
+          <p>Es la pieza central del robot. Define el palo principal del mecha y amplía ese módulo a <strong>3</strong>, pero conlleva la obligación de tener al menos <strong>3 cartas</strong> de ese palo en los módulos para que el mecha cuente como montado.</p>
         </article>
         <article class="rule-card">
           <h3>Copiloto</h3>
-          <p>Añade una segunda especialización. Si es <strong>♦</strong>, te deja elegir qué módulo sube a 3 y esa elección no tiene por qué ser permanente si reconfiguras el bot.</p>
+          <p>Añade una segunda especialización sin obligaciones adicionales. Si es <strong>♦</strong>, te deja elegir qué módulo sube a <strong>3</strong> y esa elección no tiene por qué ser permanente si reconfiguras el bot.</p>
         </article>
         <article class="rule-card">
           <h3>Tripulación completa</h3>
@@ -910,7 +912,7 @@
             <li>5♦ → roba 5</li>
             <li>9♦ → roba 9</li>
           </ul>
-          <p style="margin-top:10px;">No puedes usar esta forma de robo en <strong>dos turnos seguidos</strong>.</p>
+          <p style="margin-top:10px;">No puedes usar esta forma de robo en <strong>dos turnos seguidos</strong>. Si no quedan suficientes cartas en el mazo, robas solo las que queden.</p>
         </article>
         <article class="panel-card">
           <h3>Robar cartas · Opción B</h3>
@@ -937,7 +939,13 @@
             <li>o <strong>♣ tréboles</strong> si tienes activo <strong>A♦</strong></li>
           </ul>
           <div class="formula">1 punto de combustible = hasta 2 puntos de ataque</div>
-          <p style="margin-top:12px;">Las <strong>♠ del panel</strong> no se descartan en este tipo de ataque. Los <strong>♦</strong> o <strong>♣</strong> usados como combustible sí se descartan.</p>
+          <ol style="margin-top:12px;padding-left:18px;">
+            <li>Declaras cuántos puntos de <strong>♠</strong> del panel quieres usar como ataque.</li>
+            <li>Compruebas que tienes combustible suficiente para habilitarlos con proporción <strong>1:2</strong>.</li>
+            <li>Gastas el combustible correspondiente.</li>
+            <li>Las <strong>♠ del panel</strong> no se descartan en este tipo de ataque.</li>
+            <li>Los <strong>♦</strong> o <strong>♣</strong> usados como combustible sí se descartan.</li>
+          </ol>
         </article>
         <article class="panel-card">
           <h3>Proyectil adicional</h3>
@@ -959,18 +967,19 @@
         </article>
         <article class="panel-card">
           <h3>Pasar turno</h3>
-          <p>Si eliges pasar turno, debes descartar <strong>2 cartas cualquiera</strong> de tu mano al descarte. Pasar también cuenta como tu acción principal.</p>
+          <p>Si eliges pasar turno, debes descartar <strong>2 cartas cualquiera</strong> de tu mano al descarte. Pasar también cuenta como tu acción principal. Si no puedes o no quieres realizar ninguna otra acción, estás obligado a hacerlo.</p>
         </article>
       </div>
 
       <div class="cards-2" style="margin-top:14px;">
         <article class="tip-card">
-          <h3>Defensa</h3>
-          <p>El jugador atacado puede usar <strong>1 única carta de diamantes</strong> desde la mano para reducir el ataque.</p>
+          <h3>Defensa activa</h3>
+          <p>Cuando recibes un ataque, antes de que se aplique el daño, tienes una oportunidad de defensa activa: puedes usar <strong>1 única carta de diamantes</strong> directamente de tu mano para atenuar el ataque recibido.</p>
           <ul>
             <li>Reduce el ataque en su valor</li>
             <li>Se descarta después</li>
             <li>Solo sirve como esquiva previa al impacto</li>
+            <li>Solo puedes usar <strong>1 carta</strong> de diamantes de la mano por ataque</li>
           </ul>
         </article>
         <article class="tip-card">
@@ -1015,14 +1024,14 @@
           <tr>
             <td data-label="Paso"><strong>5. Combustible y proyectil</strong></td>
             <td data-label="Resolución">Los diamantes o tréboles usados como combustible y las picas disparadas como proyectil ya se consideran gastados.</td>
-            <td data-label="Destino de cartas">Van al descarte.</td>
+            <td data-label="Destino de cartas">♦ o ♣ usados como combustible, ♠ disparadas como proyectil y ♦ usados para esquivar van al descarte.</td>
           </tr>
         </tbody>
       </table>
 
       <div class="example-box">
-        <strong>Ejemplo rápido de defensa</strong>
-        <p>Un ataque entra con valor <strong>8</strong>. El defensor tiene Armadura: <strong>2♣, 4♣, 7♣</strong> y Corazones: <strong>3♥, 6♥</strong>. Se resuelve así: 8 es superior a 2, cae <strong>2♣</strong> y quedan 6. 6 es superior a 4, cae <strong>4♣</strong> y quedan 2. 2 no es superior a 7, así que <strong>7♣</strong> sobrevive y el daño termina ahí. Los corazones no se tocan.</p>
+        <strong>Ejemplo completo de defensa</strong>
+        <p>Un ataque entra con valor <strong>12</strong>. El defensor tiene un <strong>5♦</strong> en la mano y decide usarlo para esquivar, así que el ataque se reduce a <strong>7</strong>. En su panel tiene <strong>2♣, 4♣, 7♣</strong> y <strong>3♥, 6♥</strong>. La resolución queda así: 7 es superior a 2, cae <strong>2♣</strong> y quedan 5. 5 es superior a 4, cae <strong>4♣</strong> y queda 1. 1 no es superior a 7, así que <strong>7♣</strong> sobrevive. El daño termina ahí y los corazones no se tocan.</p>
       </div>
     </section>
 
@@ -1038,15 +1047,17 @@
       <div class="cards-3">
         <article class="rule-card">
           <h3>Colapso del mecha</h3>
-          <p>Cuando un jugador pierde su <strong>último corazón</strong>, su robot queda destruido y la partida termina de inmediato. No importa cuánto combustible conserve ni cuántos proyectiles le queden.</p>
+          <p>Cuando un jugador pierde su <strong>último corazón</strong>, su robot queda destruido y la partida termina de inmediato. No importa cuánto combustible conserve. No importa cuántos proyectiles le queden. Si el último corazón cae, el mecha desaparece.</p>
         </article>
         <article class="rule-card">
           <h3>Claves tácticas</h3>
           <ul>
-            <li><strong>♠</strong> son tu daño</li>
-            <li><strong>♥</strong> son tu vida real</li>
-            <li><strong>♣</strong> protegen esa vida</li>
-            <li><strong>♦</strong> sirven para robar o habilitar ataques</li>
+            <li><strong>♠ Picas</strong> → daño</li>
+            <li><strong>♥ Corazones</strong> → vida real</li>
+            <li><strong>♣ Tréboles</strong> → escudo</li>
+            <li><strong>♦ Diamantes</strong> → energía</li>
+            <li><strong>Figuras</strong> → cerebro del bot</li>
+            <li><strong>Ases</strong> → mejora crítica</li>
           </ul>
         </article>
         <article class="rule-card">
@@ -1057,7 +1068,7 @@
 
       <div class="ambient-block">
         <strong>Ambientación</strong>
-        <p>Al principio solo hay piezas sueltas. Una pica aquí. Un trébol allá. Un piloto sin máquina. Una coraza sin cuerpo que proteger. Pero poco a poco el panel se transforma. El mecha empieza a tomar forma. La armadura se tensa. El combustible entra en combustión. Y de pronto, una sola decisión lo cambia todo: <strong>abrir fuego</strong>. En PoCoBOT, cada carta es una pieza, cada palo es un sistema, cada figura es una mente al mando y cada As es una mejora crítica.</p>
+        <p>Al principio solo hay piezas sueltas. Una pica aquí. Un trébol allá. Un piloto sin máquina. Una coraza sin cuerpo que proteger. Pero poco a poco el panel se transforma. El mecha empieza a tomar forma. La armadura se tensa. El combustible entra en combustión. Y de pronto, una sola decisión lo cambia todo: <strong>abrir fuego</strong>. En PoCoBOT, cada carta es una pieza, cada palo es un sistema, cada figura es una mente al mando, cada As es una mejora crítica y cada ataque puede dejar al rival ardiendo entre restos de metal.</p>
       </div>
 
       <div class="cards-2" style="margin-top:14px;">
@@ -1068,20 +1079,21 @@
             <li>En tu turno robas 1 y haces 1 acción.</li>
             <li>Tus acciones son: Modificar mecha, Robar cartas, Atacar o Pasar turno.</li>
             <li>Modificar mecha te da 2 operaciones.</li>
+            <li>Toda carta que retires del panel va al descarte, salvo los corazones perdidos por daño, que se eliminan.</li>
             <li>El mecha está montado cuando tiene 1 Piloto y 6 cartas en módulos, de las cuales 3 son del palo del Piloto.</li>
-            <li>Para un ataque con combustible, usas combustible del panel para activar picas a razón de 1 a 2.</li>
-            <li>A partir del primer ataque de la partida, ya se puede atacar también descartando 1 sola pica del panel como proyectil.</li>
+            <li>Puedes robar descartando 1 ♦ de la mano o con Maniobra de Tripulación Completa: descartas 2 figuras y robas 4.</li>
           </ol>
         </article>
         <article class="quick-card">
           <h3>Recordatorios de mesa</h3>
           <ol>
-            <li>Toda carta retirada del panel va al descarte, salvo los corazones perdidos por daño.</li>
-            <li>Los corazones perdidos se eliminan de la partida.</li>
+            <li>Para ataque con combustible: <strong>1 punto de combustible = 2 puntos de ataque</strong>.</li>
+            <li>En ataque con combustible, las picas del panel <strong>no</strong> se gastan.</li>
+            <li>A partir del primer ataque de la partida, ya se puede atacar también descartando 1 sola pica del panel como proyectil.</li>
+            <li>Cuando te atacan, puedes usar 1 ♦ de tu mano para reducir el daño antes de resolverlo.</li>
+            <li>El daño entra primero sobre ♣ armadura y luego sobre ♥ corazones.</li>
+            <li>Pierdes cuando te quedas sin corazones.</li>
             <li>Si no puedes hacer otra cosa, debes pasar turno descartando 2 cartas.</li>
-            <li>No puedes usar robo con diamantes dos turnos seguidos.</li>
-            <li>Con <strong>A♦</strong> puedes quemar armadura como combustible, pero no mezclarla con diamantes en el mismo ataque.</li>
-            <li>Si cambias la tripulación o el potenciador y te pasas de hueco, debes descartar de inmediato.</li>
           </ol>
         </article>
       </div>
