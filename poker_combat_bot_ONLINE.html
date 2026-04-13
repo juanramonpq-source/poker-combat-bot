@@ -4559,6 +4559,7 @@ var _ol = {
 };
 
 let defenseUiCueKey = '';
+let defensePromptTimer = null;
 
 const singlePlayerAi = {
   timer: null,
@@ -6692,6 +6693,10 @@ function showDefensePrompt(playerIdx){
   spawnElementSparks(document.getElementById(`player-panel-${playerIdx}`) || document.getElementById('tacticalScreen'), 18, 'cyan');
 }
 function hideDefensePrompt(){
+  if(defensePromptTimer){
+    window.clearTimeout(defensePromptTimer);
+    defensePromptTimer = null;
+  }
   const overlay = document.getElementById('defensePromptOverlay');
   if(overlay) overlay.classList.remove('show');
 }
@@ -6710,6 +6715,10 @@ function beginInteractiveDefenseSelection(){
 
 function maybeCueDefenseActiveUi(){
   if(!state.pendingDefense){
+    if(defensePromptTimer){
+      window.clearTimeout(defensePromptTimer);
+      defensePromptTimer = null;
+    }
     if(defenseUiCueKey){
       scrollToTopArea('smooth');
     }
@@ -6726,8 +6735,12 @@ function maybeCueDefenseActiveUi(){
   addToast('¡ESQUÍVALO con tus diamantes en mano!', 'warn');
   playUiSound('alert');
   triggerScreenRipple('cyan');
-  window.setTimeout(() => {
-    if(!state.pendingDefense || state.pendingDefense.defenderIndex !== defenderIndex) return;
+  if(defensePromptTimer){
+    window.clearTimeout(defensePromptTimer);
+  }
+  defensePromptTimer = window.setTimeout(() => {
+    defensePromptTimer = null;
+    if(!state.pendingDefense || state.pendingDefense.defenderIndex !== defenderIndex || state.defenseSelectionMode) return;
     showDefensePrompt(defenderIndex);
   }, 220);
 }
@@ -6799,6 +6812,10 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
   };
   state.selected = [];
   state.defenseSelectionMode = false;
+  if(defensePromptTimer){
+    window.clearTimeout(defensePromptTimer);
+    defensePromptTimer = null;
+  }
   state.phase = 'Defensa activa';
 
   if(numericDiamonds.length===0){
