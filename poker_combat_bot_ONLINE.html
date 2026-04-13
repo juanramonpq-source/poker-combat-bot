@@ -3218,29 +3218,17 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
 
 /* ===== DEFENSE PROMPT / HEADER ATTACK SEQUENCE ===== */
 .defense-prompt-overlay{
-  position:fixed;
-  inset:0;
-  z-index:1002;
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:22px;
-  background:radial-gradient(circle at center, rgba(4,12,24,.12), rgba(4,8,18,.54));
-  backdrop-filter:blur(2px);
-  transform:scale(.98);
-  transition:opacity .2s ease, visibility .2s ease, transform .2s ease;
+  display:none !important;
 }
-.defense-prompt-overlay.show{
-  opacity:1;
-  visibility:visible;
-  transform:scale(1);
+.defense-alert-overlay{
+  display:none !important;
 }
-.defense-prompt-card{
-  width:min(92vw, 520px);
-  padding:20px 22px 18px;
+.defense-alert-overlay.show{
+  display:none !important;
+}
+.defense-alert-card{
+  width:min(92vw, 560px);
+  padding:22px 26px 20px;
   border-radius:24px;
   border:2px solid rgba(255,178,102,.82);
   background:
@@ -3254,8 +3242,9 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   pointer-events:auto;
   position:relative;
   overflow:hidden;
+  pointer-events:none;
 }
-.defense-prompt-card::after{
+.defense-alert-card::after{
   content:"";
   position:absolute;
   inset:0;
@@ -3263,7 +3252,7 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   border:1px solid rgba(255,236,183,.12);
   pointer-events:none;
 }
-.defense-prompt-kicker{
+.defense-alert-kicker{
   color:#ffcf68;
   font-size:.76rem;
   font-weight:900;
@@ -3271,7 +3260,7 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   letter-spacing:.2em;
   margin-bottom:8px;
 }
-.defense-prompt-title{
+.defense-alert-title{
   color:#fff3ef;
   font-size:1.36rem;
   font-weight:1000;
@@ -3280,62 +3269,12 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   margin-bottom:10px;
   line-height:1.15;
 }
-.defense-prompt-body{
+.defense-alert-body{
   color:#ffe7de;
   font-size:1rem;
   line-height:1.45;
   max-width:34ch;
   margin:0 auto;
-}
-.defense-prompt-actions{
-  margin-top:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  flex-wrap:wrap;
-}
-.defense-prompt-choose,
-.defense-prompt-dismiss{
-  min-width:168px;
-}
-.defense-prompt-choose{
-  border-color:rgba(128,240,255,.82);
-  background:linear-gradient(180deg, rgba(229,252,255,.98), rgba(132,232,255,.98) 54%, rgba(31,137,232,.98));
-  color:#103160;
-  box-shadow:
-    inset 0 0 16px rgba(255,255,255,.24),
-    0 0 0 1px rgba(136,232,255,.24),
-    0 0 16px rgba(64,192,255,.16);
-}
-.defense-prompt-choose:not(:disabled):hover{
-  box-shadow:
-    inset 0 0 20px rgba(255,255,255,.30),
-    0 0 0 1px rgba(189,245,255,.44),
-    0 0 20px rgba(64,192,255,.24);
-}
-.defense-prompt-dismiss{
-  border-color:rgba(255,214,118,.86);
-  background:linear-gradient(180deg, rgba(255,234,234,.98), rgba(255,142,142,.98) 54%, rgba(188,28,28,.98));
-  color:#fff3ef;
-  box-shadow:
-    inset 0 0 16px rgba(255,255,255,.18),
-    0 0 0 1px rgba(255,150,150,.22),
-    0 0 16px rgba(255,82,82,.18);
-}
-.defense-prompt-dismiss:not(:disabled):hover{
-  box-shadow:
-    inset 0 0 20px rgba(255,255,255,.24),
-    0 0 0 1px rgba(255,188,188,.36),
-    0 0 20px rgba(255,82,82,.26);
-}
-.defense-prompt-note{
-  width:100%;
-  color:#ffd7ca;
-  font-size:.77rem;
-  font-weight:800;
-  letter-spacing:.05em;
-  text-transform:uppercase;
 }
 
 
@@ -4162,6 +4101,13 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
               </div>
             </div>
           </div>
+          <div class="defense-alert-overlay" id="defenseAlertOverlay" aria-hidden="true">
+            <div class="defense-alert-card">
+              <div class="defense-alert-kicker" id="defenseAlertKicker">Defensa activa</div>
+              <div class="defense-alert-title" id="defenseAlertTitle">Ataque enemigo previsto</div>
+              <div class="defense-alert-body" id="defenseAlertBody">¡ESQUÍVALO con tus diamantes en mano!</div>
+            </div>
+          </div>
           <div class="projectile-prompt-overlay" id="projectilePromptOverlay">
             <div class="projectile-prompt-card">
               <div class="projectile-prompt-kicker">Sistema de combate</div>
@@ -4559,7 +4505,7 @@ var _ol = {
 };
 
 let defenseUiCueKey = '';
-let defensePromptTimer = null;
+let defenseAlertTimer = null;
 
 const singlePlayerAi = {
   timer: null,
@@ -4614,6 +4560,7 @@ function hideTransientOverlays(){
   [
     'mechaShowcaseOverlay',
     'defensePromptOverlay',
+    'defenseAlertOverlay',
     'projectilePromptOverlay',
     'attackReadyPromptOverlay',
     'figureBurstPromptOverlay'
@@ -5835,6 +5782,8 @@ function toggleSelect(id){
     }
     state.selected = [];
     state.selected.push(found);
+    state.defenseSelectionMode = true;
+    hideDefenseAlert();
     render();
     pulseButton('confirmDefenseBtn');
     notifySelection(`Defensa preparada con ${cardText(found)}. Pulsa Confirmar defensa o No defender.`);
@@ -6665,38 +6614,25 @@ function positionDefensePromptNearPlayer(playerIdx){
   overlay.style.top = '0';
 }
 
-function showDefensePrompt(playerIdx){
-  const overlay = document.getElementById('defensePromptOverlay');
-  const kicker = document.getElementById('defensePromptKicker');
-  const title = document.getElementById('defensePromptTitle');
-  const body = document.getElementById('defensePromptBody');
-  const note = document.getElementById('defensePromptNote');
-  const chooseBtn = document.getElementById('defensePromptChooseBtn');
-  const skipBtn = document.getElementById('defensePromptSkipBtn');
-  const player = state.players[playerIdx];
-  if(!overlay || !player || !title || !body || !kicker || !note || !chooseBtn || !skipBtn){
-    return;
+function showDefenseAlert(playerIdx){
+  hideDefenseAlert();
+}
+
+function hideDefenseAlert(){
+  if(defenseAlertTimer){
+    window.clearTimeout(defenseAlertTimer);
+    defenseAlertTimer = null;
   }
-  const cue = getDefenseCueCopy(player);
-  kicker.textContent = cue.kicker;
-  title.textContent = cue.title;
-  body.textContent = cue.body;
-  note.textContent = 'Pulsa “Seleccionar diamantes” para abrir tu mano defensiva o “No defender” para asumir el impacto.';
-  const canChoose = tutorialAllowsButton('confirmDefenseBtn');
-  const canReject = tutorialAllowsButton('skipDefenseBtn');
-  chooseBtn.disabled = !canChoose;
-  chooseBtn.classList.toggle('button-live', canChoose);
-  skipBtn.disabled = !canReject;
-  skipBtn.classList.toggle('button-live', canReject);
-  positionDefensePromptNearPlayer(playerIdx);
-  overlay.classList.add('show');
+  const overlay = document.getElementById('defenseAlertOverlay');
+  if(overlay) overlay.classList.remove('show');
+}
+
+function showDefensePrompt(playerIdx){
+  showDefenseAlert(playerIdx);
   spawnElementSparks(document.getElementById(`player-panel-${playerIdx}`) || document.getElementById('tacticalScreen'), 18, 'cyan');
 }
 function hideDefensePrompt(){
-  if(defensePromptTimer){
-    window.clearTimeout(defensePromptTimer);
-    defensePromptTimer = null;
-  }
+  hideDefenseAlert();
   const overlay = document.getElementById('defensePromptOverlay');
   if(overlay) overlay.classList.remove('show');
 }
@@ -6704,7 +6640,7 @@ function beginInteractiveDefenseSelection(){
   if(!state.pendingDefense) return;
   const defenderIndex = state.pendingDefense.defenderIndex;
   state.defenseSelectionMode = true;
-  hideDefensePrompt();
+  hideDefenseAlert();
   state.transitionLock = false;
   render();
   scrollToPlayerPanel(defenderIndex, 'smooth', 'center');
@@ -6715,10 +6651,7 @@ function beginInteractiveDefenseSelection(){
 
 function maybeCueDefenseActiveUi(){
   if(!state.pendingDefense){
-    if(defensePromptTimer){
-      window.clearTimeout(defensePromptTimer);
-      defensePromptTimer = null;
-    }
+    hideDefenseAlert();
     if(defenseUiCueKey){
       scrollToTopArea('smooth');
     }
@@ -6735,14 +6668,8 @@ function maybeCueDefenseActiveUi(){
   addToast('¡ESQUÍVALO con tus diamantes en mano!', 'warn');
   playUiSound('alert');
   triggerScreenRipple('cyan');
-  if(defensePromptTimer){
-    window.clearTimeout(defensePromptTimer);
-  }
-  defensePromptTimer = window.setTimeout(() => {
-    defensePromptTimer = null;
-    if(!state.pendingDefense || state.pendingDefense.defenderIndex !== defenderIndex || state.defenseSelectionMode) return;
-    showDefensePrompt(defenderIndex);
-  }, 220);
+  const defenderPanel = document.getElementById(`player-panel-${defenderIndex}`);
+  spawnElementSparks(defenderPanel || document.getElementById('tacticalScreen'), 18, 'cyan');
 }
 
 function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
@@ -6751,7 +6678,9 @@ function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
     switchToBattleMusic();
   }
   render();
-  scrollToTopArea('smooth');
+  scrollToTopArea('auto');
+  window.setTimeout(() => scrollToTopArea('auto'), 80);
+  window.setTimeout(() => scrollToTopArea('auto'), 320);
   window.setTimeout(() => {
     triggerBeam();
     triggerCombatCinematic(attackerIdx, withProjectile);
@@ -6812,10 +6741,7 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
   };
   state.selected = [];
   state.defenseSelectionMode = false;
-  if(defensePromptTimer){
-    window.clearTimeout(defensePromptTimer);
-    defensePromptTimer = null;
-  }
+  hideDefenseAlert();
   state.phase = 'Defensa activa';
 
   if(numericDiamonds.length===0){
