@@ -405,13 +405,13 @@
         <div class="control-groups">
           <article class="control-group">
             <h3>VFX de combate</h3>
-            <p>Estas acciones disparan el flujo real de ataque, impacto y victoria dentro del juego incrustado. Los ataques completos ya incluyen el golpe sobre el defensor, la explosión del radar y la bajada visual de defensa/armadura.</p>
+            <p>Estas acciones disparan el flujo real de ataque, impacto y victoria dentro del juego incrustado. Los ataques completos ya incluyen el golpe sobre el defensor, la explosión del radar y la bajada visual de defensa/armadura. El botón de defensa activa abre directamente la escena real con mensaje, sonido y foco superior.</p>
             <div class="control-grid">
               <button class="control-btn primary" type="button" data-action="attack">Ataque completo</button>
               <button class="control-btn secondary" type="button" data-action="attack-projectile">Ataque + proyectil completo</button>
               <button class="control-btn" type="button" data-action="impact-light">Impacto ligero</button>
               <button class="control-btn danger" type="button" data-action="impact-heavy">Impacto pesado</button>
-              <button class="control-btn" type="button" data-action="defense-preview">Defensa activa</button>
+              <button class="control-btn secondary" type="button" data-action="defense-preview">Probar defensa activa</button>
               <button class="control-btn secondary" type="button" data-action="victory">Victoria</button>
             </div>
           </article>
@@ -730,10 +730,11 @@
           break;
         }
         case 'defense-preview': {
-          const snapshot = await callApi(api => api.previewDefense({ totalAttack:8, withProjectile:false }));
+          labState.viewerPlayerIdx = labState.attackerIdx === 0 ? 1 : 0;
+          const snapshot = await callApi(api => api.previewDefense({ attackerIdx: labState.attackerIdx, totalAttack:8, withProjectile:false }));
           syncSnapshot(snapshot);
-          noteSound('Defensa');
-          noteEvent('Ventana de defensa activa');
+          noteSound('Alert');
+          noteEvent('Defensa activa real · mensaje, sonido y foco superior');
           break;
         }
         case 'victory': {

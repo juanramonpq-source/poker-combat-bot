@@ -357,10 +357,31 @@ button.button-live{
   box-shadow: inset 0 0 16px rgba(35,216,255,.12), 0 0 0 1px rgba(255,156,28,.12), 0 0 14px rgba(35,216,255,.12);
   animation:buttonReadyPulse 1.8s ease-in-out infinite;
 }
+#confirmAttackBtn{
+  border-color:rgba(255,108,98,.62);
+  background:linear-gradient(180deg, rgba(104,18,18,.96), rgba(54,10,14,.98));
+  color:#fff4ef;
+  box-shadow:inset 0 0 16px rgba(255,122,92,.16), 0 0 0 1px rgba(255,122,92,.16), 0 0 14px rgba(255,112,46,.08);
+}
+#confirmAttackBtn:hover{
+  box-shadow:inset 0 0 18px rgba(255,142,112,.22), 0 0 18px rgba(255,106,84,.18);
+}
+#confirmAttackBtn.button-live{
+  box-shadow:
+    inset 0 0 18px rgba(255,142,112,.24),
+    0 0 0 1px rgba(255,142,112,.34),
+    0 0 18px rgba(255,96,96,.24),
+    0 0 28px rgba(255,112,46,.18);
+  animation:confirmAttackPulse 1.18s ease-in-out infinite;
+}
 button.button-press{ animation:buttonPress .24s ease; }
 @keyframes buttonReadyPulse{
   0%,100%{ transform:translateY(0); }
   50%{ transform:translateY(-1px); box-shadow: inset 0 0 18px rgba(35,216,255,.18), 0 0 18px rgba(35,216,255,.18); }
+}
+@keyframes confirmAttackPulse{
+  0%,100%{ transform:translateY(0); filter:brightness(1); }
+  50%{ transform:translateY(-1px); filter:brightness(1.08); }
 }
 @keyframes buttonPress{
   0%{ transform:scale(1); }
@@ -1177,6 +1198,20 @@ button:disabled{
 .defense-banner{
   margin-top:6px;border:1px solid rgba(35,216,255,.35);border-radius:8px;padding:6px 8px;background:rgba(35,216,255,.08);
   color:#a6f8ff;font-size:.72rem;
+}
+.defense-banner.active-defense{
+  border-color:rgba(255,118,96,.62);
+  background:linear-gradient(180deg, rgba(62,14,18,.94), rgba(24,8,14,.88));
+  color:#fff2ee;
+  box-shadow:0 0 0 1px rgba(255,128,102,.16), 0 0 18px rgba(255,112,46,.16), inset 0 0 16px rgba(255,122,92,.14);
+  animation:defenseBannerAlert 1.45s ease-in-out infinite;
+}
+.defense-banner.active-defense strong{
+  color:#ffd5cb;
+}
+@keyframes defenseBannerAlert{
+  0%,100%{ transform:translateY(0); filter:brightness(1); }
+  50%{ transform:translateY(-1px); filter:brightness(1.07); }
 }
 .footer-note{margin-top:6px;text-align:center;color:rgba(126,198,215,.55);font-size:.66rem;text-transform:uppercase;letter-spacing:.11em}
 .zone-pulse{animation:zonePulse .8s ease}
@@ -3196,12 +3231,12 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   max-width:360px;
   padding:14px 16px 12px;
   border-radius:18px;
-  border:2px solid rgba(35,216,255,.58);
-  background:linear-gradient(180deg, rgba(10,20,32,.96), rgba(7,14,24,.98));
+  border:2px solid rgba(255,128,102,.62);
+  background:linear-gradient(180deg, rgba(48,14,20,.96), rgba(14,10,20,.98));
   box-shadow:
-    0 0 0 2px rgba(255,178,46,.10),
-    0 0 22px rgba(35,216,255,.16),
-    inset 0 0 18px rgba(35,216,255,.07);
+    0 0 0 2px rgba(255,178,46,.12),
+    0 0 26px rgba(255,112,46,.22),
+    inset 0 0 18px rgba(255,122,92,.10);
   text-align:center;
 }
 .defense-prompt-kicker{
@@ -3213,15 +3248,15 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   margin-bottom:6px;
 }
 .defense-prompt-title{
-  color:#9cf8ff;
-  font-size:1rem;
+  color:#fff3ef;
+  font-size:1.02rem;
   font-weight:1000;
   text-transform:uppercase;
   letter-spacing:.08em;
   margin-bottom:8px;
 }
 .defense-prompt-body{
-  color:#dffcff;
+  color:#ffe7de;
   font-size:.84rem;
   line-height:1.35;
 }
@@ -3937,9 +3972,9 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
           </div>
           <div class="defense-prompt-overlay" id="defensePromptOverlay">
             <div class="defense-prompt-card">
-              <div class="defense-prompt-kicker">Ventana de defensa</div>
-              <div class="defense-prompt-title" id="defensePromptTitle">Jugador 2</div>
-              <div class="defense-prompt-body">Esquiva con combustible de tu mano</div>
+              <div class="defense-prompt-kicker" id="defensePromptKicker">Defensa activa</div>
+              <div class="defense-prompt-title" id="defensePromptTitle">Ataque enemigo previsto</div>
+              <div class="defense-prompt-body" id="defensePromptBody">¡ESQUÍVALO con tus diamantes en mano!</div>
             </div>
           </div>
           <div class="projectile-prompt-overlay" id="projectilePromptOverlay">
@@ -4322,6 +4357,7 @@ const state = {
   lastActionType: null,
   projectileUnlocked: false,
   projectilePromptPlayer: null,
+  postAttackTopFocus: false,
 };
 
 /* ===== ONLINE MULTIPLAYER STATE ===== */
@@ -4335,6 +4371,8 @@ var _ol = {
   socket: null,
   sendTimer: null
 };
+
+let defenseUiCueKey = '';
 
 const singlePlayerAi = {
   timer: null,
@@ -4831,6 +4869,15 @@ function addToast(msg, type='info'){
   stack.appendChild(div);
   setTimeout(() => div.remove(), 3200);
 }
+function getDefenseCueCopy(defender){
+  const name = defender?.name || 'El defensor';
+  return {
+    kicker: 'Defensa activa',
+    title: 'Ataque enemigo previsto',
+    body: `¡ESQUÍVALO con tus diamantes en mano! ${name} puede jugar 1 ♦ numérico desde su mano para reducir el daño.`,
+    banner: `<strong>Ataque enemigo previsto.</strong> ¡ESQUÍVALO con tus diamantes en mano! Selecciona <strong>1 ♦ numérico</strong> y pulsa <strong>Confirmar defensa</strong>, o <strong>No defender</strong>.`
+  };
+}
 function ensureAudio(){
   if(!state.soundOn) return null;
   const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -5219,6 +5266,7 @@ function newGame(){
   state.pendingTurnSfx = null;
   state.attackReadyPromptPlayer = null;
   state.attackReadyPromptActive = false;
+  state.postAttackTopFocus = false;
   state.selected = [];
   state.attackMode = false;
   state.projectileMode = false;
@@ -6425,6 +6473,7 @@ function positionDefensePromptNearPlayer(playerIdx){
   const overlay = document.getElementById('defensePromptOverlay');
   if(!overlay) return;
   const card = overlay.querySelector('.defense-prompt-card');
+  const tacticalScreen = document.getElementById('tacticalScreen');
   const anchorBtn = document.querySelector(`.quick-modify-btn[data-quick-modify="${playerIdx}"]`);
   const playerPanel = document.getElementById(`player-panel-${playerIdx}`);
   const vw = window.innerWidth || document.documentElement.clientWidth;
@@ -6435,7 +6484,11 @@ function positionDefensePromptNearPlayer(playerIdx){
   let left = 24;
   let top = 24;
 
-  if(anchorBtn){
+  if(tacticalScreen){
+    const rect = tacticalScreen.getBoundingClientRect();
+    left = rect.left + rect.width / 2 - cardWidth / 2;
+    top = rect.top + 18;
+  } else if(anchorBtn){
     const rect = anchorBtn.getBoundingClientRect();
     left = rect.left + rect.width / 2 - cardWidth / 2;
     top = rect.top - cardHeight - 16;
@@ -6459,20 +6512,52 @@ function positionDefensePromptNearPlayer(playerIdx){
 
 function showDefensePrompt(playerIdx, callback){
   const overlay = document.getElementById('defensePromptOverlay');
+  const kicker = document.getElementById('defensePromptKicker');
   const title = document.getElementById('defensePromptTitle');
+  const body = document.getElementById('defensePromptBody');
   const player = state.players[playerIdx];
-  if(!overlay || !player || !title){
+  if(!overlay || !player || !title || !body || !kicker){
     if(callback) callback();
     return;
   }
-  title.textContent = player.name;
+  const cue = getDefenseCueCopy(player);
+  kicker.textContent = cue.kicker;
+  title.textContent = cue.title;
+  body.textContent = cue.body;
   positionDefensePromptNearPlayer(playerIdx);
   overlay.classList.add('show');
-  spawnElementSparks(document.getElementById(`player-panel-${playerIdx}`), 18, 'cyan');
+  spawnElementSparks(document.getElementById('tacticalScreen') || document.getElementById(`player-panel-${playerIdx}`), 18, 'cyan');
   window.setTimeout(() => {
     overlay.classList.remove('show');
     if(callback) callback();
   }, 1500);
+}
+
+function maybeCueDefenseActiveUi(){
+  if(!state.pendingDefense){
+    if(defenseUiCueKey){
+      scrollToTopArea('smooth');
+    }
+    defenseUiCueKey = '';
+    return;
+  }
+  const key = `${state.pendingDefense.attackerIndex}:${state.pendingDefense.defenderIndex}:${state.pendingDefense.totalAttack}:${state.turnCount}`;
+  if(key === defenseUiCueKey) return;
+  defenseUiCueKey = key;
+  const defenderIndex = state.pendingDefense.defenderIndex;
+  scrollToTopArea('smooth');
+  addToast('Ataque enemigo previsto', 'danger');
+  addToast('¡ESQUÍVALO con tus diamantes en mano!', 'warn');
+  playUiSound('alert');
+  triggerScreenRipple('cyan');
+  showDefensePrompt(defenderIndex, (!_ol.active)
+    ? () => {
+        if(state.pendingDefense){
+          state.transitionLock = false;
+          render();
+        }
+      }
+    : null);
 }
 
 function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
@@ -6541,7 +6626,7 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
     withProjectile
   };
   state.selected = [];
-  state.phase = 'Defensa';
+  state.phase = 'Defensa activa';
 
   if(numericDiamonds.length===0){
     log(`🛡️ ${defender.name} no tiene diamantes numéricos para defenderse.`);
@@ -6550,30 +6635,9 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
   }
 
   log(`🛡️ ${defender.name} puede responder con 1 ♦ numérico de su mano.`);
-  addToast('Ventana de defensa activa', 'ok');
-  playUiSound('alert');
-  triggerScreenRipple('cyan');
   state.transitionLock = true;
   render();
-  scrollToPlayerPanel(defenderIndex, 'smooth');
-
-  // CRITICAL FIX: In multiplayer, don't auto-close defense window
-  // The Guest needs time to receive the state and respond with confirmDefense/skipDefense
-  if (_ol.active && _ol.role === 'host') {
-    console.log('[ONLINE] Host in defense window - waiting for Guest response, NOT auto-closing');
-    // In multiplayer, keep transitionLock = true until Guest responds via confirmDefense/skipDefense
-    // Those functions will set transitionLock = false and resolve the attack
-    showDefensePrompt(defenderIndex, () => {
-      // Just show the prompt without auto-resolving
-      // The Guest action handlers will resolve when they respond
-    });
-  } else {
-    // Single player: auto-close after timeout
-    showDefensePrompt(defenderIndex, () => {
-      state.transitionLock = false;
-      render();
-    });
-  }
+  maybeCueDefenseActiveUi();
 }
 
 function confirmAttack(projectileOnly=false){
@@ -6691,6 +6755,7 @@ function resolveAttackAfterDefense(defenseCard){
   state.pendingDefense = null;
   state.selected = [];
   state.phase = 'Ataque';
+  state.postAttackTopFocus = true;
 
   runHeaderAttackSequence(pending.attackerIndex, !!pending.withProjectile, () => {
     const result = applyAttack(defenderIdx, totalAttack);
@@ -6862,7 +6927,13 @@ function advanceTurn(){
   if(_ol.active) console.log('[ONLINE] advanceTurn calling render, currentPlayer now:', state.currentPlayer);
   render();
   maybeQueueAttackReadyPrompt(state.currentPlayer);
+  const keepTopFocus = !!state.postAttackTopFocus;
+  state.postAttackTopFocus = false;
   window.setTimeout(() => {
+    if(keepTopFocus){
+      scrollToTopArea('smooth');
+      return;
+    }
     scrollToPlayerPanel(state.currentPlayer, 'smooth');
     window.setTimeout(maybeShowAttackReadyPrompt, 420);
   }, 140);
@@ -7061,15 +7132,18 @@ function renderAttackConsole(){
 
   if(state.pendingDefense){
     const defender = state.players[state.pendingDefense.defenderIndex];
+    const cue = getDefenseCueCopy(defender);
     status.textContent = 'Defensa activa';
-    hint.innerHTML = `${defender.name} puede usar 1 ♦ numérico de su mano para amortiguar el ataque.`;
-    subHint.textContent = 'Selecciona un diamante del defensor y confirma la defensa, o pulsa “No defender”.';
+    hint.innerHTML = `<strong>${cue.title}.</strong> ¡ESQUÍVALO con tus diamantes en mano!`;
+    subHint.textContent = `${defender.name} puede jugar 1 ♦ numérico desde su mano para mitigar el golpe antes del impacto.`;
     defenseBanner.style.display = 'block';
-    defenseBanner.textContent = `Ventana de defensa activa para ${defender.name}. Selecciona 1 ♦ numérico de su mano y pulsa “Confirmar defensa”, o “No defender”.`;
+    defenseBanner.classList.add('active-defense');
+    defenseBanner.innerHTML = cue.banner;
     return;
   }
 
   defenseBanner.style.display = 'none';
+  defenseBanner.classList.remove('active-defense');
 
   if(isSinglePlayerMode() && isAiControlledPlayer(getFocusPlayerIndex())){
     status.textContent = 'CPU pensando';
@@ -7252,9 +7326,9 @@ function updateHints(){
   }
 
   if(state.pendingDefense){
-    if(mainHint) mainHint.innerHTML = 'Fase de defensa: el jugador objetivo puede responder con un diamante de su mano.';
-    if(attackHint) attackHint.innerHTML = 'Ventana de defensa activa: usa 1 ♦ numérico para reducir daño.';
-    if(attackSubHint) attackSubHint.textContent = 'Si no hay diamantes numéricos disponibles, el ataque se resolverá directamente.';
+    if(mainHint) mainHint.innerHTML = 'Ataque enemigo previsto. El jugador objetivo puede esquivarlo con 1 ♦ numérico de su mano.';
+    if(attackHint) attackHint.innerHTML = 'Defensa activa: ¡ESQUÍVALO con tus diamantes en mano!';
+    if(attackSubHint) attackSubHint.textContent = 'Selecciona 1 ♦ numérico y confirma la defensa, o pulsa “No defender”.';
     if(tutorialPanelTitle) tutorialPanelTitle.textContent = 'Tutorial activo · defensa';
     if(tutorialPanelText) tutorialPanelText.textContent = 'El jugador que recibe el ataque puede seleccionar 1 ♦ de su mano para reducir el daño antes de resolver el impacto.';
     if(tutorialPanelTip) tutorialPanelTip.textContent = 'Sin diamantes, el ataque se resolverá directamente.';
@@ -7939,6 +8013,7 @@ function scheduleSinglePlayerAi(delayOverride=null){
 }
 
 function afterRender(){
+  maybeCueDefenseActiveUi();
   if(_ol.active){
     if(_ol.role === 'host') console.log('[ONLINE] afterRender on host, about to queue state send');
     // olHideOpponentHand() no longer needed - hand is hidden server-side in olGetSerializableState()
@@ -7963,9 +8038,13 @@ function render(){
   document.body.classList.toggle('tutorial-guided-active', tutorialIsGuided());
   document.body.classList.toggle('tutorial-guided-busy', tutorialSystem.enabled && tutorialSystem.busy);
   document.getElementById('turnLabel').textContent = state.pendingDefense
-    ? `Defiende: ${state.players[state.pendingDefense.defenderIndex].name}`
+    ? `Defensa · ${state.players[state.pendingDefense.defenderIndex].name}`
     : state.players[state.currentPlayer]?.name || '—';
-  document.getElementById('phaseLabel').textContent = state.winner ? 'Final' : state.phase;
+  document.getElementById('phaseLabel').textContent = state.winner
+    ? 'Final'
+    : state.pendingDefense
+      ? 'Esquiva con ♦'
+      : state.phase;
   document.getElementById('deckCount').textContent = state.deck.length;
   document.getElementById('discardCount').textContent = state.discard.length;
 
@@ -9611,9 +9690,9 @@ function devPreviewImpact({ defenderIdx=1, attackPoints=4 } = {}){
   return devGetSnapshot();
 }
 
-function devPreviewDefense({ totalAttack=8, withProjectile=false } = {}){
+function devPreviewDefense({ attackerIdx=0, totalAttack=8, withProjectile=false } = {}){
   devBootArena();
-  state.currentPlayer = 0;
+  state.currentPlayer = attackerIdx;
   beginDefenseWindow(totalAttack, withProjectile);
   render();
   return devGetSnapshot();
