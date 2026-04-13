@@ -1290,11 +1290,24 @@ button:disabled{
   flex:1 1 0;
   animation:none !important;
   transform:none !important;
+  transition:opacity .15s ease, color .15s ease, box-shadow .15s ease, background .15s ease !important;
 }
 .defense-guide-actions button.button-live{
   animation:none !important;
   transform:none !important;
   box-shadow:0 0 0 1px rgba(255,210,180,.12), 0 0 18px rgba(255,112,46,.24);
+}
+.defense-guide-actions button:hover,
+.defense-guide-actions button:active,
+.defense-guide-actions button:focus-visible{
+  transform:none !important;
+}
+.defense-guide-actions button:hover{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.88),
+    inset 0 -2px 0 rgba(78,99,190,.22),
+    0 4px 0 rgba(12,18,50,.22),
+    0 8px 12px rgba(0,0,0,.10) !important;
 }
 .hand.defense-hand-focus{
   border-color:rgba(92,236,255,.56);
@@ -4812,6 +4825,14 @@ function hideTransientOverlays(){
   ].forEach(id => {
     const overlay = document.getElementById(id);
     if(overlay) overlay.classList.remove('show');
+  });
+}
+function mountFloatingHudToBody(){
+  ['defenseGuideBar'].forEach(id => {
+    const node = document.getElementById(id);
+    if(node && node.parentElement !== document.body){
+      document.body.appendChild(node);
+    }
   });
 }
 function isRunningStandaloneApp(){
@@ -8506,6 +8527,7 @@ function afterRender(){
 
 function render(){
   ensureEnhancedFxDom();
+  mountFloatingHudToBody();
   if(tutorialSystem.enabled) updateTutorialPhase();
   document.body.classList.toggle('victory', !!state.winner);
   document.body.classList.toggle('tutorial-guided-active', tutorialIsGuided());
