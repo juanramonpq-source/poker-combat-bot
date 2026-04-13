@@ -7412,13 +7412,47 @@ const CARD_FILE_RANKS = {
   Q: 'queen',
   K: 'king',
 };
-function buildRealCardImageMarkup(card){
+const DETAILED_CARD_IMAGE_STATE = {
+  preloaded: false,
+  loadedSrcs: new Set(),
+};
+function getRealCardImageSrc(card){
   const suitCode = CARD_FILE_SUITS[card.suit];
   const rankCode = CARD_FILE_RANKS[card.rank];
   if(!suitCode || !rankCode) return '';
-  const src = `assets/cards/hayeah-full/${rankCode}_of_${suitCode}.svg`;
+  return `assets/cards/hayeah-full/${rankCode}_of_${suitCode}.svg`;
+}
+function primeDetailedCardImage(src){
+  if(!src || DETAILED_CARD_IMAGE_STATE.loadedSrcs.has(src)) return;
+  const img = new Image();
+  img.decoding = 'sync';
+  img.loading = 'eager';
+  img.src = src;
+  DETAILED_CARD_IMAGE_STATE.loadedSrcs.add(src);
+}
+function preloadDetailedCardAssets(force = false){
+  if(!force && shouldUseCompactCardLayout()) return;
+  if(DETAILED_CARD_IMAGE_STATE.preloaded && !force) return;
+  Object.values(CARD_FILE_SUITS).forEach(suitCode => {
+    Object.values(CARD_FILE_RANKS).forEach(rankCode => {
+      primeDetailedCardImage(`assets/cards/hayeah-full/${rankCode}_of_${suitCode}.svg`);
+    });
+  });
+  DETAILED_CARD_IMAGE_STATE.preloaded = true;
+}
+function buildRealCardImageElement(card){
+  const src = getRealCardImageSrc(card);
+  if(!src) return null;
+  primeDetailedCardImage(src);
   const safeClass = ['10','J','Q','K','A'].includes(card.rank) ? ' card-real-image-safe' : '';
-  return `<img class="card-real-image${safeClass}" src="${src}" alt="" loading="eager" decoding="async" draggable="false">`;
+  const img = document.createElement('img');
+  img.className = `card-real-image${safeClass}`;
+  img.src = src;
+  img.alt = '';
+  img.loading = 'eager';
+  img.decoding = 'sync';
+  img.draggable = false;
+  return img;
 }
 function createCoreArray(player){
   const arr = [];
@@ -8115,7 +8149,8 @@ function createCardEl(card, playerIdx, zone){
     div.innerHTML = buildCompactCardMarkup(card, suitInfo);
   } else {
     div.classList.add('card-detailed');
-    div.innerHTML = buildRealCardImageMarkup(card);
+    const realCardImage = buildRealCardImageElement(card);
+    if(realCardImage) div.appendChild(realCardImage);
   }
   if(activePlayer) div.addEventListener('click', () => toggleSelect(card.id));
   return div;
@@ -8957,6 +8992,7 @@ document.getElementById('enterGameBtn').addEventListener('click', () => {
 document.getElementById('tutorialBtn').addEventListener('click', startTutorialMode);
 
 window.addEventListener('resize', () => {
+  preloadDetailedCardAssets();
   const overlay = document.getElementById('mechaShowcaseOverlay');
   if(overlay && overlay.classList.contains('show')){
     positionShowcaseNearPlayer(state.currentPlayer, overlay);
@@ -8977,6 +9013,9 @@ window.addEventListener('resize', () => {
   if(figureOverlay && figureOverlay.classList.contains('show')){
     positionShowcaseNearPlayer(state.currentPlayer, figureOverlay);
   }
+});
+window.addEventListener('load', () => {
+  preloadDetailedCardAssets();
 });
 
 // Populate intro screen mecha images — random pair each load
