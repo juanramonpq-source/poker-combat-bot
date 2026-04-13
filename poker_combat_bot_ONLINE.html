@@ -1220,6 +1220,124 @@ button:disabled{
   0%,100%{ transform:translateY(0); filter:brightness(1); }
   50%{ transform:translateY(-1px); filter:brightness(1.07); }
 }
+.defense-guide-bar{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  z-index:1001;
+  width:min(92vw, 720px);
+  padding:14px 16px 12px;
+  border-radius:18px;
+  border:1px solid rgba(255,128,96,.56);
+  background:
+    radial-gradient(circle at top, rgba(255,188,112,.18), transparent 52%),
+    linear-gradient(180deg, rgba(56,14,18,.96), rgba(18,10,20,.96));
+  box-shadow:
+    0 0 0 1px rgba(255,122,92,.12),
+    0 14px 36px rgba(0,0,0,.34),
+    inset 0 0 18px rgba(255,122,92,.12);
+  transform:translate(-50%, calc(100% + 24px));
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:transform .22s ease, opacity .22s ease, visibility .22s ease;
+}
+.defense-guide-bar.show{
+  transform:translate(-50%, 0);
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+.defense-guide-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:6px;
+}
+.defense-guide-kicker{
+  color:#ffcfbe;
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.defense-guide-state{
+  color:#ffd57b;
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.defense-guide-title{
+  color:#fff4ef;
+  font-size:1rem;
+  font-weight:900;
+  line-height:1.2;
+}
+.defense-guide-body{
+  margin-top:4px;
+  color:#ffd7cb;
+  font-size:.83rem;
+  line-height:1.35;
+}
+.defense-guide-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+.defense-guide-actions button{
+  flex:1 1 0;
+}
+.defense-guide-actions button.button-live{
+  box-shadow:0 0 0 1px rgba(255,210,180,.12), 0 0 18px rgba(255,112,46,.24);
+}
+.hand.defense-hand-focus{
+  border-color:rgba(92,236,255,.56);
+  box-shadow:0 0 0 1px rgba(92,236,255,.18), 0 0 22px rgba(35,216,255,.12), inset 0 0 18px rgba(35,216,255,.06);
+}
+.hand.defense-hand-focus .zone-title{
+  color:#cbfbff;
+}
+.card.defense-choice{
+  box-shadow:
+    0 0 0 1px rgba(95,241,255,.38),
+    0 0 16px rgba(35,216,255,.16),
+    inset 0 0 0 1px rgba(255,255,255,.16);
+  animation:defenseChoicePulse 1.3s ease-in-out infinite;
+}
+.card.defense-choice.selected{
+  box-shadow:
+    0 0 0 2px rgba(255,200,120,.48),
+    0 0 20px rgba(255,178,46,.26),
+    inset 0 0 0 1px rgba(255,255,255,.22);
+}
+@keyframes defenseChoicePulse{
+  0%,100%{ transform:translateY(0); filter:brightness(1); }
+  50%{ transform:translateY(-2px); filter:brightness(1.08); }
+}
+@media (max-width: 720px){
+  .defense-guide-bar{
+    bottom:12px;
+    width:min(95vw, 520px);
+    padding:12px 12px 10px;
+    border-radius:16px;
+  }
+  .defense-guide-head{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:4px;
+  }
+  .defense-guide-title{
+    font-size:.93rem;
+  }
+  .defense-guide-body{
+    font-size:.78rem;
+  }
+  .defense-guide-actions{
+    flex-direction:column;
+  }
+}
 .footer-note{margin-top:6px;text-align:center;color:rgba(126,198,215,.55);font-size:.66rem;text-transform:uppercase;letter-spacing:.11em}
 .zone-pulse{animation:zonePulse .8s ease}
 .zone-draw{animation:drawPulse .8s ease}
@@ -2474,6 +2592,58 @@ body.victory .frame{
   color:#fff4c2;
   border-bottom-color:rgba(255,244,194,.7);
 }
+.intro-install-tip{
+  margin:8px auto 0;
+  max-width:560px;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:8px 10px;
+  border-radius:16px;
+  border:1px solid rgba(255,178,46,.28);
+  background:linear-gradient(180deg, rgba(19,33,57,.82), rgba(10,17,30,.9));
+  box-shadow:inset 0 0 14px rgba(35,216,255,.05);
+  text-align:left;
+  position:relative;
+  z-index:1;
+}
+.intro-install-icon{
+  flex:0 0 auto;
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg, rgba(255,207,104,.18), rgba(35,216,255,.14));
+  border:1px solid rgba(255,207,104,.24);
+  color:#ffcf68;
+  box-shadow:0 0 14px rgba(35,216,255,.08);
+}
+.intro-install-icon svg{
+  width:18px;
+  height:18px;
+  display:block;
+}
+.intro-install-text{
+  min-width:0;
+}
+.intro-install-title{
+  color:#ffcf68;
+  font-size:.71rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+}
+.intro-install-copy{
+  margin-top:2px;
+  color:#dffcff;
+  font-size:.69rem;
+  line-height:1.22;
+}
+.intro-install-copy strong{
+  color:#fff4c2;
+}
 @media (max-width: 760px){
   .intro-screen{
     justify-content:center;
@@ -2536,6 +2706,25 @@ body.victory .frame{
   .intro-pill strong{ font-size:.53rem; margin-bottom:2px; letter-spacing:.1em; }
   .intro-menu-copy{ font-size:.72rem; line-height:1.18; max-width:362px; margin:0 auto; }
   .intro-note{ font-size:.69rem; line-height:1.2; max-width:362px; margin:8px auto 0; }
+  .intro-install-tip{
+    max-width:362px;
+    gap:8px;
+    padding:8px 9px;
+    border-radius:14px;
+  }
+  .intro-install-icon{
+    width:30px;
+    height:30px;
+    border-radius:10px;
+  }
+  .intro-install-title{
+    font-size:.64rem;
+    letter-spacing:.12em;
+  }
+  .intro-install-copy{
+    font-size:.64rem;
+    line-height:1.14;
+  }
   #introButtonsMain .intro-enter,
   #introButtonsMain .intro-tutorial,
   .intro-card[data-menu="local"] .intro-enter,
@@ -2567,6 +2756,13 @@ body.victory .frame{
   .intro-title{ width:min(372px, 96%); margin:0 auto -48px; }
   .brand-title-image.intro{ max-width:372px; max-height:112px; }
   .intro-subtitle{ max-width:326px; }
+  .intro-install-tip{
+    max-width:334px;
+    padding:7px 8px;
+  }
+  .intro-install-copy{
+    font-size:.61rem;
+  }
   #introButtonsMain .intro-enter,
   #introButtonsMain .intro-tutorial,
   .intro-card[data-menu="local"] .intro-enter,
@@ -2619,6 +2815,22 @@ body.victory .frame{
   .intro-menu-copy{ display:block; font-size:.68rem; line-height:1.12; max-width:340px; margin:0 auto; }
   .intro-enter, .intro-tutorial{ padding:10px 12px; font-size:.8rem; border-radius:14px; }
   .intro-note{ display:block; font-size:.65rem; line-height:1.12; max-width:338px; margin:6px auto 0; }
+  .intro-install-tip{
+    max-width:338px;
+    margin-top:7px;
+    padding:7px 8px;
+  }
+  .intro-install-icon{
+    width:28px;
+    height:28px;
+  }
+  .intro-install-title{
+    font-size:.6rem;
+  }
+  .intro-install-copy{
+    font-size:.59rem;
+    line-height:1.1;
+  }
 }
 
 .brand-title-image{
@@ -3987,6 +4199,19 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
       </div>
     </div>
     <div class="intro-note">Local: 1 jugador o pantalla compartida • Online: creación de sala en red • <a href="MANUAL_USUARIO.html" target="_blank">📖 Abrir Manual</a> • <a href="mailto:autores@factordual.com">Contacta con el autor</a></div>
+    <div class="intro-install-tip" aria-label="Consejo para instalar la web app">
+      <div class="intro-install-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" role="presentation">
+          <path d="M12 15V4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8.5 7.5 12 4l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 11.5V18a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="intro-install-text">
+        <div class="intro-install-title">Mejor experiencia</div>
+        <div class="intro-install-copy">Instálalo como <strong>web app</strong>. <strong>iPhone/iPad:</strong> Compartir -> Añadir a pantalla de inicio. <strong>Android/PC:</strong> Instalar app desde el navegador.</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -4106,6 +4331,18 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
               <div class="defense-alert-kicker" id="defenseAlertKicker">Defensa activa</div>
               <div class="defense-alert-title" id="defenseAlertTitle">Ataque enemigo previsto</div>
               <div class="defense-alert-body" id="defenseAlertBody">¡ESQUÍVALO con tus diamantes en mano!</div>
+            </div>
+          </div>
+          <div class="defense-guide-bar" id="defenseGuideBar" aria-hidden="true">
+            <div class="defense-guide-head">
+              <div class="defense-guide-kicker">Defensa activa</div>
+              <div class="defense-guide-state" id="defenseGuideState">Elige 1♦</div>
+            </div>
+            <div class="defense-guide-title" id="defenseGuideTitle">Ataque enemigo previsto</div>
+            <div class="defense-guide-body" id="defenseGuideBody">Elige 1♦ de tu mano para esquivar o rechaza la defensa.</div>
+            <div class="defense-guide-actions">
+              <button class="cyan" id="defenseGuidePrimaryBtn" type="button">Seleccionar diamantes</button>
+              <button class="warn" id="defenseGuideSkipBtn" type="button">No defender</button>
             </div>
           </div>
           <div class="projectile-prompt-overlay" id="projectilePromptOverlay">
@@ -4561,6 +4798,7 @@ function hideTransientOverlays(){
     'mechaShowcaseOverlay',
     'defensePromptOverlay',
     'defenseAlertOverlay',
+    'defenseGuideBar',
     'projectilePromptOverlay',
     'attackReadyPromptOverlay',
     'figureBurstPromptOverlay'
@@ -6627,6 +6865,54 @@ function hideDefenseAlert(){
   if(overlay) overlay.classList.remove('show');
 }
 
+function syncDefenseGuideBar(){
+  const bar = document.getElementById('defenseGuideBar');
+  const stateChip = document.getElementById('defenseGuideState');
+  const title = document.getElementById('defenseGuideTitle');
+  const body = document.getElementById('defenseGuideBody');
+  const primary = document.getElementById('defenseGuidePrimaryBtn');
+  const skip = document.getElementById('defenseGuideSkipBtn');
+  if(!bar || !stateChip || !title || !body || !primary || !skip) return;
+
+  if(!state.pendingDefense || state.winner){
+    bar.classList.remove('show');
+    bar.setAttribute('aria-hidden', 'true');
+    primary.disabled = true;
+    skip.disabled = true;
+    primary.classList.remove('button-live');
+    skip.classList.remove('button-live');
+    return;
+  }
+
+  const defender = state.players[state.pendingDefense.defenderIndex];
+  const selectedDefense = state.selected.length === 1 && isNumericDiamondCard(state.selected[0]);
+  const actionAllowed = canUseInteractiveDefenseAction();
+
+  if(!actionAllowed){
+    bar.classList.remove('show');
+    bar.setAttribute('aria-hidden', 'true');
+    primary.disabled = true;
+    skip.disabled = true;
+    primary.classList.remove('button-live');
+    skip.classList.remove('button-live');
+    return;
+  }
+
+  stateChip.textContent = selectedDefense ? 'Confirmar o rechazar' : 'Elige 1♦';
+  title.textContent = 'Ataque enemigo previsto';
+  body.textContent = selectedDefense
+    ? `${defender.name} ha preparado ${cardText(state.selected[0])}. Confirma la defensa o recházala ahora.`
+    : `${defender.name} puede mitigar este golpe. Elige 1♦ numérico de tu mano o pulsa “No defender”.`;
+
+  primary.textContent = selectedDefense ? 'Confirmar defensa' : 'Seleccionar diamantes';
+  primary.disabled = !actionAllowed;
+  skip.disabled = !actionAllowed;
+  primary.classList.toggle('button-live', actionAllowed);
+  skip.classList.toggle('button-live', actionAllowed);
+  bar.classList.add('show');
+  bar.setAttribute('aria-hidden', 'false');
+}
+
 function showDefensePrompt(playerIdx){
   showDefenseAlert(playerIdx);
   spawnElementSparks(document.getElementById(`player-panel-${playerIdx}`) || document.getElementById('tacticalScreen'), 18, 'cyan');
@@ -7092,6 +7378,7 @@ function createPlayerPanel(player, idx){
   const isWinner = state.winner && idx===winnerIdx;
   const isLoser = state.winner && idx!==winnerIdx;
   const isDefenseFocus = !!state.pendingDefense && idx===state.pendingDefense.defenderIndex;
+  const isInteractiveDefenseFocus = !!state.pendingDefense && getInteractivePlayerIndex() === state.pendingDefense.defenderIndex && idx===state.pendingDefense.defenderIndex;
   const handSummary = shouldHideHandForPlayer(idx) ? `${player.hand.length} oculta` : `${player.hand.length} cartas`;
   const panelStatus = isDefenseFocus
     ? 'Ventana de defensa'
@@ -7196,7 +7483,7 @@ function createPlayerPanel(player, idx){
         </div>
 
         <div class="zones-bottom">
-          <div class="frame zone hand" id="hand-zone-${idx}">
+          <div class="frame zone hand ${isInteractiveDefenseFocus ? 'defense-hand-focus' : ''}" id="hand-zone-${idx}">
             <div class="zone-title"><span>Mano</span><span class="zone-value">${handSummary}</span></div>
             <div class="cards" id="hand-${idx}"></div>
           </div>
@@ -7258,10 +7545,10 @@ function renderAttackConsole(){
     const cue = getDefenseCueCopy(defender);
     status.textContent = 'Defensa activa';
     if(state.defenseSelectionMode){
-      hint.innerHTML = '<strong>Selección de defensa.</strong> Elige 1 ♦ numérico de tu mano y confirma la defensa.';
+      hint.innerHTML = '<strong>Selección de defensa.</strong> Elige 1 ♦ numérico de tu mano y confirma la defensa desde la barra inferior o el panel superior.';
       subHint.textContent = `${defender.name} puede reducir el daño con 1 único diamante numérico o rechazar la defensa.`;
     }else{
-      hint.innerHTML = `<strong>${cue.title}.</strong> ¡ESQUÍVALO con tus diamantes en mano!`;
+      hint.innerHTML = `<strong>${cue.title}.</strong> Elige 1 ♦ numérico con <strong>Seleccionar diamantes</strong> o rechaza la defensa.`;
       subHint.textContent = `${defender.name} puede jugar 1 ♦ numérico desde su mano para mitigar el golpe antes del impacto.`;
     }
     defenseBanner.style.display = 'block';
@@ -8245,6 +8532,7 @@ function render(){
   state.players.forEach((player, idx) => maybeQueueFigureBurstPrompt(idx));
 
   updateButtons();
+  syncDefenseGuideBar();
   syncTutorialVisualTargets();
   buildSideTowers();
   flushFxQueue();
@@ -8260,6 +8548,11 @@ function createCardEl(card, playerIdx, zone){
   const interactivePlayer = getInteractivePlayerIndex();
   const tutorialBlocksInteraction = tutorialIsGuided() && interactivePlayer !== 0;
   const activePlayer = playerIdx === interactivePlayer && !state.winner && !tutorialBlocksInteraction;
+  const defenseCandidate = !!state.pendingDefense
+    && playerIdx === state.pendingDefense.defenderIndex
+    && zone === 'hand'
+    && isNumericDiamondCard(card)
+    && activePlayer;
   const div = document.createElement('div');
   const zoneKey = String(zone || card.zone || 'unknown').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
   if(card.suit==='hidden'){
@@ -8272,6 +8565,7 @@ function createCardEl(card, playerIdx, zone){
   div.dataset.cardZone = zone || card.zone || '';
   div.dataset.cardOwner = String(playerIdx);
   if(activePlayer) div.classList.add('clickable');
+  if(defenseCandidate) div.classList.add('defense-choice');
   if(isSelected(card.id)) div.classList.add('selected');
   if(isPendingAttackCard(card.id)) div.classList.add('pending');
   const suitInfo = (SUITS[card.suit] || SUITS_DISPLAY[card.suit] || SUITS.hearts);
@@ -8594,6 +8888,18 @@ document.getElementById('projectileOnlyBtn').addEventListener('click', () => {
 document.getElementById('confirmDefenseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
   confirmDefense();
+});
+document.getElementById('defenseGuidePrimaryBtn').addEventListener('click', () => {
+  if(!canUseInteractiveDefenseAction()) return;
+  if(state.selected.length===1 && isNumericDiamondCard(state.selected[0])){
+    confirmDefense();
+  }else{
+    beginInteractiveDefenseSelection();
+  }
+});
+document.getElementById('defenseGuideSkipBtn').addEventListener('click', () => {
+  if(!canUseInteractiveDefenseAction()) return;
+  skipDefense();
 });
 document.getElementById('defensePromptChooseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
