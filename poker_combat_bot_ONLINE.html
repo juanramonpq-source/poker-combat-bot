@@ -358,27 +358,27 @@ button.button-live{
   animation:buttonReadyPulse 1.8s ease-in-out infinite;
 }
 #confirmAttackBtn{
-  border-color:rgba(255,150,150,.92);
-  background:linear-gradient(180deg, rgba(255,229,229,.98), rgba(255,120,120,.98) 48%, rgba(209,24,24,.98));
-  color:#fff4f1;
-  text-shadow:0 1px 0 rgba(95,0,0,.28);
+  border-color:rgba(255,150,150,.92) !important;
+  background:linear-gradient(180deg, rgba(255,229,229,.98), rgba(255,120,120,.98) 48%, rgba(209,24,24,.98)) !important;
+  color:#fff4f1 !important;
+  text-shadow:0 1px 0 rgba(95,0,0,.28) !important;
   box-shadow:
     inset 0 0 22px rgba(255,255,255,.18),
     0 0 0 1px rgba(255,110,110,.24),
-    0 0 16px rgba(255,72,72,.24);
+    0 0 16px rgba(255,72,72,.24) !important;
 }
 #confirmAttackBtn:hover{
   box-shadow:
     inset 0 0 24px rgba(255,255,255,.24),
     0 0 0 1px rgba(255,188,188,.34),
-    0 0 22px rgba(255,88,88,.34);
+    0 0 22px rgba(255,88,88,.34) !important;
 }
 #confirmAttackBtn.button-live{
   box-shadow:
     inset 0 0 22px rgba(255,255,255,.26),
     0 0 0 2px rgba(255,194,194,.52),
     0 0 20px rgba(255,88,88,.40),
-    0 0 34px rgba(184,24,24,.32);
+    0 0 34px rgba(184,24,24,.32) !important;
   animation:confirmAttackPulse 1.18s ease-in-out infinite;
 }
 button.button-press{ animation:buttonPress .24s ease; }
@@ -4524,6 +4524,7 @@ const state = {
   log: [],
   players: [],
   pendingDefense: null,
+  defenseSelectionMode: false,
   fxQueue: [],
   debug: true,
   soundOn: true,
@@ -4678,6 +4679,7 @@ function returnToMainMenu(){
   state.projectileMode = false;
   state.transitionLock = false;
   state.pendingDefense = null;
+  state.defenseSelectionMode = false;
   state.selected = [];
   state.singleDifficulty = null;
   state.gameMode = 'local';
@@ -5466,6 +5468,7 @@ function newGame(){
   state.tutorialStep = 0;
   state.log = [];
   state.pendingDefense = null;
+  state.defenseSelectionMode = false;
   state.fxQueue = [];
   state.projectileUnlocked = false;
   state.projectilePromptPlayer = null;
@@ -5832,16 +5835,8 @@ function toggleSelect(id){
     state.selected = [];
     state.selected.push(found);
     render();
-    if(tutorialIsGuided()){
-      pulseButton('confirmDefenseBtn');
-      return;
-    }
-    window.setTimeout(() => {
-      if(state.pendingDefense && state.selected.length===1 && state.selected[0].id===found.id){
-        pulseButton('confirmDefenseBtn');
-        confirmDefense();
-      }
-    }, 120);
+    pulseButton('confirmDefenseBtn');
+    notifySelection(`Defensa preparada con ${cardText(found)}. Pulsa Confirmar defensa o No defender.`);
     return;
   }
 
@@ -6703,6 +6698,7 @@ function hideDefensePrompt(){
 function beginInteractiveDefenseSelection(){
   if(!state.pendingDefense) return;
   const defenderIndex = state.pendingDefense.defenderIndex;
+  state.defenseSelectionMode = true;
   hideDefensePrompt();
   state.transitionLock = false;
   render();
@@ -6720,6 +6716,7 @@ function maybeCueDefenseActiveUi(){
     defenseUiCueKey = '';
     return;
   }
+  if(state.defenseSelectionMode) return;
   const key = `${state.pendingDefense.attackerIndex}:${state.pendingDefense.defenderIndex}:${state.pendingDefense.totalAttack}:${state.turnCount}`;
   if(key === defenseUiCueKey) return;
   defenseUiCueKey = key;
@@ -6801,6 +6798,7 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
     withProjectile
   };
   state.selected = [];
+  state.defenseSelectionMode = false;
   state.phase = 'Defensa activa';
 
   if(numericDiamonds.length===0){
@@ -6909,6 +6907,7 @@ function resolveAttackAfterDefense(defenseCard){
   const pending = state.pendingDefense;
   if(!pending) return;
   state.transitionLock = true;
+  state.defenseSelectionMode = false;
   hideDefensePrompt();
 
   const defender = state.players[pending.defenderIndex];
@@ -7315,11 +7314,18 @@ function renderAttackConsole(){
     const defender = state.players[state.pendingDefense.defenderIndex];
     const cue = getDefenseCueCopy(defender);
     status.textContent = 'Defensa activa';
-    hint.innerHTML = `<strong>${cue.title}.</strong> ¡ESQUÍVALO con tus diamantes en mano!`;
-    subHint.textContent = `${defender.name} puede jugar 1 ♦ numérico desde su mano para mitigar el golpe antes del impacto.`;
+    if(state.defenseSelectionMode){
+      hint.innerHTML = '<strong>Selección de defensa.</strong> Elige 1 ♦ numérico de tu mano y confirma la defensa.';
+      subHint.textContent = `${defender.name} puede reducir el daño con 1 único diamante numérico o rechazar la defensa.`;
+    }else{
+      hint.innerHTML = `<strong>${cue.title}.</strong> ¡ESQUÍVALO con tus diamantes en mano!`;
+      subHint.textContent = `${defender.name} puede jugar 1 ♦ numérico desde su mano para mitigar el golpe antes del impacto.`;
+    }
     defenseBanner.style.display = 'block';
     defenseBanner.classList.add('active-defense');
-    defenseBanner.innerHTML = cue.banner;
+    defenseBanner.innerHTML = state.defenseSelectionMode
+      ? '<strong>Selección de defensa.</strong> Elige <strong>1 ♦ numérico</strong> en tu mano y pulsa <strong>Confirmar defensa</strong>, o usa <strong>No defender</strong>.'
+      : cue.banner;
     return;
   }
 
@@ -8930,13 +8936,25 @@ function tutorialRunOpponentPass(nextStepIndex, statusText){
     }
 
     const opponent = state.players[1];
-    if(nextStepIndex===7 && opponent.armor.length){
+    if(nextStepIndex===7){
       const armorDump = [...opponent.armor];
-      opponent.armor = [];
-      armorDump.forEach(card => state.discard.push(card));
+      const defenseTrim = opponent.defense
+        .filter(card => card.id === TUTORIAL_CARD_IDS.p1DefenseC)
+        .sort((a, b) => b.value - a.value);
+      if(armorDump.length){
+        opponent.armor = [];
+        armorDump.forEach(card => state.discard.push(card));
+      }
+      if(defenseTrim.length){
+        opponent.defense = opponent.defense.filter(card => !defenseTrim.some(trimmed => trimmed.id === card.id));
+        defenseTrim.forEach(card => state.discard.push(card));
+      }
       setBestFlexTargets(opponent);
-      log(`🎓 ${opponent.name} abre el blindaje para que practiques el remate con proyectil: ${armorDump.map(cardText).join(', ')}.`);
-      addToast('Blindaje del instructor expuesto', 'warn');
+      const exposedParts = [...armorDump, ...defenseTrim];
+      if(exposedParts.length){
+        log(`🎓 ${opponent.name} abre el blindaje y expone el núcleo para que practiques el remate con proyectil: ${exposedParts.map(cardText).join(', ')}.`);
+        addToast('Núcleo del instructor expuesto', 'warn');
+      }
     }
     state.selected = [];
     state.lastActionType = 'pass';
