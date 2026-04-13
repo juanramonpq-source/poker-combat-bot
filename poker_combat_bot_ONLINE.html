@@ -1246,7 +1246,6 @@ button:disabled{
   transform:translate(-50%, 0);
   opacity:1;
   visibility:visible;
-  pointer-events:auto;
 }
 .defense-guide-head{
   display:flex;
@@ -1285,11 +1284,16 @@ button:disabled{
   display:flex;
   gap:10px;
   margin-top:12px;
+  pointer-events:auto;
 }
 .defense-guide-actions button{
   flex:1 1 0;
+  animation:none !important;
+  transform:none !important;
 }
 .defense-guide-actions button.button-live{
+  animation:none !important;
+  transform:none !important;
   box-shadow:0 0 0 1px rgba(255,210,180,.12), 0 0 18px rgba(255,112,46,.24);
 }
 .hand.defense-hand-focus{
@@ -2643,6 +2647,9 @@ body.victory .frame{
 }
 .intro-install-copy strong{
   color:#fff4c2;
+}
+.standalone-installed .intro-install-tip{
+  display:none !important;
 }
 @media (max-width: 760px){
   .intro-screen{
@@ -4806,6 +4813,21 @@ function hideTransientOverlays(){
     const overlay = document.getElementById(id);
     if(overlay) overlay.classList.remove('show');
   });
+}
+function isRunningStandaloneApp(){
+  const nav = window.navigator || {};
+  const iosStandalone = nav.standalone === true;
+  const refStandalone = typeof document.referrer === 'string' && document.referrer.startsWith('android-app://');
+  let displayStandalone = false;
+  try{
+    displayStandalone = !!window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+  }catch(_err){
+    displayStandalone = false;
+  }
+  return iosStandalone || refStandalone || displayStandalone;
+}
+function syncIntroInstallTip(){
+  document.body.classList.toggle('standalone-installed', isRunningStandaloneApp());
 }
 function resetOnlineLobbyUi(){
   const status = document.getElementById('olStatus');
@@ -9474,7 +9496,15 @@ window.addEventListener('resize', () => {
 });
 window.addEventListener('load', () => {
   preloadDetailedCardAssets();
+  syncIntroInstallTip();
+  try{
+    const displayMode = window.matchMedia('(display-mode: standalone)');
+    if(displayMode && typeof displayMode.addEventListener === 'function'){
+      displayMode.addEventListener('change', syncIntroInstallTip);
+    }
+  }catch(_err){}
 });
+window.addEventListener('pageshow', syncIntroInstallTip);
 
 // Populate intro screen mecha images — random pair each load
 (function(){
@@ -10279,6 +10309,7 @@ window.__pocobotDev = {
   }
 };
 
+syncIntroInstallTip();
 render();
 
 /* ========== ONLINE MULTIPLAYER CODE ========== */
