@@ -1281,10 +1281,7 @@ button:disabled{
   line-height:1.35;
 }
 .defense-guide-actions{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-  pointer-events:auto;
+  display:none !important;
 }
 .defense-guide-actions button{
   flex:1 1 0;
@@ -1328,6 +1325,75 @@ button:disabled{
     0 0 0 2px rgba(255,200,120,.48),
     0 0 20px rgba(255,178,46,.26),
     inset 0 0 0 1px rgba(255,255,255,.22);
+}
+.defense-inline-guide{
+  margin-bottom:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,128,96,.46);
+  background:
+    radial-gradient(circle at top, rgba(255,188,112,.14), transparent 56%),
+    linear-gradient(180deg, rgba(46,14,18,.92), rgba(15,10,20,.94));
+  box-shadow:
+    0 0 0 1px rgba(255,122,92,.10),
+    0 0 16px rgba(255,112,46,.12),
+    inset 0 0 16px rgba(255,122,92,.08);
+}
+.defense-inline-guide.ready{
+  border-color:rgba(255,206,118,.56);
+  box-shadow:
+    0 0 0 1px rgba(255,206,118,.12),
+    0 0 18px rgba(255,178,46,.16),
+    inset 0 0 16px rgba(255,200,120,.08);
+}
+.defense-inline-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.defense-inline-title{
+  color:#ffcfbe;
+  font-size:.68rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+}
+.defense-inline-state{
+  color:#ffd57b;
+  font-size:.64rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.defense-inline-body{
+  margin-top:6px;
+  color:#fff1ea;
+  font-size:.74rem;
+  line-height:1.28;
+}
+.defense-inline-actions{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+.defense-inline-actions button{
+  flex:1 1 0;
+  transform:none !important;
+}
+.defense-inline-actions button:hover,
+.defense-inline-actions button:active,
+.defense-inline-actions button:focus-visible{
+  transform:none !important;
+}
+@media (max-width: 760px){
+  .defense-inline-guide{
+    padding:9px 10px;
+    border-radius:12px;
+  }
+  .defense-inline-actions{
+    flex-direction:column;
+  }
 }
 @keyframes defenseChoicePulse{
   0%,100%{ transform:translateY(0); filter:brightness(1); }
@@ -7422,6 +7488,7 @@ function createPlayerPanel(player, idx){
   const isLoser = state.winner && idx!==winnerIdx;
   const isDefenseFocus = !!state.pendingDefense && idx===state.pendingDefense.defenderIndex;
   const isInteractiveDefenseFocus = !!state.pendingDefense && getInteractivePlayerIndex() === state.pendingDefense.defenderIndex && idx===state.pendingDefense.defenderIndex;
+  const selectedDefenseCard = isInteractiveDefenseFocus && state.selected.length===1 && isNumericDiamondCard(state.selected[0]) ? state.selected[0] : null;
   const handSummary = shouldHideHandForPlayer(idx) ? `${player.hand.length} oculta` : `${player.hand.length} cartas`;
   const panelStatus = isDefenseFocus
     ? 'Ventana de defensa'
@@ -7528,6 +7595,23 @@ function createPlayerPanel(player, idx){
         <div class="zones-bottom">
           <div class="frame zone hand ${isInteractiveDefenseFocus ? 'defense-hand-focus' : ''}" id="hand-zone-${idx}">
             <div class="zone-title"><span>Mano</span><span class="zone-value">${handSummary}</span></div>
+            ${isInteractiveDefenseFocus ? `
+              <div class="defense-inline-guide ${selectedDefenseCard ? 'ready' : ''}">
+                <div class="defense-inline-header">
+                  <div class="defense-inline-title">Defensa activa</div>
+                  <div class="defense-inline-state">${selectedDefenseCard ? 'Confirmar o rechazar' : 'Elige 1♦'}</div>
+                </div>
+                <div class="defense-inline-body">
+                  ${selectedDefenseCard
+                    ? `Defensa preparada con <strong>${cardText(selectedDefenseCard)}</strong>. Confirma la defensa o recházala ahora.`
+                    : 'Selecciona 1♦ numérico de tu mano para esquivar el ataque. Si no quieres defenderte, pulsa “No defender”.'}
+                </div>
+                <div class="defense-inline-actions">
+                  <button class="cyan defense-inline-primary" type="button" data-defense-inline="primary">${selectedDefenseCard ? 'Confirmar defensa' : 'Seleccionar diamantes'}</button>
+                  <button class="warn defense-inline-skip" type="button" data-defense-inline="skip">No defender</button>
+                </div>
+              </div>
+            ` : ''}
             <div class="cards" id="hand-${idx}"></div>
           </div>
         </div>
@@ -8960,6 +9044,23 @@ document.getElementById('skipDefenseBtn').addEventListener('click', () => {
 
 document.addEventListener('click', (event) => {
   ensureAudio();
+
+  const defenseInlinePrimary = event.target.closest('[data-defense-inline="primary"]');
+  if(defenseInlinePrimary){
+    if(!canUseInteractiveDefenseAction()) return;
+    pulseButton(defenseInlinePrimary);
+    if(state.selected.length===1 && isNumericDiamondCard(state.selected[0])) confirmDefense();
+    else beginInteractiveDefenseSelection();
+    return;
+  }
+
+  const defenseInlineSkip = event.target.closest('[data-defense-inline="skip"]');
+  if(defenseInlineSkip){
+    if(!canUseInteractiveDefenseAction()) return;
+    pulseButton(defenseInlineSkip);
+    skipDefense();
+    return;
+  }
 
   const attackBtn = event.target.closest('.quick-attack-btn');
   if(attackBtn){
