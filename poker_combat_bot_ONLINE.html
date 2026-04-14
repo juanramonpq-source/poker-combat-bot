@@ -8217,7 +8217,37 @@ function aiEvaluateCardUtility(card, player){
   if(isNumericDiamondCard(card)) score += 16;
   return score;
 }
-function aiEvaluateBoardState(player){
+function aiEstimateThreatPotential(player){
+  if(!player) return 0;
+  const playableAttackCards = player.attack.filter(isPlayableProjectileCard);
+  const bestProjectile = state.projectileUnlocked && playableAttackCards.length
+    ? Math.max(...playableAttackCards.map(card => card.value))
+    : 0;
+  const mainThreat = playerCanAttack(player)
+    ? Math.min(sumCards(playableAttackCards), sumCards(player.fuel) * 2)
+    : 0;
+  return Math.max(mainThreat, bestProjectile);
+}
+function aiEstimateDurability(player){
+  if(!player) return 0;
+  return sumCards(player.defense) * 1.35 + sumCards(player.armor);
+}
+function aiBuildHardPressureProfile(player, opponent){
+  const selfThreat = aiEstimateThreatPotential(player);
+  const enemyThreat = aiEstimateThreatPotential(opponent);
+  const selfDurability = aiEstimateDurability(player);
+  const enemyDurability = aiEstimateDurability(opponent);
+  return {
+    selfThreat,
+    enemyThreat,
+    selfDurability,
+    enemyDurability,
+    underPressure: enemyThreat >= Math.max(8, selfDurability * 0.72),
+    canThreatenKillSoon: selfThreat >= Math.max(1, sumCards(opponent?.defense || [])),
+    enemyIsFragile: enemyDurability <= Math.max(9, selfThreat + 4)
+  };
+}
+function aiEvaluateBoardState(player, opponent=null, difficulty='easy'){
   const build = getBuildStatus(player);
   const pilotReq = getPilotCombatRequirement(player);
   let score = 0;
@@ -8239,9 +8269,21 @@ function aiEvaluateBoardState(player){
   if(player.core.pilot && player.core.pilot.suit !== 'diamonds'){
     score += countSuit(playerStatsList(player), player.core.pilot.suit) * 9;
   }
+  if(difficulty === 'hard' && opponent){
+    const pressure = aiBuildHardPressureProfile(player, opponent);
+    score += pressure.selfThreat * 8.2;
+    score += Math.min(sumCards(player.fuel), 12) * 1.8;
+    if(pressure.underPressure){
+      score += sumCards(player.defense) * 1.05;
+      score += sumCards(player.armor) * 0.82;
+      score -= Math.max(0, pressure.enemyThreat - pressure.selfDurability) * 6.4;
+    }
+    if(pressure.canThreatenKillSoon) score += 48;
+    if(pressure.enemyIsFragile) score += 28;
+  }
   return score;
 }
-function aiFindBestSwapSelection(player, currentScore){
+function aiFindBestSwapSelection(player, currentScore, opponent=null, difficulty='easy'){
   let best = null;
   player.hand.forEach(handCard => {
     const naturalZone = getCardNaturalZone(handCard);
@@ -8256,7 +8298,7 @@ function aiFindBestSwapSelection(player, currentScore){
       simBoard.splice(removeIndex, 1);
       const placed = aiPlaceCardSilently(sim, handCard, naturalZone);
       if(!placed.ok) return;
-      const score = aiEvaluateBoardState(sim) + (handCard.value - boardCard.value) * 4;
+      const score = aiEvaluateBoardState(sim, opponent, difficulty) + (handCard.value - boardCard.value) * 4;
       const gain = score - currentScore;
       if(!best || gain > best.gain){
         best = {
@@ -8286,9 +8328,10 @@ function aiFindEasyModifySelection(player){
   return aiFindBestSwapSelection(player, aiEvaluateBoardState(player));
 }
 function aiFindHardModifySelection(player){
+  const opponent = state.players[1 - state.currentPlayer];
   const opsLimit = Math.min(state.turnCount === 1 ? 3 : 2, player.hand.length);
-  const currentScore = aiEvaluateBoardState(player);
-  let best = aiFindBestSwapSelection(player, currentScore);
+  const currentScore = aiEvaluateBoardState(player, opponent, 'hard');
+  let best = aiFindBestSwapSelection(player, currentScore, opponent, 'hard');
 
   for(let count=1; count<=opsLimit; count++){
     aiGetCombinations(player.hand, count, count).forEach(combo => {
@@ -8301,7 +8344,7 @@ function aiFindHardModifySelection(player){
           if(!placed.ok) ok = false;
         });
         if(!ok) return;
-        const score = aiEvaluateBoardState(sim);
+        const score = aiEvaluateBoardState(sim, opponent, 'hard');
         const gain = score - currentScore;
         if(!best || gain > best.gain){
           best = {
@@ -8345,9 +8388,32 @@ function aiSimulateAttackOutcome(defender, attackPoints){
     }
   }
 
+  const remainingArmorValue = sumCards(armor);
+  const remainingDefenseValue = sumCards(defense);
+  const overkill = Math.max(0, remaining);
   const wouldWin = defender.defense.length > 0 && destroyedDefenseCount >= defender.defense.length;
   const score = (wouldWin ? 1200 : 0) + destroyedDefenseCount * 220 + destroyedArmorCount * 52 + attackPoints * 1.8;
-  return { destroyedArmorCount, destroyedDefenseCount, wouldWin, score };
+  return { destroyedArmorCount, destroyedDefenseCount, wouldWin, score, remainingArmorValue, remainingDefenseValue, overkill };
+}
+function aiScoreHardAttackPlan(player, defender, plan){
+  const fuelCards = plan.selected.filter(card => card.zone === 'fuel' || card.zone === 'armor');
+  const armorFuelValue = sumCards(fuelCards.filter(card => card.zone === 'armor'));
+  const fuelValue = sumCards(fuelCards);
+  const reserveThreat = Math.max(0, sumCards(player.attack) - (plan.projectileValue || 0));
+  const reserveShield = Math.max(0, sumCards(player.defense) + sumCards(player.armor) - armorFuelValue);
+  const defenderBuffer = sumCards(defender.armor) + sumCards(defender.defense);
+  const wastedAttack = Math.max(0, plan.totalAttack - defenderBuffer);
+  let score = plan.outcome.score;
+  score += reserveThreat * 1.35;
+  score += reserveShield * 0.52;
+  score -= fuelValue * 1.1;
+  score -= armorFuelValue * 3.2;
+  score -= wastedAttack * 1.8;
+  if(plan.outcome.wouldWin) score += 180;
+  if(plan.outcome.destroyedDefenseCount > 0) score += 56;
+  if(plan.outcome.destroyedArmorCount > 0 && !plan.outcome.destroyedDefenseCount) score += 20;
+  if(plan.projectileOnly && !plan.outcome.destroyedArmorCount && !plan.outcome.destroyedDefenseCount) score -= 22;
+  return score;
 }
 function aiChooseBestAttackPlan(player, difficulty){
   const canMainAttack = playerCanAttack(player);
@@ -8374,6 +8440,7 @@ function aiChooseBestAttackPlan(player, difficulty){
             projectileMode: false,
             projectileOnly: false,
             totalAttack: totalMain,
+            projectileValue: 0,
             outcome,
             score: outcome.score - fuelCards.length * 4 - attackCards.length * 2
           });
@@ -8390,6 +8457,7 @@ function aiChooseBestAttackPlan(player, difficulty){
               projectileMode: true,
               projectileOnly: false,
               totalAttack,
+              projectileValue: projectileCard.value,
               outcome,
               score: outcome.score - fuelCards.length * 5 - mainCards.length * 2 - 6
             });
@@ -8407,6 +8475,7 @@ function aiChooseBestAttackPlan(player, difficulty){
         projectileMode: false,
         projectileOnly: true,
         totalAttack: projectileCard.value,
+        projectileValue: projectileCard.value,
         outcome,
         score: outcome.score - 4
       });
@@ -8417,6 +8486,9 @@ function aiChooseBestAttackPlan(player, difficulty){
   if(difficulty === 'easy'){
     return plans.sort((a,b) => b.totalAttack - a.totalAttack || b.score - a.score)[0];
   }
+  plans.forEach(plan => {
+    plan.score = aiScoreHardAttackPlan(player, defender, plan);
+  });
   return plans.sort((a,b) => b.score - a.score || b.totalAttack - a.totalAttack)[0];
 }
 function aiChooseDefenseCard(defender, difficulty){
@@ -8447,8 +8519,15 @@ function aiChooseDiamondDrawCard(player, difficulty, attackPlan, modifyPlan){
   if(!diamonds.length) return null;
   if(attackPlan && attackPlan.outcome && attackPlan.outcome.wouldWin) return null;
   if(modifyPlan && modifyPlan.gain > 18) return null;
+  const opponent = state.players[1 - state.currentPlayer];
   if(getBuildStatus(player).combatReady && player.fuel.length >= 2 && difficulty === 'hard'){
+    const pressure = aiBuildHardPressureProfile(player, opponent);
+    if(pressure.underPressure && player.hand.filter(isNumericDiamondCard).length <= 2) return null;
     return [...diamonds].sort((a,b) => a.value - b.value)[0];
+  }
+  if(difficulty === 'hard'){
+    if(!player.core.pilot || !player.core.copilot) return [...diamonds].sort((a,b) => b.value - a.value)[0];
+    if(player.hand.length <= 3) return [...diamonds].sort((a,b) => b.value - a.value)[0];
   }
   return [...diamonds].sort((a,b) => b.value - a.value)[0];
 }
@@ -8463,7 +8542,11 @@ function aiShouldUseFigureBurst(player, difficulty, modifyPlan, attackPlan){
   if(!hasFigureBurstCondition(player)) return false;
   if(attackPlan && attackPlan.outcome && attackPlan.outcome.wouldWin) return false;
   if(modifyPlan && modifyPlan.gain > 18) return false;
-  return difficulty === 'hard' ? !playerCanAttack(player) : player.hand.length >= 5;
+  if(difficulty === 'hard'){
+    if(!player.core.pilot || !player.core.copilot) return true;
+    return !playerCanAttack(player) || player.hand.length <= 4 || !modifyPlan || modifyPlan.gain < 12;
+  }
+  return player.hand.length >= 5;
 }
 function aiCanExecuteAttackPlan(player, attackPlan){
   if(!player || !attackPlan) return false;
@@ -8495,18 +8578,28 @@ function runSinglePlayerAiDefense(){
 }
 function runSinglePlayerAiTurn(){
   const player = state.players[state.currentPlayer];
+  const opponent = state.players[1 - state.currentPlayer];
   const difficulty = state.singleDifficulty || 'easy';
   const attackPlan = aiChooseBestAttackPlan(player, difficulty);
   const modifyPlan = difficulty === 'hard' ? aiFindHardModifySelection(player) : aiFindEasyModifySelection(player);
   const modifyGain = modifyPlan?.gain || 0;
+  const hardPressure = difficulty === 'hard' ? aiBuildHardPressureProfile(player, opponent) : null;
   const shouldAttackFirst = !!attackPlan && (
     attackPlan.outcome.wouldWin ||
     attackPlan.outcome.destroyedDefenseCount > 0 ||
     !modifyPlan ||
-    (difficulty === 'hard' ? attackPlan.score >= modifyGain + 28 : attackPlan.outcome.destroyedArmorCount > 0)
+    (difficulty === 'hard'
+      ? (!hardPressure?.underPressure && attackPlan.score >= modifyGain + 22)
+        || (hardPressure?.canThreatenKillSoon && attackPlan.score >= modifyGain + 8)
+      : attackPlan.outcome.destroyedArmorCount > 0)
   );
 
   if(shouldAttackFirst && aiTryAttackPlan(player, attackPlan)){
+    return;
+  }
+  if(difficulty === 'hard' && hardPressure?.underPressure && modifyPlan && modifyPlan.selected.length && modifyGain >= 8){
+    state.selected = dedupeSelectedCards(modifyPlan.selected);
+    modifyMecha();
     return;
   }
   if(modifyPlan && modifyPlan.selected.length){
