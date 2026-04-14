@@ -4798,6 +4798,7 @@ const state = {
   debug: true,
   soundOn: true,
   audioCtx: null,
+  bgmMenu: null,
   bgm1: null,
   bgm2: null,
   musicPhase: 'none',
@@ -4861,6 +4862,7 @@ function getFocusPlayerIndex(){
 function hideIntroScreen(){
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.add('hidden');
+  if(state.musicPhase === 'menu') pauseMusic(state.bgmMenu, false);
 }
 function showIntroMenu(menuKey='root'){
   const introCard = document.querySelector('.intro-card');
@@ -4878,6 +4880,7 @@ function showIntroScreen(menuKey='root'){
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.remove('hidden');
   showIntroMenu(menuKey);
+  startMenuMusic(false);
 }
 function hideTransientOverlays(){
   [
@@ -5372,8 +5375,9 @@ function ensureAudio(){
 }
 
 /* ===== EMBEDDED AUDIO DATA ===== */
-const AUDIO_BGM_1_URI = "assets/audio_menu_cyberpunk_city.mp3";
+const AUDIO_BGM_1_URI = "assets/audio_01.mp3";
 const AUDIO_BGM_2_URI = "assets/audio_02.mp3";
+const AUDIO_BGM_MENU_URI = "assets/Titanium Gears.mp3";
 const AUDIO_SFX_URIS = {
   uiClick: "assets/sfx/ui_click.wav",
   shuffle: "assets/sfx/card_shuffle.wav",
@@ -5412,11 +5416,17 @@ function playImpactExplosion(heavy=false){
 }
 
 function ensureMusicElements(){
+  if(!state.bgmMenu){
+    state.bgmMenu = new Audio(AUDIO_BGM_MENU_URI);
+    state.bgmMenu.loop = true;
+    state.bgmMenu.preload = 'auto';
+    state.bgmMenu.volume = 0.28;
+  }
   if(!state.bgm1){
     state.bgm1 = new Audio(AUDIO_BGM_1_URI);
     state.bgm1.loop = true;
     state.bgm1.preload = 'auto';
-    state.bgm1.volume = 0.24;
+    state.bgm1.volume = 0.30;
   }
   if(!state.bgm2){
     state.bgm2 = new Audio(AUDIO_BGM_2_URI);
@@ -5433,10 +5443,12 @@ function pauseMusic(audio, reset=false){
   }catch(e){}
 }
 function stopAllMusic(reset=true){
+  pauseMusic(state.bgmMenu, reset);
   pauseMusic(state.bgm1, reset);
   pauseMusic(state.bgm2, reset);
 }
 function getActiveMusic(){
+  if(state.musicPhase === 'menu') return state.bgmMenu;
   if(state.musicPhase === 'battle') return state.bgm2;
   if(state.musicPhase === 'intro') return state.bgm1;
   return null;
@@ -5463,36 +5475,69 @@ function playMusicTrack(audio, restart=false){
 function startIntroMusic(forceRestart=false){
   ensureMusicElements();
   state.musicPhase = 'intro';
+  pauseMusic(state.bgmMenu, true);
   pauseMusic(state.bgm2, true);
   playMusicTrack(state.bgm1, forceRestart);
+}
+function startMenuMusic(forceRestart=false){
+  const intro = document.getElementById('introScreen');
+  if(!intro || intro.classList.contains('hidden')) return;
+  ensureMusicElements();
+  state.musicPhase = 'menu';
+  pauseMusic(state.bgm1, true);
+  pauseMusic(state.bgm2, true);
+  playMusicTrack(state.bgmMenu, forceRestart);
 }
 function switchToBattleMusic(){
   ensureMusicElements();
   if(state.firstAttackTriggered) return;
   state.firstAttackTriggered = true;
   state.musicPhase = 'battle';
+  pauseMusic(state.bgmMenu, true);
   pauseMusic(state.bgm1, true);
   playMusicTrack(state.bgm2, true);
 }
 function syncMusicToState(){
   ensureMusicElements();
   if(!state.soundOn){
+    pauseMusic(state.bgmMenu, false);
     pauseMusic(state.bgm1, false);
     pauseMusic(state.bgm2, false);
     return;
   }
+  const intro = document.getElementById('introScreen');
+  const introVisible = !!intro && !intro.classList.contains('hidden');
+  if(introVisible && !state.gameStarted){
+    pauseMusic(state.bgm1, false);
+    pauseMusic(state.bgm2, false);
+    playMusicTrack(state.bgmMenu, false);
+    state.musicPhase = 'menu';
+    return;
+  }
   if(!state.gameStarted || state.winner){
+    pauseMusic(state.bgmMenu, false);
     pauseMusic(state.bgm1, false);
     pauseMusic(state.bgm2, false);
     return;
   }
   if(state.musicPhase === 'battle'){
+    pauseMusic(state.bgmMenu, false);
     pauseMusic(state.bgm1, false);
     playMusicTrack(state.bgm2, false);
   }else if(state.musicPhase === 'intro'){
+    pauseMusic(state.bgmMenu, false);
     pauseMusic(state.bgm2, false);
     playMusicTrack(state.bgm1, false);
+  }else if(state.musicPhase === 'menu'){
+    pauseMusic(state.bgm1, false);
+    pauseMusic(state.bgm2, false);
+    playMusicTrack(state.bgmMenu, false);
   }
+}
+function maybeResumeMenuMusic(){
+  const intro = document.getElementById('introScreen');
+  if(!state.soundOn || state.gameStarted || !intro || intro.classList.contains('hidden')) return;
+  startMenuMusic(false);
 }
 function playTone(freq, duration=.08, type='square', volume=.025, slideTo=null){
   const ctx = ensureAudio();
@@ -9713,6 +9758,7 @@ window.addEventListener('resize', () => {
 window.addEventListener('load', () => {
   preloadDetailedCardAssets();
   syncIntroInstallTip();
+  startMenuMusic(false);
   try{
     const displayMode = window.matchMedia('(display-mode: standalone)');
     if(displayMode && typeof displayMode.addEventListener === 'function'){
@@ -9721,6 +9767,8 @@ window.addEventListener('load', () => {
   }catch(_err){}
 });
 window.addEventListener('pageshow', syncIntroInstallTip);
+window.addEventListener('pointerdown', maybeResumeMenuMusic, { passive:true });
+window.addEventListener('keydown', maybeResumeMenuMusic);
 
 // Populate intro screen mecha images — random pair each load
 (function(){
@@ -10457,6 +10505,7 @@ function devSetAttacker(playerIdx=0){
 function devPrimeAudio(){
   ensureAudio();
   ensureSfxBank();
+  ensureMusicElements();
   return { soundOn: state.soundOn, ready: true };
 }
 
@@ -10527,6 +10576,7 @@ window.__pocobotDev = {
 
 syncIntroInstallTip();
 render();
+startMenuMusic(false);
 
 /* ========== ONLINE MULTIPLAYER CODE ========== */
 
@@ -10905,7 +10955,7 @@ function olSendAction(action) {
 
 function olGetSerializableState() {
   var fullState = JSON.parse(JSON.stringify(state, function(k, v) {
-    if (k === 'bgm1' || k === 'bgm2') return undefined;
+    if (k === 'bgmMenu' || k === 'bgm1' || k === 'bgm2') return undefined;
     if (k === 'selected') return undefined; // CRITICAL: Don't sync card selection to other player
     if (typeof v === 'function') return undefined;
     if (v instanceof HTMLElement) return undefined;
