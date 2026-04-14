@@ -334,6 +334,24 @@
       pointer-events:none;
       overflow:hidden;
     }
+    .story-map-stage[data-scene="hangar"]{
+      background:
+        radial-gradient(circle at 14% 18%, rgba(111,214,255,.18), transparent 18%),
+        radial-gradient(circle at 28% 74%, rgba(255,181,113,.14), transparent 18%),
+        linear-gradient(180deg, #18386c 0%, #102848 26%, #0a1727 58%, #07111f 100%);
+    }
+    .story-map-stage[data-scene="camp"]{
+      background:
+        radial-gradient(circle at 54% 26%, rgba(255,110,100,.2), transparent 18%),
+        radial-gradient(circle at 50% 54%, rgba(255,181,113,.12), transparent 20%),
+        linear-gradient(180deg, #2c2030 0%, #251725 26%, #111926 58%, #08121e 100%);
+    }
+    .story-map-stage[data-scene="protocol"]{
+      background:
+        radial-gradient(circle at 85% 12%, rgba(255,244,180,.2), transparent 22%),
+        radial-gradient(circle at 88% 22%, rgba(146,246,255,.14), transparent 18%),
+        linear-gradient(180deg, #16253f 0%, #122034 22%, #09131f 56%, #050c15 100%);
+    }
     .story-map-world::before{
       content:"";
       position:absolute;
@@ -428,6 +446,236 @@
     .story-map-sector-a{left:8%;top:8%}
     .story-map-sector-b{left:42%;top:14%}
     .story-map-sector-c{right:10%;top:18%}
+    .story-landmark{
+      display:none;
+    }
+    .story-landmark.is-completed{
+      opacity:.7;
+    }
+    .story-landmark.is-active{
+      opacity:1;
+      filter:drop-shadow(0 0 20px rgba(146,246,255,.18));
+    }
+    .story-landmark-hangar{
+      left:4%;
+      bottom:17%;
+      width:208px;
+      height:170px;
+      filter:drop-shadow(0 20px 22px rgba(0,0,0,.26));
+    }
+    .story-landmark-hangar .hangar-shell{
+      position:absolute;
+      inset:auto 12px 18px 0;
+      height:104px;
+      border-radius:28px 34px 24px 18px;
+      border:1px solid rgba(157,231,255,.2);
+      background:
+        linear-gradient(180deg, rgba(98,196,255,.24), transparent 24%),
+        linear-gradient(180deg, rgba(29,68,118,.96), rgba(10,19,33,.98));
+      box-shadow:inset 0 0 18px rgba(111,214,255,.12);
+      clip-path:polygon(0 100%, 0 48%, 12% 14%, 30% 0, 74% 0, 90% 18%, 100% 42%, 100% 100%);
+    }
+    .story-landmark-hangar .hangar-door{
+      position:absolute;
+      left:34px;
+      bottom:18px;
+      width:94px;
+      height:64px;
+      border-radius:16px 16px 12px 12px;
+      border:1px solid rgba(146,246,255,.2);
+      background:
+        linear-gradient(180deg, rgba(146,246,255,.24), transparent 20%),
+        linear-gradient(180deg, rgba(10,22,43,.98), rgba(4,10,18,.98));
+      box-shadow:inset 0 0 16px rgba(111,214,255,.1);
+    }
+    .story-landmark-hangar .hangar-door::before{
+      content:"";
+      position:absolute;
+      inset:10px 14px;
+      border-top:2px solid rgba(146,246,255,.14);
+      border-bottom:2px solid rgba(146,246,255,.1);
+    }
+    .story-landmark-hangar .hangar-light{
+      position:absolute;
+      bottom:74px;
+      width:18px;
+      height:8px;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(255,244,180,.92), rgba(111,214,255,.6));
+      box-shadow:0 0 12px rgba(255,244,180,.34);
+    }
+    .story-landmark-hangar .hangar-light-a{left:28px}
+    .story-landmark-hangar .hangar-light-b{left:58px}
+    .story-landmark-hangar .hangar-light-c{left:88px}
+    .story-landmark-hangar .hangar-crane{
+      position:absolute;
+      right:14px;
+      bottom:58px;
+      width:44px;
+      height:98px;
+      border-left:4px solid rgba(157,231,255,.24);
+      border-top:4px solid rgba(157,231,255,.18);
+    }
+    .story-landmark-hangar .hangar-crane::before{
+      content:"";
+      position:absolute;
+      right:-8px;
+      top:20px;
+      width:2px;
+      height:42px;
+      background:rgba(255,213,95,.22);
+      box-shadow:0 0 10px rgba(255,213,95,.16);
+    }
+    .story-landmark-hangar .hangar-vapor{
+      position:absolute;
+      left:6px;
+      bottom:0;
+      width:134px;
+      height:48px;
+      background:
+        radial-gradient(circle at 18% 50%, rgba(146,246,255,.18), transparent 26%),
+        radial-gradient(circle at 40% 42%, rgba(255,181,113,.18), transparent 28%),
+        radial-gradient(circle at 66% 54%, rgba(146,246,255,.16), transparent 30%);
+      filter:blur(8px);
+      opacity:.72;
+    }
+    .story-landmark-camp{
+      left:46%;
+      top:22%;
+      width:220px;
+      height:146px;
+      transform:translate(-50%, -50%);
+      filter:drop-shadow(0 18px 26px rgba(0,0,0,.24));
+    }
+    .story-landmark-camp .camp-ground{
+      position:absolute;
+      inset:auto 0 12px 0;
+      height:62px;
+      border-radius:30px;
+      background:
+        radial-gradient(circle at 50% 0, rgba(255,110,100,.16), transparent 46%),
+        linear-gradient(180deg, rgba(55,33,35,.86), rgba(17,18,24,.98));
+      border:1px solid rgba(255,110,100,.16);
+    }
+    .story-landmark-camp .camp-plate{
+      position:absolute;
+      bottom:34px;
+      width:56px;
+      height:44px;
+      border-radius:10px 10px 12px 12px;
+      background:
+        linear-gradient(180deg, rgba(255,152,130,.22), transparent 22%),
+        linear-gradient(180deg, rgba(118,32,37,.98), rgba(49,16,22,.98));
+      border:1px solid rgba(255,110,100,.22);
+      box-shadow:0 10px 18px rgba(0,0,0,.18);
+    }
+    .story-landmark-camp .camp-plate-a{left:12px;transform:rotate(-5deg)}
+    .story-landmark-camp .camp-plate-b{left:66px;height:52px}
+    .story-landmark-camp .camp-plate-c{left:124px;transform:rotate(4deg)}
+    .story-landmark-camp .camp-beacon{
+      position:absolute;
+      left:96px;
+      bottom:48px;
+      width:16px;
+      height:68px;
+      background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,110,100,.18));
+      border-radius:12px;
+      box-shadow:0 0 18px rgba(255,110,100,.14);
+    }
+    .story-landmark-camp .camp-beacon::before{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:-14px;
+      width:18px;
+      height:18px;
+      transform:translateX(-50%);
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,244,180,.95), rgba(255,110,100,.8));
+      box-shadow:0 0 16px rgba(255,110,100,.4);
+    }
+    .story-landmark-camp .camp-banner{
+      position:absolute;
+      left:110px;
+      bottom:82px;
+      width:44px;
+      height:28px;
+      background:linear-gradient(180deg, rgba(138,22,28,.96), rgba(73,12,18,.98));
+      clip-path:polygon(0 0, 100% 0, 100% 70%, 68% 54%, 34% 88%, 0 74%);
+      border:1px solid rgba(255,110,100,.18);
+    }
+    .story-landmark-camp .camp-fire{
+      position:absolute;
+      left:148px;
+      bottom:28px;
+      width:40px;
+      height:32px;
+      background:
+        radial-gradient(circle at 50% 72%, rgba(255,181,113,.92), transparent 36%),
+        radial-gradient(circle at 52% 46%, rgba(255,110,100,.9), transparent 42%);
+      filter:blur(2px);
+    }
+    .story-landmark-protocol{
+      right:3%;
+      top:4%;
+      width:196px;
+      height:222px;
+      filter:drop-shadow(0 22px 34px rgba(0,0,0,.28));
+    }
+    .story-landmark-protocol .protocol-base{
+      position:absolute;
+      left:22px;
+      right:16px;
+      bottom:12px;
+      height:62px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        linear-gradient(180deg, rgba(255,244,180,.16), transparent 22%),
+        linear-gradient(180deg, rgba(38,56,87,.96), rgba(12,19,33,.98));
+    }
+    .story-landmark-protocol .protocol-ring{
+      position:absolute;
+      left:28px;
+      right:22px;
+      bottom:58px;
+      height:76px;
+      border-radius:50%;
+      border:2px solid rgba(146,246,255,.24);
+      box-shadow:0 0 0 10px rgba(146,246,255,.04), 0 0 18px rgba(146,246,255,.1);
+    }
+    .story-landmark-protocol .protocol-spire{
+      position:absolute;
+      left:86px;
+      bottom:58px;
+      width:26px;
+      height:136px;
+      border-radius:18px 18px 10px 10px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.8), rgba(146,246,255,.3) 26%, rgba(20,36,64,.98));
+      box-shadow:0 0 18px rgba(146,246,255,.16);
+      clip-path:polygon(50% 0, 100% 18%, 100% 100%, 0 100%, 0 18%);
+    }
+    .story-landmark-protocol .protocol-beam{
+      position:absolute;
+      left:92px;
+      top:0;
+      width:14px;
+      height:110px;
+      background:linear-gradient(180deg, rgba(255,244,180,.96), rgba(146,246,255,.54), transparent);
+      border-radius:999px;
+      filter:blur(1px);
+      opacity:.95;
+    }
+    .story-landmark-protocol .protocol-sparks{
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 38% 26%, rgba(255,244,180,.54), transparent 10%),
+        radial-gradient(circle at 64% 18%, rgba(146,246,255,.48), transparent 10%),
+        radial-gradient(circle at 54% 34%, rgba(255,255,255,.42), transparent 8%);
+      opacity:.72;
+    }
     .story-map-overlay{
       position:absolute;
       inset:16px;
@@ -598,6 +846,24 @@
       letter-spacing:.04em;
       max-width:10ch;
     }
+    .story-map-node[data-scene="hangar"]{
+      width:132px;
+      background:
+        linear-gradient(180deg, rgba(41,84,134,.99), rgba(18,38,70,.98) 38%, rgba(8,18,34,.99));
+      border-color:rgba(146,246,255,.18);
+    }
+    .story-map-node[data-scene="camp"]{
+      width:132px;
+      background:
+        linear-gradient(180deg, rgba(98,42,52,.99), rgba(44,18,28,.98) 38%, rgba(11,18,31,.99));
+      border-color:rgba(255,110,100,.18);
+    }
+    .story-map-node[data-scene="protocol"]{
+      width:132px;
+      background:
+        linear-gradient(180deg, rgba(89,91,132,.99), rgba(30,36,65,.98) 38%, rgba(12,18,32,.99));
+      border-color:rgba(255,244,180,.22);
+    }
     .story-map-marker{
       position:absolute;
       left:var(--x, 10%);
@@ -691,6 +957,126 @@
       display:flex;
       flex-wrap:wrap;
       gap:8px;
+    }
+    .story-map-scene-card{
+      display:grid;
+      grid-template-columns:72px 1fr;
+      gap:12px;
+      align-items:center;
+      padding:12px;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      box-shadow:inset 0 0 18px rgba(255,255,255,.02);
+    }
+    .story-map-scene-card[data-scene="hangar"]{
+      background:
+        radial-gradient(circle at 18% 20%, rgba(146,246,255,.14), transparent 22%),
+        linear-gradient(180deg, rgba(23,52,92,.72), rgba(10,18,31,.9));
+      border-color:rgba(146,246,255,.16);
+    }
+    .story-map-scene-card[data-scene="camp"]{
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255,110,100,.16), transparent 22%),
+        linear-gradient(180deg, rgba(67,28,36,.78), rgba(10,18,31,.92));
+      border-color:rgba(255,110,100,.16);
+    }
+    .story-map-scene-card[data-scene="protocol"]{
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255,244,180,.16), transparent 24%),
+        linear-gradient(180deg, rgba(46,50,88,.78), rgba(10,18,31,.92));
+      border-color:rgba(255,244,180,.16);
+    }
+    .story-map-scene-crest{
+      position:relative;
+      width:72px;
+      height:72px;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(7,15,28,.94), rgba(6,11,19,.98));
+    }
+    .story-map-scene-crest span{
+      position:absolute;
+      display:block;
+    }
+    .story-map-scene-card[data-scene="hangar"] .story-map-scene-crest::before{
+      content:"";
+      position:absolute;
+      left:10px;
+      right:10px;
+      bottom:10px;
+      height:34px;
+      background:linear-gradient(180deg, rgba(41,84,134,.98), rgba(9,18,33,.98));
+      clip-path:polygon(0 100%, 0 38%, 16% 4%, 36% 0, 74% 0, 88% 18%, 100% 46%, 100% 100%);
+      border:1px solid rgba(146,246,255,.14);
+    }
+    .story-map-scene-card[data-scene="hangar"] .story-map-scene-crest::after{
+      content:"";
+      position:absolute;
+      left:22px;
+      bottom:10px;
+      width:28px;
+      height:22px;
+      border-radius:10px 10px 8px 8px;
+      background:linear-gradient(180deg, rgba(146,246,255,.2), rgba(10,18,31,.98));
+      border:1px solid rgba(146,246,255,.16);
+    }
+    .story-map-scene-card[data-scene="camp"] .story-map-scene-crest::before{
+      content:"";
+      position:absolute;
+      left:10px;
+      right:12px;
+      bottom:12px;
+      height:22px;
+      background:linear-gradient(180deg, rgba(117,30,38,.98), rgba(43,12,20,.98));
+      border-radius:10px;
+      box-shadow:0 -14px 0 -6px rgba(117,30,38,.96);
+    }
+    .story-map-scene-card[data-scene="camp"] .story-map-scene-crest::after{
+      content:"";
+      position:absolute;
+      left:34px;
+      top:12px;
+      width:8px;
+      height:34px;
+      background:linear-gradient(180deg, rgba(255,255,255,.32), rgba(255,110,100,.24));
+      box-shadow:0 0 12px rgba(255,110,100,.16);
+    }
+    .story-map-scene-card[data-scene="protocol"] .story-map-scene-crest::before{
+      content:"";
+      position:absolute;
+      left:28px;
+      bottom:10px;
+      width:16px;
+      height:44px;
+      background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(146,246,255,.34) 22%, rgba(17,27,46,.98));
+      clip-path:polygon(50% 0, 100% 18%, 100% 100%, 0 100%, 0 18%);
+    }
+    .story-map-scene-card[data-scene="protocol"] .story-map-scene-crest::after{
+      content:"";
+      position:absolute;
+      left:16px;
+      right:16px;
+      bottom:12px;
+      height:18px;
+      border-radius:50%;
+      border:2px solid rgba(146,246,255,.22);
+      box-shadow:0 0 10px rgba(146,246,255,.12);
+    }
+    .story-map-scene-copy strong{
+      display:block;
+      margin-bottom:4px;
+      color:var(--white);
+      font-size:.9rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .story-map-scene-copy span{
+      display:block;
+      color:var(--muted);
+      font-size:.82rem;
+      line-height:1.45;
     }
     .story-map-status .badge{
       background:rgba(255,255,255,.05);
@@ -1038,6 +1424,223 @@
       line-height:1.48;
       font-size:.88rem;
     }
+    .story-map-stage{
+      min-height:0;
+      padding:0;
+      aspect-ratio:1536 / 1024;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.1);
+      background:linear-gradient(180deg, rgba(9,14,21,.98), rgba(6,9,15,.98));
+      box-shadow:inset 0 0 0 1px rgba(146,246,255,.06), 0 24px 50px rgba(0,0,0,.24);
+    }
+    .story-map-stage::before,
+    .story-map-stage::after{
+      display:none;
+    }
+    .story-map-world,
+    .story-map-overlay{
+      display:none;
+    }
+    .story-map-art{
+      position:absolute;
+      inset:0;
+      z-index:0;
+      overflow:hidden;
+    }
+    .story-map-art img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      filter:saturate(1.04) contrast(1.02) brightness(.96);
+    }
+    .story-map-art::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 18% 82%, rgba(118,232,255,.12), transparent 22%),
+        radial-gradient(circle at 84% 22%, rgba(118,232,255,.1), transparent 22%),
+        linear-gradient(180deg, rgba(8,12,18,.12), rgba(8,12,18,.18));
+      pointer-events:none;
+      mix-blend-mode:screen;
+    }
+    .story-map-atmosphere{
+      position:absolute;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:
+        linear-gradient(180deg, rgba(6,10,15,.08), transparent 18%, transparent 82%, rgba(5,8,13,.12)),
+        radial-gradient(circle at 50% 50%, transparent 58%, rgba(5,8,13,.08) 100%);
+    }
+    .story-map-stage[data-scene="hangar"] .story-map-atmosphere{
+      background:
+        radial-gradient(circle at 20% 74%, rgba(118,232,255,.12), transparent 18%),
+        radial-gradient(circle at 24% 56%, rgba(255,181,113,.05), transparent 16%),
+        linear-gradient(180deg, rgba(6,10,15,.06), transparent 18%, transparent 82%, rgba(5,8,13,.12));
+    }
+    .story-map-stage[data-scene="camp"] .story-map-atmosphere{
+      background:
+        radial-gradient(circle at 60% 29%, rgba(255,110,100,.12), transparent 20%),
+        radial-gradient(circle at 56% 38%, rgba(255,181,113,.05), transparent 16%),
+        linear-gradient(180deg, rgba(6,10,15,.06), transparent 18%, transparent 82%, rgba(5,8,13,.12));
+    }
+    .story-map-stage[data-scene="protocol"] .story-map-atmosphere{
+      background:
+        radial-gradient(circle at 82% 18%, rgba(255,244,180,.12), transparent 22%),
+        radial-gradient(circle at 84% 20%, rgba(118,232,255,.1), transparent 18%),
+        linear-gradient(180deg, rgba(6,10,15,.05), transparent 18%, transparent 82%, rgba(5,8,13,.12));
+    }
+    .story-map-nodes{
+      position:absolute;
+      inset:0;
+      z-index:2;
+      width:100%;
+      height:100%;
+    }
+    .story-map-node{
+      width:60px;
+      height:60px;
+      padding:0;
+      border:none;
+      background:transparent;
+      box-shadow:none;
+      overflow:visible;
+    }
+    .story-map-node[data-scene="hangar"],
+    .story-map-node[data-scene="camp"],
+    .story-map-node[data-scene="protocol"]{
+      width:60px;
+      border:none;
+      background:transparent;
+    }
+    .story-map-node::before{
+      content:"";
+      position:absolute;
+      inset:8px;
+      border-radius:50%;
+      border:3px solid rgba(245,249,255,.88);
+      background:
+        radial-gradient(circle at 35% 32%, rgba(255,255,255,.18), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(15,18,24,.38), rgba(7,10,14,.66));
+      box-shadow:0 0 0 3px rgba(16,18,22,.86), 0 10px 16px rgba(0,0,0,.28);
+    }
+    .story-map-node::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:50%;
+      border:2px solid rgba(146,246,255,.18);
+      opacity:0;
+      transform:scale(.86);
+      transition:opacity .18s ease, transform .18s ease, border-color .18s ease;
+      box-shadow:0 0 18px rgba(146,246,255,.12);
+    }
+    .story-map-node:hover{
+      transform:translate(-50%, -50%);
+      box-shadow:none;
+      border:none;
+      background:transparent;
+    }
+    .story-map-node:hover::after{
+      opacity:1;
+      transform:scale(1.04);
+    }
+    .story-map-node.is-active{
+      box-shadow:none;
+      border:none;
+      background:transparent;
+    }
+    .story-map-node.is-active::before{
+      border-color:rgba(146,246,255,.98);
+      background:
+        radial-gradient(circle at 35% 32%, rgba(255,255,255,.24), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(29,68,118,.52), rgba(7,10,14,.72));
+      box-shadow:0 0 0 3px rgba(16,18,22,.92), 0 0 24px rgba(118,232,255,.28), 0 14px 18px rgba(0,0,0,.3);
+    }
+    .story-map-node.is-active::after{
+      opacity:1;
+      transform:scale(1.14);
+      border-color:rgba(255,213,95,.56);
+      box-shadow:0 0 22px rgba(255,213,95,.22);
+    }
+    .story-map-node.is-completed::before{
+      border-color:rgba(255,213,95,.94);
+      background:
+        radial-gradient(circle at 35% 32%, rgba(255,255,255,.18), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(93,77,18,.38), rgba(7,10,14,.68));
+      box-shadow:0 0 0 3px rgba(16,18,22,.86), 0 0 18px rgba(255,213,95,.18), 0 10px 16px rgba(0,0,0,.28);
+    }
+    .story-map-node-step{
+      right:-2px;
+      top:-4px;
+      width:24px;
+      height:24px;
+      font-size:.72rem;
+      box-shadow:0 0 0 2px rgba(10,16,24,.92), 0 8px 12px rgba(0,0,0,.24);
+      z-index:1;
+    }
+    .story-map-node-kind,
+    .story-map-node-title{
+      display:none;
+    }
+    .story-map-marker{
+      width:96px;
+      height:96px;
+      z-index:3;
+    }
+    .story-map-marker::before,
+    .story-map-marker::after{
+      inset:14px;
+      border-color:rgba(118,232,255,.22);
+      box-shadow:0 0 20px rgba(118,232,255,.1);
+    }
+    .story-map-marker::after{
+      inset:25px;
+      border-color:rgba(255,213,95,.28);
+    }
+    .story-map-marker-core{
+      width:68px;
+      height:68px;
+      border-radius:20px;
+      padding:7px;
+      background:linear-gradient(180deg, rgba(250,252,255,.96), rgba(164,238,255,.84));
+      box-shadow:0 0 0 5px rgba(6,13,24,.9), 0 0 22px rgba(118,232,255,.16), 0 12px 20px rgba(0,0,0,.26);
+    }
+    .story-map-marker-label{
+      bottom:-10px;
+      padding:5px 9px;
+      font-size:.58rem;
+      letter-spacing:.12em;
+    }
+    @media (max-width:860px){
+      .story-map-stage{
+        aspect-ratio:1536 / 1024;
+        min-height:0;
+      }
+      .story-map-node{
+        width:48px;
+        height:48px;
+      }
+      .story-map-node::before{
+        inset:6px;
+        border-width:2px;
+      }
+      .story-map-node-step{
+        width:20px;
+        height:20px;
+        font-size:.64rem;
+      }
+      .story-map-marker{
+        width:78px;
+        height:78px;
+      }
+      .story-map-marker-core{
+        width:56px;
+        height:56px;
+      }
+    }
     @keyframes map-pulse{
       0%{transform:translate(-50%, -50%) scale(.84);opacity:.75}
       70%{transform:translate(-50%, -50%) scale(1.28);opacity:0}
@@ -1116,7 +1719,11 @@
         <span class="mini-pill">Prototipo jugable del mapa</span>
       </div>
       <div class="story-map-grid">
-        <div class="story-map-stage" id="storyMapStage">
+        <div class="story-map-stage" id="storyMapStage" data-scene="hangar">
+          <div class="story-map-art" aria-hidden="true">
+            <img src="assets/Historia/MAPAOK.png" alt="">
+          </div>
+          <div class="story-map-atmosphere" aria-hidden="true"></div>
           <div class="story-map-world" aria-hidden="true">
             <div class="story-map-fog"></div>
             <div class="story-map-skyline">
@@ -1131,6 +1738,31 @@
               <span class="wreck-b"></span>
               <span class="wreck-c"></span>
               <span class="wreck-d"></span>
+            </div>
+            <div class="story-landmark story-landmark-hangar" data-step="1">
+              <span class="hangar-shell"></span>
+              <span class="hangar-door"></span>
+              <span class="hangar-light hangar-light-a"></span>
+              <span class="hangar-light hangar-light-b"></span>
+              <span class="hangar-light hangar-light-c"></span>
+              <span class="hangar-crane"></span>
+              <span class="hangar-vapor"></span>
+            </div>
+            <div class="story-landmark story-landmark-camp" data-step="5">
+              <span class="camp-ground"></span>
+              <span class="camp-plate camp-plate-a"></span>
+              <span class="camp-plate camp-plate-b"></span>
+              <span class="camp-plate camp-plate-c"></span>
+              <span class="camp-beacon"></span>
+              <span class="camp-banner"></span>
+              <span class="camp-fire"></span>
+            </div>
+            <div class="story-landmark story-landmark-protocol" data-step="10">
+              <span class="protocol-base"></span>
+              <span class="protocol-ring"></span>
+              <span class="protocol-spire"></span>
+              <span class="protocol-beam"></span>
+              <span class="protocol-sparks"></span>
             </div>
             <span class="story-map-pylon story-map-pylon-a"></span>
             <span class="story-map-pylon story-map-pylon-b"></span>
@@ -1155,52 +1787,52 @@
           </div>
 
           <div class="story-map-nodes" id="storyMapNodes">
-            <button class="story-map-node" type="button" data-step="1" data-kind="Construcción" data-short="Hangar" data-x="9%" data-y="74%">
+            <button class="story-map-node" type="button" data-step="1" data-kind="Construcción" data-short="Hangar" data-scene="hangar" data-x="22.8%" data-y="81.5%" aria-label="Nodo 1 Hangar de la Fosa Azul">
               <span class="story-map-node-step">1</span>
               <span class="story-map-node-kind">Construcción</span>
               <span class="story-map-node-title">Fosa Azul</span>
             </button>
-            <button class="story-map-node" type="button" data-step="2" data-kind="Combate" data-short="Pruebas" data-x="19%" data-y="57%">
+            <button class="story-map-node" type="button" data-step="2" data-kind="Combate" data-short="Pruebas" data-x="43.1%" data-y="57.4%" aria-label="Nodo 2 Patio de pruebas del taller">
               <span class="story-map-node-step">2</span>
               <span class="story-map-node-kind">Combate</span>
               <span class="story-map-node-title">Patio de pruebas</span>
             </button>
-            <button class="story-map-node" type="button" data-step="3" data-kind="Encargo" data-short="Mercado" data-x="31%" data-y="61%">
+            <button class="story-map-node" type="button" data-step="3" data-kind="Encargo" data-short="Mercado" data-x="29.2%" data-y="32.6%" aria-label="Nodo 3 Mercado de Relés Muertos">
               <span class="story-map-node-step">3</span>
               <span class="story-map-node-kind">Encargo</span>
               <span class="story-map-node-title">Relés muertos</span>
             </button>
-            <button class="story-map-node" type="button" data-step="4" data-kind="Proyectil" data-short="Torre" data-x="42%" data-y="52%">
+            <button class="story-map-node" type="button" data-step="4" data-kind="Proyectil" data-short="Torre" data-x="39.8%" data-y="32.2%" aria-label="Nodo 4 Torre de Seguimiento 4B">
               <span class="story-map-node-step">4</span>
               <span class="story-map-node-kind">Proyectil</span>
               <span class="story-map-node-title">Torre 4B</span>
             </button>
-            <button class="story-map-node" type="button" data-step="5" data-kind="Diálogo" data-short="Campamento" data-x="54%" data-y="35%">
+            <button class="story-map-node" type="button" data-step="5" data-kind="Diálogo" data-short="Campamento" data-scene="camp" data-x="53.8%" data-y="35.4%" aria-label="Nodo 5 Campamento de las Placas Rojas">
               <span class="story-map-node-step">5</span>
               <span class="story-map-node-kind">Diálogo</span>
               <span class="story-map-node-title">Placas rojas</span>
             </button>
-            <button class="story-map-node" type="button" data-step="6" data-kind="Defensa" data-short="Emboscada" data-x="64%" data-y="40%">
+            <button class="story-map-node" type="button" data-step="6" data-kind="Defensa" data-short="Emboscada" data-x="46.2%" data-y="79.8%" aria-label="Nodo 6 Foso de Viento Negro">
               <span class="story-map-node-step">6</span>
               <span class="story-map-node-kind">Defensa</span>
               <span class="story-map-node-title">Viento negro</span>
             </button>
-            <button class="story-map-node" type="button" data-step="7" data-kind="Reconfiguración" data-short="Subestación" data-x="75%" data-y="48%">
+            <button class="story-map-node" type="button" data-step="7" data-kind="Reconfiguración" data-short="Subestación" data-x="58.8%" data-y="69.8%" aria-label="Nodo 7 Subestación de Ceniza">
               <span class="story-map-node-step">7</span>
               <span class="story-map-node-kind">Tripulación</span>
               <span class="story-map-node-title">Subestación</span>
             </button>
-            <button class="story-map-node" type="button" data-step="8" data-kind="Duelo" data-short="Puente" data-x="85%" data-y="30%">
+            <button class="story-map-node" type="button" data-step="8" data-kind="Duelo" data-short="Puente" data-x="81.7%" data-y="52.1%" aria-label="Nodo 8 Puente de Relámpagos Quietos">
               <span class="story-map-node-step">8</span>
               <span class="story-map-node-kind">Duelo</span>
               <span class="story-map-node-title">Relámpagos quietos</span>
             </button>
-            <button class="story-map-node" type="button" data-step="9" data-kind="Final" data-short="Argós" data-x="89%" data-y="22%">
+            <button class="story-map-node" type="button" data-step="9" data-kind="Final" data-short="Argós" data-x="77.7%" data-y="84.2%" aria-label="Nodo 9 Cúpula Hendida de Argós">
               <span class="story-map-node-step">9</span>
               <span class="story-map-node-kind">Final</span>
               <span class="story-map-node-title">Cúpula de Argós</span>
             </button>
-            <button class="story-map-node" type="button" data-step="10" data-kind="Desbloqueo" data-short="Protocolo" data-x="92%" data-y="11%">
+            <button class="story-map-node" type="button" data-step="10" data-kind="Desbloqueo" data-short="Protocolo" data-scene="protocol" data-x="79.9%" data-y="28.6%" aria-label="Nodo 10 Protocolo Ceniza">
               <span class="story-map-node-step">10</span>
               <span class="story-map-node-kind">Desbloqueo</span>
               <span class="story-map-node-title">Protocolo Ceniza</span>
@@ -1220,6 +1852,15 @@
             <span class="badge dialog" id="storyMapBadgeStep">Nodo 1</span>
             <span class="badge build" id="storyMapBadgeKind">Construcción</span>
             <span class="badge goal" id="storyMapBadgeShort">Hangar</span>
+          </div>
+          <div class="story-map-scene-card" id="storyMapSceneCard" data-scene="hangar">
+            <div class="story-map-scene-crest" aria-hidden="true">
+              <span></span>
+            </div>
+            <div class="story-map-scene-copy">
+              <strong id="storyMapSceneName">Hangar sumergido</strong>
+              <span id="storyMapSceneMood">Refugio de arranque entre vapor, focos de taller y placas medio enterradas.</span>
+            </div>
           </div>
           <div>
             <h3 id="storyMapTitle">Hangar de la Fosa Azul</h3>
@@ -1567,7 +2208,25 @@
       const progressTextEl = document.getElementById('storyMapProgressText');
       const prevBtn = document.getElementById('storyMapPrev');
       const nextBtn = document.getElementById('storyMapNext');
+      const stageEl = document.getElementById('storyMapStage');
+      const landmarkEls = Array.from(document.querySelectorAll('.story-landmark'));
+      const sceneCardEl = document.getElementById('storyMapSceneCard');
+      const sceneNameEl = document.getElementById('storyMapSceneName');
+      const sceneMoodEl = document.getElementById('storyMapSceneMood');
       let activeStep = 1;
+      const sceneMetaByStep = {
+        1:{scene:'hangar', name:'Hangar sumergido', mood:'Refugio de arranque entre vapor, focos de taller y placas medio enterradas.'},
+        5:{scene:'camp', name:'Campamento de placas rojas', mood:'Barricadas remendadas, hogueras de litio y veteranos que miden a cada recién llegado.'},
+        10:{scene:'protocol', name:'Santuario del protocolo', mood:'Un enclave reservado donde la tecnología superviviente se trata como si fuera rango y reliquia a la vez.'}
+      };
+
+      function getSceneMeta(step){
+        return sceneMetaByStep[step] || {
+          scene:'default',
+          name:'Sector táctico',
+          mood:'Tramo intermedio de la Ruta Ceniza-9, con presión creciente y señales del mundo roto a tu alrededor.'
+        };
+      }
 
       function getRouteNode(step){
         return routeNodes.find((node) => Number(node.dataset.step) === step) || null;
@@ -1629,6 +2288,16 @@
         progressTextEl.textContent = getProgressCopy(activeStep);
         prevBtn.disabled = activeStep === 1;
         nextBtn.disabled = activeStep === 10;
+        const sceneMeta = getSceneMeta(activeStep);
+        stageEl.dataset.scene = sceneMeta.scene;
+        sceneCardEl.dataset.scene = sceneMeta.scene;
+        sceneNameEl.textContent = sceneMeta.name;
+        sceneMoodEl.textContent = sceneMeta.mood;
+        landmarkEls.forEach((landmark) => {
+          const landmarkStep = Number(landmark.dataset.step);
+          landmark.classList.toggle('is-active', landmarkStep === activeStep);
+          landmark.classList.toggle('is-completed', landmarkStep < activeStep);
+        });
 
         routeNode.scrollIntoView({ behavior:'smooth', block:'nearest' });
       }
