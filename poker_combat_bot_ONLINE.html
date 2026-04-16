@@ -4731,6 +4731,8 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
             <button id="confirmDefenseBtn">Confirmar defensa</button>
             <button id="skipDefenseBtn">No defender</button>
             <button class="primary" id="returnHomeBtn">Volver</button>
+            <button class="primary" id="saveGameBtn">Salvar partida</button>
+            <button class="cyan" id="loadGameBtn">Cargar partida</button>
           </div>
 
           <div class="console-rule" id="fuelRuleBanner">Combustible del panel: <strong>valor total × 2</strong> = límite de ataque con picas.</div>
@@ -5912,6 +5914,25 @@ function drawFromDeck(options = {}){
   return state.deck.pop() || null;
 }
 const MAX_HAND_SIZE = 18;
+const SAVE_CODE_PREFIX = 'PCB1.';
+const SAVE_RANK_TO_CODE = {
+  'A':'A','K':'K','Q':'Q','J':'J','10':'T','9':'9','8':'8','7':'7','6':'6','5':'5','4':'4','3':'3','2':'2'
+};
+const SAVE_CODE_TO_RANK = {
+  'A':'A','K':'K','Q':'Q','J':'J','T':'10','9':'9','8':'8','7':'7','6':'6','5':'5','4':'4','3':'3','2':'2'
+};
+const SAVE_SUIT_TO_CODE = {
+  spades:'S',
+  hearts:'H',
+  clubs:'C',
+  diamonds:'D'
+};
+const SAVE_CODE_TO_SUIT = {
+  S:'spades',
+  H:'hearts',
+  C:'clubs',
+  D:'diamonds'
+};
 function receiveDrawnCard(player, card){
   if(!player || !card) return { accepted:false, discarded:false, card:null };
   if(player.hand.length >= MAX_HAND_SIZE){
@@ -5938,6 +5959,340 @@ function scrollToPlayerPanel(playerIdx, behavior='smooth', align='top'){
     top: Math.max(0, top),
     behavior
   });
+}
+
+function encodeCardToken(card){
+  if(!card || !card.rank || !card.suit) return '';
+  const rankCode = SAVE_RANK_TO_CODE[card.rank];
+  const suitCode = SAVE_SUIT_TO_CODE[card.suit];
+  if(!rankCode || !suitCode) return '';
+  return `${rankCode}${suitCode}`;
+}
+function decodeCardToken(token, seq){
+  if(typeof token !== 'string' || token.length !== 2) throw new Error('Token de carta inválido.');
+  const rank = SAVE_CODE_TO_RANK[token[0]];
+  const suit = SAVE_CODE_TO_SUIT[token[1]];
+  if(!rank || !suit) throw new Error(`Token de carta desconocido: ${token}`);
+  return {
+    id: `save-${seq}-${token}`,
+    rank,
+    suit,
+    value: rankValue(rank)
+  };
+}
+function encodeCardList(cards){
+  return (cards || []).map(encodeCardToken).filter(Boolean).join('.');
+}
+function decodeCardList(serialized){
+  if(!serialized) return [];
+  if(typeof serialized !== 'string') throw new Error('Lista de cartas inválida.');
+  return serialized.split('.').map(token => token.trim()).filter(Boolean);
+}
+function findCardLocationByToken(token){
+  for(let owner=0; owner<(state.players || []).length; owner++){
+    const player = state.players[owner];
+    if(!player) continue;
+    for(const zone of ['hand','attack','defense','armor','fuel']){
+      const found = player[zone].find(card => encodeCardToken(card) === token);
+      if(found) return { card: found, zone, owner };
+    }
+    if(player.core?.pilot && encodeCardToken(player.core.pilot) === token) return { card: player.core.pilot, zone:'core-pilot', owner };
+    if(player.core?.copilot && encodeCardToken(player.core.copilot) === token) return { card: player.core.copilot, zone:'core-copilot', owner };
+    if(player.core?.booster && encodeCardToken(player.core.booster) === token) return { card: player.core.booster, zone:'core-booster', owner };
+  }
+  return null;
+}
+function serializeSelectedCards(){
+  return (state.selected || []).map(card => ({
+    t: encodeCardToken(card),
+    z: card.zone || null
+  })).filter(entry => !!entry.t);
+}
+function restoreSelectedCards(entries){
+  return (entries || []).map(entry => {
+    if(!entry || !entry.t) return null;
+    const located = findCardLocationByToken(entry.t);
+    if(!located) return null;
+    return {
+      ...located.card,
+      zone: located.zone || entry.z || 'hand',
+      owner: located.owner
+    };
+  }).filter(Boolean);
+}
+function getSaveSupportState(){
+  if(!state.gameStarted || !state.players || state.players.length !== 2){
+    return { allowed:false, reason:'No hay una partida activa que salvar o cargar.' };
+  }
+  if(_ol.active){
+    return { allowed:false, reason:'Guardar y cargar online llega en la siguiente fase. De momento queda limitado a Local y 1 jugador.' };
+  }
+  if(tutorialSystem.enabled){
+    return { allowed:false, reason:'El tutorial guiado no admite guardado todavía para no romper su guion.' };
+  }
+  if(state.transitionLock){
+    return { allowed:false, reason:'Espera a que termine la animación actual para salvar o cargar la partida.' };
+  }
+  return { allowed:true, reason:'' };
+}
+function buildSavePayload(){
+  const support = getSaveSupportState();
+  if(!support.allowed) throw new Error(support.reason);
+  return {
+    v: 1,
+    m: state.gameMode,
+    d: state.singleDifficulty || null,
+    tu: state.tutorial ? 1 : 0,
+    cp: state.currentPlayer,
+    tc: state.turnCount,
+    ph: state.phase,
+    w: state.winner,
+    am: state.attackMode ? 1 : 0,
+    pm: state.projectileMode ? 1 : 0,
+    ts: state.tutorialStep || 0,
+    pu: state.projectileUnlocked ? 1 : 0,
+    fa: state.firstAttackTriggered ? 1 : 0,
+    gs: state.gameStarted ? 1 : 0,
+    pd: state.pendingDefense ? {
+      a: state.pendingDefense.attackerIndex,
+      d: state.pendingDefense.defenderIndex,
+      t: state.pendingDefense.totalAttack,
+      p: state.pendingDefense.withProjectile ? 1 : 0
+    } : null,
+    ds: state.defenseSelectionMode ? 1 : 0,
+    se: serializeSelectedCards(),
+    dk: encodeCardList(state.deck),
+    dc: encodeCardList(state.discard),
+    rm: encodeCardList(state.removed),
+    p: (state.players || []).map(player => ({
+      n: player.name || '',
+      h: encodeCardList(player.hand),
+      cp: encodeCardToken(player.core?.pilot),
+      cc: encodeCardToken(player.core?.copilot),
+      cb: encodeCardToken(player.core?.booster),
+      a: encodeCardList(player.attack),
+      d: encodeCardList(player.defense),
+      r: encodeCardList(player.armor),
+      f: encodeCardList(player.fuel),
+      xc: player.flexTargets?.copilot || null,
+      xb: player.flexTargets?.booster || null,
+      la: player.flags?.lastOwnAction || null,
+      fb: player.flags?.figureBurstButtonUnlocked ? 1 : 0,
+      fp: player.flags?.figureBurstPromptShown ? 1 : 0,
+      at: player.flags?.attackReadyPromptTurn || 0,
+      ff: player.flags?.firstAttackComplete ? 1 : 0
+    }))
+  };
+}
+function utf8ToBase64Url(text){
+  const bytes = new TextEncoder().encode(text);
+  let binary = '';
+  const chunkSize = 0x8000;
+  for(let i=0; i<bytes.length; i += chunkSize){
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/,'');
+}
+function base64UrlToUtf8(base64url){
+  const normalized = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for(let i=0; i<binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function encodeSaveCode(payload){
+  return SAVE_CODE_PREFIX + utf8ToBase64Url(JSON.stringify(payload));
+}
+function decodeSaveCode(code){
+  const raw = String(code || '').trim().replace(/\s+/g, '');
+  if(!raw.startsWith(SAVE_CODE_PREFIX)){
+    throw new Error('El código no parece una partida válida de PoCoBOT.');
+  }
+  const json = base64UrlToUtf8(raw.slice(SAVE_CODE_PREFIX.length));
+  const payload = JSON.parse(json);
+  if(!payload || payload.v !== 1) throw new Error('La versión del código no es compatible.');
+  if(!['local','single'].includes(payload.m)) throw new Error('Este código pertenece a un modo todavía no compatible con la carga segura.');
+  return payload;
+}
+function collectPayloadTokens(payload){
+  const tokens = [];
+  tokens.push(...decodeCardList(payload.dk));
+  tokens.push(...decodeCardList(payload.dc));
+  tokens.push(...decodeCardList(payload.rm));
+  (payload.p || []).forEach(player => {
+    tokens.push(...decodeCardList(player.h));
+    tokens.push(...decodeCardList(player.a));
+    tokens.push(...decodeCardList(player.d));
+    tokens.push(...decodeCardList(player.r));
+    tokens.push(...decodeCardList(player.f));
+    if(player.cp) tokens.push(player.cp);
+    if(player.cc) tokens.push(player.cc);
+    if(player.cb) tokens.push(player.cb);
+  });
+  return tokens;
+}
+function buildCardRegistryFromPayload(payload){
+  const tokens = collectPayloadTokens(payload);
+  const unique = new Set();
+  const registry = new Map();
+  let seq = 1;
+  tokens.forEach(token => {
+    if(unique.has(token)) throw new Error(`Carta duplicada en el código: ${token}`);
+    unique.add(token);
+    registry.set(token, decodeCardToken(token, seq++));
+  });
+  if(unique.size !== 52){
+    throw new Error(`El código no describe una baraja completa. Cartas detectadas: ${unique.size}/52.`);
+  }
+  return registry;
+}
+function mapTokensToCards(tokens, registry){
+  return (tokens || []).map(token => {
+    const card = registry.get(token);
+    if(!card) throw new Error(`Carta no encontrada en el código: ${token}`);
+    return card;
+  });
+}
+function restoreGameFromCode(code){
+  const support = getSaveSupportState();
+  if(!support.allowed) throw new Error(support.reason);
+  const payload = decodeSaveCode(code);
+  const registry = buildCardRegistryFromPayload(payload);
+
+  clearSinglePlayerAiTimer();
+  hideTransientOverlays();
+  hideDefenseAlert();
+  clearVictoryFx();
+  ensureEnhancedFxDom();
+  stopAllMusic(true);
+
+  state.gameMode = payload.m;
+  state.singleDifficulty = payload.d || null;
+  state.tutorial = !!payload.tu;
+  state.deck = mapTokensToCards(decodeCardList(payload.dk), registry);
+  state.tutorialRiggedDraws = [];
+  state.discard = mapTokensToCards(decodeCardList(payload.dc), registry);
+  state.removed = mapTokensToCards(decodeCardList(payload.rm), registry);
+  state.currentPlayer = Number(payload.cp) || 0;
+  state.turnCount = Number(payload.tc) || 0;
+  state.phase = payload.ph || 'Montaje';
+  state.winner = payload.w === 0 || payload.w === 1 ? payload.w : null;
+  state.selected = [];
+  state.attackMode = !!payload.am;
+  state.projectileMode = !!payload.pm;
+  state.tutorialStep = Number(payload.ts) || 0;
+  state.log = [];
+  state.pendingDefense = payload.pd ? {
+    attackerIndex: Number(payload.pd.a) || 0,
+    defenderIndex: Number(payload.pd.d) || 0,
+    totalAttack: Number(payload.pd.t) || 0,
+    withProjectile: !!payload.pd.p
+  } : null;
+  state.defenseSelectionMode = !!payload.ds;
+  state.fxQueue = [];
+  state.firstAttackTriggered = !!payload.fa;
+  state.gameStarted = !!payload.gs;
+  state.transitionLock = false;
+  state.pendingTurnSfx = null;
+  state.figureBurstPromptPlayer = null;
+  state.figureBurstPromptActive = false;
+  state.attackReadyPromptPlayer = null;
+  state.attackReadyPromptActive = false;
+  state.lastActionType = null;
+  state.projectileUnlocked = !!payload.pu;
+  state.projectilePromptPlayer = null;
+  state.postAttackTopFocus = false;
+  state.musicPhase = state.winner ? 'none' : (state.firstAttackTriggered ? 'battle' : 'intro');
+
+  state.players = (payload.p || []).map((player, idx) => ({
+    name: player.n || (idx === 0 ? 'Jugador 1' : 'Jugador 2'),
+    hand: mapTokensToCards(decodeCardList(player.h), registry),
+    core: {
+      pilot: player.cp ? registry.get(player.cp) || null : null,
+      copilot: player.cc ? registry.get(player.cc) || null : null,
+      booster: player.cb ? registry.get(player.cb) || null : null
+    },
+    attack: mapTokensToCards(decodeCardList(player.a), registry),
+    defense: mapTokensToCards(decodeCardList(player.d), registry),
+    armor: mapTokensToCards(decodeCardList(player.r), registry),
+    fuel: mapTokensToCards(decodeCardList(player.f), registry),
+    flexTargets: {
+      copilot: player.xc || null,
+      booster: player.xb || null
+    },
+    flags: {
+      mounted: false,
+      combatReady: false,
+      lastOwnAction: player.la || null,
+      figureBurstButtonUnlocked: !!player.fb,
+      figureBurstPromptShown: !!player.fp,
+      attackReadyPromptTurn: Number(player.at) || 0,
+      firstAttackComplete: !!player.ff
+    }
+  }));
+
+  if(state.players.length !== 2){
+    throw new Error('El código no contiene los dos paneles de una partida válida.');
+  }
+
+  state.players.forEach(player => {
+    const build = getBuildStatus(player);
+    player.flags.mounted = build.mounted;
+    player.flags.combatReady = build.combatReady;
+  });
+
+  state.selected = restoreSelectedCards(payload.se);
+  if(state.projectileUnlocked === false && state.players.some(player => player.flags.firstAttackComplete)){
+    state.projectileUnlocked = true;
+  }
+
+  if(state.gameStarted){
+    hideIntroScreen();
+  }
+  render();
+  log('💾 Partida cargada desde código.');
+  addToast('Partida cargada', 'ok');
+  window.setTimeout(() => {
+    if(state.winner !== null){
+      scrollToWinnerCup('smooth');
+      return;
+    }
+    const focusIdx = getFocusPlayerIndex();
+    if(focusIdx >= 0) scrollToPlayerPanel(focusIdx, 'smooth');
+  }, 180);
+}
+function requestSaveGame(){
+  try{
+    pulseButton('saveGameBtn');
+    const payload = buildSavePayload();
+    const code = encodeSaveCode(payload);
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(code).then(() => {
+        addToast('Código copiado al portapapeles', 'ok');
+      }).catch(() => {
+        addToast('Código listo para copiar', 'warn');
+      });
+    } else {
+      addToast('Código listo para copiar', 'warn');
+    }
+    log('💾 Se ha generado un código de partida.');
+    window.prompt('Código de salvado de PoCoBOT. Guárdalo para cargar la partida más tarde:', code);
+  }catch(err){
+    addToast(err.message || 'No se pudo salvar la partida', 'warn');
+  }
+}
+function requestLoadGame(){
+  try{
+    pulseButton('loadGameBtn');
+    const support = getSaveSupportState();
+    if(!support.allowed) throw new Error(support.reason);
+    const code = window.prompt('Pega aquí el código de partida para restaurarla:');
+    if(!code) return;
+    restoreGameFromCode(code);
+  }catch(err){
+    addToast(err.message || 'No se pudo cargar la partida', 'warn');
+  }
 }
 
 function newGame(){
@@ -9127,6 +9482,7 @@ function updateButtons(){
   const inDefense = !!state.pendingDefense;
   const locked = !!state.transitionLock;
   const cpuOwnsCurrentContext = isSinglePlayerMode() && getInteractivePlayerIndex() < 0;
+  const saveSupport = getSaveSupportState();
   const player = state.players[state.currentPlayer] || { hand:[], attack:[] };
   const canAttackMain = playerCanAttack(player);
   const canAnyProjectile = state.projectileUnlocked && player.attack.some(isPlayableProjectileCard);
@@ -9142,6 +9498,8 @@ function updateButtons(){
   markButtonEnabled('projectileOnlyBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('projectileOnlyBtn') && !locked && canProjectileOnlyNow(), canProjectileOnlyNow() && tutorialAllowsButton('projectileOnlyBtn') && !cpuOwnsCurrentContext);
   markButtonEnabled('clearSelectionBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('clearSelectionBtn') && !locked && state.selected.length>0);
   markButtonEnabled('returnHomeBtn', true);
+  markButtonEnabled('saveGameBtn', saveSupport.allowed && !cpuOwnsCurrentContext);
+  markButtonEnabled('loadGameBtn', saveSupport.allowed && !cpuOwnsCurrentContext);
   markButtonEnabled('soundToggleBtn', true, state.soundOn);
   markButtonEnabled('confirmDefenseBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('confirmDefenseBtn') && !hasWinner && inDefense && state.selected.length===1 && isNumericDiamondCard(state.selected[0]), inDefense && tutorialAllowsButton('confirmDefenseBtn') && !cpuOwnsCurrentContext);
   markButtonEnabled('skipDefenseBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('skipDefenseBtn') && !hasWinner && inDefense, inDefense && tutorialAllowsButton('skipDefenseBtn') && !cpuOwnsCurrentContext);
@@ -9313,6 +9671,8 @@ function requestNewGame(){
 // Eventos
 document.getElementById('newGameBtn').addEventListener('click', requestNewGame);
 document.getElementById('returnHomeBtn').addEventListener('click', returnToMainMenu);
+document.getElementById('saveGameBtn').addEventListener('click', requestSaveGame);
+document.getElementById('loadGameBtn').addEventListener('click', requestLoadGame);
 document.getElementById('toggleTutorialBtn').addEventListener('click', () => {
   if(tutorialSystem.enabled && !tutorialSystem.completed){
     closeTutorialMode();
