@@ -416,6 +416,54 @@ body.victory .player-name{ text-shadow:0 0 16px rgba(116,255,242,.35); }
 body.victory .frame{
   box-shadow:0 0 0 1px rgba(255,214,92,.18), 0 0 24px rgba(116,255,242,.10), inset 0 0 22px rgba(255,214,92,.04);
 }
+.winner-banner{
+  position:absolute;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%) scale(.96);
+  z-index:8;
+  min-width:min(520px, calc(100% - 48px));
+  max-width:min(680px, calc(100% - 48px));
+  padding:14px 22px 16px;
+  border-radius:20px;
+  border:2px solid rgba(255,214,92,.66);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.18), transparent 56%),
+    linear-gradient(180deg, rgba(18,16,8,.94), rgba(9,13,16,.96));
+  box-shadow:
+    0 0 0 2px rgba(255,214,92,.10),
+    0 0 28px rgba(255,214,92,.18),
+    0 0 34px rgba(116,255,242,.10),
+    inset 0 0 24px rgba(255,214,92,.06);
+  text-align:center;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .24s ease, transform .24s ease, visibility .24s ease;
+}
+body.victory .winner-banner.show{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) scale(1);
+}
+.winner-banner-kicker{
+  font-size:.76rem;
+  font-weight:900;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#8dfcff;
+  margin-bottom:6px;
+}
+.winner-banner-name{
+  font-size:clamp(1.6rem, 3.8vw, 2.8rem);
+  font-weight:1000;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:#fff6cb;
+  text-shadow:
+    0 0 18px rgba(255,214,92,.34),
+    0 0 28px rgba(116,255,242,.16);
+}
 .tactical-screen.attack-left,
 .tactical-screen.attack-right{
   box-shadow:0 0 26px rgba(35,216,255,.12), inset 0 0 32px rgba(255,178,46,.05);
@@ -4567,6 +4615,10 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
               <span class="pill" id="tutorialLabel">Tutorial ON</span>
             </div>
           </div>
+          <div class="winner-banner" id="winnerBanner" aria-live="polite">
+            <div class="winner-banner-kicker">Ganador</div>
+            <div class="winner-banner-name" id="winnerBannerName">Jugador 1</div>
+          </div>
           <div class="mech-status-banner" id="mechaStatusBanner">Montaje en curso</div>
         </div>
 
@@ -5859,6 +5911,16 @@ function drawFromDeck(options = {}){
   }
   return state.deck.pop() || null;
 }
+const MAX_HAND_SIZE = 18;
+function receiveDrawnCard(player, card){
+  if(!player || !card) return { accepted:false, discarded:false, card:null };
+  if(player.hand.length >= MAX_HAND_SIZE){
+    state.discard.push(card);
+    return { accepted:false, discarded:true, card };
+  }
+  player.hand.push(card);
+  return { accepted:true, discarded:false, card };
+}
 
 function scrollToPlayerPanel(playerIdx, behavior='smooth', align='top'){
   const panel = document.getElementById(`player-panel-${playerIdx}`);
@@ -5916,11 +5978,18 @@ function newGame(){
   state.figureBurstPromptPlayer = null;
   state.figureBurstPromptActive = false;
   state.players = initPlayers();
+  if(_ol.active){
+    const onlineNames = _ol.role === 'guest'
+      ? [(_ol.opponentNick || 'Jugador 1'), (_ol.nickname || 'Jugador 2')]
+      : [(_ol.nickname || 'Jugador 1'), (_ol.opponentNick || 'Jugador 2')];
+    if(state.players[0]) state.players[0].name = onlineNames[0];
+    if(state.players[1]) state.players[1].name = onlineNames[1];
+  }
 
   for(let r=0;r<5;r++){
     state.players.forEach((p, idx) => {
       const c = drawFromDeck();
-      if(c) p.hand.push(c);
+      if(c) receiveDrawnCard(p, c);
     });
   }
   decideFirstPlayer();
@@ -6977,10 +7046,12 @@ function drawWithTwoFigures(){
   });
 
   let drawnCount = 0;
+  let discardedByCap = 0;
   for(let i=0;i<4;i++){
     const drawn = drawFromDeck({ allowRecycle:false, announce:i===0 });
     if(!drawn) break;
-    player.hand.push(drawn);
+    const receiveResult = receiveDrawnCard(player, drawn);
+    if(receiveResult.discarded) discardedByCap += 1;
     drawnCount += 1;
   }
 
@@ -6992,8 +7063,12 @@ function drawWithTwoFigures(){
     addToast(`Robo especial interrumpido: ${drawnCount}/4`, 'warn');
     log(`📭 ${player.name} activa la táctica de 2 figuras, descarta ${figures.map(cardText).join(', ')} y roba ${drawnCount}/4 carta(s) porque el mazo se agotó.`);
   } else {
-    addToast('Robo especial: 4 cartas', 'ok');
-    log(`🂠 ${player.name} activa la táctica de 2 figuras, descarta ${figures.map(cardText).join(', ')} y roba 4 carta(s).`);
+    addToast(`Robo especial: ${drawnCount} carta(s)`, 'ok');
+    log(`🂠 ${player.name} activa la táctica de 2 figuras, descarta ${figures.map(cardText).join(', ')} y procesa ${drawnCount} carta(s).`);
+  }
+  if(discardedByCap){
+    addToast(`Mano llena: ${discardedByCap} carta(s) al descarte`, 'warn');
+    log(`🗑️ ${player.name} tenía la mano al máximo (${MAX_HAND_SIZE}). ${discardedByCap} carta(s) robada(s) van al descarte.`);
   }
 
   player.flags.figureBurstButtonUnlocked = false;
@@ -7033,10 +7108,12 @@ function drawWithDiamond(){
   state.discard.push(card);
 
   let drawnCount = 0;
+  let discardedByCap = 0;
   for(let i=0;i<card.value;i++){
     const drawn = drawFromDeck({ allowRecycle:false, announce:i===0 });
     if(!drawn) break;
-    player.hand.push(drawn);
+    const receiveResult = receiveDrawnCard(player, drawn);
+    if(receiveResult.discarded) discardedByCap += 1;
     drawnCount += 1;
   }
 
@@ -7050,7 +7127,11 @@ function drawWithDiamond(){
   } else {
     addToast(`Roba ${drawnCount} carta(s)`, 'ok');
   }
-  log(`⛽ ${player.name} descarta ${cardText(card)} y roba ${drawnCount} carta(s).`);
+  if(discardedByCap){
+    addToast(`Mano llena: ${discardedByCap} carta(s) al descarte`, 'warn');
+    log(`🗑️ ${player.name} tenía la mano al máximo (${MAX_HAND_SIZE}). ${discardedByCap} carta(s) robada(s) van al descarte.`);
+  }
+  log(`⛽ ${player.name} descarta ${cardText(card)} y procesa ${drawnCount} carta(s) de robo.`);
   state.lastActionType = 'diamondDraw';
   state.players[playerIdx].flags.lastOwnAction = 'diamondDraw';
   advanceTurn();
@@ -7599,14 +7680,25 @@ function advanceTurn(){
   state.turnCount += 1;
   state.phase = 'Turno';
   const card = drawFromDeck();
-  if(card) state.players[state.currentPlayer].hand.push(card);
-  queueFx(`hand-zone-${state.currentPlayer}`, 'zone-draw');
-  addToast(`${state.players[state.currentPlayer].name} roba 1 carta`, 'ok');
-  if(state.pendingTurnSfx){
-    playUiSound(state.pendingTurnSfx);
-    state.pendingTurnSfx = null;
+  const receiveResult = card ? receiveDrawnCard(state.players[state.currentPlayer], card) : null;
+  if(card){
+    queueFx(`hand-zone-${state.currentPlayer}`, 'zone-draw');
+  }
+  if(receiveResult?.discarded){
+    addToast(`Mano llena: ${cardText(card)} al descarte`, 'warn');
+    log(`🗑️ ${state.players[state.currentPlayer].name} tiene la mano al máximo (${MAX_HAND_SIZE}). ${cardText(card)} va al descarte.`);
+  } else if(receiveResult?.accepted){
+    addToast(`${state.players[state.currentPlayer].name} roba 1 carta`, 'ok');
+  }
+  if(card){
+    if(state.pendingTurnSfx){
+      playUiSound(state.pendingTurnSfx);
+      state.pendingTurnSfx = null;
+    } else {
+      playUiSound('draw');
+    }
   } else {
-    playUiSound('draw');
+    state.pendingTurnSfx = null;
   }
   if(_ol.active) console.log('[ONLINE] advanceTurn calling render, currentPlayer now:', state.currentPlayer);
   render();
@@ -8298,11 +8390,19 @@ function renderRadarMecha(){
   if(focusPlayer && mainBanner){
     const focusBuild = getBuildStatus(focusPlayer);
     const focusReq = getPilotCombatRequirement(focusPlayer);
-    if(focusBuild.combatReady) mainBanner.textContent = `${focusPlayer.name} · Combate listo`;
+    if(state.winner) mainBanner.textContent = `${state.winner} · Victoria confirmada`;
+    else if(focusBuild.combatReady) mainBanner.textContent = `${focusPlayer.name} · Combate listo`;
     else if(focusBuild.mounted && !focusReq.ready) mainBanner.textContent = `${focusPlayer.name} · Bloqueado por piloto`;
     else if(focusBuild.mounted) mainBanner.textContent = `${focusPlayer.name} · Mecha montado`;
     else if(focusPlayer.core.pilot) mainBanner.textContent = `${focusPlayer.name} · Cabina activa`;
     else mainBanner.textContent = `${focusPlayer.name} · Montaje en curso`;
+  }
+
+  const winnerBanner = document.getElementById('winnerBanner');
+  const winnerBannerName = document.getElementById('winnerBannerName');
+  if(winnerBanner && winnerBannerName){
+    winnerBannerName.textContent = state.winner || '';
+    winnerBanner.classList.toggle('show', !!state.winner);
   }
 }
 
@@ -9198,8 +9298,20 @@ function attachButtonAnimations(){
   });
 }
 
+function requestNewGame(){
+  if(_ol.active && _ol.role === 'guest'){
+    pulseButton('newGameBtn');
+    playUiSound('alert');
+    triggerScreenRipple('cyan');
+    olSendAction({ type: 'newGame' });
+    addToast('Solicitud de nueva partida enviada', 'ok');
+    return;
+  }
+  newGame();
+}
+
 // Eventos
-document.getElementById('newGameBtn').addEventListener('click', newGame);
+document.getElementById('newGameBtn').addEventListener('click', requestNewGame);
 document.getElementById('returnHomeBtn').addEventListener('click', returnToMainMenu);
 document.getElementById('toggleTutorialBtn').addEventListener('click', () => {
   if(tutorialSystem.enabled && !tutorialSystem.completed){
@@ -10907,6 +11019,10 @@ function olProcessGuestAction(action) {
       state.selected = olConvertCardIdsToObjects(action.selected) || [];
       console.log('[ONLINE] olProcessGuestAction passTurn - selected cards:', state.selected.length);
       passTurn();
+      break;
+    case 'newGame':
+      console.log('[ONLINE] olProcessGuestAction newGame - restarting match from host');
+      newGame();
       break;
     case 'attackModeOpen':
       if (!state.pendingDefense) {
