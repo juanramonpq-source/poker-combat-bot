@@ -4193,6 +4193,87 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   color: var(--muted);
 }
 
+.ol-waiting-intel {
+  margin-top: 18px;
+  width: min(440px, calc(100vw - 48px));
+  padding: 16px 18px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(18, 28, 47, 0.88), rgba(7, 12, 24, 0.92));
+  border: 1px solid rgba(116, 166, 255, 0.26);
+  box-shadow:
+    0 16px 42px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+
+.ol-waiting-intel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ol-waiting-intel-kicker {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #8ddfff;
+  font-weight: 800;
+}
+
+.ol-waiting-intel-note {
+  font-size: 0.78rem;
+  color: rgba(226, 236, 255, 0.72);
+}
+
+.ol-waiting-intel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ol-waiting-intel-card {
+  min-height: 88px;
+  border-radius: 14px;
+  padding: 12px 12px 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ol-waiting-intel-card[data-suit="spades"] {
+  box-shadow: inset 0 0 0 1px rgba(77, 229, 255, 0.08);
+}
+
+.ol-waiting-intel-card[data-suit="hearts"] {
+  box-shadow: inset 0 0 0 1px rgba(255, 145, 127, 0.08);
+}
+
+.ol-waiting-intel-card[data-suit="clubs"] {
+  box-shadow: inset 0 0 0 1px rgba(156, 255, 160, 0.08);
+}
+
+.ol-waiting-intel-label {
+  font-size: 0.78rem;
+  color: rgba(226, 236, 255, 0.74);
+  letter-spacing: 0.04em;
+}
+
+.ol-waiting-intel-value {
+  font-size: 1.65rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #f5fbff;
+}
+
+.ol-waiting-intel-sub {
+  font-size: 0.76rem;
+  color: rgba(226, 236, 255, 0.58);
+}
+
 .ol-waiting-actions {
   margin-top: 18px;
   display: flex;
@@ -4345,8 +4426,28 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   <div class="ol-waiting-spinner"></div>
   <div id="olWaitingText">Turno del rival...</div>
   <div class="ol-waiting-opponent" id="olWaitingOpponent"></div>
-  <div class="ol-waiting-actions">
-    <button id="olExitMatchBtn" class="ol-button ol-secondary">Volver al inicio</button>
+  <div class="ol-waiting-intel" id="olWaitingIntel" aria-live="polite">
+    <div class="ol-waiting-intel-head">
+      <div class="ol-waiting-intel-kicker">Lectura táctica del rival</div>
+      <div class="ol-waiting-intel-note">Datos públicos en tiempo real</div>
+    </div>
+    <div class="ol-waiting-intel-grid">
+      <div class="ol-waiting-intel-card" data-suit="spades">
+        <div class="ol-waiting-intel-label">♠ Ataque</div>
+        <div class="ol-waiting-intel-value" id="olWaitingAttackValue">0</div>
+        <div class="ol-waiting-intel-sub" id="olWaitingAttackSub">0 cartas</div>
+      </div>
+      <div class="ol-waiting-intel-card" data-suit="hearts">
+        <div class="ol-waiting-intel-label">♥ Defensa</div>
+        <div class="ol-waiting-intel-value" id="olWaitingDefenseValue">0</div>
+        <div class="ol-waiting-intel-sub" id="olWaitingDefenseSub">0 cartas</div>
+      </div>
+      <div class="ol-waiting-intel-card" data-suit="clubs">
+        <div class="ol-waiting-intel-label">♣ Armadura</div>
+        <div class="ol-waiting-intel-value" id="olWaitingArmorValue">0</div>
+        <div class="ol-waiting-intel-sub" id="olWaitingArmorSub">0 cartas</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -4995,9 +5096,9 @@ function primeOfflineMode(gameMode, difficulty=null){
 }
 
 const tutorialSteps = [
-  'Primer turno: puedes colocar hasta 3 cartas por módulo. A partir del siguiente turno, sin piloto principal el límite baja a 2.',
+  'Un Mecha es un robot modulable: se define por AL MENOS 6 cartas de núcleos y 1 piloto. Primer turno: puedes colocar hasta 3 cartas por módulo. A partir del siguiente turno, sin piloto principal el límite baja a 2.',
   'El piloto principal define la forma del mecha: amplía a 3 el módulo de su palo y exige reunir 3 cartas de ese palo para poder atacar. El copiloto normal amplía su palo a 3. El copiloto ♦ solo puede ser copiloto, es dinámico y permite que cualquier único módulo llegue a 3 sin fijarlo para toda la partida.',
-  'Todos los ases son potenciadores: solo pueden ir al slot de booster. El As♦ no amplía ningún módulo: únicamente permite usar la armadura (♣) del panel como combustible para atacar.',
+  'Todos los ases son potenciadores: solo pueden ir al slot de booster. A♠, A♥ y A♣ llevan su módulo directamente a 4. El As♦ no amplía ningún módulo: únicamente permite usar la armadura (♣) del panel como combustible para atacar.',
   'Modificar cuenta operaciones: colocar, descartar o sustituir.',
   'Ataca con combustible del panel y picas numéricas del módulo de ataque. El defensor solo puede responder con ♦ numéricos. El proyectil consume exactamente 1 carta de picas numérica y hace el daño de esa carta.',
   'No se puede usar robar con diamantes en dos turnos seguidos. Si el mazo se agota durante ese robo, el robo se detiene ahí.'
@@ -5048,7 +5149,7 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'core-build',
     title: 'Paso 1 · Monta el núcleo',
-    body: 'Antes de tocar nada, quédate con este mapa rápido del juego:<br><br><strong>Palos:</strong> ♠ ataque, ♥ defensa, ♣ armadura y ♦ combustible/defensa/robo.<br><strong>Figuras:</strong> J/Q/K solo van al núcleo como <strong>piloto</strong> o <strong>copiloto</strong>.<br><strong>Piloto:</strong> define la “forma” del mecha, porque fija el palo que debe llegar a <strong>3 cartas</strong> para poder atacar.<br><strong>Copiloto:</strong> es una ventaja táctica; añade +1 al límite de su palo. Si es <strong>♦</strong>, no puede ser piloto y su ayuda es <strong>dinámica</strong>: sostiene el módulo que haga falta en cada momento.<br><strong>Reconfiguración:</strong> si cambias piloto o copiloto a mitad de partida, el mecha se recalcula y debes descartar el exceso que ya no quepa.<br><br>Ahora sí: en este primer paso vas a colocar <strong>piloto</strong>, <strong>copiloto</strong> y <strong>booster</strong> en una sola modificación.',
+    body: 'Quédate con esta definición antes de tocar nada: <strong>un Mecha es un robot modulable; se define por AL MENOS 6 cartas de núcleos y 1 piloto</strong>.<br><br>Mapa rápido del juego:<br><strong>Palos:</strong> ♠ ataque, ♥ defensa, ♣ armadura y ♦ combustible/defensa/robo.<br><strong>Figuras:</strong> J/Q/K solo van al núcleo como <strong>piloto</strong> o <strong>copiloto</strong>.<br><strong>Piloto:</strong> define la “forma” del mecha, porque fija el palo que debe llegar a <strong>3 cartas</strong> para poder atacar.<br><strong>Copiloto:</strong> añade +1 al límite de su palo. Si es <strong>♦</strong>, no puede ser piloto y su ayuda es <strong>dinámica</strong>: sostiene el módulo que haga falta en cada momento.<br><strong>Reconfiguración:</strong> si cambias piloto o copiloto a mitad de partida, el mecha se recalcula y descarta automáticamente lo que ya no quepa.<br><br>Ahora sí: en este primer paso vas a colocar <strong>piloto</strong>, <strong>copiloto</strong> y <strong>booster</strong> en una sola modificación.',
     objective: 'Selecciona <strong>K♠</strong>, <strong>J♦</strong> y <strong>A♦</strong> de tu mano y pulsa <strong>Modificar</strong>.',
     tip: 'Idea clave: el piloto limita la forma del mecha, el copiloto la mejora y el as lo potencia.',
     allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
@@ -5968,6 +6069,14 @@ function getFixedModuleLimits(player){
     }
   }
 
+  if(player.core.booster && player.core.booster.rank === 'A' && player.core.booster.suit !== 'diamonds'){
+    const module = SUIT_TO_MODULE[player.core.booster.suit];
+    if(module){
+      limits[module].max = Math.max(limits[module].max, 4);
+      limits[module].sources.push('AS');
+    }
+  }
+
   return limits;
 }
 
@@ -6346,6 +6455,29 @@ function getOverflowAfterCoreReplacement(player, targetZone, incomingCard){
 
   return best.overflow;
 }
+function getSortedOverflowCards(player, overflow){
+  const cardsByModule = { attack:[], defense:[], armor:[] };
+  const cards = [];
+
+  MODULE_KEYS.forEach(module => {
+    const overflowCount = overflow[module] || 0;
+    if(!overflowCount) return;
+    const sorted = [...player[module]].sort((a, b) => {
+      const valueDiff = (a?.value || 0) - (b?.value || 0);
+      if(valueDiff !== 0) return valueDiff;
+      return String(a?.id || '').localeCompare(String(b?.id || ''));
+    }).slice(0, overflowCount);
+    cardsByModule[module] = sorted;
+    cards.push(...sorted.map(card => ({ card, zone:module })));
+  });
+
+  return { cardsByModule, cards };
+}
+function getAutoDiscardAfterCoreReplacement(player, targetZone, incomingCard){
+  const overflow = getOverflowAfterCoreReplacement(player, targetZone, incomingCard);
+  const discardPlan = getSortedOverflowCards(player, overflow);
+  return { overflow, ...discardPlan };
+}
 function selectedOverflowCardsByModule(boardCards){
   const byModule = { attack:0, defense:0, armor:0 };
   boardCards.forEach(c => {
@@ -6382,10 +6514,13 @@ function modifyMecha(){
   state.selected = dedupeSelectedCards(state.selected);
   const playerIdx = state.currentPlayer;
   const player = state.players[playerIdx];
-  const opsLimit = state.turnCount === 1 ? 3 : 2;
   const handCards = state.selected.filter(s => s.zone==='hand');
   const boardCards = state.selected.filter(s => s.zone!=='hand');
-  const operations = handCards.length + boardCards.length;
+  const coreBoardCards = boardCards.filter(c => c.zone.startsWith('core'));
+  const moduleDiscardCards = boardCards.filter(c => MODULE_KEYS.includes(c.zone) || c.zone==='fuel');
+  const autoCoreReplacement = handCards.length===1 && coreBoardCards.length===1;
+  const opsLimit = state.turnCount === 1 ? 3 : 2;
+  const operations = autoCoreReplacement ? 2 : handCards.length + boardCards.length;
 
   console.log('[DEBUG-MODIFY] Selected cards:');
   console.log('[DEBUG-MODIFY]   - Hand cards:', handCards.map(c => c.rank + c.suit));
@@ -6394,9 +6529,6 @@ function modifyMecha(){
 
   if(operations===0) return notifySelection('Selecciona cartas de la mano para colocar o cartas del panel para descartar/cambiar.');
   if(operations>opsLimit) return notifySelection(`Máximo ${opsLimit} operaciones de modificación en este turno.`);
-
-  const coreBoardCards = boardCards.filter(c => c.zone.startsWith('core'));
-  const moduleDiscardCards = boardCards.filter(c => MODULE_KEYS.includes(c.zone) || c.zone==='fuel');
 
   if(handCards.length===1 && boardCards.length===1 && moduleDiscardCards.length===1){
     const handCard = handCards[0];
@@ -6417,35 +6549,28 @@ function modifyMecha(){
       return notifySelection('La carta de la mano no puede sustituir legalmente esa pieza del núcleo.');
     }
 
-    const requiredOverflow = getOverflowAfterCoreReplacement(player, targetCore.zone, fromHand);
-    const selectedOverflow = selectedOverflowCardsByModule(moduleDiscardCards);
-    for(const mod of MODULE_KEYS){
-      if((requiredOverflow[mod] || 0) !== (selectedOverflow[mod] || 0)){
-        if(requiredOverflow[mod]){
-          return notifySelection(`Al cambiar ${zoneLabel(targetCore.zone)} debes descartar ${requiredOverflow[mod]} carta(s) sobrante(s) de ${MODULE_LABELS[mod]}.`);
-        }
-      }
-    }
+    const autoDiscardPlan = getAutoDiscardAfterCoreReplacement(player, targetCore.zone, fromHand);
 
     const removedCore = popCardFromZone(player, targetCore.zone, targetCore.id);
     removeById(player.hand, fromHand.id);
     pushCardToZone(player, targetCore.zone, fromHand);
 
-    moduleDiscardCards.forEach(c => {
-      const removed = popCardFromZone(player, c.zone, c.id);
+    autoDiscardPlan.cards.forEach(({ card, zone }) => {
+      const removed = popCardFromZone(player, zone, card.id);
       if(removed) state.discard.push(removed);
     });
 
     state.discard.push(removedCore);
     setBestFlexTargets(player);
     queueFx(`core-zone-${playerIdx}`, 'zone-pulse');
-    moduleDiscardCards.forEach(c => queueFx(zoneIdFromPlacement(playerIdx, c.zone), 'zone-pulse'));
+    autoDiscardPlan.cards.forEach(({ zone }) => queueFx(zoneIdFromPlacement(playerIdx, zone), 'zone-pulse'));
     addToast(`${zoneLabel(targetCore.zone)} sustituido`, 'ok');
     if(targetCore.zone==='core-pilot') addToast('Piloto sustituido', 'warn');
     if(targetCore.zone==='core-copilot') addToast('Copiloto sustituido', 'warn');
+    if(targetCore.zone==='core-booster') addToast('Potenciador sustituido', 'warn');
     log(`🔧 ${player.name} sustituye ${cardText(removedCore)} por ${cardText(fromHand)} en ${zoneLabel(targetCore.zone)}.`);
-    if(moduleDiscardCards.length){
-      log(`🗑️ Ajuste de capacidad: descarta ${moduleDiscardCards.map(cardText).join(', ')}.`);
+    if(autoDiscardPlan.cards.length){
+      log(`🗑️ Ajuste automático de capacidad: descarta ${autoDiscardPlan.cards.map(entry => cardText(entry.card)).join(', ')}.`);
     }
     syncMilestones(playerIdx);
     finishModifyTurn();
@@ -7531,6 +7656,7 @@ function createPlayerPanel(player, idx){
   const winnerIdx = getWinnerIndex();
   const isWinner = state.winner && idx===winnerIdx;
   const isLoser = state.winner && idx!==winnerIdx;
+  const showVictoryTrophy = !!state.winner;
   const isDefenseFocus = !!state.pendingDefense && idx===state.pendingDefense.defenderIndex;
   const isInteractiveDefenseFocus = !!state.pendingDefense && getInteractivePlayerIndex() === state.pendingDefense.defenderIndex && idx===state.pendingDefense.defenderIndex;
   const selectedDefenseCard = isInteractiveDefenseFocus && state.selected.length===1 && isNumericDiamondCard(state.selected[0]) ? state.selected[0] : null;
@@ -7551,7 +7677,7 @@ function createPlayerPanel(player, idx){
 
   return `
     <section class="frame player-panel ${active ? 'active' : ''} ${build.mounted ? 'mounted' : ''} ${build.combatReady ? 'combat-ready' : ''} ${isWinner ? 'winner' : ''} ${isLoser ? 'loser' : ''}" id="player-panel-${idx}">
-      ${isWinner ? '<div class="victory-trophy">🏆</div>' : ''}
+      ${showVictoryTrophy ? '<div class="victory-trophy">🏆</div>' : ''}
       <div class="mecha-summary">
         <div class="turn-badge">${isDefenseFocus ? 'DEFENSA ACTIVA' : active ? 'TURNO ACTIVO' : 'EN ESPERA'}</div>
         <div class="frame pilot-tag">
@@ -10901,17 +11027,45 @@ function olIsMyTurn() {
   return state.currentPlayer === _ol.myIndex;
 }
 
+function olUpdateWaitingIntel() {
+  if (!_ol.active) return;
+  var opponentIdx = 1 - _ol.myIndex;
+  var opponent = state.players && state.players[opponentIdx];
+  var attackValue = document.getElementById('olWaitingAttackValue');
+  var attackSub = document.getElementById('olWaitingAttackSub');
+  var defenseValue = document.getElementById('olWaitingDefenseValue');
+  var defenseSub = document.getElementById('olWaitingDefenseSub');
+  var armorValue = document.getElementById('olWaitingArmorValue');
+  var armorSub = document.getElementById('olWaitingArmorSub');
+
+  if (!attackValue || !attackSub || !defenseValue || !defenseSub || !armorValue || !armorSub) return;
+
+  var attackCards = opponent && Array.isArray(opponent.attack) ? opponent.attack : [];
+  var defenseCards = opponent && Array.isArray(opponent.defense) ? opponent.defense : [];
+  var armorCards = opponent && Array.isArray(opponent.armor) ? opponent.armor : [];
+
+  attackValue.textContent = String(sumCards(attackCards));
+  attackSub.textContent = attackCards.length + (attackCards.length === 1 ? ' carta' : ' cartas');
+  defenseValue.textContent = String(sumCards(defenseCards));
+  defenseSub.textContent = defenseCards.length + (defenseCards.length === 1 ? ' carta' : ' cartas');
+  armorValue.textContent = String(sumCards(armorCards));
+  armorSub.textContent = armorCards.length + (armorCards.length === 1 ? ' carta' : ' cartas');
+}
+
 function olUpdateWaitingUI() {
   if (!_ol.active) return;
   var veil = document.getElementById('olWaitingVeil');
   if (!veil) return;
   var myTurn = olIsMyTurn();
+  olUpdateWaitingIntel();
   // Show waiting veil if NOT my turn AND no winner
   // Ignore transitionLock - it's a local animation state for the host
   if (!myTurn && !state.winner) {
     var name = _ol.opponentNick || 'Rival';
     var txt = document.getElementById('olWaitingText');
     if (txt) txt.textContent = 'Turno de ' + name + '…';
+    var opp = document.getElementById('olWaitingOpponent');
+    if (opp) opp.textContent = 'Mientras esperas, puedes leer sus módulos y calcular el siguiente cruce.';
     veil.classList.remove('ol-hidden');
   } else {
     veil.classList.add('ol-hidden');
@@ -11076,7 +11230,6 @@ document.getElementById('olJoinRoomBtn').addEventListener('click', function() {
 });
 
 document.getElementById('olBackBtn').addEventListener('click', returnToMainMenu);
-document.getElementById('olExitMatchBtn').addEventListener('click', returnToMainMenu);
 
 console.log('[DEBUG] ========== CÓDIGO ONLINE CARGADO COMPLETAMENTE ==========');
 
