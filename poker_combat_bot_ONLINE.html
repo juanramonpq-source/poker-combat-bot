@@ -4973,6 +4973,7 @@ const state = {
   projectileUnlocked: false,
   projectilePromptPlayer: null,
   postAttackTopFocus: false,
+  onlineFxCue: null,
 };
 
 /* ===== ONLINE MULTIPLAYER STATE ===== */
@@ -4991,6 +4992,121 @@ var _ol = {
 
 let defenseUiCueKey = '';
 let defenseAlertTimer = null;
+let olLastFxCueId = null;
+let olWaitingRevealBlockedUntil = 0;
+let olWaitingRevealTimer = null;
+
+function buildOnlineFxCue(type, playerIdx, extra={}){
+  return {
+    id: `fx-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    type,
+    playerIdx,
+    turnCount: state.turnCount,
+    ...extra
+  };
+}
+
+function clearOnlineFxCue(cueId=null){
+  if(!cueId){
+    state.onlineFxCue = null;
+    return;
+  }
+  if(state.onlineFxCue && state.onlineFxCue.id === cueId){
+    state.onlineFxCue = null;
+  }
+}
+
+function olSuppressWaitingVeil(durationMs=1800){
+  olWaitingRevealBlockedUntil = Math.max(olWaitingRevealBlockedUntil, Date.now() + durationMs);
+  if(olWaitingRevealTimer){
+    window.clearTimeout(olWaitingRevealTimer);
+    olWaitingRevealTimer = null;
+  }
+  const veil = document.getElementById('olWaitingVeil');
+  if(veil) veil.classList.add('ol-hidden');
+  olWaitingRevealTimer = window.setTimeout(() => {
+    olWaitingRevealTimer = null;
+    olUpdateWaitingUI();
+  }, durationMs + 60);
+}
+
+function queueOnlineFxCue(type, playerIdx, extra={}){
+  if(!_ol.active || _ol.role !== 'host') return null;
+  const cue = buildOnlineFxCue(type, playerIdx, extra);
+  state.onlineFxCue = cue;
+  olSendState();
+  return cue.id;
+}
+
+function replayOnlineAttackFx(cue){
+  if(!cue) return;
+  const attackerIdx = Number(cue.playerIdx);
+  const defenderIdx = Number(cue.defenderIdx);
+  const withProjectile = !!cue.withProjectile;
+  const attackPoints = Number(cue.attackPoints) || 0;
+  const heavyImpact = !!cue.heavyImpact;
+  const destroyedArmorCount = Number(cue.destroyedArmorCount) || 0;
+  const destroyedDefenseCount = Number(cue.destroyedDefenseCount) || 0;
+
+  if(!Number.isFinite(attackerIdx) || !Number.isFinite(defenderIdx)) return;
+
+  olSuppressWaitingVeil(3200);
+  scrollToTopArea('auto');
+  window.setTimeout(() => scrollToTopArea('auto'), 80);
+  window.setTimeout(() => scrollToTopArea('auto'), 320);
+
+  window.setTimeout(() => {
+    triggerBeam();
+    triggerCombatCinematic(attackerIdx, withProjectile);
+    flushFxQueue();
+    triggerSideRadarAttack(attackerIdx, withProjectile);
+    playUiSound(withProjectile ? 'heavy' : 'attack');
+    triggerScreenShake(withProjectile ? 'heavy' : 'light');
+    triggerScreenRipple(withProjectile ? 'amber' : 'red');
+    pulseVibrate([40, 24, 60]);
+    spawnElementSparks(document.getElementById('tacticalScreen'), withProjectile ? 42 : 28, withProjectile ? 'amber' : 'red');
+    if(withProjectile) window.setTimeout(spawnComboText, 300);
+  }, 360);
+
+  window.setTimeout(() => {
+    if(!(destroyedArmorCount > 0 || destroyedDefenseCount > 0 || attackPoints > 0)) return;
+    queueFx(`player-panel-${defenderIdx}`, 'damage-shake');
+    queueFx(`player-panel-${defenderIdx}`, 'damage-flash');
+    queueFx(`player-panel-${defenderIdx}`, 'impact-burst');
+    queueFx(`mechaDial-${defenderIdx}`, 'impact-burst');
+    if(destroyedArmorCount > 0) queueFx(`module-box-armor-${defenderIdx}`, 'zone-pulse');
+    if(destroyedDefenseCount > 0) queueFx(`module-box-defense-${defenderIdx}`, 'zone-pulse');
+    flushFxQueue();
+    triggerSideRadarImpact(defenderIdx, heavyImpact);
+    playUiSound(destroyedDefenseCount > 0 ? 'heavy' : 'impact');
+    triggerScreenShake(heavyImpact ? 'heavy' : 'light');
+    triggerScreenRipple(destroyedDefenseCount > 0 ? 'red' : 'amber');
+    pulseVibrate(destroyedDefenseCount > 0 ? [40, 30, 60] : [20, 20, 20]);
+    spawnDamageNumber(defenderIdx, attackPoints);
+    spawnImpactBurst(defenderIdx, heavyImpact);
+    triggerImpactFlash(destroyedDefenseCount > 0 ? 'red' : 'amber');
+    if(destroyedArmorCount > 0) pulseRadarStat(defenderIdx, 'armor');
+    if(destroyedDefenseCount > 0) pulseRadarStat(defenderIdx, 'defense');
+  }, 1860);
+}
+
+function replayOnlineFxCue(cue){
+  if(!cue || !cue.type) return;
+  const playerIdx = Number(cue.playerIdx);
+  if(!Number.isFinite(playerIdx)) return;
+
+  switch(cue.type){
+    case 'modify':
+      olSuppressWaitingVeil(1850);
+      triggerModifyFeedbackSequence(playerIdx, () => {});
+      break;
+    case 'attack':
+      replayOnlineAttackFx(cue);
+      break;
+    default:
+      break;
+  }
+}
 
 const singlePlayerAi = {
   timer: null,
@@ -5123,6 +5239,12 @@ function stopOnlineModeUi(){
   _ol.opponentNick = '';
   _ol.pendingLoadCode = '';
   _ol.pendingLoadMeta = null;
+  olLastFxCueId = null;
+  olWaitingRevealBlockedUntil = 0;
+  if(olWaitingRevealTimer){
+    window.clearTimeout(olWaitingRevealTimer);
+    olWaitingRevealTimer = null;
+  }
 }
 function returnToMainMenu(){
   const leavingOnline = _ol.active || !!_ol.socket || state.gameMode === 'online';
@@ -5146,6 +5268,7 @@ function returnToMainMenu(){
   state.selected = [];
   state.singleDifficulty = null;
   state.gameMode = 'local';
+  state.onlineFxCue = null;
 
   showIntroScreen('root');
   render();
@@ -5156,6 +5279,7 @@ function primeOfflineMode(gameMode, difficulty=null){
   resetTutorialSession();
   state.gameMode = gameMode;
   state.singleDifficulty = gameMode === 'single' ? difficulty : null;
+  state.onlineFxCue = null;
   state.tutorial = false;
 }
 
@@ -6243,6 +6367,7 @@ function restoreGameFromCode(code, options = {}){
   state.projectileUnlocked = !!payload.pu;
   state.projectilePromptPlayer = null;
   state.postAttackTopFocus = false;
+  state.onlineFxCue = null;
   state.musicPhase = state.winner ? 'none' : (state.firstAttackTriggered ? 'battle' : 'intro');
 
   state.players = (payload.p || []).map((player, idx) => ({
@@ -6398,6 +6523,7 @@ function newGame(){
   state.currentPlayer = 0;
   state.turnCount = 0;
   state.phase = 'Preparación';
+  if(state.gameMode === 'online' || _ol.active) state.tutorial = false;
   state.winner = null;
   state.pendingTurnSfx = null;
   state.attackReadyPromptPlayer = null;
@@ -6413,6 +6539,7 @@ function newGame(){
   state.fxQueue = [];
   state.projectileUnlocked = false;
   state.projectilePromptPlayer = null;
+  state.onlineFxCue = null;
   state.figureBurstPromptPlayer = null;
   state.figureBurstPromptActive = false;
   state.players = initPlayers();
@@ -7425,6 +7552,7 @@ function finishModifyTurn(){
   state.pendingTurnSfx = 'turn_build';
   state.players[state.currentPlayer].flags.lastOwnAction = 'modify';
   state.transitionLock = true;
+  const onlineFxCueId = queueOnlineFxCue('modify', state.currentPlayer);
 
   let callbackExecuted = false;
 
@@ -7432,6 +7560,7 @@ function finishModifyTurn(){
   const safetyTimeout = window.setTimeout(() => {
     if (!callbackExecuted) {
       if(_ol.active) console.log('[ONLINE] finishModifyTurn SAFETY TIMEOUT: forcing advanceTurn after 3 seconds');
+      clearOnlineFxCue(onlineFxCueId);
       state.transitionLock = false;
       advanceTurn();
     }
@@ -7443,6 +7572,7 @@ function finishModifyTurn(){
     if(callbackExecuted) return; // Safety: don't execute twice
     callbackExecuted = true;
     window.clearTimeout(safetyTimeout);
+    clearOnlineFxCue(onlineFxCueId);
 
     if(_ol.active) console.log('[ONLINE] finishModifyTurn callback: showMechaUpdateShowcase completed');
     render(); // Render AFTER the showcase animation
@@ -7959,9 +8089,19 @@ function resolveAttackAfterDefense(defenseCard){
   state.selected = [];
   state.phase = 'Ataque';
   state.postAttackTopFocus = true;
+  const outcomePreview = aiSimulateAttackOutcome(defender, totalAttack);
+  const attackFxCueId = queueOnlineFxCue('attack', pending.attackerIndex, {
+    defenderIdx,
+    withProjectile: !!pending.withProjectile,
+    attackPoints: totalAttack,
+    heavyImpact: outcomePreview.destroyedDefenseCount > 0 || totalAttack >= 8,
+    destroyedArmorCount: outcomePreview.destroyedArmorCount,
+    destroyedDefenseCount: outcomePreview.destroyedDefenseCount
+  });
 
   runHeaderAttackSequence(pending.attackerIndex, !!pending.withProjectile, () => {
     const result = applyAttack(defenderIdx, totalAttack);
+    clearOnlineFxCue(attackFxCueId);
     log(result.summary);
     state.pendingTurnSfx = 'turn_attack';
     checkWinner();
@@ -11326,6 +11466,7 @@ function olStartGame(role) {
   resetTutorialSession();
   state.gameMode = 'online';
   state.singleDifficulty = null;
+  state.tutorial = false;
   _ol.role = role;
   _ol.myIndex = role === 'host' ? 0 : 1;
   _ol.active = true;
@@ -11441,6 +11582,9 @@ function olApplyState(data) {
   // Apply host's state completely - guest trusts host as authoritative
   Object.assign(state, data);
   Object.assign(state, keep);
+  const cueToReplay = state.onlineFxCue && state.onlineFxCue.id !== olLastFxCueId
+    ? { ...state.onlineFxCue }
+    : null;
 
   // Keep local selection only if the guest can still interact and the same card ids
   // still exist in the guest's own zones after the authoritative host update.
@@ -11463,6 +11607,10 @@ function olApplyState(data) {
   if (!state._guestButtonsSetup) {
     olSetupGuestButtons();
     state._guestButtonsSetup = true;
+  }
+  if(cueToReplay){
+    olLastFxCueId = cueToReplay.id;
+    replayOnlineFxCue(cueToReplay);
   }
 }
 
@@ -11651,6 +11799,10 @@ function olUpdateWaitingUI() {
   if (!veil) return;
   var myTurn = olIsMyTurn();
   olUpdateWaitingIntel();
+  if(Date.now() < olWaitingRevealBlockedUntil){
+    veil.classList.add('ol-hidden');
+    return;
+  }
   // Show waiting veil if NOT my turn AND no winner
   // Ignore transitionLock - it's a local animation state for the host
   if (!myTurn && !state.winner) {
@@ -11757,6 +11909,7 @@ function olShowLobby() {
   resetTutorialSession();
   state.gameMode = 'online';
   state.singleDifficulty = null;
+  state.tutorial = false;
   document.getElementById('introScreen').classList.add('hidden');
   document.getElementById('olLobbyScreen').classList.remove('ol-hidden');
 }
