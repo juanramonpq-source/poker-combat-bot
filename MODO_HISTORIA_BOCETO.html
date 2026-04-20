@@ -506,6 +506,37 @@
       font-size:.92rem;
       line-height:1.55;
     }
+    .scene-context{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(10,17,24,.68), rgba(8,13,19,.42));
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .scene-chip{
+      display:inline-flex;
+      align-items:center;
+      width:max-content;
+      min-height:28px;
+      padding:0 12px;
+      border-radius:999px;
+      background:rgba(255,185,109,.1);
+      border:1px solid rgba(255,185,109,.18);
+      color:#ffe0bd;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .scene-objective{
+      margin:0;
+      color:#f3f8fd;
+      font-size:.9rem;
+      line-height:1.55;
+    }
     .scene-speaker{
       margin-top:14px;
       color:#ffcf9d;
@@ -763,6 +794,9 @@
         margin:0 12px 86px;
         padding:16px;
       }
+      .scene-context{
+        padding:12px;
+      }
       .scene-title{
         font-size:1.28rem;
       }
@@ -854,6 +888,10 @@
               <p class="scene-node" id="storySceneNodeLabel">Hangar de la Fosa Azul</p>
               <h2 class="scene-title" id="storySceneTitle">Fosa Azul · Primer Encuentro</h2>
               <p class="scene-subtitle" id="storySceneSubtitle">La aventura empieza en el taller. Aquí el mundo te exige entender el metal antes de merecer pilotarlo.</p>
+              <div class="scene-context">
+                <div class="scene-chip" id="storySceneTypeChip">Briefing · Construcción</div>
+                <p class="scene-objective" id="storySceneObjective">Objetivo: Construir un bot válido para el taller.</p>
+              </div>
 
               <div class="scene-speaker" id="storySceneSpeaker">Mara Oxido</div>
               <p class="scene-line" id="storySceneLine">Si no sabes ensamblarlo, tampoco sabrás salvarlo.</p>
@@ -898,6 +936,8 @@
     const storySceneNodeLabel = document.getElementById('storySceneNodeLabel');
     const storySceneTitle = document.getElementById('storySceneTitle');
     const storySceneSubtitle = document.getElementById('storySceneSubtitle');
+    const storySceneTypeChip = document.getElementById('storySceneTypeChip');
+    const storySceneObjective = document.getElementById('storySceneObjective');
     const storySceneSpeaker = document.getElementById('storySceneSpeaker');
     const storySceneLine = document.getElementById('storySceneLine');
     const storySceneCast = document.getElementById('storySceneCast');
@@ -1182,6 +1222,8 @@
       storySceneNodeLabel.textContent = localNode.title;
       storySceneTitle.textContent = scene.title || localNode.title;
       storySceneSubtitle.textContent = scene.subtitle || localNode.lead;
+      storySceneTypeChip.textContent = `${localNode.type} · ${localNode.sceneChip}`;
+      storySceneObjective.textContent = `Objetivo: ${localNode.mission}`;
       storySceneSpeaker.textContent = line.speaker;
       storySceneLine.textContent = line.text;
       renderStoryCast(localNode.cast);
