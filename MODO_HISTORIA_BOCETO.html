@@ -175,6 +175,12 @@
       box-shadow:none;
       isolation:isolate;
     }
+    .title-picture{
+      display:block;
+      width:100%;
+      height:100%;
+      min-height:100svh;
+    }
     .title-art-wrap::before{
       content:"";
       position:absolute;
@@ -465,6 +471,9 @@
       .workspace{
         width:min(100% - 16px, 100%);
       }
+      .title-image{
+        object-position:center center;
+      }
       .title-overlay{
         padding:28px 16px max(12svh, 86px);
       }
@@ -478,7 +487,10 @@
     <section class="title-stage" id="titleStage">
       <div class="title-shell">
         <div class="title-art-wrap" id="titleArtWrap">
-          <img class="title-image" src="assets/Historia/Brutos/Titulo1.PNG" alt="Titulo de Camino de PoCoBOT" loading="eager">
+          <picture class="title-picture">
+            <source media="(max-width: 900px) and (orientation: portrait)" srcset="assets/Historia/Brutos/TituloSmartphone.png">
+            <img class="title-image" src="assets/Historia/Brutos/Titulo1.PNG" alt="Titulo de Camino de PoCoBOT" loading="eager">
+          </picture>
           <div class="title-overlay">
             <div class="title-copy">
               <strong>Modo Historia · Boceto vivo</strong>
