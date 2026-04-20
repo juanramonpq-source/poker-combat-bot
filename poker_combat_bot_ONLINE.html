@@ -6048,7 +6048,9 @@ function drawFromDeck(options = {}){
   return state.deck.pop() || null;
 }
 const MAX_HAND_SIZE = 18;
-const SAVE_CODE_PREFIX = 'PCB1.';
+const SAVE_CODE_PREFIX_V1 = 'PCB1.';
+const SAVE_CODE_PREFIX_V2 = 'PCB2.';
+const SAVE_CODE_COMPRESSION = 'gzip';
 const SAVE_RANK_TO_CODE = {
   'A':'A','K':'K','Q':'Q','J':'J','10':'T','9':'9','8':'8','7':'7','6':'6','5':'5','4':'4','3':'3','2':'2'
 };
@@ -6244,16 +6246,70 @@ function base64UrlToUtf8(base64url){
   for(let i=0; i<binary.length; i++) bytes[i] = binary.charCodeAt(i);
   return new TextDecoder().decode(bytes);
 }
-function encodeSaveCode(payload){
-  return SAVE_CODE_PREFIX + utf8ToBase64Url(JSON.stringify(payload));
+function canUseCompressedSaveCodes(){
+  return typeof CompressionStream === 'function'
+    && typeof DecompressionStream === 'function'
+    && typeof Blob === 'function'
+    && typeof Response === 'function';
 }
-function decodeSaveCode(code){
+function bytesToBase64Url(bytes){
+  let binary = '';
+  const chunkSize = 0x8000;
+  for(let i=0; i<bytes.length; i += chunkSize){
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/,'');
+}
+function base64UrlToBytes(base64url){
+  const normalized = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for(let i=0; i<binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+async function compressUtf8Text(text){
+  const stream = new Blob([text]).stream().pipeThrough(new CompressionStream(SAVE_CODE_COMPRESSION));
+  const buffer = await new Response(stream).arrayBuffer();
+  return new Uint8Array(buffer);
+}
+async function decompressUtf8Bytes(bytes){
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream(SAVE_CODE_COMPRESSION));
+  const buffer = await new Response(stream).arrayBuffer();
+  return new TextDecoder().decode(buffer);
+}
+async function encodeSaveCode(payload){
+  const json = JSON.stringify(payload);
+  if(canUseCompressedSaveCodes()){
+    try{
+      const compressed = await compressUtf8Text(json);
+      return SAVE_CODE_PREFIX_V2 + bytesToBase64Url(compressed);
+    }catch(err){
+      console.warn('[SAVE] No se pudo comprimir el código. Se usa el formato legado.', err);
+    }
+  }
+  return SAVE_CODE_PREFIX_V1 + utf8ToBase64Url(json);
+}
+async function decodeSaveCode(code){
   const raw = String(code || '').trim().replace(/\s+/g, '');
-  if(!raw.startsWith(SAVE_CODE_PREFIX)){
+  let json = '';
+  if(raw.startsWith(SAVE_CODE_PREFIX_V2)){
+    try{
+      json = await decompressUtf8Bytes(base64UrlToBytes(raw.slice(SAVE_CODE_PREFIX_V2.length)));
+    }catch(err){
+      throw new Error('No se pudo descomprimir el código de partida.');
+    }
+  } else if(raw.startsWith(SAVE_CODE_PREFIX_V1)){
+    json = base64UrlToUtf8(raw.slice(SAVE_CODE_PREFIX_V1.length));
+  } else {
     throw new Error('El código no parece una partida válida de PoCoBOT.');
   }
-  const json = base64UrlToUtf8(raw.slice(SAVE_CODE_PREFIX.length));
-  const payload = JSON.parse(json);
+  let payload = null;
+  try{
+    payload = JSON.parse(json);
+  }catch(err){
+    throw new Error('El código está dañado o incompleto.');
+  }
   if(!payload || payload.v !== 1) throw new Error('La versión del código no es compatible.');
   return payload;
 }
@@ -6296,7 +6352,7 @@ function mapTokensToCards(tokens, registry){
     return card;
   });
 }
-function restoreGameFromCode(code, options = {}){
+async function restoreGameFromCode(code, options = {}){
   const {
     allowOnline = false,
     forceMode = null,
@@ -6307,7 +6363,7 @@ function restoreGameFromCode(code, options = {}){
     const support = getSaveSupportState();
     if(!support.allowed) throw new Error(support.reason);
   }
-  const payload = decodeSaveCode(code);
+  const payload = await decodeSaveCode(code);
   const targetMode = forceMode || payload.m;
   const onlineRestore = targetMode === 'online';
   if(payload.m === 'online' && !allowOnline){
@@ -6436,11 +6492,11 @@ function restoreGameFromCode(code, options = {}){
     if(focusIdx >= 0) scrollToPlayerPanel(focusIdx, 'smooth');
   }, 180);
 }
-function requestSaveGame(){
+async function requestSaveGame(){
   try{
     pulseButton('saveGameBtn');
     const payload = buildSavePayload();
-    const code = encodeSaveCode(payload);
+    const code = await encodeSaveCode(payload);
     if(navigator.clipboard && window.isSecureContext){
       navigator.clipboard.writeText(code).then(() => {
         addToast('Código copiado al portapapeles', 'ok');
@@ -6456,14 +6512,14 @@ function requestSaveGame(){
     addToast(err.message || 'No se pudo salvar la partida', 'warn');
   }
 }
-function requestLoadGame(){
+async function requestLoadGame(){
   try{
     pulseButton('loadGameBtn');
     const support = getSaveSupportState();
     if(!support.allowed) throw new Error(support.reason);
     const code = window.prompt('Pega aquí el código de partida para restaurarla:');
     if(!code) return;
-    restoreGameFromCode(code, _ol.active && _ol.role === 'host'
+    await restoreGameFromCode(code, _ol.active && _ol.role === 'host'
       ? {
           allowOnline: true,
           forceMode: 'online',
@@ -6474,7 +6530,7 @@ function requestLoadGame(){
     addToast(err.message || 'No se pudo cargar la partida', 'warn');
   }
 }
-function requestOnlineLobbyLoadGame(){
+async function requestOnlineLobbyLoadGame(){
   const nick = (document.getElementById('olNicknameInput').value || '').trim();
   if(!nick){
     olSetStatus('Introduce tu nombre primero.', true);
@@ -6483,7 +6539,7 @@ function requestOnlineLobbyLoadGame(){
   const code = window.prompt('Pega aquí el código de partida online:');
   if(!code) return;
   try{
-    const payload = decodeSaveCode(code);
+    const payload = await decodeSaveCode(code);
     if(payload.m !== 'online'){
       throw new Error('Ese código no corresponde a una partida online.');
     }
@@ -11483,17 +11539,16 @@ function olStartGame(role) {
       const pendingCode = _ol.pendingLoadCode;
       _ol.pendingLoadCode = '';
       _ol.pendingLoadMeta = null;
-      try {
-        restoreGameFromCode(pendingCode, {
+      restoreGameFromCode(pendingCode, {
           allowOnline: true,
           forceMode: 'online',
           forcePlayerNames: [(_ol.nickname || 'Jugador 1'), (_ol.opponentNick || 'Jugador 2')],
           skipSupportCheck: true
-        });
+        }).then(() => {
         window.setTimeout(function() {
           if (_ol.socket) olSendState();
         }, 80);
-      } catch(err) {
+      }).catch(err => {
         console.error('[ONLINE] Error restoring loaded match:', err);
         olSetStatus('El código no se pudo restaurar. Se inicia una sala nueva.', true);
         newGame();
@@ -11505,7 +11560,7 @@ function olStartGame(role) {
             if (_ol.socket) olSendState();
           }, 50);
         }, 140);
-      }
+      });
     } else {
       newGame();
       window.setTimeout(function() {
