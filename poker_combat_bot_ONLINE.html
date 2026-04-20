@@ -5302,6 +5302,26 @@ function primeOfflineMode(gameMode, difficulty=null){
   state.tutorial = false;
 }
 
+function autoStartStoryMissionIfRequested(){
+  if(!STORY_MISSION_BOOT) return;
+
+  switch(STORY_MISSION_BOOT){
+    case 'hangar_build':
+      primeOfflineMode('local');
+      newGame();
+      hideIntroScreen();
+      addToast('Mision historia: construye un bot valido para el taller', 'warn');
+      log('📜 Mision historia: construye un bot valido para el taller.');
+      window.setTimeout(() => {
+        scrollToPlayerPanel(state.currentPlayer, 'smooth');
+        notifySelection('Mision historia: construye un bot valido para el taller.');
+      }, 260);
+      break;
+    default:
+      break;
+  }
+}
+
 const tutorialSteps = [
   'Un Mecha es un robot modulable: se define por AL MENOS 6 cartas de núcleos y 1 piloto. Primer turno: puedes colocar hasta 3 cartas por módulo. A partir del siguiente turno, sin piloto principal el límite baja a 2.',
   'El piloto principal define la forma del mecha: amplía a 3 el módulo de su palo y exige reunir 3 cartas de ese palo para poder atacar. El copiloto normal amplía su palo a 3. El copiloto ♦ solo puede ser copiloto, es dinámico y permite que cualquier único módulo llegue a 3 sin fijarlo para toda la partida.',
@@ -5687,6 +5707,7 @@ const AUDIO_BGM_1_URI = "assets/audio_01.mp3";
 const AUDIO_BGM_2_URI = "assets/audio_02.mp3";
 const AUDIO_BGM_MENU_URI = "assets/GravitSilence.mp3";
 const STORY_AUDIO_PRIORITY_KEY = "pocobot_story_audio_priority";
+const STORY_MISSION_BOOT = new URLSearchParams(window.location.search).get('story_mission') || '';
 const AUDIO_SFX_URIS = {
   uiClick: "assets/sfx/ui_click.wav",
   shuffle: "assets/sfx/card_shuffle.wav",
@@ -10724,6 +10745,7 @@ window.addEventListener('load', () => {
   preloadDetailedCardAssets();
   syncIntroInstallTip();
   startMenuMusic(false);
+  autoStartStoryMissionIfRequested();
   try{
     const displayMode = window.matchMedia('(display-mode: standalone)');
     if(displayMode && typeof displayMode.addEventListener === 'function'){
