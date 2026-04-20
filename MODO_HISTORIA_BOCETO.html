@@ -299,14 +299,11 @@
     .story-playfield{
       position:relative;
       min-height:100svh;
-      display:grid;
-      grid-template-columns:minmax(0,1fr) minmax(360px, 460px);
-      gap:0;
+      display:block;
     }
     .story-map-shell{
       position:relative;
       min-height:100svh;
-      border-right:1px solid rgba(143,244,255,.08);
       background:
         linear-gradient(180deg, rgba(6,10,15,.1), rgba(6,10,15,.42)),
         #05080d;
@@ -337,8 +334,8 @@
       top:clamp(16px, 3vh, 30px);
       z-index:3;
       display:grid;
-      gap:10px;
-      max-width:min(44vw, 520px);
+      gap:8px;
+      max-width:min(34vw, 420px);
     }
     .story-kicker{
       display:inline-flex;
@@ -367,119 +364,205 @@
     }
     .story-map-hud p{
       margin:0;
-      max-width:48ch;
+      max-width:38ch;
       color:#d8e7f4;
-      font-size:.93rem;
-      line-height:1.58;
+      font-size:.88rem;
+      line-height:1.5;
       text-shadow:0 8px 22px rgba(0,0,0,.52);
     }
-    .story-dialog{
-      position:relative;
-      z-index:3;
-      min-height:100svh;
+    .story-scene-stage{
+      position:absolute;
+      inset:0;
+      z-index:7;
       display:grid;
-      align-content:start;
-      gap:16px;
-      padding:clamp(18px, 3vw, 30px);
+      align-items:end;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .35s ease;
+    }
+    .story-scene-stage.active{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .scene-backdrop{
+      position:absolute;
+      inset:0;
+      background:#05080d no-repeat center center / cover;
+      transform:scale(1.02);
+    }
+    .scene-backdrop::after{
+      content:"";
+      position:absolute;
+      inset:0;
       background:
-        linear-gradient(180deg, rgba(22,17,14,.92), rgba(7,11,17,.98));
-      border-left:1px solid rgba(255,255,255,.05);
-      overflow:auto;
+        linear-gradient(180deg, rgba(4,7,11,.18), transparent 24%, rgba(4,7,11,.72) 100%),
+        radial-gradient(circle at 24% 20%, rgba(255,185,109,.14), transparent 18%),
+        radial-gradient(circle at 78% 18%, rgba(143,244,255,.1), transparent 16%);
     }
-    .story-dialog-header{
-      display:grid;
-      gap:10px;
+    .scene-header{
+      position:absolute;
+      left:clamp(16px, 3vw, 34px);
+      right:clamp(16px, 3vw, 34px);
+      top:clamp(16px, 3vh, 26px);
+      z-index:2;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
     }
-    .story-dialog-eyebrow{
-      color:#ffcf9d;
+    .scene-kicker{
+      display:inline-flex;
+      align-items:center;
+      min-height:38px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(7,11,17,.68);
+      color:#ffe0bc;
       font-size:.72rem;
       font-weight:900;
-      letter-spacing:.18em;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      backdrop-filter:blur(10px);
+      box-shadow:0 14px 26px rgba(0,0,0,.2);
+    }
+    .scene-close{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:38px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(7,11,17,.68);
+      color:#ebf8ff;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      backdrop-filter:blur(10px);
+      box-shadow:0 14px 26px rgba(0,0,0,.2);
+      cursor:pointer;
+    }
+    .scene-portraits{
+      position:absolute;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+    }
+    .scene-portrait{
+      position:absolute;
+      bottom:0;
+      max-height:min(84svh, 880px);
+      width:auto;
+      opacity:0;
+      transform:translateY(18px) scale(.98);
+      filter:drop-shadow(0 36px 46px rgba(0,0,0,.44));
+      transition:opacity .35s ease, transform .35s ease;
+    }
+    .scene-portrait.visible{
+      opacity:.96;
+      transform:translateY(0) scale(1);
+    }
+    .scene-portrait.left{
+      left:max(2vw, 18px);
+      max-width:min(34vw, 420px);
+    }
+    .scene-portrait.right{
+      right:max(2vw, 18px);
+      max-width:min(36vw, 460px);
+    }
+    .scene-dialog-card{
+      position:relative;
+      z-index:2;
+      width:min(880px, calc(100% - 32px));
+      margin:0 0 clamp(78px, 10vh, 108px) clamp(16px, 3vw, 34px);
+      padding:18px;
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(8,13,19,.8);
+      box-shadow:0 28px 54px rgba(0,0,0,.34);
+      backdrop-filter:blur(16px);
+    }
+    .scene-node{
+      margin:0 0 6px;
+      color:#8ff4ff;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.16em;
       text-transform:uppercase;
     }
-    .story-dialog-title{
+    .scene-title{
       margin:0;
       font-family:"Arial Black","Impact",sans-serif;
-      font-size:clamp(1.75rem, 2vw, 2.35rem);
-      line-height:1.05;
+      font-size:clamp(1.38rem, 2vw, 1.9rem);
+      line-height:1.08;
       letter-spacing:.03em;
       text-transform:uppercase;
     }
-    .story-dialog-lead{
-      margin:0;
-      color:#dce7f3;
-      line-height:1.58;
-      font-size:.96rem;
-    }
-    .story-scene{
-      overflow:hidden;
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.08);
-      background:#070b10;
-      box-shadow:0 22px 42px rgba(0,0,0,.28);
-    }
-    .story-scene img{
-      width:100%;
-      aspect-ratio:1.22 / 1;
-      object-fit:cover;
-    }
-    .story-meta{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr));
-      gap:10px;
-    }
-    .story-chip,
-    .story-type{
-      padding:10px 12px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.04);
-      font-size:.75rem;
-      font-weight:800;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:#e7f4ff;
-    }
-    .story-block{
-      padding:14px 15px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.06);
-      background:rgba(255,255,255,.035);
-    }
-    .story-block strong{
-      display:block;
-      color:var(--amber);
-      font-size:.75rem;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-    }
-    .story-block p{
+    .scene-subtitle{
       margin:8px 0 0;
-      color:var(--muted);
+      color:#d4e2ef;
+      font-size:.92rem;
       line-height:1.55;
-      font-size:.9rem;
     }
-    .story-cast{
+    .scene-speaker{
+      margin-top:14px;
+      color:#ffcf9d;
+      font-size:.76rem;
+      font-weight:900;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+    }
+    .scene-line{
+      margin:8px 0 0;
+      color:#f4f9ff;
+      font-size:1.02rem;
+      line-height:1.68;
+    }
+    .scene-cast{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
+      margin-top:14px;
     }
-    .story-cast span{
+    .scene-cast span{
       display:inline-flex;
       align-items:center;
-      min-height:32px;
+      min-height:30px;
       padding:0 12px;
       border-radius:999px;
-      background:rgba(143,244,255,.09);
+      background:rgba(143,244,255,.08);
       border:1px solid rgba(143,244,255,.14);
       color:#dff8ff;
-      font-size:.78rem;
+      font-size:.76rem;
       font-weight:700;
-      letter-spacing:.04em;
     }
-    .story-dialogue{
-      color:#ffe7ca;
-      font-style:italic;
+    .scene-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+    .scene-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:42px;
+      padding:0 16px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(22,47,59,.95), rgba(11,18,24,.98));
+      color:#edf7ff;
+      font-size:.76rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      box-shadow:0 16px 28px rgba(0,0,0,.22);
+      cursor:pointer;
+    }
+    .scene-btn.secondary{
+      background:rgba(255,255,255,.05);
     }
     .lab-toggle{
       position:absolute;
@@ -589,21 +672,18 @@
     }
 
     @media (max-width:1180px){
-      .story-playfield{grid-template-columns:1fr}
-      .story-dialog{
-        min-height:auto;
-        max-height:42svh;
-        border-left:0;
-        border-top:1px solid rgba(255,255,255,.05);
-      }
       .story-map-shell{
         min-height:58svh;
-        border-right:0;
       }
       .story-map-frame{
         min-height:58svh;
       }
       .story-map-hud{max-width:min(78vw, 560px)}
+      .scene-portrait.left{max-width:min(38vw, 320px)}
+      .scene-portrait.right{max-width:min(42vw, 360px)}
+      .scene-dialog-card{
+        width:min(760px, calc(100% - 32px));
+      }
     }
     @media (orientation:portrait){
       .title-art-wrap{
@@ -653,16 +733,6 @@
         max-width:34ch;
         font-size:.86rem;
       }
-      .story-dialog{
-        padding:16px;
-        max-height:48svh;
-      }
-      .story-dialog-title{
-        font-size:1.42rem;
-      }
-      .story-meta{
-        grid-template-columns:1fr;
-      }
       .lab-toggle{
         left:16px;
         bottom:66px;
@@ -671,6 +741,39 @@
         left:16px;
         bottom:116px;
         width:calc(100vw - 32px);
+      }
+      .scene-header{
+        left:16px;
+        right:16px;
+        top:16px;
+      }
+      .scene-portrait{
+        max-height:46svh;
+      }
+      .scene-portrait.left{
+        left:-8px;
+        max-width:42vw;
+      }
+      .scene-portrait.right{
+        right:-10px;
+        max-width:46vw;
+      }
+      .scene-dialog-card{
+        width:calc(100% - 24px);
+        margin:0 12px 86px;
+        padding:16px;
+      }
+      .scene-title{
+        font-size:1.28rem;
+      }
+      .scene-line{
+        font-size:.95rem;
+      }
+      .scene-actions{
+        flex-direction:column;
+      }
+      .scene-btn{
+        width:100%;
       }
       .title-image{
         object-fit:contain;
@@ -710,11 +813,11 @@
             class="story-map-frame"
             id="storyMapFrame"
             title="Mapa interactivo inmersivo del modo historia"
-            src="pocobot_mapa_interactivo.html"></iframe>
+            src="pocobot_mapa_interactivo.html?immersive=1"></iframe>
 
           <div class="story-map-hud">
-            <span class="story-kicker">Camino de PoCoBOT</span>
-            <p>Explora la Ruta Ceniza. Cada parada activa un fragmento del viaje y va definiendo la verdadera alma del mundo de PoCoBOT.</p>
+            <span class="story-kicker">Bienvenido a la aventura</span>
+            <p>Empieza la Ruta Ceniza. Ve al Hangar de la Fosa Azul o al Patio de Pruebas, los dos lugares marcados en azul.</p>
           </div>
 
           <button class="lab-toggle" id="labToggleBtn" type="button" aria-expanded="false" aria-controls="labDrawer">Laboratorio</button>
@@ -737,49 +840,33 @@
               </div>
             </div>
           </aside>
+          <section class="story-scene-stage" id="storySceneStage" hidden>
+            <div class="scene-backdrop" id="storySceneBackdrop"></div>
+            <div class="scene-header">
+              <span class="scene-kicker" id="storySceneOrder">Capítulo 1 · Ruta Ceniza</span>
+              <button class="scene-close" id="storySceneCloseBtn" type="button">Volver al mapa</button>
+            </div>
+            <div class="scene-portraits">
+              <img class="scene-portrait left" id="storyScenePortraitLeft" alt="" hidden>
+              <img class="scene-portrait right" id="storyScenePortraitRight" alt="" hidden>
+            </div>
+            <article class="scene-dialog-card">
+              <p class="scene-node" id="storySceneNodeLabel">Hangar de la Fosa Azul</p>
+              <h2 class="scene-title" id="storySceneTitle">Fosa Azul · Primer Encuentro</h2>
+              <p class="scene-subtitle" id="storySceneSubtitle">La aventura empieza en el taller. Aquí el mundo te exige entender el metal antes de merecer pilotarlo.</p>
+
+              <div class="scene-speaker" id="storySceneSpeaker">Mara Oxido</div>
+              <p class="scene-line" id="storySceneLine">Si no sabes ensamblarlo, tampoco sabrás salvarlo.</p>
+
+              <div class="scene-cast" id="storySceneCast"></div>
+
+              <div class="scene-actions">
+                <button class="scene-btn" id="storySceneNextBtn" type="button">Siguiente</button>
+                <button class="scene-btn secondary" id="storySceneMapBtn" type="button">Volver al mapa</button>
+              </div>
+            </article>
+          </section>
         </section>
-
-        <aside class="story-dialog" id="storyDialogPanel">
-          <div class="story-dialog-header">
-            <span class="story-dialog-eyebrow" id="storyDialogOrder">Capítulo 1 · Ruta Ceniza</span>
-            <h2 class="story-dialog-title" id="storyDialogTitle">Hangar de la Fosa Azul</h2>
-            <p class="story-dialog-lead" id="storyDialogLead">Briefing de arranque. Aquí definimos qué es un mecha, la necesidad de montaje y el tono del refugio técnico.</p>
-          </div>
-
-          <div class="story-scene">
-            <img id="storyDialogScene" src="assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG" alt="Escenario del capítulo actual" loading="lazy">
-          </div>
-
-          <div class="story-meta">
-            <div class="story-chip" id="storyDialogChip">Construcción</div>
-            <div class="story-type" id="storyDialogType">Briefing</div>
-          </div>
-
-          <div class="story-block">
-            <strong>Misión</strong>
-            <p id="storyDialogMission">Construir un bot válido para un NPC.</p>
-          </div>
-
-          <div class="story-block">
-            <strong>Qué enseña</strong>
-            <p id="storyDialogLearn">Piloto, módulos y condición de mecha montado.</p>
-          </div>
-
-          <div class="story-block">
-            <strong>Tensión</strong>
-            <p id="storyDialogTension">Todo arranca desde el oficio: ensamblar antes de merecer pilotar.</p>
-          </div>
-
-          <div class="story-block">
-            <strong>Reparto</strong>
-            <div class="story-cast" id="storyDialogCast"></div>
-          </div>
-
-          <div class="story-block">
-            <strong>Diálogo</strong>
-            <p class="story-dialogue" id="storyDialogQuote">“Si no sabes ensamblarlo, tampoco sabrás salvarlo.”</p>
-          </div>
-        </aside>
       </div>
     </section>
   </main>
@@ -802,17 +889,20 @@
     const storyMapFrame = document.getElementById('storyMapFrame');
     const labToggleBtn = document.getElementById('labToggleBtn');
     const labDrawer = document.getElementById('labDrawer');
-    const storyDialogOrder = document.getElementById('storyDialogOrder');
-    const storyDialogTitle = document.getElementById('storyDialogTitle');
-    const storyDialogLead = document.getElementById('storyDialogLead');
-    const storyDialogScene = document.getElementById('storyDialogScene');
-    const storyDialogChip = document.getElementById('storyDialogChip');
-    const storyDialogType = document.getElementById('storyDialogType');
-    const storyDialogMission = document.getElementById('storyDialogMission');
-    const storyDialogLearn = document.getElementById('storyDialogLearn');
-    const storyDialogTension = document.getElementById('storyDialogTension');
-    const storyDialogCast = document.getElementById('storyDialogCast');
-    const storyDialogQuote = document.getElementById('storyDialogQuote');
+    const storySceneStage = document.getElementById('storySceneStage');
+    const storySceneBackdrop = document.getElementById('storySceneBackdrop');
+    const storySceneOrder = document.getElementById('storySceneOrder');
+    const storySceneCloseBtn = document.getElementById('storySceneCloseBtn');
+    const storyScenePortraitLeft = document.getElementById('storyScenePortraitLeft');
+    const storyScenePortraitRight = document.getElementById('storyScenePortraitRight');
+    const storySceneNodeLabel = document.getElementById('storySceneNodeLabel');
+    const storySceneTitle = document.getElementById('storySceneTitle');
+    const storySceneSubtitle = document.getElementById('storySceneSubtitle');
+    const storySceneSpeaker = document.getElementById('storySceneSpeaker');
+    const storySceneLine = document.getElementById('storySceneLine');
+    const storySceneCast = document.getElementById('storySceneCast');
+    const storySceneNextBtn = document.getElementById('storySceneNextBtn');
+    const storySceneMapBtn = document.getElementById('storySceneMapBtn');
 
     let glowTick = 0;
     let manualGlowTimeout = null;
@@ -824,6 +914,8 @@
     let titleAudioMaster = null;
     let titleAudioDelayInput = null;
     let currentStoryNodeId = 'hangar';
+    let activeSceneNodeId = null;
+    let sceneLineIndex = 0;
 
     if (storyMapMusic) {
       storyMapMusic.volume = 0.34;
@@ -1007,30 +1099,124 @@
       }
     };
 
+    const storySceneScripts = {
+      hangar: {
+        title: 'Fosa Azul · Primer Encuentro',
+        subtitle: 'El taller no te recibe como héroe. Te recibe como alguien que aún debe demostrar que entiende el metal.',
+        portraits: {
+          right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
+        },
+        lines: [
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            text: 'Bienvenido a la Fosa Azul. Aquí nadie pilota nada que no haya comprendido antes.'
+          },
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            text: 'Un mecha es un robot modulable. Se define por al menos 6 cartas de núcleos y 1 piloto.'
+          },
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            text: 'Así que olvida la épica por un minuto. Primero móntame un bot válido para el taller. Luego ya hablaremos de aventura.'
+          }
+        ]
+      },
+      patio: {
+        title: 'Patio de Pruebas · Primer Choque',
+        subtitle: 'El metal ya está montado. Ahora toca comprobar si sabes hacerlo responder bajo presión.',
+        portraits: {
+          right: { src: 'assets/Historia/Brutos/MaraOXIDO3.PNG', alt: 'Mara Oxido' }
+        },
+        lines: [
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            text: 'Muy bien. Ya has demostrado que puedes ensamblar. Ahora demuestra que puedes sostener un turno completo sin temblar.'
+          },
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            text: 'Ataca cuando toque, no cuando te entre el miedo. El bot no entiende ansiedad, solo secuencia.'
+          }
+        ]
+      }
+    };
+
     function renderStoryCast(cast) {
-      storyDialogCast.innerHTML = '';
+      storySceneCast.innerHTML = '';
       cast.forEach((name) => {
         const pill = document.createElement('span');
         pill.textContent = name;
-        storyDialogCast.appendChild(pill);
+        storySceneCast.appendChild(pill);
       });
     }
 
-    function renderStoryNode(nodeId, incomingNode = {}) {
+    function renderStoryNode(nodeId) {
       const localNode = storyDraftNodes[nodeId] || storyDraftNodes.hangar;
       currentStoryNodeId = localNode.id;
-      storyDialogOrder.textContent = `Capítulo ${localNode.order} · Ruta Ceniza`;
-      storyDialogTitle.textContent = localNode.title;
-      storyDialogLead.textContent = localNode.lead;
-      storyDialogScene.src = localNode.image;
-      storyDialogScene.alt = localNode.title;
-      storyDialogChip.textContent = localNode.sceneChip || incomingNode.subtype || 'Boceto';
-      storyDialogType.textContent = incomingNode.type || localNode.type;
-      storyDialogMission.textContent = incomingNode.mission || localNode.mission;
-      storyDialogLearn.textContent = incomingNode.learn || localNode.learn;
-      storyDialogTension.textContent = localNode.tension;
-      storyDialogQuote.textContent = incomingNode.dialogue || localNode.dialogue;
       renderStoryCast(localNode.cast);
+    }
+
+    function setScenePortrait(slot, portrait, activeSide) {
+      const element = slot === 'left' ? storyScenePortraitLeft : storyScenePortraitRight;
+      if (!portrait) {
+        element.hidden = true;
+        element.classList.remove('visible');
+        element.removeAttribute('src');
+        return;
+      }
+      element.hidden = false;
+      element.src = portrait.src;
+      element.alt = portrait.alt || '';
+      element.classList.toggle('visible', activeSide === slot || !activeSide);
+    }
+
+    function renderSceneLine() {
+      const localNode = storyDraftNodes[activeSceneNodeId] || storyDraftNodes.hangar;
+      const scene = storySceneScripts[activeSceneNodeId];
+      const line = scene.lines[Math.min(sceneLineIndex, scene.lines.length - 1)];
+      storySceneOrder.textContent = `Capítulo ${localNode.order} · Ruta Ceniza`;
+      storySceneNodeLabel.textContent = localNode.title;
+      storySceneTitle.textContent = scene.title || localNode.title;
+      storySceneSubtitle.textContent = scene.subtitle || localNode.lead;
+      storySceneSpeaker.textContent = line.speaker;
+      storySceneLine.textContent = line.text;
+      renderStoryCast(localNode.cast);
+      setScenePortrait('left', scene.portraits?.left, line.side);
+      setScenePortrait('right', scene.portraits?.right, line.side);
+      storySceneNextBtn.textContent = sceneLineIndex >= scene.lines.length - 1 ? 'Volver al mapa' : 'Siguiente';
+    }
+
+    function openStoryScene(nodeId) {
+      const localNode = storyDraftNodes[nodeId];
+      const scene = storySceneScripts[nodeId];
+      if (!localNode || !scene) return;
+      activeSceneNodeId = nodeId;
+      sceneLineIndex = 0;
+      if (storySceneBackdrop) {
+        storySceneBackdrop.style.backgroundImage = `url("${localNode.image}")`;
+      }
+      if (labDrawer && !labDrawer.hasAttribute('hidden')) {
+        labDrawer.setAttribute('hidden', '');
+        labToggleBtn.setAttribute('aria-expanded', 'false');
+      }
+      renderSceneLine();
+      storySceneStage.hidden = false;
+      requestAnimationFrame(() => storySceneStage.classList.add('active'));
+    }
+
+    function closeStoryScene() {
+      activeSceneNodeId = null;
+      sceneLineIndex = 0;
+      storySceneStage.classList.remove('active');
+      window.setTimeout(() => {
+        if (!storySceneStage.classList.contains('active')) {
+          storySceneStage.hidden = true;
+        }
+      }, 260);
     }
 
     function postNodeSelectionToMap(nodeId) {
@@ -1290,6 +1476,7 @@
       document.documentElement.style.setProperty('--enter-shift', '-3px');
       document.documentElement.style.setProperty('--enter-scale', '1.012');
       playMapMusic();
+      closeStoryScene();
       renderStoryNode(currentStoryNodeId);
       setTimeout(() => {
         workspacePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1303,11 +1490,25 @@
       document.documentElement.style.setProperty('--enter-shift', '0px');
       document.documentElement.style.setProperty('--enter-scale', '1');
       pauseMapMusic();
+      closeStoryScene();
       if (titleMusicUnlocked) startTitleMusic();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     enterStoryBtn.addEventListener('click', showWorkspace);
+    storySceneCloseBtn.addEventListener('click', closeStoryScene);
+    storySceneMapBtn.addEventListener('click', closeStoryScene);
+    storySceneNextBtn.addEventListener('click', () => {
+      if (!activeSceneNodeId) return;
+      const scene = storySceneScripts[activeSceneNodeId];
+      if (!scene) return;
+      if (sceneLineIndex >= scene.lines.length - 1) {
+        closeStoryScene();
+        return;
+      }
+      sceneLineIndex += 1;
+      renderSceneLine();
+    });
     labToggleBtn.addEventListener('click', () => {
       const opening = labDrawer.hasAttribute('hidden');
       if (opening) {
@@ -1334,7 +1535,10 @@
     window.addEventListener('message', (event) => {
       const data = event.data;
       if (!data || data.type !== 'pocobot-story-map-selection' || !data.node || !data.node.id) return;
-      renderStoryNode(data.node.id, data.node);
+      renderStoryNode(data.node.id);
+      if (data.reason === 'user-select' && data.node.status !== 'locked') {
+        openStoryScene(data.node.id);
+      }
     });
 
     if (storyMapFrame) {
@@ -1348,6 +1552,7 @@
       if (!workspacePanel.classList.contains('active')) startTitleMusic();
     }, 220);
     renderStoryNode(currentStoryNodeId);
+    closeStoryScene();
   </script>
 </body>
 </html>
