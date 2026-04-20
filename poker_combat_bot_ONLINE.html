@@ -6707,8 +6707,8 @@ function getBuildStatus(player){
 }
 function getHandSummary(player, playerIdx){
   if(!player) return `0 cartas · MAXIMO ${MAX_HAND_SIZE}`;
-  if(shouldHideHandForPlayer(playerIdx)) return `${player.hand.length} oculta · MAXIMO ${MAX_HAND_SIZE}`;
-  return `${player.hand.length} cartas · valor ${sumCards(player.hand)} · MAXIMO ${MAX_HAND_SIZE}`;
+  if(shouldHideHandForPlayer(playerIdx)) return `${player.hand.length} cartas ocultas · MAXIMO ${MAX_HAND_SIZE}`;
+  return `${player.hand.length} cartas · MAXIMO ${MAX_HAND_SIZE}`;
 }
 function getPilotCombatRequirement(player){
   if(!player || !player.core) {
