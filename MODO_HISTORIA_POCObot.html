@@ -514,10 +514,147 @@
       display:grid;
       gap:14px;
     }
+    .chapter-active{
+      overflow:hidden;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.06);
+      background:linear-gradient(180deg, rgba(13,20,29,.98), rgba(8,12,18,.99));
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .chapter-scene{
+      position:relative;
+      aspect-ratio:16 / 9;
+      overflow:hidden;
+      background:#0b1016;
+    }
+    .chapter-scene img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+    }
+    .chapter-scene::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(3,7,12,.04), rgba(3,7,12,.5)),
+        linear-gradient(0deg, rgba(3,7,12,.7), transparent 45%);
+      pointer-events:none;
+    }
+    .chapter-scene-chip{
+      position:absolute;
+      left:14px;
+      top:14px;
+      z-index:1;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:30px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,184,109,.24);
+      background:rgba(17,24,34,.74);
+      backdrop-filter:blur(8px);
+      color:#ffe2bf;
+      font-size:.68rem;
+      font-weight:900;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+    .chapter-body{
+      padding:16px;
+      display:grid;
+      gap:12px;
+    }
+    .chapter-kicker{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+      color:var(--amber);
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    .chapter-kicker .slash{
+      color:rgba(255,255,255,.28);
+    }
+    .chapter-body h5{
+      margin:0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:1.35rem;
+      line-height:.95;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .chapter-body p{
+      margin:0;
+    }
+    .chapter-meta-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .chapter-meta-card{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.03);
+    }
+    .chapter-meta-card strong{
+      display:block;
+      color:var(--amber);
+      font-size:.72rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .chapter-meta-card span{
+      display:block;
+      margin-top:6px;
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.48;
+    }
+    .chapter-cast{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .chapter-cast span{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:30px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(144,244,255,.14);
+      background:rgba(144,244,255,.08);
+      color:var(--cyan);
+      font-size:.68rem;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
     .chapter-list{
-      max-height:76vh;
+      max-height:42vh;
       overflow:auto;
       padding-right:4px;
+    }
+    .chapter-row{
+      cursor:pointer;
+      transition:border-color .2s ease, background .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+    .chapter-row:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,184,109,.22);
+      background:rgba(255,255,255,.05);
+    }
+    .chapter-row.active{
+      border-color:rgba(144,244,255,.24);
+      background:linear-gradient(180deg, rgba(24,44,56,.42), rgba(10,15,22,.8));
+      box-shadow:0 12px 22px rgba(78,204,231,.08);
     }
     .chapter-row small{
       display:inline-flex;
@@ -550,6 +687,145 @@
       background:rgba(255,184,109,.08);
       color:#ffe7ca;
       font-size:.85rem;
+      line-height:1.5;
+    }
+
+    .asset-root{
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid rgba(144,244,255,.14);
+      background:rgba(7,14,22,.5);
+    }
+    .asset-root strong{
+      display:block;
+      color:var(--cyan);
+      font-size:.76rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .asset-root code{
+      display:block;
+      margin-top:8px;
+      color:#d7efff;
+      font-size:.9rem;
+      word-break:break-all;
+    }
+    .asset-root span{
+      display:block;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:.85rem;
+      line-height:1.5;
+    }
+
+    .tag-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+    .tiny-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:30px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:.7rem;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .portrait-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .portrait-card{
+      overflow:hidden;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.06);
+      background:linear-gradient(180deg, rgba(15,21,30,.98), rgba(8,12,18,.98));
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .portrait-media{
+      aspect-ratio:4 / 4.6;
+      overflow:hidden;
+      background:radial-gradient(circle at 50% 18%, rgba(144,244,255,.12), transparent 30%), #0a1016;
+    }
+    .portrait-media img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center top;
+      filter:saturate(1.03) contrast(1.02);
+    }
+    .portrait-body{
+      padding:12px 12px 14px;
+    }
+    .portrait-body strong{
+      display:block;
+      color:var(--amber);
+      font-size:.8rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .portrait-body span{
+      display:block;
+      margin-top:6px;
+      color:var(--white);
+      font-size:1rem;
+      font-weight:900;
+      letter-spacing:.02em;
+      text-transform:uppercase;
+    }
+    .portrait-body p{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.5;
+    }
+
+    .world-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .world-shot{
+      overflow:hidden;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.03);
+    }
+    .world-shot img{
+      width:100%;
+      aspect-ratio:16 / 10;
+      object-fit:cover;
+      object-position:center;
+      background:#0a1016;
+    }
+    .world-copy{
+      padding:12px;
+    }
+    .world-copy strong{
+      display:block;
+      color:var(--amber);
+      font-size:.78rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .world-copy span{
+      display:block;
+      margin-top:7px;
+      color:var(--muted);
+      font-size:.84rem;
       line-height:1.5;
     }
 
@@ -587,7 +863,10 @@
         padding:16px;
       }
       .hero-grid,
-      .draft-board{
+      .draft-board,
+      .chapter-meta-grid,
+      .portrait-grid,
+      .world-grid{
         grid-template-columns:1fr;
       }
       .frame-wrap.map iframe{height:58vh;min-height:420px}
@@ -606,7 +885,7 @@
   <main class="story-shell">
     <section class="topbar">
       <div class="brand">
-        <img src="assets/icon-512.png" alt="PoCoBOT">
+        <img src="apple-touch-icon.png" alt="PoCoBOT">
         <div>
           <strong>Modo Historia Oculto</strong>
           <h1>Ruta Ceniza · Estudio Interno</h1>
@@ -615,6 +894,7 @@
       </div>
       <div class="top-actions">
         <a class="ghost-link" href="MODO_DESARROLLADOR_POCObot.html">Volver al laboratorio</a>
+        <a class="ghost-link" href="MODO_HISTORIA_BOCETO.html">Boceto</a>
         <a class="ghost-link" href="pocobot_mapa_interactivo.html" target="_blank" rel="noopener">Mapa base</a>
         <a class="ghost-link" href="pocobot_lore_biblia.html" target="_blank" rel="noopener">Biblia base</a>
       </div>
@@ -727,6 +1007,10 @@
                   <strong>3. Integrar al final</strong>
                   <span>Solo cuando el bloque funcione de verdad lo moveremos a la pagina principal de PoCoBOT.</span>
                 </div>
+                <div class="dock-item">
+                  <strong>4. Raiz narrativa oficial</strong>
+                  <span>Todo lo que consolidemos para historia debe vivir en <code>assets/Historia</code>. Esa carpeta pasa a ser el almacen oficial del modo historia.</span>
+                </div>
               </div>
             </article>
 
@@ -757,6 +1041,10 @@
               <strong>Boceto · modo historia real</strong>
               <h4>Este es el terreno donde vamos a plantar la campana definitiva</h4>
               <p>El mapa queda ya incrustado dentro del area de boceto para que la ruta visual, las estaciones y las misiones se disen en el mismo sitio donde luego construiremos la experiencia real. A partir de aqui, cada nodo que definamos bien se podra convertir en escena jugable.</p>
+              <div class="tag-row">
+                <a class="ghost-link" href="MODO_HISTORIA_BOCETO.html">Abrir Boceto</a>
+                <span class="tiny-pill">Portada + titulo + mapa</span>
+              </div>
             </section>
 
             <article class="frame-card">
@@ -771,7 +1059,7 @@
                 </div>
               </div>
               <div class="frame-wrap map">
-                <iframe title="Mapa del boceto del modo historia" src="pocobot_mapa_interactivo.html"></iframe>
+                <iframe id="storyBocetoMapFrame" title="Mapa del boceto del modo historia" src="pocobot_mapa_interactivo.html"></iframe>
               </div>
             </article>
 
@@ -796,61 +1084,209 @@
                   <span>Construir aqui la version buena, y subirla a PoCoBOT principal solo cuando el bloque este realmente terminado.</span>
                 </div>
               </div>
+              <div class="asset-root">
+                <strong>Raiz oficial del modo historia</strong>
+                <code>/assets/Historia</code>
+                <span>Usaremos esta ruta como repositorio vivo de mapa, musica, lore, retratos, localizaciones y futuros datos del modo historia. Los materiales de <code>Brutos</code> pasan a alimentar directamente este boceto.</span>
+              </div>
+            </article>
+
+            <article class="draft-card">
+              <h4>Nucleo de personajes oficiales</h4>
+              <p>Ya he conectado el boceto con los nombres e imagenes oficiales que has dejado en <code>assets/Historia/Brutos</code>, para que trabajemos con la identidad buena del reparto desde el principio.</p>
+              <div class="portrait-grid">
+                <article class="portrait-card">
+                  <div class="portrait-media">
+                    <img src="assets/Historia/Brutos/MaraOXIDO4.PNG" alt="Mara Oxido" loading="lazy">
+                  </div>
+                  <div class="portrait-body">
+                    <strong>Protagonista guia</strong>
+                    <span>Mara Oxido</span>
+                    <p>Mecanica del arranque de ruta. Es la mano que baja el mecha a tierra, explica el oficio y da el tono tecnico del inicio.</p>
+                  </div>
+                </article>
+                <article class="portrait-card">
+                  <div class="portrait-media">
+                    <img src="assets/Historia/Brutos/VeraHEX2.PNG" alt="Vera Hex" loading="lazy">
+                  </div>
+                  <div class="portrait-body">
+                    <strong>Contacto de frontera</strong>
+                    <span>Vera Hex</span>
+                    <p>Abre el mundo exterior, la informacion y la economia de supervivencia. Ideal para estirar el mapa mas alla del taller.</p>
+                  </div>
+                </article>
+                <article class="portrait-card">
+                  <div class="portrait-media">
+                    <img src="assets/Historia/Brutos/CorvoVANTA2.PNG" alt="Corvo Vanta" loading="lazy">
+                  </div>
+                  <div class="portrait-body">
+                    <strong>Rival tactico</strong>
+                    <span>Corvo Vanta</span>
+                    <p>Representa criterio, presion y duelo serio. Su presencia debe marcar el cambio de entrenamiento a amenaza real.</p>
+                  </div>
+                </article>
+                <article class="portrait-card">
+                  <div class="portrait-media">
+                    <img src="assets/Historia/Brutos/CustodioArgos2.PNG" alt="Custodio de Argos" loading="lazy">
+                  </div>
+                  <div class="portrait-body">
+                    <strong>Figura terminal</strong>
+                    <span>Custodio de Argos</span>
+                    <p>Es la cara del examen final y del legado de Argos. Todo el ascenso de la ruta debe empujar hacia esta presencia.</p>
+                  </div>
+                </article>
+              </div>
+              <div class="tag-row">
+                <span class="tiny-pill">Mara Oxido</span>
+                <span class="tiny-pill">Vera Hex</span>
+                <span class="tiny-pill">Corvo Vanta</span>
+                <span class="tiny-pill">Custodio de Argos</span>
+              </div>
+            </article>
+
+            <article class="draft-card">
+              <h4>Retazos del mundo que ya tenemos</h4>
+              <p>Estas piezas visuales salen de la carpeta <code>Brutos</code> y nos sirven para que el boceto deje de ser abstracto: ya se ve el tono real de refugio, frontera, amenaza y final de viaje.</p>
+              <div class="world-grid">
+                <article class="world-shot">
+                  <img src="assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG" alt="Hangar de la Fosa Azul" loading="lazy">
+                  <div class="world-copy">
+                    <strong>Hangar de la Fosa Azul</strong>
+                    <span>Punto de arranque: refugio tecnico, nucleo azul y sensacion de oficio superviviente.</span>
+                  </div>
+                </article>
+                <article class="world-shot">
+                  <img src="assets/Historia/Brutos/3MERCADO DE RELÉS MUERTOS.PNG" alt="Mercado de Relés Muertos" loading="lazy">
+                  <div class="world-copy">
+                    <strong>Mercado de Relés Muertos</strong>
+                    <span>Chatarra, comercio y mundo vivo. Aqui el jugador siente por primera vez la escala del entorno.</span>
+                  </div>
+                </article>
+                <article class="world-shot">
+                  <img src="assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG" alt="Torre de Seguimiento 4B" loading="lazy">
+                  <div class="world-copy">
+                    <strong>Torre de Seguimiento 4B</strong>
+                    <span>Infraestructura vieja de Argos. Buen nodo para subir misterio y conectar jugabilidad con observacion.</span>
+                  </div>
+                </article>
+                <article class="world-shot">
+                  <img src="assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG" alt="Campamento de las Placas Rojas" loading="lazy">
+                  <div class="world-copy">
+                    <strong>Campamento de las Placas Rojas</strong>
+                    <span>Humanidad, memoria y veterania. Ideal para dar respiracion emocional sin perder tension.</span>
+                  </div>
+                </article>
+                <article class="world-shot">
+                  <img src="assets/Historia/Brutos/6FOSO DE VIENTO NEGRO.PNG" alt="Foso de Viento Negro" loading="lazy">
+                  <div class="world-copy">
+                    <strong>Foso de Viento Negro</strong>
+                    <span>Entorno hostil perfecto para defensa activa, emboscada y peligro fisico del terreno.</span>
+                  </div>
+                </article>
+                <article class="world-shot">
+                  <img src="assets/Historia/Brutos/9EXTERIOR DE LA CÚPULA HENDIDA DE ARGÓS.PNG" alt="Exterior de la Cupula Hendida de Argos" loading="lazy">
+                  <div class="world-copy">
+                    <strong>Exterior de la Cupula Hendida de Argos</strong>
+                    <span>El ascenso ya tiene final visual. Aqui se siente que la ruta llega a algo sagrado, roto y peligroso.</span>
+                  </div>
+                </article>
+              </div>
             </article>
           </div>
 
           <aside class="chapter-card">
             <div>
-              <h4>Capitulos base del Boceto</h4>
-              <p>He dejado la estructura ya subida al estudio para que podamos empezar a trabajar directamente sobre la ruta. Esta lista es la semilla viva del modo historia.</p>
+              <h4>Capitulo activo del Boceto</h4>
+              <p>Ahora el mapa ya alimenta este panel. Al pulsar una estacion dentro del mapa o en la lista, la ficha cambia para que podamos sentir la campaña como una ruta real y no solo como un listado.</p>
+            </div>
+            <article class="chapter-active">
+              <div class="chapter-scene">
+                <img id="chapterSceneImage" src="assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG" alt="Escenario del capitulo activo" loading="lazy">
+                <span class="chapter-scene-chip" id="chapterSceneChip">Construccion</span>
+              </div>
+              <div class="chapter-body">
+                <div class="chapter-kicker">
+                  <span id="chapterOrderLabel">Capitulo 1</span>
+                  <span class="slash">/</span>
+                  <span id="chapterTypeLabel">Briefing</span>
+                </div>
+                <h5 id="chapterActiveTitle">Hangar de la Fosa Azul</h5>
+                <p id="chapterActiveLead">Briefing de arranque. Aqui definimos que es un mecha, la necesidad de montaje y el tono del refugio tecnico.</p>
+                <div class="chapter-meta-grid">
+                  <article class="chapter-meta-card">
+                    <strong>Mision</strong>
+                    <span id="chapterMission">Construir un bot valido para un NPC.</span>
+                  </article>
+                  <article class="chapter-meta-card">
+                    <strong>Aprende</strong>
+                    <span id="chapterLearn">Piloto, modulos y condicion de mecha montado.</span>
+                  </article>
+                  <article class="chapter-meta-card">
+                    <strong>Tension</strong>
+                    <span id="chapterTension">Todo arranca desde el oficio: ensamblar antes de merecer pilotar.</span>
+                  </article>
+                  <article class="chapter-meta-card">
+                    <strong>Escenario</strong>
+                    <span id="chapterSceneNote">Refugio tecnico azul, nucleo energetico y sensacion de taller superviviente.</span>
+                  </article>
+                </div>
+                <div class="chapter-cast" id="chapterCast">
+                  <span>Mara Oxido</span>
+                </div>
+                <p id="chapterDialogue">“Si no sabes ensamblarlo, tampoco sabras salvarlo.”</p>
+              </div>
+            </article>
+            <div>
+              <h4>Ruta completa</h4>
+              <p>La lista sigue viva, pero ahora tambien sirve para pilotar el mapa y comparar la progresion del viaje nodo por nodo.</p>
             </div>
             <div class="chapter-list">
-              <article class="chapter-row">
+              <article class="chapter-row active" data-node-id="hangar">
                 <strong>1. Hangar de la Fosa Azul</strong>
                 <span>Briefing de arranque. Aqui definimos que es un mecha, la necesidad de montaje y el tono del refugio tecnico.</span>
                 <small>Construccion</small>
               </article>
-              <article class="chapter-row">
+              <article class="chapter-row" data-node-id="patio">
                 <strong>2. Patio de Pruebas del Taller</strong>
                 <span>Primer combate funcional. Sirve para que el jugador vea que el bot responde y que construir bien importa.</span>
                 <small>Tutorial de combate</small>
               </article>
-              <article class="chapter-row">
+              <article class="chapter-row" data-node-id="mercado">
                 <strong>3. Mercado de Relés Muertos</strong>
                 <span>Se abre el mundo. Encargo, chatarra, informacion, y sensacion de economia de supervivencia.</span>
                 <small>Encuentro</small>
               </article>
-              <article class="chapter-row">
+              <article class="chapter-row" data-node-id="torre">
                 <strong>4. Torre de Seguimiento 4B</strong>
                 <span>Primer nodo claramente vinculado a Argos. Buen lugar para la mision de proyectil y para subir misterio.</span>
                 <small>Prueba tactica</small>
               </article>
-              <article class="chapter-row">
+              <article class="chapter-row" data-node-id="campamento">
                 <strong>5. Campamento de las Placas Rojas</strong>
                 <span>Pausa de personaje. Memoria de la guerra, tono humano y aparicion de criterio moral.</span>
                 <small>Dialogo</small>
               </article>
-              <article class="chapter-row">
+              <article class="chapter-row" data-node-id="foso">
                 <strong>6. Foso de Viento Negro</strong>
                 <span>Terreno hostil ideal para defensa activa, emboscada y lectura de peligro real.</span>
                 <small>Defensa activa</small>
               </article>
-              <article class="chapter-row">
+              <article class="chapter-row" data-node-id="subestacion">
                 <strong>7. Subestacion de Ceniza</strong>
                 <span>Reconfiguracion del bot y coste tactico. Buen nodo para jugar con tripulacion y cambio de limites.</span>
                 <small>Reconfiguracion</small>
               </article>
-              <article class="chapter-row">
+              <article class="chapter-row" data-node-id="puente">
                 <strong>8. Puente de los Relampagos Quietos</strong>
                 <span>Duelo de criterio. Ya no es aprender: aqui el jugador debe demostrar que domina la tension tactica.</span>
                 <small>Combate serio</small>
               </article>
-              <article class="chapter-row">
+              <article class="chapter-row" data-node-id="cupula">
                 <strong>9. Cupula Hendida de Argos</strong>
                 <span>Entrada al territorio del mito real. Revelacion, escala y umbral narrativo antes del cierre.</span>
                 <small>Aproximacion final</small>
               </article>
-              <article class="chapter-row">
+              <article class="chapter-row" data-node-id="protocolo">
                 <strong>10. Protocolo Ceniza</strong>
                 <span>Resolucion y desbloqueo. El final del viaje debe sentirse como examen y herencia del mundo anterior.</span>
                 <small>Cierre</small>
@@ -866,6 +1302,176 @@
   <script>
     const tabButtons = [...document.querySelectorAll('.tab-btn')];
     const tabPanels = [...document.querySelectorAll('.tab-panel')];
+    const storyBocetoMapFrame = document.getElementById('storyBocetoMapFrame');
+    const chapterRows = [...document.querySelectorAll('.chapter-row[data-node-id]')];
+
+    const chapterSceneImage = document.getElementById('chapterSceneImage');
+    const chapterSceneChip = document.getElementById('chapterSceneChip');
+    const chapterOrderLabel = document.getElementById('chapterOrderLabel');
+    const chapterTypeLabel = document.getElementById('chapterTypeLabel');
+    const chapterActiveTitle = document.getElementById('chapterActiveTitle');
+    const chapterActiveLead = document.getElementById('chapterActiveLead');
+    const chapterMission = document.getElementById('chapterMission');
+    const chapterLearn = document.getElementById('chapterLearn');
+    const chapterTension = document.getElementById('chapterTension');
+    const chapterSceneNote = document.getElementById('chapterSceneNote');
+    const chapterCast = document.getElementById('chapterCast');
+    const chapterDialogue = document.getElementById('chapterDialogue');
+
+    const storyDraftNodes = {
+      hangar: {
+        id: 'hangar',
+        order: 1,
+        title: 'Hangar de la Fosa Azul',
+        type: 'Briefing',
+        sceneChip: 'Construccion',
+        image: 'assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG',
+        lead: 'Briefing de arranque. Aqui definimos que es un mecha, la necesidad de montaje y el tono del refugio tecnico.',
+        mission: 'Construir un bot valido para un NPC.',
+        learn: 'Piloto, modulos y condicion de mecha montado.',
+        tension: 'Todo arranca desde el oficio: ensamblar antes de merecer pilotar.',
+        sceneNote: 'Refugio tecnico azul, nucleo energetico y sensacion de taller superviviente.',
+        dialogue: '“Si no sabes ensamblarlo, tampoco sabras salvarlo.”',
+        cast: ['Mara Oxido']
+      },
+      patio: {
+        id: 'patio',
+        order: 2,
+        title: 'Patio de Pruebas del Taller',
+        type: 'Combate',
+        sceneChip: 'Tutorial',
+        image: 'assets/Historia/Brutos/2PATIO DE PRUEBAS DEL TALLER.PNG',
+        lead: 'Primer combate funcional. Sirve para que el jugador vea que el bot responde y que construir bien importa.',
+        mission: 'Ganar el combate tutorializado.',
+        learn: 'Ataque con combustible y orden del turno.',
+        tension: 'Aqui la historia deja de ser promesa y se convierte en prueba visible.',
+        sceneNote: 'Anillo de pruebas, metal vivo y primera lectura del mecha en accion.',
+        dialogue: '“No me interesa que pegues fuerte. Me interesa que pegues cuando toca.”',
+        cast: ['Mara Oxido']
+      },
+      mercado: {
+        id: 'mercado',
+        order: 3,
+        title: 'Mercado de Relés Muertos',
+        type: 'Encuentro',
+        sceneChip: 'Encargo',
+        image: 'assets/Historia/Brutos/3MERCADO DE RELÉS MUERTOS.PNG',
+        lead: 'Se abre el mundo. Encargo, chatarra, informacion y sensacion de economia de supervivencia.',
+        mission: 'Montar defensa y armadura minimas en turnos limitados.',
+        learn: 'Decisiones de montaje bajo restriccion.',
+        tension: 'La ruta deja el taller y entra en un mundo donde todo vale si aguanta.',
+        sceneNote: 'Chatarra, comercio improvisado y conocimiento repartido entre ruinas.',
+        dialogue: '“La chatarra no miente: o aguanta, o te mata.”',
+        cast: ['Vera Hex']
+      },
+      torre: {
+        id: 'torre',
+        order: 4,
+        title: 'Torre de Seguimiento 4B',
+        type: 'Prueba tactica',
+        sceneChip: 'Proyectil',
+        image: 'assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG',
+        lead: 'Primer nodo claramente vinculado a Argos. Buen lugar para la mision de proyectil y para subir misterio.',
+        mission: 'Lanzar al menos un proyectil para completar el nodo.',
+        learn: 'Activacion de proyectiles y timing ofensivo.',
+        tension: 'La infraestructura vieja de Argos empieza a mirar al jugador de vuelta.',
+        sceneNote: 'Radar vertical, vigilancia remanente y tecnologia que todavia filtra el paso.',
+        dialogue: '“No todos los disparos son para matar. Algunos son para abrir puertas.”',
+        cast: ['Mara Oxido', 'Vera Hex']
+      },
+      campamento: {
+        id: 'campamento',
+        order: 5,
+        title: 'Campamento de las Placas Rojas',
+        type: 'Dialogo',
+        sceneChip: 'Veteranos',
+        image: 'assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG',
+        lead: 'Pausa de personaje. Memoria de la guerra, tono humano y aparicion de criterio moral.',
+        mission: 'Evento narrativo corto con recompensa de contexto.',
+        learn: 'Tono del mundo y rivalidad futura.',
+        tension: 'La ruta se humaniza justo antes de endurecerse de verdad.',
+        sceneNote: 'Campamento rojo, memoria de batalla y pausa tensa antes del siguiente salto.',
+        dialogue: '“Los novatos montan armas. Los supervivientes montan margenes.”',
+        cast: ['Corvo Vanta']
+      },
+      foso: {
+        id: 'foso',
+        order: 6,
+        title: 'Foso de Viento Negro',
+        type: 'Combate',
+        sceneChip: 'Defensa activa',
+        image: 'assets/Historia/Brutos/6FOSO DE VIENTO NEGRO.PNG',
+        lead: 'Terreno hostil ideal para defensa activa, emboscada y lectura de peligro real.',
+        mission: 'Mitigar un ataque usando diamantes en mano.',
+        learn: 'Defensa activa y gestion tactica del dano.',
+        tension: 'El mundo ataca primero y obliga a leer el peligro antes de poder responder.',
+        sceneNote: 'Quebrada oscura, viento toxico y emboscada contenida en el propio paisaje.',
+        dialogue: '“El metal siempre avisa antes de partirse. Escuchalo.”',
+        cast: ['Corvo Vanta']
+      },
+      subestacion: {
+        id: 'subestacion',
+        order: 7,
+        title: 'Subestacion de Ceniza',
+        type: 'Reconfiguracion',
+        sceneChip: 'Tripulacion',
+        image: 'assets/Historia/Brutos/7SUBESTACIÓN DE CENIZA.PNG',
+        lead: 'Reconfiguracion del bot y coste tactico. Buen nodo para jugar con tripulacion y cambio de limites.',
+        mission: 'Completar una reconfiguracion valida sin romper limites.',
+        learn: 'Piloto, copiloto y descarte por exceso.',
+        tension: 'Aqui el jugador entiende que cambiar la forma del bot siempre tiene precio.',
+        sceneNote: 'Infraestructura energetica semimuerta, carga residual y sensacion de sistema roto pero util.',
+        dialogue: '“La maquina no discute. Si cambias la forma, pagas el coste.”',
+        cast: ['Mara Oxido', 'Vera Hex']
+      },
+      puente: {
+        id: 'puente',
+        order: 8,
+        title: 'Puente de los Relampagos Quietos',
+        type: 'Combate',
+        sceneChip: 'Duelo',
+        image: 'assets/Historia/Brutos/8PUENTE DE LOS RELÁMPAGOS QUIETOS.PNG',
+        lead: 'Duelo de criterio. Ya no es aprender: aqui el jugador debe demostrar que domina la tension tactica.',
+        mission: 'Vencer a un rival tactico de media dificultad.',
+        learn: 'Lectura de amenaza y presion sostenida.',
+        tension: 'Corvo deja de ser sombra narrativa y se convierte en examen vivo.',
+        sceneNote: 'Pasarela electrificada, horizonte roto y tension contenida en el vacio.',
+        dialogue: '“Si consigues cruzar este puente, quiza merezcas llegar al final.”',
+        cast: ['Corvo Vanta']
+      },
+      cupula: {
+        id: 'cupula',
+        order: 9,
+        title: 'Cupula Hendida de Argos',
+        type: 'Aproximacion final',
+        sceneChip: 'Revelacion',
+        image: 'assets/Historia/Brutos/9EXTERIOR DE LA CÚPULA HENDIDA DE ARGÓS.PNG',
+        lead: 'Entrada al territorio del mito real. Revelacion, escala y umbral narrativo antes del cierre.',
+        mission: 'Atravesar el umbral de Argos y preparar el duelo final.',
+        learn: 'Escala del conflicto y cierre de la ruta.',
+        tension: 'La ruta deja de ser supervivencia y se vuelve ceremonia de acceso a algo mayor.',
+        sceneNote: 'Megaestructura rota, energia antigua y sensacion de sanctasanctorum tecnologico.',
+        dialogue: '“No buscabamos fuerza. Buscabamos a quien supiera no desperdiciarla.”',
+        cast: ['Corvo Vanta', 'Custodio de Argos']
+      },
+      protocolo: {
+        id: 'protocolo',
+        order: 10,
+        title: 'Protocolo Ceniza',
+        type: 'Cierre',
+        sceneChip: 'Desbloqueo',
+        image: 'assets/Historia/Brutos/9BINTERIOR DE LA CÚPULA HENDIDA DE ARGÓS.PNG',
+        lead: 'Resolucion y desbloqueo. El final del viaje debe sentirse como examen y herencia del mundo anterior.',
+        mission: 'Activar SUPER DIFICIL en 1 jugador.',
+        learn: 'Cierre sobrio, merecido y con sensacion de rango.',
+        tension: 'Todo converge en la pregunta final: quien merece operar lo que queda del viejo mundo.',
+        sceneNote: 'Interior ceremonial de Argos, nucleo activo y presencia terminal del Custodio.',
+        dialogue: '“Bienvenido a la carretera real. Ahora empieza la parte seria.”',
+        cast: ['Custodio de Argos']
+      }
+    };
+
+    let currentStoryNodeId = 'hangar';
 
     function setActiveTab(tabName){
       tabButtons.forEach((button)=>{
@@ -878,8 +1484,82 @@
     }
 
     tabButtons.forEach((button)=>{
-      button.addEventListener('click', ()=> setActiveTab(button.dataset.tab));
+      button.addEventListener('click', ()=> {
+        setActiveTab(button.dataset.tab);
+        history.replaceState(null, '', `#panel-${button.dataset.tab}`);
+      });
     });
+
+    function syncRouteList(nodeId){
+      chapterRows.forEach((row)=>{
+        row.classList.toggle('active', row.dataset.nodeId === nodeId);
+      });
+    }
+
+    function renderChapterCast(cast){
+      chapterCast.innerHTML = '';
+      cast.forEach((name)=>{
+        const pill = document.createElement('span');
+        pill.textContent = name;
+        chapterCast.appendChild(pill);
+      });
+    }
+
+    function renderStoryDraftNode(nodeId, incomingNode){
+      const localNode = storyDraftNodes[nodeId] || storyDraftNodes.hangar;
+      const mapNode = incomingNode || {};
+      currentStoryNodeId = localNode.id;
+
+      chapterSceneImage.src = localNode.image;
+      chapterSceneImage.alt = localNode.title;
+      chapterSceneChip.textContent = localNode.sceneChip || mapNode.subtype || 'Boceto';
+      chapterOrderLabel.textContent = `Capitulo ${localNode.order || mapNode.order || '?'}`;
+      chapterTypeLabel.textContent = mapNode.type || localNode.type;
+      chapterActiveTitle.textContent = localNode.title || mapNode.name;
+      chapterActiveLead.textContent = localNode.lead;
+      chapterMission.textContent = mapNode.mission || localNode.mission;
+      chapterLearn.textContent = mapNode.learn || localNode.learn;
+      chapterTension.textContent = localNode.tension;
+      chapterSceneNote.textContent = localNode.sceneNote;
+      chapterDialogue.textContent = mapNode.dialogue || localNode.dialogue;
+      renderChapterCast(localNode.cast);
+      syncRouteList(localNode.id);
+    }
+
+    function postNodeSelectionToMap(nodeId){
+      if (!storyBocetoMapFrame || !storyBocetoMapFrame.contentWindow) return;
+      storyBocetoMapFrame.contentWindow.postMessage({
+        type: 'pocobot-story-map-select',
+        id: nodeId,
+      }, '*');
+    }
+
+    chapterRows.forEach((row)=>{
+      row.addEventListener('click', ()=>{
+        const nodeId = row.dataset.nodeId;
+        renderStoryDraftNode(nodeId);
+        postNodeSelectionToMap(nodeId);
+      });
+    });
+
+    window.addEventListener('message', (event)=>{
+      const data = event.data;
+      if (!data || data.type !== 'pocobot-story-map-selection' || !data.node || !data.node.id) return;
+      renderStoryDraftNode(data.node.id, data.node);
+    });
+
+    if (storyBocetoMapFrame) {
+      storyBocetoMapFrame.addEventListener('load', ()=>{
+        postNodeSelectionToMap(currentStoryNodeId);
+      });
+    }
+
+    const requestedTab = new URLSearchParams(window.location.search).get('tab');
+    if (requestedTab === 'boceto' || window.location.hash === '#panel-boceto' || window.location.hash === '#tab-boceto') {
+      setActiveTab('boceto');
+    }
+
+    renderStoryDraftNode(currentStoryNodeId);
   </script>
 </body>
 </html>
