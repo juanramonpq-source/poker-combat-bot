@@ -1300,6 +1300,7 @@
   </main>
 
   <script>
+    const STORY_AUDIO_PRIORITY_KEY = 'pocobot_story_audio_priority';
     const tabButtons = [...document.querySelectorAll('.tab-btn')];
     const tabPanels = [...document.querySelectorAll('.tab-panel')];
     const storyBocetoMapFrame = document.getElementById('storyBocetoMapFrame');
@@ -1317,6 +1318,41 @@
     const chapterSceneNote = document.getElementById('chapterSceneNote');
     const chapterCast = document.getElementById('chapterCast');
     const chapterDialogue = document.getElementById('chapterDialogue');
+
+    function pauseDocumentMedia(doc, reset=true){
+      if(!doc) return;
+      try{
+        doc.querySelectorAll('audio,video').forEach((media)=>{
+          try{
+            media.pause();
+            if(reset && typeof media.currentTime === 'number') media.currentTime = 0;
+          }catch(error){}
+        });
+      }catch(error){}
+    }
+
+    function requestStoryAudioPriority(){
+      pauseDocumentMedia(document);
+
+      [window.parent !== window ? window.parent : null, window.opener].forEach((targetWindow)=>{
+        if(!targetWindow) return;
+        try{
+          pauseDocumentMedia(targetWindow.document);
+          if(typeof targetWindow.__pocobotStoryAudioPriority === 'function'){
+            targetWindow.__pocobotStoryAudioPriority();
+          }
+        }catch(error){}
+      });
+
+      try{
+        localStorage.setItem(STORY_AUDIO_PRIORITY_KEY, JSON.stringify({
+          ts: Date.now(),
+          page: 'MODO_HISTORIA_POCObot'
+        }));
+      }catch(error){}
+    }
+
+    requestStoryAudioPriority();
 
     const storyDraftNodes = {
       hangar: {

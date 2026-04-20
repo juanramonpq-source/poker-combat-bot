@@ -566,6 +566,7 @@
   </audio>
 
   <script>
+    const STORY_AUDIO_PRIORITY_KEY = 'pocobot_story_audio_priority';
     const titleStage = document.getElementById('titleStage');
     const titleArtWrap = document.getElementById('titleArtWrap');
     const enterStoryBtn = document.getElementById('enterStoryBtn');
@@ -585,6 +586,41 @@
     if (storyMapMusic) {
       storyMapMusic.volume = 0.34;
     }
+
+    function pauseDocumentMedia(doc, reset=true) {
+      if (!doc) return;
+      try {
+        doc.querySelectorAll('audio,video').forEach((media) => {
+          try {
+            media.pause();
+            if (reset && typeof media.currentTime === 'number') media.currentTime = 0;
+          } catch (error) {}
+        });
+      } catch (error) {}
+    }
+
+    function requestStoryAudioPriority() {
+      pauseDocumentMedia(document);
+
+      [window.parent !== window ? window.parent : null, window.opener].forEach((targetWindow) => {
+        if (!targetWindow) return;
+        try {
+          pauseDocumentMedia(targetWindow.document);
+          if (typeof targetWindow.__pocobotStoryAudioPriority === 'function') {
+            targetWindow.__pocobotStoryAudioPriority();
+          }
+        } catch (error) {}
+      });
+
+      try {
+        localStorage.setItem(STORY_AUDIO_PRIORITY_KEY, JSON.stringify({
+          ts: Date.now(),
+          page: 'MODO_HISTORIA_BOCETO'
+        }));
+      } catch (error) {}
+    }
+
+    requestStoryAudioPriority();
 
     const TITLE_THEME = [
       {

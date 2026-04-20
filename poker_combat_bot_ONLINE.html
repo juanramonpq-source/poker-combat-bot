@@ -5667,6 +5667,7 @@ function ensureAudio(){
 const AUDIO_BGM_1_URI = "assets/audio_01.mp3";
 const AUDIO_BGM_2_URI = "assets/audio_02.mp3";
 const AUDIO_BGM_MENU_URI = "assets/GravitSilence.mp3";
+const STORY_AUDIO_PRIORITY_KEY = "pocobot_story_audio_priority";
 const AUDIO_SFX_URIS = {
   uiClick: "assets/sfx/ui_click.wav",
   shuffle: "assets/sfx/card_shuffle.wav",
@@ -5828,6 +5829,28 @@ function maybeResumeMenuMusic(){
   if(!state.soundOn || state.gameStarted || !intro || intro.classList.contains('hidden')) return;
   startMenuMusic(false);
 }
+function stopPageMedia(reset=true){
+  try{
+    document.querySelectorAll('audio,video').forEach((media) => {
+      try{
+        media.pause();
+        if(reset && typeof media.currentTime === 'number') media.currentTime = 0;
+      }catch(e){}
+    });
+  }catch(e){}
+}
+function relinquishAudioForStoryMode(){
+  stopAllMusic(true);
+  stopPageMedia(true);
+  if(state.audioCtx && state.audioCtx.state === 'running'){
+    state.audioCtx.suspend().catch(() => {});
+  }
+}
+window.__pocobotStoryAudioPriority = relinquishAudioForStoryMode;
+window.addEventListener('storage', (event) => {
+  if(event.key !== STORY_AUDIO_PRIORITY_KEY || !event.newValue) return;
+  relinquishAudioForStoryMode();
+});
 function playTone(freq, duration=.08, type='square', volume=.025, slideTo=null){
   const ctx = ensureAudio();
   if(!ctx || !ctx.createOscillator) return;
