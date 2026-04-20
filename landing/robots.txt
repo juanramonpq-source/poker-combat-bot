@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /counter.php
+Disallow: /counter_data.json
+Disallow: /counter.lock
+
+# Sitemap
+Sitemap: https://poker-combat-bot.online/sitemap.xml

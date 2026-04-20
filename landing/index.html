@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="es" prefix="og: https://ogp.me/ns#">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ═══════════════════════════════════════════
+     SEO PRIMARIO
+════════════════════════════════════════════ -->
+<title>PoCoBOT (Poker Combat Bot) — Combate de Mechas con Estrategia de Póker</title>
+<meta name="description" content="PoCoBOT (Poker Combat Bot): juego multijugador de combate entre mechas con mecánica de póker. Elige tu robot, juega tus cartas y destruye al rival. Gratis, sin instalación, en tu navegador.">
+<meta name="keywords" content="PoCoBOT, poker combat bot, pocobot, juego mechas, combate robots, juego de cartas, poker game, multijugador navegador, HTML5 game, mecha battle, robot game, estrategia poker">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="author" content="Juan Ramón Pérez Quintanar — PoCoBOT · Poker Combat Bot">
+<meta name="theme-color" content="#050510">
+
+<link rel="canonical" href="https://poker-combat-bot.online/">
+
+<!-- ═══════════════════════════════════════════
+     ICONOS Y MANIFEST
+════════════════════════════════════════════ -->
+<link rel="icon"             type="image/png" sizes="512x512" href="assets/icon.png">
+<link rel="icon"             type="image/png" sizes="32x32"   href="assets/icon.png">
+<link rel="apple-touch-icon"                                  href="assets/icon.png">
+<meta name="msapplication-TileImage" content="assets/icon.png">
+<meta name="msapplication-TileColor" content="#050510">
+
+<!-- ═══════════════════════════════════════════
+     OPEN GRAPH (Facebook, LinkedIn, WhatsApp…)
+════════════════════════════════════════════ -->
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="PoCoBOT · Poker Combat Bot">
+<meta property="og:title"       content="PoCoBOT — Combate de Mechas con Estrategia de Póker">
+<meta property="og:description" content="PoCoBOT: elige tu mecha, juega tus cartas de póker y destruye al rival en duelos multijugador en tiempo real. Gratis, sin instalación.">
+<meta property="og:image"       content="https://poker-combat-bot.online/assets/icon.png">
+<meta property="og:image:width"  content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:image:alt"    content="PoCoBOT — icono del juego">
+<meta property="og:url"         content="https://poker-combat-bot.online/">
+<meta property="og:locale"      content="es_ES">
+
+<!-- ═══════════════════════════════════════════
+     TWITTER / X CARD
+════════════════════════════════════════════ -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="PoCoBOT — Combate de Mechas con Estrategia de Póker">
+<meta name="twitter:description" content="PoCoBOT: elige tu mecha, juega tus cartas y destruye al rival. Multijugador en tiempo real, gratis en tu navegador.">
+<meta name="twitter:image"       content="https://poker-combat-bot.online/assets/icon.png">
+<meta name="twitter:image:alt"   content="PoCoBOT · Poker Combat Bot">
+
+<!-- ═══════════════════════════════════════════
+     SCHEMA.ORG — VideoGame (datos estructurados)
+════════════════════════════════════════════ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Poker Combat Bot",
+  "alternateName": "PoCoBOT",
+  "creator": {
+    "@type": "Person",
+    "name": "Juan Ramón Pérez Quintanar"
+  },
+  "description": "PoCoBOT (Poker Combat Bot): juego multijugador de combate entre mechas con mecánica de póker. Elige tu robot de combate, juega combinaciones de cartas para activar ataques y destruye al mecha rival. Gratis, sin instalación, en cualquier navegador.",
+  "url": "https://pokercombatbot.up.railway.app",
+  "sameAs": ["https://poker-combat-bot.online/"],
+  "image": "https://poker-combat-bot.online/assets/icon.png",
+  "genre": ["Strategy", "Card Game", "Action", "Multiplayer"],
+  "gamePlatform": ["Web Browser", "HTML5", "PC", "Mobile"],
+  "applicationCategory": "Game",
+  "operatingSystem": "Web Browser",
+  "inLanguage": "es",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "availability": "https://schema.org/InStock"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "1",
+    "bestRating": "5"
+  }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════
+     PRECONEXIONES Y FUENTES
+════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* =====================================================
+   BASE & VARIABLES
+===================================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --cyan:   #00e5ff;
+  --cyan30: rgba(0,229,255,0.3);
+  --cyan10: rgba(0,229,255,0.1);
+  --gold:   #ffd700;
+  --gold60: rgba(255,215,0,0.6);
+  --gold20: rgba(255,215,0,0.2);
+  --red:    #ff2244;
+  --red30:  rgba(255,34,68,0.3);
+  --bg:     #050510;
+  --bg2:    #0a0a1e;
+  --text:   #9ab8e0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  overflow-x: hidden;
+}
+
+/* =====================================================
+   CIRCUIT CANVAS
+===================================================== */
+#circuit-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* =====================================================
+   SCANLINES
+===================================================== */
+.scanlines {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(0,0,0,0.045) 2px, rgba(0,0,0,0.045) 4px
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+section, header, footer { position: relative; z-index: 2; }
+
+/* =====================================================
+   SHARED
+===================================================== */
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 0.18em;
+  color: #fff;
+  text-shadow: 0 0 18px var(--cyan), 0 0 40px var(--cyan30);
+  margin-bottom: 0.6rem;
+}
+.section-title::after {
+  content: '';
+  display: block;
+  width: 80px; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  margin: 0.7rem auto 0;
+}
+.section-subtitle {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--cyan);
+  opacity: 0.55;
+  letter-spacing: 0.15em;
+  margin-bottom: 3rem;
+  text-transform: uppercase;
+}
+
+/* =====================================================
+   PLAY BUTTON
+===================================================== */
+.play-btn {
+  display: inline-block;
+  position: relative;
+  text-decoration: none;
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: clamp(1.1rem, 2.5vw, 1.55rem);
+  letter-spacing: 0.12em;
+  color: #05040a;
+  background: linear-gradient(135deg, #ffe033 0%, #ffa500 40%, #ffd700 60%, #fff176 100%);
+  padding: 0.9em 2.8em;
+  border: none;
+  cursor: pointer;
+  clip-path: polygon(16px 0%, calc(100% - 16px) 0%, 100% 50%, calc(100% - 16px) 100%, 16px 100%, 0% 50%);
+  filter: drop-shadow(0 0 20px rgba(255,215,0,0.85)) drop-shadow(0 0 45px rgba(255,165,0,0.5));
+  animation: btnPulse 2.8s ease-in-out infinite;
+  transition: filter 0.15s, transform 0.15s;
+  white-space: nowrap;
+}
+.play-btn:hover {
+  animation: none;
+  transform: scale(1.07);
+  filter: drop-shadow(0 0 38px rgba(255,215,0,1)) drop-shadow(0 0 80px rgba(255,165,0,0.9)) brightness(1.12);
+}
+.play-btn.large {
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  padding: 1em 3.4em;
+}
+@keyframes btnPulse {
+  0%,100% { filter: drop-shadow(0 0 18px rgba(255,215,0,0.85)) drop-shadow(0 0 40px rgba(255,165,0,0.45)); transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 38px rgba(255,215,0,1))    drop-shadow(0 0 80px rgba(255,165,0,0.75)); transform: scale(1.03); }
+}
+
+/* =====================================================
+   HERO
+===================================================== */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1rem 1.5rem;
+  gap: 0.3rem;
+  overflow: hidden;
+  position: relative;
+}
+#hero::before {
+  content: '♠  ♥  ♦  ♣';
+  position: absolute; top: 1.4rem; right: 2rem;
+  font-size: 1.3rem; color: var(--gold); opacity: 0.35;
+  letter-spacing: 0.6rem; pointer-events: none;
+}
+#hero::after {
+  content: '♣  ♦  ♥  ♠';
+  position: absolute; top: 1.4rem; left: 2rem;
+  font-size: 1.3rem; color: var(--gold); opacity: 0.35;
+  letter-spacing: 0.6rem; pointer-events: none;
+}
+
+.hero-logo {
+  width: min(360px, 62vw);
+  height: auto;
+  display: block;
+  margin: 0 auto 0.2rem;
+  filter: drop-shadow(0 0 22px rgba(255,215,0,0.9)) drop-shadow(0 0 55px rgba(255,215,0,0.5));
+  animation: logoPulse 3.5s ease-in-out infinite;
+}
+@keyframes logoPulse {
+  0%,100% { filter: drop-shadow(0 0 22px rgba(255,215,0,0.9))  drop-shadow(0 0 55px rgba(255,215,0,0.45)); }
+  50%      { filter: drop-shadow(0 0 40px rgba(255,215,0,1))   drop-shadow(0 0 95px rgba(255,215,0,0.7)); }
+}
+
+.hero-tagline {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(0.5rem, 1.2vw, 0.72rem);
+  letter-spacing: 0.4em;
+  color: var(--cyan); text-align: center; text-transform: uppercase;
+  margin-bottom: 0.5rem; opacity: 0.85;
+}
+
+.hero-arena {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%; max-width: 1280px;
+  gap: 1rem;
+}
+
+.mecha-side {
+  flex: 0 0 auto;
+  width: clamp(100px, 16vw, 220px);
+}
+.mecha-side img {
+  width: 100%; display: block;
+  filter: drop-shadow(0 0 22px var(--cyan)) drop-shadow(0 0 50px rgba(0,229,255,0.35));
+  animation: mechaFloat 5s ease-in-out infinite;
+}
+.mecha-side.left img {
+  transform: scaleX(-1);
+  filter: drop-shadow(0 0 22px var(--red)) drop-shadow(0 0 50px var(--red30));
+  animation-name: mechaFloatLeft; animation-delay: -2.5s;
+}
+@keyframes mechaFloat     { 0%,100% { transform: translateY(0); }           50% { transform: translateY(-18px); } }
+@keyframes mechaFloatLeft { 0%,100% { transform: scaleX(-1) translateY(0); } 50% { transform: scaleX(-1) translateY(-18px); } }
+
+.hero-cta {
+  flex: 1; min-width: 250px; max-width: 440px;
+  display: flex; flex-direction: column; align-items: center; gap: 0.7rem; padding: 1rem;
+}
+
+.vs-badge {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900;
+  color: var(--red);
+  text-shadow: 0 0 18px var(--red), 0 0 40px var(--red30);
+  animation: vsPulse 2.2s ease-in-out infinite; line-height: 1;
+}
+@keyframes vsPulse {
+  0%,100% { transform: scale(1); }
+  50%      { transform: scale(1.12); text-shadow: 0 0 30px var(--red), 0 0 70px var(--red30); }
+}
+
+.play-subtitle {
+  font-size: 0.78rem; color: var(--cyan); letter-spacing: 0.18em;
+  opacity: 0.7; text-align: center; text-transform: uppercase;
+}
+
+.scroll-hint {
+  position: absolute; bottom: 1.2rem; left: 50%; transform: translateX(-50%);
+  text-align: center; font-size: 0.65rem; letter-spacing: 0.3em;
+  color: var(--cyan); opacity: 0.5; z-index: 5;
+  animation: scrollBounce 2.2s ease-in-out infinite; line-height: 1.7;
+}
+@keyframes scrollBounce {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(7px); }
+}
+
+/* =====================================================
+   STATS BAR
+===================================================== */
+#stats-bar {
+  background: rgba(0,229,255,0.04);
+  border-top: 1px solid rgba(0,229,255,0.12);
+  border-bottom: 1px solid rgba(0,229,255,0.12);
+  padding: 1.8rem 2rem;
+}
+.stats-inner {
+  max-width: 1000px; margin: 0 auto;
+  display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1.5rem;
+}
+.stat-item {
+  text-align: center; opacity: 0; transform: scale(0.75);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.stat-item.visible { opacity: 1; transform: scale(1); }
+.stat-num {
+  display: block;
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900;
+  color: var(--gold); text-shadow: 0 0 12px var(--gold60); line-height: 1;
+}
+.stat-label {
+  font-size: 0.75rem; letter-spacing: 0.15em;
+  color: var(--text); opacity: 0.65; text-transform: uppercase; margin-top: 0.3rem;
+}
+
+/* =====================================================
+   COUNTERS BAR (visitas reales)
+===================================================== */
+#counters-bar {
+  background: rgba(255,215,0,0.03);
+  border-bottom: 1px solid rgba(255,215,0,0.1);
+  padding: 1.1rem 2rem;
+}
+.counters-inner {
+  max-width: 900px; margin: 0 auto;
+  display: flex; justify-content: center; align-items: center;
+  gap: 3rem; flex-wrap: wrap;
+}
+.counter-item {
+  display: flex; align-items: center; gap: 0.7rem;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.counter-item.visible { opacity: 1; transform: translateY(0); }
+.counter-icon { font-size: 1.4rem; line-height: 1; }
+.counter-info { display: flex; flex-direction: column; }
+.counter-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--gold); text-shadow: 0 0 10px var(--gold60);
+  line-height: 1;
+}
+.counter-label {
+  font-size: 0.7rem; letter-spacing: 0.12em;
+  color: var(--text); opacity: 0.6; text-transform: uppercase; margin-top: 0.15rem;
+}
+.counter-divider {
+  width: 1px; height: 40px;
+  background: linear-gradient(180deg, transparent, rgba(255,215,0,0.3), transparent);
+}
+
+/* live dot */
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #00ff88; box-shadow: 0 0 7px #00ff88;
+  display: inline-block; margin-right: 0.3rem;
+  animation: liveBlink 1.6s ease-in-out infinite;
+}
+@keyframes liveBlink {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.3; transform: scale(0.8); }
+}
+/* fallback si la API no carga */
+.counter-num.loading {
+  color: rgba(255,215,0,0.3);
+  font-size: 1rem;
+}
+
+/* =====================================================
+   HOW TO PLAY
+===================================================== */
+#how-to-play {
+  padding: 5.5rem 2rem;
+  background: linear-gradient(180deg, var(--bg), var(--bg2) 50%, var(--bg));
+  position: relative;
+}
+#how-to-play::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan30), transparent);
+}
+
+.steps-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 2rem; max-width: 1080px; margin: 2rem auto 0;
+}
+.step-card {
+  background: rgba(0,229,255,0.03); border: 1px solid rgba(0,229,255,0.18);
+  border-radius: 3px; padding: 2rem 1.6rem 1.8rem; position: relative; overflow: hidden;
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.55s ease, transform 0.55s ease, border-color 0.3s, background 0.3s;
+}
+.step-card.visible { opacity: 1; transform: translateY(0); }
+.step-card:hover { border-color: var(--cyan); background: rgba(0,229,255,0.07); transform: translateY(-6px); }
+.step-card::before { content: ''; position: absolute; top: -1px; left: -1px; width: 18px; height: 18px; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); }
+.step-card::after  { content: ''; position: absolute; bottom: -1px; right: -1px; width: 18px; height: 18px; border-bottom: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+.step-icon { font-size: 2.2rem; color: var(--gold); text-shadow: 0 0 14px var(--gold); display: block; margin-bottom: 0.2rem; }
+.step-num  { font-family: 'Orbitron', monospace; font-size: 4rem; font-weight: 900; color: rgba(0,229,255,0.06); position: absolute; top: 0.8rem; right: 1rem; line-height: 1; pointer-events: none; }
+.step-card h3 { font-family: 'Orbitron', monospace; font-size: 0.92rem; font-weight: 700; color: #fff; letter-spacing: 0.12em; margin-bottom: 0.8rem; }
+.step-card p  { font-size: 0.95rem; line-height: 1.65; color: var(--text); margin-bottom: 1.4rem; }
+.step-img { width: 110px; display: block; margin: 0 auto; filter: drop-shadow(0 0 12px var(--cyan)); }
+.card-hand { display: flex; gap: 0.35rem; justify-content: center; flex-wrap: wrap; margin-top: 0.5rem; }
+.card-pip { background: #fff; color: #1a1a3e; font-family: 'Orbitron', monospace; font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.5rem; border-radius: 3px; border: 1px solid rgba(0,229,255,0.4); box-shadow: 0 0 8px rgba(0,229,255,0.25); }
+.card-pip.red { color: #cc0000; }
+
+/* =====================================================
+   ROSTER
+===================================================== */
+#roster { padding: 5rem 0; position: relative; overflow: hidden; }
+#roster::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold60), transparent); }
+.roster-scroll-wrap { width: 100%; overflow: hidden; position: relative; }
+.roster-scroll-wrap::before,
+.roster-scroll-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 140px; z-index: 3; pointer-events: none; }
+.roster-scroll-wrap::before { left: 0;  background: linear-gradient(90deg,  var(--bg), transparent); }
+.roster-scroll-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--bg), transparent); }
+.roster-track { display: flex; gap: 1.5rem; padding: 1.5rem 1rem; width: max-content; animation: scrollLeft 35s linear infinite; }
+.roster-track:hover { animation-play-state: paused; }
+@keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.roster-card { flex: 0 0 auto; width: 185px; background: rgba(0,229,255,0.04); border: 1px solid rgba(0,229,255,0.18); border-radius: 3px; padding: 1rem 0.8rem 0.9rem; text-align: center; cursor: pointer; position: relative; transition: border-color 0.28s, background 0.28s, transform 0.28s; }
+.roster-card:hover { border-color: var(--gold); background: rgba(255,215,0,0.06); transform: translateY(-9px) scale(1.04); }
+.roster-card::before { content: attr(data-suit); position: absolute; top: 0.5rem; right: 0.7rem; font-size: 1.1rem; color: var(--gold); opacity: 0.3; }
+.roster-card img { width: 130px; height: 150px; object-fit: contain; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px var(--cyan)); transition: filter 0.28s; }
+.roster-card:hover img { filter: drop-shadow(0 0 22px var(--gold)) drop-shadow(0 0 8px #fff); }
+.mech-name { font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 0.09em; color: var(--cyan); margin-top: 0.5rem; text-transform: uppercase; }
+.mech-type { font-size: 0.72rem; color: var(--text); opacity: 0.6; margin-top: 0.15rem; }
+.power-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-top: 0.55rem; overflow: hidden; }
+.power-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--cyan), var(--gold)); }
+
+/* =====================================================
+   FEATURES
+===================================================== */
+#features { padding: 4.5rem 2rem; background: var(--bg2); border-top: 1px solid rgba(0,229,255,0.12); border-bottom: 1px solid rgba(0,229,255,0.12); }
+.features-grid { max-width: 1100px; margin: 2.5rem auto 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+.feature-tile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.7rem; padding: 1.6rem 1rem; border: 1px solid rgba(0,229,255,0.1); border-radius: 3px; background: rgba(0,229,255,0.02); opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s, background 0.3s; }
+.feature-tile.visible { opacity: 1; transform: translateY(0); }
+.feature-tile:hover { border-color: rgba(0,229,255,0.45); background: rgba(0,229,255,0.06); }
+.feature-icon { font-size: 2.2rem; line-height: 1; }
+.feature-tile h4 { font-family: 'Orbitron', monospace; font-size: 0.82rem; font-weight: 700; color: #fff; letter-spacing: 0.1em; }
+.feature-tile p  { font-size: 0.88rem; line-height: 1.55; color: var(--text); opacity: 0.75; }
+
+/* =====================================================
+   FINAL CTA
+===================================================== */
+#final-cta { padding: 7rem 2rem; text-align: center; position: relative; overflow: hidden; }
+#final-cta::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), var(--gold), var(--cyan), transparent); }
+.cta-inner { position: relative; z-index: 2; }
+#final-cta h2 { font-family: 'Orbitron', monospace; font-size: clamp(1.5rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: 0.12em; text-shadow: 0 0 25px var(--cyan30); margin-bottom: 0.8rem; }
+#final-cta .sub { font-size: 1.05rem; color: var(--text); opacity: 0.75; letter-spacing: 0.06em; margin-bottom: 2.5rem; }
+.cta-bg-mechas { position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; z-index: 0; overflow: hidden; }
+.cta-bg-mechas img { width: clamp(120px, 16vw, 260px); opacity: 0.07; filter: drop-shadow(0 0 40px var(--cyan)); }
+.cta-bg-mechas img.flip { transform: scaleX(-1); }
+
+/* =====================================================
+   FOOTER
+===================================================== */
+footer { background: rgba(0,0,0,0.6); border-top: 1px solid rgba(0,229,255,0.08); padding: 2rem; text-align: center; }
+footer img { height: 48px; opacity: 0.55; margin-bottom: 0.6rem; filter: drop-shadow(0 0 10px var(--gold60)); display: block; margin: 0 auto 0.6rem; }
+footer p { font-size: 0.72rem; letter-spacing: 0.14em; color: var(--text); opacity: 0.35; }
+
+/* =====================================================
+   GLITCH
+===================================================== */
+.glitch { position: relative; display: inline-block; }
+.glitch::before, .glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.glitch::before { color: #ff00ff; animation: glitch1 5s infinite; clip-path: polygon(0 25%, 100% 25%, 100% 45%, 0 45%); }
+.glitch::after  { color: #00ffff; animation: glitch2 5s infinite; clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); }
+@keyframes glitch1 { 0%,97%,100% { transform: translateX(0); opacity: 0; } 98% { transform: translateX(-4px); opacity: 0.8; } }
+@keyframes glitch2 { 0%,95%,100% { transform: translateX(0); opacity: 0; } 96% { transform: translateX(4px);  opacity: 0.8; } }
+
+/* =====================================================
+   FLOATING SUITS
+===================================================== */
+.fsz { position: fixed; pointer-events: none; z-index: 1; animation: suitFloat linear forwards; opacity: 0; user-select: none; }
+@keyframes suitFloat {
+  0%   { opacity: 0;    transform: translateY(0)      rotate(0deg); }
+  8%   { opacity: 0.35; }
+  85%  { opacity: 0.15; }
+  100% { opacity: 0;    transform: translateY(-110vh) rotate(420deg); }
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 760px) {
+  .mecha-side { width: clamp(100px, 24vw, 180px); }
+  .hero-cta   { min-width: 200px; padding: 0.5rem; }
+  .vs-badge   { font-size: 1.6rem; }
+  .counters-inner { gap: 1.5rem; }
+  .counter-divider { display: none; }
+}
+@media (max-width: 520px) { .mecha-side { display: none; } }
+</style>
+</head>
+<body>
+
+<canvas id="circuit-canvas"></canvas>
+<div class="scanlines"></div>
+
+<!-- ═══════════════════════════════════════════════
+     H1 semántico (oculto visualmente, visible para buscadores)
+════════════════════════════════════════════════ -->
+<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
+  PoCoBOT — Poker Combat Bot: Juego de Combate de Mechas con Estrategia de Póker Multijugador
+</h1>
+
+<!-- ═══════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════ -->
+<section id="hero" aria-label="Inicio">
+  <img src="assets/pocobot_title.png"
+       class="hero-logo"
+       alt="Poker Combat Bot — logo oficial del juego"
+       width="861" height="394"
+       loading="eager">
+  <p class="hero-tagline">PoCoBOT · Combate de Mechas · Estrategia de Póker · Multijugador en Tiempo Real</p>
+
+  <div class="hero-arena">
+    <div class="mecha-side left">
+      <img src="assets/image_17.png" alt="Mecha enemigo rojo con armadura eléctrica" loading="eager">
+    </div>
+    <div class="hero-cta">
+      <div class="vs-badge" aria-hidden="true">VS</div>
+      <a href="https://pokercombatbot.up.railway.app"
+         class="play-btn"
+         title="Jugar Poker Combat Bot gratis en el navegador"
+         rel="noopener">
+        <span>⚡&nbsp;JUGAR&nbsp;⚡</span>
+      </a>
+      <p class="play-subtitle">Gratis · Sin registro · En tu navegador · PoCoBOT</p>
+    </div>
+    <div class="mecha-side right">
+      <img src="assets/image_16.png" alt="Tu mecha azul con energía Nova" loading="eager">
+    </div>
+  </div>
+
+  <div class="scroll-hint" aria-hidden="true">DESCUBRE MÁS<br>▼</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     STATS BAR (datos del juego)
+════════════════════════════════════════════════ -->
+<div id="stats-bar" aria-label="Estadísticas del juego">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <span class="stat-num" data-target="12">0</span>
+      <span class="stat-label">Mechas disponibles</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-target="52">0</span>
+      <span class="stat-label">Cartas en juego</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-target="10">0</span>
+      <span class="stat-label">Manos de póker</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-target="1">0</span>
+      <span class="stat-label">Ganador por partida</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     COUNTERS BAR (visitas reales)
+════════════════════════════════════════════════ -->
+<div id="counters-bar" aria-label="Contadores de visitas">
+  <div class="counters-inner">
+    <div class="counter-item" id="total-counter-item">
+      <div class="counter-icon" aria-hidden="true">👁</div>
+      <div class="counter-info">
+        <span class="counter-num loading" id="total-visits-num">…</span>
+        <span class="counter-label">Visitas totales</span>
+      </div>
+    </div>
+    <div class="counter-divider" aria-hidden="true"></div>
+    <div class="counter-item" id="hour-counter-item">
+      <div class="counter-icon" aria-hidden="true"><span class="live-dot"></span>⏱</div>
+      <div class="counter-info">
+        <span class="counter-num loading" id="hour-visits-num">…</span>
+        <span class="counter-label">Visitas última hora</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     HOW TO PLAY
+════════════════════════════════════════════════ -->
+<section id="how-to-play" aria-label="Cómo se juega">
+  <h2 class="section-title">¿CÓMO SE JUEGA?</h2>
+
+  <div class="steps-grid">
+    <article class="step-card">
+      <span class="step-icon" aria-hidden="true">♠</span>
+      <span class="step-num" aria-hidden="true">01</span>
+      <h3>ELIGE TU MECHA</h3>
+      <p>Selecciona tu robot de combate. Cada mecha tiene estadísticas únicas — blindaje, velocidad, potencia de fuego y habilidades especiales devastadoras.</p>
+      <img src="assets/image_11.png" alt="Mecha Dark Hunter con ojos verdes" class="step-img" loading="lazy" width="110" height="130">
+    </article>
+
+    <article class="step-card">
+      <span class="step-icon" aria-hidden="true">♥</span>
+      <span class="step-num" aria-hidden="true">02</span>
+      <h3>CONSTRUYE TU BARAJA</h3>
+      <p>Diseña tu núcleo con cartas de la baraja francesa. Cada carta amplifica los atributos de tu BOT o MECHA. Estrategia pura — ¡elige bien cuándo es el mejor momento de atacar!</p>
+      <div class="card-hand" aria-label="Baraja francesa">
+        <span class="card-pip red" title="As de corazones">A♥</span>
+        <span class="card-pip red" title="Rey de corazones">K♥</span>
+        <span class="card-pip red" title="Reina de corazones">Q♥</span>
+        <span class="card-pip red" title="Jota de corazones">J♥</span>
+        <span class="card-pip red" title="10 de corazones">10♥</span>
+      </div>
+    </article>
+
+    <article class="step-card">
+      <span class="step-icon" aria-hidden="true">♦</span>
+      <span class="step-num" aria-hidden="true">03</span>
+      <h3>DESTRUYE AL RIVAL</h3>
+      <p>Elimina al mecha enemigo antes de que te elimine a ti. Farolea, anticipa, combina habilidades y lanza el ataque definitivo en el momento justo.</p>
+      <img src="assets/image_29.png" alt="Mecha Blaze Storm en posición de combate" class="step-img" loading="lazy" width="110" height="130">
+    </article>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     MECHA ROSTER
+════════════════════════════════════════════════ -->
+<section id="roster" aria-label="Galería de mechas">
+  <h2 class="section-title">ELIGE TU GUERRERO</h2>
+  <p class="section-subtitle">Cada mecha de PoCoBOT — una historia de combate</p>
+  <div class="roster-scroll-wrap">
+    <div class="roster-track" id="roster-track" aria-label="Mechas disponibles en el juego"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FEATURES
+════════════════════════════════════════════════ -->
+<section id="features" aria-label="Características del juego">
+  <h2 class="section-title">POR QUÉ JUGAR</h2>
+  <div class="features-grid">
+    <div class="feature-tile">
+      <div class="feature-icon" aria-hidden="true">🎴</div>
+      <h4>ESTRATEGIA PROFUNDA</h4>
+      <p>El póker no es solo suerte. Cada decisión de carta puede cambiar el resultado del duelo.</p>
+    </div>
+    <div class="feature-tile">
+      <div class="feature-icon" aria-hidden="true">🤖</div>
+      <h4>MECHAS ÚNICOS</h4>
+      <p>Elige entre docenas de robots de combate con habilidades que cambian completamente el estilo de juego.</p>
+    </div>
+    <div class="feature-tile">
+      <div class="feature-icon" aria-hidden="true">⚡</div>
+      <h4>TIEMPO REAL</h4>
+      <p>Batallas multijugador instantáneas. Sin turnos lentos — el combate no espera a nadie.</p>
+    </div>
+    <div class="feature-tile">
+      <div class="feature-icon" aria-hidden="true">🌐</div>
+      <h4>SIN INSTALACIÓN</h4>
+      <p>HTML5 nativo. Abre el navegador y combate. PC, tablet o móvil — siempre listo.</p>
+    </div>
+    <div class="feature-tile">
+      <div class="feature-icon" aria-hidden="true">🏆</div>
+      <h4>COMPETICIÓN</h4>
+      <p>Escala el ranking. Demuestra que tu estrategia y tu mecha son los mejores de la arena.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FINAL CTA
+════════════════════════════════════════════════ -->
+<section id="final-cta" aria-label="Llamada a la acción">
+  <div class="cta-bg-mechas" aria-hidden="true">
+    <img src="assets/image_18.png" alt="" class="flip" loading="lazy">
+    <img src="assets/image_15.png" alt="" loading="lazy">
+  </div>
+  <div class="cta-inner">
+    <h2 class="glitch" data-text="¿LISTO PARA COMBATIR?">¿LISTO PARA COMBATIR?</h2>
+    <p class="sub">La arena de PoCoBOT te espera. Tu mecha está cargado. Las cartas están barajadas.</p>
+    <a href="https://pokercombatbot.up.railway.app"
+       class="play-btn large"
+       title="Entrar a Poker Combat Bot"
+       rel="noopener">
+      <span>⚡&nbsp;ENTRAR AL COMBATE&nbsp;⚡</span>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════ -->
+<footer>
+  <img src="assets/pocobot_title.png" alt="Poker Combat Bot" width="180" height="64" loading="lazy">
+  <p>© 2025 POKER COMBAT BOT (PoCoBOT) &nbsp;·&nbsp; COMBATE · ESTRATEGIA · PODER</p>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════════ -->
+<script>
+/* ─────────────────────────────────────────────
+   CIRCUIT BOARD CANVAS
+───────────────────────────────────────────── */
+(function () {
+  const canvas = document.getElementById('circuit-canvas');
+  const ctx    = canvas.getContext('2d');
+  const GRID   = 52;
+  let paths    = [];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = document.documentElement.scrollHeight;
+  }
+  resize();
+  window.addEventListener('resize', () => { resize(); buildPaths(); });
+
+  function buildPaths() {
+    paths = [];
+    const cols = Math.ceil(canvas.width  / GRID) + 1;
+    const rows = Math.ceil(canvas.height / GRID) + 1;
+    for (let i = 0; i < 28; i++) {
+      const isGold = Math.random() > 0.55;
+      const p = { pts: [], progress: Math.random(), speed: 0.0007 + Math.random() * 0.0013,
+                  color: isGold ? '#ffd700' : '#00e5ff', totalLen: 0 };
+      let x = Math.floor(Math.random() * cols) * GRID;
+      let y = Math.floor(Math.random() * rows) * GRID;
+      p.pts.push({ x, y });
+      for (let j = 0; j < 12; j++) {
+        const dir = Math.floor(Math.random() * 4);
+        const d   = (1 + Math.floor(Math.random() * 7)) * GRID;
+        let nx = x, ny = y;
+        if (dir === 0) nx = Math.min(x + d, cols * GRID);
+        if (dir === 1) nx = Math.max(x - d, 0);
+        if (dir === 2) ny = Math.min(y + d, rows * GRID);
+        if (dir === 3) ny = Math.max(y - d, 0);
+        if (nx !== x || ny !== y) { x = nx; y = ny; p.pts.push({ x, y }); }
+      }
+      for (let j = 1; j < p.pts.length; j++) {
+        const dx = p.pts[j].x - p.pts[j-1].x, dy = p.pts[j].y - p.pts[j-1].y;
+        p.totalLen += Math.sqrt(dx*dx + dy*dy);
+      }
+      if (p.pts.length > 1 && p.totalLen > 0) paths.push(p);
+    }
+  }
+  buildPaths();
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    paths.forEach(p => {
+      if (p.pts.length < 2) return;
+      ctx.beginPath();
+      ctx.moveTo(p.pts[0].x, p.pts[0].y);
+      for (let i = 1; i < p.pts.length; i++) ctx.lineTo(p.pts[i].x, p.pts[i].y);
+      ctx.strokeStyle = p.color === '#ffd700' ? 'rgba(255,215,0,0.07)' : 'rgba(0,229,255,0.07)';
+      ctx.lineWidth = 1; ctx.stroke();
+      p.pts.forEach(pt => {
+        ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = p.color === '#ffd700' ? 'rgba(255,215,0,0.14)' : 'rgba(0,229,255,0.14)';
+        ctx.fill();
+      });
+      p.progress += p.speed;
+      if (p.progress > 1.08) p.progress = -0.08;
+      const t = Math.max(0, Math.min(1, p.progress));
+      const targetLen = p.totalLen * t;
+      let cumLen = 0;
+      for (let i = 1; i < p.pts.length; i++) {
+        const dx = p.pts[i].x - p.pts[i-1].x, dy = p.pts[i].y - p.pts[i-1].y;
+        const segLen = Math.sqrt(dx*dx + dy*dy);
+        if (cumLen + segLen >= targetLen) {
+          const frac = (targetLen - cumLen) / segLen;
+          const px = p.pts[i-1].x + frac * dx, py = p.pts[i-1].y + frac * dy;
+          const grad = ctx.createRadialGradient(px, py, 0, px, py, 18);
+          if (p.color === '#ffd700') { grad.addColorStop(0,'rgba(255,215,0,0.9)'); grad.addColorStop(1,'transparent'); }
+          else                       { grad.addColorStop(0,'rgba(0,229,255,0.9)'); grad.addColorStop(1,'transparent'); }
+          ctx.beginPath(); ctx.arc(px, py, 18, 0, Math.PI*2); ctx.fillStyle = grad; ctx.fill();
+          ctx.beginPath(); ctx.arc(px, py, 2.8, 0, Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+          break;
+        }
+        cumLen += segLen;
+      }
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+
+/* ─────────────────────────────────────────────
+   FLOATING CARD SUITS
+───────────────────────────────────────────── */
+(function () {
+  const suits  = ['♠','♥','♦','♣'];
+  const colors = ['rgba(200,220,255,0.55)','rgba(255,80,100,0.6)','rgba(255,80,100,0.6)','rgba(200,220,255,0.55)'];
+  function spawn() {
+    const el  = document.createElement('div');
+    const idx = Math.floor(Math.random() * 4);
+    el.className = 'fsz'; el.textContent = suits[idx];
+    el.style.color = colors[idx];
+    el.style.fontSize = (0.9 + Math.random() * 1.8) + 'rem';
+    el.style.left     = (4 + Math.random() * 92) + 'vw';
+    el.style.bottom   = '-2.5rem';
+    const dur = 9 + Math.random() * 13;
+    el.style.animationDuration = dur + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), dur * 1000 + 200);
+  }
+  spawn(); setInterval(spawn, 700);
+})();
+
+
+/* ─────────────────────────────────────────────
+   MECHA ROSTER
+───────────────────────────────────────────── */
+(function () {
+  const mechas = [
+    { img:'assets/image_10.png', name:'IRON SENTINEL', type:'Tanque · Pesado',              power:85, suit:'♠' },
+    { img:'assets/image_11.png', name:'DARK HUNTER',   type:'Asalto · Veloz',               power:78, suit:'♣' },
+    { img:'assets/image_12.png', name:'WAR TITAN',     type:'Soporte · Pesado',             power:90, suit:'♠' },
+    { img:'assets/image_13.png', name:'CANNON KING',   type:'Artillería · Largo alcance',   power:92, suit:'♦' },
+    { img:'assets/image_14.png', name:'STORM WALKER',  type:'Asalto · Equilibrado',         power:80, suit:'♥' },
+    { img:'assets/image_15.png', name:'ANGEL WRATH',   type:'Aéreo · Velocista',            power:88, suit:'♦' },
+    { img:'assets/image_16.png', name:'NOVA BLAZE',    type:'Energía · Especial',           power:95, suit:'♥' },
+    { img:'assets/image_17.png', name:'THUNDER LORD',  type:'Eléctrico · Destructor',       power:93, suit:'♠' },
+    { img:'assets/image_18.png', name:'IRON ANGEL',    type:'Aéreo · Pesado',               power:87, suit:'♣' },
+    { img:'assets/image_20.png', name:'BLOCK TITAN',   type:'Defensa · Indestructible',     power:82, suit:'♦' },
+    { img:'assets/image_21.png', name:'FORTRESS MK-2', type:'Tanque · Ultra-blindado',      power:89, suit:'♠' },
+    { img:'assets/image_22.png', name:'WING STRIKER',  type:'Aéreo · Ataque pesado',        power:91, suit:'♥' },
+    { img:'assets/image_25.png', name:'STEEL GUARD',   type:'Tanque · Equilibrado',         power:79, suit:'♠' },
+    { img:'assets/image_29.png', name:'BLAZE STORM',   type:'Asalto · Crítico',             power:96, suit:'♥' },
+  ];
+  const track = document.getElementById('roster-track');
+  [...mechas, ...mechas].forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'roster-card';
+    card.setAttribute('data-suit', m.suit);
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Seleccionar mecha ${m.name}`);
+    card.innerHTML = `
+      <img src="${m.img}" alt="${m.name} — ${m.type}" loading="lazy" width="130" height="150">
+      <div class="mech-name">${m.name}</div>
+      <div class="mech-type">${m.type}</div>
+      <div class="power-bar"><div class="power-fill" style="width:${m.power}%"></div></div>`;
+    card.addEventListener('click', () => { window.location.href = 'https://pokercombatbot.up.railway.app'; });
+    track.appendChild(card);
+  });
+})();
+
+
+/* ─────────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────────── */
+(function () {
+  const io = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.12 }
+  );
+  document.querySelectorAll('.step-card, .stat-item, .feature-tile, .counter-item').forEach((el, i) => {
+    el.style.transitionDelay = (i % 5) * 0.1 + 's';
+    io.observe(el);
+  });
+})();
+
+
+/* ─────────────────────────────────────────────
+   ANIMATED COUNTERS (game stats)
+───────────────────────────────────────────── */
+(function () {
+  function countUp(el, target) {
+    const start = performance.now();
+    (function tick(now) {
+      const p = Math.min((now - start) / 1400, 1);
+      el.textContent = Math.round((1 - Math.pow(1-p, 3)) * target);
+      if (p < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.stat-num[data-target]').forEach(el => {
+          countUp(el, +el.dataset.target);
+          delete el.dataset.target;
+        });
+        io.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  io.observe(document.getElementById('stats-bar'));
+})();
+
+
+/* ─────────────────────────────────────────────
+   VISIT COUNTERS (reales)
+   ─ Llama a counter.php si existe en el servidor
+   ─ Si no, usa CountAPI como fallback gratuito
+   ─ Si ninguno funciona, oculta la barra
+───────────────────────────────────────────── */
+(function () {
+  const totalEl = document.getElementById('total-visits-num');
+  const hourEl  = document.getElementById('hour-visits-num');
+
+  function setNum(el, val) {
+    el.classList.remove('loading');
+    el.textContent = Number(val).toLocaleString('es-ES');
+  }
+
+  function hideBar() {
+    const bar = document.getElementById('counters-bar');
+    if (bar) bar.style.display = 'none';
+  }
+
+  /* ── Intento 1: counter.php en el mismo servidor ── */
+  fetch('counter.php', { method: 'GET', cache: 'no-store' })
+    .then(r => {
+      if (!r.ok) throw new Error('no php');
+      return r.json();
+    })
+    .then(data => {
+      if (typeof data.total !== 'undefined') setNum(totalEl, data.total);
+      if (typeof data.last_hour !== 'undefined') setNum(hourEl, data.last_hour);
+    })
+    .catch(() => {
+      /* ── Intento 2: CountAPI (servicio gratuito) ── */
+      const ns   = 'pokercombatbot-landing-v1';
+      const now  = new Date();
+      const hKey = now.getFullYear() + '' +
+                   String(now.getMonth()+1).padStart(2,'0') +
+                   String(now.getDate()).padStart(2,'0') +
+                   String(now.getHours()).padStart(2,'0');
+
+      /* Incrementa contador total */
+      fetch(`https://api.countapi.xyz/hit/${ns}/total-visits`)
+        .then(r => r.json())
+        .then(d => { if (d && d.value) setNum(totalEl, d.value); })
+        .catch(() => {});
+
+      /* Incrementa contador de la hora actual */
+      fetch(`https://api.countapi.xyz/hit/${ns}/hour-${hKey}`)
+        .then(r => r.json())
+        .then(d => { if (d && d.value) setNum(hourEl, d.value); })
+        .catch(() => hideBar());
+    });
+})();
+</script>
+</body>
+</html>

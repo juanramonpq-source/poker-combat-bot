@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PoCoBOT - Mapa Modo Historia</title>
+  <style>
+    :root{
+      --bg:#090d14;
+      --panel:rgba(10,14,22,.9);
+      --line:rgba(120,236,255,.18);
+      --text:#eef7ff;
+      --muted:#c0d6e6;
+      --accent:#78ecff;
+      --gold:#ffd55f;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;
+      overflow:hidden;
+      font-family:"Trebuchet MS","Avenir Next",Verdana,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(120,236,255,.08), transparent 20%),
+        radial-gradient(circle at 80% 10%, rgba(255,213,95,.08), transparent 18%),
+        linear-gradient(180deg, #11161f 0%, #090d14 100%);
+    }
+    .container{
+      width:100%;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:20px;
+      position:relative;
+    }
+    .map-shell{
+      position:relative;
+      width:min(95vw, 1500px);
+      aspect-ratio:1536 / 1024;
+      border-radius:28px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      background:#05090f;
+      box-shadow:0 30px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(120,236,255,.06);
+    }
+    .map-backdrop{
+      position:absolute;
+      inset:0;
+      background:url('Historia/MAPAOK.png') center/cover no-repeat;
+      filter:saturate(1.02) contrast(1.01) brightness(.94);
+    }
+    .map-backdrop::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(6,10,16,.08), transparent 14%, transparent 84%, rgba(6,10,16,.12)),
+        radial-gradient(circle at 20% 76%, rgba(120,236,255,.10), transparent 16%),
+        radial-gradient(circle at 82% 20%, rgba(120,236,255,.08), transparent 18%);
+      pointer-events:none;
+    }
+    .header,
+    .legend,
+    .info-panel{
+      position:absolute;
+      z-index:5;
+      background:var(--panel);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow:0 16px 28px rgba(0,0,0,.25);
+    }
+    .header{
+      top:18px;
+      left:18px;
+      padding:14px 16px;
+      border-radius:18px;
+    }
+    .header h1{
+      font-size:1.1rem;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .header p{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:.8rem;
+      line-height:1.4;
+    }
+    .legend{
+      top:18px;
+      right:18px;
+      padding:14px 16px;
+      border-radius:18px;
+      display:grid;
+      gap:8px;
+      max-width:230px;
+    }
+    .legend h2{
+      font-size:.76rem;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--accent);
+      margin-bottom:2px;
+    }
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:.75rem;
+      color:var(--muted);
+    }
+    .legend-dot{
+      width:11px;
+      height:11px;
+      border-radius:50%;
+      flex-shrink:0;
+      box-shadow:0 0 10px currentColor;
+    }
+    .info-panel{
+      left:18px;
+      bottom:18px;
+      width:min(520px, calc(100% - 36px));
+      padding:18px;
+      border-radius:22px;
+      opacity:0;
+      transform:translateY(10px);
+      transition:opacity .22s ease, transform .22s ease;
+    }
+    .info-panel.active{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .info-panel h2{
+      font-size:1rem;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--gold);
+      margin-bottom:6px;
+    }
+    .info-panel .tipo{
+      font-size:.72rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--accent);
+      margin-bottom:12px;
+    }
+    .info-panel p{
+      color:var(--muted);
+      font-size:.88rem;
+      line-height:1.5;
+      margin-bottom:8px;
+    }
+    .info-panel .dialogo{
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px solid rgba(120,236,255,.16);
+      color:#fff5bf;
+      font-style:italic;
+    }
+    .map-svg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:3;
+    }
+    .node{
+      cursor:pointer;
+    }
+    .node-hit{
+      fill:transparent;
+    }
+    .node-ring{
+      fill:rgba(10,14,18,.38);
+      stroke:rgba(242,246,255,.94);
+      stroke-width:6;
+      filter:drop-shadow(0 10px 18px rgba(0,0,0,.34));
+      transition:transform .18s ease, stroke .18s ease, filter .18s ease, fill .18s ease;
+      transform-origin:center;
+    }
+    .node-glow{
+      fill:none;
+      stroke:rgba(120,236,255,.16);
+      stroke-width:8;
+      opacity:0;
+      transition:opacity .18s ease, transform .18s ease, stroke .18s ease;
+      transform-origin:center;
+    }
+    .node-number{
+      fill:#ffffff;
+      font-size:24px;
+      font-weight:900;
+      text-anchor:middle;
+      dominant-baseline:middle;
+      pointer-events:none;
+      text-shadow:0 2px 12px rgba(0,0,0,.3);
+    }
+    .node:hover .node-ring,
+    .node.is-active .node-ring{
+      fill:rgba(17,33,48,.56);
+      stroke:var(--accent);
+      filter:drop-shadow(0 0 18px rgba(120,236,255,.36));
+    }
+    .node:hover .node-glow,
+    .node.is-active .node-glow{
+      opacity:1;
+      stroke:rgba(255,213,95,.5);
+    }
+    .node.is-complete .node-ring{
+      stroke:var(--gold);
+      filter:drop-shadow(0 0 14px rgba(255,213,95,.28));
+    }
+    .node-tag{
+      fill:rgba(7,11,16,.88);
+      stroke:rgba(120,236,255,.24);
+      stroke-width:1.5;
+    }
+    .node-tag-text{
+      fill:var(--accent);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-anchor:middle;
+      dominant-baseline:middle;
+      text-transform:uppercase;
+    }
+    @media (max-width: 980px){
+      .container{padding:12px}
+      .map-shell{width:100vw;border-radius:0}
+      .header,.legend,.info-panel{border-radius:16px}
+      .header{left:12px;top:12px;right:12px;max-width:none}
+      .legend{display:none}
+      .info-panel{left:12px;right:12px;bottom:12px;width:auto}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="map-shell">
+      <div class="map-backdrop" aria-hidden="true"></div>
+      <svg id="mapSvg" class="map-svg" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet"></svg>
+
+      <div class="header">
+        <h1>Camino de PoCoBOT</h1>
+        <p>Overlay interactivo del mapa. Los círculos ya se apoyan en los nodos reales de `MAPAOK`.</p>
+      </div>
+
+      <div class="legend">
+        <h2>Lectura rápida</h2>
+        <div class="legend-item"><span class="legend-dot" style="background:#ffd55f;color:#ffd55f"></span><span>Punto activo</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#78ecff;color:#78ecff"></span><span>Hotspot interactivo</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ffffff;color:#ffffff"></span><span>Círculo del mapa real</span></div>
+      </div>
+
+      <div class="info-panel" id="infoPanel">
+        <h2 id="infoTitle">Parada</h2>
+        <div class="tipo" id="infoTipo">Tipo de misión</div>
+        <p id="infoDesc">Descripción</p>
+        <p id="infoMision"><strong>MISIÓN:</strong></p>
+        <p id="infoAprende"><strong>APRENDE:</strong></p>
+        <div class="dialogo" id="infoDialogo"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const nodos = [
+      {
+        id: 1,
+        nombre: 'HANGAR DE LA FOSA AZUL',
+        tipo: 'CONSTRUCCIÓN',
+        clase: 'construction',
+        x: 350,
+        y: 834,
+        tag: '01',
+        descripcion: 'Mara Óxido te entrega un chasis dañado. Debes montar un mecha operativo para otro piloto.',
+        mision: 'Construir un bot válido para un NPC',
+        aprende: 'Piloto, módulos y condición de mecha montado',
+        dialogo: 'Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+      },
+      {
+        id: 2,
+        nombre: 'PATIO DE PRUEBAS DEL TALLER',
+        tipo: 'COMBATE',
+        clase: 'combat',
+        x: 662,
+        y: 588,
+        tag: '02',
+        descripcion: 'Primer duelo controlado contra un dron escuela pilotado por Mara.',
+        mision: 'Ganar el combate tutorializado',
+        aprende: 'Ataque con combustible y orden del turno',
+        dialogo: 'No me interesa que pegues fuerte. Me interesa que pegues cuando toca.'
+      },
+      {
+        id: 3,
+        nombre: 'MERCADO DE RELÉS MUERTOS',
+        tipo: 'ENCUENTRO',
+        clase: 'encounter',
+        x: 448,
+        y: 334,
+        tag: '03',
+        descripcion: 'Vera Hex te ofrece información sobre la Ruta Ceniza a cambio de reparar un mecha de escolta.',
+        mision: 'Montar defensa y armadura mínimas en turnos limitados',
+        aprende: 'Decisiones de montaje bajo restricción',
+        dialogo: 'La chatarra no miente: o aguanta, o te mata.'
+      },
+      {
+        id: 4,
+        nombre: 'TORRE DE SEGUIMIENTO 4B',
+        tipo: 'PRUEBA TÁCTICA',
+        clase: 'tactical',
+        x: 611,
+        y: 330,
+        tag: '04',
+        descripcion: 'Debes lanzar un proyectil para abatir un emisor concreto y abrir el paso.',
+        mision: 'Lanzar al menos un proyectil para completar el nodo',
+        aprende: 'Activación de proyectiles y timing ofensivo',
+        dialogo: 'No todos los disparos son para matar. Algunos son para abrir puertas.'
+      },
+      {
+        id: 5,
+        nombre: 'CAMPAMENTO DE LAS PLACAS ROJAS',
+        tipo: 'DIÁLOGO',
+        clase: 'dialogue',
+        x: 826,
+        y: 362,
+        tag: '05',
+        descripcion: 'Corvo Vanta, veterano, te observa. Evento narrativo sin combate.',
+        mision: 'Evento narrativo corto con recompensa de contexto',
+        aprende: 'Tono del mundo y rivalidad futura',
+        dialogo: 'Los novatos montan armas. Los supervivientes montan márgenes.'
+      },
+      {
+        id: 6,
+        nombre: 'FOSO DE VIENTO NEGRO',
+        tipo: 'DEFENSA ACTIVA',
+        clase: 'active-defense',
+        x: 710,
+        y: 817,
+        tag: '06',
+        descripcion: 'Un raider local te embosca. Debes realizar una defensa activa correcta.',
+        mision: 'Mitigar un ataque usando diamantes en mano',
+        aprende: 'Defensa activa y gestión táctica del daño',
+        dialogo: 'El metal siempre avisa antes de partirse. Escúchalo.'
+      },
+      {
+        id: 7,
+        nombre: 'SUBESTACIÓN DE CENIZA',
+        tipo: 'RECONFIGURACIÓN',
+        clase: 'reconfig',
+        x: 903,
+        y: 714,
+        tag: '07',
+        descripcion: 'Una avería te obliga a rediseñar el mecha sobre la marcha.',
+        mision: 'Completar una reconfiguración válida sin romper límites',
+        aprende: 'Piloto, copiloto y descarte por exceso',
+        dialogo: 'La máquina no discute. Si cambias la forma, pagas el coste.'
+      },
+      {
+        id: 8,
+        nombre: 'PUENTE DE LOS RELÁMPAGOS QUIETOS',
+        tipo: 'COMBATE DUELISTA',
+        clase: 'duelist',
+        x: 1255,
+        y: 533,
+        tag: '08',
+        descripcion: 'Primer combate serio contra Corvo Vanta. Un examen de verdad.',
+        mision: 'Vencer a un rival táctico de media dificultad',
+        aprende: 'Lectura de amenaza y presión sostenida',
+        dialogo: 'Si consigues cruzar este puente, quizá merezcas llegar al final.'
+      },
+      {
+        id: 9,
+        nombre: 'CÚPULA HENDIDA DE ARGÓS',
+        tipo: 'REVELACIÓN',
+        clase: 'revelation',
+        x: 1193,
+        y: 862,
+        tag: '09',
+        descripcion: 'Descubres que la Ruta Ceniza era un filtro. Duelo contra el custodio del Protocolo Bastión.',
+        mision: 'Derrotar al custodio de Argós',
+        aprende: 'Combate completo con todo el sistema activo',
+        dialogo: 'No buscábamos fuerza. Buscábamos a quien supiera no desperdiciarla.'
+      },
+      {
+        id: 10,
+        nombre: 'PROTOCOLO CENIZA',
+        tipo: 'CIERRE',
+        clase: 'closure',
+        x: 1228,
+        y: 293,
+        tag: '10',
+        descripcion: 'Campaña completada. Se desbloquea el modo SUPER DIFÍCIL.',
+        mision: 'Activar SUPER DIFÍCIL en 1 jugador',
+        aprende: 'Acceso a contenido veterano',
+        dialogo: 'Bienvenido a la carretera real. Ahora empieza la parte seria.'
+      }
+    ];
+
+    const svg = document.getElementById('mapSvg');
+    const infoPanel = document.getElementById('infoPanel');
+    let activeId = 1;
+
+    function setInfo(nodo) {
+      document.getElementById('infoTitle').textContent = `${nodo.id}. ${nodo.nombre}`;
+      document.getElementById('infoTipo').textContent = nodo.tipo;
+      document.getElementById('infoDesc').textContent = nodo.descripcion;
+      document.getElementById('infoMision').innerHTML = `<strong>MISIÓN:</strong> ${nodo.mision}`;
+      document.getElementById('infoAprende').innerHTML = `<strong>APRENDE:</strong> ${nodo.aprende}`;
+      document.getElementById('infoDialogo').textContent = `“${nodo.dialogo}”`;
+      infoPanel.classList.add('active');
+    }
+
+    function setActive(id) {
+      activeId = id;
+      document.querySelectorAll('.node').forEach((nodeEl) => {
+        const nodeId = Number(nodeEl.dataset.id);
+        nodeEl.classList.toggle('is-active', nodeId === id);
+        nodeEl.classList.toggle('is-complete', nodeId < id);
+      });
+      const nodo = nodos.find((item) => item.id === id);
+      if (nodo) setInfo(nodo);
+    }
+
+    function createNode(nodo) {
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      group.setAttribute('class', 'node');
+      group.dataset.id = nodo.id;
+
+      const hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      hit.setAttribute('cx', nodo.x);
+      hit.setAttribute('cy', nodo.y);
+      hit.setAttribute('r', '40');
+      hit.setAttribute('class', 'node-hit');
+
+      const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      glow.setAttribute('cx', nodo.x);
+      glow.setAttribute('cy', nodo.y);
+      glow.setAttribute('r', '34');
+      glow.setAttribute('class', 'node-glow');
+
+      const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      ring.setAttribute('cx', nodo.x);
+      ring.setAttribute('cy', nodo.y);
+      ring.setAttribute('r', '30');
+      ring.setAttribute('class', 'node-ring');
+
+      const number = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      number.setAttribute('x', nodo.x);
+      number.setAttribute('y', nodo.y + 1);
+      number.setAttribute('class', 'node-number');
+      number.textContent = nodo.id;
+
+      const tagBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      tagBg.setAttribute('x', nodo.x - 18);
+      tagBg.setAttribute('y', nodo.y - 48);
+      tagBg.setAttribute('rx', '9');
+      tagBg.setAttribute('width', '36');
+      tagBg.setAttribute('height', '20');
+      tagBg.setAttribute('class', 'node-tag');
+
+      const tagText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      tagText.setAttribute('x', nodo.x);
+      tagText.setAttribute('y', nodo.y - 38);
+      tagText.setAttribute('class', 'node-tag-text');
+      tagText.textContent = nodo.tag;
+
+      group.append(hit, glow, ring, number, tagBg, tagText);
+      group.addEventListener('mouseenter', () => setInfo(nodo));
+      group.addEventListener('click', () => setActive(nodo.id));
+      svg.appendChild(group);
+    }
+
+    nodos.forEach(createNode);
+    setActive(1);
+  </script>
+</body>
+</html>
