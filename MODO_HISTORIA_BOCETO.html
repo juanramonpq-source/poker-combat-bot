@@ -219,7 +219,7 @@
       border-radius:0;
       overflow:hidden;
       border:0;
-      background:#060a10;
+      background:#060a10 url("assets/Historia/low/titulo1-low.jpg") no-repeat center center / cover;
       box-shadow:none;
       isolation:isolate;
     }
@@ -264,7 +264,11 @@
       object-position:center 28%;
       filter:saturate(1.05) contrast(1.03);
       transform:scale(var(--enter-scale)) translateY(var(--enter-shift));
-      transition:transform .35s ease;
+      opacity:0;
+      transition:opacity .55s ease, transform .35s ease;
+    }
+    .title-stage.title-ready .title-image{
+      opacity:1;
     }
     .title-overlay{
       position:absolute;
@@ -346,15 +350,18 @@
     .workspace.active{display:block}
     .story-playfield{
       position:relative;
+      width:100vw;
       min-height:100svh;
       display:block;
     }
     .story-map-shell{
       position:relative;
+      width:100vw;
+      height:100svh;
       min-height:100svh;
       background:
         linear-gradient(180deg, rgba(6,10,15,.1), rgba(6,10,15,.42)),
-        #05080d;
+        #05080d url("assets/Historia/low/mapaok-low.jpg") no-repeat center top / cover;
       overflow:hidden;
     }
     .story-map-shell::after{
@@ -375,15 +382,22 @@
       border:0;
       display:block;
       background:#05080d;
+      opacity:0;
+      transition:opacity .45s ease;
+    }
+    .story-map-frame.loaded{
+      opacity:1;
     }
     .story-map-hud{
-      position:absolute;
-      left:clamp(16px, 3vw, 36px);
-      top:clamp(16px, 3vh, 30px);
+      position:fixed;
+      right:clamp(16px, 3vw, 36px);
+      bottom:clamp(18px, 3vh, 30px);
       z-index:3;
       display:grid;
       gap:8px;
-      max-width:min(34vw, 420px);
+      justify-items:end;
+      text-align:right;
+      max-width:min(30vw, 400px);
     }
     .story-kicker{
       display:inline-flex;
@@ -412,7 +426,7 @@
     }
     .story-map-hud p{
       margin:0;
-      max-width:38ch;
+      max-width:34ch;
       color:#d8e7f4;
       font-size:.88rem;
       line-height:1.5;
@@ -435,8 +449,19 @@
     .scene-backdrop{
       position:absolute;
       inset:0;
-      background:#05080d no-repeat center center / cover;
+      background:#05080d var(--scene-low-image, none) no-repeat center center / cover;
       transform:scale(1.02);
+    }
+    .scene-backdrop::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:#05080d var(--scene-high-image, none) no-repeat center center / cover;
+      opacity:0;
+      transition:opacity .5s ease;
+    }
+    .scene-backdrop.loaded::before{
+      opacity:1;
     }
     .scene-backdrop::after{
       content:"";
@@ -492,12 +517,45 @@
       box-shadow:0 14px 26px rgba(0,0,0,.2);
       cursor:pointer;
     }
-    .scene-portraits{
+    .scene-intro-tag{
       position:absolute;
-      inset:0;
-      z-index:1;
+      top:clamp(62px, 9vh, 94px);
+      right:clamp(16px, 3vw, 34px);
+      z-index:3;
+      display:grid;
+      gap:4px;
+      min-width:min(260px, calc(100vw - 32px));
+      padding:14px 16px 15px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(180deg, rgba(8,13,19,.82), rgba(8,13,19,.72));
+      box-shadow:0 18px 34px rgba(0,0,0,.24);
+      backdrop-filter:blur(14px);
+      opacity:0;
+      transform:translateY(-8px);
       pointer-events:none;
+      transition:opacity .26s ease, transform .26s ease;
     }
+    .story-scene-stage.show-intro-tag .scene-intro-tag{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .scene-intro-kicker{
+      color:#8ff4ff;
+      font-size:.68rem;
+      font-weight:900;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+    .scene-intro-name{
+      color:#fff1dc;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:clamp(1.05rem, 1.6vw, 1.34rem);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      line-height:1.05;
+    }
+    .scene-portraits{display:none}
     .scene-portrait{
       position:absolute;
       bottom:0;
@@ -524,6 +582,32 @@
     .scene-portrait.right{
       right:max(2vw, 18px);
       max-width:min(36vw, 460px);
+    }
+    .scene-focus-wrap{
+      position:absolute;
+      inset:0;
+      z-index:1;
+      display:grid;
+      align-items:end;
+      justify-items:center;
+      padding:0 18px 0;
+      pointer-events:none;
+    }
+    .scene-focus-figure{
+      width:min(46vw, 620px);
+      max-height:min(88svh, 960px);
+      object-fit:contain;
+      filter:drop-shadow(0 34px 40px rgba(0,0,0,.36));
+      opacity:0;
+      transform:translateY(18px) scale(.985);
+      transition:opacity .34s ease, transform .34s ease, filter .34s ease;
+    }
+    .story-scene-stage.dialogue-live .scene-focus-figure{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+    .story-scene-stage.figure-raised .scene-focus-figure{
+      transform:translateY(-10svh) scale(.98);
     }
     .scene-dialog-card{
       position:relative;
@@ -740,6 +824,46 @@
     }
     .scene-btn.secondary{
       background:rgba(255,255,255,.05);
+    }
+    .story-scene-stage.ambient .scene-header,
+    .story-scene-stage.ambient .scene-dialog-card,
+    .story-scene-stage.ambient .scene-focus-wrap{
+      opacity:0;
+      pointer-events:none;
+    }
+    .story-scene-stage.minimal-dialogue .scene-node,
+    .story-scene-stage.minimal-dialogue .scene-title,
+    .story-scene-stage.minimal-dialogue .scene-subtitle,
+    .story-scene-stage.minimal-dialogue .scene-context,
+    .story-scene-stage.minimal-dialogue .scene-cast{
+      display:none;
+    }
+    .story-scene-stage.minimal-dialogue .scene-dialog-card{
+      width:min(980px, calc(100% - 28px));
+      margin:0 auto clamp(24px, 4vh, 42px);
+      padding:16px 18px 18px;
+      background:linear-gradient(180deg, rgba(8,13,19,.82), rgba(8,13,19,.76));
+    }
+    .story-scene-stage.minimal-dialogue .scene-dialog-main{
+      grid-template-columns:1fr;
+    }
+    .story-scene-stage.minimal-dialogue .scene-avatar-wrap{
+      display:none;
+    }
+    .story-scene-stage.minimal-dialogue .scene-speaker{
+      margin-top:0;
+      font-size:.72rem;
+    }
+    .story-scene-stage.minimal-dialogue .scene-line{
+      margin-top:6px;
+      font-size:1.06rem;
+      line-height:1.72;
+    }
+    .story-scene-stage.minimal-dialogue .scene-response{
+      margin-top:14px;
+    }
+    .story-scene-stage.minimal-dialogue .scene-actions{
+      margin-top:18px;
     }
     .story-mission-stage{
       position:fixed;
@@ -960,16 +1084,17 @@
       .story-map-hud{max-width:min(78vw, 560px)}
       .scene-portrait.left{max-width:min(38vw, 320px)}
       .scene-portrait.right{max-width:min(42vw, 360px)}
+      .scene-focus-figure{width:min(52vw, 520px)}
       .scene-dialog-card{
         width:min(960px, calc(100% - 32px));
       }
     }
     @media (orientation:portrait){
       .title-art-wrap{
-        background:#060a10 url("assets/Historia/Brutos/TituloSmartphone1.png") no-repeat center top / cover;
+        background:#060a10 url("assets/Historia/low/titulo-smartphone1-low.jpg") no-repeat center top / cover;
       }
-      .title-picture{
-        display:none;
+      .title-image{
+        object-position:center top;
       }
       .title-overlay{
         justify-content:flex-end;
@@ -996,19 +1121,28 @@
     }
     @media (max-width:760px){
       .page-shell{padding:0 0 24px}
-      .story-playfield{min-height:148svh}
-      .story-map-shell{min-height:148svh}
+      .story-playfield{min-height:100svh}
+      .story-map-shell{
+        min-height:100svh;
+        height:100svh;
+        overflow:auto;
+        overscroll-behavior:contain;
+      }
       .story-map-frame{
-        min-height:148svh;
-        height:148svh;
+        position:relative;
+        inset:auto;
+        width:max(140vw, 860px);
+        min-width:140vw;
+        min-height:156svh;
+        height:156svh;
       }
       .story-map-hud{
-        left:16px;
-        top:16px;
-        max-width:calc(100vw - 32px);
+        right:16px;
+        bottom:16px;
+        max-width:min(72vw, 320px);
       }
       .story-map-hud p{
-        max-width:34ch;
+        max-width:30ch;
         font-size:.86rem;
       }
       .lab-toggle{
@@ -1035,6 +1169,22 @@
       .scene-portrait.right{
         right:-10px;
         max-width:46vw;
+      }
+      .scene-focus-wrap{
+        padding:0 12px 0;
+      }
+      .scene-focus-figure{
+        width:min(74vw, 360px);
+        max-height:58svh;
+      }
+      .story-scene-stage.figure-raised .scene-focus-figure{
+        transform:translateY(-7svh) scale(.98);
+      }
+      .scene-intro-tag{
+        top:74px;
+        right:12px;
+        min-width:min(240px, calc(100vw - 24px));
+        padding:12px 14px 13px;
       }
       .scene-dialog-card{
         width:calc(100% - 24px);
@@ -1070,6 +1220,9 @@
       .scene-choice{
         width:100%;
         justify-content:flex-start;
+      }
+      .story-scene-stage.minimal-dialogue .scene-dialog-card{
+        margin:0 12px 72px;
       }
       .mission-shell{
         padding:14px 12px 12px;
@@ -1121,7 +1274,7 @@
 
     <section class="workspace" id="workspacePanel">
       <div class="story-playfield">
-        <section class="story-map-shell">
+        <section class="story-map-shell" id="storyMapShell">
           <iframe
             class="story-map-frame"
             id="storyMapFrame"
@@ -1155,9 +1308,16 @@
           </aside>
           <section class="story-scene-stage" id="storySceneStage" hidden>
             <div class="scene-backdrop" id="storySceneBackdrop"></div>
+            <div class="scene-focus-wrap">
+              <img class="scene-focus-figure" id="storySceneFigure" alt="" hidden>
+            </div>
             <div class="scene-header">
               <span class="scene-kicker" id="storySceneOrder">Capítulo 1 · Ruta Ceniza</span>
               <button class="scene-close" id="storySceneCloseBtn" type="button">Volver al mapa</button>
+            </div>
+            <div class="scene-intro-tag" id="storySceneIntroTag" aria-hidden="true">
+              <span class="scene-intro-kicker">Presentacion</span>
+              <strong class="scene-intro-name" id="storySceneIntroName">Mara Óxido</strong>
             </div>
             <div class="scene-portraits">
               <img class="scene-portrait left" id="storyScenePortraitLeft" alt="" hidden>
@@ -1234,6 +1394,7 @@
     const titleArtWrap = document.getElementById('titleArtWrap');
     const enterStoryBtn = document.getElementById('enterStoryBtn');
     const workspacePanel = document.getElementById('workspacePanel');
+    const storyMapShell = document.getElementById('storyMapShell');
     const storyMapMusic = document.getElementById('storyMapMusic');
     const storyMapFrame = document.getElementById('storyMapFrame');
     const labToggleBtn = document.getElementById('labToggleBtn');
@@ -1241,8 +1402,10 @@
     const storySceneStage = document.getElementById('storySceneStage');
     const storySceneCard = document.getElementById('storySceneCard');
     const storySceneBackdrop = document.getElementById('storySceneBackdrop');
+    const storySceneFigure = document.getElementById('storySceneFigure');
     const storySceneOrder = document.getElementById('storySceneOrder');
     const storySceneCloseBtn = document.getElementById('storySceneCloseBtn');
+    const storySceneIntroName = document.getElementById('storySceneIntroName');
     const storyScenePortraitLeft = document.getElementById('storyScenePortraitLeft');
     const storyScenePortraitRight = document.getElementById('storyScenePortraitRight');
     const storySceneNodeLabel = document.getElementById('storySceneNodeLabel');
@@ -1266,6 +1429,16 @@
     const storyMissionMapBtn = document.getElementById('storyMissionMapBtn');
     const storyMissionRestartBtn = document.getElementById('storyMissionRestartBtn');
     const storyMissionFrame = document.getElementById('storyMissionFrame');
+    const titleImage = document.querySelector('.title-image');
+    const STORY_TITLE_LOW_IMAGES = {
+      desktop: 'assets/Historia/low/titulo1-low.jpg',
+      mobile: 'assets/Historia/low/titulo-smartphone1-low.jpg'
+    };
+    const STORY_UI_SFX = {
+      hover: { src: 'assets/sfx/ui_click.wav', volume: 0.12 },
+      click: { src: 'assets/sfx/ui_click.wav', volume: 0.26 },
+      confirm: { src: 'assets/sfx/unlock.wav', volume: 0.3 }
+    };
 
     let glowTick = 0;
     let manualGlowTimeout = null;
@@ -1280,11 +1453,108 @@
     let activeSceneNodeId = null;
     let activeMissionNodeId = null;
     let sceneLineIndex = 0;
+    let sceneAmbientMode = false;
     let storyTransitionBusy = false;
     const sceneChoiceSelections = {};
+    const storyUiSfxBank = {};
+    let lastStoryHoverSfxAt = 0;
 
     if (storyMapMusic) {
       storyMapMusic.volume = 0.34;
+    }
+
+    function primeStoryUiSfx() {
+      Object.entries(STORY_UI_SFX).forEach(([key, config]) => {
+        if (storyUiSfxBank[key]) return;
+        const audio = new Audio(config.src);
+        audio.preload = 'auto';
+        storyUiSfxBank[key] = audio;
+      });
+    }
+
+    function playStoryUiSfx(kind = 'click') {
+      const config = STORY_UI_SFX[kind];
+      const base = storyUiSfxBank[kind];
+      if (!config || !base) return;
+      try {
+        const clip = base.cloneNode();
+        clip.volume = config.volume;
+        const playPromise = clip.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {});
+        }
+      } catch (error) {}
+    }
+
+    function bindStoryUiSfx(button, options = {}) {
+      if (!button || button.dataset.storyUiSfxBound === '1') return;
+      const clickKind = options.clickKind || 'click';
+      const hoverKind = options.hoverKind || 'hover';
+      const hoverEnabled = options.hover !== false;
+      button.dataset.storyUiSfxBound = '1';
+
+      if (hoverEnabled) {
+        button.addEventListener('pointerenter', () => {
+          if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+          if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
+          const now = Date.now();
+          if (now - lastStoryHoverSfxAt < 70) return;
+          lastStoryHoverSfxAt = now;
+          playStoryUiSfx(hoverKind);
+        });
+      }
+
+      button.addEventListener('click', () => {
+        if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
+        playStoryUiSfx(clickKind);
+      });
+    }
+
+    function preloadImage(src, onDone) {
+      if (!src) {
+        onDone(false);
+        return;
+      }
+      let settled = false;
+      const finish = (ok) => {
+        if (settled) return;
+        settled = true;
+        onDone(ok);
+      };
+      const image = new Image();
+      image.decoding = 'async';
+      image.onload = () => finish(true);
+      image.onerror = () => finish(false);
+      image.src = src;
+      if (image.complete) finish(true);
+    }
+
+    function syncTitleLowBackdrop() {
+      if (!titleArtWrap) return;
+      const useMobileTitle = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
+      const lowSrc = useMobileTitle ? STORY_TITLE_LOW_IMAGES.mobile : STORY_TITLE_LOW_IMAGES.desktop;
+      titleArtWrap.style.backgroundImage = `url("${lowSrc}")`;
+    }
+
+    function primeTitleArtwork() {
+      syncTitleLowBackdrop();
+      if (!titleImage || !titleStage) return;
+      const markReady = () => titleStage.classList.add('title-ready');
+      if (titleImage.complete && titleImage.currentSrc) {
+        markReady();
+        return;
+      }
+      titleImage.addEventListener('load', markReady, { once: true });
+    }
+
+    function setSceneBackdropArtwork(lowSrc, highSrc) {
+      if (!storySceneBackdrop) return;
+      storySceneBackdrop.classList.remove('loaded');
+      storySceneBackdrop.style.setProperty('--scene-low-image', lowSrc ? `url("${lowSrc}")` : 'none');
+      storySceneBackdrop.style.setProperty('--scene-high-image', highSrc ? `url("${highSrc}")` : 'none');
+      preloadImage(highSrc, (ok) => {
+        if (ok) storySceneBackdrop.classList.add('loaded');
+      });
     }
 
     function pauseDocumentMedia(doc, reset=true) {
@@ -1329,6 +1599,7 @@
         title: 'Hangar de la Fosa Azul',
         type: 'Briefing',
         sceneChip: 'Construcción',
+        lowImage: 'assets/Historia/low/hangar-fosa-azul-low.jpg',
         image: 'assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG',
         lead: 'Briefing de arranque. Aquí definimos qué es un mecha, la necesidad de montaje y el tono del refugio técnico.',
         mission: 'Construir un bot válido para un NPC.',
@@ -1467,49 +1738,75 @@
 
     const storySceneScripts = {
       hangar: {
-        title: 'Fosa Azul · Primer Encuentro',
+        title: 'Hangar de la Fosa Azul',
         subtitle: 'El taller no te recibe como héroe. Te recibe como alguien que aún debe demostrar que entiende el metal.',
         portraits: {
           right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
         },
-        completeActionLabel: 'Pasar al taller',
+        startAmbient: true,
+        minimalDialogue: true,
+        completeActionLabel: 'Abrir panel de ensamblaje',
         lines: [
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            text: 'Bienvenido a la Fosa Azul. Aquí nadie pilota nada que no haya comprendido antes.'
-          },
-          {
-            speaker: 'Mara Oxido',
-            side: 'right',
-            text: 'Antes de tocar una sola carta, dime qué has venido a buscar entre estas ruinas.',
+            figure: 'assets/Historia/Brutos/MaraOxido.png',
+            text: 'Hola, ¿quién anda ahí?',
             choices: [
               {
-                id: 'learn',
-                label: 'Aprender a montar bien.',
-                response: 'Tu respuesta: "He venido a aprender a montar bien."'
+                id: 'me',
+                label: 'Tranquila, Óxido. Solo soy yo.',
+                response: 'Tú: "Tranquila, Óxido. Solo soy yo."'
               },
               {
-                id: 'survive',
-                label: 'Una forma de sobrevivir.',
-                response: 'Tu respuesta: "He venido a encontrar una forma de sobrevivir."'
+                id: 'scare',
+                label: '¿No te habré interrumpido otra operación secreta?',
+                response: 'Tú: "¿No te habré interrumpido otra operación secreta?"'
               },
               {
-                id: 'fight',
-                label: 'Llegar al combate cuanto antes.',
-                response: 'Tu respuesta: "Quiero llegar al combate cuanto antes."'
+                id: 'looking',
+                label: 'Buscaba a Mara Óxido. Me dijeron que seguía mandando más que los motores.',
+                response: 'Tú: "Buscaba a Mara Óxido. Me dijeron que seguía mandando más que los motores."'
               }
             ]
           },
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            text: 'Un mecha es un robot modulable. Se define por al menos 6 cartas de núcleos y 1 piloto.'
+            figure: 'assets/Historia/Brutos/mara_pose_1.png',
+            figureRaised: true,
+            text: 'Con esa lengua te reconocería aunque se apagara media Fosa Azul. Intuyo que no has venido solo a verme.',
+            choices: [
+              {
+                id: 'ceniza',
+                label: 'He oído que la Ruta Ceniza no es una ruta: es un filtro viejo de Argós.',
+                response: 'Tú: "He oído que la Ruta Ceniza no es una ruta: es un filtro viejo de Argós."'
+              },
+              {
+                id: 'lore',
+                label: 'Quiero entender por qué todo el mundo habla de los PoCoBOT como si fueran salvación y condena a la vez.',
+                response: 'Tú: "Quiero entender por qué todo el mundo habla de los PoCoBOT como si fueran salvación y condena a la vez."'
+              },
+              {
+                id: 'survive',
+                label: 'Quiero aprender a seguir ahí fuera sin que la ruina me pase por encima.',
+                response: 'Tú: "Quiero aprender a seguir ahí fuera sin que la ruina me pase por encima."'
+              }
+            ]
           },
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            text: 'Así que olvida la épica por un minuto. Primero móntame un bot válido para el taller. Luego ya hablaremos de aventura.'
+            figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figureRaised: true,
+            text: 'Entonces escucha bien. La Ruta Ceniza era una cadena de evaluación de Argós: talleres, estaciones y pasos tácticos pensados para observar, filtrar y decidir quién merecía continuidad. El mundo se vino abajo, pero esas pruebas no murieron. Siguen ahí, medio rotas, filtrando de verdad.'
+          },
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figureRaised: true,
+            text: 'Y un PoCoBOT no se saca adelante a martillazos. Primero se comprende, luego se le pide fuerza. Si quieres entrar en la Ruta Ceniza, demuéstrame que sabes ensamblarlo hasta dejarlo listo para atacar. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
           }
         ]
       },
@@ -1553,10 +1850,10 @@
 
     const storyMissionScripts = {
       hangar: {
-        chip: 'Misión de construcción',
+        chip: 'Carrera de ensamblaje',
         title: 'Taller de la Fosa Azul',
-        copy: 'Construye un bot válido para el taller. Esta primera prueba ya te lleva al juego real: entra directamente en montaje y usa el panel para completar el mecha.',
-        url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_build'
+        copy: 'Monta tu PoCoBOT hasta dejarlo listo para atacar antes que Mara Óxido. Ella ensamblará en paralelo, y si llega antes, la prueba se pierde.',
+        url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race'
       }
     };
 
@@ -1590,6 +1887,38 @@
       storySceneAvatar.hidden = false;
       storySceneAvatar.src = portrait.src;
       storySceneAvatar.alt = portrait.alt || line.speaker || '';
+    }
+
+    function setSceneFigure(line, scene) {
+      if (!storySceneFigure) return;
+      const source = line.figure || scene.figure || '';
+      if (!source) {
+        storySceneFigure.hidden = true;
+        storySceneFigure.removeAttribute('src');
+        storySceneFigure.removeAttribute('alt');
+        return;
+      }
+      storySceneFigure.hidden = false;
+      storySceneFigure.src = source;
+      storySceneFigure.alt = line.speaker || scene.title || 'Figura del personaje';
+    }
+
+    function syncSceneStageMode(scene) {
+      if (!storySceneStage) return;
+      storySceneStage.classList.toggle('ambient', !!sceneAmbientMode);
+      storySceneStage.classList.toggle('dialogue-live', !sceneAmbientMode);
+      storySceneStage.classList.toggle('minimal-dialogue', !!scene?.minimalDialogue);
+    }
+
+    function syncScenePresentation(line) {
+      if (!storySceneStage) return;
+      const showIntroTag = !!(activeSceneNodeId === 'hangar' && line && sceneLineIndex === 0);
+      const raiseFigure = !!(line && line.figureRaised);
+      storySceneStage.classList.toggle('show-intro-tag', showIntroTag);
+      storySceneStage.classList.toggle('figure-raised', raiseFigure);
+      if (storySceneIntroName) {
+        storySceneIntroName.textContent = line?.speaker || 'Mara Óxido';
+      }
     }
 
     function setScenePortrait(slot, portrait, activeSide) {
@@ -1636,6 +1965,7 @@
         button.className = 'scene-choice';
         button.textContent = choice.label;
         if (choice.id === selectedId) button.classList.add('selected');
+        bindStoryUiSfx(button, { clickKind: 'confirm' });
         button.addEventListener('click', () => {
           sceneChoiceSelections[getSceneChoiceKey()] = choice.id;
           renderSceneLine(true);
@@ -1672,32 +2002,54 @@
       setScenePortrait('left', scene.portraits?.left, line.side);
       setScenePortrait('right', scene.portraits?.right, line.side);
       setSceneAvatar(line, scene);
+      setSceneFigure(line, scene);
+      syncScenePresentation(line);
       const needsChoice = renderSceneChoices(line);
       storySceneNextBtn.disabled = needsChoice;
       storySceneNextBtn.textContent = sceneLineIndex >= scene.lines.length - 1 ? (scene.completeActionLabel || 'Volver al mapa') : 'Adelante';
+    }
+
+    function activateSceneDialogue() {
+      if (!activeSceneNodeId || !sceneAmbientMode) return;
+      const scene = storySceneScripts[activeSceneNodeId];
+      if (!scene) return;
+      sceneAmbientMode = false;
+      syncSceneStageMode(scene);
+      renderSceneLine();
     }
 
     function openStoryScene(nodeId) {
       const localNode = storyDraftNodes[nodeId];
       const scene = storySceneScripts[nodeId];
       if (!localNode || !scene) return;
-      activeSceneNodeId = nodeId;
-      sceneLineIndex = 0;
-      if (storySceneBackdrop) {
-        storySceneBackdrop.style.backgroundImage = `url("${localNode.image}")`;
-      }
-      if (labDrawer && !labDrawer.hasAttribute('hidden')) {
-        labDrawer.setAttribute('hidden', '');
-        labToggleBtn.setAttribute('aria-expanded', 'false');
-      }
-      renderSceneLine();
-      storySceneStage.hidden = false;
-      requestAnimationFrame(() => storySceneStage.classList.add('active'));
+      runStoryTransition(() => {
+        activeSceneNodeId = nodeId;
+        sceneLineIndex = 0;
+        sceneAmbientMode = !!scene.startAmbient;
+        setSceneBackdropArtwork(localNode.lowImage || localNode.image, localNode.image);
+        if (labDrawer && !labDrawer.hasAttribute('hidden')) {
+          labDrawer.setAttribute('hidden', '');
+          labToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+        syncSceneStageMode(scene);
+        if (!sceneAmbientMode) {
+          renderSceneLine();
+        } else if (storySceneFigure) {
+          storySceneFigure.hidden = true;
+          storySceneFigure.removeAttribute('src');
+          storySceneFigure.removeAttribute('alt');
+        }
+        storySceneStage.hidden = false;
+        requestAnimationFrame(() => storySceneStage.classList.add('active'));
+      });
     }
 
     function closeStoryScene() {
       activeSceneNodeId = null;
       sceneLineIndex = 0;
+      sceneAmbientMode = false;
+      syncSceneStageMode(null);
+      syncScenePresentation(null);
       storySceneStage.classList.remove('active');
       window.setTimeout(() => {
         if (!storySceneStage.classList.contains('active')) {
@@ -1734,9 +2086,21 @@
         if (!storyMissionStage.classList.contains('active')) {
           storyMissionStage.hidden = true;
           if (storyMissionFrame) storyMissionFrame.src = 'about:blank';
-          if (workspacePanel.classList.contains('active')) playMapMusic();
+          if (workspacePanel.classList.contains('active')) {
+            resetStoryMapViewport();
+            playMapMusic();
+          }
         }
       }, 260);
+    }
+
+    function resetStoryMapViewport() {
+      if (storyMapShell) storyMapShell.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      try {
+        if (storyMapFrame && storyMapFrame.contentWindow) {
+          storyMapFrame.contentWindow.scrollTo(0, 0);
+        }
+      } catch (error) {}
     }
 
     function postNodeSelectionToMap(nodeId) {
@@ -2019,6 +2383,7 @@
         closeStoryScene();
         renderStoryNode(currentStoryNodeId);
         setTimeout(() => {
+          resetStoryMapViewport();
           workspacePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
           postNodeSelectionToMap(currentStoryNodeId);
         }, 80);
@@ -2036,6 +2401,15 @@
       if (titleMusicUnlocked) startTitleMusic();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    primeStoryUiSfx();
+    bindStoryUiSfx(enterStoryBtn, { clickKind: 'confirm' });
+    bindStoryUiSfx(labToggleBtn);
+    bindStoryUiSfx(storySceneCloseBtn);
+    bindStoryUiSfx(storySceneMapBtn);
+    bindStoryUiSfx(storySceneNextBtn, { clickKind: 'click' });
+    bindStoryUiSfx(storyMissionMapBtn);
+    bindStoryUiSfx(storyMissionRestartBtn, { clickKind: 'confirm' });
 
     enterStoryBtn.addEventListener('click', showWorkspace);
     storySceneCloseBtn.addEventListener('click', closeStoryScene);
@@ -2064,6 +2438,12 @@
       }
       sceneLineIndex += 1;
       renderSceneLine();
+    });
+    storySceneStage.addEventListener('pointerdown', (event) => {
+      if (!sceneAmbientMode) return;
+      if (event.target.closest('button, a, input, textarea, select')) return;
+      playStoryUiSfx('confirm');
+      activateSceneDialogue();
     });
     labToggleBtn.addEventListener('click', () => {
       const opening = labDrawer.hasAttribute('hidden');
@@ -2098,11 +2478,21 @@
     });
 
     if (storyMapFrame) {
+      try {
+        if (storyMapFrame.contentDocument?.readyState === 'complete') {
+          storyMapFrame.classList.add('loaded');
+        }
+      } catch (error) {}
       storyMapFrame.addEventListener('load', () => {
+        storyMapFrame.classList.add('loaded');
+        resetStoryMapViewport();
         postNodeSelectionToMap(currentStoryNodeId);
       });
     }
 
+    primeTitleArtwork();
+    window.addEventListener('resize', syncTitleLowBackdrop);
+    window.addEventListener('orientationchange', syncTitleLowBackdrop);
     animateAmbientGlow();
     window.setTimeout(() => {
       if (!workspacePanel.classList.contains('active')) startTitleMusic();

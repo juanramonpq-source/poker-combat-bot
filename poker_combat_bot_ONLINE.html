@@ -4993,6 +4993,8 @@ const state = {
   projectilePromptPlayer: null,
   postAttackTopFocus: false,
   onlineFxCue: null,
+  storyMission: null,
+  storyMissionAnnounced: false,
 };
 
 /* ===== ONLINE MULTIPLAYER STATE ===== */
@@ -5317,9 +5319,57 @@ function autoStartStoryMissionIfRequested(){
         notifySelection('Mision historia: construye un bot valido para el taller.');
       }, 260);
       break;
+    case 'hangar_race':
+      primeOfflineMode('single', 'hard');
+      newGame();
+      hideIntroScreen();
+      addToast('Mision historia: deja tu PoCoBOT listo para atacar antes que Mara', 'warn');
+      log('📜 Mision historia: adelántate a Mara y deja tu PoCoBOT listo para atacar.');
+      window.setTimeout(() => {
+        scrollToPlayerPanel(0, 'smooth');
+        notifySelection('Objetivo: deja tu PoCoBOT listo para atacar antes que Mara Óxido.');
+      }, 260);
+      break;
     default:
       break;
   }
+}
+
+function applyStoryMissionPlayerSetup(){
+  state.storyMission = STORY_MISSION_BOOT || null;
+  state.storyMissionAnnounced = false;
+  if(state.storyMission === 'hangar_race'){
+    if(state.players[0]) state.players[0].name = 'Piloto';
+    if(state.players[1]) state.players[1].name = 'Mara Oxido';
+  }
+}
+
+function maybeResolveStoryMission(){
+  if(state.storyMission !== 'hangar_race' || state.winner || !state.players || state.players.length < 2) return;
+  const playerReady = playerCanAttack(state.players[0]);
+  const maraReady = playerCanAttack(state.players[1]);
+  if(!playerReady && !maraReady) return;
+
+  const winnerIdx = playerReady && !maraReady
+    ? 0
+    : maraReady && !playerReady
+      ? 1
+      : state.currentPlayer;
+  const playerWon = winnerIdx === 0;
+  state.winner = state.players[winnerIdx].name;
+  state.phase = 'Mision';
+  state.storyMissionAnnounced = true;
+  log(playerWon
+    ? '🏁 Mision completada: tu PoCoBOT ya puede atacar.'
+    : '⚠️ Mara Oxido ha ensamblado antes un PoCoBOT listo para atacar.');
+  addToast(
+    playerWon
+      ? 'Mision completada: tu PoCoBOT ya puede atacar'
+      : 'Mara Oxido ha montado antes un PoCoBOT listo para atacar',
+    playerWon ? 'ok' : 'warn'
+  );
+  triggerVictorySequence();
+  window.setTimeout(() => scrollToWinnerCup('smooth'), 180);
 }
 
 const tutorialSteps = [
@@ -6680,6 +6730,7 @@ function newGame(){
     if(state.players[0]) state.players[0].name = onlineNames[0];
     if(state.players[1]) state.players[1].name = onlineNames[1];
   }
+  applyStoryMissionPlayerSetup();
 
   for(let r=0;r<5;r++){
     state.players.forEach((p, idx) => {
@@ -6725,6 +6776,21 @@ function getBuildStatus(player){
   const mounted = !!player.core.pilot && player.attack.length>0 && player.defense.length>0 && player.armor.length>0;
   const combatReady = playerCanAttack(player);
   return { mounted, combatReady };
+}
+function getStoryMissionBuildPercent(player){
+  if(!player || !player.core) return 0;
+  const stats = playerStatsList(player);
+  let progress = 0;
+  if(player.core.pilot) progress += 28;
+  if(player.core.copilot) progress += 8;
+  if(player.core.booster) progress += 6;
+  progress += Math.min(3, player.attack.length) * 10;
+  progress += Math.min(3, player.defense.length) * 10;
+  progress += Math.min(3, player.armor.length) * 10;
+  progress += Math.min(3, player.fuel.length) * 6;
+  progress += Math.min(6, stats.length) * 3;
+  if(playerCanAttack(player)) return 100;
+  return Math.min(96, progress);
 }
 function getHandSummary(player, playerIdx){
   if(!player) return `0 cartas · MAXIMO ${MAX_HAND_SIZE}`;
@@ -8890,6 +8956,22 @@ function updateHints(){
     return;
   }
 
+  if(state.storyMission === 'hangar_race'){
+    if(mainHint) mainHint.innerHTML = '🏁 Misión historia: deja tu PoCoBOT listo para atacar antes que Mara Óxido.';
+    if(attackHint) attackHint.innerHTML = 'Carrera de ensamblaje: el primero que pueda atacar gana la prueba.';
+    if(attackSubHint) attackSubHint.textContent = 'Mara está ensamblando en paralelo. No necesitas disparar: basta con dejar tu mecha listo para combate.';
+    if(tutorialPanelTitle) tutorialPanelTitle.textContent = 'Misión historia · Hangar';
+    if(tutorialPanelText) tutorialPanelText.textContent = 'Esta prueba termina en cuanto uno de los dos bots queda listo para atacar. Aprovecha el montaje, protege el piloto y acelera tu forma de combate.';
+    if(tutorialPanelTip) tutorialPanelTip.textContent = 'No hace falta destruir a Mara: aquí manda la velocidad de ensamblaje.';
+    if(tutorialPanelObjective) tutorialPanelObjective.textContent = 'Objetivo: ser el primero en dejar un PoCoBOT listo para atacar.';
+    if(tutorialPanelStep) tutorialPanelStep.textContent = 'Capítulo 1 · Hangar';
+    if(tutorialPanelMode) tutorialPanelMode.textContent = 'Carrera';
+    if(tutorialPanelMeterFill) tutorialPanelMeterFill.style.width = `${Math.max(getStoryMissionBuildPercent(state.players[0]), getStoryMissionBuildPercent(state.players[1]))}%`;
+    if(tutorialPanelFocus) tutorialPanelFocus.textContent = 'Prioriza un piloto principal y alcanza la estructura mínima de mecha montado cuanto antes.';
+    if(tutorialPanelStatus) tutorialPanelStatus.textContent = 'La prueba se resuelve automáticamente en cuanto uno de los dos puede atacar.';
+    return;
+  }
+
   if(!state.tutorial){
     if(mainHint) mainHint.innerHTML = 'Modo libre activado. El foco está en la prueba visual y funcional del tablero.';
     if(attackHint) attackHint.innerHTML = 'Modo libre activado. La consola solo muestra acciones legales.';
@@ -9718,6 +9800,7 @@ function afterRender(){
 function render(){
   ensureEnhancedFxDom();
   mountFloatingHudToBody();
+  maybeResolveStoryMission();
   if(tutorialSystem.enabled) updateTutorialPhase();
   document.body.classList.toggle('victory', !!state.winner);
   document.body.classList.toggle('tutorial-guided-active', tutorialIsGuided());
