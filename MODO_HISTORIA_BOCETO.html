@@ -270,6 +270,9 @@
     .title-stage.title-ready .title-image{
       opacity:1;
     }
+    .title-stage.title-ready .title-art-wrap{
+      background-image:none;
+    }
     .title-overlay{
       position:absolute;
       inset:0;
@@ -387,6 +390,231 @@
     }
     .story-map-frame.loaded{
       opacity:1;
+    }
+    .story-mobile-route{
+      display:none;
+      position:relative;
+      z-index:3;
+      min-height:100svh;
+      padding:clamp(16px, 4vw, 28px) clamp(14px, 4vw, 24px) clamp(120px, 18svh, 168px);
+      overflow-y:auto;
+      overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+    }
+    .mobile-route-hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:26px;
+      border:1px solid rgba(255,255,255,.08);
+      min-height:220px;
+      background:
+        linear-gradient(180deg, rgba(6,10,15,.14), rgba(6,10,15,.74)),
+        #05080d url("assets/Historia/low/mapaok-low.jpg") no-repeat center top / cover;
+      box-shadow:0 22px 42px rgba(0,0,0,.28);
+    }
+    .mobile-route-hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.08), transparent 18%),
+        linear-gradient(0deg, rgba(4,7,11,.82), transparent 48%);
+      pointer-events:none;
+    }
+    .mobile-route-hero-copy{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:10px;
+      align-content:end;
+      min-height:220px;
+      padding:22px 20px 20px;
+    }
+    .mobile-route-kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      width:max-content;
+      min-height:34px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(7,11,17,.74);
+      color:#ffe2c0;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+      box-shadow:0 12px 26px rgba(0,0,0,.22);
+      backdrop-filter:blur(10px);
+    }
+    .mobile-route-kicker::before{
+      content:"";
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:radial-gradient(circle, #8ff4ff 0%, #4ac7e3 62%, rgba(74,199,227,.2) 100%);
+      box-shadow:0 0 16px rgba(143,244,255,.68);
+    }
+    .mobile-route-title{
+      margin:0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:clamp(1.4rem, 5vw, 2rem);
+      line-height:1.04;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+      color:#f5fbff;
+      text-shadow:0 10px 26px rgba(0,0,0,.34);
+    }
+    .mobile-route-copy{
+      margin:0;
+      max-width:32ch;
+      color:#dbe7f2;
+      font-size:.92rem;
+      line-height:1.56;
+      text-shadow:0 8px 20px rgba(0,0,0,.28);
+    }
+    .mobile-route-list{
+      display:grid;
+      gap:14px;
+      margin-top:16px;
+    }
+    .mobile-route-card{
+      position:relative;
+      overflow:hidden;
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(10,17,24,.9), rgba(7,11,17,.96));
+      box-shadow:0 18px 34px rgba(0,0,0,.24);
+    }
+    .mobile-route-card.locked{
+      opacity:.72;
+      filter:saturate(.74);
+    }
+    .mobile-route-card.current{
+      border-color:rgba(143,244,255,.34);
+      box-shadow:0 0 0 1px rgba(143,244,255,.14), 0 20px 38px rgba(0,0,0,.26);
+    }
+    .mobile-route-art{
+      position:relative;
+      height:144px;
+      overflow:hidden;
+      background:#05080d;
+    }
+    .mobile-route-art img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+      object-position:center center;
+      filter:saturate(1.02) contrast(1.02);
+    }
+    .mobile-route-art::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.05), transparent 20%),
+        linear-gradient(0deg, rgba(4,7,11,.8), transparent 34%);
+    }
+    .mobile-route-body{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:10px;
+      padding:16px 16px 18px;
+    }
+    .mobile-route-topline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .mobile-route-order{
+      color:#8ff4ff;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .mobile-route-state{
+      display:inline-flex;
+      align-items:center;
+      min-height:28px;
+      padding:0 12px;
+      border-radius:999px;
+      font-size:.68rem;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.05);
+      color:#dbe7f2;
+    }
+    .mobile-route-state.available{
+      color:#dffbff;
+      border-color:rgba(143,244,255,.26);
+      background:rgba(143,244,255,.12);
+      box-shadow:0 0 18px rgba(143,244,255,.08);
+    }
+    .mobile-route-state.locked{
+      color:#c6d0dc;
+      border-color:rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+    }
+    .mobile-route-name{
+      margin:0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:1.16rem;
+      line-height:1.12;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+      color:#f4f9ff;
+    }
+    .mobile-route-summary{
+      margin:0;
+      color:#d6e3ee;
+      font-size:.9rem;
+      line-height:1.58;
+    }
+    .mobile-route-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .mobile-route-meta span{
+      display:inline-flex;
+      align-items:center;
+      min-height:28px;
+      padding:0 11px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.06);
+      color:#d7e8f4;
+      font-size:.72rem;
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+    .mobile-route-action{
+      justify-self:start;
+      min-height:40px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(20,48,60,.95), rgba(10,17,24,.98));
+      color:#edf7ff;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      box-shadow:0 12px 24px rgba(0,0,0,.2);
+      cursor:pointer;
+    }
+    .mobile-route-card.locked .mobile-route-action{
+      opacity:.5;
+      cursor:not-allowed;
+      box-shadow:none;
     }
     .story-map-hud{
       position:fixed;
@@ -594,20 +822,25 @@
       pointer-events:none;
     }
     .scene-focus-figure{
+      --scene-figure-shift:0svh;
       width:min(46vw, 620px);
       max-height:min(88svh, 960px);
       object-fit:contain;
       filter:drop-shadow(0 34px 40px rgba(0,0,0,.36));
       opacity:0;
-      transform:translateY(18px) scale(.985);
+      transform:translateY(calc(18px + var(--scene-figure-shift))) scale(.985);
       transition:opacity .34s ease, transform .34s ease, filter .34s ease;
     }
     .story-scene-stage.dialogue-live .scene-focus-figure{
       opacity:1;
-      transform:translateY(0) scale(1);
+      transform:translateY(var(--scene-figure-shift)) scale(1);
     }
     .story-scene-stage.figure-raised .scene-focus-figure{
-      transform:translateY(-10svh) scale(.98);
+      transform:translateY(calc(var(--scene-figure-shift) - 8svh)) scale(.98);
+    }
+    .story-scene-stage.hangar-scene .scene-focus-figure{
+      width:min(54vw, 760px);
+      max-height:min(92svh, 1080px);
     }
     .scene-dialog-card{
       position:relative;
@@ -830,6 +1063,30 @@
     .story-scene-stage.ambient .scene-focus-wrap{
       opacity:0;
       pointer-events:none;
+    }
+    .scene-ambient-actions{
+      position:absolute;
+      right:clamp(16px, 2.8vw, 28px);
+      bottom:clamp(18px, 3vh, 30px);
+      z-index:3;
+      display:none;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      gap:10px;
+      width:min(440px, calc(100vw - 28px));
+    }
+    .story-scene-stage.ambient .scene-ambient-actions{
+      display:flex;
+    }
+    .scene-ambient-hint{
+      flex:1 1 100%;
+      margin:0;
+      text-align:right;
+      color:rgba(239,247,255,.78);
+      font-size:.78rem;
+      line-height:1.5;
+      letter-spacing:.05em;
+      text-shadow:0 8px 26px rgba(0,0,0,.34);
     }
     .story-scene-stage.minimal-dialogue .scene-node,
     .story-scene-stage.minimal-dialogue .scene-title,
@@ -1090,10 +1347,34 @@
       }
     }
     @media (orientation:portrait){
+      .story-map-shell{
+        height:auto;
+        min-height:100svh;
+        overflow-y:auto;
+        overflow-x:hidden;
+      }
+      .story-map-frame,
+      .story-map-hud{
+        display:none;
+      }
+      .story-mobile-route{
+        display:block;
+      }
+      .lab-toggle{
+        bottom:14px;
+        left:14px;
+      }
+      .lab-drawer{
+        left:14px;
+        right:14px;
+        bottom:64px;
+        width:auto;
+      }
       .title-art-wrap{
         background:#060a10 url("assets/Historia/low/titulo-smartphone1-low.jpg") no-repeat center top / cover;
       }
       .title-image{
+        object-fit:cover;
         object-position:center top;
       }
       .title-overlay{
@@ -1177,8 +1458,12 @@
         width:min(74vw, 360px);
         max-height:58svh;
       }
+      .story-scene-stage.hangar-scene .scene-focus-figure{
+        width:min(82vw, 430px);
+        max-height:68svh;
+      }
       .story-scene-stage.figure-raised .scene-focus-figure{
-        transform:translateY(-7svh) scale(.98);
+        transform:translateY(calc(var(--scene-figure-shift) - 5svh)) scale(.98);
       }
       .scene-intro-tag{
         top:74px;
@@ -1214,6 +1499,15 @@
       .scene-btn{
         width:100%;
       }
+      .scene-ambient-actions{
+        left:12px;
+        right:12px;
+        bottom:16px;
+        width:auto;
+      }
+      .scene-ambient-hint{
+        text-align:left;
+      }
       .scene-choices{
         flex-direction:column;
       }
@@ -1239,13 +1533,6 @@
       }
       .mission-frame{
         min-height:52svh;
-      }
-      .title-image{
-        object-fit:contain;
-        object-position:center center;
-      }
-      .title-overlay{
-        padding:28px 16px max(12svh, 86px);
       }
       .bottom-back{bottom:12px}
     }
@@ -1281,6 +1568,17 @@
             title="Mapa interactivo inmersivo del modo historia"
             src="pocobot_mapa_interactivo.html?immersive=1"></iframe>
 
+          <section class="story-mobile-route" id="storyMobileRoute">
+            <header class="mobile-route-hero">
+              <div class="mobile-route-hero-copy">
+                <span class="mobile-route-kicker">Bienvenido a la aventura</span>
+                <h2 class="mobile-route-title">Ruta Ceniza</h2>
+                <p class="mobile-route-copy">En móvil recorrerás la campaña como una travesía vertical. Empieza por los dos primeros destinos activos y ve abriendo el resto paso a paso.</p>
+              </div>
+            </header>
+            <div class="mobile-route-list" id="storyMobileRouteList"></div>
+          </section>
+
           <div class="story-map-hud">
             <span class="story-kicker">Bienvenido a la aventura</span>
             <p>Empieza la Ruta Ceniza. Ve al Hangar de la Fosa Azul o al Patio de Pruebas, los dos lugares marcados en azul.</p>
@@ -1310,6 +1608,11 @@
             <div class="scene-backdrop" id="storySceneBackdrop"></div>
             <div class="scene-focus-wrap">
               <img class="scene-focus-figure" id="storySceneFigure" alt="" hidden>
+            </div>
+            <div class="scene-ambient-actions" id="storySceneAmbientActions">
+              <p class="scene-ambient-hint">Pulsa <strong>Adelante</strong> o toca la pantalla para entrar en la conversación.</p>
+              <button class="scene-btn secondary" id="storySceneAmbientMapBtn" type="button">Volver al mapa</button>
+              <button class="scene-btn" id="storySceneAmbientNextBtn" type="button">Adelante</button>
             </div>
             <div class="scene-header">
               <span class="scene-kicker" id="storySceneOrder">Capítulo 1 · Ruta Ceniza</span>
@@ -1397,6 +1700,8 @@
     const storyMapShell = document.getElementById('storyMapShell');
     const storyMapMusic = document.getElementById('storyMapMusic');
     const storyMapFrame = document.getElementById('storyMapFrame');
+    const storyMobileRoute = document.getElementById('storyMobileRoute');
+    const storyMobileRouteList = document.getElementById('storyMobileRouteList');
     const labToggleBtn = document.getElementById('labToggleBtn');
     const labDrawer = document.getElementById('labDrawer');
     const storySceneStage = document.getElementById('storySceneStage');
@@ -1404,6 +1709,8 @@
     const storySceneBackdrop = document.getElementById('storySceneBackdrop');
     const storySceneFigure = document.getElementById('storySceneFigure');
     const storySceneOrder = document.getElementById('storySceneOrder');
+    const storySceneAmbientMapBtn = document.getElementById('storySceneAmbientMapBtn');
+    const storySceneAmbientNextBtn = document.getElementById('storySceneAmbientNextBtn');
     const storySceneCloseBtn = document.getElementById('storySceneCloseBtn');
     const storySceneIntroName = document.getElementById('storySceneIntroName');
     const storyScenePortraitLeft = document.getElementById('storyScenePortraitLeft');
@@ -1751,6 +2058,7 @@
             speaker: 'Mara Oxido',
             side: 'right',
             figure: 'assets/Historia/Brutos/MaraOxido.png',
+            figureShiftVh: -10,
             text: 'Hola, ¿quién anda ahí?',
             choices: [
               {
@@ -1775,6 +2083,7 @@
             side: 'right',
             figure: 'assets/Historia/Brutos/mara_pose_1.png',
             figureRaised: true,
+            figureShiftVh: -14,
             text: 'Con esa lengua te reconocería aunque se apagara media Fosa Azul. Intuyo que no has venido solo a verme.',
             choices: [
               {
@@ -1799,6 +2108,7 @@
             side: 'right',
             figure: 'assets/Historia/Brutos/mara_pose_3.png',
             figureRaised: true,
+            figureShiftVh: -15,
             text: 'Entonces escucha bien. La Ruta Ceniza era una cadena de evaluación de Argós: talleres, estaciones y pasos tácticos pensados para observar, filtrar y decidir quién merecía continuidad. El mundo se vino abajo, pero esas pruebas no murieron. Siguen ahí, medio rotas, filtrando de verdad.'
           },
           {
@@ -1806,6 +2116,7 @@
             side: 'right',
             figure: 'assets/Historia/Brutos/mara_pose_3.png',
             figureRaised: true,
+            figureShiftVh: -15,
             text: 'Y un PoCoBOT no se saca adelante a martillazos. Primero se comprende, luego se le pide fuerza. Si quieres entrar en la Ruta Ceniza, demuéstrame que sabes ensamblarlo hasta dejarlo listo para atacar. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
           }
         ]
@@ -1853,7 +2164,7 @@
         chip: 'Carrera de ensamblaje',
         title: 'Taller de la Fosa Azul',
         copy: 'Monta tu PoCoBOT hasta dejarlo listo para atacar antes que Mara Óxido. Ella ensamblará en paralelo, y si llega antes, la prueba se pierde.',
-        url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race'
+        url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race&story_embed=1&story_audio=external'
       }
     };
 
@@ -1870,6 +2181,58 @@
       const localNode = storyDraftNodes[nodeId] || storyDraftNodes.hangar;
       currentStoryNodeId = localNode.id;
       renderStoryCast(localNode.cast);
+      renderMobileRoute();
+    }
+
+    function isMobileStoryRouteMode() {
+      return window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
+    }
+
+    function isStoryNodeAvailable(node) {
+      return Number(node?.order || 99) <= 2;
+    }
+
+    function renderMobileRoute() {
+      if (!storyMobileRouteList) return;
+      const nodes = Object.values(storyDraftNodes).sort((a, b) => a.order - b.order);
+      storyMobileRouteList.innerHTML = '';
+
+      nodes.forEach((node) => {
+        const available = isStoryNodeAvailable(node);
+        const card = document.createElement('article');
+        card.className = `mobile-route-card${available ? '' : ' locked'}${currentStoryNodeId === node.id ? ' current' : ''}`;
+
+        const stateLabel = available ? (currentStoryNodeId === node.id ? 'Activo' : 'Disponible') : 'Bloqueado';
+        const stateClass = available ? 'available' : 'locked';
+        card.innerHTML = `
+          <div class="mobile-route-art">
+            <img src="${node.image}" alt="${node.title}" loading="lazy">
+          </div>
+          <div class="mobile-route-body">
+            <div class="mobile-route-topline">
+              <span class="mobile-route-order">Nodo ${node.order}</span>
+              <span class="mobile-route-state ${stateClass}">${stateLabel}</span>
+            </div>
+            <h3 class="mobile-route-name">${node.title}</h3>
+            <p class="mobile-route-summary">${node.lead}</p>
+            <div class="mobile-route-meta">
+              <span>${node.type}</span>
+              <span>${node.sceneChip}</span>
+            </div>
+            <button class="mobile-route-action" type="button" ${available ? '' : 'disabled aria-disabled="true"'}>${available ? 'Entrar' : 'Aún no disponible'}</button>
+          </div>
+        `;
+
+        const actionButton = card.querySelector('.mobile-route-action');
+        bindStoryUiSfx(actionButton, { clickKind: available ? 'confirm' : 'click', hover: false });
+        actionButton.addEventListener('click', () => {
+          if (!available) return;
+          renderStoryNode(node.id);
+          openStoryScene(node.id);
+        });
+
+        storyMobileRouteList.appendChild(card);
+      });
     }
 
     function getSceneChoiceKey() {
@@ -1914,8 +2277,11 @@
       if (!storySceneStage) return;
       const showIntroTag = !!(activeSceneNodeId === 'hangar' && line && sceneLineIndex === 0);
       const raiseFigure = !!(line && line.figureRaised);
+      const figureShift = Number.isFinite(line?.figureShiftVh) ? line.figureShiftVh : 0;
       storySceneStage.classList.toggle('show-intro-tag', showIntroTag);
       storySceneStage.classList.toggle('figure-raised', raiseFigure);
+      storySceneStage.classList.toggle('hangar-scene', activeSceneNodeId === 'hangar');
+      storySceneStage.style.setProperty('--scene-figure-shift', `${figureShift}svh`);
       if (storySceneIntroName) {
         storySceneIntroName.textContent = line?.speaker || 'Mara Óxido';
       }
@@ -2050,6 +2416,8 @@
       sceneAmbientMode = false;
       syncSceneStageMode(null);
       syncScenePresentation(null);
+      storySceneStage.classList.remove('hangar-scene');
+      storySceneStage.style.setProperty('--scene-figure-shift', '0svh');
       storySceneStage.classList.remove('active');
       window.setTimeout(() => {
         if (!storySceneStage.classList.contains('active')) {
@@ -2064,7 +2432,7 @@
       if (!localNode || !mission || !storyMissionStage) return;
       activeMissionNodeId = nodeId;
       closeStoryScene();
-      pauseMapMusic();
+      playMapMusic();
       if (storyMissionBackdrop) {
         storyMissionBackdrop.style.backgroundImage = `url("${localNode.image}")`;
       }
@@ -2406,6 +2774,8 @@
     bindStoryUiSfx(enterStoryBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(labToggleBtn);
     bindStoryUiSfx(storySceneCloseBtn);
+    bindStoryUiSfx(storySceneAmbientMapBtn);
+    bindStoryUiSfx(storySceneAmbientNextBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(storySceneMapBtn);
     bindStoryUiSfx(storySceneNextBtn, { clickKind: 'click' });
     bindStoryUiSfx(storyMissionMapBtn);
@@ -2413,6 +2783,8 @@
 
     enterStoryBtn.addEventListener('click', showWorkspace);
     storySceneCloseBtn.addEventListener('click', closeStoryScene);
+    storySceneAmbientMapBtn.addEventListener('click', closeStoryScene);
+    storySceneAmbientNextBtn.addEventListener('click', activateSceneDialogue);
     storySceneMapBtn.addEventListener('click', closeStoryScene);
     storyMissionMapBtn.addEventListener('click', closeStoryMission);
     storyMissionRestartBtn.addEventListener('click', () => {

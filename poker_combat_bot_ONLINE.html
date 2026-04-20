@@ -41,6 +41,15 @@ body{
   letter-spacing:.02em;
 }
 .app{max-width:1500px;margin:0 auto;padding:8px 10px 10px}
+body.story-embed-mode{
+  background:transparent;
+  overflow:hidden;
+}
+body.story-embed-mode .app{
+  max-width:none;
+  min-height:100svh;
+  padding:0;
+}
 .frame{
   border:2px solid var(--line);
   border-radius:14px;
@@ -71,6 +80,13 @@ body{
   gap:10px;
   align-items:stretch;
   margin-bottom:8px;
+}
+body.story-embed-mode .cockpit-grid{
+  min-height:100svh;
+  margin-bottom:0;
+}
+body.story-embed-mode #introScreen{
+  display:none !important;
 }
 .side-tower{
   padding:8px;
@@ -4367,6 +4383,15 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
 
 <!-- Socket.IO Library (Required for Online Multiplayer) -->
 <script src="/socket.io/socket.io.js"></script>
+<script>
+  (function(){
+    const params = new URLSearchParams(window.location.search);
+    if(params.get('story_embed') === '1'){
+      document.documentElement.classList.add('story-embed-mode');
+      document.body.classList.add('story-embed-mode');
+    }
+  })();
+</script>
 
 <!-- Online Status Bar -->
 <div id="olStatusBar" class="ol-hidden">
@@ -5175,6 +5200,7 @@ function showIntroMenu(menuKey='root'){
   if(introCard) introCard.dataset.menu = menuKey;
 }
 function showIntroScreen(menuKey='root'){
+  if(STORY_EMBED_MODE) return;
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.remove('hidden');
   showIntroMenu(menuKey);
@@ -5757,7 +5783,10 @@ const AUDIO_BGM_1_URI = "assets/audio_01.mp3";
 const AUDIO_BGM_2_URI = "assets/audio_02.mp3";
 const AUDIO_BGM_MENU_URI = "assets/GravitSilence.mp3";
 const STORY_AUDIO_PRIORITY_KEY = "pocobot_story_audio_priority";
-const STORY_MISSION_BOOT = new URLSearchParams(window.location.search).get('story_mission') || '';
+const STORY_BOOT_PARAMS = new URLSearchParams(window.location.search);
+const STORY_MISSION_BOOT = STORY_BOOT_PARAMS.get('story_mission') || '';
+const STORY_EMBED_MODE = STORY_BOOT_PARAMS.get('story_embed') === '1';
+const STORY_AUDIO_MODE = STORY_BOOT_PARAMS.get('story_audio') || '';
 const AUDIO_SFX_URIS = {
   uiClick: "assets/sfx/ui_click.wav",
   shuffle: "assets/sfx/card_shuffle.wav",
@@ -5766,6 +5795,10 @@ const AUDIO_SFX_URIS = {
   impact: "assets/sfx/impact.wav",
   explosion: "assets/sfx/attack_explosion.mp3"
 };
+
+function isStoryMissionExternalAudio(){
+  return STORY_EMBED_MODE && STORY_AUDIO_MODE === 'external';
+}
 
 function ensureSfxBank(){
   if(!state.sfxBank) state.sfxBank = {};
@@ -5853,6 +5886,11 @@ function playMusicTrack(audio, restart=false){
   }catch(e){}
 }
 function startIntroMusic(forceRestart=false){
+  if(isStoryMissionExternalAudio()){
+    stopAllMusic(false);
+    state.musicPhase = 'none';
+    return;
+  }
   ensureMusicElements();
   state.musicPhase = 'intro';
   pauseMusic(state.bgmMenu, true);
@@ -5860,6 +5898,11 @@ function startIntroMusic(forceRestart=false){
   playMusicTrack(state.bgm1, forceRestart);
 }
 function startMenuMusic(forceRestart=false){
+  if(isStoryMissionExternalAudio()){
+    stopAllMusic(false);
+    state.musicPhase = 'none';
+    return;
+  }
   const intro = document.getElementById('introScreen');
   if(!intro || intro.classList.contains('hidden')) return;
   ensureMusicElements();
@@ -5869,6 +5912,11 @@ function startMenuMusic(forceRestart=false){
   playMusicTrack(state.bgmMenu, forceRestart);
 }
 function switchToBattleMusic(){
+  if(isStoryMissionExternalAudio()){
+    stopAllMusic(false);
+    state.musicPhase = 'none';
+    return;
+  }
   ensureMusicElements();
   if(state.firstAttackTriggered) return;
   state.firstAttackTriggered = true;
@@ -5878,6 +5926,11 @@ function switchToBattleMusic(){
   playMusicTrack(state.bgm2, true);
 }
 function syncMusicToState(){
+  if(isStoryMissionExternalAudio()){
+    stopAllMusic(false);
+    state.musicPhase = 'none';
+    return;
+  }
   ensureMusicElements();
   if(!state.soundOn){
     pauseMusic(state.bgmMenu, false);
@@ -5915,6 +5968,7 @@ function syncMusicToState(){
   }
 }
 function maybeResumeMenuMusic(){
+  if(isStoryMissionExternalAudio()) return;
   const intro = document.getElementById('introScreen');
   if(!state.soundOn || state.gameStarted || !intro || intro.classList.contains('hidden')) return;
   startMenuMusic(false);
