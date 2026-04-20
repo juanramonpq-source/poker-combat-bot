@@ -4332,6 +4332,21 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   min-width: 220px;
 }
 
+.ol-waiting-save-note {
+  margin-top: 10px;
+  width: min(440px, calc(100vw - 48px));
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: rgba(226, 236, 255, 0.72);
+}
+
+.ol-waiting-actions .ol-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
 .ol-card-face-down {
   opacity: 0.3 !important;
 }
@@ -4501,6 +4516,10 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
       </div>
     </div>
   </div>
+  <div class="ol-waiting-actions" id="olWaitingActions">
+    <button id="olWaitingSaveBtn" class="ol-button" type="button">Salvar partida</button>
+  </div>
+  <div class="ol-waiting-save-note" id="olWaitingSaveNote">Solo el host puede salvar una partida online porque conserva el estado completo de la sala.</div>
 </div>
 
 <div class="app">
@@ -6518,6 +6537,7 @@ async function restoreGameFromCode(code, options = {}){
 async function requestSaveGame(){
   try{
     pulseButton('saveGameBtn');
+    pulseButton('olWaitingSaveBtn');
     const payload = buildSavePayload();
     const code = await encodeSaveCode(payload);
     if(navigator.clipboard && window.isSecureContext){
@@ -6534,6 +6554,16 @@ async function requestSaveGame(){
   }catch(err){
     addToast(err.message || 'No se pudo salvar la partida', 'warn');
   }
+}
+function requestOnlineWaitingSave(){
+  if(_ol.active && _ol.role === 'guest'){
+    pulseButton('olWaitingSaveBtn');
+    olSendAction({ type: 'requestSave' });
+    addToast('Solicitud de guardado enviada al host', 'ok');
+    log('📡 Solicitud de guardado enviada al host.');
+    return;
+  }
+  requestSaveGame();
 }
 async function requestLoadGame(){
   try{
@@ -6675,6 +6705,11 @@ function getBuildStatus(player){
   const combatReady = playerCanAttack(player);
   return { mounted, combatReady };
 }
+function getHandSummary(player, playerIdx){
+  if(!player) return `0 cartas · MAXIMO ${MAX_HAND_SIZE}`;
+  if(shouldHideHandForPlayer(playerIdx)) return `${player.hand.length} oculta · MAXIMO ${MAX_HAND_SIZE}`;
+  return `${player.hand.length} cartas · valor ${sumCards(player.hand)} · MAXIMO ${MAX_HAND_SIZE}`;
+}
 function getPilotCombatRequirement(player){
   if(!player || !player.core) {
     return {
@@ -6730,7 +6765,33 @@ function getPilotCombatRequirement(player){
     required,
     basicsReady,
     title: ready ? 'Restricción del piloto cumplida' : `Piloto exige ${required} cartas en ${MODULE_LABELS[module]}`,
-    detail: `${SUITS[pilot.suit].symbol} ${MODULE_LABELS[module]}: ${current}/${required} · ${basicsText}`
+      detail: `${SUITS[pilot.suit].symbol} ${MODULE_LABELS[module]}: ${current}/${required} · ${basicsText}`
+  };
+}
+function getPlayerPanelPriorityNotice(player, idx){
+  if(!player || idx !== state.currentPlayer) return null;
+  if(state.pendingDefense || state.winner || state.transitionLock) return null;
+  if(state.attackMode || state.projectileMode) return null;
+  if(isAiControlledPlayer(idx)) return null;
+
+  const attackPlan = aiChooseBestAttackPlan(player, 'easy');
+  const modifyPlan = aiFindEasyModifySelection(player);
+  const drawCard = aiChooseDiamondDrawCard(player, 'easy', attackPlan, modifyPlan);
+  const figureBurstReady = hasFigureBurstCondition(player);
+  const hasPlayableAction = !!(
+    attackPlan ||
+    (modifyPlan && Array.isArray(modifyPlan.selected) && modifyPlan.selected.length) ||
+    drawCard ||
+    figureBurstReady
+  );
+  if(hasPlayableAction) return null;
+
+  const required = Math.min(2, player.hand.length);
+  if(required <= 0) return null;
+
+  return {
+    title: 'Puedes pasar el turno',
+    detail: `Si no puedes hacer nada más en este turno, selecciona ${required} carta(s) de tu mano y pulsa Pasar.`
   };
 }
 function syncMilestones(playerIdx){
@@ -8409,7 +8470,10 @@ function createPlayerPanel(player, idx){
   const isDefenseFocus = !!state.pendingDefense && idx===state.pendingDefense.defenderIndex;
   const isInteractiveDefenseFocus = !!state.pendingDefense && getInteractivePlayerIndex() === state.pendingDefense.defenderIndex && idx===state.pendingDefense.defenderIndex;
   const selectedDefenseCard = isInteractiveDefenseFocus && state.selected.length===1 && isNumericDiamondCard(state.selected[0]) ? state.selected[0] : null;
-  const handSummary = shouldHideHandForPlayer(idx) ? `${player.hand.length} oculta` : `${player.hand.length} cartas`;
+  const handSummary = getHandSummary(player, idx);
+  const priorityNotice = getPlayerPanelPriorityNotice(player, idx);
+  const pilotLockTitle = priorityNotice ? priorityNotice.title : pilotReq.title;
+  const pilotLockDetail = priorityNotice ? priorityNotice.detail : pilotReq.detail;
   const panelStatus = isDefenseFocus
     ? 'Ventana de defensa'
     : isAiControlledPlayer(idx) && active
@@ -8476,8 +8540,8 @@ function createPlayerPanel(player, idx){
         </div>
         <div class="frame pilot-lock ${pilotReq.ready ? 'ready' : 'blocked'}">
           <div class="label">Bloqueo de piloto</div>
-          <div class="value">${pilotReq.title}</div>
-          <div class="sub">${pilotReq.detail}</div>
+          <div class="value">${pilotLockTitle}</div>
+          <div class="sub">${pilotLockDetail}</div>
         </div>
       </div>
 
@@ -9974,6 +10038,7 @@ function requestNewGame(){
 document.getElementById('newGameBtn').addEventListener('click', requestNewGame);
 document.getElementById('returnHomeBtn').addEventListener('click', returnToMainMenu);
 document.getElementById('saveGameBtn').addEventListener('click', requestSaveGame);
+document.getElementById('olWaitingSaveBtn').addEventListener('click', requestOnlineWaitingSave);
 document.getElementById('loadGameBtn').addEventListener('click', requestLoadGame);
 document.getElementById('toggleTutorialBtn').addEventListener('click', () => {
   if(tutorialSystem.enabled && !tutorialSystem.completed){
@@ -11705,6 +11770,11 @@ function olConvertCardIdsToObjects(cardIds, zone) {
 
 function olProcessGuestAction(action) {
   switch (action.type) {
+    case 'requestSave':
+      log(`📡 ${state.players[1]?.name || _ol.opponentNick || 'El guest'} solicita un guardado de la partida.`);
+      addToast('Solicitud de guardado recibida', 'warn');
+      requestSaveGame();
+      break;
     case 'modifyMecha':
       state.selected = olConvertCardIdsToObjects(action.selected) || [];
       modifyMecha();
@@ -11871,12 +11941,48 @@ function olUpdateWaitingIntel() {
   armorSub.textContent = armorCards.length + (armorCards.length === 1 ? ' carta' : ' cartas');
 }
 
+function syncOnlineWaitingSaveUi() {
+  var btn = document.getElementById('olWaitingSaveBtn');
+  var note = document.getElementById('olWaitingSaveNote');
+  var actions = document.getElementById('olWaitingActions');
+  if (!btn || !note || !actions) return;
+
+  if (!_ol.active) {
+    btn.disabled = true;
+    btn.textContent = 'Salvar partida';
+    actions.classList.add('ol-hidden');
+    note.classList.add('ol-hidden');
+    return;
+  }
+
+  var support = getSaveSupportState();
+  var canSaveOnline = _ol.role === 'host' && support.allowed;
+
+  if (_ol.role === 'host') {
+    btn.textContent = 'Salvar partida';
+    btn.disabled = !canSaveOnline;
+    actions.classList.remove('ol-hidden');
+    note.classList.remove('ol-hidden');
+    note.textContent = canSaveOnline
+      ? 'Como host puedes salvar la partida incluso mientras esperas. El codigo conserva el estado completo de la sala.'
+      : (support.reason || 'Ahora mismo no se puede salvar la partida.');
+    return;
+  }
+
+  btn.textContent = 'Solicitar guardado al host';
+  btn.disabled = false;
+  actions.classList.remove('ol-hidden');
+  note.classList.remove('ol-hidden');
+  note.textContent = 'El host generara el codigo de salvado autoritativo. El guest no puede guardarlo localmente porque no conserva la mano oculta rival.';
+}
+
 function olUpdateWaitingUI() {
   if (!_ol.active) return;
   var veil = document.getElementById('olWaitingVeil');
   if (!veil) return;
   var myTurn = olIsMyTurn();
   olUpdateWaitingIntel();
+  syncOnlineWaitingSaveUi();
   if(Date.now() < olWaitingRevealBlockedUntil){
     veil.classList.add('ol-hidden');
     return;

@@ -282,117 +282,280 @@
     }
 
     .workspace{
-      width:min(1500px, calc(100% - 28px));
-      margin:0 auto;
-      border-radius:var(--radius-xl);
-      padding:20px;
+      width:100%;
+      min-height:100svh;
+      margin:0;
+      border-radius:0;
+      border-left:0;
+      border-right:0;
+      padding:0;
       display:none;
-      gap:16px;
-      background:linear-gradient(180deg, rgba(10,15,23,.96), rgba(6,10,15,.99));
+      background:
+        radial-gradient(circle at 82% 18%, rgba(74,199,227,.13), transparent 16%),
+        radial-gradient(circle at 16% 74%, rgba(255,185,109,.1), transparent 18%),
+        linear-gradient(180deg, rgba(7,11,17,.98), rgba(4,7,11,.995));
     }
-    .workspace.active{display:grid}
-    .workspace-header{
+    .workspace.active{display:block}
+    .story-playfield{
+      position:relative;
+      min-height:100svh;
       display:grid;
-      gap:14px;
+      grid-template-columns:minmax(0,1fr) minmax(360px, 460px);
+      gap:0;
     }
-    .workspace-title{
+    .story-map-shell{
+      position:relative;
+      min-height:100svh;
+      border-right:1px solid rgba(143,244,255,.08);
+      background:
+        linear-gradient(180deg, rgba(6,10,15,.1), rgba(6,10,15,.42)),
+        #05080d;
+      overflow:hidden;
+    }
+    .story-map-shell::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), transparent 12%),
+        linear-gradient(0deg, rgba(5,8,13,.78), transparent 22%);
+      pointer-events:none;
+      z-index:2;
+    }
+    .story-map-frame{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+      background:#05080d;
+    }
+    .story-map-hud{
+      position:absolute;
+      left:clamp(16px, 3vw, 36px);
+      top:clamp(16px, 3vh, 30px);
+      z-index:3;
       display:grid;
-      gap:12px;
-      justify-items:center;
-      text-align:center;
+      gap:10px;
+      max-width:min(44vw, 520px);
     }
-    .workspace-title img{
-      width:min(980px, 100%);
-      filter:drop-shadow(0 20px 30px rgba(0,0,0,.32));
+    .story-kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      width:max-content;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(7,11,17,.76);
+      box-shadow:0 18px 34px rgba(0,0,0,.24);
+      backdrop-filter:blur(10px);
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:#ffe2c0;
     }
-    .workspace-title p{
+    .story-kicker::before{
+      content:"";
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:radial-gradient(circle, #8ff4ff 0%, #4ac7e3 62%, rgba(74,199,227,.2) 100%);
+      box-shadow:0 0 16px rgba(143,244,255,.72);
+    }
+    .story-map-hud p{
       margin:0;
-      max-width:66ch;
-      color:var(--muted);
-      line-height:1.6;
+      max-width:48ch;
+      color:#d8e7f4;
+      font-size:.93rem;
+      line-height:1.58;
+      text-shadow:0 8px 22px rgba(0,0,0,.52);
     }
-
-    .workspace-grid{
+    .story-dialog{
+      position:relative;
+      z-index:3;
+      min-height:100svh;
       display:grid;
-      grid-template-columns:minmax(0,1.18fr) minmax(320px,.82fr);
+      align-content:start;
       gap:16px;
-      align-items:start;
+      padding:clamp(18px, 3vw, 30px);
+      background:
+        linear-gradient(180deg, rgba(22,17,14,.92), rgba(7,11,17,.98));
+      border-left:1px solid rgba(255,255,255,.05);
+      overflow:auto;
     }
-    .workspace-card,
-    .workspace-side,
-    .workspace-note{
-      border-radius:26px;
+    .story-dialog-header{
+      display:grid;
+      gap:10px;
     }
-    .workspace-card,
-    .workspace-side,
-    .workspace-note{
-      padding:18px;
-    }
-    .workspace-card h2,
-    .workspace-side h2,
-    .workspace-note h2{
-      margin:0;
-      font-family:"Arial Black","Impact",sans-serif;
-      font-size:1.08rem;
-      letter-spacing:.05em;
+    .story-dialog-eyebrow{
+      color:#ffcf9d;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.18em;
       text-transform:uppercase;
     }
-    .workspace-card p,
-    .workspace-side p,
-    .workspace-note p{
+    .story-dialog-title{
+      margin:0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:clamp(1.75rem, 2vw, 2.35rem);
+      line-height:1.05;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+    }
+    .story-dialog-lead{
+      margin:0;
+      color:#dce7f3;
+      line-height:1.58;
+      font-size:.96rem;
+    }
+    .story-scene{
+      overflow:hidden;
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#070b10;
+      box-shadow:0 22px 42px rgba(0,0,0,.28);
+    }
+    .story-scene img{
+      width:100%;
+      aspect-ratio:1.22 / 1;
+      object-fit:cover;
+    }
+    .story-meta{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:10px;
+    }
+    .story-chip,
+    .story-type{
+      padding:10px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      font-size:.75rem;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#e7f4ff;
+    }
+    .story-block{
+      padding:14px 15px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.035);
+    }
+    .story-block strong{
+      display:block;
+      color:var(--amber);
+      font-size:.75rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .story-block p{
       margin:8px 0 0;
       color:var(--muted);
       line-height:1.55;
       font-size:.9rem;
     }
-    .map-frame{
-      margin-top:14px;
-      overflow:hidden;
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.06);
-      background:#05080d;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    .story-cast{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
     }
-    .map-frame iframe{
-      width:100%;
-      height:78vh;
-      min-height:760px;
-      border:0;
-      display:block;
-      background:#05080d;
-    }
-
-    .workspace-side{
-      display:grid;
-      gap:14px;
-      background:linear-gradient(180deg, rgba(29,21,16,.95), rgba(9,14,21,.98));
-    }
-    .side-block{
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.06);
-      background:rgba(255,255,255,.03);
-    }
-    .side-block strong{
-      display:block;
-      color:var(--amber);
+    .story-cast span{
+      display:inline-flex;
+      align-items:center;
+      min-height:32px;
+      padding:0 12px;
+      border-radius:999px;
+      background:rgba(143,244,255,.09);
+      border:1px solid rgba(143,244,255,.14);
+      color:#dff8ff;
       font-size:.78rem;
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+    .story-dialogue{
+      color:#ffe7ca;
+      font-style:italic;
+    }
+    .lab-toggle{
+      position:absolute;
+      left:clamp(16px, 3vw, 36px);
+      bottom:clamp(56px, 8vh, 94px);
+      z-index:4;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:40px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(8,13,19,.76);
+      color:#eaf8ff;
+      font-size:.74rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      backdrop-filter:blur(12px);
+      box-shadow:0 16px 30px rgba(0,0,0,.24);
+      cursor:pointer;
+    }
+    .lab-drawer{
+      position:absolute;
+      left:clamp(16px, 3vw, 36px);
+      bottom:clamp(104px, 13vh, 142px);
+      z-index:4;
+      width:min(420px, calc(100vw - 32px));
+      display:grid;
+      gap:12px;
+      padding:16px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(7,11,17,.84);
+      box-shadow:0 26px 50px rgba(0,0,0,.28);
+      backdrop-filter:blur(16px);
+    }
+    .lab-drawer[hidden]{display:none}
+    .lab-drawer h2{
+      margin:0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:1rem;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+    }
+    .lab-drawer p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.52;
+      font-size:.88rem;
+    }
+    .lab-list{
+      display:grid;
+      gap:10px;
+    }
+    .lab-item{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.035);
+    }
+    .lab-item strong{
+      display:block;
+      color:#ffe2c0;
+      font-size:.75rem;
       letter-spacing:.1em;
       text-transform:uppercase;
     }
-    .side-block span{
+    .lab-item span{
       display:block;
-      margin-top:7px;
+      margin-top:6px;
       color:var(--muted);
-      font-size:.86rem;
-      line-height:1.5;
+      font-size:.85rem;
+      line-height:1.45;
     }
-    .workspace-note{
-      background:rgba(255,185,109,.08);
-      border-color:rgba(255,185,109,.18);
-      color:#ffe7ca;
-    }
-    .workspace-note p{color:#ffe7ca}
 
     .bottom-back{
       position:fixed;
@@ -426,8 +589,21 @@
     }
 
     @media (max-width:1180px){
-      .workspace-grid{grid-template-columns:1fr}
-      .map-frame iframe{height:68vh;min-height:620px}
+      .story-playfield{grid-template-columns:1fr}
+      .story-dialog{
+        min-height:auto;
+        max-height:42svh;
+        border-left:0;
+        border-top:1px solid rgba(255,255,255,.05);
+      }
+      .story-map-shell{
+        min-height:58svh;
+        border-right:0;
+      }
+      .story-map-frame{
+        min-height:58svh;
+      }
+      .story-map-hud{max-width:min(78vw, 560px)}
     }
     @media (orientation:portrait){
       .title-art-wrap{
@@ -467,20 +643,34 @@
     }
     @media (max-width:760px){
       .page-shell{padding:0 0 24px}
-      .workspace,
-      .workspace-card,
-      .workspace-side,
-      .workspace-note{
-        border-radius:22px;
+      .story-map-shell{min-height:56svh}
+      .story-map-hud{
+        left:16px;
+        top:16px;
+        max-width:calc(100vw - 32px);
       }
-      .workspace,
-      .workspace-card,
-      .workspace-side,
-      .workspace-note{
+      .story-map-hud p{
+        max-width:34ch;
+        font-size:.86rem;
+      }
+      .story-dialog{
         padding:16px;
+        max-height:48svh;
       }
-      .workspace{
-        width:min(100% - 16px, 100%);
+      .story-dialog-title{
+        font-size:1.42rem;
+      }
+      .story-meta{
+        grid-template-columns:1fr;
+      }
+      .lab-toggle{
+        left:16px;
+        bottom:66px;
+      }
+      .lab-drawer{
+        left:16px;
+        bottom:116px;
+        width:calc(100vw - 32px);
       }
       .title-image{
         object-fit:contain;
@@ -489,7 +679,6 @@
       .title-overlay{
         padding:28px 16px max(12svh, 86px);
       }
-      .map-frame iframe{height:58vh;min-height:420px}
       .bottom-back{bottom:12px}
     }
   </style>
@@ -515,42 +704,80 @@
     </section>
 
     <section class="workspace" id="workspacePanel">
-      <div class="workspace-header">
-        <div class="workspace-title">
-          <img src="assets/Historia/Brutos/TituloARIIBA.png" alt="Camino de PoCoBOT" loading="lazy">
-          <p>Debajo del emblema queda el mapa interactivo, que ya pasa a ser el verdadero suelo del modo historia. Todo lo que diseñemos a partir de ahora crecerá sobre esta ruta.</p>
-        </div>
-      </div>
+      <div class="story-playfield">
+        <section class="story-map-shell">
+          <iframe
+            class="story-map-frame"
+            id="storyMapFrame"
+            title="Mapa interactivo inmersivo del modo historia"
+            src="pocobot_mapa_interactivo.html"></iframe>
 
-      <div class="workspace-grid">
-        <article class="workspace-card">
-          <h2>Mapa interactivo del Boceto</h2>
-          <p>Esta es la base sobre la que vamos a escribir escenas, conectar capítulos y sentir el viaje completo de la Ruta Ceniza.</p>
-          <div class="map-frame">
-            <iframe title="Mapa interactivo del boceto de historia" src="pocobot_mapa_interactivo.html"></iframe>
+          <div class="story-map-hud">
+            <span class="story-kicker">Camino de PoCoBOT</span>
+            <p>Explora la Ruta Ceniza. Cada parada activa un fragmento del viaje y va definiendo la verdadera alma del mundo de PoCoBOT.</p>
           </div>
-        </article>
 
-        <aside class="workspace-side">
-          <div>
-            <h2>Punto de arranque</h2>
-            <p>Ya no estamos en un simple panel de estudio. Este espacio es la puerta buena del modo historia: título, entrada y mapa operativo.</p>
+          <button class="lab-toggle" id="labToggleBtn" type="button" aria-expanded="false" aria-controls="labDrawer">Laboratorio</button>
+
+          <aside class="lab-drawer" id="labDrawer" hidden>
+            <h2>Laboratorio de Boceto</h2>
+            <p>Esta capa mantiene la base de programación y diseño sin competir con la inmersión del mapa. La versión final prescindirá de ella, pero aquí nos sigue sirviendo para construir con criterio.</p>
+            <div class="lab-list">
+              <div class="lab-item">
+                <strong>Base visual</strong>
+                <span><code>TituloARIIBA.png</code>, <code>pocobot_mapa_interactivo.html</code> y los escenarios de <code>assets/Historia</code> siguen siendo la referencia viva.</span>
+              </div>
+              <div class="lab-item">
+                <strong>Base narrativa</strong>
+                <span>La ruta, los protagonistas y el conflicto de Argós se siguen modelando a partir de la biblia de lore y de los nodos ya sembrados.</span>
+              </div>
+              <div class="lab-item">
+                <strong>Próximo paso</strong>
+                <span>Convertir <code>Hangar de la Fosa Azul</code> en la primera escena interactiva real, ya conectada a este panel.</span>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <aside class="story-dialog" id="storyDialogPanel">
+          <div class="story-dialog-header">
+            <span class="story-dialog-eyebrow" id="storyDialogOrder">Capítulo 1 · Ruta Ceniza</span>
+            <h2 class="story-dialog-title" id="storyDialogTitle">Hangar de la Fosa Azul</h2>
+            <p class="story-dialog-lead" id="storyDialogLead">Briefing de arranque. Aquí definimos qué es un mecha, la necesidad de montaje y el tono del refugio técnico.</p>
           </div>
-          <div class="side-block">
-            <strong>Base visual</strong>
-            <span><code>Titulo1.png</code> funciona como portada ceremonial de entrada, y <code>TituloARIIBA.png</code> ya encabeza la zona de trabajo real.</span>
+
+          <div class="story-scene">
+            <img id="storyDialogScene" src="assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG" alt="Escenario del capítulo actual" loading="lazy">
           </div>
-          <div class="side-block">
-            <strong>Base narrativa</strong>
-            <span><code>assets/Historia</code> sigue siendo la raíz oficial para retratos, localizaciones, audio, lore y futuros datos de campaña.</span>
+
+          <div class="story-meta">
+            <div class="story-chip" id="storyDialogChip">Construcción</div>
+            <div class="story-type" id="storyDialogType">Briefing</div>
           </div>
-          <div class="side-block">
-            <strong>Próximo paso natural</strong>
-            <span>Construir el <code>Capítulo 1 · Hangar de la Fosa Azul</code> como la primera escena real, ya dentro de esta ruta.</span>
+
+          <div class="story-block">
+            <strong>Misión</strong>
+            <p id="storyDialogMission">Construir un bot válido para un NPC.</p>
           </div>
-          <div class="workspace-note">
-            <h2>Importante</h2>
-            <p>Esta página sigue siendo oculta y de desarrollo. La moveremos al circuito principal solo cuando el bloque esté sólido de verdad.</p>
+
+          <div class="story-block">
+            <strong>Qué enseña</strong>
+            <p id="storyDialogLearn">Piloto, módulos y condición de mecha montado.</p>
+          </div>
+
+          <div class="story-block">
+            <strong>Tensión</strong>
+            <p id="storyDialogTension">Todo arranca desde el oficio: ensamblar antes de merecer pilotar.</p>
+          </div>
+
+          <div class="story-block">
+            <strong>Reparto</strong>
+            <div class="story-cast" id="storyDialogCast"></div>
+          </div>
+
+          <div class="story-block">
+            <strong>Diálogo</strong>
+            <p class="story-dialogue" id="storyDialogQuote">“Si no sabes ensamblarlo, tampoco sabrás salvarlo.”</p>
           </div>
         </aside>
       </div>
@@ -572,6 +799,20 @@
     const enterStoryBtn = document.getElementById('enterStoryBtn');
     const workspacePanel = document.getElementById('workspacePanel');
     const storyMapMusic = document.getElementById('storyMapMusic');
+    const storyMapFrame = document.getElementById('storyMapFrame');
+    const labToggleBtn = document.getElementById('labToggleBtn');
+    const labDrawer = document.getElementById('labDrawer');
+    const storyDialogOrder = document.getElementById('storyDialogOrder');
+    const storyDialogTitle = document.getElementById('storyDialogTitle');
+    const storyDialogLead = document.getElementById('storyDialogLead');
+    const storyDialogScene = document.getElementById('storyDialogScene');
+    const storyDialogChip = document.getElementById('storyDialogChip');
+    const storyDialogType = document.getElementById('storyDialogType');
+    const storyDialogMission = document.getElementById('storyDialogMission');
+    const storyDialogLearn = document.getElementById('storyDialogLearn');
+    const storyDialogTension = document.getElementById('storyDialogTension');
+    const storyDialogCast = document.getElementById('storyDialogCast');
+    const storyDialogQuote = document.getElementById('storyDialogQuote');
 
     let glowTick = 0;
     let manualGlowTimeout = null;
@@ -582,6 +823,7 @@
     let titleAudioCtx = null;
     let titleAudioMaster = null;
     let titleAudioDelayInput = null;
+    let currentStoryNodeId = 'hangar';
 
     if (storyMapMusic) {
       storyMapMusic.volume = 0.34;
@@ -621,6 +863,183 @@
     }
 
     requestStoryAudioPriority();
+
+    const storyDraftNodes = {
+      hangar: {
+        id: 'hangar',
+        order: 1,
+        title: 'Hangar de la Fosa Azul',
+        type: 'Briefing',
+        sceneChip: 'Construcción',
+        image: 'assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG',
+        lead: 'Briefing de arranque. Aquí definimos qué es un mecha, la necesidad de montaje y el tono del refugio técnico.',
+        mission: 'Construir un bot válido para un NPC.',
+        learn: 'Piloto, módulos y condición de mecha montado.',
+        tension: 'Todo arranca desde el oficio: ensamblar antes de merecer pilotar.',
+        dialogue: '“Si no sabes ensamblarlo, tampoco sabrás salvarlo.”',
+        cast: ['Mara Oxido']
+      },
+      patio: {
+        id: 'patio',
+        order: 2,
+        title: 'Patio de Pruebas del Taller',
+        type: 'Combate',
+        sceneChip: 'Tutorial',
+        image: 'assets/Historia/Brutos/2PATIO DE PRUEBAS DEL TALLER.PNG',
+        lead: 'Primer combate funcional. Aquí el jugador ve que el bot responde y que construir bien importa.',
+        mission: 'Ganar el combate tutorializado.',
+        learn: 'Ataque con combustible y orden del turno.',
+        tension: 'La historia deja de ser promesa y se convierte en prueba visible.',
+        dialogue: '“No me interesa que pegues fuerte. Me interesa que pegues cuando toca.”',
+        cast: ['Mara Oxido']
+      },
+      mercado: {
+        id: 'mercado',
+        order: 3,
+        title: 'Mercado de Relés Muertos',
+        type: 'Encuentro',
+        sceneChip: 'Encargo',
+        image: 'assets/Historia/Brutos/3MERCADO_RELES_MUERTOS.PNG',
+        lead: 'Se abre el mundo. Encargo, chatarra, información y sensación de economía de supervivencia.',
+        mission: 'Montar defensa y armadura mínimas en turnos limitados.',
+        learn: 'Decisiones de montaje bajo restricción.',
+        tension: 'La ruta deja el taller y entra en un mundo donde todo vale si aguanta.',
+        dialogue: '“La chatarra no miente: o aguanta, o te mata.”',
+        cast: ['Vera Hex']
+      },
+      torre: {
+        id: 'torre',
+        order: 4,
+        title: 'Torre de Seguimiento 4B',
+        type: 'Prueba táctica',
+        sceneChip: 'Proyectil',
+        image: 'assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG',
+        lead: 'Primer nodo claramente vinculado a Argós. Buen lugar para la misión de proyectil y para subir misterio.',
+        mission: 'Lanzar al menos un proyectil para completar el nodo.',
+        learn: 'Activación de proyectiles y timing ofensivo.',
+        tension: 'La infraestructura vieja de Argós empieza a mirar al jugador de vuelta.',
+        dialogue: '“No todos los disparos son para matar. Algunos son para abrir puertas.”',
+        cast: ['Mara Oxido', 'Vera Hex']
+      },
+      campamento: {
+        id: 'campamento',
+        order: 5,
+        title: 'Campamento de las Placas Rojas',
+        type: 'Diálogo',
+        sceneChip: 'Veteranos',
+        image: 'assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG',
+        lead: 'Pausa de personaje. Memoria de la guerra, tono humano y aparición de criterio moral.',
+        mission: 'Evento narrativo corto con recompensa de contexto.',
+        learn: 'Tono del mundo y rivalidad futura.',
+        tension: 'La ruta se humaniza justo antes de endurecerse de verdad.',
+        dialogue: '“Los novatos montan armas. Los supervivientes montan márgenes.”',
+        cast: ['Corvo Vanta']
+      },
+      foso: {
+        id: 'foso',
+        order: 6,
+        title: 'Foso de Viento Negro',
+        type: 'Combate',
+        sceneChip: 'Defensa activa',
+        image: 'assets/Historia/Brutos/6FOSO DE VIENTO NEGRO.PNG',
+        lead: 'Terreno hostil ideal para defensa activa, emboscada y lectura de peligro real.',
+        mission: 'Mitigar un ataque usando diamantes en mano.',
+        learn: 'Defensa activa y gestión táctica del daño.',
+        tension: 'El mundo ataca primero y obliga a leer el peligro antes de poder responder.',
+        dialogue: '“El metal siempre avisa antes de partirse. Escúchalo.”',
+        cast: ['Corvo Vanta']
+      },
+      subestacion: {
+        id: 'subestacion',
+        order: 7,
+        title: 'Subestación de Ceniza',
+        type: 'Reconfiguración',
+        sceneChip: 'Tripulación',
+        image: 'assets/Historia/Brutos/7SUBESTACIÓN DE CENIZA.PNG',
+        lead: 'Reconfiguración del bot y coste táctico. Buen nodo para jugar con tripulación y cambio de límites.',
+        mission: 'Completar una reconfiguración válida sin romper límites.',
+        learn: 'Piloto, copiloto y descarte por exceso.',
+        tension: 'Aquí el jugador entiende que cambiar la forma del bot siempre tiene precio.',
+        dialogue: '“La máquina no discute. Si cambias la forma, pagas el coste.”',
+        cast: ['Mara Oxido', 'Vera Hex']
+      },
+      puente: {
+        id: 'puente',
+        order: 8,
+        title: 'Puente de los Relámpagos Quietos',
+        type: 'Combate',
+        sceneChip: 'Duelo',
+        image: 'assets/Historia/Brutos/8PUENTE DE LOS RELÁMPAGOS QUIETOS.PNG',
+        lead: 'Duelo de criterio. Ya no es aprender: aquí el jugador debe demostrar que domina la tensión táctica.',
+        mission: 'Vencer a un rival táctico de media dificultad.',
+        learn: 'Lectura de amenaza y presión sostenida.',
+        tension: 'Corvo deja de ser sombra narrativa y se convierte en examen vivo.',
+        dialogue: '“Si consigues cruzar este puente, quizá merezcas llegar al final.”',
+        cast: ['Corvo Vanta']
+      },
+      cupula: {
+        id: 'cupula',
+        order: 9,
+        title: 'Cúpula Hendida de Argós',
+        type: 'Aproximación final',
+        sceneChip: 'Revelación',
+        image: 'assets/Historia/Brutos/9EXTERIOR_CUPULA_HENDIDA_DE_ARGOS.PNG',
+        lead: 'Entrada al territorio del mito real. Revelación, escala y umbral narrativo antes del cierre.',
+        mission: 'Atravesar el umbral de Argós y preparar el duelo final.',
+        learn: 'Escala del conflicto y cierre de la ruta.',
+        tension: 'La ruta deja de ser supervivencia y se vuelve ceremonia de acceso a algo mayor.',
+        dialogue: '“No buscábamos fuerza. Buscábamos a quien supiera no desperdiciarla.”',
+        cast: ['Corvo Vanta', 'Custodio de Argos']
+      },
+      protocolo: {
+        id: 'protocolo',
+        order: 10,
+        title: 'Protocolo Ceniza',
+        type: 'Cierre',
+        sceneChip: 'Desbloqueo',
+        image: 'assets/Historia/Brutos/9BINTERIOR DE LA CÚPULA HENDIDA DE ARGÓS.PNG',
+        lead: 'Resolución y desbloqueo. El final del viaje debe sentirse como examen y herencia del mundo anterior.',
+        mission: 'Activar SUPER DIFÍCIL en 1 jugador.',
+        learn: 'Cierre sobrio, merecido y con sensación de rango.',
+        tension: 'Todo converge en la pregunta final: quién merece operar lo que queda del viejo mundo.',
+        dialogue: '“Bienvenido a la carretera real. Ahora empieza la parte seria.”',
+        cast: ['Custodio de Argos']
+      }
+    };
+
+    function renderStoryCast(cast) {
+      storyDialogCast.innerHTML = '';
+      cast.forEach((name) => {
+        const pill = document.createElement('span');
+        pill.textContent = name;
+        storyDialogCast.appendChild(pill);
+      });
+    }
+
+    function renderStoryNode(nodeId, incomingNode = {}) {
+      const localNode = storyDraftNodes[nodeId] || storyDraftNodes.hangar;
+      currentStoryNodeId = localNode.id;
+      storyDialogOrder.textContent = `Capítulo ${localNode.order} · Ruta Ceniza`;
+      storyDialogTitle.textContent = localNode.title;
+      storyDialogLead.textContent = localNode.lead;
+      storyDialogScene.src = localNode.image;
+      storyDialogScene.alt = localNode.title;
+      storyDialogChip.textContent = localNode.sceneChip || incomingNode.subtype || 'Boceto';
+      storyDialogType.textContent = incomingNode.type || localNode.type;
+      storyDialogMission.textContent = incomingNode.mission || localNode.mission;
+      storyDialogLearn.textContent = incomingNode.learn || localNode.learn;
+      storyDialogTension.textContent = localNode.tension;
+      storyDialogQuote.textContent = incomingNode.dialogue || localNode.dialogue;
+      renderStoryCast(localNode.cast);
+    }
+
+    function postNodeSelectionToMap(nodeId) {
+      if (!storyMapFrame || !storyMapFrame.contentWindow) return;
+      storyMapFrame.contentWindow.postMessage({
+        type: 'pocobot-story-map-select',
+        id: nodeId
+      }, '*');
+    }
 
     const TITLE_THEME = [
       {
@@ -871,8 +1290,10 @@
       document.documentElement.style.setProperty('--enter-shift', '-3px');
       document.documentElement.style.setProperty('--enter-scale', '1.012');
       playMapMusic();
+      renderStoryNode(currentStoryNodeId);
       setTimeout(() => {
         workspacePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        postNodeSelectionToMap(currentStoryNodeId);
       }, 80);
     }
 
@@ -887,6 +1308,15 @@
     }
 
     enterStoryBtn.addEventListener('click', showWorkspace);
+    labToggleBtn.addEventListener('click', () => {
+      const opening = labDrawer.hasAttribute('hidden');
+      if (opening) {
+        labDrawer.removeAttribute('hidden');
+      } else {
+        labDrawer.setAttribute('hidden', '');
+      }
+      labToggleBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+    });
     titleStage.addEventListener('pointerdown', () => {
       if (workspacePanel.classList.contains('active')) return;
       startTitleMusic();
@@ -901,10 +1331,23 @@
       playMapMusic();
     }, { passive: true });
 
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || data.type !== 'pocobot-story-map-selection' || !data.node || !data.node.id) return;
+      renderStoryNode(data.node.id, data.node);
+    });
+
+    if (storyMapFrame) {
+      storyMapFrame.addEventListener('load', () => {
+        postNodeSelectionToMap(currentStoryNodeId);
+      });
+    }
+
     animateAmbientGlow();
     window.setTimeout(() => {
       if (!workspacePanel.classList.contains('active')) startTitleMusic();
     }, 220);
+    renderStoryNode(currentStoryNodeId);
   </script>
 </body>
 </html>
