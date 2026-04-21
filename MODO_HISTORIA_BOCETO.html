@@ -1254,6 +1254,32 @@
       font-size:.92rem;
       line-height:1.56;
     }
+    .mission-tip{
+      display:grid;
+      gap:6px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid rgba(143,244,255,.18);
+      background:
+        linear-gradient(180deg, rgba(12,21,30,.92), rgba(8,13,19,.92)),
+        radial-gradient(circle at 10% 18%, rgba(143,244,255,.08), transparent 22%);
+      box-shadow:
+        inset 0 0 0 1px rgba(143,244,255,.06),
+        0 18px 32px rgba(0,0,0,.22);
+    }
+    .mission-tip-label{
+      color:#8ff4ff;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .mission-tip-copy{
+      margin:0;
+      color:#f1f7fb;
+      font-size:.96rem;
+      line-height:1.58;
+    }
     .mission-actions{
       display:flex;
       flex-wrap:wrap;
@@ -1505,7 +1531,7 @@
         width:min(320px, 100%);
       }
     }
-    @media (max-width:760px){
+    @media (max-width:760px) and (orientation:portrait){
       .page-shell{padding:0 0 24px}
       .story-playfield{min-height:100svh}
       .story-map-shell{
@@ -1660,7 +1686,7 @@
       <div class="title-shell">
         <div class="title-art-wrap" id="titleArtWrap">
           <picture class="title-picture">
-            <source media="(max-width: 900px) and (orientation: portrait)" srcset="assets/Historia/Brutos/TituloSmartphone1.png">
+            <source media="(orientation: portrait)" srcset="assets/Historia/Brutos/TituloSmartphone1.png">
             <img class="title-image" src="assets/Historia/Brutos/Titulo1.PNG" alt="Titulo de Camino de PoCoBOT" loading="eager">
           </picture>
           <div class="title-overlay">
@@ -1777,6 +1803,10 @@
                 <span class="mission-chip" id="storyMissionChip">Misión de construcción</span>
                 <h2 class="mission-title" id="storyMissionTitle">Taller de la Fosa Azul</h2>
                 <p class="mission-copy" id="storyMissionCopy">Mara ya ha hablado. Ahora toca pasar del relato al metal y construir un bot válido dentro del taller.</p>
+                <aside class="mission-tip" id="storyMissionTip">
+                  <span class="mission-tip-label">Definicion de mecha</span>
+                  <p class="mission-tip-copy">Un mecha valido para PoCoBOT necesita al menos <strong>6 cartas</strong> repartidas entre <strong>Ataque, Defensa y Armadura</strong>, y al menos <strong>1 Piloto</strong>.</p>
+                </aside>
                 <div class="mission-actions">
                   <button class="scene-btn secondary" id="storyMissionMapBtn" type="button">Volver al mapa</button>
                   <button class="scene-btn secondary" id="storyMissionRestartBtn" type="button">Reiniciar misión</button>
@@ -1849,6 +1879,7 @@
     const storyMissionChip = document.getElementById('storyMissionChip');
     const storyMissionTitle = document.getElementById('storyMissionTitle');
     const storyMissionCopy = document.getElementById('storyMissionCopy');
+    const storyMissionTip = document.getElementById('storyMissionTip');
     const storyMissionMapBtn = document.getElementById('storyMissionMapBtn');
     const storyMissionRestartBtn = document.getElementById('storyMissionRestartBtn');
     const storyMissionFrame = document.getElementById('storyMissionFrame');
@@ -1920,6 +1951,10 @@
       } catch (error) {}
     }
 
+    function isPortraitStoryLayout() {
+      return window.matchMedia('(orientation: portrait)').matches;
+    }
+
     function bindStoryUiSfx(button, options = {}) {
       if (!button || button.dataset.storyUiSfxBound === '1') return;
       const clickKind = options.clickKind || 'click';
@@ -1967,7 +2002,7 @@
       if (!asset) return '';
       if (typeof asset === 'string') return asset;
       if (typeof asset === 'object') {
-        const useMobileAsset = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
+        const useMobileAsset = isPortraitStoryLayout();
         if (useMobileAsset && asset.mobile) return asset.mobile;
         return asset.desktop || asset.mobile || '';
       }
@@ -2436,6 +2471,7 @@
         chip: 'Carrera de ensamblaje',
         title: 'Taller de la Fosa Azul',
         copy: 'Monta tu PoCoBOT hasta dejarlo listo para atacar antes que Mara Óxido. Ella ensamblará en paralelo, y si llega antes, la prueba se pierde.',
+        tip: 'Un mecha valido para PoCoBOT necesita al menos <strong>6 cartas</strong> repartidas entre <strong>Ataque, Defensa y Armadura</strong>, y al menos <strong>1 Piloto</strong>.',
         url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race&story_embed=1&story_audio=external'
       }
     };
@@ -2493,7 +2529,7 @@
     }
 
     function isMobileStoryRouteMode() {
-      return window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
+      return isPortraitStoryLayout();
     }
 
     function setStoryCompletedCount(nextCompletedCount, options = {}) {
@@ -2849,6 +2885,11 @@
       if (storyMissionChip) storyMissionChip.textContent = mission.chip;
       if (storyMissionTitle) storyMissionTitle.textContent = mission.title;
       if (storyMissionCopy) storyMissionCopy.textContent = mission.copy;
+      if (storyMissionTip) {
+        const tipCopy = storyMissionTip.querySelector('.mission-tip-copy');
+        if (tipCopy) tipCopy.innerHTML = mission.tip || '';
+        storyMissionTip.hidden = !mission.tip;
+      }
       if (storyMissionFrame) {
         storyMissionFrame.src = mission.url;
       }
@@ -2915,6 +2956,16 @@
           storyMapFrame.contentWindow.scrollTo(0, 0);
         }
       } catch (error) {}
+    }
+
+    function handleStoryViewportChange() {
+      syncTitleLowBackdrop();
+      renderMobileRoute();
+      if (!workspacePanel.classList.contains('active')) return;
+      if (!isMobileStoryRouteMode()) {
+        resetStoryMapViewport();
+      }
+      syncStoryMapState();
     }
 
     function postNodeSelectionToMap(nodeId) {
@@ -3325,8 +3376,8 @@
     }
 
     primeTitleArtwork();
-    window.addEventListener('resize', syncTitleLowBackdrop);
-    window.addEventListener('orientationchange', syncTitleLowBackdrop);
+    window.addEventListener('resize', handleStoryViewportChange);
+    window.addEventListener('orientationchange', handleStoryViewportChange);
     animateAmbientGlow();
     window.setTimeout(() => {
       if (!workspacePanel.classList.contains('active')) startTitleMusic();
