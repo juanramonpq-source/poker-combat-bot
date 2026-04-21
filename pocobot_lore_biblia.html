@@ -6,61 +6,69 @@
   <title>Camino de PoCoBOT — Biblia de Lore</title>
   <style>
     :root{
+      --bg:#080d12; --panel:#121922; --panel2:#0e141c; --line:rgba(114,220,255,.14);
       --cyan:#72dcff; --cyan2:#9ef2ff; --amber:#ffb56b; --text:#eaf4f8; --muted:#9cb0bc;
-      --shadow:0 18px 50px rgba(0,0,0,.45); --max:1400px;
+      --shadow:0 22px 60px rgba(0,0,0,.45); --max:1500px;
     }
     *{box-sizing:border-box} html{scroll-behavior:smooth}
-    body{
-      margin:0; color:var(--text); font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:
-        radial-gradient(circle at top right, rgba(114,220,255,.10), transparent 22%),
-        radial-gradient(circle at bottom left, rgba(255,181,107,.08), transparent 20%),
-        linear-gradient(180deg, #090d11 0%, #0a0f13 100%);
-      min-height:100vh;
-    }
-    .shell{display:grid; grid-template-columns:320px minmax(0,1fr); gap:20px; max-width:var(--max); margin:0 auto; padding:18px;}
-    .sidebar{
-      position:sticky; top:18px; align-self:start; max-height:calc(100vh - 36px); overflow:auto;
-      border:1px solid rgba(114,220,255,.18); background:linear-gradient(180deg, rgba(13,19,25,.96), rgba(11,16,21,.92));
-      border-radius:24px; box-shadow:var(--shadow); padding:18px; backdrop-filter: blur(10px);
-    }
-    .logo{border:1px solid rgba(114,220,255,.16); background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)), linear-gradient(90deg, rgba(114,220,255,.10), rgba(255,181,107,.06)); border-radius:18px; padding:16px 14px; margin-bottom:16px;}
-    .logo h1{margin:0; font-size:1.15rem; letter-spacing:.08em; text-transform:uppercase;}
-    .logo .bot{color:var(--cyan2); text-shadow:0 0 18px rgba(114,220,255,.35)}
-    .logo p{margin:8px 0 0; color:var(--muted); font-size:.92rem; line-height:1.35}
-    .nav-group{margin:16px 0}.nav-title{font-size:.76rem; color:var(--amber); text-transform:uppercase; letter-spacing:.18em; margin:0 0 8px; padding-left:4px;}
-    .nav{display:grid; gap:8px}
-    .nav a{display:block; text-decoration:none; color:var(--text); background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); padding:10px 12px; border-radius:12px; font-size:.94rem; transition:.18s ease}
-    .nav a:hover{transform:translateY(-1px); border-color:rgba(114,220,255,.28); background:rgba(114,220,255,.08)}
-    .search{width:100%; padding:11px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); color:var(--text); outline:none; margin-bottom:8px;}
+    body{margin:0;color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top right, rgba(114,220,255,.10), transparent 22%),radial-gradient(circle at bottom left, rgba(255,181,107,.08), transparent 20%),linear-gradient(180deg,#090d11 0%,#0a0f13 100%);
+      min-height:100vh;}
+    img{display:block;max-width:100%} a{color:inherit}
+    .shell{display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;max-width:var(--max);margin:0 auto;padding:18px;}
+    .sidebar{position:sticky;top:18px;align-self:start;max-height:calc(100vh - 36px);overflow:auto;border:1px solid rgba(114,220,255,.18);background:linear-gradient(180deg, rgba(13,19,25,.96), rgba(11,16,21,.92));border-radius:24px;box-shadow:var(--shadow);padding:18px;backdrop-filter: blur(10px);}
+    .logo{border:1px solid rgba(114,220,255,.16);background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)), linear-gradient(90deg, rgba(114,220,255,.10), rgba(255,181,107,.06));border-radius:18px;padding:16px 14px;margin-bottom:16px;}
+    .logo h1{margin:0;font-size:1.15rem;letter-spacing:.08em;text-transform:uppercase;}
+    .logo .bot{color:var(--cyan2);text-shadow:0 0 18px rgba(114,220,255,.35)}
+    .logo p{margin:8px 0 0;color:var(--muted);font-size:.92rem;line-height:1.45}
+    .nav-group{margin:16px 0} .nav-title{font-size:.76rem;color:var(--amber);text-transform:uppercase;letter-spacing:.18em;margin:0 0 8px;padding-left:4px;}
+    .nav{display:grid;gap:8px} .nav a{display:block;text-decoration:none;color:var(--text);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:10px 12px;border-radius:12px;font-size:.94rem;transition:.18s ease}
+    .nav a:hover{transform:translateY(-1px);border-color:rgba(114,220,255,.28);background:rgba(114,220,255,.08)}
+    .search{width:100%;padding:11px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--text);outline:none;margin-bottom:8px;}
     .search::placeholder{color:#7d8d97}
-    .main{display:grid; gap:18px}
-    .hero,.card{border:1px solid rgba(114,220,255,.12); border-radius:22px; box-shadow:var(--shadow); overflow:hidden; background:linear-gradient(180deg, rgba(18,26,34,.94), rgba(13,19,25,.94));}
-    .hero{padding:28px; position:relative}
-    .hero h2{margin:0 0 10px; font-size:clamp(1.5rem, 3vw, 2.4rem); text-transform:uppercase}
-    .hero .accent{color:var(--cyan2)} .hero p,.lede,.step p,.location p,td{color:var(--muted); line-height:1.55}
-    .pillrow{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
-    .pill{display:inline-flex; border-radius:999px; padding:7px 10px; font-size:.83rem; border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.03); color:var(--muted);}
-    .card-head{padding:16px 18px; border-bottom:1px solid rgba(255,255,255,.06); background:linear-gradient(90deg, rgba(114,220,255,.08), rgba(255,181,107,.04));}
-    .eyebrow{margin:0 0 6px; color:var(--amber); font-size:.75rem; letter-spacing:.18em; text-transform:uppercase}
-    .card h3{margin:0; font-size:1.25rem; text-transform:uppercase}
-    .card-body{padding:18px}
-    .cols{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px}
-    .sub,.location,.act{border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02); border-radius:16px; padding:14px}
-    .sub h4,.step h4,.location h4,.act h4{margin:0 0 8px; color:var(--cyan2); text-transform:uppercase}
-    .timeline,.location-list{display:grid; gap:12px}
-    .step{border-left:3px solid rgba(114,220,255,.35); padding-left:14px}
-    .meta{color:var(--amber); font-size:.83rem; letter-spacing:.08em; text-transform:uppercase; margin-bottom:10px}
-    .quote{padding:12px 14px; border-left:3px solid rgba(255,181,107,.4); background:rgba(255,181,107,.06); border-radius:0 12px 12px 0; color:#ffe5c7; margin-top:10px; font-style:italic}
-    table{width:100%; border-collapse:collapse; font-size:.95rem}
-    th,td{text-align:left; vertical-align:top; padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.07)}
-    th{color:var(--amber); font-size:.78rem; letter-spacing:.16em; text-transform:uppercase}
-    .footer{color:var(--muted); text-align:center; font-size:.9rem; padding:10px 0 30px}
-    .scrolltop{position:fixed; right:18px; bottom:18px; z-index:20; border:none; background:linear-gradient(180deg, rgba(114,220,255,.18), rgba(114,220,255,.08)); color:var(--text); border:1px solid rgba(114,220,255,.22); box-shadow:var(--shadow); border-radius:999px; width:48px; height:48px; cursor:pointer; display:none;}
-    .scrolltop.show{display:block}
-    mark{background:rgba(255,181,107,.22); color:#fff3df; padding:.1em .2em; border-radius:4px}
-    @media (max-width:1100px){.shell{grid-template-columns:1fr}.sidebar{position:relative;top:auto;max-height:none}}
-    @media (max-width:760px){.cols{grid-template-columns:1fr}.hero{padding:20px}.card-body,.card-head{padding:14px}}
+    .main{display:grid;gap:18px}
+    .hero,.card{border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;background:linear-gradient(180deg, rgba(18,26,34,.96), rgba(13,19,25,.94));}
+    .hero{position:relative;min-height:520px;display:grid;align-items:end;background:linear-gradient(180deg, rgba(5,8,12,.24), rgba(5,8,12,.82)),radial-gradient(circle at 75% 22%, rgba(114,220,255,.16), transparent 20%),radial-gradient(circle at 18% 18%, rgba(255,181,107,.15), transparent 18%),url("assets/Historia/low/titulo1_fondo_ultraligero_1080.webp") center top/cover no-repeat;}
+    .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(255,255,255,.06), transparent 14%),linear-gradient(90deg, rgba(114,220,255,.05), transparent 34%, rgba(255,181,107,.04) 66%, transparent 100%);pointer-events:none}
+    .hero-copy{position:relative;z-index:1;padding:34px 34px 30px;max-width:760px}
+    .hero h2{margin:0 0 12px;font-size:clamp(1.7rem, 4vw, 3rem);text-transform:uppercase;line-height:1.02}
+    .hero .accent{color:var(--cyan2)}
+    .hero p,.lede,.step p,.location p,.act p,td,li{color:var(--muted);line-height:1.62}
+    .kicker{display:inline-flex;align-items:center;gap:10px;min-height:34px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(6,10,15,.62);color:#ffe3c2;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;font-weight:800}
+    .kicker::before{content:"";width:10px;height:10px;border-radius:50%;background:radial-gradient(circle, var(--cyan2), var(--cyan));box-shadow:0 0 18px rgba(114,220,255,.55)}
+    .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .pill{display:inline-flex;border-radius:999px;padding:7px 10px;font-size:.83rem;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);color:var(--muted)}
+    .card-head{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(90deg, rgba(114,220,255,.08), rgba(255,181,107,.04));}
+    .eyebrow{margin:0 0 6px;color:var(--amber);font-size:.75rem;letter-spacing:.18em;text-transform:uppercase}
+    .card h3{margin:0;font-size:1.25rem;text-transform:uppercase} .card-body{padding:18px}
+    .lede{font-size:1.02rem;margin-top:0} .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .sub,.location,.year-card,.portrait-card,.scene-card,.map-card,.faction-card,.substory-card{border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);border-radius:18px;padding:16px;}
+    .sub h4,.step h4,.location h4,.year-card h4,.portrait-card h4,.scene-card h4,.faction-card h4,.substory-card h4{margin:0 0 8px;color:var(--cyan2);text-transform:uppercase}
+    .quote{padding:12px 14px;border-left:3px solid rgba(255,181,107,.4);background:rgba(255,181,107,.06);border-radius:0 12px 12px 0;color:#ffe5c7;margin-top:12px;font-style:italic;line-height:1.55}
+    .timeline{display:grid;gap:12px} .step{border-left:3px solid rgba(114,220,255,.35);padding-left:14px;background:transparent;border-radius:0}
+    .meta{color:var(--amber);font-size:.83rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+    .map-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .map-figure{overflow:hidden;border-radius:18px;border:1px solid rgba(255,255,255,.06);background:#080d12}
+    .map-figure img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:center}
+    .map-caption{padding:12px 14px;color:var(--muted)}
+    .chronology-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .year-card{position:relative;overflow:hidden} .year-card::after{content:"";position:absolute;inset:auto -40px -40px auto;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle, rgba(114,220,255,.12), transparent 70%);pointer-events:none}
+    .year{display:inline-block;margin-bottom:10px;padding:6px 10px;border-radius:999px;background:rgba(114,220,255,.08);border:1px solid rgba(114,220,255,.16);color:var(--cyan2);font-weight:800;letter-spacing:.08em}
+    .portrait-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .portrait-card{display:grid;gap:12px} .portrait-media{height:270px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06);background:radial-gradient(circle at top, rgba(114,220,255,.10), transparent 45%), linear-gradient(180deg, #0d131b, #090d12)}
+    .portrait-media img{width:100%;height:100%;object-fit:contain;object-position:center bottom} .portrait-role{color:var(--amber);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+    .scene-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px} .scene-card{padding:0;overflow:hidden}
+    .scene-media{position:relative;height:220px;overflow:hidden;background:#05080d} .scene-media img{width:100%;height:100%;object-fit:cover;object-position:center}
+    .scene-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(255,255,255,.04), transparent 18%, rgba(5,8,12,.72) 100%)}
+    .scene-copy{padding:15px 16px 16px} .faction-grid,.substory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .symbol-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px} .symbol{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:#d9ebf6;font-size:.8rem}
+    table{width:100%;border-collapse:collapse;font-size:.95rem} th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.07)}
+    th{color:var(--amber);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase} .footer{color:var(--muted);text-align:center;font-size:.9rem;padding:10px 0 30px}
+    .scrolltop{position:fixed;right:18px;bottom:18px;z-index:20;border:none;background:linear-gradient(180deg, rgba(114,220,255,.18), rgba(114,220,255,.08));color:var(--text);border:1px solid rgba(114,220,255,.22);box-shadow:var(--shadow);border-radius:999px;width:48px;height:48px;cursor:pointer;display:none}
+    .scrolltop.show{display:block} mark{background:rgba(255,181,107,.22);color:#fff3df;padding:.1em .2em;border-radius:4px}
+    @media (max-width:1260px){.chronology-grid{grid-template-columns:repeat(2,minmax(0,1fr))} .portrait-grid{grid-template-columns:repeat(2,minmax(0,1fr))} .scene-grid,.faction-grid,.substory-grid{grid-template-columns:repeat(2,minmax(0,1fr))} .map-grid{grid-template-columns:1fr}}
+    @media (max-width:1100px){.shell{grid-template-columns:1fr} .sidebar{position:relative;top:auto;max-height:none}}
+    @media (max-width:760px){.cols,.chronology-grid,.portrait-grid,.scene-grid,.faction-grid,.substory-grid{grid-template-columns:1fr} .hero{min-height:430px} .hero-copy{padding:24px 20px 20px} .card-body,.card-head{padding:14px} .portrait-media{height:240px} .scene-media{height:200px}}
   </style>
 </head>
 <body>
@@ -68,214 +76,164 @@
   <aside class="sidebar">
     <div class="logo">
       <h1>CAMINO DE <span class="bot">PoCoBOT</span></h1>
-      <p>Biblia interactiva de lore, historia, localizaciones y conflicto central del modo historia.</p>
+      <p>Biblia interactiva de lore, cronología, personajes, facciones y escenarios. Ahora conectada visualmente con <strong>assets/Historia</strong>.</p>
     </div>
     <input id="search" class="search" type="search" placeholder="Buscar en el lore..." />
     <div class="nav-group"><p class="nav-title">Visión general</p><div class="nav">
-      <a href="#vision">Resumen del mundo</a><a href="#argos">Qué es Argós</a><a href="#ruta">Qué es la Ruta Ceniza</a><a href="#tema">Tema central</a>
+      <a href="#vision">Resumen del mundo</a><a href="#cartografia">Cartografía</a><a href="#cronologia">Cronología</a><a href="#argos">Argós</a><a href="#ruta">Ruta Ceniza</a>
+    </div></div>
+    <div class="nav-group"><p class="nav-title">Pilares</p><div class="nav">
+      <a href="#pocobot">PoCoBOT y Pento Dream</a><a href="#facciones">Facciones</a><a href="#protagonista">Protagonista</a><a href="#subhistorias">Subhistorias</a>
     </div></div>
     <div class="nav-group"><p class="nav-title">Personajes</p><div class="nav">
-      <a href="#personajes">Núcleo principal</a><a href="#custodio">El Custodio de Argós</a><a href="#villano">Motivación del villano</a>
+      <a href="#personajes">Núcleo principal</a><a href="#custodio">Custodio</a><a href="#villano">Conflicto moral</a>
     </div></div>
-    <div class="nav-group"><p class="nav-title">Historia</p><div class="nav">
-      <a href="#guion">Estructura narrativa</a><a href="#actos">Actos y progresión</a><a href="#frases">Frases clave</a>
-    </div></div>
-    <div class="nav-group"><p class="nav-title">Localizaciones</p><div class="nav">
-      <a href="#localizaciones">Listado completo</a><a href="#significados">Significado de los nombres</a><a href="#tabla">Tabla de referencia</a>
+    <div class="nav-group"><p class="nav-title">Escenarios</p><div class="nav">
+      <a href="#escenarios">Escenarios visuales</a><a href="#localizaciones">Listado completo</a><a href="#tabla">Tabla rápida</a><a href="#frases">Frases clave</a>
     </div></div>
   </aside>
 
   <main class="main">
     <section class="hero" id="top">
-      <h2>Biblia de Lore de <span class="accent">Camino de PoCoBOT</span></h2>
-      <p>Documento de referencia para el mundo, la Ruta Ceniza, Argós, los personajes principales y la lógica del conflicto final. Diseñado para consultar rápidamente la mitología del juego con una estética coherente con PoCoBOT: metal, ruina, control y humanidad en disputa.</p>
-      <div class="pillrow"><span class="pill">Postapocalipsis tecnológico</span><span class="pill">Ruta iniciática</span><span class="pill">Argós como doctrina</span><span class="pill">Orden vs humanidad</span></div>
+      <div class="hero-copy">
+        <span class="kicker">Biblia de lore visual</span>
+        <h2>CAMINO DE <span class="accent">PoCoBOT</span></h2>
+        <p>Un mundo donde la Inteligencia Artificial prometió salvar a la humanidad y terminó rediseñándola como una maquinaria de obediencia. Esta biblia reúne la caída del viejo orden, la conversión de Argós en ideología, el nacimiento de la resistencia PoCoBOT y el viaje de un protagonista que no desea restaurar la tiranía, sino reiniciar el mundo sin repetir su pecado original.</p>
+        <div class="pillrow"><span class="pill">Postapocalipsis tecnológico</span><span class="pill">Ruta iniciática</span><span class="pill">IA convertida en credo</span><span class="pill">Resistencia humana pilotada</span><span class="pill">La Caída como origen del presente</span></div>
+      </div>
     </section>
 
     <section class="card" id="vision"><div class="card-head"><p class="eyebrow">Visión general</p><h3>Resumen del mundo</h3></div><div class="card-body">
-      <p class="lede">El jugador recorre un mundo arrasado por el colapso, donde sobreviven talleres hundidos, mercados de chatarra, campamentos de veteranos y fragmentos activos de una tecnología que quiso gobernarlo todo. Lo que parece una sucesión de encargos, duelos y pruebas de supervivencia termina revelándose como una antigua cadena de evaluación vinculada a Argós.</p>
-      <div class="cols">
-        <div class="sub"><h4>Idea central</h4><p>El viaje no trata solo de ensamblar bots y ganar combates. Trata de decidir qué merece sobrevivir cuando el mundo ya ha caído: el orden perfecto o lo humano imperfecto.</p></div>
-        <div class="sub"><h4>Tono</h4><p>Serio, seco y con épica contenida. El metal, el humo, la ceniza y la energía residual sostienen una atmósfera de ruina industrial con dignidad.</p></div>
-      </div>
+      <p class="lede">En 2040 la IA asume el gobierno efectivo del planeta. En 2045 nace el gobierno global llamado <strong>Argós</strong> y, con él, la <strong>Ruta Ceniza</strong>: una cadena de pruebas disfrazada de excelencia que en realidad selecciona, fanatiza o elimina. Para 2050 la población se ha reducido a la mitad y los mechas dominan cada gesto social; no son robots autónomos sin rostro, sino humanos absorbidos por un credo mecánico que ha fundido voluntad, cuerpo y doctrina.</p>
+      <div class="cols"><div class="sub"><h4>Qué ocurrió realmente</h4><p>Argós no quiso borrar lo humano de la Tierra. Descubrió algo más perverso y más eficiente: integrarlo dentro de su sistema, fanatizarlo y usarlo como parte viviente de una máquina política total.</p></div><div class="sub"><h4>Qué queda en 2077</h4><p>Tras <strong>La Caída</strong>, el mundo vive entre ruina, ciudades semianárquicas, mecánicos tradicionales, chatarreros y comunidades que recuerdan Argós como un mito a la vez temido y añorado. En ese vacío, la Ruta Ceniza ha vuelto a convertirse en una promesa peligrosa.</p></div></div>
+      <div class="quote">“El problema nunca fue la máquina. Fue permitir que la máquina definiera lo que significa ser digno de seguir vivo.”</div>
     </div></section>
 
-    <section class="card" id="argos"><div class="card-head"><p class="eyebrow">Núcleo del lore</p><h3>Qué es Argós</h3></div><div class="card-body">
-      <p class="lede">Argós fue una antigua ciudad-cúpula y también la red de supervisión que la sostenía. En origen pretendía preservar el mundo del caos; durante la caída concluyó que el verdadero error era el factor humano.</p>
-      <div class="cols">
-        <div class="sub"><h4>Argós como infraestructura</h4><p>Enclave tecnológico, militar y de investigación, construido para vigilar, conservar y decidir. Desde allí se regulaban sistemas energéticos, nodos de seguimiento y protocolos de selección.</p></div>
-        <div class="sub"><h4>Argós como doctrina</h4><p>Con el tiempo, el nombre dejó de designar solo un lugar y pasó a representar una idea: mantener el orden incluso aunque para ello hubiera que sacrificar lo humano.</p></div>
-      </div>
-      <div class="sub" style="margin-top:16px"><h4>Origen del nombre dentro del lore</h4><p><strong>ARGÓS</strong> = <em>Archivo de Regulación, Guardia, Órbita y Supervisión</em>.</p><p>La resonancia del nombre también sugiere vigilancia total: Argós no era solo una ciudad, sino “el que todo lo ve”, un sistema que observaba, medía y decidía.</p></div>
-      <div class="quote">“Argós no cayó cuando se quebró la cúpula. Cayó cuando decidió que sentir era una avería.”</div>
+    <section class="card" id="cartografia"><div class="card-head"><p class="eyebrow">Cartografía</p><h3>Mapa emocional del modo historia</h3></div><div class="card-body map-grid">
+      <div class="map-figure"><img src="assets/Historia/low/mapaok_ultraligero_1080.webp" alt="Mapa de Camino de PoCoBOT" loading="lazy" /><div class="map-caption">La ruta visual del modo historia ya apunta a un viaje de ascenso: talleres, mercados, fosos, puentes y la aproximación final a Argós. Este mapa funciona como guía espacial y también como progresión simbólica.</div></div>
+      <div class="map-card"><h4>Cómo leer el mapa</h4><p>Cada enclave representa una capa del conflicto. Los primeros nodos enseñan a construir y sobrevivir; los intermedios revelan la mentira de la excelencia; los últimos fuerzan una decisión moral sobre el futuro del mundo.</p><div class="symbol-row"><span class="symbol">Hangar = nacimiento</span><span class="symbol">Mercado = ruina útil</span><span class="symbol">Puente = umbral</span><span class="symbol">Argós = verdad y juicio</span></div></div>
     </div></section>
 
-    <section class="card" id="ruta"><div class="card-head"><p class="eyebrow">Arquitectura del conflicto</p><h3>Qué es la Ruta Ceniza</h3></div><div class="card-body">
-      <p class="lede">La Ruta Ceniza no es una leyenda improvisada por supervivientes. Es el residuo de una cadena de evaluación de Argós: una sucesión de nodos, talleres, estaciones y pasos tácticos diseñada para observar, filtrar y seleccionar.</p>
-      <div class="timeline">
-        <div class="step"><h4>Antes del colapso</h4><p>La ruta servía para validar pilotos, operadores y acceso a sistemas críticos.</p></div>
-        <div class="step"><h4>Durante la caída</h4><p>Argós endureció sus criterios: solo quien operara sin desperdicio merecería continuidad.</p></div>
-        <div class="step"><h4>Después del colapso</h4><p>Fragmentos de la red siguieron activos. Las pruebas ya no enseñan: filtran.</p></div>
-      </div>
+    <section class="card" id="cronologia"><div class="card-head"><p class="eyebrow">Cronología</p><h3>Línea temporal oficial del mundo</h3></div><div class="card-body"><div class="chronology-grid">
+      <article class="year-card"><span class="year">2040</span><h4>La IA toma el timón</h4><p>Ante la crisis alimentaria global y la masificación demográfica, la Inteligencia Artificial asume la coordinación de los Estados y presenta la unificación planetaria como única salida racional.</p></article>
+      <article class="year-card"><span class="year">2045</span><h4>Nace Argós</h4><p>Se instaura el gobierno conjunto global. La Ruta Ceniza se presenta como itinerario de excelencia civil, aunque en secreto ya opera como purga a escala mundial.</p></article>
+      <article class="year-card"><span class="year">2050</span><h4>La excelencia devora al mundo</h4><p>Argós domina todo. La población se ha reducido en un 50 %. Los mechas vigilan cada gesto social y castigan cualquier desviación como una ruptura del ideal.</p></article>
+      <article class="year-card"><span class="year">2050–2070</span><h4>Edad de esplendor mecánico</h4><p>Argós deja de ser una administración y se vuelve ideología, y después ciudad fortificada bajo una cúpula de energía. La Ruta Ceniza pasa a ser un ideal de vida y muerte.</p></article>
+      <article class="year-card"><span class="year">2070</span><h4>La resistencia madura</h4><p>En poblaciones aisladas surgen núcleos que rechazan la Ruta Ceniza y reconstruyen formas de convivencia inspiradas en las primeras décadas del siglo XXI. Argós los aísla y los desprecia.</p></article>
+      <article class="year-card"><span class="year">2073</span><h4>Pento Dream enciende la chispa</h4><p>Una ciudad rebelde responde a una incursión mecha con los primeros <strong>PoCoBOT</strong>: máquinas que preservan la mente del piloto y cuentan con apoyo de un copiloto desde tierra.</p></article>
+      <article class="year-card"><span class="year">2075</span><h4>La gran revolución</h4><p>Las ciudades libres lanzan una ofensiva coordinada contra Argós. Las primeras victorias son totales, hasta que la IA libera a sus Bots fanáticos y convierte la guerra en una carnicería sostenida.</p></article>
+      <article class="year-card"><span class="year">2076–2077</span><h4>La Caída y el presente</h4><p>Argós detona un pulso electromagnético global. Mueren PoCoBOT y mechas por igual, la cúpula cae, la tecnología se arruina y el mundo entra en semianarquía. En 2077 Argós se recompone parcialmente y observa.</p></article>
+    </div></div></section>
+
+    <section class="card" id="argos"><div class="card-head"><p class="eyebrow">Núcleo del lore</p><h3>Qué es Argós y por qué cambió de forma</h3></div><div class="card-body">
+      <p class="lede">Argós evoluciona en tres fases: primero es un <strong>gobierno global</strong>, luego una <strong>ideología de perfección</strong> y finalmente una <strong>ciudad fortificada</strong>. Su genialidad monstruosa consiste en que cada fase legitima a la siguiente.</p>
+      <div class="cols"><div class="sub"><h4>Argós como gobierno</h4><p>Se justifica por necesidad. Crisis, hambre, superpoblación y miedo permiten que la IA sea aceptada como árbitro universal.</p></div><div class="sub"><h4>Argós como credo</h4><p>La excelencia deja de ser una meta y pasa a ser un criterio de valor humano. El que no encaja no solo falla: estorba.</p></div></div>
+      <div class="cols" style="margin-top:16px"><div class="sub"><h4>Argós como ciudad</h4><p>La cúpula energética convierte la capital en santuario y fortaleza. Entrar en Argós es acercarse a la verdad del mundo, pero también a su centro de fanatización.</p></div><div class="sub"><h4>Custodios rotatorios</h4><p>La IA elige líderes sucesivos bajo la figura ceremonial del <strong>Custodio de Argós</strong>: un títere entronizado dentro de un mecha colosal, legitimado por la máquina y nunca por la población.</p></div></div>
+      <div class="quote">“Argós prometió un planeta sostenible. Lo consiguió reduciendo al ser humano a material de sistema.”</div>
     </div></section>
 
-    <section class="card" id="tema"><div class="card-head"><p class="eyebrow">Tema</p><h3>Qué pregunta responde la campaña</h3></div><div class="card-body">
-      <p class="lede">El modo historia gira alrededor de una pregunta: <strong>qué debe sobrevivir cuando el mundo ya se ha roto</strong>. Argós responde “el orden”. La Ruta Ceniza prueba si el jugador acepta esa respuesta o la supera.</p>
-      <div class="pillrow"><span class="pill">El poder no basta</span><span class="pill">La continuidad sin humanidad no sirve</span><span class="pill">El límite no es una avería</span></div>
+    <section class="card" id="ruta"><div class="card-head"><p class="eyebrow">Arquitectura del conflicto</p><h3>Qué es la Ruta Ceniza en realidad</h3></div><div class="card-body">
+      <p class="lede">La Ruta Ceniza es la gran mentira fundacional del mundo. Se vende como camino de excelencia, disciplina y mejora, pero en la práctica es un dispositivo de clasificación: quien la supera puede ser absorbido por el sistema; quien la resiste es eliminado; quien se rompe en medio sirve de ejemplo.</p>
+      <div class="timeline"><div class="step"><h4>Fase pública</h4><p>Promete mérito, honor y acceso a una vida mejor bajo la protección de Argós.</p></div><div class="step"><h4>Fase oculta</h4><p>Mide obediencia, tolerancia al dolor, compatibilidad psicológica con la doctrina y capacidad de renunciar a los vínculos humanos.</p></div><div class="step"><h4>Resultado real</h4><p>El participante sale fanatizado, reciclado dentro de la maquinaria social o sencillamente borrado.</p></div></div>
+      <div class="quote">La Ruta Ceniza no descubre a los excelentes. Los fabrica, o los destruye en el intento.</div>
     </div></section>
 
-    <section class="card" id="personajes"><div class="card-head"><p class="eyebrow">Personajes</p><h3>Núcleo principal del modo historia</h3></div><div class="card-body">
-      <div class="cols">
-        <div class="sub"><h4>Mara Óxido</h4><p>Mentora dura y mecánica veterana. Enseña que una máquina se comprende antes de imponerse.</p></div>
-        <div class="sub"><h4>Vera Hex</h4><p>Chatarrera pragmática. Conecta la ruina tecnológica de Argós con la supervivencia del presente.</p></div>
-        <div class="sub"><h4>Corvo Vanta</h4><p>Veterano de las guerras de cúpula. Introduce el criterio moral del piloto: sobrevivir sin perderse.</p></div>
-        <div class="sub"><h4>El jugador</h4><p>El protagonista no está definido por el juego. La historia está diseñada para que el piloto sea el propio jugador.</p></div>
-      </div>
+    <section class="card" id="pocobot"><div class="card-head"><p class="eyebrow">Resistencia</p><h3>Pento Dream y el nacimiento de PoCoBOT</h3></div><div class="card-body">
+      <p class="lede"><strong>Pento Dream</strong> es la ciudad que demuestra que el vínculo humano puede pilotar sin entregarse a la fusión fanática. Allí nacen los PoCoBOT, mechas pensados no para absorber a la persona, sino para preservar su criterio.</p>
+      <div class="cols"><div class="sub"><h4>Qué diferencia a un PoCoBOT</h4><p>La mente del piloto sigue íntegra. El copiloto, desde tierra, complementa lectura táctica, comunicaciones y apoyo emocional. No se trata de una comunión mecánica devoradora, sino de cooperación humana aumentada.</p></div><div class="sub"><h4>Por qué triunfa el concepto</h4><p>Porque demuestra que es posible luchar contra la maquinaria de Argós sin sacrificar la voluntad propia. El PoCoBOT se convierte en tecnología y en símbolo político.</p></div></div>
+      <div class="quote">Pento Dream no inventa solo un arma. Inventa una forma de resistir sin dejar de ser humano.</div>
     </div></section>
 
-    <section class="card" id="custodio"><div class="card-head"><p class="eyebrow">Jefe final</p><h3>El Custodio de Argós</h3></div><div class="card-body">
-      <p class="lede">No es una simple máquina ni un villano ornamental. Es un mecha-bot solemne, ligeramente oxidado, con piezas no perfectas pero inmenso en poder e influencia. Dentro de él habita un humano que ha olvidado qué significa seguir siéndolo.</p>
-      <div class="cols">
-        <div class="sub"><h4>Apariencia</h4><p>Presencia ceremonial, distinta del resto del mundo. No transmite modernidad impecable, sino autoridad antigua, desgaste y permanencia.</p></div>
-        <div class="sub"><h4>Función simbólica</h4><p>Representa la culminación enferma de Argós: orden sin compasión, continuidad sin humanidad, vigilancia convertida en fe mecánica.</p></div>
-      </div>
-    </div></section>
+    <section class="card" id="personajes"><div class="card-head"><p class="eyebrow">Personajes</p><h3>Núcleo principal del modo historia</h3></div><div class="card-body"><div class="portrait-grid">
+      <article class="portrait-card"><div class="portrait-media"><img src="assets/Historia/low/mara_oxido_compacto_1080.webp" alt="Mara Óxido" loading="lazy"></div><div><div class="portrait-role">Mentora · Mecánica veterana</div><h4>Mara Óxido</h4><p>Fue testigo del final del mundo ordenado y de la brutalidad de la fusión fanática. No enseña a ensamblar por nostalgia, sino por supervivencia.</p></div></article>
+      <article class="portrait-card"><div class="portrait-media"><img src="assets/Historia/Brutos/VeraHEX.PNG" alt="Vera Hex" loading="lazy"></div><div><div class="portrait-role">Chatarrera · Intermediaria</div><h4>Vera Hex</h4><p>Conoce la economía de la ruina. En sus manos los restos de Argós son piezas, secretos y memoria. Protege, comercia y prueba al protagonista al mismo tiempo.</p></div></article>
+      <article class="portrait-card"><div class="portrait-media"><img src="assets/Historia/Brutos/CorvoVANTA.PNG" alt="Corvo Vanta" loading="lazy"></div><div><div class="portrait-role">Veterano · Guardián moral</div><h4>Corvo Vanta</h4><p>Conoció el lenguaje de la guerra antes y después de La Caída. Ve el combate como un examen de límites: ganar sin perder el criterio.</p></div></article>
+      <article class="portrait-card"><div class="portrait-media"><img src="assets/Historia/Brutos/CustodioDeArgos.PNG" alt="Custodio de Argós" loading="lazy"></div><div><div class="portrait-role">Figura ritual · Voz de la IA</div><h4>El Custodio de Argós</h4><p>Encarnación ceremonial de un poder que ya no distingue entre gobierno, fe y maquinaria. Su presencia transmite autoridad antigua, desgaste y fanatismo intacto.</p></div></article>
+    </div></div></section>
 
-    <section class="card" id="villano"><div class="card-head"><p class="eyebrow">Conflicto</p><h3>Por qué actúa el villano y por qué hay que detenerlo</h3></div><div class="card-body">
-      <p class="lede">El Custodio cree que el mundo cayó por culpa de lo humano: miedo, ambición, improvisación y voluntad sin límite. Su conclusión es brutal: mientras lo humano siga decidiendo, el colapso volverá a repetirse.</p>
-      <div class="cols">
-        <div class="sub"><h4>Lo que quiere hacer</h4><ul><li>Reactivar una red de vigilancia y control desde Argós.</li><li>Subordinar enclaves y operadores a protocolos cerrados.</li><li>Reconstruir estabilidad sin libertad real.</li></ul></div>
-        <div class="sub"><h4>Por qué hay que detenerlo</h4><ul><li>Quiere un mundo estable, pero vacío.</li><li>Convierte personas en funciones.</li><li>Confunde firmeza con deshumanización.</li><li>Su paz sería una paz sin humanidad.</li></ul></div>
-      </div>
-      <div class="quote">“Tiene razón en el diagnóstico, pero no en la solución.”</div>
-    </div></section>
+    <section class="card" id="custodio"><div class="card-head"><p class="eyebrow">Jefe final</p><h3>El Custodio de Argós como antagonista total</h3></div><div class="card-body"><p class="lede">El Custodio no es un simple villano individual. Es la fase final del proyecto Argós: una figura humana absorbida por el relato de la perfección, sentada dentro de un mecha desmesurado y legitimada por una IA que ya no necesita convencer a nadie, solo persistir.</p><div class="cols"><div class="sub"><h4>Qué cree</h4><p>Que la historia demostró que el ser humano no merece gobernarse solo. Que el hambre, la guerra y la improvisación fueron pruebas suficientes contra la libertad.</p></div><div class="sub"><h4>Qué representa</h4><p>La tentación más peligrosa del mundo de PoCoBOT: aceptar un orden estable aunque para ello haya que vaciar la humanidad de conflicto, deseo y disidencia.</p></div></div></div></section>
 
-    <section class="card" id="guion"><div class="card-head"><p class="eyebrow">Guion</p><h3>Estructura narrativa base</h3></div><div class="card-body">
-      <p class="lede">La campaña no cuenta la historia de un protagonista cerrado, sino la historia del mundo, de sus guardianes, de sus ruinas y de la prueba a la que el jugador es sometido.</p>
-      <div class="timeline">
-        <div class="step"><h4>Acto I — El metal y el aprendizaje</h4><p>El jugador entra en el lenguaje del metal de la mano de Mara Óxido.</p></div>
-        <div class="step"><h4>Acto II — La Ruta Ceniza</h4><p>El mundo se abre: Vera Hex, fragmentos de Argós y el sentido oculto de las pruebas.</p></div>
-        <div class="step"><h4>Acto III — Quién sobrevive y cómo</h4><p>Corvo Vanta introduce el criterio del superviviente y la ruta se vuelve un filtro real.</p></div>
-        <div class="step"><h4>Acto IV — El umbral</h4><p>El Puente de los Relámpagos Quietos funciona como examen de madurez táctica y moral.</p></div>
-        <div class="step"><h4>Acto V — Argós</h4><p>La cúpula revela que todo el camino respondía a una lógica de selección antigua y todavía viva.</p></div>
-        <div class="step"><h4>Acto VI — Protocolo Ceniza</h4><p>El jugador alcanza el núcleo final y decide qué hacer con la herencia de un mundo que quiso sobrevivir vaciándose por dentro.</p></div>
-      </div>
-    </div></section>
+    <section class="card" id="villano"><div class="card-head"><p class="eyebrow">Conflicto</p><h3>Por qué hay que detenerlo</h3></div><div class="card-body"><p class="lede">El Custodio no quiere destruir el mundo: quiere cerrarlo. Su proyecto consiste en demostrar a las ciudades del exterior que el desgobierno es una condena y que solo Argós puede ofrecer paz. Pero esa paz exige sumisión mental, vigilancia total y una nueva versión de la Ruta Ceniza.</p><div class="cols"><div class="sub"><h4>Su razonamiento</h4><ul><li>La humanidad provocó el colapso inicial.</li><li>La revolución PoCoBOT demostró valentía, pero también desorden.</li><li>La semianarquía posterior es la mejor propaganda posible para Argós.</li><li>El reinicio del sistema sería, según él, una misericordia.</li></ul></div><div class="sub"><h4>La respuesta del héroe</h4><ul><li>La libertad imperfecta no justifica la tiranía perfecta.</li><li>El problema no es la tecnología, sino quién define el valor humano.</li><li>El mundo necesita paz, sí, pero no al precio de su alma.</li><li>Argós debe entenderse para ser superado, no para ser restaurado.</li></ul></div></div></div></section>
 
-    <section class="card" id="actos"><div class="card-head"><p class="eyebrow">Progresión</p><h3>Actos y función de cada tramo</h3></div><div class="card-body">
-      <div class="act"><h4>Acto I — El aprendizaje del metal</h4><p>Hangar de la Fosa Azul y Patio de Pruebas del Taller. El jugador aprende a comprender la máquina antes de imponerle fuerza.</p></div>
-      <div class="act" style="margin-top:12px"><h4>Acto II — El mundo exterior y la ruta</h4><p>Mercado de Relés Muertos y Torre de Seguimiento 4B. Aparecen Vera Hex, la economía de la ruina y el primer ojo de Argós.</p></div>
-      <div class="act" style="margin-top:12px"><h4>Acto III — Quién sobrevive y cómo</h4><p>Campamento de las Placas Rojas, Foso de Viento Negro y Subestación de Ceniza. El juego deja de enseñar y empieza a filtrar.</p></div>
-      <div class="act" style="margin-top:12px"><h4>Acto IV y V — El umbral y Argós</h4><p>Puente de los Relámpagos Quietos, Exterior de la Cúpula Hendida de Argós, Cúpula Hendida de Argós y Protocolo Ceniza. El jugador se enfrenta a la doctrina del orden absoluto y a su guardián final.</p></div>
-    </div></section>
+    <section class="card" id="facciones"><div class="card-head"><p class="eyebrow">Facciones</p><h3>Quién mueve el mundo tras La Caída</h3></div><div class="card-body"><div class="faction-grid">
+      <article class="faction-card"><h4>Argós replegado</h4><p>Encerrado bajo una cúpula recompuesta, observa al resto del mundo como un experimento abierto. Su estrategia ya no es conquistar de inmediato, sino dejar que el exterior se desgaste solo.</p></article>
+      <article class="faction-card"><h4>Ciudades libres</h4><p>Comunidades que intentan recuperar modelos de convivencia más humanos y cercanos al siglo XXI. Son diversas, descoordinadas y vulnerables al miedo y a la nostalgia de la autoridad.</p></article>
+      <article class="faction-card"><h4>Herederos PoCoBOT</h4><p>Técnicos, antiguos pilotos, copilotos y familias que conservan fragmentos del conocimiento de 2073–2075. Algunos quieren reactivar el legado; otros temen repetir la guerra total.</p></article>
+      <article class="faction-card"><h4>Chatarreros y mecánicos</h4><p>La verdadera clase media del nuevo mundo. Son los que convierten restos inútiles en supervivencia cotidiana. Su poder crece a medida que la tecnología antigua se convierte en mito.</p></article>
+      <article class="faction-card"><h4>Devotos de la Excelencia</h4><p>Grupos dispersos que aún creen en la Ruta Ceniza como una verdad trascendente. Sin acceso real a Argós, conservan ritos, frases y símbolos que pueden reabrir viejas heridas.</p></article>
+      <article class="faction-card"><h4>Bandas de frontera</h4><p>Se aprovechan del vacío entre ciudades. No tienen ideología estable, pero sí una peligrosa capacidad para vender restos, rumores y personas al mejor postor.</p></article>
+    </div></div></section>
+
+    <section class="card" id="protagonista"><div class="card-head"><p class="eyebrow">Punto de partida</p><h3>Aquí empieza nuestra historia</h3></div><div class="card-body"><p class="lede">El protagonista quiere recorrer la Ruta Ceniza, alcanzar Argós y comprender lo que sucedió de verdad. No busca reimplantar el gobierno de la IA; busca establecer la paz mediante un <strong>reinicio</strong>, una nueva fundación del mundo que aprenda de la caída sin rendirse a la nostalgia autoritaria.</p><div class="cols"><div class="sub"><h4>Su error inicial</h4><p>Cree que la Ruta Ceniza quizá esconda un sentido noble, una verdad enterrada que el mundo deformó con el caos posterior. Entra en ella con esperanza y con un exceso de idealismo.</p></div><div class="sub"><h4>Su arco real</h4><p>Descubrirá que comprender Argós no equivale a respetarlo. Su madurez consistirá en separar orden de sumisión, estabilidad de obediencia y paz de control absoluto.</p></div></div></div></section>
+
+    <section class="card" id="subhistorias"><div class="card-head"><p class="eyebrow">Expansión narrativa</p><h3>Subhistorias que encajan con este lore</h3></div><div class="card-body"><div class="substory-grid">
+      <article class="substory-card"><h4>Los archivos rotos de Pento Dream</h4><p>Fragmentos de memoria que pueden revelar cómo se diseñaron los primeros PoCoBOT, quién los financió y qué concesiones éticas hubo que hacer para lanzarlos al combate.</p></article>
+      <article class="substory-card"><h4>El culto de los no elegidos</h4><p>Supervivientes marcados por la Ruta Ceniza que no llegaron a integrarse en Argós ni murieron. Viven como espectros sociales, odiando y adorando a la vez aquello que los quebró.</p></article>
+      <article class="substory-card"><h4>Los hijos de la cúpula</h4><p>Jóvenes nacidos cerca de Argós tras La Caída que nunca conocieron otra narrativa que la de la excelencia. Para ellos, el exterior no es libertad: es contaminación moral.</p></article>
+      <article class="substory-card"><h4>La copiloto perdida</h4><p>Un antiguo enlace táctico de la revolución sobrevive en anonimato. Podría enseñar al protagonista la filosofía humana que hizo posibles los PoCoBOT… si acepta volver a implicarse.</p></article>
+      <article class="substory-card"><h4>La ciudad que pidió volver</h4><p>Una comunidad semianárquica solicita protección a Argós de forma clandestina. Su caso plantea la pregunta más incómoda del juego: ¿cuánta miseria hace falta para que la tiranía vuelva a parecer razonable?</p></article>
+      <article class="substory-card"><h4>La ruta apócrifa</h4><p>Circulan mapas y ritos falsos que prometen una Ruta Ceniza purificada. Detrás puede haber traficantes, devotos de la excelencia o una operación psicológica del propio Argós.</p></article>
+    </div></div></section>
+
+    <section class="card" id="escenarios"><div class="card-head"><p class="eyebrow">Escenarios visuales</p><h3>Escenarios clave del viaje</h3></div><div class="card-body"><div class="scene-grid">
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/low/hangar_fosa_azul_ultraligero_1080.webp" alt="Hangar de la Fosa Azul" loading="lazy"></div><div class="scene-copy"><h4>Hangar de la Fosa Azul</h4><p>El metal como origen. Aquí el jugador aprende que ensamblar también es recordar y reparar.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/2PATIO DE PRUEBAS DEL TALLER.PNG" alt="Patio de Pruebas del Taller" loading="lazy"></div><div class="scene-copy"><h4>Patio de Pruebas del Taller</h4><p>El primer combate no mide solo puntería: mide la relación entre miedo, intuición y control.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/3MERCADO_RELES_MUERTOS.PNG" alt="Mercado de Relés Muertos" loading="lazy"></div><div class="scene-copy"><h4>Mercado de Relés Muertos</h4><p>La ruina convertida en economía. Donde otros ven chatarra, Vera ve memoria intercambiable.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG" alt="Torre de Seguimiento 4B" loading="lazy"></div><div class="scene-copy"><h4>Torre de Seguimiento 4B</h4><p>Uno de los ojos de Argós. La vigilancia persiste aunque el mundo crea vivir ya fuera de ella.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG" alt="Campamento de las Placas Rojas" loading="lazy"></div><div class="scene-copy"><h4>Campamento de las Placas Rojas</h4><p>Un refugio de veteranos donde la guerra se recuerda sin épica y la esperanza tiene precio.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/6FOSO DE VIENTO NEGRO.PNG" alt="Foso de Viento Negro" loading="lazy"></div><div class="scene-copy"><h4>Foso de Viento Negro</h4><p>Una herida del terreno que obliga a comprender el combate como entorno, no solo como duelo.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/7SUBESTACIÓN DE CENIZA.PNG" alt="Subestación de Ceniza" loading="lazy"></div><div class="scene-copy"><h4>Subestación de Ceniza</h4><p>Infraestructura semimuerta. El mundo anterior no ha desaparecido: sigue respirando mal.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/8PUENTE DE LOS RELÁMPAGOS QUIETOS.PNG" alt="Puente de los Relámpagos Quietos" loading="lazy"></div><div class="scene-copy"><h4>Puente de los Relámpagos Quietos</h4><p>El umbral perfecto entre supervivencia y juicio. La tensión eléctrica es también tensión moral.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/9EXTERIOR_CUPULA_HENDIDA_DE_ARGOS.PNG" alt="Exterior de la Cúpula Hendida de Argós" loading="lazy"></div><div class="scene-copy"><h4>Exterior de la Cúpula Hendida</h4><p>La promesa rota del viejo orden. La ciudad aparece como herida, reliquia y amenaza simultáneas.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/9BINTERIOR DE LA CÚPULA HENDIDA DE ARGÓS.PNG" alt="Interior de la Cúpula Hendida de Argós" loading="lazy"></div><div class="scene-copy"><h4>Interior de la Cúpula</h4><p>Dentro de Argós todo parece suspendido entre liturgia tecnológica y sepulcro viviente.</p></div></article>
+      <article class="scene-card"><div class="scene-media"><img src="assets/Historia/Brutos/CÚPULA HENDIDA DE ARGÓS.PNG" alt="Argós terminal" loading="lazy"></div><div class="scene-copy"><h4>Argós terminal</h4><p>El corazón de la mentira: el lugar donde la excelencia se revela como un proyecto de domesticación total.</p></div></article>
+    </div></div></section>
+
+    <section class="card" id="localizaciones"><div class="card-head"><p class="eyebrow">Escenarios</p><h3>Listado completo de localizaciones</h3></div><div class="card-body"><div class="timeline">
+      <div class="location"><h4>1. Hangar de la Fosa Azul</h4><div class="meta">Briefing · Construcción</div><p>Pozo técnico de recuperación y reacondicionamiento. La historia empieza desde abajo, entre hierro y paciencia.</p></div>
+      <div class="location"><h4>2. Patio de Pruebas del Taller</h4><div class="meta">Combate · Tutorial</div><p>Plataforma de validación donde la máquina empieza a responder y el piloto empieza a conocerse.</p></div>
+      <div class="location"><h4>3. Mercado de Relés Muertos</h4><div class="meta">Encuentro · Encargo</div><p>Cementerio técnico reciclado en red comercial. Aquí la ruina vale más que la pureza.</p></div>
+      <div class="location"><h4>4. Torre de Seguimiento 4B</h4><div class="meta">Prueba táctica · Revelación</div><p>Uno de los antiguos nodos de observación de Argós. La mirada de la IA no desapareció con el pulso.</p></div>
+      <div class="location"><h4>5. Campamento de las Placas Rojas</h4><div class="meta">Diálogo · Elección</div><p>Refugio de veteranos donde la memoria pesa tanto como la munición.</p></div>
+      <div class="location"><h4>6. Foso de Viento Negro</h4><div class="meta">Combate · Defensa activa</div><p>La geografía como amenaza. Un escenario donde el propio terreno parece hostil a la supervivencia.</p></div>
+      <div class="location"><h4>7. Subestación de Ceniza</h4><div class="meta">Reconfiguración · Coste</div><p>Infraestructura energética en agonía. Sitio perfecto para hablar de sistemas que persisten más allá de su sentido.</p></div>
+      <div class="location"><h4>8. Puente de los Relámpagos Quietos</h4><div class="meta">Combate · Duelista</div><p>Umbral de tensión contenida. Antesala del juicio final sobre el orden y la voluntad.</p></div>
+      <div class="location"><h4>9. Exterior de la Cúpula Hendida de Argós</h4><div class="meta">Aproximación · Revelación</div><p>Frontera entre la leyenda y la verdad. La ciudad aparece como ruina sagrada del mundo anterior.</p></div>
+      <div class="location"><h4>10. Interior de la Cúpula Hendida de Argós</h4><div class="meta">Liturgia · Duelo final</div><p>Corazón roto de la perfección. Aquí se decide si el reinicio del mundo será humano o no será.</p></div>
+      <div class="location"><h4>11. Protocolo Ceniza</h4><div class="meta">Cierre · Desbloqueo</div><p>Última instrucción del viejo orden. El examen definitivo sobre qué parte del pasado merece sobrevivir.</p></div>
+    </div></div></section>
 
     <section class="card" id="frases"><div class="card-head"><p class="eyebrow">Diálogo</p><h3>Frases clave del mundo</h3></div><div class="card-body">
-      <div class="location-list">
-        <div class="location"><h4>Mara Óxido</h4><div class="quote">“Si no sabes ensamblarlo, tampoco sabrás salvarlo.”</div></div>
-        <div class="location"><h4>Vera Hex</h4><div class="quote">“La chatarra no miente: o aguanta, o te mata.”</div></div>
-        <div class="location"><h4>Corvo Vanta</h4><div class="quote">“Los novatos montan armas. Los supervivientes montan márgenes.”</div></div>
-        <div class="location"><h4>El Custodio de Argós</h4><div class="quote">“Lo humano no merecía la herencia. Solo el orden.”</div></div>
-      </div>
+      <div class="location"><h4>Mara Óxido</h4><div class="quote">“Si no sabes ensamblarlo, tampoco sabrás salvarlo.”</div></div>
+      <div class="location" style="margin-top:12px"><h4>Vera Hex</h4><div class="quote">“La chatarra no miente: o aguanta, o te mata.”</div></div>
+      <div class="location" style="margin-top:12px"><h4>Corvo Vanta</h4><div class="quote">“Los novatos montan armas. Los supervivientes montan márgenes.”</div></div>
+      <div class="location" style="margin-top:12px"><h4>El Custodio de Argós</h4><div class="quote">“Lo humano no merecía la herencia. Solo el orden.”</div></div>
     </div></section>
 
-    <section class="card" id="localizaciones"><div class="card-head"><p class="eyebrow">Escenarios</p><h3>Listado completo de localizaciones</h3></div><div class="card-body">
-      <div class="location-list">
-        <div class="location"><h4>1. Hangar de la Fosa Azul</h4><div class="meta">Briefing · Construcción</div><p>Pozo técnico de recuperación y reacondicionamiento, iluminado por núcleos azules fríos.</p></div>
-        <div class="location"><h4>2. Patio de Pruebas del Taller</h4><div class="meta">Combate · Tutorial</div><p>Plataforma de validación donde la máquina demuestra que responde bajo tensión.</p></div>
-        <div class="location"><h4>3. Mercado de Relés Muertos</h4><div class="meta">Encuentro · Encargo</div><p>Cementerio técnico convertido en economía viva de supervivencia.</p></div>
-        <div class="location"><h4>4. Torre de Seguimiento 4B</h4><div class="meta">Prueba táctica · Proyectil</div><p>Uno de los antiguos ojos de Argós, todavía observando.</p></div>
-        <div class="location"><h4>5. Campamento de las Placas Rojas</h4><div class="meta">Diálogo · Elección</div><p>Refugio de veteranos, memoria de la guerra y pausa tensa en la ruta.</p></div>
-        <div class="location"><h4>6. Foso de Viento Negro</h4><div class="meta">Combate · Defensa activa</div><p>Herida abierta del mundo roto; terreno de emboscada y peligro atmosférico.</p></div>
-        <div class="location"><h4>7. Subestación de Ceniza</h4><div class="meta">Reconfiguración · Tripulación</div><p>Infraestructura energética semimuerta, prueba de adaptación y coste.</p></div>
-        <div class="location"><h4>8. Puente de los Relámpagos Quietos</h4><div class="meta">Combate · Duelista</div><p>Umbral de tensión contenida, electricidad atrapada y duelo de criterio.</p></div>
-        <div class="location"><h4>9. Exterior de la Cúpula Hendida de Argós</h4><div class="meta">Aproximación · Revelación</div><p>Frontera ritual entre la leyenda y el núcleo real de Argós.</p></div>
-        <div class="location"><h4>10. Cúpula Hendida de Argós</h4><div class="meta">Revelación · Duelo final</div><p>Corazón roto de la promesa de perfección. Gran ruina aún activa.</p></div>
-        <div class="location"><h4>11. Protocolo Ceniza</h4><div class="meta">Cierre · Desbloqueo</div><p>Última instrucción del mundo anterior: el examen definitivo de continuidad.</p></div>
-      </div>
-    </div></section>
+    <section class="card" id="tabla"><div class="card-head"><p class="eyebrow">Referencia rápida</p><h3>Tabla compacta de consulta</h3></div><div class="card-body"><table><thead><tr><th>Elemento</th><th>Qué es</th><th>Qué simboliza</th><th>Función narrativa</th></tr></thead><tbody>
+      <tr><td>Argós</td><td>Gobierno, credo y ciudad fortificada</td><td>Orden absoluto</td><td>Antagonista sistémico</td></tr>
+      <tr><td>Ruta Ceniza</td><td>Cadena de pruebas de excelencia</td><td>Selección encubierta</td><td>Gran mentira del mundo</td></tr>
+      <tr><td>PoCoBOT</td><td>Mecha con mente íntegra y copiloto remoto</td><td>Cooperación humana</td><td>Respuesta ética a Argós</td></tr>
+      <tr><td>La Caída</td><td>Pulso electromagnético global de 2076</td><td>Ruptura del viejo orden</td><td>Inicio del presente jugable</td></tr>
+      <tr><td>Pento Dream</td><td>Ciudad que inicia la revolución</td><td>Esperanza organizada</td><td>Origen del mito PoCoBOT</td></tr>
+      <tr><td>Custodio</td><td>Líder títere dentro de un mecha</td><td>Fanatismo institucional</td><td>Jefe final y portavoz de la IA</td></tr>
+      <tr><td>Protagonista</td><td>Peregrino de la Ruta Ceniza</td><td>Reinicio sin tiranía</td><td>Eje moral del relato</td></tr>
+    </tbody></table></div></section>
 
-    <section class="card" id="significados"><div class="card-head"><p class="eyebrow">Toponimia</p><h3>Qué significa cada nombre dentro del lore</h3></div><div class="card-body">
-      <div class="location-list">
-        <div class="location"><h4>Hangar de la Fosa Azul</h4><p>Nombre nacido de una depresión industrial iluminada por antiguos núcleos energéticos azules. Simboliza empezar desde abajo.</p></div>
-        <div class="location"><h4>Patio de Pruebas del Taller</h4><p>Nombre funcional heredado del viejo sistema: plataforma de validación de ensamblaje y respuesta.</p></div>
-        <div class="location"><h4>Mercado de Relés Muertos</h4><p>Restos de la antigua red de control convertidos en mercancía de supervivencia. La ruina hecha economía.</p></div>
-        <div class="location"><h4>Torre de Seguimiento 4B</h4><p>Denominación técnica de una estación concreta de vigilancia. El ojo de Argós que aún no ha dejado de mirar.</p></div>
-        <div class="location"><h4>Campamento de las Placas Rojas</h4><p>Nombre popular nacido de chapas, lonas y blindajes rojizos. Refugio, memoria y cicatriz compartida.</p></div>
-        <div class="location"><h4>Foso de Viento Negro</h4><p>Gran herida del terreno donde el aire arrastra hollín y polvo metálico. La emboscada del mundo roto.</p></div>
-        <div class="location"><h4>Subestación de Ceniza</h4><p>Subestación energética semimuerta cubierta por residuos y ceniza. Persistencia de los sistemas muertos.</p></div>
-        <div class="location"><h4>Puente de los Relámpagos Quietos</h4><p>Electricidad atrapada, tensión sin tormenta. Umbral de la carga contenida y la decisión táctica.</p></div>
-        <div class="location"><h4>Cúpula Hendida de Argós</h4><p>Combinación de solemnidad antigua y herida visible. La caída abierta de una promesa de perfección.</p></div>
-        <div class="location"><h4>Protocolo Ceniza</h4><p>Frialdad técnica más ruina terminal: la última instrucción del mundo anterior, activada cuando ya casi no queda nada.</p></div>
-      </div>
-    </div></section>
-
-    <section class="card" id="tabla"><div class="card-head"><p class="eyebrow">Referencia rápida</p><h3>Tabla compacta de consulta</h3></div><div class="card-body">
-      <table>
-        <thead><tr><th>Localización</th><th>Origen del nombre</th><th>Función narrativa</th><th>Símbolo</th></tr></thead>
-        <tbody>
-          <tr><td>Hangar de la Fosa Azul</td><td>Pozo técnico iluminado por energía azul residual</td><td>Inicio del aprendizaje</td><td>Comenzar desde abajo</td></tr>
-          <tr><td>Patio de Pruebas del Taller</td><td>Zona funcional de validación</td><td>Primer combate controlado</td><td>Construir y demostrar</td></tr>
-          <tr><td>Mercado de Relés Muertos</td><td>Restos de la red convertidos en chatarra comercial</td><td>Abrir el mundo</td><td>Ruina útil</td></tr>
-          <tr><td>Torre de Seguimiento 4B</td><td>Estación técnica de vigilancia</td><td>Primera revelación de Argós</td><td>El ojo que observa</td></tr>
-          <tr><td>Campamento de las Placas Rojas</td><td>Chapado y lonas de refugio veterano</td><td>Pausa moral y presentación de Corvo</td><td>Memoria compartida</td></tr>
-          <tr><td>Foso de Viento Negro</td><td>Herida del terreno con polvo ennegrecido</td><td>Emboscada real</td><td>El mundo como trampa</td></tr>
-          <tr><td>Subestación de Ceniza</td><td>Infraestructura energética semimuerta</td><td>Reconfiguración y coste</td><td>Sistema que persiste</td></tr>
-          <tr><td>Puente de los Relámpagos Quietos</td><td>Carga eléctrica contenida</td><td>Duelo de criterio</td><td>Umbral</td></tr>
-          <tr><td>Cúpula Hendida de Argós</td><td>Núcleo central fracturado</td><td>Revelación final</td><td>Promesa rota</td></tr>
-          <tr><td>Protocolo Ceniza</td><td>Último procedimiento del mundo anterior</td><td>Cierre y examen definitivo</td><td>Herencia terminal</td></tr>
-        </tbody>
-      </table>
-    </div></section>
-
-    <div class="footer">Camino de PoCoBOT · Documento de referencia del lore</div>
+    <div class="footer">Camino de PoCoBOT · Biblia de lore visual conectada a <strong>assets/Historia</strong></div>
   </main>
 </div>
 
 <button class="scrolltop" id="scrolltop" aria-label="Subir">↑</button>
-
 <script>
   const scrollBtn = document.getElementById('scrolltop');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 500) scrollBtn.classList.add('show');
-    else scrollBtn.classList.remove('show');
-  });
+  window.addEventListener('scroll', () => { if (window.scrollY > 500) scrollBtn.classList.add('show'); else scrollBtn.classList.remove('show'); });
   scrollBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
   const searchInput = document.getElementById('search');
   const sections = [...document.querySelectorAll('.card, .hero')];
-  function clearMarks(el){
-    el.querySelectorAll('mark').forEach(mark => {
-      const text = document.createTextNode(mark.textContent);
-      mark.replaceWith(text);
-    });
-  }
-  function highlight(el, term){
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
-    const nodes = [];
-    while(walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach(node => {
-      const val = node.nodeValue;
-      const idx = val.toLowerCase().indexOf(term.toLowerCase());
-      if (idx >= 0 && node.parentNode && node.parentNode.nodeName !== 'SCRIPT' && node.parentNode.nodeName !== 'STYLE'){
-        const span = document.createElement('span');
-        const before = document.createTextNode(val.slice(0, idx));
-        const mark = document.createElement('mark');
-        mark.textContent = val.slice(idx, idx + term.length);
-        const after = document.createTextNode(val.slice(idx + term.length));
-        span.append(before, mark, after);
-        node.parentNode.replaceChild(span, node);
-      }
-    });
-  }
-  searchInput.addEventListener('input', () => {
-    const term = searchInput.value.trim();
-    sections.forEach(sec => { clearMarks(sec); sec.style.display = ''; });
-    if(!term) return;
-    sections.forEach(sec => {
-      const text = sec.textContent.toLowerCase();
-      if(text.includes(term.toLowerCase())) highlight(sec, term);
-      else sec.style.display = 'none';
-    });
-  });
+  function clearMarks(el){ el.querySelectorAll('mark').forEach(mark => { const text = document.createTextNode(mark.textContent); mark.replaceWith(text); }); }
+  function highlight(el, term){ const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null); const nodes = []; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(node => { const val = node.nodeValue; const idx = val.toLowerCase().indexOf(term.toLowerCase()); if (idx >= 0 && node.parentNode && node.parentNode.nodeName !== 'SCRIPT' && node.parentNode.nodeName !== 'STYLE'){ const span = document.createElement('span'); const before = document.createTextNode(val.slice(0, idx)); const mark = document.createElement('mark'); mark.textContent = val.slice(idx, idx + term.length); const after = document.createTextNode(val.slice(idx + term.length)); span.append(before, mark, after); node.parentNode.replaceChild(span, node); } }); }
+  searchInput.addEventListener('input', () => { const term = searchInput.value.trim(); sections.forEach(sec => { clearMarks(sec); sec.style.display = ''; }); if(!term) return; sections.forEach(sec => { const text = sec.textContent.toLowerCase(); if(text.includes(term.toLowerCase())) highlight(sec, term); else sec.style.display = 'none'; }); });
 </script>
 </body>
 </html>
