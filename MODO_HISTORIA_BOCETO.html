@@ -1725,8 +1725,8 @@
       .scene-dialog-card{
         width:calc(100% - 24px);
         margin:0 12px 86px;
-        padding:16px;
-        max-height:44svh;
+        padding:16px 16px 18px;
+        max-height:min(56svh, calc(100svh - 208px));
         overflow:auto;
         overscroll-behavior:contain;
       }
@@ -1771,6 +1771,7 @@
       }
       .story-scene-stage.minimal-dialogue .scene-dialog-card{
         margin:0 12px 72px;
+        max-height:min(58svh, calc(100svh - 196px));
       }
       .mission-shell{
         padding:14px 12px 12px;
