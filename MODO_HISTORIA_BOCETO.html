@@ -1178,6 +1178,8 @@
       z-index:8;
       display:grid;
       grid-template-rows:auto minmax(0,1fr);
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
       opacity:0;
       pointer-events:none;
       transition:opacity .35s ease;
@@ -1206,11 +1208,11 @@
     .mission-shell{
       position:relative;
       z-index:1;
-      min-height:100%;
+      min-height:100svh;
       display:grid;
       grid-template-rows:auto minmax(0,1fr);
-      gap:14px;
-      padding:clamp(16px, 2.4vw, 26px);
+      gap:12px;
+      padding:clamp(14px, 2vw, 22px);
     }
     .mission-brief{
       display:grid;
@@ -1260,6 +1262,7 @@
     .mission-frame-wrap{
       position:relative;
       min-height:0;
+      min-height:min(74svh, 1100px);
       border-radius:26px;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.08);
@@ -1269,7 +1272,7 @@
     .mission-frame{
       width:100%;
       height:100%;
-      min-height:56svh;
+      min-height:min(74svh, 1100px);
       border:0;
       display:block;
       background:#05080d;
@@ -1644,7 +1647,7 @@
         width:100%;
       }
       .mission-frame{
-        min-height:52svh;
+        min-height:64svh;
       }
       .bottom-back{bottom:12px}
     }
@@ -2237,13 +2240,13 @@
             variantSourceLine: 0,
             variants: {
               me: {
-                text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Fosa Azul se viniera abajo. Intuyo que no has venido solo a verme.'
+                text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Fosa Azul se viniera abajo. Intuyo que no has venido solo a verme... ¿O sí?'
               },
               scare: {
-                text: 'Si tú entras sin avisar, no es interrupción: es costumbre. Lo raro sería verte llamar primero. Intuyo que no has venido solo a verme.'
+                text: 'Para tí entrar sin avisar no es interrupción: es costumbre. Lo raro sería verte llamar primero. Intuyo que venir a verme no era suficiente motivación para tí...'
               },
               looking: {
-                text: 'Sigue así y un día voy a cobrar entrada por escuchar mis propias leyendas. Intuyo que no has venido solo a verme.'
+                text: 'Sigue así y conseguirás que acabe cobrando entrada por escuchar mis propias leyendas. Intuyo que no has venido solo a verme.'
               }
             },
             choices: [
@@ -2277,13 +2280,13 @@
             variantSourceLine: 1,
             variants: {
               ceniza: {
-                text: 'No vas desencaminado. La Ruta Ceniza no era un paseo con nombre dramático: era una criba de Argós. Talleres, torres, puentes... cada parada medía si el piloto entendía la máquina o solo quería que obedeciera. El mundo cayó, pero la criba siguió funcionando a medias.'
+                text: 'No vas desencaminado. La Ruta Ceniza no era solo un paseo con nombre dramático: se trataba de una criba de Argós. Talleres, torres, puentes... cada parada medía si el piloto entendía la máquina o solo quería que obedeciera. El mundo cayó, pero la criba siguió funcionando a medias, ahora desde el punto de vista de la máquina...'
               },
               lore: {
-                text: 'Porque los PoCoBOT lo fueron casi todo. Son robots de combate modulares: marcos pensados para custodiar rutas, sostener enclaves y decidir guerras. En manos buenas pueden salvar una comunidad. En manos torpes la condenan entera en dos turnos mal montados.'
+                text: 'Porque los PoCoBOT lo fueron casi todo. Son robots de combate modulares: marcos pensados para custodiar rutas, sostener enclaves y sostener la paz. En manos buenas pueden salvar una comunidad. En manos torpes la condenan entera en dos turnos mal montados. Como ocurrió en la caída...'
               },
               survive: {
-                text: 'Entonces empieza por aceptar esto: ahí fuera no sobrevive el más ruidoso. Sobrevive quien deja margen, quien vuelve con el bot entero y con algo humano todavía dentro. Corvo lo diría de otra forma, pero no te estaría diciendo otra cosa.'
+                text: 'Entonces empieza por aceptar esto: ahí fuera no sobrevive el más ruidoso. Sobrevive quien deja margen, quien vuelve con el mecha entero y con algo humano todavía dentro. El viejo Corvo lo diría de otra forma, pero en el fondo te estaría diciendo esto mismo.'
               }
             }
           },
@@ -2300,13 +2303,13 @@
             variantSourceLine: 1,
             variants: {
               ceniza: {
-                text: 'Si quieres afrontar la antigua Ruta Ceniza, empieza por el principio: monta un PoCoBOT y déjalo listo para atacar delante de mí. Las viejas pruebas de Argós siguen filtrando de verdad. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+                text: 'Si quieres afrontar la antigua Ruta Ceniza, empieza por el principio: monta un PoCoBOT y déjalo listo para atacar, antes de que lo haga yo. Las viejas pruebas de Argós siguen filtrando al que vale y al que no. Ya sabes lo que digo siempre: Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
               },
               lore: {
-                text: 'Si quieres hablar de PoCoBOT con propiedad, deja de nombrarlos como reliquias y móntame uno ahora. Quiero verlo nacer, ajustarse y quedar listo para atacar. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+                text: 'Si quieres hablar de PoCoBOT con propiedad, deja de nombrarlos como reliquias y móntame uno ahora. Quiero verlo nacer, ajustarse y quedar listo para atacar. Yo haré lo mismo, ¡Intenta superarme! Ya sabes lo que digo siempre: Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
               },
               survive: {
-                text: 'Si quieres seguir ahí fuera, primero demuéstrame que puedes darle forma a un PoCoBOT sin pedir milagros. Cuando el metal responda, hablamos de la Ruta Ceniza. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+                text: 'Si quieres arreglar algo de este mundo, primero demuéstrame que puedes darle forma a un PoCoBOT sin despeinarte. Si no puedes superarme a mí, entonces no tienes nada que hacer. Cuando el metal responda, hablamos de la Ruta Ceniza. Ya sabes lo que digo siempre: Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
               }
             }
           }
@@ -2320,32 +2323,34 @@
         completeActionLabel: 'Volver al mapa',
         completeAction: 'map',
         portraits: {
-          right: { src: 'assets/Historia/Brutos/MaraOXIDO4.PNG', alt: 'Mara Oxido' }
+          right: { src: 'assets/Historia/Brutos/MaraOxido.png', alt: 'Mara Oxido' }
         },
         lines: [
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_4.png',
+            figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+            figure: 'assets/Historia/Brutos/MaraOxido.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -30,
-            figureMobileShiftVh: -22,
-            figureScale: 0.88,
-            figureMobileScale: 0.76,
-            text: 'Eso ya se parece a un PoCoBOT y no a un montón de piezas enfadadas. Bien. La Fosa Azul te ha visto empezar, y créeme, Argós toma nota de los que saben poner orden antes de pedir potencia.'
+            figureShiftVh: -20,
+            figureMobileShiftVh: -12,
+            figureScale: 0.94,
+            figureMobileScale: 0.8,
+            text: 'Eso ya se parece a un PoCoBOT y no a un montón de piezas pegadas. Bien. La Fosa Azul te ha visto empezar, y créeme, Argós toma nota de los que saben poner orden antes de pedir potencia. Ya veo era cierto: no buscabas una cita conmigo...'
           },
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_1.png',
+            figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+            figure: 'assets/Historia/Brutos/MaraOxido.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -31,
-            figureMobileShiftVh: -24,
-            figureScale: 0.88,
-            figureMobileScale: 0.76,
-            text: 'No te recrees todavía. La Ruta Ceniza no premia el brillo de un acierto: premia a quien puede repetirlo bajo presión. Vuelve al mapa. El Patio de Pruebas ya es asunto tuyo.'
+            figureShiftVh: -20,
+            figureMobileShiftVh: -12,
+            figureScale: 0.94,
+            figureMobileScale: 0.8,
+            text: 'No te recrees todavía. La Ruta Ceniza no premia el brillo de un solo acierto: premia a quien puede repetirlo bajo presión. Vuelve al mapa. El Patio de Pruebas te espera.'
           }
         ]
       },
@@ -2357,32 +2362,34 @@
         completeActionLabel: 'Reintentar la prueba',
         completeAction: 'mission',
         portraits: {
-          right: { src: 'assets/Historia/Brutos/MaraOXIDO2.png', alt: 'Mara Oxido' }
+          right: { src: 'assets/Historia/Brutos/MaraOxido.png', alt: 'Mara Oxido' }
         },
         lines: [
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_2.png',
+            figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+            figure: 'assets/Historia/Brutos/MaraOxido.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -30,
-            figureMobileShiftVh: -22,
-            figureScale: 0.88,
-            figureMobileScale: 0.76,
-            text: 'Has querido llegar antes de entender qué estabas montando. Y fuera del hangar esa prisa te deja sin bot, sin margen y sin segunda conversación.'
+            figureShiftVh: -20,
+            figureMobileShiftVh: -12,
+            figureScale: 0.94,
+            figureMobileScale: 0.8,
+            text: 'Has querido llegar antes de entender qué estabas montando. Y fuera del hangar esa prisa te deja sin bot, sin margen y sin cita conmigo...'
           },
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+            figure: 'assets/Historia/Brutos/MaraOxido.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -33,
-            figureMobileShiftVh: -25,
-            figureScale: 0.86,
-            figureMobileScale: 0.74,
-            text: 'Respira, recoloca y vuelve a intentarlo. La Ruta Ceniza no perdona la torpeza, pero sí respeta a quien aprende antes de pedir otro turno.'
+            figureShiftVh: -20,
+            figureMobileShiftVh: -12,
+            figureScale: 0.94,
+            figureMobileScale: 0.8,
+            text: 'Respira, recoloca y vuelve a intentarlo. La Ruta Ceniza no perdona la torpeza, pero sí respeta a quien aprende antes de pedir otra oportunidad. No consideres esto unas calabazas... pero estás muy verde para mí.'
           }
         ]
       },

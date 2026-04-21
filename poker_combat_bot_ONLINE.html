@@ -43,7 +43,9 @@ body{
 .app{max-width:1500px;margin:0 auto;padding:8px 10px 10px}
 body.story-embed-mode{
   background:transparent;
-  overflow:hidden;
+  overflow:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
 }
 body.story-embed-mode .app{
   max-width:none;
@@ -83,10 +85,38 @@ body.story-embed-mode .app{
 }
 body.story-embed-mode .cockpit-grid{
   min-height:100svh;
-  margin-bottom:0;
+  margin-bottom:24px;
 }
 body.story-embed-mode #introScreen{
   display:none !important;
+}
+body.story-embed-mode .story-embed-nav{
+  position:fixed;
+  right:12px;
+  bottom:max(12px, env(safe-area-inset-bottom));
+  z-index:120;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+body.story-embed-mode .story-embed-nav-btn{
+  min-width:96px;
+  min-height:42px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,178,46,.35);
+  background:linear-gradient(180deg, rgba(8,13,19,.92), rgba(10,16,25,.96));
+  box-shadow:0 12px 24px rgba(0,0,0,.28);
+  color:var(--text);
+  font-size:.76rem;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+body.story-embed-mode .story-embed-nav-btn:hover{
+  border-color:rgba(35,216,255,.48);
+  color:#fff6e8;
 }
 .side-tower{
   padding:8px;
@@ -4398,6 +4428,11 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   🌐 Conectando...
 </div>
 
+<div class="story-embed-nav" id="storyEmbedNav" hidden>
+  <button class="story-embed-nav-btn" id="storyEmbedTopBtn" type="button">Panel</button>
+  <button class="story-embed-nav-btn" id="storyEmbedHandBtn" type="button">Mano</button>
+</div>
+
 <div class="intro-screen" id="introScreen">
   <div class="intro-card" data-menu="root">
     <div class="intro-kicker">Sistema táctico de combate</div>
@@ -6280,6 +6315,54 @@ function scrollToPlayerPanel(playerIdx, behavior='smooth', align='top'){
     top: Math.max(0, top),
     behavior
   });
+}
+
+function scrollToHandZone(playerIdx, behavior='smooth'){
+  const handZone = document.getElementById(`hand-zone-${playerIdx}`);
+  if(!handZone) return;
+  const top = window.scrollY + handZone.getBoundingClientRect().top - 16;
+  window.scrollTo({
+    top: Math.max(0, top),
+    behavior
+  });
+}
+
+function scrollToSharedControls(behavior='smooth'){
+  const controls = document.querySelector('.shared-controls');
+  if(!controls){
+    window.scrollTo({ top: 0, behavior });
+    return;
+  }
+  const top = window.scrollY + controls.getBoundingClientRect().top - 14;
+  window.scrollTo({
+    top: Math.max(0, top),
+    behavior
+  });
+}
+
+function setupStoryEmbedNavigation(){
+  const nav = document.getElementById('storyEmbedNav');
+  const topBtn = document.getElementById('storyEmbedTopBtn');
+  const handBtn = document.getElementById('storyEmbedHandBtn');
+  if(!nav || !topBtn || !handBtn) return;
+  if(!STORY_EMBED_MODE){
+    nav.hidden = true;
+    return;
+  }
+  nav.hidden = false;
+  if(topBtn.dataset.bound !== '1'){
+    topBtn.dataset.bound = '1';
+    topBtn.addEventListener('click', () => {
+      scrollToSharedControls('smooth');
+    });
+  }
+  if(handBtn.dataset.bound !== '1'){
+    handBtn.dataset.bound = '1';
+    handBtn.addEventListener('click', () => {
+      const humanIdx = typeof getInteractivePlayerIndex === 'function' ? getInteractivePlayerIndex() : 0;
+      scrollToHandZone(humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0), 'smooth');
+    });
+  }
 }
 
 function encodeCardToken(card){
@@ -10901,6 +10984,7 @@ window.addEventListener('load', () => {
   syncIntroInstallTip();
   startMenuMusic(false);
   autoStartStoryMissionIfRequested();
+  setupStoryEmbedNavigation();
   try{
     const displayMode = window.matchMedia('(display-mode: standalone)');
     if(displayMode && typeof displayMode.addEventListener === 'function'){
