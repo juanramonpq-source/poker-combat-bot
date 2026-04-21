@@ -219,7 +219,7 @@
       border-radius:0;
       overflow:hidden;
       border:0;
-      background:#060a10 url("assets/Historia/low/titulo1-low.jpg") no-repeat center center / cover;
+      background:#060a10 url("assets/Historia/low/titulo1_fondo_ultraligero_1080.webp") no-repeat center center / cover;
       box-shadow:none;
       isolation:isolate;
     }
@@ -364,7 +364,7 @@
       min-height:100svh;
       background:
         linear-gradient(180deg, rgba(6,10,15,.1), rgba(6,10,15,.42)),
-        #05080d url("assets/Historia/low/mapaok-low.jpg") no-repeat center top / cover;
+        #05080d url("assets/Historia/low/mapaok_ultraligero_1080.webp") no-repeat center top / cover;
       overflow:hidden;
     }
     .story-map-shell::after{
@@ -409,7 +409,7 @@
       min-height:220px;
       background:
         linear-gradient(180deg, rgba(6,10,15,.14), rgba(6,10,15,.74)),
-        #05080d url("assets/Historia/low/mapaok-low.jpg") no-repeat center top / cover;
+        #05080d url("assets/Historia/low/mapaok_ultraligero_1080.webp") no-repeat center top / cover;
       box-shadow:0 22px 42px rgba(0,0,0,.28);
     }
     .mobile-route-hero::before{
@@ -495,6 +495,10 @@
       border-color:rgba(143,244,255,.34);
       box-shadow:0 0 0 1px rgba(143,244,255,.14), 0 20px 38px rgba(0,0,0,.26);
     }
+    .mobile-route-card.completed{
+      border-color:rgba(115,255,186,.34);
+      box-shadow:0 0 0 1px rgba(115,255,186,.14), 0 20px 38px rgba(0,0,0,.26);
+    }
     .mobile-route-art{
       position:relative;
       height:144px;
@@ -556,6 +560,18 @@
       border-color:rgba(143,244,255,.26);
       background:rgba(143,244,255,.12);
       box-shadow:0 0 18px rgba(143,244,255,.08);
+    }
+    .mobile-route-state.current{
+      color:#dffbff;
+      border-color:rgba(143,244,255,.26);
+      background:rgba(143,244,255,.16);
+      box-shadow:0 0 20px rgba(143,244,255,.1);
+    }
+    .mobile-route-state.completed{
+      color:#e8fff4;
+      border-color:rgba(115,255,186,.28);
+      background:rgba(115,255,186,.14);
+      box-shadow:0 0 18px rgba(115,255,186,.1);
     }
     .mobile-route-state.locked{
       color:#c6d0dc;
@@ -823,24 +839,36 @@
     }
     .scene-focus-figure{
       --scene-figure-shift:0svh;
+      --scene-figure-mobile-shift:var(--scene-figure-shift);
+      --scene-figure-scale:1;
+      --scene-figure-mobile-scale:var(--scene-figure-scale);
       width:min(46vw, 620px);
       max-height:min(88svh, 960px);
       object-fit:contain;
+      object-position:center bottom;
+      transform-origin:center bottom;
       filter:drop-shadow(0 34px 40px rgba(0,0,0,.36));
       opacity:0;
-      transform:translateY(calc(18px + var(--scene-figure-shift))) scale(.985);
+      transform:translateY(calc(18px + var(--scene-figure-shift))) scale(var(--scene-figure-scale));
       transition:opacity .34s ease, transform .34s ease, filter .34s ease;
+    }
+    .scene-focus-figure.figure-mara{
+      object-position:center top;
     }
     .story-scene-stage.dialogue-live .scene-focus-figure{
       opacity:1;
-      transform:translateY(var(--scene-figure-shift)) scale(1);
+      transform:translateY(var(--scene-figure-shift)) scale(var(--scene-figure-scale));
     }
     .story-scene-stage.figure-raised .scene-focus-figure{
-      transform:translateY(calc(var(--scene-figure-shift) - 8svh)) scale(.98);
+      transform:translateY(calc(var(--scene-figure-shift) - 8svh)) scale(var(--scene-figure-scale));
     }
     .story-scene-stage.hangar-scene .scene-focus-figure{
-      width:min(54vw, 760px);
-      max-height:min(92svh, 1080px);
+      width:min(48vw, 700px);
+      max-height:min(86svh, 920px);
+    }
+    .story-scene-stage.hangar-scene .scene-focus-wrap{
+      align-items:start;
+      padding-top:clamp(64px, 10vh, 118px);
     }
     .scene-dialog-card{
       position:relative;
@@ -853,6 +881,12 @@
       background:linear-gradient(180deg, rgba(8,13,19,.86), rgba(8,13,19,.78));
       box-shadow:0 28px 54px rgba(0,0,0,.34);
       backdrop-filter:blur(20px);
+      opacity:1;
+      transform:translateY(0);
+      transition:opacity .34s ease, transform .34s ease;
+    }
+    .story-scene-stage.ambient .scene-dialog-card{
+      transform:translateY(18px);
     }
     .scene-dialog-main{
       display:grid;
@@ -1059,10 +1093,26 @@
       background:rgba(255,255,255,.05);
     }
     .story-scene-stage.ambient .scene-header,
-    .story-scene-stage.ambient .scene-dialog-card,
-    .story-scene-stage.ambient .scene-focus-wrap{
+    .story-scene-stage.ambient .scene-dialog-card{
       opacity:0;
       pointer-events:none;
+    }
+    .story-scene-stage.ambient.scene-ambient-blank .scene-focus-wrap,
+    .story-scene-stage.ambient.scene-ambient-blank .scene-intro-tag{
+      opacity:0;
+      pointer-events:none;
+    }
+    .story-scene-stage.ambient.scene-ambient-figure .scene-focus-wrap{
+      opacity:1;
+      pointer-events:none;
+    }
+    .story-scene-stage.ambient.scene-ambient-figure .scene-focus-figure{
+      opacity:1;
+      transform:translateY(var(--scene-figure-shift)) scale(var(--scene-figure-scale));
+    }
+    .story-scene-stage.ambient.scene-ambient-figure .scene-intro-tag{
+      opacity:1;
+      transform:translateY(0);
     }
     .scene-ambient-actions{
       position:absolute;
@@ -1346,6 +1396,58 @@
         width:min(960px, calc(100% - 32px));
       }
     }
+    @media (max-height:760px){
+      .scene-focus-figure{
+        width:min(40vw, 520px);
+        max-height:58svh;
+      }
+      .story-scene-stage.hangar-scene .scene-focus-figure{
+        width:min(42vw, 560px);
+        max-height:64svh;
+      }
+      .story-scene-stage.hangar-scene .scene-focus-wrap{
+        padding-top:74px;
+      }
+      .story-scene-stage.figure-raised .scene-focus-figure{
+        transform:translateY(calc(var(--scene-figure-shift) - 10svh)) scale(var(--scene-figure-scale));
+      }
+      .scene-dialog-card{
+        width:min(980px, calc(100% - 24px));
+        margin:0 auto 18px;
+        padding:14px 16px;
+        border-radius:24px;
+        max-height:46svh;
+        overflow:auto;
+        overscroll-behavior:contain;
+      }
+      .scene-dialog-main{
+        grid-template-columns:92px 1fr;
+        gap:14px;
+        align-items:start;
+      }
+      .scene-avatar{
+        max-height:150px;
+      }
+      .scene-subtitle{
+        font-size:.84rem;
+        line-height:1.42;
+      }
+      .scene-context{
+        gap:8px;
+        margin-top:10px;
+        padding:10px 12px;
+      }
+      .scene-speaker{
+        margin-top:10px;
+      }
+      .scene-line{
+        font-size:.94rem;
+        line-height:1.52;
+      }
+      .scene-actions{
+        margin-top:14px;
+      }
+    }
     @media (orientation:portrait){
       .story-map-shell{
         height:auto;
@@ -1371,7 +1473,7 @@
         width:auto;
       }
       .title-art-wrap{
-        background:#060a10 url("assets/Historia/low/titulo-smartphone1-low.jpg") no-repeat center top / cover;
+        background:#060a10 url("assets/Historia/low/titulo_smartphone_compacto_1080.webp") no-repeat center top / cover;
       }
       .title-image{
         object-fit:cover;
@@ -1455,15 +1557,22 @@
         padding:0 12px 0;
       }
       .scene-focus-figure{
-        width:min(74vw, 360px);
-        max-height:58svh;
+        width:min(72vw, 340px);
+        max-height:54svh;
+        transform:translateY(calc(18px + var(--scene-figure-mobile-shift))) scale(var(--scene-figure-mobile-scale));
       }
       .story-scene-stage.hangar-scene .scene-focus-figure{
-        width:min(82vw, 430px);
-        max-height:68svh;
+        width:min(74vw, 360px);
+        max-height:56svh;
+      }
+      .story-scene-stage.hangar-scene .scene-focus-wrap{
+        padding-top:86px;
+      }
+      .story-scene-stage.dialogue-live .scene-focus-figure{
+        transform:translateY(var(--scene-figure-mobile-shift)) scale(var(--scene-figure-mobile-scale));
       }
       .story-scene-stage.figure-raised .scene-focus-figure{
-        transform:translateY(calc(var(--scene-figure-shift) - 5svh)) scale(.98);
+        transform:translateY(calc(var(--scene-figure-mobile-shift) - 5svh)) scale(var(--scene-figure-mobile-scale));
       }
       .scene-intro-tag{
         top:74px;
@@ -1475,6 +1584,9 @@
         width:calc(100% - 24px);
         margin:0 12px 86px;
         padding:16px;
+        max-height:44svh;
+        overflow:auto;
+        overscroll-behavior:contain;
       }
       .scene-dialog-main{
         grid-template-columns:92px 1fr;
@@ -1610,7 +1722,7 @@
               <img class="scene-focus-figure" id="storySceneFigure" alt="" hidden>
             </div>
             <div class="scene-ambient-actions" id="storySceneAmbientActions">
-              <p class="scene-ambient-hint">Pulsa <strong>Adelante</strong> o toca la pantalla para entrar en la conversación.</p>
+              <p class="scene-ambient-hint" id="storySceneAmbientHint">Pulsa <strong>Adelante</strong> o toca la pantalla para entrar en la escena.</p>
               <button class="scene-btn secondary" id="storySceneAmbientMapBtn" type="button">Volver al mapa</button>
               <button class="scene-btn" id="storySceneAmbientNextBtn" type="button">Adelante</button>
             </div>
@@ -1710,6 +1822,7 @@
     const storySceneFigure = document.getElementById('storySceneFigure');
     const storySceneOrder = document.getElementById('storySceneOrder');
     const storySceneAmbientMapBtn = document.getElementById('storySceneAmbientMapBtn');
+    const storySceneAmbientHint = document.getElementById('storySceneAmbientHint');
     const storySceneAmbientNextBtn = document.getElementById('storySceneAmbientNextBtn');
     const storySceneCloseBtn = document.getElementById('storySceneCloseBtn');
     const storySceneIntroName = document.getElementById('storySceneIntroName');
@@ -1738,8 +1851,12 @@
     const storyMissionFrame = document.getElementById('storyMissionFrame');
     const titleImage = document.querySelector('.title-image');
     const STORY_TITLE_LOW_IMAGES = {
-      desktop: 'assets/Historia/low/titulo1-low.jpg',
-      mobile: 'assets/Historia/low/titulo-smartphone1-low.jpg'
+      desktop: 'assets/Historia/low/titulo1_fondo_compacto.webp',
+      mobile: 'assets/Historia/low/titulo_smartphone_compacto_1080.webp'
+    };
+    const STORY_MAP_THEMES = {
+      exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
+      chapter_clear: ''
     };
     const STORY_UI_SFX = {
       hover: { src: 'assets/sfx/ui_click.wav', volume: 0.12 },
@@ -1758,12 +1875,19 @@
     let titleAudioDelayInput = null;
     let currentStoryNodeId = 'hangar';
     let activeSceneNodeId = null;
+    let activeSceneScriptKey = null;
     let activeMissionNodeId = null;
     let sceneLineIndex = 0;
     let sceneAmbientMode = false;
+    let sceneAmbientStep = 0;
     let storyTransitionBusy = false;
     const sceneChoiceSelections = {};
     const storyUiSfxBank = {};
+    const storyProgressState = {
+      completedCount: 0,
+      pendingThemeKey: null,
+      lastMissionResult: null
+    };
     let lastStoryHoverSfxAt = 0;
 
     if (storyMapMusic) {
@@ -1836,10 +1960,20 @@
       if (image.complete) finish(true);
     }
 
+    function resolveStoryAssetSource(asset) {
+      if (!asset) return '';
+      if (typeof asset === 'string') return asset;
+      if (typeof asset === 'object') {
+        const useMobileAsset = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
+        if (useMobileAsset && asset.mobile) return asset.mobile;
+        return asset.desktop || asset.mobile || '';
+      }
+      return '';
+    }
+
     function syncTitleLowBackdrop() {
       if (!titleArtWrap) return;
-      const useMobileTitle = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
-      const lowSrc = useMobileTitle ? STORY_TITLE_LOW_IMAGES.mobile : STORY_TITLE_LOW_IMAGES.desktop;
+      const lowSrc = resolveStoryAssetSource(STORY_TITLE_LOW_IMAGES);
       titleArtWrap.style.backgroundImage = `url("${lowSrc}")`;
     }
 
@@ -1856,10 +1990,12 @@
 
     function setSceneBackdropArtwork(lowSrc, highSrc) {
       if (!storySceneBackdrop) return;
+      const resolvedLowSrc = resolveStoryAssetSource(lowSrc);
+      const resolvedHighSrc = resolveStoryAssetSource(highSrc);
       storySceneBackdrop.classList.remove('loaded');
-      storySceneBackdrop.style.setProperty('--scene-low-image', lowSrc ? `url("${lowSrc}")` : 'none');
-      storySceneBackdrop.style.setProperty('--scene-high-image', highSrc ? `url("${highSrc}")` : 'none');
-      preloadImage(highSrc, (ok) => {
+      storySceneBackdrop.style.setProperty('--scene-low-image', resolvedLowSrc ? `url("${resolvedLowSrc}")` : 'none');
+      storySceneBackdrop.style.setProperty('--scene-high-image', resolvedHighSrc ? `url("${resolvedHighSrc}")` : 'none');
+      preloadImage(resolvedHighSrc, (ok) => {
         if (ok) storySceneBackdrop.classList.add('loaded');
       });
     }
@@ -1906,7 +2042,10 @@
         title: 'Hangar de la Fosa Azul',
         type: 'Briefing',
         sceneChip: 'Construcción',
-        lowImage: 'assets/Historia/low/hangar-fosa-azul-low.jpg',
+        lowImage: {
+          desktop: 'assets/Historia/low/hangar_fosa_azul_compacto_1600.webp',
+          mobile: 'assets/Historia/low/hangar_fosa_azul_ultraligero_1080.webp'
+        },
         image: 'assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG',
         lead: 'Briefing de arranque. Aquí definimos qué es un mecha, la necesidad de montaje y el tono del refugio técnico.',
         mission: 'Construir un bot válido para un NPC.',
@@ -2047,6 +2186,8 @@
       hangar: {
         title: 'Hangar de la Fosa Azul',
         subtitle: 'El taller no te recibe como héroe. Te recibe como alguien que aún debe demostrar que entiende el metal.',
+        contextChip: 'Briefing · Construcción',
+        objective: 'Escucha a Mara, entiende lo que se juega en la Ruta Ceniza y supera la primera prueba de ensamblaje.',
         portraits: {
           right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
         },
@@ -2057,24 +2198,29 @@
           {
             speaker: 'Mara Oxido',
             side: 'right',
+            figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
             figure: 'assets/Historia/Brutos/MaraOxido.png',
-            figureShiftVh: -10,
+            figureClass: 'figure-mara',
+            figureShiftVh: -24,
+            figureMobileShiftVh: -20,
+            figureScale: 0.92,
+            figureMobileScale: 0.82,
             text: 'Hola, ¿quién anda ahí?',
             choices: [
               {
                 id: 'me',
-                label: 'Tranquila, Óxido. Solo soy yo.',
-                response: 'Tú: "Tranquila, Óxido. Solo soy yo."'
+                label: 'Tranquila, Óxido. Soy yo.',
+                response: 'Tú: "Tranquila, Óxido. Soy yo."'
               },
               {
                 id: 'scare',
-                label: '¿No te habré interrumpido otra operación secreta?',
-                response: 'Tú: "¿No te habré interrumpido otra operación secreta?"'
+                label: '¿No te habré fastidiado otra genialidad clandestina?',
+                response: 'Tú: "¿No te habré fastidiado otra genialidad clandestina?"'
               },
               {
                 id: 'looking',
-                label: 'Buscaba a Mara Óxido. Me dijeron que seguía mandando más que los motores.',
-                response: 'Tú: "Buscaba a Mara Óxido. Me dijeron que seguía mandando más que los motores."'
+                label: 'Buscaba a la célebre Mara Óxido. Qué casualidad encontrarte mandando aquí también.',
+                response: 'Tú: "Buscaba a la célebre Mara Óxido. Qué casualidad encontrarte mandando aquí también."'
               }
             ]
           },
@@ -2082,9 +2228,24 @@
             speaker: 'Mara Oxido',
             side: 'right',
             figure: 'assets/Historia/Brutos/mara_pose_1.png',
+            figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -14,
-            text: 'Con esa lengua te reconocería aunque se apagara media Fosa Azul. Intuyo que no has venido solo a verme.',
+            figureShiftVh: -31,
+            figureMobileShiftVh: -24,
+            figureScale: 0.88,
+            figureMobileScale: 0.76,
+            variantSourceLine: 0,
+            variants: {
+              me: {
+                text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Fosa Azul se viniera abajo. Intuyo que no has venido solo a verme.'
+              },
+              scare: {
+                text: 'Si tú entras sin avisar, no es interrupción: es costumbre. Lo raro sería verte llamar primero. Intuyo que no has venido solo a verme.'
+              },
+              looking: {
+                text: 'Sigue así y un día voy a cobrar entrada por escuchar mis propias leyendas. Intuyo que no has venido solo a verme.'
+              }
+            },
             choices: [
               {
                 id: 'ceniza',
@@ -2107,17 +2268,121 @@
             speaker: 'Mara Oxido',
             side: 'right',
             figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -15,
-            text: 'Entonces escucha bien. La Ruta Ceniza era una cadena de evaluación de Argós: talleres, estaciones y pasos tácticos pensados para observar, filtrar y decidir quién merecía continuidad. El mundo se vino abajo, pero esas pruebas no murieron. Siguen ahí, medio rotas, filtrando de verdad.'
+            figureShiftVh: -33,
+            figureMobileShiftVh: -25,
+            figureScale: 0.86,
+            figureMobileScale: 0.74,
+            variantSourceLine: 1,
+            variants: {
+              ceniza: {
+                text: 'No vas desencaminado. La Ruta Ceniza no era un paseo con nombre dramático: era una criba de Argós. Talleres, torres, puentes... cada parada medía si el piloto entendía la máquina o solo quería que obedeciera. El mundo cayó, pero la criba siguió funcionando a medias.'
+              },
+              lore: {
+                text: 'Porque los PoCoBOT lo fueron casi todo. Son robots de combate modulares: marcos pensados para custodiar rutas, sostener enclaves y decidir guerras. En manos buenas pueden salvar una comunidad. En manos torpes la condenan entera en dos turnos mal montados.'
+              },
+              survive: {
+                text: 'Entonces empieza por aceptar esto: ahí fuera no sobrevive el más ruidoso. Sobrevive quien deja margen, quien vuelve con el bot entero y con algo humano todavía dentro. Corvo lo diría de otra forma, pero no te estaría diciendo otra cosa.'
+              }
+            }
           },
           {
             speaker: 'Mara Oxido',
             side: 'right',
             figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -15,
-            text: 'Y un PoCoBOT no se saca adelante a martillazos. Primero se comprende, luego se le pide fuerza. Si quieres entrar en la Ruta Ceniza, demuéstrame que sabes ensamblarlo hasta dejarlo listo para atacar. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+            figureShiftVh: -33,
+            figureMobileShiftVh: -25,
+            figureScale: 0.86,
+            figureMobileScale: 0.74,
+            variantSourceLine: 1,
+            variants: {
+              ceniza: {
+                text: 'Si quieres afrontar la antigua Ruta Ceniza, empieza por el principio: monta un PoCoBOT y déjalo listo para atacar delante de mí. Las viejas pruebas de Argós siguen filtrando de verdad. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+              },
+              lore: {
+                text: 'Si quieres hablar de PoCoBOT con propiedad, deja de nombrarlos como reliquias y móntame uno ahora. Quiero verlo nacer, ajustarse y quedar listo para atacar. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+              },
+              survive: {
+                text: 'Si quieres seguir ahí fuera, primero demuéstrame que puedes darle forma a un PoCoBOT sin pedir milagros. Cuando el metal responda, hablamos de la Ruta Ceniza. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+              }
+            }
+          }
+        ]
+      },
+      hangar_outcome_win: {
+        title: 'Hangar de la Fosa Azul',
+        subtitle: 'La primera criba del metal ya ha hablado.',
+        contextChip: 'Resultado · Aprobado',
+        objective: 'Regresar al mapa con el Hangar completado y avanzar al Patio de Pruebas.',
+        completeActionLabel: 'Volver al mapa',
+        completeAction: 'map',
+        portraits: {
+          right: { src: 'assets/Historia/Brutos/MaraOXIDO4.PNG', alt: 'Mara Oxido' }
+        },
+        lines: [
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figure: 'assets/Historia/Brutos/mara_pose_4.png',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -30,
+            figureMobileShiftVh: -22,
+            figureScale: 0.88,
+            figureMobileScale: 0.76,
+            text: 'Eso ya se parece a un PoCoBOT y no a un montón de piezas enfadadas. Bien. La Fosa Azul te ha visto empezar, y créeme, Argós toma nota de los que saben poner orden antes de pedir potencia.'
+          },
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figure: 'assets/Historia/Brutos/mara_pose_1.png',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -31,
+            figureMobileShiftVh: -24,
+            figureScale: 0.88,
+            figureMobileScale: 0.76,
+            text: 'No te recrees todavía. La Ruta Ceniza no premia el brillo de un acierto: premia a quien puede repetirlo bajo presión. Vuelve al mapa. El Patio de Pruebas ya es asunto tuyo.'
+          }
+        ]
+      },
+      hangar_outcome_lose: {
+        title: 'Hangar de la Fosa Azul',
+        subtitle: 'Perder aquí también forma parte del aprendizaje del metal.',
+        contextChip: 'Resultado · Reintento',
+        objective: 'Volver a ensamblar con calma hasta dejar tu PoCoBOT listo para atacar antes que Mara.',
+        completeActionLabel: 'Reintentar la prueba',
+        completeAction: 'mission',
+        portraits: {
+          right: { src: 'assets/Historia/Brutos/MaraOXIDO2.png', alt: 'Mara Oxido' }
+        },
+        lines: [
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figure: 'assets/Historia/Brutos/mara_pose_2.png',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -30,
+            figureMobileShiftVh: -22,
+            figureScale: 0.88,
+            figureMobileScale: 0.76,
+            text: 'Has querido llegar antes de entender qué estabas montando. Y fuera del hangar esa prisa te deja sin bot, sin margen y sin segunda conversación.'
+          },
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -33,
+            figureMobileShiftVh: -25,
+            figureScale: 0.86,
+            figureMobileScale: 0.74,
+            text: 'Respira, recoloca y vuelve a intentarlo. La Ruta Ceniza no perdona la torpeza, pero sí respeta a quien aprende antes de pedir otro turno.'
           }
         ]
       },
@@ -2177,19 +2442,60 @@
       });
     }
 
-    function renderStoryNode(nodeId) {
+    function getStoryNodeStatus(node) {
+      if (!node) return 'locked';
+      if (node.order <= storyProgressState.completedCount) return 'completed';
+      if (node.order === storyProgressState.completedCount + 1) return 'current';
+      if (node.order === storyProgressState.completedCount + 2) return 'available';
+      return 'locked';
+    }
+
+    function isStoryNodeAvailable(node) {
+      return getStoryNodeStatus(node) !== 'locked';
+    }
+
+    function queueStoryMapTheme(themeKey) {
+      storyProgressState.pendingThemeKey = themeKey || null;
+      if (storyMapShell) {
+        if (themeKey) storyMapShell.dataset.pendingTheme = themeKey;
+        else delete storyMapShell.dataset.pendingTheme;
+      }
+    }
+
+    function postStoryProgressToMap() {
+      if (!storyMapFrame || !storyMapFrame.contentWindow) return;
+      storyMapFrame.contentWindow.postMessage({
+        type: 'pocobot-story-map-progress',
+        completedCount: storyProgressState.completedCount,
+        selectedId: currentStoryNodeId
+      }, '*');
+    }
+
+    function syncStoryMapState() {
+      postStoryProgressToMap();
+      postNodeSelectionToMap(currentStoryNodeId);
+    }
+
+    function renderStoryNode(nodeId, options = {}) {
+      const shouldSyncMap = options.syncMap !== false;
       const localNode = storyDraftNodes[nodeId] || storyDraftNodes.hangar;
       currentStoryNodeId = localNode.id;
       renderStoryCast(localNode.cast);
       renderMobileRoute();
+      if (shouldSyncMap) syncStoryMapState();
     }
 
     function isMobileStoryRouteMode() {
       return window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
     }
 
-    function isStoryNodeAvailable(node) {
-      return Number(node?.order || 99) <= 2;
+    function setStoryCompletedCount(nextCompletedCount, options = {}) {
+      storyProgressState.completedCount = Math.max(0, Math.min(Object.keys(storyDraftNodes).length, nextCompletedCount));
+      if (options.selectedId && storyDraftNodes[options.selectedId]) {
+        currentStoryNodeId = options.selectedId;
+      }
+      renderMobileRoute();
+      syncStoryMapState();
     }
 
     function renderMobileRoute() {
@@ -2198,12 +2504,17 @@
       storyMobileRouteList.innerHTML = '';
 
       nodes.forEach((node) => {
-        const available = isStoryNodeAvailable(node);
+        const status = getStoryNodeStatus(node);
+        const available = status !== 'locked';
         const card = document.createElement('article');
-        card.className = `mobile-route-card${available ? '' : ' locked'}${currentStoryNodeId === node.id ? ' current' : ''}`;
+        card.className = `mobile-route-card ${status}${currentStoryNodeId === node.id ? ' current' : ''}`;
 
-        const stateLabel = available ? (currentStoryNodeId === node.id ? 'Activo' : 'Disponible') : 'Bloqueado';
-        const stateClass = available ? 'available' : 'locked';
+        const stateLabel = {
+          completed: 'Completado',
+          current: 'Activo',
+          available: 'Disponible',
+          locked: 'Bloqueado'
+        }[status];
         card.innerHTML = `
           <div class="mobile-route-art">
             <img src="${node.image}" alt="${node.title}" loading="lazy">
@@ -2211,7 +2522,7 @@
           <div class="mobile-route-body">
             <div class="mobile-route-topline">
               <span class="mobile-route-order">Nodo ${node.order}</span>
-              <span class="mobile-route-state ${stateClass}">${stateLabel}</span>
+              <span class="mobile-route-state ${status}">${stateLabel}</span>
             </div>
             <h3 class="mobile-route-name">${node.title}</h3>
             <p class="mobile-route-summary">${node.lead}</p>
@@ -2219,7 +2530,9 @@
               <span>${node.type}</span>
               <span>${node.sceneChip}</span>
             </div>
-            <button class="mobile-route-action" type="button" ${available ? '' : 'disabled aria-disabled="true"'}>${available ? 'Entrar' : 'Aún no disponible'}</button>
+            <button class="mobile-route-action" type="button" ${available ? '' : 'disabled aria-disabled="true"'}>
+              ${status === 'completed' ? 'Revisar' : available ? 'Entrar' : 'Aún no disponible'}
+            </button>
           </div>
         `;
 
@@ -2235,8 +2548,26 @@
       });
     }
 
-    function getSceneChoiceKey() {
-      return `${activeSceneNodeId || 'none'}:${sceneLineIndex}`;
+    function getActiveSceneScriptKey() {
+      return activeSceneScriptKey || activeSceneNodeId || null;
+    }
+
+    function getSceneChoiceKey(lineIndex = sceneLineIndex, sceneKey = getActiveSceneScriptKey()) {
+      return `${sceneKey || 'none'}:${lineIndex}`;
+    }
+
+    function getSceneChoiceSelection(lineIndex, sceneKey = getActiveSceneScriptKey()) {
+      return sceneChoiceSelections[getSceneChoiceKey(lineIndex, sceneKey)] || null;
+    }
+
+    function resolveSceneLine(scene, lineIndex = sceneLineIndex) {
+      if (!scene || !Array.isArray(scene.lines) || !scene.lines.length) return null;
+      const baseLine = scene.lines[Math.min(lineIndex, scene.lines.length - 1)];
+      const variantSourceLine = Number.isInteger(baseLine.variantSourceLine) ? baseLine.variantSourceLine : null;
+      if (variantSourceLine === null || !baseLine.variants) return baseLine;
+      const choiceId = getSceneChoiceSelection(variantSourceLine);
+      const variant = choiceId ? baseLine.variants[choiceId] : null;
+      return variant ? { ...baseLine, ...variant } : baseLine;
     }
 
     function setSceneAvatar(line, scene) {
@@ -2254,16 +2585,35 @@
 
     function setSceneFigure(line, scene) {
       if (!storySceneFigure) return;
-      const source = line.figure || scene.figure || '';
+      const source = resolveStoryAssetSource(line.figure || scene.figure || '');
+      const lowSource = resolveStoryAssetSource(line.figureLow || scene.figureLow || '');
+      storySceneFigure.className = 'scene-focus-figure';
       if (!source) {
         storySceneFigure.hidden = true;
         storySceneFigure.removeAttribute('src');
         storySceneFigure.removeAttribute('alt');
+        delete storySceneFigure.dataset.figureToken;
         return;
       }
+      if (line.figureClass) {
+        line.figureClass.split(/\s+/).filter(Boolean).forEach((className) => {
+          storySceneFigure.classList.add(className);
+        });
+      }
       storySceneFigure.hidden = false;
-      storySceneFigure.src = source;
       storySceneFigure.alt = line.speaker || scene.title || 'Figura del personaje';
+      const figureToken = `${getActiveSceneScriptKey() || 'scene'}:${sceneLineIndex}:${source}`;
+      storySceneFigure.dataset.figureToken = figureToken;
+      if (lowSource && lowSource !== source) {
+        storySceneFigure.src = lowSource;
+        preloadImage(source, (ok) => {
+          if (!ok) return;
+          if (storySceneFigure.dataset.figureToken !== figureToken) return;
+          storySceneFigure.src = source;
+        });
+      } else {
+        storySceneFigure.src = source;
+      }
     }
 
     function syncSceneStageMode(scene) {
@@ -2271,20 +2621,52 @@
       storySceneStage.classList.toggle('ambient', !!sceneAmbientMode);
       storySceneStage.classList.toggle('dialogue-live', !sceneAmbientMode);
       storySceneStage.classList.toggle('minimal-dialogue', !!scene?.minimalDialogue);
+      storySceneStage.classList.toggle('scene-ambient-blank', !!sceneAmbientMode && sceneAmbientStep === 0);
+      storySceneStage.classList.toggle('scene-ambient-figure', !!sceneAmbientMode && sceneAmbientStep === 1);
     }
 
     function syncScenePresentation(line) {
       if (!storySceneStage) return;
-      const showIntroTag = !!(activeSceneNodeId === 'hangar' && line && sceneLineIndex === 0);
+      const activeSceneKey = getActiveSceneScriptKey();
+      const showIntroTag = !!(activeSceneKey === 'hangar' && sceneAmbientMode && sceneAmbientStep === 1 && line);
       const raiseFigure = !!(line && line.figureRaised);
       const figureShift = Number.isFinite(line?.figureShiftVh) ? line.figureShiftVh : 0;
+      const figureMobileShift = Number.isFinite(line?.figureMobileShiftVh) ? line.figureMobileShiftVh : figureShift;
+      const figureScale = Number.isFinite(line?.figureScale) ? line.figureScale : 1;
+      const figureMobileScale = Number.isFinite(line?.figureMobileScale) ? line.figureMobileScale : figureScale;
       storySceneStage.classList.toggle('show-intro-tag', showIntroTag);
       storySceneStage.classList.toggle('figure-raised', raiseFigure);
       storySceneStage.classList.toggle('hangar-scene', activeSceneNodeId === 'hangar');
-      storySceneStage.style.setProperty('--scene-figure-shift', `${figureShift}svh`);
+      storySceneStage.style.setProperty('--scene-figure-shift', `${figureShift}vh`);
+      storySceneStage.style.setProperty('--scene-figure-mobile-shift', `${figureMobileShift}vh`);
+      storySceneStage.style.setProperty('--scene-figure-scale', String(figureScale));
+      storySceneStage.style.setProperty('--scene-figure-mobile-scale', String(figureMobileScale));
       if (storySceneIntroName) {
         storySceneIntroName.textContent = line?.speaker || 'Mara Óxido';
       }
+    }
+
+    function updateAmbientHint() {
+      if (!storySceneAmbientHint || !storySceneAmbientNextBtn) return;
+      if (!sceneAmbientMode) {
+        storySceneAmbientHint.innerHTML = 'Pulsa <strong>Adelante</strong> o toca la pantalla para continuar.';
+        storySceneAmbientNextBtn.textContent = 'Adelante';
+        return;
+      }
+      if (sceneAmbientStep === 0) {
+        storySceneAmbientHint.innerHTML = 'Pulsa <strong>Adelante</strong> o toca la pantalla para revelar a Mara Óxido.';
+        storySceneAmbientNextBtn.textContent = 'Adelante';
+        return;
+      }
+      storySceneAmbientHint.innerHTML = 'Pulsa <strong>Adelante</strong> o toca la pantalla para abrir la conversación.';
+      storySceneAmbientNextBtn.textContent = 'Adelante';
+    }
+
+    function showAmbientFigure(scene) {
+      const introLine = resolveSceneLine(scene, 0) || scene.lines?.[0] || null;
+      if (!introLine) return;
+      setSceneFigure(introLine, scene);
+      syncScenePresentation(introLine);
     }
 
     function setScenePortrait(slot, portrait, activeSide) {
@@ -2314,7 +2696,7 @@
     function renderSceneChoices(line) {
       if (!storySceneChoices || !storySceneResponse) return;
       const choices = Array.isArray(line.choices) ? line.choices : [];
-      const selectedId = sceneChoiceSelections[getSceneChoiceKey()] || null;
+      const selectedId = getSceneChoiceSelection(sceneLineIndex) || null;
       storySceneChoices.innerHTML = '';
 
       if (!choices.length) {
@@ -2333,7 +2715,7 @@
         if (choice.id === selectedId) button.classList.add('selected');
         bindStoryUiSfx(button, { clickKind: 'confirm' });
         button.addEventListener('click', () => {
-          sceneChoiceSelections[getSceneChoiceKey()] = choice.id;
+          sceneChoiceSelections[getSceneChoiceKey(sceneLineIndex)] = choice.id;
           renderSceneLine(true);
         });
         storySceneChoices.appendChild(button);
@@ -2353,15 +2735,16 @@
 
     function renderSceneLine(skipTransition = false) {
       const localNode = storyDraftNodes[activeSceneNodeId] || storyDraftNodes.hangar;
-      const scene = storySceneScripts[activeSceneNodeId];
-      const line = scene.lines[Math.min(sceneLineIndex, scene.lines.length - 1)];
+      const scene = storySceneScripts[getActiveSceneScriptKey()] || storySceneScripts.hangar;
+      const line = resolveSceneLine(scene);
+      if (!line) return;
       if (!skipTransition) cueSceneLineTransition();
       storySceneOrder.textContent = `Capítulo ${localNode.order} · Ruta Ceniza`;
       storySceneNodeLabel.textContent = localNode.title;
       storySceneTitle.textContent = scene.title || localNode.title;
       storySceneSubtitle.textContent = scene.subtitle || localNode.lead;
-      storySceneTypeChip.textContent = `${localNode.type} · ${localNode.sceneChip}`;
-      storySceneObjective.textContent = `Objetivo: ${localNode.mission}`;
+      storySceneTypeChip.textContent = scene.contextChip || `${localNode.type} · ${localNode.sceneChip}`;
+      storySceneObjective.textContent = `Objetivo: ${scene.objective || localNode.mission}`;
       storySceneSpeaker.textContent = line.speaker;
       storySceneLine.textContent = line.text;
       renderStoryCast(localNode.cast);
@@ -2377,21 +2760,32 @@
 
     function activateSceneDialogue() {
       if (!activeSceneNodeId || !sceneAmbientMode) return;
-      const scene = storySceneScripts[activeSceneNodeId];
+      const scene = storySceneScripts[getActiveSceneScriptKey()];
       if (!scene) return;
+      if (sceneAmbientStep === 0) {
+        sceneAmbientStep = 1;
+        syncSceneStageMode(scene);
+        showAmbientFigure(scene);
+        updateAmbientHint();
+        return;
+      }
+      sceneAmbientStep = 2;
       sceneAmbientMode = false;
       syncSceneStageMode(scene);
+      updateAmbientHint();
       renderSceneLine();
     }
 
-    function openStoryScene(nodeId) {
+    function openStoryScene(nodeId, sceneKey = nodeId) {
       const localNode = storyDraftNodes[nodeId];
-      const scene = storySceneScripts[nodeId];
+      const scene = storySceneScripts[sceneKey];
       if (!localNode || !scene) return;
       runStoryTransition(() => {
         activeSceneNodeId = nodeId;
+        activeSceneScriptKey = sceneKey;
         sceneLineIndex = 0;
         sceneAmbientMode = !!scene.startAmbient;
+        sceneAmbientStep = sceneAmbientMode ? 0 : 2;
         setSceneBackdropArtwork(localNode.lowImage || localNode.image, localNode.image);
         if (labDrawer && !labDrawer.hasAttribute('hidden')) {
           labDrawer.setAttribute('hidden', '');
@@ -2399,11 +2793,14 @@
         }
         syncSceneStageMode(scene);
         if (!sceneAmbientMode) {
+          updateAmbientHint();
           renderSceneLine();
         } else if (storySceneFigure) {
           storySceneFigure.hidden = true;
           storySceneFigure.removeAttribute('src');
           storySceneFigure.removeAttribute('alt');
+          syncScenePresentation(null);
+          updateAmbientHint();
         }
         storySceneStage.hidden = false;
         requestAnimationFrame(() => storySceneStage.classList.add('active'));
@@ -2412,12 +2809,18 @@
 
     function closeStoryScene() {
       activeSceneNodeId = null;
+      activeSceneScriptKey = null;
       sceneLineIndex = 0;
       sceneAmbientMode = false;
+      sceneAmbientStep = 0;
       syncSceneStageMode(null);
       syncScenePresentation(null);
+      updateAmbientHint();
       storySceneStage.classList.remove('hangar-scene');
-      storySceneStage.style.setProperty('--scene-figure-shift', '0svh');
+      storySceneStage.style.setProperty('--scene-figure-shift', '0vh');
+      storySceneStage.style.setProperty('--scene-figure-mobile-shift', '0vh');
+      storySceneStage.style.setProperty('--scene-figure-scale', '1');
+      storySceneStage.style.setProperty('--scene-figure-mobile-scale', '1');
       storySceneStage.classList.remove('active');
       window.setTimeout(() => {
         if (!storySceneStage.classList.contains('active')) {
@@ -2446,8 +2849,12 @@
       requestAnimationFrame(() => storyMissionStage.classList.add('active'));
     }
 
-    function closeStoryMission() {
-      activeMissionNodeId = null;
+    function closeStoryMission(options = {}) {
+      const onClosed = typeof options.onClosed === 'function' ? options.onClosed : null;
+      const preserveMissionId = options.preserveMissionId === true;
+      if (!preserveMissionId) {
+        activeMissionNodeId = null;
+      }
       if (!storyMissionStage) return;
       storyMissionStage.classList.remove('active');
       window.setTimeout(() => {
@@ -2458,8 +2865,40 @@
             resetStoryMapViewport();
             playMapMusic();
           }
+          if (!preserveMissionId) {
+            activeMissionNodeId = null;
+          }
+          if (onClosed) onClosed();
         }
       }, 260);
+    }
+
+    function handleStoryMissionResult(result) {
+      if (!result || result.mission !== 'hangar_race') return;
+      const missionNodeId = activeMissionNodeId || 'hangar';
+      const success = !!result.success;
+      storyProgressState.lastMissionResult = success ? 'success' : 'failure';
+      if (success) {
+        queueStoryMapTheme('chapter_clear');
+        setStoryCompletedCount(Math.max(storyProgressState.completedCount, 1), { selectedId: 'patio' });
+      } else {
+        renderStoryNode('hangar');
+      }
+      closeStoryMission({
+        preserveMissionId: true,
+        onClosed: () => {
+          activeMissionNodeId = null;
+          activeSceneNodeId = null;
+          activeSceneScriptKey = null;
+          sceneLineIndex = 0;
+          sceneAmbientMode = false;
+          if (storySceneStage) {
+            storySceneStage.classList.remove('active');
+            storySceneStage.hidden = true;
+          }
+          openStoryScene(missionNodeId, success ? 'hangar_outcome_win' : 'hangar_outcome_lose');
+        }
+      });
     }
 
     function resetStoryMapViewport() {
@@ -2725,6 +3164,15 @@
 
     async function playMapMusic() {
       if (!storyMapMusic) return;
+      const pendingThemeSrc = STORY_MAP_THEMES[storyProgressState.pendingThemeKey || ''] || '';
+      if (pendingThemeSrc) {
+        const sourceEl = storyMapMusic.querySelector('source');
+        const currentSrc = sourceEl?.getAttribute('src') || '';
+        if (sourceEl && currentSrc !== pendingThemeSrc) {
+          sourceEl.setAttribute('src', pendingThemeSrc);
+          storyMapMusic.load();
+        }
+      }
       try {
         await storyMapMusic.play();
         mapMusicUnlocked = true;
@@ -2798,10 +3246,11 @@
     });
     storySceneNextBtn.addEventListener('click', () => {
       if (!activeSceneNodeId) return;
-      const scene = storySceneScripts[activeSceneNodeId];
+      const scene = storySceneScripts[getActiveSceneScriptKey()];
       if (!scene) return;
       if (sceneLineIndex >= scene.lines.length - 1) {
-        if (storyMissionScripts[activeSceneNodeId]) {
+        const completeAction = scene.completeAction || ((getActiveSceneScriptKey() === activeSceneNodeId && storyMissionScripts[activeSceneNodeId]) ? 'mission' : 'map');
+        if (completeAction === 'mission') {
           openStoryMission(activeSceneNodeId);
         } else {
           closeStoryScene();
@@ -2842,10 +3291,16 @@
 
     window.addEventListener('message', (event) => {
       const data = event.data;
-      if (!data || data.type !== 'pocobot-story-map-selection' || !data.node || !data.node.id) return;
-      renderStoryNode(data.node.id);
-      if (data.reason === 'user-select' && data.node.status !== 'locked') {
-        openStoryScene(data.node.id);
+      if (!data || !data.type) return;
+      if (data.type === 'pocobot-story-map-selection' && data.node && data.node.id) {
+        renderStoryNode(data.node.id, { syncMap: false });
+        if (data.reason === 'user-select' && data.node.status !== 'locked') {
+          openStoryScene(data.node.id);
+        }
+        return;
+      }
+      if (data.type === 'pocobot-story-mission-result') {
+        handleStoryMissionResult(data);
       }
     });
 
@@ -2858,7 +3313,7 @@
       storyMapFrame.addEventListener('load', () => {
         storyMapFrame.classList.add('loaded');
         resetStoryMapViewport();
-        postNodeSelectionToMap(currentStoryNodeId);
+        syncStoryMapState();
       });
     }
 

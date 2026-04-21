@@ -5370,6 +5370,19 @@ function applyStoryMissionPlayerSetup(){
   }
 }
 
+function broadcastStoryMissionOutcome(payload){
+  const message = {
+    type: 'pocobot-story-mission-result',
+    ...payload
+  };
+  [window.parent !== window ? window.parent : null, window.opener].forEach((targetWindow) => {
+    if(!targetWindow) return;
+    try{
+      targetWindow.postMessage(message, '*');
+    }catch(error){}
+  });
+}
+
 function maybeResolveStoryMission(){
   if(state.storyMission !== 'hangar_race' || state.winner || !state.players || state.players.length < 2) return;
   const playerReady = playerCanAttack(state.players[0]);
@@ -5394,6 +5407,11 @@ function maybeResolveStoryMission(){
       : 'Mara Oxido ha montado antes un PoCoBOT listo para atacar',
     playerWon ? 'ok' : 'warn'
   );
+  broadcastStoryMissionOutcome({
+    mission: state.storyMission,
+    success: playerWon,
+    winner: state.winner
+  });
   triggerVictorySequence();
   window.setTimeout(() => scrollToWinnerCup('smooth'), 180);
 }
