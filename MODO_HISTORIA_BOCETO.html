@@ -256,6 +256,122 @@
       pointer-events:none;
       z-index:2;
     }
+    .title-storm{
+      position:absolute;
+      inset:0;
+      z-index:2;
+      pointer-events:none;
+      overflow:hidden;
+      mix-blend-mode:screen;
+    }
+    .title-storm-flash,
+    .title-bolt{
+      position:absolute;
+      opacity:0;
+      pointer-events:none;
+    }
+    .title-storm-flash{
+      inset:-10%;
+      background:
+        radial-gradient(circle at 16% 22%, rgba(143,244,255,.22), transparent 18%),
+        radial-gradient(circle at 78% 18%, rgba(255,255,255,.18), transparent 14%),
+        radial-gradient(circle at 62% 34%, rgba(255,185,109,.16), transparent 22%);
+      filter:blur(24px);
+    }
+    .title-storm-flash-a{
+      animation:stormFlashA 11.4s linear infinite;
+    }
+    .title-storm-flash-b{
+      animation:stormFlashB 14.8s linear infinite;
+    }
+    .title-storm-flash-c{
+      inset:-14%;
+      background:
+        radial-gradient(circle at 32% 16%, rgba(255,255,255,.16), transparent 12%),
+        radial-gradient(circle at 64% 26%, rgba(143,244,255,.2), transparent 18%),
+        radial-gradient(circle at 86% 22%, rgba(255,185,109,.14), transparent 14%);
+      filter:blur(28px);
+      animation:stormFlashA 17.2s linear infinite;
+      animation-delay:3.2s;
+    }
+    .title-bolt{
+      top:-12%;
+      width:4px;
+      height:72%;
+      background:linear-gradient(180deg, rgba(255,255,255,0), rgba(223,251,255,.96) 18%, rgba(143,244,255,.88) 52%, rgba(255,255,255,0));
+      border-radius:999px;
+      filter:drop-shadow(0 0 8px rgba(143,244,255,.9)) drop-shadow(0 0 22px rgba(143,244,255,.45));
+      transform-origin:top center;
+    }
+    .title-bolt::before,
+    .title-bolt::after{
+      content:"";
+      position:absolute;
+      width:3px;
+      height:38%;
+      border-radius:999px;
+      background:linear-gradient(180deg, rgba(255,255,255,0), rgba(216,250,255,.9) 22%, rgba(143,244,255,.82) 64%, rgba(255,255,255,0));
+      filter:inherit;
+      top:30%;
+    }
+    .title-bolt::before{
+      left:-16px;
+      transform:rotate(26deg);
+      transform-origin:top center;
+    }
+    .title-bolt::after{
+      right:-15px;
+      top:44%;
+      height:26%;
+      transform:rotate(-24deg);
+      transform-origin:top center;
+    }
+    .title-bolt-a{
+      left:17%;
+      transform:rotate(16deg);
+      animation:boltFlashA 11.4s linear infinite;
+    }
+    .title-bolt-b{
+      left:71%;
+      height:64%;
+      transform:rotate(-11deg);
+      animation:boltFlashB 14.8s linear infinite;
+    }
+    .title-bolt-c{
+      left:51%;
+      top:-8%;
+      height:48%;
+      transform:rotate(7deg);
+      animation:boltFlashC 18.2s linear infinite;
+    }
+    .title-bolt-subtle{
+      width:3px;
+      filter:drop-shadow(0 0 6px rgba(143,244,255,.82)) drop-shadow(0 0 16px rgba(143,244,255,.35));
+    }
+    .title-bolt-subtle::before{
+      left:-12px;
+      height:32%;
+    }
+    .title-bolt-subtle::after{
+      right:-12px;
+      height:22%;
+    }
+    .title-bolt-d{
+      left:34%;
+      top:-10%;
+      height:54%;
+      transform:rotate(-9deg);
+      animation:boltFlashB 13.6s linear infinite;
+      animation-delay:2.6s;
+    }
+    .title-bolt-e{
+      left:82%;
+      top:-15%;
+      height:58%;
+      transform:rotate(18deg);
+      animation:boltFlashA 16.4s linear infinite;
+      animation-delay:5.1s;
+    }
     .title-image{
       width:100%;
       height:100svh;
@@ -1677,6 +1793,52 @@
       }
       .bottom-back{bottom:12px}
     }
+    @keyframes stormFlashA{
+      0%, 11%, 100%{opacity:0}
+      11.4%{opacity:.56}
+      11.8%{opacity:.16}
+      12.2%{opacity:.42}
+      13.1%{opacity:0}
+    }
+    @keyframes stormFlashB{
+      0%, 47%, 100%{opacity:0}
+      47.4%{opacity:.48}
+      47.8%{opacity:.18}
+      48.1%{opacity:.38}
+      49.2%{opacity:0}
+    }
+    @keyframes boltFlashA{
+      0%, 11%, 100%{opacity:0}
+      11.3%{opacity:1}
+      11.5%{opacity:.24}
+      11.75%{opacity:.92}
+      12.05%{opacity:.18}
+      12.4%{opacity:.72}
+      13.2%{opacity:0}
+    }
+    @keyframes boltFlashB{
+      0%, 47%, 100%{opacity:0}
+      47.35%{opacity:.94}
+      47.6%{opacity:.2}
+      47.92%{opacity:.88}
+      48.22%{opacity:.14}
+      48.64%{opacity:.62}
+      49.3%{opacity:0}
+    }
+    @keyframes boltFlashC{
+      0%, 69%, 100%{opacity:0}
+      69.2%{opacity:.72}
+      69.48%{opacity:.16}
+      69.82%{opacity:.58}
+      70.4%{opacity:0}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .title-storm-flash,
+      .title-bolt{
+        animation:none;
+        opacity:0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1685,6 +1847,16 @@
     <section class="title-stage" id="titleStage">
       <div class="title-shell">
         <div class="title-art-wrap" id="titleArtWrap">
+          <div class="title-storm" aria-hidden="true">
+            <span class="title-storm-flash title-storm-flash-a"></span>
+            <span class="title-storm-flash title-storm-flash-b"></span>
+            <span class="title-storm-flash title-storm-flash-c"></span>
+            <span class="title-bolt title-bolt-a"></span>
+            <span class="title-bolt title-bolt-b"></span>
+            <span class="title-bolt title-bolt-c"></span>
+            <span class="title-bolt title-bolt-subtle title-bolt-d"></span>
+            <span class="title-bolt title-bolt-subtle title-bolt-e"></span>
+          </div>
           <picture class="title-picture">
             <source media="(orientation: portrait)" srcset="assets/Historia/Brutos/TituloSmartphone1.png">
             <img class="title-image" src="assets/Historia/Brutos/Titulo1.PNG" alt="Titulo de Camino de PoCoBOT" loading="eager">
@@ -1831,7 +2003,7 @@
     <a class="back-link" href="MODO_HISTORIA_POCObot.html?tab=boceto#panel-boceto">Volver</a>
   </div>
 
-  <audio id="storyTitleMusic" preload="metadata" loop>
+  <audio id="storyTitleMusic" preload="auto" autoplay playsinline loop>
     <source src="assets/Historia/CenizaMetalica.mp3" type="audio/mpeg">
   </audio>
 
@@ -1907,6 +2079,7 @@
     let manualGlowTimeout = null;
     let mapMusicUnlocked = false;
     let titleMusicUnlocked = false;
+    let titleMusicFadeFrame = null;
     let currentStoryNodeId = 'hangar';
     let activeSceneNodeId = null;
     let activeSceneScriptKey = null;
@@ -1926,6 +2099,11 @@
 
     if (storyTitleMusic) {
       storyTitleMusic.volume = 0.42;
+      storyTitleMusic.addEventListener('canplay', () => {
+        if (!workspacePanel.classList.contains('active')) {
+          bootstrapTitleMusicAutoplay();
+        }
+      }, { once: true });
     }
 
     if (storyMapMusic) {
@@ -2997,13 +3175,79 @@
       }, 760);
     }
 
+    function fadeTitleMusicVolume(target, duration = 900) {
+      if (!storyTitleMusic) return;
+      if (titleMusicFadeFrame) {
+        window.cancelAnimationFrame(titleMusicFadeFrame);
+        titleMusicFadeFrame = null;
+      }
+      const startVolume = Number.isFinite(storyTitleMusic.volume) ? storyTitleMusic.volume : 0;
+      const safeTarget = Math.max(0, Math.min(1, target));
+      if (duration <= 0) {
+        storyTitleMusic.volume = safeTarget;
+        return;
+      }
+      const startAt = performance.now();
+      const step = (now) => {
+        const progress = Math.min(1, (now - startAt) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        storyTitleMusic.volume = startVolume + (safeTarget - startVolume) * eased;
+        if (progress < 1) {
+          titleMusicFadeFrame = window.requestAnimationFrame(step);
+        } else {
+          titleMusicFadeFrame = null;
+          storyTitleMusic.volume = safeTarget;
+        }
+      };
+      titleMusicFadeFrame = window.requestAnimationFrame(step);
+    }
+
+    async function bootstrapTitleMusicAutoplay() {
+      if (!storyTitleMusic || workspacePanel.classList.contains('active')) return false;
+      if (!storyTitleMusic.paused && !storyTitleMusic.muted) {
+        titleMusicUnlocked = true;
+        return true;
+      }
+
+      try {
+        storyTitleMusic.muted = false;
+        storyTitleMusic.volume = 0.42;
+        await storyTitleMusic.play();
+        titleMusicUnlocked = true;
+        return true;
+      } catch (error) {}
+
+      try {
+        storyTitleMusic.pause();
+        storyTitleMusic.currentTime = 0;
+        storyTitleMusic.muted = true;
+        storyTitleMusic.volume = 0;
+        await storyTitleMusic.play();
+        titleMusicUnlocked = true;
+        window.setTimeout(() => {
+          if (!storyTitleMusic || workspacePanel.classList.contains('active')) return;
+          storyTitleMusic.muted = false;
+          fadeTitleMusicVolume(0.42, 1200);
+        }, 120);
+        return true;
+      } catch (error) {
+        titleMusicUnlocked = false;
+        storyTitleMusic.pause();
+        storyTitleMusic.currentTime = 0;
+        storyTitleMusic.muted = false;
+        storyTitleMusic.volume = 0.42;
+        return false;
+      }
+    }
+
     async function startTitleMusic() {
       if (workspacePanel.classList.contains('active')) return;
       if (!storyTitleMusic) return;
       try {
-        storyTitleMusic.currentTime = storyTitleMusic.currentTime || 0;
+        storyTitleMusic.muted = false;
         await storyTitleMusic.play();
         titleMusicUnlocked = true;
+        fadeTitleMusicVolume(0.42, 420);
       } catch (error) {
         titleMusicUnlocked = false;
       }
@@ -3011,8 +3255,14 @@
 
     function stopTitleMusic() {
       if (!storyTitleMusic) return;
+      if (titleMusicFadeFrame) {
+        window.cancelAnimationFrame(titleMusicFadeFrame);
+        titleMusicFadeFrame = null;
+      }
       storyTitleMusic.pause();
       storyTitleMusic.currentTime = 0;
+      storyTitleMusic.muted = false;
+      storyTitleMusic.volume = 0.42;
     }
 
     function updateGlowPosition(x, y) {
@@ -3202,9 +3452,13 @@
     primeTitleArtwork();
     window.addEventListener('resize', handleStoryViewportChange);
     window.addEventListener('orientationchange', handleStoryViewportChange);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden || workspacePanel.classList.contains('active')) return;
+      bootstrapTitleMusicAutoplay();
+    });
     animateAmbientGlow();
     window.setTimeout(() => {
-      if (!workspacePanel.classList.contains('active')) startTitleMusic();
+      if (!workspacePanel.classList.contains('active')) bootstrapTitleMusicAutoplay();
     }, 220);
     renderStoryNode(currentStoryNodeId);
     closeStoryScene();
