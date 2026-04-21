@@ -1831,6 +1831,10 @@
     <a class="back-link" href="MODO_HISTORIA_POCObot.html?tab=boceto#panel-boceto">Volver</a>
   </div>
 
+  <audio id="storyTitleMusic" preload="metadata" loop>
+    <source src="assets/Historia/CenizaMetalica.mp3" type="audio/mpeg">
+  </audio>
+
   <audio id="storyMapMusic" preload="none" loop>
     <source src="assets/Historia/EngranesdeTitanio(Exploración).mp3" type="audio/mpeg">
   </audio>
@@ -1843,6 +1847,7 @@
     const enterStoryBtn = document.getElementById('enterStoryBtn');
     const workspacePanel = document.getElementById('workspacePanel');
     const storyMapShell = document.getElementById('storyMapShell');
+    const storyTitleMusic = document.getElementById('storyTitleMusic');
     const storyMapMusic = document.getElementById('storyMapMusic');
     const storyMapFrame = document.getElementById('storyMapFrame');
     const storyMobileRoute = document.getElementById('storyMobileRoute');
@@ -1902,11 +1907,6 @@
     let manualGlowTimeout = null;
     let mapMusicUnlocked = false;
     let titleMusicUnlocked = false;
-    let titleMusicRunning = false;
-    let titleMusicLoopTimer = null;
-    let titleAudioCtx = null;
-    let titleAudioMaster = null;
-    let titleAudioDelayInput = null;
     let currentStoryNodeId = 'hangar';
     let activeSceneNodeId = null;
     let activeSceneScriptKey = null;
@@ -1923,6 +1923,10 @@
       lastMissionResult: null
     };
     let lastStoryHoverSfxAt = 0;
+
+    if (storyTitleMusic) {
+      storyTitleMusic.volume = 0.42;
+    }
 
     if (storyMapMusic) {
       storyMapMusic.volume = 0.34;
@@ -2993,202 +2997,22 @@
       }, 760);
     }
 
-    const TITLE_THEME = [
-      {
-        duration: 3.8,
-        chord: [45, 52, 57],
-        melody: [
-          { offset: 0.45, note: 64, length: 1.9, gain: 0.028 },
-          { offset: 2.1, note: 69, length: 1.2, gain: 0.022 }
-        ]
-      },
-      {
-        duration: 3.6,
-        chord: [47, 54, 59],
-        melody: [
-          { offset: 0.72, note: 66, length: 1.4, gain: 0.026 },
-          { offset: 2.36, note: 71, length: 1.0, gain: 0.02 }
-        ]
-      },
-      {
-        duration: 3.9,
-        chord: [40, 47, 52],
-        melody: [
-          { offset: 0.84, note: 62, length: 1.6, gain: 0.024 },
-          { offset: 2.52, note: 64, length: 1.2, gain: 0.02 }
-        ]
-      },
-      {
-        duration: 4.4,
-        chord: [42, 49, 54],
-        melody: [
-          { offset: 0.88, note: 61, length: 1.7, gain: 0.024 },
-          { offset: 2.0, note: 66, length: 1.6, gain: 0.022 },
-          { offset: 3.08, note: 69, length: 1.4, gain: 0.019 }
-        ]
-      }
-    ];
-
-    function midiToHz(midi) {
-      return 440 * Math.pow(2, (midi - 69) / 12);
-    }
-
-    function ensureTitleAudioEngine() {
-      if (titleAudioCtx) return titleAudioCtx;
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return null;
-
-      titleAudioCtx = new AudioCtx();
-      titleAudioMaster = titleAudioCtx.createGain();
-      titleAudioMaster.gain.value = 0.0001;
-
-      const lowpass = titleAudioCtx.createBiquadFilter();
-      lowpass.type = 'lowpass';
-      lowpass.frequency.value = 1900;
-      lowpass.Q.value = 0.38;
-
-      const delay = titleAudioCtx.createDelay(1.6);
-      delay.delayTime.value = 0.34;
-      const feedback = titleAudioCtx.createGain();
-      feedback.gain.value = 0.28;
-      const wet = titleAudioCtx.createGain();
-      wet.gain.value = 0.19;
-
-      titleAudioDelayInput = titleAudioCtx.createGain();
-      titleAudioDelayInput.gain.value = 0.42;
-
-      titleAudioMaster.connect(lowpass);
-      lowpass.connect(titleAudioCtx.destination);
-      titleAudioDelayInput.connect(delay);
-      delay.connect(feedback);
-      feedback.connect(delay);
-      delay.connect(wet);
-      wet.connect(titleAudioMaster);
-
-      return titleAudioCtx;
-    }
-
-    function schedulePad(note, start, duration, gainValue, detuneCents = 0) {
-      if (!titleAudioCtx || !titleAudioMaster) return;
-      const oscA = titleAudioCtx.createOscillator();
-      const oscB = titleAudioCtx.createOscillator();
-      const gain = titleAudioCtx.createGain();
-      const filter = titleAudioCtx.createBiquadFilter();
-
-      oscA.type = 'sine';
-      oscB.type = 'triangle';
-      oscA.frequency.value = midiToHz(note);
-      oscB.frequency.value = midiToHz(note) * 1.0025;
-      oscB.detune.value = detuneCents;
-
-      filter.type = 'lowpass';
-      filter.frequency.value = 920;
-      filter.Q.value = 0.55;
-
-      gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.linearRampToValueAtTime(gainValue, start + 1.0);
-      gain.gain.linearRampToValueAtTime(gainValue * 0.92, start + Math.max(1.4, duration - 1.15));
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
-      oscA.connect(filter);
-      oscB.connect(filter);
-      filter.connect(gain);
-      gain.connect(titleAudioMaster);
-      gain.connect(titleAudioDelayInput);
-
-      oscA.start(start);
-      oscB.start(start);
-      oscA.stop(start + duration + 0.05);
-      oscB.stop(start + duration + 0.05);
-    }
-
-    function scheduleLead(note, start, duration, gainValue) {
-      if (!titleAudioCtx || !titleAudioMaster) return;
-      const oscA = titleAudioCtx.createOscillator();
-      const oscB = titleAudioCtx.createOscillator();
-      const gain = titleAudioCtx.createGain();
-      const filter = titleAudioCtx.createBiquadFilter();
-
-      oscA.type = 'triangle';
-      oscB.type = 'sine';
-      oscA.frequency.value = midiToHz(note);
-      oscB.frequency.value = midiToHz(note + 12);
-
-      filter.type = 'bandpass';
-      filter.frequency.value = 1260;
-      filter.Q.value = 1.2;
-
-      gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.linearRampToValueAtTime(gainValue, start + 0.08);
-      gain.gain.exponentialRampToValueAtTime(gainValue * 0.34, start + Math.min(duration, 0.9));
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
-      oscA.connect(filter);
-      oscB.connect(filter);
-      filter.connect(gain);
-      gain.connect(titleAudioMaster);
-      gain.connect(titleAudioDelayInput);
-
-      oscA.start(start);
-      oscB.start(start);
-      oscA.stop(start + duration + 0.08);
-      oscB.stop(start + duration + 0.08);
-    }
-
-    function scheduleTitleTheme(startTime) {
-      let cursor = startTime;
-      TITLE_THEME.forEach((section, sectionIndex) => {
-        section.chord.forEach((note, noteIndex) => {
-          schedulePad(note, cursor, section.duration + 1.15, 0.014 + noteIndex * 0.003, sectionIndex * 1.5 + noteIndex);
-        });
-        section.melody.forEach((entry) => {
-          scheduleLead(entry.note, cursor + entry.offset, entry.length, entry.gain);
-        });
-        cursor += section.duration;
-      });
-      return cursor - startTime;
-    }
-
     async function startTitleMusic() {
       if (workspacePanel.classList.contains('active')) return;
-      const ctx = ensureTitleAudioEngine();
-      if (!ctx || !titleAudioMaster) return;
-
+      if (!storyTitleMusic) return;
       try {
-        await ctx.resume();
+        storyTitleMusic.currentTime = storyTitleMusic.currentTime || 0;
+        await storyTitleMusic.play();
         titleMusicUnlocked = true;
       } catch (error) {
         titleMusicUnlocked = false;
-        return;
       }
-
-      const now = ctx.currentTime;
-      titleAudioMaster.gain.cancelScheduledValues(now);
-      titleAudioMaster.gain.setValueAtTime(Math.max(titleAudioMaster.gain.value, 0.0001), now);
-      titleAudioMaster.gain.exponentialRampToValueAtTime(0.19, now + 1.8);
-
-      if (titleMusicRunning) return;
-
-      titleMusicRunning = true;
-      const loopDuration = scheduleTitleTheme(now + 0.08);
-      titleMusicLoopTimer = window.setInterval(() => {
-        if (!titleMusicRunning) return;
-        scheduleTitleTheme(ctx.currentTime + 0.12);
-      }, Math.max(4000, (loopDuration - 0.35) * 1000));
     }
 
     function stopTitleMusic() {
-      if (!titleAudioCtx || !titleAudioMaster) return;
-      titleMusicRunning = false;
-      if (titleMusicLoopTimer) {
-        window.clearInterval(titleMusicLoopTimer);
-        titleMusicLoopTimer = null;
-      }
-
-      const now = titleAudioCtx.currentTime;
-      titleAudioMaster.gain.cancelScheduledValues(now);
-      titleAudioMaster.gain.setValueAtTime(Math.max(titleAudioMaster.gain.value, 0.0001), now);
-      titleAudioMaster.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+      if (!storyTitleMusic) return;
+      storyTitleMusic.pause();
+      storyTitleMusic.currentTime = 0;
     }
 
     function updateGlowPosition(x, y) {
