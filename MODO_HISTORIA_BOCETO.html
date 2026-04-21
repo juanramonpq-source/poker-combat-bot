@@ -1608,14 +1608,10 @@
         display:block;
       }
       .lab-toggle{
-        bottom:14px;
-        left:14px;
+        display:none !important;
       }
       .lab-drawer{
-        left:14px;
-        right:14px;
-        bottom:64px;
-        width:auto;
+        display:none !important;
       }
       .title-art-wrap{
         background:#060a10 url("assets/Historia/low/titulo_smartphone_compacto_1080.webp") no-repeat center top / cover;
@@ -3455,11 +3451,6 @@
     });
 
     if (storyMapFrame) {
-      try {
-        if (storyMapFrame.contentDocument?.readyState === 'complete') {
-          storyMapFrame.classList.add('loaded');
-        }
-      } catch (error) {}
       storyMapFrame.addEventListener('load', () => {
         storyMapFrame.classList.add('loaded');
         resetStoryMapViewport();
