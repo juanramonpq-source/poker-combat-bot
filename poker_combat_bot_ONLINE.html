@@ -6320,7 +6320,10 @@ function scrollToPlayerPanel(playerIdx, behavior='smooth', align='top'){
 function scrollToHandZone(playerIdx, behavior='smooth'){
   const handZone = document.getElementById(`hand-zone-${playerIdx}`);
   if(!handZone) return;
-  const top = window.scrollY + handZone.getBoundingClientRect().top - 16;
+  const rect = handZone.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+  const bottomPadding = 18;
+  const top = window.scrollY + rect.bottom - viewportHeight + bottomPadding;
   window.scrollTo({
     top: Math.max(0, top),
     behavior
