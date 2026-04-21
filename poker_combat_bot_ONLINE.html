@@ -5378,6 +5378,7 @@ function autoStartStoryMissionIfRequested(){
       window.setTimeout(() => {
         scrollToPlayerPanel(state.currentPlayer, 'smooth');
         notifySelection('Mision historia: construye un bot valido para el taller.');
+        setupStoryEmbedNavigation();
       }, 260);
       break;
     case 'hangar_race':
@@ -5389,6 +5390,7 @@ function autoStartStoryMissionIfRequested(){
       window.setTimeout(() => {
         scrollToPlayerPanel(0, 'smooth');
         notifySelection('Objetivo: deja tu PoCoBOT listo para atacar antes que Mara Óxido.');
+        setupStoryEmbedNavigation();
       }, 260);
       break;
     default:
@@ -6318,11 +6320,15 @@ function scrollToPlayerPanel(playerIdx, behavior='smooth', align='top'){
 }
 
 function scrollToHandZone(playerIdx, behavior='smooth'){
+  const handCards = document.getElementById(`hand-${playerIdx}`);
   const handZone = document.getElementById(`hand-zone-${playerIdx}`);
-  if(!handZone) return;
-  const rect = handZone.getBoundingClientRect();
+  const targetEl = handCards || handZone;
+  if(!targetEl) return;
+  const rect = targetEl.getBoundingClientRect();
   const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-  const bottomPadding = 18;
+  // Anchor to the real hand row so the cards stay visible at the bottom
+  // while still leaving some of the module panel in view above.
+  const bottomPadding = 28;
   const top = window.scrollY + rect.bottom - viewportHeight + bottomPadding;
   window.scrollTo({
     top: Math.max(0, top),
@@ -6365,6 +6371,20 @@ function setupStoryEmbedNavigation(){
       const humanIdx = typeof getInteractivePlayerIndex === 'function' ? getInteractivePlayerIndex() : 0;
       scrollToHandZone(humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0), 'smooth');
     });
+  }
+}
+
+function handleStoryEmbedMessage(event){
+  if(!STORY_EMBED_MODE) return;
+  const data = event.data;
+  if(!data || data.type !== 'pocobot-story-embed-scroll') return;
+  if(data.command === 'panel'){
+    scrollToSharedControls('smooth');
+    return;
+  }
+  if(data.command === 'hand'){
+    const humanIdx = typeof getInteractivePlayerIndex === 'function' ? getInteractivePlayerIndex() : 0;
+    scrollToHandZone(humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0), 'smooth');
   }
 }
 
@@ -10012,6 +10032,7 @@ function render(){
   buildSideTowers();
   flushFxQueue();
   attachButtonAnimations();
+  setupStoryEmbedNavigation();
   setTimeout(maybeShowFigureBurstPrompt, 0);
 
   // Online multiplayer post-render
@@ -10982,6 +11003,7 @@ window.addEventListener('resize', () => {
     positionShowcaseNearPlayer(state.currentPlayer, figureOverlay);
   }
 });
+window.addEventListener('message', handleStoryEmbedMessage);
 window.addEventListener('load', () => {
   preloadDetailedCardAssets();
   syncIntroInstallTip();

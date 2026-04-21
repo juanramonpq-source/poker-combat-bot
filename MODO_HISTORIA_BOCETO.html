@@ -1720,12 +1720,7 @@
         transform:translateY(calc(var(--scene-figure-mobile-shift) - 5svh)) scale(var(--scene-figure-mobile-scale));
       }
       .scene-intro-tag{
-        top:74px;
-        left:12px;
-        right:auto;
-        min-width:min(214px, calc(100vw - 24px));
-        max-width:min(214px, calc(100vw - 24px));
-        padding:12px 14px 13px;
+        display:none;
       }
       .scene-dialog-card{
         width:calc(100% - 24px);
@@ -1982,6 +1977,8 @@
                   <p class="mission-tip-copy">Un mecha valido para PoCoBOT necesita al menos <strong>6 cartas</strong> repartidas entre <strong>Ataque, Defensa y Armadura</strong>, y al menos <strong>1 Piloto</strong>.</p>
                 </aside>
                 <div class="mission-actions">
+                  <button class="scene-btn secondary" id="storyMissionPanelBtn" type="button">Panel</button>
+                  <button class="scene-btn secondary" id="storyMissionHandBtn" type="button">Mano</button>
                   <button class="scene-btn secondary" id="storyMissionMapBtn" type="button">Volver al mapa</button>
                   <button class="scene-btn secondary" id="storyMissionRestartBtn" type="button">Reiniciar misión</button>
                 </div>
@@ -2059,6 +2056,8 @@
     const storyMissionTitle = document.getElementById('storyMissionTitle');
     const storyMissionCopy = document.getElementById('storyMissionCopy');
     const storyMissionTip = document.getElementById('storyMissionTip');
+    const storyMissionPanelBtn = document.getElementById('storyMissionPanelBtn');
+    const storyMissionHandBtn = document.getElementById('storyMissionHandBtn');
     const storyMissionMapBtn = document.getElementById('storyMissionMapBtn');
     const storyMissionRestartBtn = document.getElementById('storyMissionRestartBtn');
     const storyMissionFrame = document.getElementById('storyMissionFrame');
@@ -3105,6 +3104,14 @@
       }, 260);
     }
 
+    function postStoryMissionEmbedCommand(command) {
+      if (!storyMissionFrame || !storyMissionFrame.contentWindow || !command) return;
+      storyMissionFrame.contentWindow.postMessage({
+        type: 'pocobot-story-embed-scroll',
+        command
+      }, '*');
+    }
+
     function handleStoryMissionResult(result) {
       if (!result || result.mission !== 'hangar_race') return;
       const missionNodeId = activeMissionNodeId || 'hangar';
@@ -3360,6 +3367,8 @@
     bindStoryUiSfx(storySceneAmbientNextBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(storySceneMapBtn);
     bindStoryUiSfx(storySceneNextBtn, { clickKind: 'click' });
+    bindStoryUiSfx(storyMissionPanelBtn);
+    bindStoryUiSfx(storyMissionHandBtn);
     bindStoryUiSfx(storyMissionMapBtn);
     bindStoryUiSfx(storyMissionRestartBtn, { clickKind: 'confirm' });
 
@@ -3368,6 +3377,12 @@
     storySceneAmbientMapBtn.addEventListener('click', closeStoryScene);
     storySceneAmbientNextBtn.addEventListener('click', activateSceneDialogue);
     storySceneMapBtn.addEventListener('click', closeStoryScene);
+    storyMissionPanelBtn.addEventListener('click', () => {
+      postStoryMissionEmbedCommand('panel');
+    });
+    storyMissionHandBtn.addEventListener('click', () => {
+      postStoryMissionEmbedCommand('hand');
+    });
     storyMissionMapBtn.addEventListener('click', closeStoryMission);
     storyMissionRestartBtn.addEventListener('click', () => {
       if (!activeMissionNodeId) return;
