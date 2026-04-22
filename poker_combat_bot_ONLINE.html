@@ -5489,8 +5489,8 @@ const TUTORIAL_CARD_IDS = {
 };
 
 const TUTORIAL_DRAW_SEQUENCE = [
-  ['9', 'hearts', 'tut-draw-01'],
-  ['10', 'clubs', 'tut-draw-02'],
+  ['Q', 'hearts', 'tut-draw-01'],
+  ['J', 'clubs', 'tut-draw-02'],
   ['8', 'hearts', 'tut-draw-03'],
   ['9', 'clubs', 'tut-draw-04'],
   ['10', 'spades', 'tut-draw-05'],
@@ -5582,9 +5582,31 @@ const TUTORIAL_SCRIPT = [
     highlightZones: ['hand-zone-0']
   },
   {
+    id: 'figure-burst',
+    title: 'Paso 8 · Aprovecha las figuras extra',
+    body: 'Te han salido dos figuras nuevas en la mano. Como ya tienes <strong>piloto</strong> y <strong>copiloto</strong> montados, ahora puedes activar la táctica <strong>2 Figuras → 4</strong>.<br><br>Descartarás esas dos figuras y robarás <strong>4 cartas</strong>. Es una forma muy útil de reciclar mano cuando el mecha ya está estable.',
+    objective: 'Pulsa <strong>2 Figuras → 4</strong> en tu panel.',
+    tip: 'Esta acción está en el panel del jugador, no arriba. Solo aparece cuando ya tienes piloto, copiloto y al menos 2 figuras en la mano.',
+    allowedButtons: ['quickFigureDrawBtn'],
+    allowedCardIds: [],
+    highlightButtons: ['quickFigureDrawBtn'],
+    highlightZones: ['hand-zone-0']
+  },
+  {
+    id: 'pass-turn',
+    title: 'Paso 9 · Aprende a pasar turno',
+    body: 'Si no puedes o no quieres hacer nada útil, estás obligado a usar <strong>Pasar</strong> desde el panel principal de arriba y descartar <strong>2 cartas</strong> de la mano.<br><br>Si te quedara menos de 2, descartarías las que tuvieras. Aquí vamos a practicarlo de forma explícita.',
+    objective: 'Selecciona <strong>8♥</strong> y <strong>9♣</strong> de tu mano y pulsa <strong>Pasar ARRIBA</strong>.',
+    tip: 'Pasar turno no es “no hacer nada”: siempre implica descartar para ceder la iniciativa.',
+    allowedButtons: ['actionPassBtn', 'clearSelectionBtn'],
+    allowedCardIds: ['tut-draw-03', 'tut-draw-04'],
+    highlightButtons: ['actionPassBtn'],
+    highlightZones: ['hand-zone-0']
+  },
+  {
     id: 'projectile',
-    title: 'Paso 8 · Proyectiles, figuras extra y cierre',
-    body: 'Antes del remate, quédate con tres reglas muy útiles:<br><br><strong>2 figuras → 4 cartas:</strong> si ya tienes <strong>piloto</strong> y <strong>copiloto</strong> montados y robas <strong>dos figuras más</strong>, puedes descartarlas con la acción <strong>2 Figuras → 4</strong> para robar 4 cartas.<br><br><strong>Pasar turno:</strong> si no puedes o no quieres hacer nada, estás obligado a usar <strong>Pasar</strong> en el panel principal de arriba y descartar <strong>2 cartas</strong>; si te queda menos de 2, descartas las que tengas.<br><br>Ahora sí: tu primer ataque completo ha desbloqueado los <strong>proyectiles</strong>. El proyectil siempre consume <strong>1 pica numérica</strong> del módulo Ataque y <strong>esa carta se descarta</strong>.<br><br><strong>Opción A · Solo proyectil:</strong> selecciona <strong>8♠</strong> y pulsa <strong>Solo proyectil</strong>.<br><br><strong>Opción B · Ataque combinado + proyectil:</strong> abre el ataque arriba, activa <strong>Modo proyectil</strong>, usa <strong>6♣</strong> como combustible desde Armadura gracias al <strong>A♦</strong> booster, añade <strong>4♠</strong> como ataque principal y <strong>8♠</strong> como proyectil, y confirma arriba.',
+    title: 'Paso 10 · Remate final con proyectil',
+    body: 'Ahora sí: tu primer ataque completo ya ha desbloqueado los <strong>proyectiles</strong>. El proyectil siempre consume <strong>1 pica numérica</strong> del módulo Ataque y <strong>esa carta se descarta</strong>.<br><br><strong>Opción A · Solo proyectil:</strong> selecciona <strong>8♠</strong> y pulsa <strong>Solo proyectil</strong>.<br><br><strong>Opción B · Ataque combinado + proyectil:</strong> abre el ataque arriba, activa <strong>Modo proyectil</strong>, usa <strong>6♣</strong> como combustible desde Armadura gracias al <strong>A♦</strong> booster, añade <strong>4♠</strong> como ataque principal y <strong>8♠</strong> como proyectil, y confirma arriba.',
     objective: 'Gana la partida con una de estas dos opciones finales: <strong>Solo proyectil</strong> con <strong>8♠</strong> o <strong>ataque combinado + proyectil</strong> con <strong>6♣ + 4♠ + 8♠</strong> desde el panel principal.',
     tip: 'El proyectil se descarta siempre. Si eliges el ataque combinado, recuerda: <strong>Modo proyectil ARRIBA</strong> y después <strong>Confirmar ataque ARRIBA</strong>.',
     allowedButtons: ['attackModeBtn', 'toggleProjectileBtn', 'projectileOnlyBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
@@ -8048,8 +8070,8 @@ function drawWithTwoFigures(){
   if(!hasFigureBurstCondition(player)){
     player.flags.figureBurstPromptShown = false;
   }
-  state.lastActionType = 'diamondDraw';
-  player.flags.lastOwnAction = 'diamondDraw';
+  state.lastActionType = 'figureBurst';
+  player.flags.lastOwnAction = 'figureBurst';
   advanceTurn();
 }
 
@@ -9025,6 +9047,9 @@ function tutorialBuildFocusText(step){
   if(buttonCount){
     if(step.id==='open-attack'){
       return 'Puedes usar el botón iluminado de arriba o el botón Ataque del panel del jugador para subir al panel principal.';
+    }
+    if(step.id==='figure-burst'){
+      return 'Pulsa 2 Figuras → 4 en tu panel: aquí no hace falta subir a la consola superior.';
     }
     return 'En este paso solo necesitas el botón iluminado.';
   }
@@ -10176,7 +10201,9 @@ function updateButtons(){
     const owner = Number(btn.dataset.quickFigure);
     const ownerPlayer = state.players[owner];
     const allowed = !!ownerPlayer && hasFigureBurstCondition(ownerPlayer);
-    btn.disabled = locked || hasWinner || inDefense || owner !== state.currentPlayer || !allowed || tutorialIsGuided() || isAiControlledPlayer(owner);
+    const tutorialQuickFigureEnabled = !tutorialIsGuided() || tutorialAllowsButton('quickFigureDrawBtn');
+    btn.disabled = locked || hasWinner || inDefense || owner !== state.currentPlayer || !allowed || !tutorialQuickFigureEnabled || isAiControlledPlayer(owner);
+    btn.classList.toggle('button-live', owner === state.currentPlayer && !btn.disabled && tutorialIsGuided() && tutorialAllowsButton('quickFigureDrawBtn'));
   });
 }
 
@@ -10472,6 +10499,7 @@ document.addEventListener('click', (event) => {
   if(figureBtn){
     const owner = Number(figureBtn.dataset.quickFigure);
     if(owner !== state.currentPlayer || isAiControlledPlayer(owner) || state.transitionLock || state.pendingDefense || state.winner) return;
+    if(!tutorialValidateAction('quickFigureDraw')) return;
     pulseButton(figureBtn);
     drawWithTwoFigures();
     return;
@@ -10580,6 +10608,10 @@ function tutorialExpectedAction(stepId){
       return 'confirmDefense';
     case 'draw-diamond':
       return 'drawWithDiamond';
+    case 'figure-burst':
+      return 'quickFigureDraw';
+    case 'pass-turn':
+      return 'passTurn';
     case 'projectile':
       return null;
     default:
@@ -10601,6 +10633,8 @@ function tutorialExpectedSelection(stepId){
       return [TUTORIAL_CARD_IDS.p0DefendDiamond];
     case 'draw-diamond':
       return [TUTORIAL_CARD_IDS.p0DrawDiamond];
+    case 'pass-turn':
+      return ['tut-draw-03', 'tut-draw-04'];
     case 'projectile':
       return null;
     default:
@@ -10675,6 +10709,9 @@ function syncTutorialVisualTargets(){
     if(id==='attackModeBtn'){
       document.querySelectorAll(`.quick-attack-btn[data-quick-attack="${state.currentPlayer}"]`).forEach(btn => btn.classList.add('tutorial-button-focus'));
     }
+    if(id==='quickFigureDrawBtn'){
+      document.querySelectorAll(`.quick-figure-draw-btn[data-quick-figure="${state.currentPlayer}"]`).forEach(btn => btn.classList.add('tutorial-button-focus'));
+    }
   });
 }
 
@@ -10732,6 +10769,13 @@ function tutorialIsStepComplete(stepId){
       return !state.pendingDefense && state.currentPlayer===0 && !p0.hand.some(card => card.id===TUTORIAL_CARD_IDS.p0DefendDiamond);
     case 'draw-diamond':
       return state.currentPlayer===1 && !p0.hand.some(card => card.id===TUTORIAL_CARD_IDS.p0DrawDiamond) && state.lastActionType==='diamondDraw';
+    case 'figure-burst':
+      return state.currentPlayer===1 && state.lastActionType==='figureBurst';
+    case 'pass-turn':
+      return state.currentPlayer===1
+        && state.lastActionType==='pass'
+        && !p0.hand.some(card => card.id==='tut-draw-03')
+        && !p0.hand.some(card => card.id==='tut-draw-04');
     case 'projectile':
       return state.winner===state.players[0]?.name;
     default:
@@ -10754,7 +10798,8 @@ function tutorialRunOpponentPass(nextStepIndex, statusText){
     }
 
     const opponent = state.players[1];
-    if(nextStepIndex===7){
+    const nextStep = TUTORIAL_SCRIPT[nextStepIndex] || null;
+    if(nextStep?.id==='projectile'){
       const armorDump = [...opponent.armor];
       const defenseTrim = opponent.defense
         .filter(card => card.id === TUTORIAL_CARD_IDS.p1DefenseC)
@@ -10833,12 +10878,18 @@ function tutorialHandleStepCompletion(step){
       tutorialSetStep(6);
       break;
     case 'draw-diamond':
-      tutorialRunOpponentPass(7, 'Reabastécete y prepárate para terminar el ejercicio con un proyectil.');
+      tutorialRunOpponentPass(7, 'Buen robo. Ahora recicla esas dos figuras extra para transformar la mano.');
+      break;
+    case 'figure-burst':
+      tutorialRunOpponentPass(8, 'Perfecto. Ahora practica cómo pasar turno descartando 2 cartas.');
+      break;
+    case 'pass-turn':
+      tutorialRunOpponentPass(9, 'Ahora sí: el instructor te abre una ventana para rematar la práctica con un proyectil.');
       break;
     case 'projectile':
       addToast('Tutorial completado', 'ok');
       log('🎓 Tutorial guiado completado. El modo libre queda desbloqueado en esta misma partida.');
-      tutorialSetStep(8, { clearSelection:false });
+      tutorialSetStep(10, { clearSelection:false });
       break;
     default:
       tutorialSystem.completionLock = false;
