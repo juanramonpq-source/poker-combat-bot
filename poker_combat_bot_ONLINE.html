@@ -1518,59 +1518,75 @@ button:disabled{
 @media (max-width: 760px) and (orientation: portrait){
   .defense-guide-bar{
     bottom:10px;
-    width:min(96vw, 420px);
-    padding:10px 10px 8px;
+    width:min(97vw, 440px);
+    padding:12px 12px 10px;
     border-radius:14px;
   }
   .defense-guide-kicker,
   .defense-guide-state{
-    font-size:.62rem;
-    letter-spacing:.1em;
+    font-size:.64rem;
+    letter-spacing:.08em;
   }
   .defense-guide-title{
-    font-size:.84rem;
-    line-height:1.16;
+    font-size:.92rem;
+    line-height:1.18;
   }
   .defense-guide-body{
-    font-size:.72rem;
-    line-height:1.22;
+    font-size:.78rem;
+    line-height:1.28;
   }
   .defense-inline-guide{
-    margin-bottom:8px;
-    padding:8px 9px;
-    border-radius:11px;
+    margin-bottom:10px;
+    padding:12px 12px 12px;
+    border-radius:14px;
   }
   .defense-inline-header{
     align-items:flex-start;
-    flex-wrap:wrap;
-    gap:4px 8px;
+    flex-direction:column;
+    gap:6px;
   }
   .defense-inline-title{
-    font-size:.62rem;
+    font-size:.72rem;
+    line-height:1.08;
     letter-spacing:.12em;
   }
   .defense-inline-state{
-    font-size:.6rem;
+    display:inline-flex;
+    align-items:center;
+    padding:4px 8px;
+    border-radius:999px;
+    background:rgba(255,198,112,.10);
+    font-size:.66rem;
+    line-height:1.12;
     letter-spacing:.04em;
   }
   .defense-inline-body{
-    margin-top:5px;
-    font-size:.68rem;
-    line-height:1.22;
+    margin-top:7px;
+    font-size:.79rem;
+    line-height:1.32;
   }
   .defense-inline-actions{
-    gap:6px;
-    margin-top:8px;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:10px;
   }
   .defense-inline-actions button{
     width:100%;
     min-width:0;
-    min-height:40px;
-    padding:8px 9px;
-    font-size:.66rem;
-    line-height:1.14;
-    letter-spacing:.03em;
+    min-height:48px;
+    padding:11px 12px;
+    font-size:.76rem;
+    line-height:1.2;
+    letter-spacing:0;
+    text-transform:none;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
     white-space:normal;
+    overflow-wrap:anywhere;
   }
 }
 .footer-note{margin-top:6px;text-align:center;color:rgba(126,198,215,.55);font-size:.66rem;text-transform:uppercase;letter-spacing:.11em}
@@ -8353,7 +8369,8 @@ function syncDefenseGuideBar(){
       ? `${defender.name} puede esquivar con 1♦. O pulsa “No defender”.`
       : `${defender.name} puede mitigar este golpe. Elige 1♦ numérico de tu mano o pulsa “No defender”.`);
 
-  primary.textContent = selectedDefense ? (compactDefenseCopy ? 'Confirmar' : 'Confirmar defensa') : (compactDefenseCopy ? 'Elegir 1♦' : 'Seleccionar diamantes');
+  primary.textContent = selectedDefense ? (compactDefenseCopy ? 'Confirmar' : 'Confirmar defensa') : (compactDefenseCopy ? 'Usar 1♦' : 'Seleccionar diamantes');
+  skip.textContent = compactDefenseCopy ? 'Sin defensa' : 'No defender';
   primary.disabled = !actionAllowed;
   skip.disabled = !actionAllowed;
   primary.classList.toggle('button-live', actionAllowed);
@@ -8983,8 +9000,8 @@ function createPlayerPanel(player, idx){
                       : 'Selecciona 1♦ numérico de tu mano para esquivar el ataque. Si no quieres defenderte, pulsa “No defender”.')}
                 </div>
                 <div class="defense-inline-actions">
-                  <button class="cyan defense-inline-primary" type="button" data-defense-inline="primary">${selectedDefenseCard ? (compactDefenseCopy ? 'Confirmar' : 'Confirmar defensa') : (compactDefenseCopy ? 'Elegir 1♦' : 'Seleccionar diamantes')}</button>
-                  <button class="warn defense-inline-skip" type="button" data-defense-inline="skip">No defender</button>
+                  <button class="cyan defense-inline-primary" type="button" data-defense-inline="primary">${selectedDefenseCard ? (compactDefenseCopy ? 'Confirmar' : 'Confirmar defensa') : (compactDefenseCopy ? 'Usar 1♦' : 'Seleccionar diamantes')}</button>
+                  <button class="warn defense-inline-skip" type="button" data-defense-inline="skip">${compactDefenseCopy ? 'Sin defensa' : 'No defender'}</button>
                 </div>
               </div>
             ` : ''}
@@ -9041,6 +9058,10 @@ function renderAttackConsole(){
         : 'Combustible del panel: <strong>valor total × 2</strong> = límite de ataque con picas.');
   if(!state.projectileUnlocked){
     fuelRuleBanner.innerHTML += ' <strong>Proyectil bloqueado:</strong> se desbloquea cuando el primer mecha queda completamente operativo.';
+  }
+  const tutorialStep = tutorialGetCurrentStep();
+  if(tutorialIsGuided() && tutorialStep?.id === 'first-attack' && state.attackMode && state.selected.length === 0){
+    fuelRuleBanner.innerHTML = '🎓 <strong>Ya estás en la consola superior.</strong> Baja ahora al panel de tu mecha para seleccionar <strong>combustible</strong> y <strong>cartas de ataque</strong>. Después vuelve aquí para confirmar el disparo.';
   }
 
   if(state.pendingDefense){
@@ -9190,10 +9211,17 @@ function updateHints(){
     const stepNumber = Math.min(tutorialSystem.stepIndex + 1, TUTORIAL_SCRIPT.length);
     const totalSteps = TUTORIAL_SCRIPT.length;
     const busyText = tutorialSystem.statusText || (step ? step.tip : '');
+    const attackPanelReturnCue = step?.id === 'first-attack' && state.attackMode && state.selected.length === 0;
 
-    if(mainHint) mainHint.innerHTML = step ? `🎓 ${step.objective}` : '🎓 Tutorial guiado en preparación.';
-    if(attackHint) attackHint.innerHTML = step ? step.objective : 'El tutorial guiado está preparando el siguiente ejercicio.';
-    if(attackSubHint) attackSubHint.textContent = busyText || 'Sigue las indicaciones del panel de tutorial.';
+    if(mainHint) mainHint.innerHTML = attackPanelReturnCue
+      ? '🎓 Ya estás arriba. Baja otra vez al panel de tu mecha para marcar combustible y picas.'
+      : (step ? `🎓 ${step.objective}` : '🎓 Tutorial guiado en preparación.');
+    if(attackHint) attackHint.innerHTML = attackPanelReturnCue
+      ? '✅ Ataque abierto. <strong>Baja al panel del jugador</strong> y selecciona primero <strong>combustible</strong> y después las <strong>cartas de ataque</strong>.'
+      : (step ? step.objective : 'El tutorial guiado está preparando el siguiente ejercicio.');
+    if(attackSubHint) attackSubHint.textContent = attackPanelReturnCue
+      ? 'Las selecciones no se hacen en esta consola: se marcan abajo, en tu mecha. Luego vuelves aquí para confirmar.'
+      : (busyText || 'Sigue las indicaciones del panel de tutorial.');
 
     if(tutorialPanel){
       tutorialPanel.classList.add('active');
@@ -9206,10 +9234,14 @@ function updateHints(){
     if(tutorialPanelStep) tutorialPanelStep.textContent = tutorialSystem.completed ? 'Guía completada' : `Paso ${stepNumber}/${totalSteps}`;
     if(tutorialPanelMode) tutorialPanelMode.textContent = tutorialSystem.completed ? 'Modo libre' : (tutorialSystem.busy ? 'Instructor en acción' : 'Guía activa');
     if(tutorialPanelMeterFill) tutorialPanelMeterFill.style.width = `${tutorialGetGuidedProgressPercent()}%`;
-    if(tutorialPanelFocus) tutorialPanelFocus.textContent = tutorialBuildFocusText(step);
+    if(tutorialPanelFocus) tutorialPanelFocus.textContent = attackPanelReturnCue
+      ? 'Ahora el foco está abajo: toca combustible y picas en el panel del mecha. La consola superior solo sirve para abrir, ajustar y confirmar.'
+      : tutorialBuildFocusText(step);
     if(tutorialPanelStatus) tutorialPanelStatus.textContent = tutorialSystem.completed
       ? 'La guía ha soltado las restricciones. Puedes seguir jugando o reiniciar cuando quieras.'
-      : (busyText || 'Solo se habilitan las acciones relevantes para el paso actual.');
+      : (attackPanelReturnCue
+        ? 'Subir al panel era solo el primer gesto del paso. La selección real de cartas se hace abajo.'
+        : (busyText || 'Solo se habilitan las acciones relevantes para el paso actual.'));
     return;
   }
 
@@ -10981,6 +11013,44 @@ function tutorialPrimeRiggedCardIds(cardIds = []){
   return primed.length;
 }
 
+function tutorialEnsureHandCardIds(playerIdx, cardIds = []){
+  const player = state.players[playerIdx];
+  if(!player) return 0;
+  let injected = 0;
+
+  cardIds.forEach(cardId => {
+    if(!cardId || player.hand.some(card => card.id === cardId)) return;
+
+    let card = null;
+    let idx = Array.isArray(state.tutorialRiggedDraws)
+      ? state.tutorialRiggedDraws.findIndex(entry => entry?.id === cardId)
+      : -1;
+    if(idx >= 0) card = state.tutorialRiggedDraws.splice(idx, 1)[0] || null;
+
+    if(!card){
+      idx = state.deck.findIndex(entry => entry?.id === cardId);
+      if(idx >= 0) card = state.deck.splice(idx, 1)[0] || null;
+    }
+
+    if(!card){
+      idx = state.discard.findIndex(entry => entry?.id === cardId);
+      if(idx >= 0) card = state.discard.splice(idx, 1)[0] || null;
+    }
+
+    if(card){
+      player.hand.push(card);
+      injected += 1;
+    }
+  });
+
+  if(injected){
+    log(`🎓 Refuerzo del tutorial: ${player.name} recibe ${injected} carta(s) clave para completar el siguiente paso.`);
+    addToast('Cartas clave del tutorial preparadas', 'ok');
+  }
+
+  return injected;
+}
+
 function tutorialRunOpponentPass(nextStepIndex, statusText){
   tutorialQueueAutoAction(statusText, () => {
     if(state.winner){
@@ -11027,6 +11097,9 @@ function tutorialRunOpponentPass(nextStepIndex, statusText){
     log(`🎓 ${opponent.name} te devuelve el turno para continuar la práctica.`);
     addToast(`${opponent.name} cede el turno`, 'ok');
     advanceTurn();
+    if(nextStep?.id==='pass-turn'){
+      tutorialEnsureHandCardIds(0, [TUTORIAL_CARD_IDS.p0PassHeart, TUTORIAL_CARD_IDS.p0PassClub]);
+    }
     tutorialSetStep(nextStepIndex);
   }, 1250);
 }
