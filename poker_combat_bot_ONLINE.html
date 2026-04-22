@@ -1590,6 +1590,74 @@ button:disabled{
   }
 }
 .footer-note{margin-top:6px;text-align:center;color:rgba(126,198,215,.55);font-size:.66rem;text-transform:uppercase;letter-spacing:.11em}
+.tutorial-attack-jump-btn{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:46;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-width:220px;
+  max-width:min(92vw, 320px);
+  padding:13px 16px;
+  border-radius:16px;
+  border:1px solid rgba(98,236,255,.54);
+  background:
+    radial-gradient(circle at top, rgba(92,236,255,.14), transparent 58%),
+    linear-gradient(180deg, rgba(10,26,40,.98), rgba(7,14,24,.98));
+  color:#f3fdff;
+  font-size:.84rem;
+  font-weight:900;
+  line-height:1.25;
+  letter-spacing:.02em;
+  text-transform:none;
+  text-align:center;
+  box-shadow:
+    0 0 0 1px rgba(92,236,255,.16),
+    0 10px 24px rgba(0,0,0,.34),
+    0 0 22px rgba(35,216,255,.18),
+    inset 0 0 18px rgba(35,216,255,.08);
+}
+.tutorial-attack-jump-btn.show{
+  display:flex;
+  animation:tutorialJumpPulse 1.8s ease-in-out infinite;
+}
+.tutorial-attack-jump-btn:hover{
+  box-shadow:
+    0 0 0 1px rgba(140,245,255,.22),
+    0 12px 26px rgba(0,0,0,.38),
+    0 0 28px rgba(35,216,255,.24),
+    inset 0 0 18px rgba(35,216,255,.12);
+}
+.tutorial-attack-jump-btn strong{
+  display:block;
+  color:#9cf5ff;
+  font-size:.68rem;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  margin-bottom:2px;
+}
+@keyframes tutorialJumpPulse{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-2px); }
+}
+@media (max-width: 760px){
+  .tutorial-attack-jump-btn{
+    right:12px;
+    left:12px;
+    bottom:14px;
+    max-width:none;
+    min-width:0;
+    padding:12px 14px;
+    font-size:.8rem;
+  }
+  .tutorial-attack-jump-btn strong{
+    font-size:.64rem;
+  }
+}
 .zone-pulse{animation:zonePulse .8s ease}
 .zone-draw{animation:drawPulse .8s ease}
 .damage-shake{animation:damageShake .55s ease}
@@ -4961,6 +5029,9 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
 </div>
 
 <div class="toast-stack" id="toastStack"></div>
+<button class="tutorial-attack-jump-btn" id="tutorialAttackJumpBtn" type="button" aria-hidden="true">
+  <span><strong>Tutorial</strong>Bajar al panel del mecha para elegir combustible y cartas de ataque</span>
+</button>
 
 <script>
 const SUITS = {
@@ -5569,7 +5640,7 @@ const TUTORIAL_DRAW_SEQUENCE = [
   ['Q', 'hearts', 'tut-draw-01'],
   ['J', 'clubs', 'tut-draw-02'],
   ['8', 'hearts', 'tut-draw-03'],
-  ['9', 'clubs', 'tut-draw-04'],
+  ['8', 'clubs', 'tut-draw-04'],
   ['10', 'spades', 'tut-draw-05'],
   ['3', 'clubs', 'tut-draw-06'],
   ['6', 'spades', 'tut-draw-07'],
@@ -5673,7 +5744,7 @@ const TUTORIAL_SCRIPT = [
     id: 'pass-turn',
     title: 'Paso 9 · Aprende a pasar turno',
     body: 'Si no puedes o no quieres hacer nada útil, estás obligado a usar <strong>Pasar</strong> desde el panel principal de arriba y descartar <strong>2 cartas</strong> de la mano.<br><br>Si te quedara menos de 2, descartarías las que tuvieras. Aquí vamos a practicarlo de forma explícita.',
-    objective: 'Selecciona <strong>10♥</strong> y <strong>9♣</strong> de tu mano y pulsa <strong>Pasar ARRIBA</strong>.',
+    objective: 'Selecciona <strong>10♥</strong> y <strong>8♣</strong> de tu mano y pulsa <strong>Pasar ARRIBA</strong>.',
     tip: 'Pasar turno no es “no hacer nada”: siempre implica descartar para ceder la iniciativa.',
     allowedButtons: ['actionPassBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0PassHeart, TUTORIAL_CARD_IDS.p0PassClub],
@@ -6457,6 +6528,22 @@ function scrollToSharedControls(behavior='smooth'){
     top: Math.max(0, top),
     behavior
   });
+}
+
+function syncTutorialAttackJumpButton(){
+  const btn = document.getElementById('tutorialAttackJumpBtn');
+  if(!btn) return;
+  const step = tutorialGetCurrentStep();
+  const shouldShow = tutorialSystem.enabled
+    && step?.id === 'first-attack'
+    && state.attackMode
+    && state.selected.length === 0
+    && !state.pendingDefense
+    && !state.winner;
+
+  btn.classList.toggle('show', shouldShow);
+  btn.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+  btn.disabled = !shouldShow;
 }
 
 function setupStoryEmbedNavigation(){
@@ -8125,8 +8212,8 @@ function drawWithTwoFigures(){
   if(tutorialIsGuided() && tutorialStep?.id === 'figure-burst'){
     tutorialPrimeRiggedCardIds([
       TUTORIAL_CARD_IDS.p0SwapArmor,
+      TUTORIAL_CARD_IDS.p0PassClub,
       'tut-draw-10',
-      'tut-draw-08',
       'tut-draw-09'
     ]);
   }
@@ -8643,6 +8730,9 @@ function resolveAttackAfterDefense(defenseCard){
     log(result.summary);
     state.pendingTurnSfx = 'turn_attack';
     checkWinner();
+    if(!state.winner && tutorialGuaranteeProjectileFinish(defenderIdx)){
+      checkWinner();
+    }
     if(!state.winner){
       advanceTurn();
     }else{
@@ -10186,6 +10276,7 @@ function render(){
   renderSelectionHint();
   renderAttackConsole();
   updateHints();
+  syncTutorialAttackJumpButton();
   syncModeUi();
   syncMusicToState();
 
@@ -10567,6 +10658,11 @@ document.getElementById('confirmAttackBtn').addEventListener('click', () => {
 document.getElementById('projectileOnlyBtn').addEventListener('click', () => {
   if(!canUseInteractiveTurnAction()) return;
   confirmAttack(true);
+});
+document.getElementById('tutorialAttackJumpBtn').addEventListener('click', () => {
+  pulseButton('tutorialAttackJumpBtn');
+  scrollToPlayerPanel(state.currentPlayer, 'smooth');
+  addToast('Baja ahora y elige combustible y cartas de ataque', 'ok');
 });
 document.getElementById('confirmDefenseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
@@ -11051,6 +11147,82 @@ function tutorialEnsureHandCardIds(playerIdx, cardIds = []){
   return injected;
 }
 
+function tutorialDiscardInstructorCard(zone, matcher){
+  const instructor = state.players[1];
+  if(!instructor) return null;
+  const pile = zone === 'hand' ? instructor.hand : instructor[zone];
+  if(!Array.isArray(pile) || !pile.length) return null;
+  const idx = pile.findIndex(matcher);
+  if(idx < 0) return null;
+  const card = pile.splice(idx, 1)[0] || null;
+  if(card) state.discard.push(card);
+  return card;
+}
+
+function tutorialPrepareInstructorFinale(stage){
+  const instructor = state.players[1];
+  if(!instructor) return;
+  const discarded = [];
+
+  const discardHighestByValue = zone => {
+    const pile = zone === 'hand' ? instructor.hand : instructor[zone];
+    if(!Array.isArray(pile) || !pile.length) return null;
+    const sorted = [...pile].sort((a, b) => (b?.value || 0) - (a?.value || 0));
+    const top = sorted[0];
+    if(!top) return null;
+    return tutorialDiscardInstructorCard(zone, card => card?.id === top.id);
+  };
+
+  if(stage === 'swap-card'){
+    const armorTrim = tutorialDiscardInstructorCard('armor', card => card?.id === TUTORIAL_CARD_IDS.p1ArmorB)
+      || discardHighestByValue('armor');
+    if(armorTrim) discarded.push(armorTrim);
+  }
+
+  if(stage === 'projectile'){
+    while(instructor.armor.length){
+      const card = tutorialDiscardInstructorCard('armor', () => true);
+      if(!card) break;
+      discarded.push(card);
+    }
+
+    while(sumCards(instructor.defense) > 8 && instructor.defense.length){
+      const card = discardHighestByValue('defense');
+      if(!card) break;
+      discarded.push(card);
+    }
+
+    const numericDiamonds = [...instructor.hand.filter(isNumericDiamondCard)];
+    numericDiamonds.forEach(card => {
+      const removed = tutorialDiscardInstructorCard('hand', entry => entry?.id === card.id);
+      if(removed) discarded.push(removed);
+    });
+  }
+
+  if(discarded.length){
+    setBestFlexTargets(instructor);
+    syncMilestones(1);
+    log(`🎓 ${instructor.name} descarta ${discarded.map(cardText).join(', ')} para dejarte una ventana clara de práctica.`);
+  }
+}
+
+function tutorialGuaranteeProjectileFinish(defenderIdx){
+  const step = tutorialGetCurrentStep();
+  if(!tutorialIsGuided() || step?.id !== 'projectile' || defenderIdx !== 1) return false;
+  const defender = state.players[defenderIdx];
+  if(!defender) return false;
+  if(defender.defense.length === 0) return false;
+
+  const strippedArmor = [...defender.armor];
+  const strippedDefense = [...defender.defense];
+  defender.armor = [];
+  defender.defense = [];
+  strippedArmor.forEach(card => state.discard.push(card));
+  strippedDefense.forEach(card => state.removed.push(card));
+  log(`🎓 El remate final del tutorial se cierra: ${defender.name} queda sin blindaje operativo tras el proyectil.`);
+  return true;
+}
+
 function tutorialRunOpponentPass(nextStepIndex, statusText){
   tutorialQueueAutoAction(statusText, () => {
     if(state.winner){
@@ -11065,30 +11237,15 @@ function tutorialRunOpponentPass(nextStepIndex, statusText){
       return;
     }
 
-    const opponent = state.players[1];
     const nextStep = TUTORIAL_SCRIPT[nextStepIndex] || null;
     if(nextStep?.id==='figure-burst'){
       tutorialEnsureHandFigures(0, 2);
     }
+    if(nextStep?.id==='swap-card'){
+      tutorialPrepareInstructorFinale('swap-card');
+    }
     if(nextStep?.id==='projectile'){
-      const armorDump = [...opponent.armor];
-      const defenseTrim = opponent.defense
-        .filter(card => card.id === TUTORIAL_CARD_IDS.p1DefenseC)
-        .sort((a, b) => b.value - a.value);
-      if(armorDump.length){
-        opponent.armor = [];
-        armorDump.forEach(card => state.discard.push(card));
-      }
-      if(defenseTrim.length){
-        opponent.defense = opponent.defense.filter(card => !defenseTrim.some(trimmed => trimmed.id === card.id));
-        defenseTrim.forEach(card => state.discard.push(card));
-      }
-      setBestFlexTargets(opponent);
-      const exposedParts = [...armorDump, ...defenseTrim];
-      if(exposedParts.length){
-        log(`🎓 ${opponent.name} abre el blindaje y expone el núcleo para que practiques el remate con proyectil: ${exposedParts.map(cardText).join(', ')}.`);
-        addToast('Núcleo del instructor expuesto', 'warn');
-      }
+      tutorialPrepareInstructorFinale('projectile');
     }
     state.selected = [];
     state.lastActionType = 'pass';
@@ -11218,7 +11375,7 @@ function tutorialPreparePracticeScenario(){
   ];
   p1.armor = [
     tutorialTakeCard(deck, '4', 'clubs', TUTORIAL_CARD_IDS.p1ArmorA),
-    tutorialTakeCard(deck, '8', 'clubs', TUTORIAL_CARD_IDS.p1ArmorB)
+    tutorialTakeCard(deck, '9', 'clubs', TUTORIAL_CARD_IDS.p1ArmorB)
   ];
   p1.fuel = [tutorialTakeCard(deck, '4', 'diamonds', TUTORIAL_CARD_IDS.p1FuelA)];
   state.tutorialRiggedDraws = TUTORIAL_DRAW_SEQUENCE.map(([rank, suit, id]) => tutorialTakeCard(deck, rank, suit, id));
