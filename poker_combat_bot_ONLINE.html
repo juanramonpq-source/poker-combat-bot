@@ -1515,6 +1515,64 @@ button:disabled{
     flex-direction:column;
   }
 }
+@media (max-width: 760px) and (orientation: portrait){
+  .defense-guide-bar{
+    bottom:10px;
+    width:min(96vw, 420px);
+    padding:10px 10px 8px;
+    border-radius:14px;
+  }
+  .defense-guide-kicker,
+  .defense-guide-state{
+    font-size:.62rem;
+    letter-spacing:.1em;
+  }
+  .defense-guide-title{
+    font-size:.84rem;
+    line-height:1.16;
+  }
+  .defense-guide-body{
+    font-size:.72rem;
+    line-height:1.22;
+  }
+  .defense-inline-guide{
+    margin-bottom:8px;
+    padding:8px 9px;
+    border-radius:11px;
+  }
+  .defense-inline-header{
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:4px 8px;
+  }
+  .defense-inline-title{
+    font-size:.62rem;
+    letter-spacing:.12em;
+  }
+  .defense-inline-state{
+    font-size:.6rem;
+    letter-spacing:.04em;
+  }
+  .defense-inline-body{
+    margin-top:5px;
+    font-size:.68rem;
+    line-height:1.22;
+  }
+  .defense-inline-actions{
+    gap:6px;
+    margin-top:8px;
+  }
+  .defense-inline-actions button{
+    width:100%;
+    min-width:0;
+    min-height:40px;
+    padding:8px 9px;
+    font-size:.66rem;
+    line-height:1.14;
+    letter-spacing:.03em;
+    white-space:normal;
+  }
+}
 .footer-note{margin-top:6px;text-align:center;color:rgba(126,198,215,.55);font-size:.66rem;text-transform:uppercase;letter-spacing:.11em}
 .zone-pulse{animation:zonePulse .8s ease}
 .zone-draw{animation:drawPulse .8s ease}
@@ -8099,6 +8157,13 @@ function drawWithDiamond(){
     addToast('Carta no valida para robar', 'warn');
     return notifySelection('Solo los diamantes numéricos (2-10♦) pueden utilizarse para robar cartas del mazo.');
   }
+  const tutorialStep = tutorialGetCurrentStep();
+  if(tutorialIsGuided() && tutorialStep?.id === 'draw-diamond'){
+    const neededFigures = Math.max(0, 2 - countHandFigures(player));
+    if(neededFigures > 0){
+      tutorialPrimeRiggedFigureDraws(neededFigures);
+    }
+  }
   removeById(player.hand, card.id);
   state.discard.push(card);
 
@@ -8242,6 +8307,7 @@ function syncDefenseGuideBar(){
   const defender = state.players[state.pendingDefense.defenderIndex];
   const selectedDefense = state.selected.length === 1 && isNumericDiamondCard(state.selected[0]);
   const actionAllowed = canUseInteractiveDefenseAction();
+  const compactDefenseCopy = useCompactDefenseCopy();
 
   if(!actionAllowed){
     bar.classList.remove('show');
@@ -8253,13 +8319,17 @@ function syncDefenseGuideBar(){
     return;
   }
 
-  stateChip.textContent = selectedDefense ? 'Confirmar o rechazar' : 'Elige 1♦';
-  title.textContent = 'Ataque enemigo previsto';
+  stateChip.textContent = selectedDefense ? (compactDefenseCopy ? 'Confirma o niega' : 'Confirmar o rechazar') : 'Elige 1♦';
+  title.textContent = compactDefenseCopy ? 'Ataque previsto' : 'Ataque enemigo previsto';
   body.textContent = selectedDefense
-    ? `${defender.name} ha preparado ${cardText(state.selected[0])}. Confirma la defensa o recházala ahora.`
-    : `${defender.name} puede mitigar este golpe. Elige 1♦ numérico de tu mano o pulsa “No defender”.`;
+    ? (compactDefenseCopy
+      ? `${defender.name} ha elegido ${cardText(state.selected[0])}. Confirma o pulsa “No defender”.`
+      : `${defender.name} ha preparado ${cardText(state.selected[0])}. Confirma la defensa o recházala ahora.`)
+    : (compactDefenseCopy
+      ? `${defender.name} puede esquivar con 1♦. O pulsa “No defender”.`
+      : `${defender.name} puede mitigar este golpe. Elige 1♦ numérico de tu mano o pulsa “No defender”.`);
 
-  primary.textContent = selectedDefense ? 'Confirmar defensa' : 'Seleccionar diamantes';
+  primary.textContent = selectedDefense ? (compactDefenseCopy ? 'Confirmar' : 'Confirmar defensa') : (compactDefenseCopy ? 'Elegir 1♦' : 'Seleccionar diamantes');
   primary.disabled = !actionAllowed;
   skip.disabled = !actionAllowed;
   primary.classList.toggle('button-live', actionAllowed);
@@ -8741,6 +8811,12 @@ function getFuelVisualStatus(player){
   return 'online';
 }
 
+function useCompactDefenseCopy(){
+  return typeof window !== 'undefined'
+    && window.matchMedia
+    && window.matchMedia('(max-width: 760px) and (orientation: portrait)').matches;
+}
+
 function createPlayerPanel(player, idx){
   setBestFlexTargets(player);
   const limits = getModuleLimits(player);
@@ -8757,6 +8833,7 @@ function createPlayerPanel(player, idx){
   const isDefenseFocus = !!state.pendingDefense && idx===state.pendingDefense.defenderIndex;
   const isInteractiveDefenseFocus = !!state.pendingDefense && getInteractivePlayerIndex() === state.pendingDefense.defenderIndex && idx===state.pendingDefense.defenderIndex;
   const selectedDefenseCard = isInteractiveDefenseFocus && state.selected.length===1 && isNumericDiamondCard(state.selected[0]) ? state.selected[0] : null;
+  const compactDefenseCopy = useCompactDefenseCopy();
   const handSummary = getHandSummary(player, idx);
   const priorityNotice = getPlayerPanelPriorityNotice(player, idx);
   const pilotLockTitle = priorityNotice ? priorityNotice.title : pilotReq.title;
@@ -8870,15 +8947,19 @@ function createPlayerPanel(player, idx){
               <div class="defense-inline-guide ${selectedDefenseCard ? 'ready' : ''}">
                 <div class="defense-inline-header">
                   <div class="defense-inline-title">Defensa activa</div>
-                  <div class="defense-inline-state">${selectedDefenseCard ? 'Confirmar o rechazar' : 'Elige 1♦'}</div>
+                  <div class="defense-inline-state">${selectedDefenseCard ? (compactDefenseCopy ? 'Confirma o niega' : 'Confirmar o rechazar') : 'Elige 1♦'}</div>
                 </div>
                 <div class="defense-inline-body">
                   ${selectedDefenseCard
-                    ? `Defensa preparada con <strong>${cardText(selectedDefenseCard)}</strong>. Confirma la defensa o recházala ahora.`
-                    : 'Selecciona 1♦ numérico de tu mano para esquivar el ataque. Si no quieres defenderte, pulsa “No defender”.'}
+                    ? (compactDefenseCopy
+                      ? `Defensa lista con <strong>${cardText(selectedDefenseCard)}</strong>. Confirma o pulsa “No defender”.`
+                      : `Defensa preparada con <strong>${cardText(selectedDefenseCard)}</strong>. Confirma la defensa o recházala ahora.`)
+                    : (compactDefenseCopy
+                      ? 'Elige 1♦ numérico para esquivar. O pulsa “No defender”.'
+                      : 'Selecciona 1♦ numérico de tu mano para esquivar el ataque. Si no quieres defenderte, pulsa “No defender”.')}
                 </div>
                 <div class="defense-inline-actions">
-                  <button class="cyan defense-inline-primary" type="button" data-defense-inline="primary">${selectedDefenseCard ? 'Confirmar defensa' : 'Seleccionar diamantes'}</button>
+                  <button class="cyan defense-inline-primary" type="button" data-defense-inline="primary">${selectedDefenseCard ? (compactDefenseCopy ? 'Confirmar' : 'Confirmar defensa') : (compactDefenseCopy ? 'Elegir 1♦' : 'Seleccionar diamantes')}</button>
                   <button class="warn defense-inline-skip" type="button" data-defense-inline="skip">No defender</button>
                 </div>
               </div>
@@ -10820,6 +10901,34 @@ function tutorialEnsureHandFigures(playerIdx, minCount = 2){
   }
 
   return injected;
+}
+
+function tutorialPrimeRiggedFigureDraws(minCount = 1){
+  if(!Array.isArray(state.tutorialRiggedDraws)) state.tutorialRiggedDraws = [];
+  const primed = [];
+  const isFigure = card => !!card && ['J','Q','K'].includes(card.rank);
+
+  while(primed.length < minCount){
+    let card = null;
+    const riggedIdx = state.tutorialRiggedDraws.findIndex(isFigure);
+    if(riggedIdx >= 0){
+      card = state.tutorialRiggedDraws.splice(riggedIdx, 1)[0] || null;
+    } else {
+      const deckIdx = state.deck.findIndex(isFigure);
+      if(deckIdx >= 0){
+        card = state.deck.splice(deckIdx, 1)[0] || null;
+      }
+    }
+    if(!card) break;
+    primed.push(card);
+  }
+
+  if(primed.length){
+    state.tutorialRiggedDraws = [...primed, ...state.tutorialRiggedDraws];
+    log(`🎓 El tutorial coloca ${primed.length} figura(s) al frente del robo para practicar 2 figuras → 4.`);
+  }
+
+  return primed.length;
 }
 
 function tutorialRunOpponentPass(nextStepIndex, statusText){
