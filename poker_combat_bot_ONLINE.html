@@ -10783,6 +10783,45 @@ function tutorialIsStepComplete(stepId){
   }
 }
 
+function tutorialEnsureHandFigures(playerIdx, minCount = 2){
+  const player = state.players[playerIdx];
+  if(!player) return 0;
+  let injected = 0;
+  const preferredFigures = [
+    ['K', 'hearts'],
+    ['Q', 'clubs'],
+    ['J', 'spades'],
+    ['K', 'clubs'],
+    ['Q', 'hearts'],
+    ['J', 'clubs']
+  ];
+
+  const takeFigureFromDeck = (rank = null, suit = null) => {
+    const idx = state.deck.findIndex(card => ['J','Q','K'].includes(card.rank) && (!rank || card.rank===rank) && (!suit || card.suit===suit));
+    if(idx < 0) return null;
+    return state.deck.splice(idx, 1)[0] || null;
+  };
+
+  while(countHandFigures(player) < minCount){
+    let card = null;
+    while(preferredFigures.length && !card){
+      const [rank, suit] = preferredFigures.shift();
+      card = takeFigureFromDeck(rank, suit);
+    }
+    if(!card) card = takeFigureFromDeck();
+    if(!card) break;
+    player.hand.push(card);
+    injected += 1;
+  }
+
+  if(injected){
+    log(`🎓 Refuerzo del tutorial: ${player.name} recibe ${injected} figura(s) extra para practicar la táctica 2 figuras → 4.`);
+    addToast('Figuras extra preparadas para la práctica', 'ok');
+  }
+
+  return injected;
+}
+
 function tutorialRunOpponentPass(nextStepIndex, statusText){
   tutorialQueueAutoAction(statusText, () => {
     if(state.winner){
@@ -10799,6 +10838,9 @@ function tutorialRunOpponentPass(nextStepIndex, statusText){
 
     const opponent = state.players[1];
     const nextStep = TUTORIAL_SCRIPT[nextStepIndex] || null;
+    if(nextStep?.id==='figure-burst'){
+      tutorialEnsureHandFigures(0, 2);
+    }
     if(nextStep?.id==='projectile'){
       const armorDump = [...opponent.armor];
       const defenseTrim = opponent.defense
