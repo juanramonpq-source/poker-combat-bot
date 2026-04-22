@@ -11237,6 +11237,7 @@ function tutorialRunOpponentPass(nextStepIndex, statusText){
       return;
     }
 
+    const opponent = state.players[1];
     const nextStep = TUTORIAL_SCRIPT[nextStepIndex] || null;
     if(nextStep?.id==='figure-burst'){
       tutorialEnsureHandFigures(0, 2);
