@@ -5764,13 +5764,13 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'projectile',
-    title: 'Paso 11 · Remate final con proyectil',
-    body: 'Ahora sí: tu primer ataque completo ya ha desbloqueado los <strong>proyectiles</strong>. El proyectil siempre consume <strong>1 pica numérica</strong> del módulo Ataque y <strong>esa carta se descarta</strong>.<br><br><strong>Opción A · Solo proyectil:</strong> selecciona <strong>8♠</strong> y pulsa <strong>Solo proyectil</strong>.<br><br><strong>Opción B · Ataque combinado + proyectil:</strong> abre el ataque arriba, activa <strong>Modo proyectil</strong>, usa <strong>7♣</strong> como combustible desde Armadura gracias al <strong>A♦</strong> booster, añade <strong>4♠</strong> como ataque principal y <strong>8♠</strong> como proyectil, y confirma arriba.',
-    objective: 'Gana la partida con una de estas dos opciones finales: <strong>Solo proyectil</strong> con <strong>8♠</strong> o <strong>ataque combinado + proyectil</strong> con <strong>7♣ + 4♠ + 8♠</strong> desde el panel principal.',
-    tip: 'El proyectil se descarta siempre. Si eliges el ataque combinado, recuerda: <strong>Modo proyectil ARRIBA</strong> y después <strong>Confirmar ataque ARRIBA</strong>.',
-    allowedButtons: ['attackModeBtn', 'toggleProjectileBtn', 'projectileOnlyBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
-    allowedCardIds: [TUTORIAL_CARD_IDS.p0SwapArmor, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackB],
-    highlightButtons: ['attackModeBtn', 'projectileOnlyBtn', 'toggleProjectileBtn'],
+    title: 'Paso 11 · Remate final y uso opcional del proyectil',
+    body: 'Ahora sí: tu primer ataque completo ya ha desbloqueado los <strong>proyectiles</strong>. La regla importante es esta: el <strong>combustible</strong> solo limita el <strong>ataque principal</strong>; el <strong>proyectil</strong> te deja añadir <strong>1 pica numérica extra</strong>, y esa carta <strong>siempre se descarta</strong>.<br><br>En este cierre tienes <strong>7♣</strong> como combustible desde Armadura gracias al <strong>A♦</strong>, así que tu límite principal es <strong>14</strong>.<br><br><strong>Opción A · Ataque normal:</strong> usa <strong>7♣ + 4♠ + 7♠</strong> y confirma arriba.<br><br><strong>Opción B · Ataque con todo:</strong> si quieres meter también la <strong>8♠</strong>, activa <strong>Modo proyectil</strong> y ataca con <strong>7♣ + 4♠ + 7♠</strong> como ataque principal y <strong>8♠</strong> como proyectil.',
+    objective: 'Gana la partida con una de estas dos opciones finales: <strong>ataque normal</strong> con <strong>7♣ + 4♠ + 7♠</strong> o <strong>ataque con todo</strong> usando <strong>Modo proyectil</strong> con <strong>7♣ + 4♠ + 7♠ + 8♠</strong>.',
+    tip: 'Usa proyectil solo cuando quieras añadir una pica extra que ya no cabe dentro del límite del combustible principal.',
+    allowedButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
+    allowedCardIds: [TUTORIAL_CARD_IDS.p0SwapArmor, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA, TUTORIAL_CARD_IDS.p0AttackB],
+    highlightButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn'],
     highlightZones: ['module-box-attack-0', 'module-box-armor-0']
   },
   {
@@ -10813,18 +10813,16 @@ function tutorialAllowsButton(id){
 }
 
 function tutorialMatchesProjectileFinisher(actionKey, selectedCards = state.selected){
-  const soloProjectile = [TUTORIAL_CARD_IDS.p0AttackB];
-  const comboProjectile = [TUTORIAL_CARD_IDS.p0SwapArmor, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackB];
+  const standardAttack = [TUTORIAL_CARD_IDS.p0SwapArmor, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA];
+  const comboProjectile = [TUTORIAL_CARD_IDS.p0SwapArmor, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA, TUTORIAL_CARD_IDS.p0AttackB];
 
-  if(actionKey === 'projectileOnly'){
-    return tutorialSelectionMatches(soloProjectile, selectedCards);
+  if(actionKey !== 'confirmAttack') return false;
+
+  if(state.projectileMode){
+    return tutorialSelectionMatches(comboProjectile, selectedCards);
   }
 
-  if(actionKey === 'confirmAttack'){
-    return state.projectileMode && tutorialSelectionMatches(comboProjectile, selectedCards);
-  }
-
-  return false;
+  return tutorialSelectionMatches(standardAttack, selectedCards);
 }
 
 function tutorialExpectedAction(stepId){
