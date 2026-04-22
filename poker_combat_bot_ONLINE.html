@@ -5540,9 +5540,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'open-attack',
     title: 'Paso 4 · Entra en modo ataque',
-    body: 'Tu mecha ya cumple la condición del piloto. Ahora abre la consola de ataque para elegir combustible y cartas de daño.',
-    objective: 'Pulsa <strong>Abrir ataque</strong>.',
-    tip: 'No hace falta seleccionar nada todavía.',
+    body: 'Tu mecha ya cumple la condición del piloto. Ahora abre la consola de ataque para elegir combustible y cartas de daño.<br><br>Puedes hacerlo de dos formas: con <strong>Abrir ataque</strong> en el panel principal de <strong>arriba</strong> o con el botón <strong>Ataque</strong> del panel de tu jugador, que te lleva automáticamente hacia arriba.',
+    objective: 'Pulsa <strong>Abrir ataque</strong> arriba o el botón <strong>Ataque</strong> de tu panel.',
+    tip: 'Si te pierdes, usa el botón Ataque del panel del jugador: te lleva al panel de control principal de arriba.',
     allowedButtons: ['attackModeBtn', 'clearSelectionBtn'],
     allowedCardIds: [],
     highlightButtons: ['attackModeBtn'],
@@ -5552,8 +5552,8 @@ const TUTORIAL_SCRIPT = [
     id: 'first-attack',
     title: 'Paso 5 · Declara tu primer ataque',
     body: 'Vas a usar <strong>8♦</strong> como combustible y <strong>4♠ + 7♠</strong> como ataque principal. El combustible se descarta al disparar; las picas del ataque principal se quedan montadas.',
-    objective: 'Selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, luego pulsa <strong>Confirmar ataque</strong>.',
-    tip: '8♦ te da un límite de 16 puntos; 4♠ + 7♠ = 11, así que es válido.',
+    objective: 'Selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, luego pulsa <strong>Confirmar ataque ARRIBA</strong>.',
+    tip: '8♦ te da un límite de 16 puntos; 4♠ + 7♠ = 11, así que es válido. La confirmación siempre se hace en el panel principal de arriba.',
     allowedButtons: ['attackModeBtn', 'confirmAttackBtn', 'clearSelectionBtn', 'cancelAttackBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
     highlightButtons: ['confirmAttackBtn'],
@@ -5573,9 +5573,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'draw-diamond',
     title: 'Paso 7 · Roba con diamantes',
-    body: 'Los diamantes también funcionan como motor de robo. Si descartas uno de la mano, robas tantas cartas como marque su valor.',
-    objective: 'Selecciona <strong>2♦</strong> de tu mano y pulsa <strong>Robar con ♦</strong>.',
-    tip: 'No puedes usar esta acción en dos turnos propios seguidos.',
+    body: 'Los diamantes también funcionan como motor de robo. Si descartas uno de la mano, robas tantas cartas como marque su valor. Esta acción se lanza desde el <strong>panel principal de arriba</strong>.',
+    objective: 'Selecciona <strong>2♦</strong> de tu mano y pulsa <strong>Robar con ♦ ARRIBA</strong>.',
+    tip: 'No puedes usar esta acción en dos turnos propios seguidos. Si te desplazas, recuerda que el panel principal está arriba.',
     allowedButtons: ['actionDrawDiamondBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0DrawDiamond],
     highlightButtons: ['actionDrawDiamondBtn'],
@@ -5583,19 +5583,19 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'projectile',
-    title: 'Paso 8 · Remata con un proyectil',
-    body: 'Tu primer ataque completo ha desbloqueado los <strong>proyectiles</strong>. Un proyectil consume exactamente una carta numérica de picas del módulo Ataque y no necesita combustible.',
-    objective: 'Selecciona <strong>8♠</strong> en tu módulo Ataque y pulsa <strong>Solo proyectil</strong>.',
-    tip: 'Este disparo final debería cerrar el ejercicio.',
-    allowedButtons: ['projectileOnlyBtn', 'clearSelectionBtn'],
-    allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackB],
-    highlightButtons: ['projectileOnlyBtn'],
-    highlightZones: ['module-box-attack-0']
+    title: 'Paso 8 · Proyectiles, figuras extra y cierre',
+    body: 'Antes del remate, quédate con tres reglas muy útiles:<br><br><strong>2 figuras → 4 cartas:</strong> si ya tienes <strong>piloto</strong> y <strong>copiloto</strong> montados y robas <strong>dos figuras más</strong>, puedes descartarlas con la acción <strong>2 Figuras → 4</strong> para robar 4 cartas.<br><br><strong>Pasar turno:</strong> si no puedes o no quieres hacer nada, estás obligado a usar <strong>Pasar</strong> en el panel principal de arriba y descartar <strong>2 cartas</strong>; si te queda menos de 2, descartas las que tengas.<br><br>Ahora sí: tu primer ataque completo ha desbloqueado los <strong>proyectiles</strong>. El proyectil siempre consume <strong>1 pica numérica</strong> del módulo Ataque y <strong>esa carta se descarta</strong>.<br><br><strong>Opción A · Solo proyectil:</strong> selecciona <strong>8♠</strong> y pulsa <strong>Solo proyectil</strong>.<br><br><strong>Opción B · Ataque combinado + proyectil:</strong> abre el ataque arriba, activa <strong>Modo proyectil</strong>, usa <strong>6♣</strong> como combustible desde Armadura gracias al <strong>A♦</strong> booster, añade <strong>4♠</strong> como ataque principal y <strong>8♠</strong> como proyectil, y confirma arriba.',
+    objective: 'Gana la partida con una de estas dos opciones finales: <strong>Solo proyectil</strong> con <strong>8♠</strong> o <strong>ataque combinado + proyectil</strong> con <strong>6♣ + 4♠ + 8♠</strong> desde el panel principal.',
+    tip: 'El proyectil se descarta siempre. Si eliges el ataque combinado, recuerda: <strong>Modo proyectil ARRIBA</strong> y después <strong>Confirmar ataque ARRIBA</strong>.',
+    allowedButtons: ['attackModeBtn', 'toggleProjectileBtn', 'projectileOnlyBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
+    allowedCardIds: [TUTORIAL_CARD_IDS.p0ArmorA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackB],
+    highlightButtons: ['attackModeBtn', 'projectileOnlyBtn', 'toggleProjectileBtn'],
+    highlightZones: ['module-box-attack-0', 'module-box-armor-0']
   },
   {
     id: 'summary',
     title: 'Tutorial completado',
-    body: 'Ya has practicado el ciclo esencial completo: <strong>montaje</strong>, <strong>combustible</strong>, <strong>ataque</strong>, <strong>defensa</strong>, <strong>robo con diamantes</strong> y <strong>proyectiles</strong>.<br><br>Las acciones avanzadas como <strong>Pasar turno</strong> y <strong>2 figuras → 4 cartas</strong> siguen disponibles en partida normal.',
+    body: 'Ya has practicado el ciclo esencial completo: <strong>montaje</strong>, <strong>combustible</strong>, <strong>ataque</strong>, <strong>defensa</strong>, <strong>robo con diamantes</strong>, <strong>proyectiles</strong>, <strong>pasar turno</strong> y <strong>2 figuras → 4 cartas</strong>.<br><br>Con esto ya puedes leer el tablero base de PoCoBOT sin depender del azar puro.',
     objective: 'Puedes seguir jugando esta partida libremente o iniciar una nueva desde la consola.',
     tip: 'Si quieres repetir la lección, vuelve a pulsar el botón TUTORIAL desde la portada.',
     allowedButtons: [],
@@ -9023,6 +9023,9 @@ function tutorialBuildFocusText(step){
       : 'Solo las cartas iluminadas forman parte de este ejercicio.';
   }
   if(buttonCount){
+    if(step.id==='open-attack'){
+      return 'Puedes usar el botón iluminado de arriba o el botón Ataque del panel del jugador para subir al panel principal.';
+    }
     return 'En este paso solo necesitas el botón iluminado.';
   }
   if(zoneCount){
@@ -10165,7 +10168,9 @@ function updateButtons(){
     const owner = Number(btn.dataset.quickAttack);
     const ownerPlayer = state.players[owner];
     const allowed = !!ownerPlayer && playerCanAttack(ownerPlayer);
-    btn.disabled = locked || hasWinner || inDefense || owner !== state.currentPlayer || !allowed || tutorialIsGuided() || isAiControlledPlayer(owner);
+    const tutorialQuickAttackEnabled = !tutorialIsGuided() || tutorialAllowsButton('attackModeBtn');
+    btn.disabled = locked || hasWinner || inDefense || owner !== state.currentPlayer || !allowed || !tutorialQuickAttackEnabled || isAiControlledPlayer(owner);
+    btn.classList.toggle('button-live', owner === state.currentPlayer && !btn.disabled && tutorialIsGuided() && tutorialAllowsButton('attackModeBtn'));
   });
   document.querySelectorAll('.quick-figure-draw-btn').forEach(btn => {
     const owner = Number(btn.dataset.quickFigure);
@@ -10546,6 +10551,21 @@ function tutorialAllowsButton(id){
   return step.allowedButtons.includes(id);
 }
 
+function tutorialMatchesProjectileFinisher(actionKey, selectedCards = state.selected){
+  const soloProjectile = [TUTORIAL_CARD_IDS.p0AttackB];
+  const comboProjectile = [TUTORIAL_CARD_IDS.p0ArmorA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackB];
+
+  if(actionKey === 'projectileOnly'){
+    return tutorialSelectionMatches(soloProjectile, selectedCards);
+  }
+
+  if(actionKey === 'confirmAttack'){
+    return state.projectileMode && tutorialSelectionMatches(comboProjectile, selectedCards);
+  }
+
+  return false;
+}
+
 function tutorialExpectedAction(stepId){
   switch(stepId){
     case 'core-build':
@@ -10561,7 +10581,7 @@ function tutorialExpectedAction(stepId){
     case 'draw-diamond':
       return 'drawWithDiamond';
     case 'projectile':
-      return 'projectileOnly';
+      return null;
     default:
       return null;
   }
@@ -10582,7 +10602,7 @@ function tutorialExpectedSelection(stepId){
     case 'draw-diamond':
       return [TUTORIAL_CARD_IDS.p0DrawDiamond];
     case 'projectile':
-      return [TUTORIAL_CARD_IDS.p0AttackB];
+      return null;
     default:
       return null;
   }
@@ -10597,6 +10617,21 @@ function tutorialValidateAction(actionKey, selectedCards = state.selected){
   if(!step) return true;
 
   if(step.id==='first-attack' && actionKey==='attackMode') return true;
+  if(step.id==='projectile' && actionKey==='attackMode') return true;
+
+  if(step.id==='projectile' && (actionKey==='projectileOnly' || actionKey==='confirmAttack')){
+    if(!tutorialMatchesProjectileFinisher(actionKey, selectedCards)){
+      notifySelection(step.objective.replace(/<[^>]+>/g, ''));
+      addToast(
+        actionKey==='projectileOnly'
+          ? 'Para el proyectil final selecciona solo 8♠.'
+          : 'Para el combinado usa 6♣ + 4♠ + 8♠ con Modo proyectil activado.',
+        'warn'
+      );
+      return false;
+    }
+    return true;
+  }
 
   const expectedAction = tutorialExpectedAction(step.id);
   if(expectedAction && expectedAction !== actionKey){
@@ -10636,6 +10671,9 @@ function syncTutorialVisualTargets(){
     if(el) el.classList.add('tutorial-button-focus');
     if(id==='actionAddBtn'){
       document.querySelectorAll(`.quick-modify-btn[data-quick-modify="${state.currentPlayer}"]`).forEach(btn => btn.classList.add('tutorial-button-focus'));
+    }
+    if(id==='attackModeBtn'){
+      document.querySelectorAll(`.quick-attack-btn[data-quick-attack="${state.currentPlayer}"]`).forEach(btn => btn.classList.add('tutorial-button-focus'));
     }
   });
 }

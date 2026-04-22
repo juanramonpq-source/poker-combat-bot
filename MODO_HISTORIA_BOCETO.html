@@ -1419,82 +1419,6 @@
       display:block;
       background:#05080d;
     }
-    .lab-toggle{
-      position:absolute;
-      left:clamp(16px, 3vw, 36px);
-      bottom:clamp(56px, 8vh, 94px);
-      z-index:4;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:40px;
-      padding:0 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(8,13,19,.76);
-      color:#eaf8ff;
-      font-size:.74rem;
-      font-weight:900;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      backdrop-filter:blur(12px);
-      box-shadow:0 16px 30px rgba(0,0,0,.24);
-      cursor:pointer;
-    }
-    .lab-drawer{
-      position:absolute;
-      left:clamp(16px, 3vw, 36px);
-      bottom:clamp(104px, 13vh, 142px);
-      z-index:4;
-      width:min(420px, calc(100vw - 32px));
-      display:grid;
-      gap:12px;
-      padding:16px;
-      border-radius:22px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(7,11,17,.84);
-      box-shadow:0 26px 50px rgba(0,0,0,.28);
-      backdrop-filter:blur(16px);
-    }
-    .lab-drawer[hidden]{display:none}
-    .lab-drawer h2{
-      margin:0;
-      font-family:"Arial Black","Impact",sans-serif;
-      font-size:1rem;
-      letter-spacing:.05em;
-      text-transform:uppercase;
-    }
-    .lab-drawer p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.52;
-      font-size:.88rem;
-    }
-    .lab-list{
-      display:grid;
-      gap:10px;
-    }
-    .lab-item{
-      padding:12px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.06);
-      background:rgba(255,255,255,.035);
-    }
-    .lab-item strong{
-      display:block;
-      color:#ffe2c0;
-      font-size:.75rem;
-      letter-spacing:.1em;
-      text-transform:uppercase;
-    }
-    .lab-item span{
-      display:block;
-      margin-top:6px;
-      color:var(--muted);
-      font-size:.85rem;
-      line-height:1.45;
-    }
-
     .bottom-back{
       position:fixed;
       left:50%;
@@ -1607,12 +1531,6 @@
       .story-mobile-route{
         display:block;
       }
-      .lab-toggle{
-        display:none !important;
-      }
-      .lab-drawer{
-        display:none !important;
-      }
       .title-art-wrap{
         background:#060a10 url("assets/Historia/low/titulo_smartphone_compacto_1080.webp") no-repeat center top / cover;
       }
@@ -1668,15 +1586,6 @@
       .story-map-hud p{
         max-width:30ch;
         font-size:.86rem;
-      }
-      .lab-toggle{
-        left:16px;
-        bottom:66px;
-      }
-      .lab-drawer{
-        left:16px;
-        bottom:116px;
-        width:calc(100vw - 32px);
       }
       .scene-header{
         left:16px;
@@ -1891,26 +1800,6 @@
             <p>Empieza la Ruta Ceniza. Ve al Hangar de la Fosa Azul o al Patio de Pruebas, los dos lugares marcados en azul.</p>
           </div>
 
-          <button class="lab-toggle" id="labToggleBtn" type="button" aria-expanded="false" aria-controls="labDrawer">Laboratorio</button>
-
-          <aside class="lab-drawer" id="labDrawer" hidden>
-            <h2>Laboratorio de Boceto</h2>
-            <p>Esta capa mantiene la base de programación y diseño sin competir con la inmersión del mapa. La versión final prescindirá de ella, pero aquí nos sigue sirviendo para construir con criterio.</p>
-            <div class="lab-list">
-              <div class="lab-item">
-                <strong>Base visual</strong>
-                <span><code>TituloARIIBA.png</code>, <code>pocobot_mapa_interactivo.html</code> y los escenarios de <code>assets/Historia</code> siguen siendo la referencia viva.</span>
-              </div>
-              <div class="lab-item">
-                <strong>Base narrativa</strong>
-                <span>La ruta, los protagonistas y el conflicto de Argós se siguen modelando a partir de la biblia de lore y de los nodos ya sembrados.</span>
-              </div>
-              <div class="lab-item">
-                <strong>Próximo paso</strong>
-                <span>Convertir <code>Hangar de la Fosa Azul</code> en la primera escena interactiva real, ya conectada a este panel.</span>
-              </div>
-            </div>
-          </aside>
           <section class="story-scene-stage" id="storySceneStage" hidden>
             <div class="scene-backdrop" id="storySceneBackdrop"></div>
             <div class="scene-focus-wrap">
@@ -2020,8 +1909,6 @@
     const storyMapFrame = document.getElementById('storyMapFrame');
     const storyMobileRoute = document.getElementById('storyMobileRoute');
     const storyMobileRouteList = document.getElementById('storyMobileRouteList');
-    const labToggleBtn = document.getElementById('labToggleBtn');
-    const labDrawer = document.getElementById('labDrawer');
     const storySceneStage = document.getElementById('storySceneStage');
     const storySceneCard = document.getElementById('storySceneCard');
     const storySceneBackdrop = document.getElementById('storySceneBackdrop');
@@ -2065,7 +1952,7 @@
     };
     const STORY_MAP_THEMES = {
       exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
-      chapter_clear: ''
+      chapter_clear: 'assets/Historia/cancionMundo.mp3'
     };
     const STORY_UI_SFX = {
       hover: { src: 'assets/sfx/ui_click.wav', volume: 0.12 },
@@ -2090,7 +1977,7 @@
     const storyUiSfxBank = {};
     const storyProgressState = {
       completedCount: 0,
-      pendingThemeKey: null,
+      pendingThemeKey: 'exploration',
       lastMissionResult: null
     };
     let lastStoryHoverSfxAt = 0;
@@ -2714,6 +2601,7 @@
 
     function setStoryCompletedCount(nextCompletedCount, options = {}) {
       storyProgressState.completedCount = Math.max(0, Math.min(Object.keys(storyDraftNodes).length, nextCompletedCount));
+      queueStoryMapTheme(storyProgressState.completedCount >= 1 ? 'chapter_clear' : 'exploration');
       if (options.selectedId && storyDraftNodes[options.selectedId]) {
         currentStoryNodeId = options.selectedId;
       }
@@ -3010,10 +2898,6 @@
         sceneAmbientMode = !!scene.startAmbient;
         sceneAmbientStep = sceneAmbientMode ? 0 : 2;
         setSceneBackdropArtwork(localNode.lowImage || localNode.image, localNode.image);
-        if (labDrawer && !labDrawer.hasAttribute('hidden')) {
-          labDrawer.setAttribute('hidden', '');
-          labToggleBtn.setAttribute('aria-expanded', 'false');
-        }
         syncSceneStageMode(scene);
         if (!sceneAmbientMode) {
           updateAmbientHint();
@@ -3048,6 +2932,10 @@
       window.setTimeout(() => {
         if (!storySceneStage.classList.contains('active')) {
           storySceneStage.hidden = true;
+          if (workspacePanel.classList.contains('active') && (!storyMissionStage || !storyMissionStage.classList.contains('active'))) {
+            resetStoryMapViewport();
+            playMapMusic();
+          }
         }
       }, 260);
     }
@@ -3330,6 +3218,7 @@
       runStoryTransition(() => {
         titleStage.classList.add('hidden');
         workspacePanel.classList.add('active');
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
         document.documentElement.style.setProperty('--enter-shift', '-3px');
         document.documentElement.style.setProperty('--enter-scale', '1.012');
         playMapMusic();
@@ -3338,7 +3227,7 @@
         renderStoryNode(currentStoryNodeId);
         setTimeout(() => {
           resetStoryMapViewport();
-          workspacePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
           postNodeSelectionToMap(currentStoryNodeId);
         }, 80);
       });
@@ -3358,7 +3247,6 @@
 
     primeStoryUiSfx();
     bindStoryUiSfx(enterStoryBtn, { clickKind: 'confirm' });
-    bindStoryUiSfx(labToggleBtn);
     bindStoryUiSfx(storySceneCloseBtn);
     bindStoryUiSfx(storySceneAmbientMapBtn);
     bindStoryUiSfx(storySceneAmbientNextBtn, { clickKind: 'confirm' });
@@ -3411,15 +3299,6 @@
       if (event.target.closest('button, a, input, textarea, select')) return;
       playStoryUiSfx('confirm');
       activateSceneDialogue();
-    });
-    labToggleBtn.addEventListener('click', () => {
-      const opening = labDrawer.hasAttribute('hidden');
-      if (opening) {
-        labDrawer.removeAttribute('hidden');
-      } else {
-        labDrawer.setAttribute('hidden', '');
-      }
-      labToggleBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
     });
     titleStage.addEventListener('pointerdown', () => {
       if (workspacePanel.classList.contains('active')) return;
