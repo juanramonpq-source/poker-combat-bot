@@ -14146,24 +14146,7 @@ function aiChooseBestAttackPlan(player, difficulty){
 function aiChooseDefenseCard(defender, difficulty){
   const options = defender.hand.filter(isNumericDiamondCard);
   if(!options.length) return null;
-  const incoming = state.pendingDefense?.totalAttack || 0;
-  const noDefense = aiSimulateAttackOutcome(defender, incoming);
-
-  if(difficulty !== 'hard'){
-    const bestCard = [...options].sort((a,b) => b.value - a.value)[0];
-    const withDefense = aiSimulateAttackOutcome(defender, Math.max(0, incoming - bestCard.value));
-    return withDefense.score < noDefense.score ? bestCard : null;
-  }
-
-  let best = null;
-  options.forEach(card => {
-    const outcome = aiSimulateAttackOutcome(defender, Math.max(0, incoming - card.value));
-    const score = outcome.score + card.value * 0.45;
-    if(!best || score < best.score){
-      best = { card, score, outcome };
-    }
-  });
-  return best && best.outcome.score < noDefense.score ? best.card : null;
+  return [...options].sort((a,b) => b.value - a.value)[0];
 }
 function aiChooseDiamondDrawCard(player, difficulty, attackPlan, modifyPlan){
   if(player.flags.lastOwnAction === 'diamondDraw') return null;
@@ -14280,7 +14263,7 @@ function runSinglePlayerAiTurn(){
 }
 function queueImmediateSinglePlayerAi(){
   if(singlePlayerAi.immediateQueued || singlePlayerAi.acting) return;
-  if(!isSinglePlayerMode() || tutorialSystem.enabled || state.winner || !state.gameStarted || state.transitionLock) return;
+  if(!isSinglePlayerMode() || tutorialSystem.enabled || state.winner || !state.gameStarted || (state.transitionLock && !state.pendingDefense)) return;
   if(!isAiControlledPlayer(getFocusPlayerIndex())) return;
   singlePlayerAi.immediateQueued = true;
   queueMicrotask(() => {
@@ -14291,7 +14274,7 @@ function queueImmediateSinglePlayerAi(){
     if(!isAiControlledPlayer(getFocusPlayerIndex())){
       return;
     }
-    if(state.transitionLock){
+    if(state.transitionLock && !state.pendingDefense){
       scheduleSinglePlayerAi(180);
       return;
     }
@@ -14317,7 +14300,7 @@ function scheduleSinglePlayerAi(delayOverride=null){
     clearSinglePlayerAiTimer();
     if(!isSinglePlayerMode() || tutorialSystem.enabled || state.winner || !state.gameStarted) return;
     if(!isAiControlledPlayer(getFocusPlayerIndex())) return;
-    if(singlePlayerAi.acting || state.transitionLock){
+    if(singlePlayerAi.acting || (state.transitionLock && !state.pendingDefense)){
       scheduleSinglePlayerAi(260);
       return;
     }
