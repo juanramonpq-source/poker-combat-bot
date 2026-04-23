@@ -8408,10 +8408,10 @@ const TUTORIAL_CARD_IDS = {
 };
 
 const TUTORIAL_DRAW_SEQUENCE = [
-  ['9', 'hearts', 'tut-draw-01'],
-  ['10', 'clubs', 'tut-draw-02'],
+  ['Q', 'hearts', 'tut-draw-01'],
+  ['J', 'clubs', 'tut-draw-02'],
   ['8', 'hearts', 'tut-draw-03'],
-  ['9', 'clubs', 'tut-draw-04'],
+  ['8', 'clubs', 'tut-draw-04'],
   ['10', 'spades', 'tut-draw-05'],
   ['3', 'clubs', 'tut-draw-06'],
   ['6', 'spades', 'tut-draw-07'],
@@ -12081,14 +12081,17 @@ function drawWithTwoFigures(){
   const tutorialStep = tutorialGetCurrentStep();
   if(tutorialIsGuided() && tutorialStep?.id === 'figure-burst'){
     tutorialPrimeRiggedCardIds([
-      TUTORIAL_CARD_IDS.p0SwapArmor,
+      TUTORIAL_CARD_IDS.p0PassHeart,
       TUTORIAL_CARD_IDS.p0PassClub,
-      'tut-draw-10',
-      'tut-draw-09'
+      TUTORIAL_CARD_IDS.p0SwapArmor,
+      'tut-draw-10'
     ]);
   }
 
   const figures = getHandFigures(player).slice(0, 2);
+  if(tutorialSystem.enabled){
+    tutorialSystem.validation.academyFigureBurstUsed = true;
+  }
   figures.forEach(card => {
     removeById(player.hand, card.id);
     state.discard.push(card);
@@ -12209,6 +12212,9 @@ function passTurn(){
   const required = Math.min(2, player.hand.length);
   const handCards = state.selected.filter(s => s.zone==='hand');
   if(handCards.length!==required) return notifySelection(`Para pasar debes seleccionar ${required} carta(s) de tu mano.`);
+  if(tutorialSystem.enabled && required === 1){
+    tutorialSystem.validation.academySingleCardPassUsed = true;
+  }
   handCards.forEach(card => {
     removeById(player.hand, card.id);
     state.discard.push(card);
@@ -12492,6 +12498,12 @@ function confirmAttack(projectileOnly=false){
   }
 
   const sel = getAttackSelection();
+  if(tutorialSystem.enabled){
+    if(projectileOnly) tutorialSystem.validation.academyProjectileOnlyUsed = true;
+    if(!projectileOnly && sel.fuel.length > 0 && !sel.armorFuel.length) tutorialSystem.validation.academyFuelAttackUsed = true;
+    if(!projectileOnly && sel.armorFuel.length > 0) tutorialSystem.validation.academyArmorFuelUsed = true;
+    if(!projectileOnly && state.projectileMode && !!sel.projectile) tutorialSystem.validation.academyProjectileComboUsed = true;
+  }
   let mainValue = sel.mainValue;
   let projectile = sel.projectile;
   let projectileValue = sel.projectileValue;
@@ -14857,8 +14869,14 @@ function tutorialExpectedAction(stepId){
       return 'confirmDefense';
     case 'draw-diamond':
       return 'drawWithDiamond';
+    case 'figure-burst':
+      return 'quickFigureDraw';
+    case 'pass-turn':
+      return 'passTurn';
+    case 'swap-card':
+      return 'modify';
     case 'projectile':
-      return 'projectileOnly';
+      return null;
     default:
       return null;
   }
@@ -14882,8 +14900,12 @@ function tutorialExpectedSelection(stepId){
       return [TUTORIAL_CARD_IDS.p0DefendDiamond];
     case 'draw-diamond':
       return [TUTORIAL_CARD_IDS.p0DrawDiamond];
+    case 'pass-turn':
+      return [TUTORIAL_CARD_IDS.p0PassHeart, TUTORIAL_CARD_IDS.p0PassClub];
+    case 'swap-card':
+      return [TUTORIAL_CARD_IDS.p0SwapArmor, TUTORIAL_CARD_IDS.p0ArmorA];
     case 'projectile':
-      return [TUTORIAL_CARD_IDS.p0AttackB];
+      return null;
     default:
       return null;
   }
@@ -15026,6 +15048,44 @@ function tutorialGuaranteeProjectileFinish(){
   return false;
 }
 
+function tutorialPrimeRiggedCardIds(cardIds = []){
+  if(!Array.isArray(state.tutorialRiggedDraws) || !state.tutorialRiggedDraws.length) return;
+  const remaining = [...state.tutorialRiggedDraws];
+  const prioritized = [];
+  cardIds.forEach(cardId => {
+    const idx = remaining.findIndex(card => card.id === cardId);
+    if(idx >= 0){
+      prioritized.push(remaining.splice(idx, 1)[0]);
+    }
+  });
+  state.tutorialRiggedDraws = [...prioritized, ...remaining];
+}
+
+function tutorialPrimeRiggedFigureDraws(count = 0){
+  if(!Array.isArray(state.tutorialRiggedDraws) || count <= 0) return;
+  const remaining = [...state.tutorialRiggedDraws];
+  const prioritized = [];
+  for(let i = 0; i < remaining.length && prioritized.length < count; i += 1){
+    if(['J', 'Q', 'K'].includes(remaining[i].rank)){
+      prioritized.push(remaining[i]);
+    }
+  }
+  if(prioritized.length < count && Array.isArray(state.deck)){
+    for(let i = 0; i < state.deck.length && prioritized.length < count; i += 1){
+      if(['J', 'Q', 'K'].includes(state.deck[i].rank)){
+        prioritized.push(state.deck.splice(i, 1)[0]);
+        i -= 1;
+      }
+    }
+  }
+  if(!prioritized.length) return;
+  const prioritizedIds = new Set(prioritized.map(card => card.id));
+  state.tutorialRiggedDraws = [
+    ...prioritized,
+    ...remaining.filter(card => !prioritizedIds.has(card.id))
+  ];
+}
+
 function tutorialIsStepComplete(stepId){
   const configuredStep = tutorialGetStepById(stepId) || tutorialGetCurrentStep();
   if(configuredStep && typeof configuredStep.isComplete === 'function'){
@@ -15054,6 +15114,18 @@ function tutorialIsStepComplete(stepId){
       return !state.pendingDefense && state.currentPlayer===0 && !p0.hand.some(card => card.id===TUTORIAL_CARD_IDS.p0DefendDiamond);
     case 'draw-diamond':
       return state.currentPlayer===1 && !p0.hand.some(card => card.id===TUTORIAL_CARD_IDS.p0DrawDiamond) && state.lastActionType==='diamondDraw';
+    case 'figure-burst':
+      return state.currentPlayer===1 && state.lastActionType==='figureBurst';
+    case 'pass-turn':
+      return state.currentPlayer===1
+        && state.lastActionType==='pass'
+        && !p0.hand.some(card => card.id===TUTORIAL_CARD_IDS.p0PassHeart)
+        && !p0.hand.some(card => card.id===TUTORIAL_CARD_IDS.p0PassClub);
+    case 'swap-card':
+      return state.currentPlayer===1
+        && state.lastActionType==='modify'
+        && p0.armor.some(card => card.id===TUTORIAL_CARD_IDS.p0SwapArmor)
+        && !p0.armor.some(card => card.id===TUTORIAL_CARD_IDS.p0ArmorA);
     case 'projectile':
       return state.winner===state.players[0]?.name;
     default:
@@ -15149,10 +15221,19 @@ function tutorialHandleStepCompletion(step){
     case 'draw-diamond':
       tutorialRunOpponentPass(7, 'Reabastécete y prepárate para terminar el ejercicio con un proyectil.');
       break;
+    case 'figure-burst':
+      tutorialRunOpponentPass(8, 'Perfecto. Ahora vamos a practicar cómo pasar turno descartando cartas.');
+      break;
+    case 'pass-turn':
+      tutorialRunOpponentPass(9, 'Bien visto. Te devuelven el turno para sustituir una carta del panel.');
+      break;
+    case 'swap-card':
+      tutorialRunOpponentPass(10, 'Último paso: remata la partida con el ataque final.');
+      break;
     case 'projectile':
       addToast('Tutorial completado', 'ok');
       log('🎓 Tutorial guiado completado. El modo libre queda desbloqueado en esta misma partida.');
-      tutorialSetStep(8, { clearSelection:false });
+      tutorialSetStep(getActiveTutorialScript().length - 1, { clearSelection:false });
       break;
     default:
       tutorialSystem.completionLock = false;
@@ -15204,7 +15285,7 @@ function tutorialPreparePracticeScenario(){
   ];
   p1.armor = [
     tutorialTakeCard(deck, '4', 'clubs', TUTORIAL_CARD_IDS.p1ArmorA),
-    tutorialTakeCard(deck, '8', 'clubs', TUTORIAL_CARD_IDS.p1ArmorB)
+    tutorialTakeCard(deck, '9', 'clubs', TUTORIAL_CARD_IDS.p1ArmorB)
   ];
   p1.fuel = [tutorialTakeCard(deck, '4', 'diamonds', TUTORIAL_CARD_IDS.p1FuelA)];
   state.tutorialRiggedDraws = TUTORIAL_DRAW_SEQUENCE.map(([rank, suit, id]) => tutorialTakeCard(deck, rank, suit, id));
@@ -15813,8 +15894,8 @@ function academyPrepareLesson6(){
   academyMoveCard(cadet, 'hand', 'fuel', TUTORIAL_CARD_IDS.p0FuelA);
   cadet.hand = [
     cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0DrawDiamond),
-    academyTakeCard('Q', 'hearts', ACADEMY_CARD_IDS.lesson6FigureA),
-    academyTakeCard('K', 'hearts', ACADEMY_CARD_IDS.lesson6FigureB)
+    academyTakeCard('Q', 'diamonds', ACADEMY_CARD_IDS.lesson6FigureA),
+    academyTakeCard('K', 'diamonds', ACADEMY_CARD_IDS.lesson6FigureB)
   ].filter(Boolean);
   academyRefreshPlayers();
 }
@@ -15845,7 +15926,7 @@ function academyPrepareLesson8(){
   academyResetForLesson('Fase 8 · Intercambiar para mejorar');
   const cadet = state.players[0];
   cadet.core.pilot = cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0Pilot) || null;
-  cadet.core.copilot = academyTakeCard('K', 'hearts', ACADEMY_CARD_IDS.lesson8Copilot);
+  cadet.core.copilot = academyTakeCard('K', 'diamonds', ACADEMY_CARD_IDS.lesson8Copilot);
   cadet.core.booster = cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0Booster) || null;
   cadet.attack = [
     cadet.attack.find(card => card.id === TUTORIAL_CARD_IDS.p0AttackBase),
@@ -15860,9 +15941,9 @@ function academyPrepareLesson8(){
   cadet.armor = [cadet.armor.find(card => card.id === TUTORIAL_CARD_IDS.p0ArmorA)].filter(Boolean);
   cadet.fuel = [];
   cadet.hand = [
-    academyTakeCard('8', 'spades', ACADEMY_CARD_IDS.lesson8Swap),
-    academyTakeCard('Q', 'hearts', ACADEMY_CARD_IDS.lesson8PilotSwap)
-  ];
+    cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0AttackB),
+    academyTakeCard('K', 'hearts', ACADEMY_CARD_IDS.lesson8PilotSwap)
+  ].filter(Boolean);
   state.turnCount = 1;
   academyRefreshPlayers();
 }
@@ -15891,12 +15972,12 @@ function academyPrepareLesson10(){
   academyMoveCard(cadet, 'hand', 'core-copilot', TUTORIAL_CARD_IDS.p0Copilot);
   academyMoveCard(cadet, 'hand', 'core-booster', TUTORIAL_CARD_IDS.p0Booster);
   academyMoveCard(cadet, 'hand', 'attack', TUTORIAL_CARD_IDS.p0AttackA);
+  academyMoveCard(cadet, 'hand', 'attack', TUTORIAL_CARD_IDS.p0AttackB);
   const smallFuel = popCardFromZone(instructor, 'fuel', TUTORIAL_CARD_IDS.p1FuelA);
   if(smallFuel){
     smallFuel.id = ACADEMY_CARD_IDS.lesson10Fuel;
     pushCardToZone(cadet, 'fuel', smallFuel);
   }
-  cadet.attack.push(academyTakeCard('8', 'spades', ACADEMY_CARD_IDS.lesson10ComboMain));
   cadet.core.pilot = academyTakeCard('K', 'hearts', ACADEMY_CARD_IDS.lesson10Pilot);
   cadet.defense.push(academyTakeCard('3', 'hearts', ACADEMY_CARD_IDS.lesson10DefenseExtra));
   cadet.hand = [];
@@ -15927,7 +16008,7 @@ function academyPrepareLesson11(){
   academyMoveCard(cadet, 'hand', 'core-booster', TUTORIAL_CARD_IDS.p0Booster);
   academyMoveCard(cadet, 'hand', 'attack', TUTORIAL_CARD_IDS.p0AttackA);
   academyMoveCard(cadet, 'hand', 'fuel', TUTORIAL_CARD_IDS.p0FuelA);
-  cadet.attack.push(academyTakeCard('8', 'spades', ACADEMY_CARD_IDS.lesson11AttackExtra));
+  academyMoveCard(cadet, 'hand', 'attack', TUTORIAL_CARD_IDS.p0AttackB);
   cadet.hand = [
     cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0DefendDiamond),
     cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0DrawDiamond)
@@ -16214,12 +16295,12 @@ const ACADEMY_LESSONS = [
         objective: 'Con el piloto de <strong>♠</strong> sosteniendo 3 cartas de ataque, selecciona <strong>8♠</strong> de tu mano y <strong>4♠</strong> del panel, luego pulsa <strong>Modificar</strong>.',
         tip: 'La carta vieja se descarta y la nueva ocupa exactamente ese hueco. Después verás el mismo principio aplicado a un cambio de piloto.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
-        allowedCardIds: [ACADEMY_CARD_IDS.lesson8Swap, TUTORIAL_CARD_IDS.p0AttackBase],
+        allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
         highlightButtons: ['actionAddBtn'],
         highlightZones: ['hand-zone-0', 'module-box-attack-0'],
         expectedAction: 'modify',
-        expectedSelection: [ACADEMY_CARD_IDS.lesson8Swap, TUTORIAL_CARD_IDS.p0AttackBase],
-        isComplete: () => state.players[0]?.attack?.some(card => card.id === ACADEMY_CARD_IDS.lesson8Swap)
+        expectedSelection: [TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
+        isComplete: () => state.players[0]?.attack?.some(card => card.id === TUTORIAL_CARD_IDS.p0AttackB)
           && !state.players[0]?.attack?.some(card => card.id === TUTORIAL_CARD_IDS.p0AttackBase)
           && academySceneSettled(1),
         onComplete: () => academyRunOpponentPass(1, 'El instructor te devuelve el turno para que cambies una pieza del núcleo y veas cómo se reordena el mecha.', () => {
@@ -16239,7 +16320,7 @@ const ACADEMY_LESSONS = [
         id: 'academy-core-swap',
         title: 'Fase 8 · Cambiar el piloto',
         body: 'Ahora aplicamos el intercambio al <strong>núcleo</strong>. Si sustituyes el piloto de <strong>♠</strong> por uno de <strong>♥</strong>, el mecha deja de sostener 3 huecos en Ataque y ese exceso debe ajustarse. Como la Defensa ya está preparada, el nuevo piloto de <strong>♥</strong> encaja, pero tendrás que soltar la <strong>7♠</strong> sobrante.',
-        objective: 'Selecciona <strong>Q♥</strong> de tu mano, el <strong>K♠</strong> del núcleo y la <strong>7♠</strong> del ataque, luego pulsa <strong>Modificar</strong>.',
+        objective: 'Selecciona <strong>K♥</strong> de tu mano, el <strong>K♠</strong> del núcleo y la <strong>7♠</strong> del ataque, luego pulsa <strong>Modificar</strong>.',
         tip: 'Este paso muestra que cambiar piloto, copiloto o potenciador puede reordenar módulos enteros. Aquí el ataque pierde un hueco y la pica sobrante se descarta.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
         allowedCardIds: [ACADEMY_CARD_IDS.lesson8PilotSwap, TUTORIAL_CARD_IDS.p0Pilot, TUTORIAL_CARD_IDS.p0AttackA],
@@ -16317,7 +16398,7 @@ const ACADEMY_LESSONS = [
         objective: 'Pulsa <strong>Atacar</strong> desde el panel del jugador, activa <strong>Modo proyectil</strong> y marca <strong>4♦ + 8♠</strong>, dejando <strong>4♠</strong> como última carta seleccionada antes de confirmar.',
         tip: 'Si intentas cerrar este paso sin combinar proyectil con ataque, la fase se reinicia. Recuerda: la última pica marcada será el proyectil.',
         allowedButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
-        allowedCardIds: [ACADEMY_CARD_IDS.lesson10Fuel, ACADEMY_CARD_IDS.lesson10ComboMain, TUTORIAL_CARD_IDS.p0AttackBase],
+        allowedCardIds: [ACADEMY_CARD_IDS.lesson10Fuel, TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
         highlightButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn'],
         highlightZones: ['fuel-zone-0', 'module-box-attack-0'],
         expectedAction: () => {
@@ -16325,7 +16406,7 @@ const ACADEMY_LESSONS = [
           if(!state.projectileMode) return 'toggleProjectile';
           return 'confirmAttack';
         },
-        expectedSelection: [ACADEMY_CARD_IDS.lesson10Fuel, ACADEMY_CARD_IDS.lesson10ComboMain, TUTORIAL_CARD_IDS.p0AttackBase],
+        expectedSelection: [ACADEMY_CARD_IDS.lesson10Fuel, TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
         isComplete: () => tutorialSystem.validation.academyProjectileComboUsed && state.winner === state.players[0]?.name && academySceneSettled(),
         onComplete: () => academyCompleteActiveLesson()
       },
