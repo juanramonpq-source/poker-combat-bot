@@ -13166,11 +13166,24 @@ function tutorialBuildFocusText(step){
   return 'Sigue el objetivo del panel y usa solo lo que quede resaltado.';
 }
 
+function academyAcknowledgeDefinitionStep(){
+  tutorialSystem.validation.academyDefinitionAck = true;
+  render();
+  updateTutorialPhase();
+}
+
 function renderTutorialPanelActions(step){
   const container = document.getElementById('tutorialPanelActions');
   if(!container) return;
   container.innerHTML = '';
-  const actions = Array.isArray(step?.panelActions) ? step.panelActions : [];
+  const actions = Array.isArray(step?.panelActions) ? [...step.panelActions] : [];
+  if(step?.id === 'academy-definition' && !actions.length && !tutorialSystem.validation.academyDefinitionAck){
+    actions.push({
+      label: 'Fase entendida',
+      kind: 'primary',
+      onClick: academyAcknowledgeDefinitionStep
+    });
+  }
   if(!actions.length){
     container.hidden = true;
     return;
@@ -16054,11 +16067,7 @@ const ACADEMY_LESSONS = [
           {
             label: 'Fase entendida',
             kind: 'primary',
-            onClick: () => {
-              tutorialSystem.validation.academyDefinitionAck = true;
-              render();
-              updateTutorialPhase();
-            }
+            onClick: academyAcknowledgeDefinitionStep
           }
         ],
         isComplete: () => tutorialSystem.validation.academyDefinitionAck,
