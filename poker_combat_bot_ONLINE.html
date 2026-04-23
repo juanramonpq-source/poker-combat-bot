@@ -10566,6 +10566,14 @@ function attachButtonAnimations(){
 }
 
 function requestNewGame(){
+  if(state.gameMode === 'tutorial' || tutorialSystem.enabled){
+    pulseButton('newGameBtn');
+    playUiSound('alert');
+    triggerScreenRipple('cyan');
+    startTutorialMode();
+    addToast('Tutorial reiniciado', 'ok');
+    return;
+  }
   if(_ol.active && _ol.role === 'guest'){
     pulseButton('newGameBtn');
     playUiSound('alert');
