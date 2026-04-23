@@ -1,5 +1,6 @@
 .DS_Store
 assets/.DS_Store
+node_modules/
 
 # Local working builds and prototypes
 functional-polish-build/
