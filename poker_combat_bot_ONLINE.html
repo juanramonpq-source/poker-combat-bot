@@ -510,6 +510,102 @@ body.victory .winner-banner.show{
     0 0 18px rgba(255,214,92,.34),
     0 0 28px rgba(116,255,242,.16);
 }
+.compact-winner-banner{
+  position:absolute;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%) scale(.94);
+  z-index:6;
+  min-width:min(440px, calc(100% - 28px));
+  max-width:min(620px, calc(100% - 28px));
+  padding:14px 18px 16px;
+  border-radius:18px;
+  border:2px solid rgba(255,214,92,.68);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.18), transparent 58%),
+    linear-gradient(180deg, rgba(12,16,30,.94), rgba(7,11,23,.98));
+  box-shadow:
+    0 0 0 2px rgba(255,214,92,.10),
+    0 0 28px rgba(255,214,92,.18),
+    0 0 34px rgba(116,255,242,.10),
+    inset 0 0 24px rgba(255,214,92,.06);
+  text-align:center;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .24s ease, transform .24s ease, visibility .24s ease;
+}
+.compact-winner-banner.show{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) scale(1);
+}
+.compact-winner-banner .winner-banner-kicker{
+  margin-bottom:4px;
+}
+.compact-winner-banner .winner-banner-name{
+  font-size:clamp(1.35rem, 2.2vw, 2.2rem);
+}
+.compact-winner-banner-trophy{
+  display:block;
+  margin:0 auto 4px;
+  font-size:2rem;
+  line-height:1;
+  filter:drop-shadow(0 0 12px rgba(255,214,92,.30));
+}
+.compact-defense-warning{
+  position:absolute;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%) scale(.94);
+  z-index:7;
+  min-width:min(460px, calc(100% - 28px));
+  max-width:min(680px, calc(100% - 28px));
+  padding:14px 18px 16px;
+  border-radius:18px;
+  border:2px solid rgba(255,109,109,.82);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.12), transparent 58%),
+    linear-gradient(180deg, rgba(86,12,18,.96), rgba(28,7,14,.98));
+  box-shadow:
+    0 0 0 2px rgba(255,92,92,.12),
+    0 0 30px rgba(255,92,92,.24),
+    0 0 34px rgba(255,170,90,.10),
+    inset 0 0 24px rgba(255,122,92,.12);
+  text-align:center;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease, visibility .2s ease;
+}
+.compact-defense-warning.show{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) scale(1);
+}
+.compact-defense-warning-kicker{
+  color:#ffd2b4;
+  font-size:.76rem;
+  font-weight:900;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.compact-defense-warning-title{
+  color:#fff5f3;
+  font-size:clamp(1.22rem, 2vw, 2rem);
+  font-weight:1000;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-shadow:0 0 16px rgba(255,92,92,.34), 0 0 28px rgba(255,178,92,.14);
+}
+.compact-defense-warning-body{
+  margin-top:6px;
+  color:#ffd7cf;
+  font-size:.84rem;
+  font-weight:800;
+  line-height:1.3;
+}
 .tactical-screen.attack-left,
 .tactical-screen.attack-right{
   box-shadow:0 0 26px rgba(35,216,255,.12), inset 0 0 32px rgba(255,178,46,.05);
@@ -6108,6 +6204,38 @@ body.desktop-compact-mode > footer{
   padding-top:0;
   align-self:start;
 }
+.compact-mecha-stage-trophy{
+  position:absolute;
+  top:-8px;
+  right:-4px;
+  font-size:2.6rem;
+  line-height:1;
+  z-index:4;
+  opacity:0;
+  transform:scale(.82) rotate(-8deg);
+  filter:drop-shadow(0 0 12px rgba(255,214,92,.34));
+  transition:opacity .22s ease, transform .22s ease;
+  pointer-events:none;
+}
+.compact-mecha-stage.is-winner .compact-mecha-stage-trophy{
+  opacity:1;
+  transform:scale(1) rotate(-4deg);
+}
+.compact-mecha-stage.is-winner{
+  box-shadow:0 0 0 1px rgba(255,214,92,.34), 0 0 26px rgba(255,214,92,.18), inset 0 0 30px rgba(255,214,92,.08);
+  border-radius:18px;
+}
+.compact-mecha-stage.is-loser{
+  opacity:.84;
+  filter:saturate(.78);
+}
+.compact-mecha-stage.compact-defense-warning-target{
+  box-shadow:0 0 0 1px rgba(255,126,112,.30), 0 0 24px rgba(255,92,92,.18), inset 0 0 24px rgba(255,92,92,.08);
+  border-radius:18px;
+}
+.compact-mecha-stage.compact-defense-warning-target .compact-mecha-ring{
+  box-shadow:0 0 0 8px rgba(255,92,92,.14), 0 0 28px rgba(255,92,92,.14);
+}
 
 .compact-mecha-stage-head{
   width:100%;
@@ -7553,11 +7681,24 @@ body.desktop-compact-mode > footer{
             <div class="compact-attack-label" id="compactAttackLabel">Ataque</div>
           </div>
 
+          <div class="compact-winner-banner" id="compactWinnerBanner" aria-live="polite">
+            <span class="compact-winner-banner-trophy">🏆</span>
+            <div class="winner-banner-kicker">Ganador</div>
+            <div class="winner-banner-name" id="compactWinnerBannerName">Jugador 1</div>
+          </div>
+
+          <div class="compact-defense-warning" id="compactDefenseWarning" aria-live="polite">
+            <div class="compact-defense-warning-kicker">Defensa activa</div>
+            <div class="compact-defense-warning-title">¡¡Warning de ataque!!</div>
+            <div class="compact-defense-warning-body" id="compactDefenseWarningBody">Puedes usar 1♦ de tu mano para defenderte.</div>
+          </div>
+
           <div class="compact-arena-brand">
             <img src="assets/pocobot_title_blue.png" alt="Poker Combat Bot" id="compactBrandImage">
           </div>
 
           <article class="compact-mecha-stage" id="compactMechaStage-0">
+            <span class="compact-mecha-stage-trophy" aria-hidden="true">🏆</span>
             <div class="compact-mecha-stage-head">
               <span id="compactMechaName-0">Jugador 1</span>
               <strong id="compactMechaPercent-0">0%</strong>
@@ -7570,6 +7711,7 @@ body.desktop-compact-mode > footer{
           </article>
 
           <article class="compact-mecha-stage" id="compactMechaStage-1">
+            <span class="compact-mecha-stage-trophy" aria-hidden="true">🏆</span>
             <div class="compact-mecha-stage-head">
               <span id="compactMechaName-1">Jugador 2</span>
               <strong id="compactMechaPercent-1">0%</strong>
@@ -11585,6 +11727,7 @@ function renderDesktopCompactHud(){
   syncCompactDraftOwner(playerIdx);
   syncDesktopCompactButtons();
   const rivalIdx = getDesktopCompactRivalIndex(playerIdx);
+  const winnerIdx = getWinnerIndex();
   const player = state.players[playerIdx] || state.players[0];
   const rival = state.players[rivalIdx] || state.players[playerIdx];
   if(!player || !rival) return;
@@ -11677,6 +11820,23 @@ function renderDesktopCompactHud(){
 
   const compactTopStatus = document.getElementById('compactTopStatus');
   if(compactTopStatus) compactTopStatus.textContent = sourceText('mechaStatusBanner') || sourceText('rightStatusText') || 'Lectura tactica lista.';
+  const compactWinnerBanner = document.getElementById('compactWinnerBanner');
+  const compactWinnerBannerName = document.getElementById('compactWinnerBannerName');
+  if(compactWinnerBanner && compactWinnerBannerName){
+    compactWinnerBannerName.textContent = state.winner || '';
+    compactWinnerBanner.classList.toggle('show', !!state.winner);
+  }
+  const compactDefenseWarning = document.getElementById('compactDefenseWarning');
+  const compactDefenseWarningBody = document.getElementById('compactDefenseWarningBody');
+  const compactDefenseVisible = !!state.pendingDefense && !state.winner && canUseInteractiveDefenseAction();
+  if(compactDefenseWarning){
+    compactDefenseWarning.classList.toggle('show', compactDefenseVisible);
+  }
+  if(compactDefenseWarningBody){
+    compactDefenseWarningBody.textContent = compactDefenseVisible
+      ? 'Baja a la mano y usa 1♦ numérico para activar tu defensa.'
+      : 'Puedes usar 1♦ de tu mano para defenderte.';
+  }
 
   ['0', '1'].forEach(rawIdx => {
     const idx = Number(rawIdx);
@@ -11686,6 +11846,9 @@ function renderDesktopCompactHud(){
     if(stage){
       stage.classList.toggle('is-focus', idx === focusIdx);
       stage.classList.toggle('is-ready', getBuildStatus(pilot).combatReady);
+      stage.classList.toggle('is-winner', !!state.winner && idx === winnerIdx);
+      stage.classList.toggle('is-loser', !!state.winner && idx !== winnerIdx);
+      stage.classList.toggle('compact-defense-warning-target', compactDefenseVisible && idx === playerIdx);
     }
     const mechaName = document.getElementById(`compactMechaName-${idx}`);
     if(mechaName) mechaName.textContent = pilot.name;
@@ -12848,7 +13011,7 @@ function createPlayerPanel(player, idx){
   const winnerIdx = getWinnerIndex();
   const isWinner = state.winner && idx===winnerIdx;
   const isLoser = state.winner && idx!==winnerIdx;
-  const showVictoryTrophy = !!state.winner;
+  const showVictoryTrophy = !!isWinner;
   const isDefenseFocus = !!state.pendingDefense && idx===state.pendingDefense.defenderIndex;
   const isInteractiveDefenseFocus = !!state.pendingDefense && getInteractivePlayerIndex() === state.pendingDefense.defenderIndex && idx===state.pendingDefense.defenderIndex;
   const selectedDefenseCard = isInteractiveDefenseFocus && state.selected.length===1 && isNumericDiamondCard(state.selected[0]) ? state.selected[0] : null;
