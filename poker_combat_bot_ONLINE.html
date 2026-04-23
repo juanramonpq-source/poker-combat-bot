@@ -12610,6 +12610,7 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
   const defender = state.players[defenderIndex];
   const diamonds = defender.hand.filter(c => c.suit==='diamonds');
   const numericDiamonds = diamonds.filter(isNumericDiamondCard);
+  const tutorialStepId = tutorialGetCurrentStep()?.id;
 
   state.pendingDefense = {
     attackerIndex: state.currentPlayer,
@@ -12621,6 +12622,13 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
   state.defenseSelectionMode = false;
   hideDefenseAlert();
   state.phase = 'Defensa activa';
+
+  if(tutorialIsGuided() && tutorialStepId === 'projectile' && defenderIndex === 1){
+    log(`🎓 ${defender.name} decide no defenderse para cerrar la práctica final.`);
+    addToast('El instructor no se defiende', 'warn');
+    resolveAttackAfterDefense(null);
+    return;
+  }
 
   if(numericDiamonds.length===0){
     log(`🛡️ ${defender.name} no tiene diamantes numéricos para defenderse.`);
