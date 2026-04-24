@@ -7445,17 +7445,23 @@ body.desktop-compact-mode > footer{
     grid-template-rows:auto minmax(0, 1fr);
     gap:5px;
   }
+  body.mobile-panorama-mode.compact-mobile-player-open .desktop-compact-shell{
+    grid-template-columns:minmax(0, 1fr) 132px;
+    grid-template-areas:
+      "topbar topbar"
+      "player dock"
+      "player dock";
+  }
+  body.mobile-panorama-mode.compact-mobile-player-open .compact-arena-panel,
+  body.mobile-panorama-mode.compact-mobile-player-open .compact-hand-panel{
+    display:none !important;
+  }
   body.mobile-panorama-mode.compact-mobile-player-open .compact-player-panel{
-    position:absolute;
-    top:54px;
-    bottom:6px;
-    left:6px;
-    right:138px;
+    grid-area:player;
+    min-width:0;
+    max-width:none;
     z-index:55;
-    opacity:1;
-    pointer-events:auto;
-    transform:translateY(0) scale(1);
-    box-shadow:0 18px 44px rgba(7,14,44,.42), 0 0 0 999px rgba(3,8,28,.22);
+    box-shadow:0 18px 44px rgba(7,14,44,.30);
   }
   body.mobile-panorama-mode.compact-mobile-player-open .compact-player-zones{
     grid-template-rows:minmax(76px, .72fr) minmax(0, 1fr) minmax(0, 1fr);
