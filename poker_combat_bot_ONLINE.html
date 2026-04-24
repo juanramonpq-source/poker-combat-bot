@@ -4551,6 +4551,10 @@ body.tutorial-guided-active .card.clickable:not(.tutorial-focus):not(.selected){
   opacity:.48;
   filter:saturate(.58) brightness(.94);
 }
+body.tutorial-guided-active.tutorial-guided-freeplay .card.clickable:not(.tutorial-focus):not(.selected){
+  opacity:1;
+  filter:none;
+}
 body.tutorial-guided-active .button-grid button:disabled:not(.tutorial-button-focus),
 body.tutorial-guided-active .quick-action-wrap button:disabled:not(.tutorial-button-focus){
   opacity:.34;
@@ -6090,6 +6094,58 @@ body.desktop-compact-mode > footer{
   animation:compactBuildStageRise 820ms cubic-bezier(.16,.78,.2,1) both;
 }
 
+.compact-mecha-stage.compact-build-overdrive{
+  border-radius:18px;
+  box-shadow:
+    0 0 0 1px rgba(255,214,97,.34),
+    0 0 34px rgba(255,160,72,.18),
+    inset 0 0 30px rgba(255,245,222,.08);
+}
+
+.compact-mecha-stage.compact-build-overdrive::before,
+.compact-mecha-stage.compact-build-overdrive::after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+}
+
+.compact-mecha-stage.compact-build-overdrive::before{
+  inset:18px 8px 26px;
+  border-radius:22px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,0) 28%),
+    repeating-linear-gradient(180deg, rgba(255,246,225,.18) 0 2px, transparent 2px 8px),
+    radial-gradient(circle at 50% 42%, rgba(255,214,97,.34), transparent 54%);
+  mix-blend-mode:screen;
+  animation:compactBuildAura 1.02s cubic-bezier(.18,.82,.2,1) both;
+}
+
+.compact-mecha-stage.compact-build-overdrive::after{
+  content:"MEJORA";
+  top:40px;
+  left:50%;
+  padding:6px 12px 5px;
+  border-radius:999px;
+  border:1px solid rgba(255,240,214,.62);
+  background:linear-gradient(180deg, rgba(255,248,228,.96), rgba(255,210,133,.88));
+  color:#7a2800;
+  font:900 .68rem/1 'Orbitron','Inter',sans-serif;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  box-shadow:0 10px 22px rgba(122,40,0,.18), 0 0 0 1px rgba(255,255,255,.22) inset;
+  transform:translate(-50%, 0);
+  animation:compactBuildBadgePop 1.06s cubic-bezier(.18,.82,.2,1) both;
+  z-index:4;
+}
+
+.compact-mecha-stage.compact-build-overdrive .compact-mecha-stage-head strong{
+  animation:compactBuildCounterPulse .98s cubic-bezier(.18,.82,.2,1) both;
+}
+
+.compact-mecha-stage.compact-build-overdrive .compact-mecha-stage-foot{
+  animation:compactBuildStatusFlash .98s ease both;
+}
+
 .compact-mecha-ring.compact-turn-radar-burst{
   box-shadow:0 0 0 6px rgba(255,214,97,.20), 0 0 30px rgba(34,123,255,.22);
 }
@@ -6104,6 +6160,27 @@ body.desktop-compact-mode > footer{
 
 .compact-mecha-ring.compact-build-ring-burst::before{
   animation:compactBuildRingBurst .96s ease both, compactRadarSweep 2.3s linear infinite;
+}
+
+.compact-mecha-ring.compact-build-ring-overdrive{
+  box-shadow:
+    0 0 0 10px rgba(255,214,97,.16),
+    0 0 46px rgba(255,132,72,.28),
+    inset 0 0 24px rgba(255,248,225,.1);
+}
+
+.compact-mecha-ring.compact-build-ring-overdrive::after{
+  content:"";
+  position:absolute;
+  inset:-18px;
+  border-radius:50%;
+  border:2px solid rgba(255,236,177,.64);
+  box-shadow:0 0 24px rgba(255,160,72,.28);
+  animation:compactBuildOverdriveWave 1.04s ease-out both;
+}
+
+.compact-mecha-ring.compact-build-ring-overdrive img{
+  animation:compactBuildMechaSync 1s cubic-bezier(.18,.82,.2,1) both;
 }
 
 .desktop-compact-shell.compact-turn-shell-shake{
@@ -6285,6 +6362,10 @@ body.desktop-compact-mode > footer{
   inset:15px;
   border-radius:50%;
   border:5px solid rgba(31,76,162,.18);
+}
+
+.compact-mecha-stage.compact-build-overdrive .compact-mecha-ring-fill{
+  animation:compactBuildCoreFlash 1s ease both;
 }
 
 .compact-mecha-ring img{
@@ -6816,6 +6897,54 @@ body.desktop-compact-mode > footer{
   0%{transform:translateY(0) scale(1)}
   25%{transform:translateY(-3px) scale(1.02)}
   100%{transform:translateY(0) scale(1)}
+}
+
+@keyframes compactBuildAura{
+  0%{opacity:0; transform:translateY(14px) scale(.92)}
+  22%{opacity:.96}
+  62%{opacity:.82}
+  100%{opacity:0; transform:translateY(-8px) scale(1.06)}
+}
+
+@keyframes compactBuildBadgePop{
+  0%{opacity:0; transform:translate(-50%, 16px) scale(.72)}
+  18%{opacity:1; transform:translate(-50%, 0) scale(1.04)}
+  58%{opacity:1; transform:translate(-50%, -2px) scale(1)}
+  100%{opacity:0; transform:translate(-50%, -16px) scale(.94)}
+}
+
+@keyframes compactBuildCounterPulse{
+  0%{transform:translateY(0) scale(1); color:#234ea0; text-shadow:none}
+  22%{transform:translateY(-6px) scale(1.18); color:#ffd568; text-shadow:0 0 16px rgba(255,213,104,.48)}
+  56%{transform:translateY(2px) scale(.98); color:#ffb84a; text-shadow:0 0 12px rgba(255,184,74,.32)}
+  100%{transform:translateY(0) scale(1); color:#234ea0; text-shadow:none}
+}
+
+@keyframes compactBuildStatusFlash{
+  0%{opacity:1; filter:brightness(1)}
+  18%{opacity:1; filter:brightness(1.22); color:#163264}
+  54%{opacity:.96; filter:brightness(1.06); color:#234ea0}
+  100%{opacity:1; filter:brightness(1); color:inherit}
+}
+
+@keyframes compactBuildCoreFlash{
+  0%{transform:scale(.86); opacity:.18; border-color:rgba(31,76,162,.18); box-shadow:0 0 0 rgba(255,214,97,0)}
+  18%{transform:scale(1.02); opacity:1; border-color:rgba(255,236,177,.88); box-shadow:0 0 28px rgba(255,214,97,.34), inset 0 0 22px rgba(255,248,225,.18)}
+  54%{transform:scale(1.1); opacity:.94; border-color:rgba(255,179,82,.72); box-shadow:0 0 34px rgba(255,152,72,.26), inset 0 0 24px rgba(255,214,97,.14)}
+  100%{transform:scale(1); opacity:1; border-color:rgba(31,76,162,.18); box-shadow:0 0 0 rgba(255,214,97,0)}
+}
+
+@keyframes compactBuildOverdriveWave{
+  0%{opacity:0; transform:scale(.66)}
+  18%{opacity:.98}
+  100%{opacity:0; transform:scale(1.18)}
+}
+
+@keyframes compactBuildMechaSync{
+  0%{transform:translateY(-9px) scale(.92); filter:brightness(1.12) saturate(1.1) drop-shadow(0 16px 16px rgba(12,20,48,.2))}
+  22%{transform:translateY(-18px) scale(1.08); filter:brightness(1.34) saturate(1.18) drop-shadow(0 0 26px rgba(255,214,97,.34))}
+  58%{transform:translateY(-4px) scale(.98); filter:brightness(1.08) saturate(1.06) drop-shadow(0 0 20px rgba(255,152,72,.22))}
+  100%{transform:translateY(-9px) scale(1); filter:drop-shadow(0 16px 16px rgba(12,20,48,.2))}
 }
 
 @keyframes compactAttackLabelRise{
@@ -11685,7 +11814,9 @@ function getModifyFeedbackSparkTarget(playerIdx){
 function triggerCompactBuildFeedback(playerIdx){
   if(!isDesktopCompactModeActive()) return false;
   pulseElementWithDuration(`compactMechaStage-${playerIdx}`, 'compact-build-stage-rise', 820);
+  pulseElementWithDuration(`compactMechaStage-${playerIdx}`, 'compact-build-overdrive', 1080);
   pulseElementWithDuration(`compactMechaRing-${playerIdx}`, 'compact-build-ring-burst', 960);
+  pulseElementWithDuration(`compactMechaRing-${playerIdx}`, 'compact-build-ring-overdrive', 1120);
   const actionsPanel = document.querySelector('.compact-actions-panel');
   if(actionsPanel){
     actionsPanel.classList.remove('compact-build-panel-glow');
@@ -11697,10 +11828,10 @@ function triggerCompactBuildFeedback(playerIdx){
   if(actionBtn) spawnElementSparks(actionBtn, 18, 'amber');
   const anchor = getCompactMechaAnchor(playerIdx);
   if(anchor){
-    spawnElementSparks(anchor.target, 26, 'amber');
-    spawnUiSparks(anchor.x, anchor.y, 22, 'amber');
+    spawnElementSparks(anchor.target, 34, 'amber');
+    spawnUiSparks(anchor.x, anchor.y, 30, 'amber');
   }
-  triggerCompactHudShake('light');
+  triggerCompactHudShake('heavy');
   return true;
 }
 
@@ -12152,7 +12283,7 @@ function hasFigureBurstCondition(player){
   return !!(player && player.core && player.core.pilot && player.core.copilot && countHandFigures(player) >= 2);
 }
 function showFigureBurstPrompt(playerIdx, callback){
-  if(tutorialSuppressAssistPrompts() && !isDesktopCompactModeActive()){
+  if(tutorialSuppressAssistPrompts()){
     if(callback) callback();
     return;
   }
@@ -12171,7 +12302,7 @@ function showFigureBurstPrompt(playerIdx, callback){
   }, 5000);
 }
 function maybeQueueFigureBurstPrompt(playerIdx){
-  if(tutorialSuppressAssistPrompts() && !isDesktopCompactModeActive()){
+  if(tutorialSuppressAssistPrompts()){
     if(state.figureBurstPromptPlayer === playerIdx) state.figureBurstPromptPlayer = null;
     state.figureBurstPromptActive = false;
     return;
@@ -12202,7 +12333,7 @@ function maybeQueueFigureBurstPrompt(playerIdx){
   }
 }
 function maybeShowFigureBurstPrompt(){
-  if(tutorialSuppressAssistPrompts() && !isDesktopCompactModeActive()){
+  if(tutorialSuppressAssistPrompts()){
     state.figureBurstPromptPlayer = null;
     state.figureBurstPromptActive = false;
     return;
@@ -14476,6 +14607,10 @@ function render(){
   document.body.classList.toggle('victory', !!state.winner);
   document.body.classList.toggle('tutorial-guided-active', tutorialIsGuided());
   document.body.classList.toggle('tutorial-guided-busy', tutorialSystem.enabled && tutorialSystem.busy);
+  document.body.classList.toggle(
+    'tutorial-guided-freeplay',
+    tutorialIsGuided() && tutorialGetCurrentStep()?.id === 'academy-short-fight'
+  );
   document.getElementById('turnLabel').textContent = state.pendingDefense
     ? `Defensa · ${state.players[state.pendingDefense.defenderIndex].name}`
     : state.players[state.currentPlayer]?.name || '—';
