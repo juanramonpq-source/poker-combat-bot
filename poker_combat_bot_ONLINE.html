@@ -7783,7 +7783,22 @@ body.desktop-compact-mode > footer{
     font-size:.74rem !important;
   }
   .app.mobile-panorama-mode .compact-winner-banner{
-    inset:12px 16px auto 16px;
+    top:50%;
+    left:50%;
+    right:auto;
+    bottom:auto;
+    width:min(360px, calc(100% - 38px));
+    min-width:0;
+    max-width:min(360px, calc(100% - 38px));
+    padding:12px 16px 14px;
+    transform:translate(-50%, -50%) scale(.94);
+    z-index:18;
+  }
+  .app.mobile-panorama-mode .compact-winner-banner.show{
+    transform:translate(-50%, -50%) scale(1);
+  }
+  .app.mobile-panorama-mode .compact-winner-banner .winner-banner-name{
+    font-size:clamp(1.4rem, 6dvh, 2.15rem);
   }
   .app.mobile-panorama-mode .compact-defense-warning{
     inset:18px auto auto 18px;
@@ -11832,6 +11847,11 @@ function setCompactMobileDrawer(drawer){
   document.body.classList.toggle('compact-mobile-player-open', activeDrawer === 'player');
 }
 
+function closeCompactMobileDrawersForCombat(){
+  if(!document.body?.classList.contains('mobile-panorama-mode')) return;
+  setCompactMobileDrawer('');
+}
+
 function isDesktopCompactModeActive(){
   const app = document.querySelector('.app');
   return !!app && app.classList.contains('desktop-compact-mode');
@@ -13605,6 +13625,7 @@ function getAttackSelection(){
 }
 
 function beginDefenseWindow(totalAttack, withProjectile=false){
+  closeCompactMobileDrawersForCombat();
   const defenderIndex = 1 - state.currentPlayer;
   const defender = state.players[defenderIndex];
   const diamonds = defender.hand.filter(c => c.suit==='diamonds');
@@ -13645,6 +13666,7 @@ function confirmAttack(projectileOnly=false){
   // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
   if (_ol.active && _ol.role === 'guest') {
     console.log('[ONLINE] Guest confirmAttack: sending action to Host instead of executing locally');
+    closeCompactMobileDrawersForCombat();
     olSendAction({ type: projectileOnly ? 'projectileOnly' : 'confirmAttack', selected: state.selected.slice(), projectile: state.projectileMode });
     return;
   }
@@ -13653,6 +13675,7 @@ function confirmAttack(projectileOnly=false){
   pulseButton(projectileOnly ? 'projectileOnlyBtn' : 'confirmAttackBtn');
   if(state.transitionLock) return;
   if(state.pendingDefense) return;
+  closeCompactMobileDrawersForCombat();
   if(projectileOnly && !state.projectileUnlocked){
     return notifySelection('El ataque por proyectil se desbloquea cuando el primer mecha queda completamente operativo.');
   }
@@ -13740,6 +13763,7 @@ function confirmAttack(projectileOnly=false){
 function resolveAttackAfterDefense(defenseCard){
   const pending = state.pendingDefense;
   if(!pending) return;
+  closeCompactMobileDrawersForCombat();
   state.transitionLock = true;
   state.defenseSelectionMode = false;
   hideDefensePrompt();
