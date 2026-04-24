@@ -16482,15 +16482,15 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-core-swap',
         title: 'Fase 8 · Cambiar el piloto',
-        body: 'Ahora aplicamos el intercambio al <strong>núcleo</strong>. Si sustituyes el piloto de <strong>♠</strong> por uno de <strong>♥</strong>, el mecha deja de sostener 3 huecos en Ataque y ese exceso debe ajustarse. Como la Defensa ya está preparada, el nuevo piloto de <strong>♥</strong> encaja, pero tendrás que soltar la <strong>7♠</strong> sobrante.',
-        objective: 'Selecciona <strong>K♥</strong> de tu mano, el <strong>K♠</strong> del núcleo y la <strong>7♠</strong> del ataque, luego pulsa <strong>Modificar</strong>.',
-        tip: 'Este paso muestra que cambiar piloto, copiloto o potenciador puede reordenar módulos enteros. Aquí el ataque pierde un hueco y la pica sobrante se descarta.',
+        body: 'Ahora aplicamos el intercambio al <strong>núcleo</strong>. Si sustituyes el piloto de <strong>♠</strong> por uno de <strong>♥</strong>, el mecha deja de sostener 3 huecos en Ataque y ese exceso debe ajustarse automáticamente. Como la Defensa ya está preparada, el nuevo piloto de <strong>♥</strong> encaja y el sistema soltará por sí solo la <strong>pica de menor valor</strong> que sobre.',
+        objective: 'Selecciona <strong>K♥</strong> de tu mano y el <strong>K♠</strong> del núcleo, luego pulsa <strong>Modificar</strong>.',
+        tip: 'La idea importante es esta: al cambiar piloto, copiloto o potenciador, el mecha se recalcula solo. Si un módulo se pasa de capacidad, el ajuste baja automáticamente la carta sobrante de menor valor.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
-        allowedCardIds: [ACADEMY_CARD_IDS.lesson8PilotSwap, TUTORIAL_CARD_IDS.p0Pilot, TUTORIAL_CARD_IDS.p0AttackA],
+        allowedCardIds: [ACADEMY_CARD_IDS.lesson8PilotSwap, TUTORIAL_CARD_IDS.p0Pilot],
         highlightButtons: ['actionAddBtn'],
         highlightZones: ['hand-zone-0', 'core-zone-0', 'module-box-attack-0'],
         expectedAction: 'modify',
-        expectedSelection: [ACADEMY_CARD_IDS.lesson8PilotSwap, TUTORIAL_CARD_IDS.p0Pilot, TUTORIAL_CARD_IDS.p0AttackA],
+        expectedSelection: [ACADEMY_CARD_IDS.lesson8PilotSwap, TUTORIAL_CARD_IDS.p0Pilot],
         isComplete: () => state.players[0]?.core?.pilot?.id === ACADEMY_CARD_IDS.lesson8PilotSwap
           && !state.players[0]?.attack?.some(card => card.id === TUTORIAL_CARD_IDS.p0AttackA)
           && academySceneSettled(1),
