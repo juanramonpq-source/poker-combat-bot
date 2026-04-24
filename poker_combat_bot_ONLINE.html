@@ -6637,9 +6637,36 @@ body.desktop-compact-mode > footer{
 
 .compact-tutorial-panel{
   display:grid;
+  grid-template-rows:auto auto minmax(0, 1fr) auto;
   align-content:start;
+  min-height:0;
   gap:8px;
   background:linear-gradient(180deg, rgba(204,77,75,.96), rgba(170,58,56,.96)) !important;
+}
+
+.compact-tutorial-scroll{
+  min-height:0;
+  overflow-y:auto;
+  padding-right:4px;
+  display:grid;
+  align-content:start;
+  gap:8px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,247,236,.72) rgba(74,18,18,.28);
+}
+
+.compact-tutorial-scroll::-webkit-scrollbar{
+  width:8px;
+}
+
+.compact-tutorial-scroll::-webkit-scrollbar-track{
+  background:rgba(74,18,18,.28);
+  border-radius:999px;
+}
+
+.compact-tutorial-scroll::-webkit-scrollbar-thumb{
+  background:rgba(255,247,236,.72);
+  border-radius:999px;
 }
 
 .compact-tutorial-body,
@@ -6652,6 +6679,40 @@ body.desktop-compact-mode > footer{
 .compact-tutorial-meta{
   color:#ffe0d4;
   font-size:0.7rem;
+}
+
+.compact-tutorial-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.compact-tutorial-actions[hidden]{
+  display:none !important;
+}
+
+.compact-tutorial-action-btn{
+  appearance:none;
+  border:1px solid rgba(255,247,236,.42);
+  border-radius:10px;
+  background:linear-gradient(180deg, rgba(255,247,236,.2), rgba(255,247,236,.08));
+  color:#fff7ec;
+  font:900 0.72rem/1.1 'Orbitron','Inter',sans-serif;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:10px 12px;
+  cursor:pointer;
+  transition:transform .16s ease, background .16s ease, border-color .16s ease;
+}
+
+.compact-tutorial-action-btn:hover{
+  transform:translateY(-1px);
+  background:linear-gradient(180deg, rgba(255,247,236,.26), rgba(255,247,236,.12));
+  border-color:rgba(255,247,236,.7);
+}
+
+.compact-tutorial-action-btn.secondary{
+  background:linear-gradient(180deg, rgba(96,22,22,.34), rgba(72,16,16,.2));
 }
 
 .tactical-overlay .substatus{
@@ -7842,12 +7903,15 @@ body.desktop-compact-mode > footer{
       <aside class="frame compact-tutorial-panel">
         <div class="compact-kicker">Tutorial integrado</div>
         <h2 id="compactTutorialBoxTitle">Lectura tactica</h2>
-        <div class="compact-tutorial-body" id="compactTutorialBoxText">
-          La lectura del tutorial aparecerá aquí cuando la guía esté activa o cuando una acción importante necesite contexto.
+        <div class="compact-tutorial-scroll" id="compactTutorialScroll">
+          <div class="compact-tutorial-body" id="compactTutorialBoxText">
+            La lectura del tutorial aparecerá aquí cuando la guía esté activa o cuando una acción importante necesite contexto.
+          </div>
+          <div class="compact-tutorial-meta" id="compactTutorialBoxMeta">
+            La interfaz compacta reutiliza el mismo motor del juego y solo cambia la distribución visual en PC.
+          </div>
         </div>
-        <div class="compact-tutorial-meta" id="compactTutorialBoxMeta">
-          La interfaz compacta reutiliza el mismo motor del juego y solo cambia la distribución visual en PC.
-        </div>
+        <div class="compact-tutorial-actions" id="compactTutorialActions" hidden></div>
       </aside>
     </div>
   </section>
@@ -11936,6 +12000,19 @@ function renderDesktopCompactHud(){
       ? (sourceText('tutorialPanelObjective') || sourceText('attackSubHint') || 'Sigue el objetivo actual y usa las zonas iluminadas.')
       : (sourceText('attackSubHint') || 'La lectura rival y tus módulos quedan visibles sin depender del scroll.');
   }
+  const compactTutorialActions = document.getElementById('compactTutorialActions');
+  if(compactTutorialActions){
+    if(tutorialSystem.enabled){
+      renderTutorialActionButtons(
+        compactTutorialActions,
+        getResolvedTutorialPanelActions(tutorialGetCurrentStep()),
+        'compact-tutorial-action-btn'
+      );
+    }else{
+      compactTutorialActions.hidden = true;
+      compactTutorialActions.innerHTML = '';
+    }
+  }
 }
 
 function positionShowcaseNearPlayer(playerIdx, overlay){
@@ -12075,7 +12152,7 @@ function hasFigureBurstCondition(player){
   return !!(player && player.core && player.core.pilot && player.core.copilot && countHandFigures(player) >= 2);
 }
 function showFigureBurstPrompt(playerIdx, callback){
-  if(tutorialIsGuided()){
+  if(tutorialSuppressAssistPrompts() && !isDesktopCompactModeActive()){
     if(callback) callback();
     return;
   }
@@ -12094,8 +12171,9 @@ function showFigureBurstPrompt(playerIdx, callback){
   }, 5000);
 }
 function maybeQueueFigureBurstPrompt(playerIdx){
-  if(tutorialIsGuided()){
+  if(tutorialSuppressAssistPrompts() && !isDesktopCompactModeActive()){
     if(state.figureBurstPromptPlayer === playerIdx) state.figureBurstPromptPlayer = null;
+    state.figureBurstPromptActive = false;
     return;
   }
   const player = state.players[playerIdx];
@@ -12124,7 +12202,7 @@ function maybeQueueFigureBurstPrompt(playerIdx){
   }
 }
 function maybeShowFigureBurstPrompt(){
-  if(tutorialIsGuided()){
+  if(tutorialSuppressAssistPrompts() && !isDesktopCompactModeActive()){
     state.figureBurstPromptPlayer = null;
     state.figureBurstPromptActive = false;
     return;
@@ -13379,10 +13457,7 @@ function academyAcknowledgeDefinitionStep(){
   updateTutorialPhase();
 }
 
-function renderTutorialPanelActions(step){
-  const container = document.getElementById('tutorialPanelActions');
-  if(!container) return;
-  container.innerHTML = '';
+function getResolvedTutorialPanelActions(step){
   const actions = Array.isArray(step?.panelActions) ? [...step.panelActions] : [];
   if(step?.id === 'academy-definition' && !actions.length && !tutorialSystem.validation.academyDefinitionAck){
     actions.push({
@@ -13391,6 +13466,12 @@ function renderTutorialPanelActions(step){
       onClick: academyAcknowledgeDefinitionStep
     });
   }
+  return actions;
+}
+
+function renderTutorialActionButtons(container, actions, className){
+  if(!container) return;
+  container.innerHTML = '';
   if(!actions.length){
     container.hidden = true;
     return;
@@ -13398,7 +13479,7 @@ function renderTutorialPanelActions(step){
   actions.forEach(action => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = `tutorial-panel-action-btn ${action.kind === 'secondary' ? 'secondary' : ''}`.trim();
+    btn.className = `${className} ${action.kind === 'secondary' ? 'secondary' : ''}`.trim();
     btn.textContent = action.label || 'Acción';
     btn.addEventListener('click', () => {
       if(typeof action.onClick === 'function') action.onClick();
@@ -13406,6 +13487,11 @@ function renderTutorialPanelActions(step){
     container.appendChild(btn);
   });
   container.hidden = false;
+}
+
+function renderTutorialPanelActions(step){
+  const actions = getResolvedTutorialPanelActions(step);
+  renderTutorialActionButtons(document.getElementById('tutorialPanelActions'), actions, 'tutorial-panel-action-btn');
 }
 
 function updateHints(){
@@ -14989,7 +15075,7 @@ function tutorialIsGuided(){
 }
 
 function tutorialSuppressAssistPrompts(){
-  return !!tutorialSystem.enabled;
+  return !!tutorialSystem.enabled || state.gameMode === 'tutorial' || state.gameMode === 'academy';
 }
 
 function tutorialGetCurrentStep(){
