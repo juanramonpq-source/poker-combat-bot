@@ -16528,7 +16528,7 @@ const ACADEMY_LESSONS = [
         expectedAction: 'modify',
         expectedSelection: [ACADEMY_CARD_IDS.lesson8PilotSwap, TUTORIAL_CARD_IDS.p0Pilot],
         isComplete: () => state.players[0]?.core?.pilot?.id === ACADEMY_CARD_IDS.lesson8PilotSwap
-          && !state.players[0]?.attack?.some(card => card.id === TUTORIAL_CARD_IDS.p0AttackA)
+          && !state.players[0]?.attack?.some(card => card.id === ACADEMY_CARD_IDS.lesson8AttackExtra)
           && academySceneSettled(1),
         onComplete: () => academyCompleteActiveLesson()
       },
