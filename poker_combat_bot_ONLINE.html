@@ -6846,6 +6846,10 @@ body.desktop-compact-mode > footer{
   background:linear-gradient(180deg, rgba(204,77,75,.96), rgba(170,58,56,.96)) !important;
 }
 
+.compact-mobile-actions-panel{
+  display:none;
+}
+
 .compact-tutorial-scroll{
   min-height:0;
   overflow-y:auto;
@@ -7365,7 +7369,7 @@ body.desktop-compact-mode > footer{
     max-width:none;
     transform:translate(-50%, -50%) rotate(90deg);
     transform-origin:center;
-    grid-template-rows:auto minmax(0, 1.18fr) minmax(146px, .56fr);
+    grid-template-rows:auto minmax(0, .82fr) minmax(178px, .78fr);
     gap:6px;
     padding:6px;
     overflow:hidden;
@@ -7390,10 +7394,10 @@ body.desktop-compact-mode > footer{
     gap:6px;
   }
   .app.mobile-panorama-mode .desktop-compact-main{
-    grid-template-columns:168px minmax(0, 1fr) 172px;
+    grid-template-columns:182px minmax(0, 1fr) 188px;
   }
   .app.mobile-panorama-mode .desktop-compact-bottom{
-    grid-template-columns:198px minmax(0, 1fr) 178px;
+    grid-template-columns:182px minmax(0, 1fr) 188px;
   }
   .app.mobile-panorama-mode .compact-topbar,
   .app.mobile-panorama-mode .compact-player-panel,
@@ -7401,7 +7405,8 @@ body.desktop-compact-mode > footer{
   .app.mobile-panorama-mode .compact-rival-panel,
   .app.mobile-panorama-mode .compact-actions-panel,
   .app.mobile-panorama-mode .compact-hand-panel,
-  .app.mobile-panorama-mode .compact-tutorial-panel{
+  .app.mobile-panorama-mode .compact-tutorial-panel,
+  .app.mobile-panorama-mode .compact-mobile-actions-panel{
     padding:7px !important;
   }
   .app.mobile-panorama-mode .compact-section-head h2,
@@ -7419,52 +7424,88 @@ body.desktop-compact-mode > footer{
   .app.mobile-panorama-mode .compact-rival-panel,
   .app.mobile-panorama-mode .compact-actions-panel,
   .app.mobile-panorama-mode .compact-hand-panel,
-  .app.mobile-panorama-mode .compact-tutorial-panel{
+  .app.mobile-panorama-mode .compact-tutorial-panel,
+  .app.mobile-panorama-mode .compact-mobile-actions-panel{
     min-height:0;
     overflow:hidden;
   }
   .app.mobile-panorama-mode .compact-arena-panel{
     min-height:0;
+    grid-template-rows:minmax(0, .7fr) auto;
   }
   .app.mobile-panorama-mode .compact-arena-core{
     min-height:0;
+    padding:5px 9px 4px;
+    grid-template-columns:minmax(0, 1fr) minmax(88px, .18fr) minmax(0, 1fr);
+    transform:scale(.88);
+    transform-origin:center top;
+    width:113.64%;
+    justify-self:center;
   }
   .app.mobile-panorama-mode .compact-arena-brand{
-    width:clamp(118px, 18dvh, 172px);
-    margin-top:30px;
+    width:clamp(88px, 13dvh, 128px);
+    margin-top:20px;
     opacity:.7;
   }
   .app.mobile-panorama-mode .compact-mecha-stage{
-    min-height:118px;
-    padding:8px 6px 8px;
+    min-height:94px;
+    padding:4px 4px 5px;
+    align-content:start;
   }
   .app.mobile-panorama-mode .compact-mecha-ring{
-    width:clamp(108px, 16dvh, 150px);
-    height:clamp(108px, 16dvh, 150px);
+    width:clamp(82px, 12dvh, 112px);
+    height:clamp(82px, 12dvh, 112px);
+  }
+  .app.mobile-panorama-mode .compact-mecha-stage-head{
+    position:relative;
+    z-index:5;
+    margin-top:-3px;
+    margin-bottom:1px;
+    padding:0 10px;
   }
   .app.mobile-panorama-mode .compact-mecha-stage-head span{
-    font-size:.7rem;
+    font-size:.62rem;
   }
   .app.mobile-panorama-mode .compact-mecha-stage-head strong{
-    font-size:1rem;
+    font-size:.84rem;
   }
   .app.mobile-panorama-mode .compact-mecha-stage-foot{
-    font-size:.64rem;
+    font-size:.56rem;
   }
   .app.mobile-panorama-mode .compact-player-zones,
   .app.mobile-panorama-mode .compact-rival-zones{
     grid-template-columns:repeat(2, minmax(0, 1fr));
     gap:6px;
   }
+  .app.mobile-panorama-mode .compact-player-zones{
+    grid-template-rows:44px minmax(0, 1fr) minmax(0, 1fr);
+  }
   .app.mobile-panorama-mode .compact-zone-card{
-    min-height:68px;
+    min-height:42px;
+    gap:4px;
+    padding:5px;
+  }
+  .app.mobile-panorama-mode .compact-zone-card-core{
+    min-height:44px;
   }
   .app.mobile-panorama-mode .compact-zone-cards{
     --compact-zone-card-width:28px;
     --compact-zone-card-height:40px;
   }
   .app.mobile-panorama-mode .compact-zone-card-fuel{
-    min-height:62px;
+    min-height:42px;
+  }
+  .app.mobile-panorama-mode .compact-zone-head{
+    font-size:.56rem;
+    line-height:1;
+  }
+  .app.mobile-panorama-mode .compact-zone-head strong{
+    font-size:.64rem;
+  }
+  .app.mobile-panorama-mode .compact-empty{
+    min-height:28px;
+    font-size:.56rem;
+    padding:5px 7px;
   }
   .app.mobile-panorama-mode .compact-rival-summary{
     font-size:.68rem;
@@ -7472,12 +7513,45 @@ body.desktop-compact-mode > footer{
   }
   .app.mobile-panorama-mode .compact-action-grid{
     grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:6px;
+    gap:5px;
+    max-height:100%;
+    overflow-y:auto;
+    padding-right:2px;
   }
   .app.mobile-panorama-mode .compact-action-grid button{
-    min-height:36px;
-    font-size:.66rem !important;
+    min-height:32px;
+    font-size:.58rem !important;
     line-height:.98 !important;
+  }
+  .app.mobile-panorama-mode .compact-actions-panel #compactAttackModeBtn,
+  .app.mobile-panorama-mode .compact-actions-panel #compactProjectileBtn,
+  .app.mobile-panorama-mode .compact-actions-panel #compactProjectileOnlyBtn,
+  .app.mobile-panorama-mode .compact-actions-panel #compactConfirmAttackBtn,
+  .app.mobile-panorama-mode .compact-actions-panel #compactPassBtn,
+  .app.mobile-panorama-mode .compact-actions-panel #compactCancelBtn{
+    display:none !important;
+  }
+  .app.mobile-panorama-mode .compact-mobile-actions-panel{
+    display:grid;
+    grid-template-rows:auto minmax(0, 1fr);
+    gap:7px;
+    background:linear-gradient(180deg, rgba(128,158,232,.97), rgba(61,88,186,.97)) !important;
+  }
+  .app.mobile-panorama-mode .compact-mobile-action-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:6px;
+    min-height:0;
+    overflow:hidden;
+  }
+  .app.mobile-panorama-mode .compact-mobile-action-grid button{
+    min-height:34px;
+    padding:7px 8px !important;
+    font-size:.62rem !important;
+    line-height:1 !important;
+  }
+  .app.mobile-panorama-mode .compact-mobile-action-grid button.compact-action-hidden{
+    display:none !important;
   }
   .app.mobile-panorama-mode .compact-hand-panel{
     display:grid;
@@ -7501,8 +7575,22 @@ body.desktop-compact-mode > footer{
   .app.mobile-panorama-mode .compact-readout .value{
     font-size:.62rem;
   }
+  .app.mobile-panorama-mode .compact-tutorial-panel{
+    display:none;
+    position:absolute;
+    right:8px;
+    bottom:8px;
+    width:min(276px, 36%);
+    height:min(210px, calc(100% - 82px));
+    z-index:45;
+    box-shadow:0 18px 42px rgba(28,6,6,.42);
+  }
+  body.mobile-panorama-mode.compact-tutorial-popup-active .compact-tutorial-panel{
+    display:grid;
+  }
   .app.mobile-panorama-mode .compact-tutorial-scroll{
     max-height:none;
+    overflow-y:auto;
   }
   .app.mobile-panorama-mode .compact-tutorial-body,
   .app.mobile-panorama-mode .compact-tutorial-meta{
@@ -8371,6 +8459,23 @@ body.desktop-compact-mode > footer{
 
         <div class="compact-hand-tray" id="compactHandCards"></div>
       </section>
+
+      <aside class="frame compact-mobile-actions-panel">
+        <div class="compact-section-head compact-section-head-tight">
+          <div>
+            <div class="compact-kicker">Ataque</div>
+            <h2>Ordenes</h2>
+          </div>
+        </div>
+        <div class="compact-mobile-action-grid">
+          <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Abrir ataque</button>
+          <button class="warn" data-contextual-attack="true" data-source-button="toggleProjectileBtn" id="compactMobileProjectileBtn" type="button">Modo proyectil</button>
+          <button class="warn" data-contextual-attack="true" data-source-button="projectileOnlyBtn" id="compactMobileProjectileOnlyBtn" type="button">Solo proyectil</button>
+          <button class="danger" data-contextual-attack="true" data-source-button="confirmAttackBtn" id="compactMobileConfirmAttackBtn" type="button">Confirmar ataque</button>
+          <button data-contextual-attack="true" data-source-button="cancelAttackBtn" id="compactMobileCancelBtn" type="button">Cancelar</button>
+          <button data-source-button="actionPassBtn" id="compactMobilePassBtn" type="button">Pasar</button>
+        </div>
+      </aside>
 
       <aside class="frame compact-tutorial-panel">
         <div class="compact-kicker">Tutorial integrado</div>
@@ -11542,6 +11647,7 @@ function syncDesktopHudAvailability(){
   app.classList.toggle('mobile-panorama-mode', mobilePanoramaActive);
   document.body.classList.toggle('desktop-compact-mode', compactActive);
   document.body.classList.toggle('mobile-panorama-mode', mobilePanoramaActive);
+  document.body.classList.toggle('compact-tutorial-popup-active', mobilePanoramaActive && (state.tutorial || tutorialSystem.enabled));
   const topToggleBtn = document.getElementById('desktopCompactToggleTopBtn');
   if(topToggleBtn){
     topToggleBtn.hidden = !desktopAvailable;
