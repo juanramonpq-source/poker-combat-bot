@@ -10692,6 +10692,33 @@ function getAutoDiscardAfterCoreReplacement(player, targetZone, incomingCard){
   const discardPlan = getSortedOverflowCards(player, overflow);
   return { overflow, ...discardPlan };
 }
+function getLowestModuleCards(player, module, count){
+  if(!player || !MODULE_KEYS.includes(module) || count <= 0) return [];
+  return [...(player[module] || [])]
+    .sort((a, b) => {
+      const valueDiff = (a?.value || 0) - (b?.value || 0);
+      if(valueDiff !== 0) return valueDiff;
+      return String(a?.id || '').localeCompare(String(b?.id || ''));
+    })
+    .slice(0, count);
+}
+function getForcedPilotSwapDiscards(player, removedPilotCard, incomingPilotCard){
+  if(!player || !removedPilotCard || !incomingPilotCard) return [];
+  if(removedPilotCard.suit === incomingPilotCard.suit) return [];
+  const previousPilotModule = SUIT_TO_MODULE[removedPilotCard.suit];
+  if(!previousPilotModule) return [];
+  const fixedLimits = getFixedModuleLimits(player);
+  const overflowCount = Math.max(0, (player[previousPilotModule] || []).length - (fixedLimits[previousPilotModule]?.max ?? 0));
+  return getLowestModuleCards(player, previousPilotModule, overflowCount).map(card => ({
+    card,
+    zone: previousPilotModule,
+    reason: 'pilot-shift'
+  }));
+}
+function getCurrentOverflowDiscardPlan(player){
+  const best = findBestFlexAssignment(player);
+  return getSortedOverflowCards(player, best.overflow);
+}
 function selectedOverflowCardsByModule(boardCards){
   const byModule = { attack:0, defense:0, armor:0 };
   boardCards.forEach(c => {
@@ -10763,13 +10790,20 @@ function modifyMecha(){
       return notifySelection('La carta de la mano no puede sustituir legalmente esa pieza del núcleo.');
     }
 
-    const autoDiscardPlan = getAutoDiscardAfterCoreReplacement(player, targetCore.zone, fromHand);
-
     const removedCore = popCardFromZone(player, targetCore.zone, targetCore.id);
     removeById(player.hand, fromHand.id);
     pushCardToZone(player, targetCore.zone, fromHand);
 
+    const forcedPilotSwapDiscards = targetCore.zone === 'core-pilot'
+      ? getForcedPilotSwapDiscards(player, removedCore, fromHand)
+      : [];
+    forcedPilotSwapDiscards.forEach(({ card, zone }) => {
+      const removed = popCardFromZone(player, zone, card.id);
+      if(removed) state.discard.push(removed);
+    });
+    const autoDiscardPlan = getCurrentOverflowDiscardPlan(player);
     autoDiscardPlan.cards.forEach(({ card, zone }) => {
+      if(forcedPilotSwapDiscards.some(entry => entry.card.id === card.id && entry.zone === zone)) return;
       const removed = popCardFromZone(player, zone, card.id);
       if(removed) state.discard.push(removed);
     });
@@ -10777,14 +10811,16 @@ function modifyMecha(){
     state.discard.push(removedCore);
     setBestFlexTargets(player);
     queueFx(`core-zone-${playerIdx}`, 'zone-pulse');
+    forcedPilotSwapDiscards.forEach(({ zone }) => queueFx(zoneIdFromPlacement(playerIdx, zone), 'zone-pulse'));
     autoDiscardPlan.cards.forEach(({ zone }) => queueFx(zoneIdFromPlacement(playerIdx, zone), 'zone-pulse'));
     addToast(`${zoneLabel(targetCore.zone)} sustituido`, 'ok');
     if(targetCore.zone==='core-pilot') addToast('Piloto sustituido', 'warn');
     if(targetCore.zone==='core-copilot') addToast('Copiloto sustituido', 'warn');
     if(targetCore.zone==='core-booster') addToast('Potenciador sustituido', 'warn');
     log(`🔧 ${player.name} sustituye ${cardText(removedCore)} por ${cardText(fromHand)} en ${zoneLabel(targetCore.zone)}.`);
-    if(autoDiscardPlan.cards.length){
-      log(`🗑️ Ajuste automático de capacidad: descarta ${autoDiscardPlan.cards.map(entry => cardText(entry.card)).join(', ')}.`);
+    const combinedAutoDiscards = [...forcedPilotSwapDiscards, ...autoDiscardPlan.cards.filter(entry => !forcedPilotSwapDiscards.some(forced => forced.card.id === entry.card.id && forced.zone === entry.zone))];
+    if(combinedAutoDiscards.length){
+      log(`🗑️ Ajuste automático de capacidad: descarta ${combinedAutoDiscards.map(entry => cardText(entry.card)).join(', ')}.`);
     }
     syncMilestones(playerIdx);
     finishModifyTurn();
