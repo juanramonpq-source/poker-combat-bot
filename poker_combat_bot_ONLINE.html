@@ -7329,12 +7329,24 @@ body.desktop-compact-mode > footer{
   .nav-panel{
     grid-template-rows:auto 1fr;
   }
+  body.mobile-panorama-mode{
+    overflow:hidden;
+    background:#070f31;
+  }
   .app.mobile-panorama-mode{
-    max-width:100% !important;
+    position:fixed;
+    inset:0;
+    z-index:1200;
+    width:100vw;
+    height:100dvh;
+    max-width:none !important;
     min-height:100dvh;
     margin:0 !important;
-    padding:8px !important;
-    overflow-x:hidden;
+    padding:0 !important;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 24%, rgba(138,210,255,.18), transparent 42%),
+      linear-gradient(180deg, #091540, #07102c 68%, #060b22);
   }
   .app.mobile-panorama-mode .cockpit-grid,
   .app.mobile-panorama-mode .board,
@@ -7343,110 +7355,185 @@ body.desktop-compact-mode > footer{
     display:none !important;
   }
   .app.mobile-panorama-mode .desktop-compact-shell{
-    display:flex !important;
-    flex-direction:column;
-    width:100%;
-    max-width:100%;
-    min-height:calc(100dvh - 16px);
-    gap:8px;
-    overflow-y:auto;
-    padding-bottom:10px;
+    display:grid !important;
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:100dvh;
+    height:100dvw;
+    min-height:0;
+    max-width:none;
+    transform:translate(-50%, -50%) rotate(90deg);
+    transform-origin:center;
+    grid-template-rows:auto minmax(0, 1.18fr) minmax(146px, .56fr);
+    gap:6px;
+    padding:6px;
+    overflow:hidden;
   }
   .app.mobile-panorama-mode .compact-topbar{
-    position:sticky;
-    top:0;
-    z-index:24;
-    padding:8px !important;
+    padding:6px !important;
   }
   .app.mobile-panorama-mode .compact-topbar-actions{
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:7px;
+    grid-template-columns:repeat(5, minmax(0, 1fr));
+    gap:6px;
   }
   .app.mobile-panorama-mode .compact-topbar-actions button{
-    min-height:38px;
-    font-size:.74rem !important;
-    line-height:1.02 !important;
+    min-height:34px;
+    font-size:.7rem !important;
+    line-height:1 !important;
+    padding:8px 10px !important;
   }
   .app.mobile-panorama-mode .desktop-compact-main,
   .app.mobile-panorama-mode .desktop-compact-bottom{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
+    display:grid;
+    min-height:0;
+    gap:6px;
+  }
+  .app.mobile-panorama-mode .desktop-compact-main{
+    grid-template-columns:168px minmax(0, 1fr) 172px;
+  }
+  .app.mobile-panorama-mode .desktop-compact-bottom{
+    grid-template-columns:198px minmax(0, 1fr) 178px;
+  }
+  .app.mobile-panorama-mode .compact-topbar,
+  .app.mobile-panorama-mode .compact-player-panel,
+  .app.mobile-panorama-mode .compact-arena-panel,
+  .app.mobile-panorama-mode .compact-rival-panel,
+  .app.mobile-panorama-mode .compact-actions-panel,
+  .app.mobile-panorama-mode .compact-hand-panel,
+  .app.mobile-panorama-mode .compact-tutorial-panel{
+    padding:7px !important;
+  }
+  .app.mobile-panorama-mode .compact-section-head h2,
+  .app.mobile-panorama-mode .compact-tutorial-panel h2{
+    font-size:1rem;
+  }
+  .app.mobile-panorama-mode .compact-kicker{
+    font-size:.58rem;
+  }
+  .app.mobile-panorama-mode .compact-chip{
+    font-size:.62rem;
+    padding:6px 10px;
+  }
+  .app.mobile-panorama-mode .compact-player-panel,
+  .app.mobile-panorama-mode .compact-rival-panel,
+  .app.mobile-panorama-mode .compact-actions-panel,
+  .app.mobile-panorama-mode .compact-hand-panel,
+  .app.mobile-panorama-mode .compact-tutorial-panel{
+    min-height:0;
+    overflow:hidden;
   }
   .app.mobile-panorama-mode .compact-arena-panel{
-    order:1;
-  }
-  .app.mobile-panorama-mode .compact-player-panel{
-    order:2;
-  }
-  .app.mobile-panorama-mode .compact-rival-panel{
-    order:3;
-  }
-  .app.mobile-panorama-mode .compact-actions-panel{
-    order:1;
-  }
-  .app.mobile-panorama-mode .compact-hand-panel{
-    order:2;
-  }
-  .app.mobile-panorama-mode .compact-tutorial-panel{
-    order:3;
+    min-height:0;
   }
   .app.mobile-panorama-mode .compact-arena-core{
-    min-height:340px;
+    min-height:0;
   }
   .app.mobile-panorama-mode .compact-arena-brand{
-    width:clamp(138px, 46vw, 210px);
-    margin-top:92px;
-    opacity:.74;
+    width:clamp(118px, 18dvh, 172px);
+    margin-top:30px;
+    opacity:.7;
   }
   .app.mobile-panorama-mode .compact-mecha-stage{
-    min-height:138px;
-    padding:12px 8px 10px;
+    min-height:118px;
+    padding:8px 6px 8px;
   }
   .app.mobile-panorama-mode .compact-mecha-ring{
-    width:clamp(136px, 38vw, 182px);
-    height:clamp(136px, 38vw, 182px);
+    width:clamp(108px, 16dvh, 150px);
+    height:clamp(108px, 16dvh, 150px);
   }
   .app.mobile-panorama-mode .compact-mecha-stage-head span{
-    font-size:.78rem;
+    font-size:.7rem;
   }
   .app.mobile-panorama-mode .compact-mecha-stage-head strong{
-    font-size:1.22rem;
+    font-size:1rem;
   }
   .app.mobile-panorama-mode .compact-mecha-stage-foot{
-    font-size:.72rem;
+    font-size:.64rem;
   }
   .app.mobile-panorama-mode .compact-player-zones,
   .app.mobile-panorama-mode .compact-rival-zones{
     grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:6px;
   }
   .app.mobile-panorama-mode .compact-zone-card{
-    min-height:90px;
+    min-height:68px;
+  }
+  .app.mobile-panorama-mode .compact-zone-cards{
+    --compact-zone-card-width:28px;
+    --compact-zone-card-height:40px;
+  }
+  .app.mobile-panorama-mode .compact-zone-card-fuel{
+    min-height:62px;
+  }
+  .app.mobile-panorama-mode .compact-rival-summary{
+    font-size:.68rem;
+    line-height:1.15;
   }
   .app.mobile-panorama-mode .compact-action-grid{
     grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:8px;
+    gap:6px;
   }
   .app.mobile-panorama-mode .compact-action-grid button{
-    min-height:42px;
-    font-size:.74rem !important;
+    min-height:36px;
+    font-size:.66rem !important;
+    line-height:.98 !important;
+  }
+  .app.mobile-panorama-mode .compact-hand-panel{
+    display:grid;
+    grid-template-rows:auto minmax(0, 1fr);
   }
   .app.mobile-panorama-mode .compact-hand-tray{
-    --compact-hand-card-width:60px;
-    --compact-hand-card-height:86px;
-    --compact-hand-card-step:32px;
+    --compact-hand-card-width:52px;
+    --compact-hand-card-height:74px;
+    --compact-hand-card-step:28px;
   }
   .app.mobile-panorama-mode .compact-readout-strip{
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:8px;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:6px;
   }
   .app.mobile-panorama-mode .compact-readout{
-    min-height:72px;
+    min-height:54px;
+  }
+  .app.mobile-panorama-mode .compact-readout .tiny-label{
+    font-size:.52rem;
+  }
+  .app.mobile-panorama-mode .compact-readout .value{
+    font-size:.62rem;
+  }
+  .app.mobile-panorama-mode .compact-tutorial-scroll{
+    max-height:none;
+  }
+  .app.mobile-panorama-mode .compact-tutorial-body,
+  .app.mobile-panorama-mode .compact-tutorial-meta{
+    font-size:.68rem;
+    line-height:1.22;
+  }
+  .app.mobile-panorama-mode .compact-tutorial-actions{
+    gap:6px;
+  }
+  .app.mobile-panorama-mode .compact-tutorial-action-btn{
+    min-height:34px;
+    font-size:.7rem;
   }
   .app.mobile-panorama-mode #compactExpandedToggleBtn{
-    grid-column:1 / -1;
-    min-height:42px;
-    font-size:.82rem !important;
+    grid-column:auto;
+    min-height:34px;
+    font-size:.74rem !important;
+  }
+  .app.mobile-panorama-mode .compact-winner-banner{
+    inset:12px 16px auto 16px;
+  }
+  .app.mobile-panorama-mode .compact-defense-warning{
+    inset:18px auto auto 18px;
+    max-width:220px;
+  }
+  .app.mobile-panorama-mode .desktop-hud-transition{
+    position:absolute;
+    inset:0;
+  }
+  .app.mobile-panorama-mode .tutorial-attack-jump-btn{
+    display:none !important;
   }
 }
 
@@ -8555,6 +8642,7 @@ let olLastFxCueId = null;
 let olWaitingRevealBlockedUntil = 0;
 let olWaitingRevealTimer = null;
 let desktopHudMode = 'expanded';
+let mobilePanoramaRequested = false;
 let desktopHudTransitionTimer = null;
 let desktopHudTransitionCleanupTimer = null;
 let compactTurnFeedbackTimer = null;
@@ -8857,6 +8945,8 @@ function returnToMainMenu(){
   state.gameMode = 'local';
   state.onlineFxCue = null;
   desktopHudMode = 'expanded';
+  mobilePanoramaRequested = false;
+  releaseOrientationLockBestEffort();
 
   showIntroScreen('root');
   render();
@@ -8870,6 +8960,8 @@ function primeOfflineMode(gameMode, difficulty=null){
   state.onlineFxCue = null;
   state.tutorial = false;
   desktopHudMode = 'expanded';
+  mobilePanoramaRequested = false;
+  releaseOrientationLockBestEffort();
 }
 
 function autoStartStoryMissionIfRequested(){
@@ -11379,14 +11471,48 @@ function canUseMobilePanoramaHud(){
   const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
   try{
+    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
+    const portraitReady = !!window.matchMedia && window.matchMedia('(max-width: 820px) and (orientation: portrait) and (pointer: coarse)').matches;
     return !!state.gameStarted
       && introHidden
       && lobbyHidden
-      && !!window.matchMedia
-      && window.matchMedia('(max-width: 820px) and (orientation: portrait) and (pointer: coarse)').matches;
+      && hasCoarsePointer
+      && compactMobileViewport
+      && (portraitReady || mobilePanoramaRequested);
   }catch(_err){
     return false;
   }
+}
+
+async function requestLandscapeOrientationBestEffort(){
+  try{
+    if(screen.orientation?.lock){
+      await screen.orientation.lock('landscape');
+      return true;
+    }
+  }catch(_err){}
+  try{
+    if(document.documentElement?.requestFullscreen && !document.fullscreenElement){
+      await document.documentElement.requestFullscreen();
+      if(screen.orientation?.lock){
+        await screen.orientation.lock('landscape');
+        return true;
+      }
+    }
+  }catch(_err){}
+  return false;
+}
+
+async function releaseOrientationLockBestEffort(){
+  try{
+    if(screen.orientation?.unlock) screen.orientation.unlock();
+  }catch(_err){}
+  try{
+    if(document.fullscreenElement && document.exitFullscreen){
+      await document.exitFullscreen();
+    }
+  }catch(_err){}
 }
 
 function isDesktopCompactModeActive(){
@@ -11400,7 +11526,10 @@ function syncDesktopHudAvailability(){
   const desktopAvailable = canUseDesktopCompactHud();
   const mobilePanoramaAvailable = canUseMobilePanoramaHud();
   const available = desktopAvailable || mobilePanoramaAvailable;
-  if(!available) desktopHudMode = 'expanded';
+  if(!available){
+    desktopHudMode = 'expanded';
+    mobilePanoramaRequested = false;
+  }
   const compactActive = available && desktopHudMode === 'compact';
   const mobilePanoramaActive = compactActive && mobilePanoramaAvailable && !desktopAvailable;
   if(!compactActive){
@@ -15366,13 +15495,19 @@ document.getElementById('skipDefenseBtn').addEventListener('click', () => {
 document.getElementById('desktopCompactToggleTopBtn').addEventListener('click', () => {
   triggerDesktopHudModeTransition('compact');
 });
-document.getElementById('mobilePanoramaToggleBtn').addEventListener('click', () => {
+document.getElementById('mobilePanoramaToggleBtn').addEventListener('click', async () => {
+  mobilePanoramaRequested = true;
+  requestLandscapeOrientationBestEffort();
   triggerDesktopHudModeTransition('compact');
 });
 document.getElementById('desktopCompactShell').addEventListener('click', (event) => {
   const btn = event.target.closest('button');
   if(!btn) return;
   if(btn.dataset.viewMode){
+    if(btn.dataset.viewMode === 'expanded'){
+      mobilePanoramaRequested = false;
+      releaseOrientationLockBestEffort();
+    }
     triggerDesktopHudModeTransition(btn.dataset.viewMode);
     return;
   }
@@ -18911,6 +19046,8 @@ function olShowLobby() {
   clearSinglePlayerAiTimer();
   resetTutorialSession();
   desktopHudMode = 'expanded';
+  mobilePanoramaRequested = false;
+  releaseOrientationLockBestEffort();
   state.gameMode = 'online';
   state.singleDifficulty = null;
   state.tutorial = false;
