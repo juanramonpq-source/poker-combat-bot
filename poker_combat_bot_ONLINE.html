@@ -7801,6 +7801,17 @@ body.desktop-compact-mode > footer{
     background:transparent;
     box-shadow:none;
     margin-top:-2px;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-4px) scale(.96);
+    pointer-events:none;
+    transition:opacity .16s ease, transform .16s ease, visibility .16s ease;
+  }
+  .app.mobile-panorama-mode .compact-mecha-stage.mobile-vitals-open .compact-mecha-module-values{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0) scale(1);
+    pointer-events:auto;
   }
   .app.mobile-panorama-mode .compact-module-values-grid{
     display:none;
@@ -9229,6 +9240,7 @@ let compactDraftOwnerIdx = null;
 let compactPointerDragState = null;
 let compactSuppressCardClickUntil = 0;
 let compactSuppressCardClickId = null;
+let mobilePanoramaVitalityStage = null;
 
 function buildOnlineFxCue(type, playerIdx, extra={}){
   return {
@@ -12175,6 +12187,21 @@ function closeCompactMobileDrawersForCombat(){
   setCompactMobileDrawer('');
 }
 
+function syncMobilePanoramaVitalityPanels(){
+  const mobilePanoramaActive = !!document.body?.classList.contains('mobile-panorama-mode');
+  [0, 1].forEach(idx => {
+    const stage = document.getElementById(`compactMechaStage-${idx}`);
+    if(!stage) return;
+    stage.classList.toggle('mobile-vitals-open', mobilePanoramaActive && mobilePanoramaVitalityStage === idx);
+  });
+}
+
+function toggleMobilePanoramaVitalityStage(idx){
+  if(!document.body?.classList.contains('mobile-panorama-mode')) return;
+  mobilePanoramaVitalityStage = mobilePanoramaVitalityStage === idx ? null : idx;
+  syncMobilePanoramaVitalityPanels();
+}
+
 function isDesktopCompactModeActive(){
   const app = document.querySelector('.app');
   return !!app && app.classList.contains('desktop-compact-mode');
@@ -12197,6 +12224,7 @@ function syncDesktopHudAvailability(){
     setCompactDropzoneHighlights([], '');
     if(!canUseExpandedDraftSurface()) clearCompactDraftPlacements(false);
   }
+  if(!mobilePanoramaActive) mobilePanoramaVitalityStage = null;
   app.classList.toggle('desktop-compact-available', available);
   app.classList.toggle('desktop-compact-mode', compactActive);
   app.classList.toggle('mobile-panorama-mode', mobilePanoramaActive);
@@ -12218,6 +12246,7 @@ function syncDesktopHudAvailability(){
   }
   const shell = document.getElementById('desktopCompactShell');
   if(shell) shell.setAttribute('aria-hidden', compactActive ? 'false' : 'true');
+  syncMobilePanoramaVitalityPanels();
   const compactExpandedBtn = document.getElementById('compactExpandedToggleBtn');
   if(compactExpandedBtn){
     compactExpandedBtn.textContent = mobilePanoramaActive ? 'Modo vertical' : 'Interfaz expandida';
@@ -16255,6 +16284,14 @@ document.getElementById('mobilePanoramaToggleBtn').addEventListener('click', asy
   triggerDesktopHudModeTransition('compact');
 });
 document.getElementById('desktopCompactShell').addEventListener('click', (event) => {
+  const mechaStage = event.target.closest('.compact-mecha-stage');
+  if(mechaStage && document.body?.classList.contains('mobile-panorama-mode') && !event.target.closest('button')){
+    const stageIdx = Number(mechaStage.id.split('-').pop());
+    if(Number.isInteger(stageIdx)){
+      toggleMobilePanoramaVitalityStage(stageIdx);
+      return;
+    }
+  }
   const btn = event.target.closest('button');
   if(!btn) return;
   if(btn.dataset.mobileDrawer){
