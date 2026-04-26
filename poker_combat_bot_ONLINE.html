@@ -7791,6 +7791,9 @@ body.desktop-compact-mode > footer{
     font-size:.48rem;
     margin-top:-4px;
   }
+  .app.mobile-panorama-mode .compact-mecha-stage{
+    cursor:pointer;
+  }
   .app.mobile-panorama-mode .compact-mecha-module-values{
     width:100%;
     max-width:124px;
@@ -7806,9 +7809,13 @@ body.desktop-compact-mode > footer{
     display:none;
   }
   .app.mobile-panorama-mode .compact-mecha-module-values .vitality-readout{
+    display:none;
     padding:3px 4px;
     gap:2px;
     border-radius:8px;
+  }
+  .app.mobile-panorama-mode .compact-mecha-stage.compact-mobile-vitality-visible .compact-mecha-module-values .vitality-readout{
+    display:grid;
   }
   .app.mobile-panorama-mode .compact-mecha-module-values .vitality-readout-head{
     align-items:center;
@@ -9229,6 +9236,7 @@ let compactDraftOwnerIdx = null;
 let compactPointerDragState = null;
 let compactSuppressCardClickUntil = 0;
 let compactSuppressCardClickId = null;
+let compactMobileVitalityVisible = new Set();
 
 function buildOnlineFxCue(type, playerIdx, extra={}){
   return {
@@ -12170,6 +12178,17 @@ function setCompactMobileDrawer(drawer){
   document.body.classList.toggle('compact-mobile-player-open', activeDrawer === 'player');
 }
 
+function isMobilePanoramaModeActive(){
+  return !!document.body?.classList.contains('mobile-panorama-mode');
+}
+
+function toggleCompactMobileVitality(stageIdx){
+  const idx = Number(stageIdx);
+  if(Number.isNaN(idx)) return;
+  if(compactMobileVitalityVisible.has(idx)) compactMobileVitalityVisible.delete(idx);
+  else compactMobileVitalityVisible.add(idx);
+}
+
 function closeCompactMobileDrawersForCombat(){
   if(!document.body?.classList.contains('mobile-panorama-mode')) return;
   setCompactMobileDrawer('');
@@ -12203,7 +12222,10 @@ function syncDesktopHudAvailability(){
   document.body.classList.toggle('desktop-compact-mode', compactActive);
   document.body.classList.toggle('mobile-panorama-mode', mobilePanoramaActive);
   document.body.classList.toggle('compact-tutorial-popup-active', mobilePanoramaActive && (state.tutorial || tutorialSystem.enabled));
-  if(!mobilePanoramaActive) setCompactMobileDrawer('');
+  if(!mobilePanoramaActive){
+    setCompactMobileDrawer('');
+    compactMobileVitalityVisible.clear();
+  }
   const topToggleBtn = document.getElementById('desktopCompactToggleTopBtn');
   if(topToggleBtn){
     topToggleBtn.hidden = !desktopAvailable;
@@ -13197,6 +13219,7 @@ function renderDesktopCompactHud(){
       stage.classList.toggle('is-winner', !!state.winner && idx === winnerIdx);
       stage.classList.toggle('is-loser', !!state.winner && idx !== winnerIdx);
       stage.classList.toggle('compact-defense-warning-target', compactDefenseVisible && idx === playerIdx);
+      stage.classList.toggle('compact-mobile-vitality-visible', isMobilePanoramaModeActive() && compactMobileVitalityVisible.has(idx));
     }
     const mechaName = document.getElementById(`compactMechaName-${idx}`);
     if(mechaName) mechaName.textContent = pilot.name;
@@ -16255,6 +16278,17 @@ document.getElementById('mobilePanoramaToggleBtn').addEventListener('click', asy
   triggerDesktopHudModeTransition('compact');
 });
 document.getElementById('desktopCompactShell').addEventListener('click', (event) => {
+  if(isMobilePanoramaModeActive()){
+    const stage = event.target.closest('.compact-mecha-stage');
+    if(stage){
+      const idx = Number(String(stage.id || '').split('-').pop());
+      if(!Number.isNaN(idx)){
+        toggleCompactMobileVitality(idx);
+        renderDesktopCompactHud();
+      }
+      return;
+    }
+  }
   const btn = event.target.closest('button');
   if(!btn) return;
   if(btn.dataset.mobileDrawer){
