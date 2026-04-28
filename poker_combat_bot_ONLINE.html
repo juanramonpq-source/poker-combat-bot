@@ -9338,6 +9338,7 @@ const state = {
   onlineFxCue: null,
   storyMission: null,
   storyMissionAnnounced: false,
+  storyMissionProgress: {},
 };
 
 
@@ -9759,6 +9760,20 @@ function autoStartStoryMissionIfRequested(){
         setupStoryEmbedNavigation();
       }, 260);
       break;
+    case 'patio_duel':
+      primeOfflineMode('single', 'easy');
+      newGame();
+      clearSinglePlayerAiTimer();
+      setupStoryPatioDuelScenario();
+      render();
+      hideIntroScreen();
+      addToast('Mision historia: ofensiva y mas ofensiva en el Patio', 'warn');
+      window.setTimeout(() => {
+        scrollToPlayerPanel(0, 'smooth');
+        notifySelection('Objetivo: usa un ataque normal con combustible, dispara un proyectil y derrota a Mara Óxido.');
+        setupStoryEmbedNavigation();
+      }, 260);
+      break;
     default:
       break;
   }
@@ -9767,10 +9782,89 @@ function autoStartStoryMissionIfRequested(){
 function applyStoryMissionPlayerSetup(){
   state.storyMission = STORY_MISSION_BOOT || null;
   state.storyMissionAnnounced = false;
-  if(state.storyMission === 'hangar_race'){
+  state.storyMissionProgress = {};
+  if(state.storyMission === 'hangar_race' || state.storyMission === 'patio_duel'){
     if(state.players[0]) state.players[0].name = 'Piloto';
     if(state.players[1]) state.players[1].name = 'Mara Oxido';
   }
+}
+
+function setupStoryPatioDuelScenario(){
+  const deck = createDeck();
+  const take = (rank, suit, customId) => tutorialTakeCard(deck, rank, suit, customId);
+  const players = initPlayers();
+  const pilot = players[0];
+  const mara = players[1];
+
+  pilot.name = 'Piloto';
+  mara.name = 'Mara Oxido';
+
+  pilot.core.pilot = take('K', 'hearts', 'story-patio-pilot');
+  pilot.core.copilot = take('J', 'diamonds', 'story-patio-copilot');
+  pilot.core.booster = take('A', 'clubs', 'story-patio-booster');
+  pilot.attack = [
+    take('10', 'spades', 'story-patio-attack-main'),
+    take('6', 'spades', 'story-patio-projectile'),
+    take('3', 'spades', 'story-patio-projectile-backup')
+  ];
+  pilot.defense = [take('8', 'hearts', 'story-patio-defense')];
+  pilot.armor = [];
+  pilot.fuel = [
+    take('8', 'diamonds', 'story-patio-fuel-main'),
+    take('4', 'diamonds', 'story-patio-fuel-backup')
+  ];
+  pilot.hand = [
+    take('6', 'diamonds', 'story-patio-hand-defense'),
+    take('Q', 'clubs', 'story-patio-hand-extra')
+  ];
+
+  mara.core.pilot = take('Q', 'spades', 'story-patio-mara-pilot');
+  mara.core.copilot = take('J', 'clubs', 'story-patio-mara-copilot');
+  mara.core.booster = take('A', 'spades', 'story-patio-mara-booster');
+  mara.attack = [
+    take('5', 'spades', 'story-patio-mara-attack-main'),
+    take('4', 'spades', 'story-patio-mara-attack'),
+    take('2', 'spades', 'story-patio-mara-attack-low')
+  ];
+  mara.defense = [
+    take('5', 'hearts', 'story-patio-mara-defense'),
+    take('2', 'hearts', 'story-patio-mara-defense-low')
+  ];
+  mara.armor = [take('4', 'clubs', 'story-patio-mara-armor')];
+  mara.fuel = [take('2', 'diamonds', 'story-patio-mara-fuel')];
+  mara.hand = [take('3', 'diamonds', 'story-patio-mara-guard')];
+
+  state.deck = deck;
+  state.discard = [];
+  state.removed = [];
+  state.players = players;
+  state.currentPlayer = 0;
+  state.turnCount = 2;
+  state.phase = 'Patio de Pruebas';
+  state.tutorial = true;
+  state.projectileUnlocked = true;
+  state.attackMode = false;
+  state.projectileMode = false;
+  state.pendingDefense = null;
+  state.defenseSelectionMode = false;
+  state.selected = [];
+  state.winner = null;
+  state.storyMission = 'patio_duel';
+  state.storyMissionAnnounced = false;
+  state.storyMissionProgress = {
+    patioNormalAttackUsed: false,
+    patioProjectileUsed: false
+  };
+  state.log = [
+    '🎯 Objetivo: usa ataque normal con combustible, dispara al menos un proyectil y derrota a Mara Oxido.',
+    '⚠️ Regla especial: el Patio fuerza los seguros. En esta misión puedes atacar con un chasis irregular; fuera de aquí, un PoCoBOT mal montado no recibe ese perdón.',
+    '📜 Mision historia: Patio de Pruebas con reglas alteradas.'
+  ];
+
+  players.forEach((player, idx) => {
+    setBestFlexTargets(player);
+    syncMilestones(idx);
+  });
 }
 
 function broadcastStoryMissionOutcome(payload){
@@ -9787,7 +9881,7 @@ function broadcastStoryMissionOutcome(payload){
 }
 
 function maybeResolveStoryMission(){
-  if(state.storyMission !== 'hangar_race' || state.winner || !state.players || state.players.length < 2) return;
+  if(state.storyMission !== 'hangar_race' || state.storyMissionAnnounced || state.winner || !state.players || state.players.length < 2) return;
   const playerReady = playerCanAttack(state.players[0]);
   const maraReady = playerCanAttack(state.players[1]);
   if(!playerReady && !maraReady) return;
@@ -9817,6 +9911,38 @@ function maybeResolveStoryMission(){
   });
   triggerVictorySequence();
   window.setTimeout(() => scrollToWinnerCup('smooth'), 180);
+}
+
+function maybeFinalizeStoryMissionAfterWinner(){
+  if(state.storyMission !== 'patio_duel' || !state.winner || state.storyMissionAnnounced || !state.players || state.players.length < 2) return;
+
+  const playerWon = state.winner === state.players[0].name;
+  const progress = state.storyMissionProgress || {};
+  const completedFuelAttack = !!progress.patioNormalAttackUsed;
+  const completedProjectile = !!progress.patioProjectileUsed;
+  const success = playerWon && completedFuelAttack && completedProjectile;
+
+  state.phase = 'Mision';
+  state.storyMissionAnnounced = true;
+
+  if(success){
+    log('🏁 Mision completada: has dominado el Patio con ataque normal, proyectil y victoria final.');
+    addToast('Mision completada: Patio superado', 'ok');
+  }else if(playerWon){
+    log('⚠️ Has ganado el duelo, pero la prueba del Patio exige usar ataque normal con combustible y al menos un proyectil.');
+    addToast('Victoria incompleta: faltó una ofensiva del Patio', 'warn');
+  }else{
+    log('⚠️ Mara Oxido se impone en el Patio de Pruebas.');
+    addToast('Mara Oxido gana el Patio de Pruebas', 'warn');
+  }
+
+  broadcastStoryMissionOutcome({
+    mission: state.storyMission,
+    success,
+    winner: state.winner,
+    completedFuelAttack,
+    completedProjectile
+  });
 }
 
 const tutorialSteps = [
@@ -11383,6 +11509,7 @@ function newGame(){
   state.onlineFxCue = null;
   state.figureBurstPromptPlayer = null;
   state.figureBurstPromptActive = false;
+  state.storyMissionProgress = {};
   state.players = initPlayers();
   academyApplyOfflineBadges(state.players);
   if(_ol.active){
@@ -11519,6 +11646,17 @@ function getStoryMissionBuildPercent(player){
   progress += Math.min(6, stats.length) * 3;
   if(playerCanAttack(player)) return 100;
   return Math.min(96, progress);
+}
+function getStoryMissionPatioPercent(player){
+  if(!player) return 0;
+  const progress = state.storyMissionProgress || {};
+  const normalDone = !!progress.patioNormalAttackUsed;
+  const projectileDone = !!progress.patioProjectileUsed;
+  if(state.winner === player.name && normalDone && projectileDone) return 100;
+  if(normalDone && projectileDone) return 84;
+  if(normalDone || projectileDone) return 66;
+  if(canPlayerOpenMainAttack(player, 0)) return 44;
+  return 24;
 }
 function getHandSummary(player, playerIdx){
   if(!player) return `0 cartas · MAXIMO ${MAX_HAND_SIZE}`;
@@ -13745,7 +13883,7 @@ function maybeQueueAttackReadyPrompt(playerIdx){
   if(playerIdx < 0 || playerIdx >= state.players.length) return;
   const player = state.players[playerIdx];
   if(!player || state.pendingDefense || state.winner) return;
-  if(playerCanAttack(player) && player.flags.attackReadyPromptTurn !== state.turnCount){
+  if(canPlayerOpenMainAttack(player, playerIdx) && player.flags.attackReadyPromptTurn !== state.turnCount){
     state.attackReadyPromptPlayer = playerIdx;
   }
 }
@@ -13759,7 +13897,7 @@ function maybeShowAttackReadyPrompt(){
   if(playerIdx===null || playerIdx===undefined) return;
   if(state.attackReadyPromptActive || state.transitionLock || state.pendingDefense || state.winner) return;
   const player = state.players[playerIdx];
-  if(!player || !playerCanAttack(player)){
+  if(!player || !canPlayerOpenMainAttack(player, playerIdx)){
     state.attackReadyPromptPlayer = null;
     return;
   }
@@ -14144,6 +14282,15 @@ function playerCanAttack(player){
   if(player.defense.length < 1 || player.attack.length < 1 || player.armor.length < 1) return false;
   return countSuit(stats, player.core.pilot.suit) >= 3;
 }
+function storyMissionAllowsIrregularAttack(playerIdx = state.currentPlayer){
+  return state.storyMission === 'patio_duel' && playerIdx === 0;
+}
+function canPlayerOpenMainAttack(player, playerIdx = state.currentPlayer){
+  if(playerCanAttack(player)) return true;
+  if(!storyMissionAllowsIrregularAttack(playerIdx) || !player) return false;
+  const hasFuel = player.fuel.length > 0 || (hasDiamondBoosterArmorFuel(player) && player.armor.length > 0);
+  return hasFuel && player.attack.some(isPlayableProjectileCard);
+}
 function refreshProjectileUnlock(){
   // This function is called after attacks to check if projectiles should be unlocked
   // Projectiles are unlocked only after the FIRST complete attack
@@ -14407,7 +14554,7 @@ function confirmAttack(projectileOnly=false){
   }
   const attacker = state.players[state.currentPlayer];
   const attackerIdx = state.currentPlayer;
-  if(!playerCanAttack(attacker) && !projectileOnly){
+  if(!canPlayerOpenMainAttack(attacker, attackerIdx) && !projectileOnly){
     return notifySelection('Tu mecha aún no puede realizar un ataque principal.');
   }
 
@@ -14439,6 +14586,16 @@ function confirmAttack(projectileOnly=false){
       : 'Selecciona combustible del panel para habilitar el ataque.');
     if(mainValue > sel.limit) return notifySelection(`Has seleccionado ${mainValue} puntos de ataque, pero el combustible solo habilita ${sel.limit}.`);
     if(mainValue===0 && !projectile) return notifySelection('Selecciona picas numéricas para el ataque principal o 1 carta numérica de picas como proyectil.');
+  }
+
+  if(state.storyMission === 'patio_duel' && attackerIdx === 0){
+    if(!state.storyMissionProgress) state.storyMissionProgress = {};
+    if(!projectileOnly && sel.fuelCards.length > 0 && mainValue > 0){
+      state.storyMissionProgress.patioNormalAttackUsed = true;
+    }
+    if(projectileOnly || !!projectile){
+      state.storyMissionProgress.patioProjectileUsed = true;
+    }
   }
 
   if(!projectileOnly){
@@ -14674,6 +14831,7 @@ function checkWinner(){
     log(`🏆 ${state.winner} gana la partida.`);
     addToast(`${state.winner} gana la partida`, 'ok');
     triggerVictorySequence();
+    maybeFinalizeStoryMissionAfterWinner();
   }
 }
 
@@ -14808,7 +14966,7 @@ function createPlayerPanel(player, idx){
           <div class="player-mode">${panelStatus}</div>
           <div class="quick-action-wrap">
             <button class="quick-modify-btn" data-quick-modify="${idx}">Modificar</button>
-            ${playerCanAttack(player) ? `<button class="quick-attack-btn attack-ready" data-quick-attack="${idx}">Atacar</button>` : ''}
+            ${canPlayerOpenMainAttack(player, idx) ? `<button class="quick-attack-btn attack-ready" data-quick-attack="${idx}">Atacar</button>` : ''}
             ${hasFigureBurstCondition(player) ? `<button class="quick-figure-draw-btn figure-ready" data-quick-figure="${idx}">2 Figuras → 4</button>` : ''}
           </div>
         </div>
@@ -15272,6 +15430,77 @@ function updateHints(){
     return;
   }
 
+  if(state.storyMission === 'patio_duel'){
+    const pilot = state.players[0] || null;
+    const missionProgress = state.storyMissionProgress || {};
+    const fuelAttackDone = !!missionProgress.patioNormalAttackUsed;
+    const projectileDone = !!missionProgress.patioProjectileUsed;
+    const specialAttackReady = !!pilot && canPlayerOpenMainAttack(pilot, 0);
+    const progress = getStoryMissionPatioPercent(pilot);
+
+    if(mainHint) mainHint.innerHTML = !specialAttackReady
+      ? '⚔️ Misión historia: Patio con chasis irregular. Prepara combustible y picas para forzar la ofensiva.'
+      : (!fuelAttackDone
+        ? '⚔️ Misión historia: usa un ataque normal con combustible. Aquí el Patio te deja hacerlo aunque el chasis sea irregular.'
+        : (!projectileDone
+          ? '🚀 Misión historia: ahora dispara al menos un proyectil.'
+          : '⚔️ Misión historia: ofensiva validada. Vence a Mara Óxido.'));
+    if(attackHint) attackHint.innerHTML = !specialAttackReady
+      ? 'Regla especial del Patio: busca cartas de ataque y combustible para activar la prueba.'
+      : (!fuelAttackDone
+        ? 'Ofensiva y más ofensiva: declara ataque principal con combustible.'
+        : (!projectileDone
+          ? 'El proyectil puede ir combinado con el ataque normal o dispararse después desde el módulo de ataque.'
+          : 'Mara también puede ponerse en guardia: calcula el daño antes de regalar tus picas.'));
+    if(attackSubHint) attackSubHint.textContent = !specialAttackReady
+      ? 'Excepción del Patio: en el juego normal un PoCoBOT incompleto o mal montado no puede atacar.'
+      : (!fuelAttackDone
+        ? 'Circunstancia especial: estos seguros forzados solo existen en esta misión del Patio.'
+        : (!projectileDone
+          ? 'La prueba no se completará sin al menos un proyectil.'
+          : 'Ya cumpliste ataque normal y proyectil. Ahora cierra el duelo.'));
+    if(tutorialPanelTitle) tutorialPanelTitle.textContent = 'Misión historia · Patio';
+    if(tutorialPanelText) tutorialPanelText.textContent = !specialAttackReady
+      ? 'Mara ha abierto los seguros del taller para que practiques con un chasis prestado e irregular.'
+      : (!fuelAttackDone
+        ? 'Primero demuestra el ciclo normal: combustible, límite de ataque y golpe principal.'
+        : (!projectileDone
+          ? 'Después demuestra la ventana de proyectil: una pica numérica sale disparada desde el módulo de ataque.'
+          : 'La técnica ya está demostrada. Solo queda derrotar a Mara sin perder el orden del turno.'));
+    if(tutorialPanelTip) tutorialPanelTip.textContent = !specialAttackReady
+      ? 'Fuera de esta misión, el mismo chasis no podría atacar si incumple las reglas PoCoBOT.'
+      : (!fuelAttackDone
+        ? 'Pulsa Atacar, selecciona combustible y una o más picas numéricas para el ataque principal.'
+        : (!projectileDone
+          ? 'Activa proyectil o usa Disparo de proyectil para registrar la segunda condición.'
+          : 'No confundas ventaja con victoria: Mara puede defenderse con diamantes.'));
+    if(tutorialPanelObjective) tutorialPanelObjective.textContent = !specialAttackReady
+      ? 'Objetivo: preparar la ofensiva del Patio.'
+      : (!fuelAttackDone
+        ? 'Objetivo: completar un ataque normal con combustible.'
+        : (!projectileDone
+          ? 'Objetivo: disparar al menos un proyectil.'
+          : 'Objetivo: derrotar a Mara Óxido.'));
+    if(tutorialPanelStep) tutorialPanelStep.textContent = 'Capítulo 2 · Patio';
+    if(tutorialPanelMode) tutorialPanelMode.textContent = 'Reglas alteradas';
+    if(tutorialPanelMeterFill) tutorialPanelMeterFill.style.width = `${progress}%`;
+    if(tutorialPanelFocus) tutorialPanelFocus.textContent = !specialAttackReady
+      ? 'Mira el módulo de ataque y el combustible: son las piezas que Mara ha dejado listas para esta excepción.'
+      : (!fuelAttackDone
+        ? 'El primer salto es técnico: ataque normal, combustible y daño suficiente para abrir la guardia.'
+        : (!projectileDone
+          ? 'El segundo salto es el proyectil. Recuerda que también cuenta si lo combinas con el ataque normal.'
+          : 'Ahora juega con cabeza: la prueba ya no examina montar, sino cerrar el combate.'));
+    if(tutorialPanelStatus) tutorialPanelStatus.textContent = !specialAttackReady
+      ? 'El Patio ha alterado las reglas, pero todavía necesitas recursos ofensivos para actuar.'
+      : (!fuelAttackDone
+        ? 'Pendiente: ataque normal con combustible.'
+        : (!projectileDone
+          ? 'Pendiente: proyectil.'
+          : 'Ataque normal y proyectil registrados. Si ganas, el Patio quedará superado.'));
+    return;
+  }
+
   if(!state.tutorial){
     if(mainHint) mainHint.innerHTML = 'Modo libre activado. El foco está en la prueba visual y funcional del tablero.';
     if(attackHint) attackHint.innerHTML = 'Modo libre activado. La consola solo muestra acciones legales.';
@@ -15646,7 +15875,8 @@ function aiEstimateThreatPotential(player){
   const bestProjectile = state.projectileUnlocked && playableAttackCards.length
     ? Math.max(...playableAttackCards.map(card => card.value))
     : 0;
-  const mainThreat = playerCanAttack(player)
+  const playerIdx = state.players.indexOf(player);
+  const mainThreat = canPlayerOpenMainAttack(player, playerIdx)
     ? Math.min(sumCards(playableAttackCards), sumCards(player.fuel) * 2)
     : 0;
   return Math.max(mainThreat, bestProjectile);
@@ -15839,7 +16069,7 @@ function aiScoreHardAttackPlan(player, defender, plan){
   return score;
 }
 function aiChooseBestAttackPlan(player, difficulty){
-  const canMainAttack = playerCanAttack(player);
+  const canMainAttack = canPlayerOpenMainAttack(player, state.currentPlayer);
   const selectableFuel = [
     ...player.fuel.map(card => ({ ...card, zone:'fuel' })),
     ...(hasDiamondBoosterArmorFuel(player) ? player.armor.map(card => ({ ...card, zone:'armor' })) : [])
@@ -15950,14 +16180,14 @@ function aiShouldUseFigureBurst(player, difficulty, modifyPlan, attackPlan){
   if(modifyPlan && modifyPlan.gain > 18) return false;
   if(difficulty === 'hard'){
     if(!player.core.pilot || !player.core.copilot) return true;
-    return !playerCanAttack(player) || player.hand.length <= 4 || !modifyPlan || modifyPlan.gain < 12;
+    return !canPlayerOpenMainAttack(player, state.currentPlayer) || player.hand.length <= 4 || !modifyPlan || modifyPlan.gain < 12;
   }
   return player.hand.length >= 5;
 }
 function aiCanExecuteAttackPlan(player, attackPlan){
   if(!player || !attackPlan) return false;
   if(attackPlan.projectileOnly) return !!state.projectileUnlocked;
-  return playerCanAttack(player);
+  return canPlayerOpenMainAttack(player, state.currentPlayer);
 }
 function aiTryAttackPlan(player, attackPlan){
   if(!aiCanExecuteAttackPlan(player, attackPlan)) return false;
@@ -16256,7 +16486,7 @@ function canPassNow(){
 function canConfirmAttackNow(){
   if(state.pendingDefense || state.winner || !state.attackMode) return false;
   const player = state.players[state.currentPlayer];
-  if(!playerCanAttack(player)) return false;
+  if(!canPlayerOpenMainAttack(player, state.currentPlayer)) return false;
   const sel = getAttackSelection();
   return sel.fuelCards.length>0 && (sel.mainValue>0 || sel.projectile) && sel.mainValue<=sel.limit;
 }
@@ -16282,7 +16512,7 @@ function updateButtons(){
   const cpuOwnsCurrentContext = isSinglePlayerMode() && getInteractivePlayerIndex() < 0;
   const saveSupport = getSaveSupportState();
   const player = state.players[state.currentPlayer] || { hand:[], attack:[] };
-  const canAttackMain = playerCanAttack(player);
+  const canAttackMain = canPlayerOpenMainAttack(player, state.currentPlayer);
   const canAnyProjectile = state.projectileUnlocked && player.attack.some(isPlayableProjectileCard);
   const tutorialModifyEnabled = tutorialAllowsButton('actionAddBtn') && canModifySelection();
   const hasDraftSelection = hasActiveDraftPlacement();
@@ -16314,7 +16544,7 @@ function updateButtons(){
   document.querySelectorAll('.quick-attack-btn').forEach(btn => {
     const owner = Number(btn.dataset.quickAttack);
     const ownerPlayer = state.players[owner];
-    const allowed = !!ownerPlayer && playerCanAttack(ownerPlayer);
+    const allowed = !!ownerPlayer && canPlayerOpenMainAttack(ownerPlayer, owner);
     const tutorialQuickAttackEnabled = !tutorialIsGuided() || tutorialAllowsButton('attackModeBtn');
     btn.disabled = locked || hasWinner || inDefense || owner !== state.currentPlayer || !allowed || !tutorialQuickAttackEnabled || isAiControlledPlayer(owner);
     btn.classList.toggle('button-live', owner === state.currentPlayer && !btn.disabled && tutorialIsGuided() && tutorialAllowsButton('attackModeBtn'));
@@ -16546,7 +16776,7 @@ document.getElementById('actionPassBtn').addEventListener('click', () => {
 document.getElementById('attackModeBtn').addEventListener('click', () => {
   if(!canUseInteractiveTurnAction()) return;
   if(!tutorialValidateAction('attackMode')) return;
-  if(state.pendingDefense || !playerCanAttack(state.players[state.currentPlayer])) return;
+  if(state.pendingDefense || !canPlayerOpenMainAttack(state.players[state.currentPlayer], state.currentPlayer)) return;
   state.attackMode = !state.attackMode;
   if(!state.attackMode){
     state.projectileMode = false;
@@ -16726,6 +16956,7 @@ document.addEventListener('click', (event) => {
   if(attackBtn){
     const owner = Number(attackBtn.dataset.quickAttack);
     if(owner !== state.currentPlayer || isAiControlledPlayer(owner) || state.transitionLock || state.pendingDefense || state.winner) return;
+    if(!canPlayerOpenMainAttack(state.players[owner], owner)) return;
     pulseButton(attackBtn);
     state.attackMode = true;
     state.projectileMode = false;

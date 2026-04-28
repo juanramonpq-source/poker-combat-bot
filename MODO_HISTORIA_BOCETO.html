@@ -978,11 +978,13 @@
     .story-scene-stage.figure-raised .scene-focus-figure{
       transform:translateY(calc(var(--scene-figure-shift) - 8svh)) scale(var(--scene-figure-scale));
     }
-    .story-scene-stage.hangar-scene .scene-focus-figure{
+    .story-scene-stage.hangar-scene .scene-focus-figure,
+    .story-scene-stage.patio-scene .scene-focus-figure{
       width:min(48vw, 700px);
       max-height:min(86svh, 920px);
     }
-    .story-scene-stage.hangar-scene .scene-focus-wrap{
+    .story-scene-stage.hangar-scene .scene-focus-wrap,
+    .story-scene-stage.patio-scene .scene-focus-wrap{
       align-items:start;
       padding-top:clamp(64px, 10vh, 118px);
     }
@@ -1470,11 +1472,13 @@
         width:min(40vw, 520px);
         max-height:58svh;
       }
-      .story-scene-stage.hangar-scene .scene-focus-figure{
+      .story-scene-stage.hangar-scene .scene-focus-figure,
+      .story-scene-stage.patio-scene .scene-focus-figure{
         width:min(42vw, 560px);
         max-height:64svh;
       }
-      .story-scene-stage.hangar-scene .scene-focus-wrap{
+      .story-scene-stage.hangar-scene .scene-focus-wrap,
+      .story-scene-stage.patio-scene .scene-focus-wrap{
         padding-top:74px;
       }
       .story-scene-stage.figure-raised .scene-focus-figure{
@@ -1611,11 +1615,13 @@
         max-height:54svh;
         transform:translateY(calc(18px + var(--scene-figure-mobile-shift))) scale(var(--scene-figure-mobile-scale));
       }
-      .story-scene-stage.hangar-scene .scene-focus-figure{
+      .story-scene-stage.hangar-scene .scene-focus-figure,
+      .story-scene-stage.patio-scene .scene-focus-figure{
         width:min(74vw, 360px);
         max-height:56svh;
       }
-      .story-scene-stage.hangar-scene .scene-focus-wrap{
+      .story-scene-stage.hangar-scene .scene-focus-wrap,
+      .story-scene-stage.patio-scene .scene-focus-wrap{
         padding-top:86px;
       }
       .story-scene-stage.dialogue-live .scene-focus-figure{
@@ -1977,6 +1983,8 @@
     const storyUiSfxBank = {};
     const storyProgressState = {
       completedCount: 0,
+      completedNodes: {},
+      maraIntroSeen: false,
       pendingThemeKey: 'exploration',
       lastMissionResult: null
     };
@@ -2165,6 +2173,10 @@
         title: 'Patio de Pruebas del Taller',
         type: 'Combate',
         sceneChip: 'Tutorial',
+        lowImage: {
+          desktop: 'assets/Historia/low/patio_pruebas_ligero_1080.webp',
+          mobile: 'assets/Historia/low/patio_pruebas_compacto_1600.webp'
+        },
         image: 'assets/Historia/Brutos/2PATIO DE PRUEBAS DEL TALLER.PNG',
         lead: 'Primer combate funcional. Aquí el jugador ve que el bot responde y que construir bien importa.',
         mission: 'Ganar el combate tutorializado.',
@@ -2496,8 +2508,142 @@
         ]
       },
       patio: {
-        title: 'Patio de Pruebas · Primer Choque',
-        subtitle: 'El metal ya está montado. Ahora toca comprobar si sabes hacerlo responder bajo presión.',
+        title: 'Patio de Pruebas del Taller',
+        subtitle: 'El hangar ya te dejó tocar el metal. Aquí toca comprobar si sabes hacerlo responder cuando el turno aprieta.',
+        contextChip: 'Combate · Tutorial',
+        objective: 'Entra al Patio, completa al menos un ataque con combustible y derrota a Mara en el primer duelo real de la Ruta Ceniza.',
+        portraits: {
+          right: { src: 'assets/Historia/Brutos/MaraOXIDO3.PNG', alt: 'Mara Oxido' }
+        },
+        startAmbient: true,
+        minimalDialogue: true,
+        completeActionLabel: 'Entrar al Patio de Pruebas',
+        lines: [
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+            figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -24,
+            figureMobileShiftVh: -18,
+            figureScale: 0.88,
+            figureMobileScale: 0.78,
+            text: 'Muy bien. Ya has demostrado que puedes montar un chasis sin que se te venga abajo en las manos. Ahora toca algo más feo: hacerlo responder a tiempo.',
+            choices: [
+              {
+                id: 'tempo',
+                label: 'Quiero entender cuándo atacar, no solo pegar por pegar.',
+                response: 'Tú: "Quiero entender cuándo atacar, no solo pegar por pegar."'
+              },
+              {
+                id: 'pressure',
+                label: 'Prefiero entrar apretando desde el primer turno.',
+                response: 'Tú: "Prefiero entrar apretando desde el primer turno."'
+              },
+              {
+                id: 'test',
+                label: 'Solo quiero comprobar si el mecha aguanta una pelea de verdad.',
+                response: 'Tú: "Solo quiero comprobar si el mecha aguanta una pelea de verdad."'
+              }
+            ]
+          },
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figure: 'assets/Historia/Brutos/mara_pose_2.png',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -30,
+            figureMobileShiftVh: -22,
+            figureScale: 0.86,
+            figureMobileScale: 0.74,
+            variantSourceLine: 0,
+            variants: {
+              tempo: {
+                text: 'Entonces escucha bien: el Patio no examina fuerza bruta. Examina secuencia. Preparar, cargar, abrir el ataque y leer la respuesta del otro. Si rompes el orden, el metal se vuelve en tu contra.'
+              },
+              pressure: {
+                text: 'La presión sirve si sabes sostenerla. Si entras al Patio solo a empujar botones, el primer bloqueo te deja vendido. Antes del golpe viene el montaje, y antes del daño viene el ritmo.'
+              },
+              test: {
+                text: 'Aguantar no basta. Un mecha que solo resiste termina convertido en chatarra cara. El Patio te pide algo más simple y más difícil: que conviertas el montaje en una acción limpia cuando llegue el momento.'
+              }
+            },
+            choices: [
+              {
+                id: 'fuel',
+                label: 'Entonces la clave es abrir el ataque con combustible y no precipitarme.',
+                response: 'Tú: "Entonces la clave es abrir el ataque con combustible y no precipitarme."'
+              },
+              {
+                id: 'defense',
+                label: 'Y si ella responde, tendré que leer la defensa y el orden del turno.',
+                response: 'Tú: "Y si ella responde, tendré que leer la defensa y el orden del turno."'
+              },
+              {
+                id: 'win',
+                label: 'Entendido: primero demostrar técnica, luego buscar la victoria.',
+                response: 'Tú: "Entendido: primero demostrar técnica, luego buscar la victoria."'
+              }
+            ]
+          },
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figure: 'assets/Historia/Brutos/mara_pose_4.png',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -32,
+            figureMobileShiftVh: -24,
+            figureScale: 0.84,
+            figureMobileScale: 0.72,
+            variantSourceLine: 1,
+            variants: {
+              fuel: {
+                text: 'Eso es. Quiero ver un ataque de verdad: combustible, lectura limpia y un mecha capaz de sostener el turno completo. Luego, si todavía sigues en pie, me ganas.'
+              },
+              defense: {
+                text: 'Exacto. Aquí no basta con montar bonito. Quiero ver que sabes cuándo cargar, cuándo abrir el ataque y cuándo aceptar que el otro también juega. El turno completo es la verdadera prueba.'
+              },
+              win: {
+                text: 'Por fin hablas como alguien que quiere durar más de una estación. La victoria importa, pero solo después de demostrar que sabes activar el mecha como toca.'
+              }
+            }
+          },
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figure: 'assets/Historia/Brutos/mara_pose_4.png',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -32,
+            figureMobileShiftVh: -24,
+            figureScale: 0.84,
+            figureMobileScale: 0.72,
+            variantSourceLine: 1,
+            variants: {
+              fuel: {
+                text: 'Entra al Patio. Monta tu PoCoBOT, completa al menos un ataque con combustible y luego derríbame si puedes. Si no haces esas dos cosas, la Ruta Ceniza seguirá cerrada para ti.'
+              },
+              defense: {
+                text: 'Vamos al Patio. Quiero verte montar, atacar con combustible al menos una vez y sostener el combate hasta el final. Si te saltas una de esas partes, no habrás aprendido nada.'
+              },
+              win: {
+                text: 'Muy bien. Pasa al Patio y dímelo con hechos: primer ataque con combustible, turno bien leído y victoria. Solo entonces admitiré que has salido del hangar de verdad.'
+              }
+            }
+          }
+        ]
+      },
+      patio_outcome_win: {
+        title: 'Patio de Pruebas del Taller',
+        subtitle: 'El metal ya no solo obedece: empieza a responder con criterio.',
+        contextChip: 'Resultado · Aprobado',
+        objective: 'Regresar al mapa con el Patio completado y continuar según las pruebas pendientes de la Ruta Ceniza.',
+        completeActionLabel: 'Volver al mapa',
+        completeAction: 'map',
         portraits: {
           right: { src: 'assets/Historia/Brutos/MaraOXIDO3.PNG', alt: 'Mara Oxido' }
         },
@@ -2505,32 +2651,296 @@
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            text: 'Muy bien. Ya has demostrado que puedes ensamblar. Ahora dime cómo quieres entrar al patio.',
-            choices: [
+            figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+            figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -22,
+            figureMobileShiftVh: -14,
+            figureScale: 0.9,
+            figureMobileScale: 0.78,
+            text: 'No te acomodes. Fuera del taller nadie te va a esperar a que pienses dos veces. Vuelve al mapa. El Mercado de Relés Muertos ya empieza a olerte llegar.',
+            conditions: [
               {
-                id: 'firm',
-                label: 'Con cabeza fría.',
-                response: 'Tu respuesta: "Entraré con la cabeza fría."'
+                when: 'hangarPending',
+                text: '¡Bien hecho! Lo has llevado hasta el ataque y has sostenido el duelo sin perder el hilo. Eso ya se parece a un piloto de la Ruta Ceniza. El combate es fundamental, pero todavía debes dominar el montaje, el acero fundido y el estaño.'
               },
               {
-                id: 'bold',
-                label: 'Presionando desde el primer turno.',
-                response: 'Tu respuesta: "Quiero presionar desde el principio."'
+                when: 'hangarCompleted',
+                text: 'No te acomodes. Fuera del taller nadie te va a esperar a que pienses dos veces. Vuelve al mapa. El Mercado de Relés Muertos ya empieza a olerte llegar.'
               }
             ]
+          }
+        ]
+      },
+      patio_outcome_lose: {
+        title: 'Patio de Pruebas del Taller',
+        subtitle: 'El primer combate todavía te está enseñando dónde se rompe el ritmo.',
+        contextChip: 'Resultado · Reintento',
+        objective: 'Repetir el duelo hasta completar un ataque con combustible y derrotar a Mara dentro del Patio.',
+        completeActionLabel: 'Reintentar la prueba',
+        completeAction: 'mission',
+        portraits: {
+          right: { src: 'assets/Historia/Brutos/MaraOXIDO3.PNG', alt: 'Mara Oxido' }
+        },
+        lines: [
+          {
+            speaker: 'Mara Oxido',
+            side: 'right',
+            figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+            figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -22,
+            figureMobileShiftVh: -14,
+            figureScale: 0.9,
+            figureMobileScale: 0.78,
+            text: 'Has entrado al Patio con más ganas que secuencia. Y el combate siempre castiga antes a quien se acelera que a quien duda un segundo de más.'
           },
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            text: 'Muy bien. Ya has demostrado que puedes ensamblar. Ahora demuestra que puedes sostener un turno completo sin temblar.'
-          },
-          {
-            speaker: 'Mara Oxido',
-            side: 'right',
-            text: 'Ataca cuando toque, no cuando te entre el miedo. El bot no entiende ansiedad, solo secuencia.'
+            figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+            figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+            figureClass: 'figure-mara',
+            figureRaised: true,
+            figureShiftVh: -22,
+            figureMobileShiftVh: -14,
+            figureScale: 0.9,
+            figureMobileScale: 0.78,
+            text: 'Respira, vuelve a montar si hace falta y recuerda la prueba: no quiero una victoria cualquiera. Quiero ver un ataque con combustible y una cabeza fría hasta el final. ¡Repite y aprende!'
           }
         ]
       }
+    };
+
+    const sharedMaraIntroLines = [
+      {
+        speaker: 'Mara Oxido',
+        side: 'right',
+        figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+        figure: 'assets/Historia/Brutos/MaraOxido.png',
+        figureClass: 'figure-mara',
+        figureShiftVh: -24,
+        figureMobileShiftVh: -20,
+        figureScale: 0.92,
+        figureMobileScale: 0.82,
+        text: 'Hola, ¿quién anda ahí?',
+        choices: [
+          {
+            id: 'me',
+            label: 'Tranquila, Óxido. Soy yo.',
+            response: 'Tú: "Tranquila, Óxido. Soy yo."'
+          },
+          {
+            id: 'scare',
+            label: '¿No te habré fastidiado otra genialidad clandestina?',
+            response: 'Tú: "¿No te habré fastidiado otra genialidad clandestina?"'
+          },
+          {
+            id: 'looking',
+            label: 'Buscaba a la célebre Mara Óxido. Qué casualidad encontrarte mandando aquí también.',
+            response: 'Tú: "Buscaba a la célebre Mara Óxido. Qué casualidad encontrarte mandando aquí también."'
+          }
+        ]
+      },
+      {
+        speaker: 'Mara Oxido',
+        side: 'right',
+        figure: 'assets/Historia/Brutos/mara_pose_1.png',
+        figureClass: 'figure-mara',
+        figureRaised: true,
+        figureShiftVh: -31,
+        figureMobileShiftVh: -24,
+        figureScale: 0.88,
+        figureMobileScale: 0.76,
+        variantSourceLine: 0,
+        variants: {
+          me: {
+            text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Ruta Ceniza se viniera abajo. Dime qué buscas antes de que el metal empiece a responder.'
+          },
+          scare: {
+            text: 'Para ti entrar sin avisar no es interrupción: es costumbre. Lo raro sería verte llamar primero. Ya que has aparecido, dime qué buscas antes de tocar nada.'
+          },
+          looking: {
+            text: 'Sigue así y conseguirás que acabe cobrando entrada por escuchar mis propias leyendas. Vamos, habla: ¿vienes a aprender o a hacer ruido?'
+          }
+        }
+      }
+    ];
+
+    const hangarZoneScene = {
+      title: 'Hangar de la Fosa Azul',
+      subtitle: 'El taller no te recibe como héroe. Te recibe como alguien que aún debe demostrar que entiende el metal.',
+      contextChip: 'Briefing · Construcción',
+      objective: 'Entiende el oficio de Mara y supera la primera prueba de ensamblaje.',
+      portraits: {
+        right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
+      },
+      startAmbient: false,
+      minimalDialogue: true,
+      completeActionLabel: 'Abrir panel de ensamblaje',
+      lines: [
+        {
+          speaker: 'Mara Oxido',
+          side: 'right',
+          figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+          figure: 'assets/Historia/Brutos/mara_pose_3.png',
+          figureClass: 'figure-mara',
+          figureRaised: true,
+          figureShiftVh: -33,
+          figureMobileShiftVh: -25,
+          figureScale: 0.86,
+          figureMobileScale: 0.74,
+          text: 'Si has venido al Hangar, empiezas por lo único que no perdona atajos: montar. Un PoCoBOT no nace cuando dispara. Nace cuando cada pieza sabe por qué está ahí.',
+          choices: [
+            {
+              id: 'ceniza',
+              label: 'He oído que la Ruta Ceniza prueba si alguien merece llegar a Argós.',
+              response: 'Tú: "He oído que la Ruta Ceniza prueba si alguien merece llegar a Argós."'
+            },
+            {
+              id: 'lore',
+              label: 'Quiero entender por qué los PoCoBOT siguen importando después de La Caída.',
+              response: 'Tú: "Quiero entender por qué los PoCoBOT siguen importando después de La Caída."'
+            },
+            {
+              id: 'survive',
+              label: 'Quiero aprender a seguir ahí fuera sin que la ruina me pase por encima.',
+              response: 'Tú: "Quiero aprender a seguir ahí fuera sin que la ruina me pase por encima."'
+            }
+          ]
+        },
+        {
+          speaker: 'Mara Oxido',
+          side: 'right',
+          figure: 'assets/Historia/Brutos/mara_pose_3.png',
+          figureClass: 'figure-mara',
+          figureRaised: true,
+          figureShiftVh: -33,
+          figureMobileShiftVh: -25,
+          figureScale: 0.86,
+          figureMobileScale: 0.74,
+          variantSourceLine: 0,
+          variants: {
+            ceniza: {
+              text: 'Esa es la versión limpia que se cuenta desde fuera. Aquí, antes de hablar de merecer nada, quiero ver si sabes construir sin convertir el metal en una superstición.'
+            },
+            lore: {
+              text: 'Importan porque no fueron solo armas. Fueron una forma de combatir sin entregar la voluntad a una máquina. Pero ese símbolo no vale nada si no sabes ensamblarlo.'
+            },
+            survive: {
+              text: 'Entonces empieza por aceptar algo sencillo: sobrevive quien vuelve con margen. El margen se construye carta a carta, no con frases bonitas.'
+            }
+          }
+        },
+        {
+          speaker: 'Mara Oxido',
+          side: 'right',
+          figure: 'assets/Historia/Brutos/mara_pose_3.png',
+          figureClass: 'figure-mara',
+          figureRaised: true,
+          figureShiftVh: -33,
+          figureMobileShiftVh: -25,
+          figureScale: 0.86,
+          figureMobileScale: 0.74,
+          text: 'Monta un PoCoBOT y déjalo listo para atacar antes que yo. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+        }
+      ]
+    };
+
+    const patioZoneScene = {
+      title: 'Patio de Pruebas del Taller',
+      subtitle: 'El Patio no pregunta si el chasis es perfecto. Pregunta si puedes leer una ventana de combate cuando Mara la abre a la fuerza.',
+      contextChip: 'Combate · Proyectil',
+      objective: 'Comprende la diferencia entre un mecha de Argós y un PoCoBOT, y vence a Mara usando proyectil y ataque normal en una prueba con reglas especiales.',
+      portraits: {
+        right: { src: 'assets/Historia/Brutos/MaraOXIDO3.PNG', alt: 'Mara Oxido' }
+      },
+      startAmbient: false,
+      minimalDialogue: true,
+      completeActionLabel: 'Entrar al Patio de Pruebas',
+      lines: [
+        {
+          speaker: 'Mara Oxido',
+          side: 'right',
+          figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+          figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+          figureClass: 'figure-mara',
+          figureRaised: true,
+          figureShiftVh: -24,
+          figureMobileShiftVh: -18,
+          figureScale: 0.88,
+          figureMobileScale: 0.78,
+          text: '¿Recuerdas cómo se hacía eso de atacar? Ya sabes... Fuego, disparos, ¡pum pum!. Lo bueno es que desde este Patio de pruebas aquí no vas a montar desde cero: Te doy un chasis prestado, irregular y con los seguros del taller abiertos. Podrá atacar aunque fuera de esta prueba no debería...',
+          choicePrompt: 'Pero antes...',
+          choices: [
+            {
+              id: 'mecha',
+              label: 'Explícame la diferencia entre un mecha de Argós y un PoCoBOT.',
+              response: 'Tú: "Explícame la diferencia entre un mecha de Argós y un PoCoBOT."'
+            },
+            {
+              id: 'ruta',
+              label: 'Estoy dispuesto a cumplir La Ruta Ceniza al completo, como en los viejos tiempos. "Buscar el camino a la excelencia". Al menos eso era lo que se decía ¿no?.',
+              response: 'Tú: "Estoy dispuesto a cumplir La Ruta Ceniza al completo, como en los viejos tiempos. \"Buscar el camino a la excelencia\". Al menos eso era lo que se decía ¿no?."'
+            },
+            {
+              id: 'rules',
+              label: 'Si el chasis es irregular, ¿por qué dices que me permitirá atacar?',
+              response: 'Tú: "Si el chasis es irregular, ¿por qué dices que me permitirá atacar?"'
+            }
+          ]
+        },
+        {
+          speaker: 'Mara Oxido',
+          side: 'right',
+          figure: 'assets/Historia/Brutos/mara_pose_2.png',
+          figureClass: 'figure-mara',
+          figureRaised: true,
+          figureShiftVh: -30,
+          figureMobileShiftVh: -22,
+          figureScale: 0.86,
+          figureMobileScale: 0.74,
+          variantSourceLine: 0,
+          variants: {
+            mecha: {
+              text: 'Un mecha de Argós no solo se pilota: te integra. Convierte disciplina, dolor y obediencia en una sola fe mecánica. Un PoCoBOT hace lo contrario: preserva la mente del piloto y depende de cooperación humana, piloto y copiloto, criterio y apoyo desde tierra. ¡Es la lucha del ser humano contra la máquina elevada a la enésima potencia!'
+            },
+            ruta: {
+              text: 'Eso se decía... sí. Pero a mi siempre me olió a chamusquina. Esa era la Ruta Ceniza idealizada: mérito, honor, protección de Argós. Es una promesa bonita, y por eso sigue siendo peligrosa. Si de verdad crees que debajo de la ruina queda una verdad noble, adelante. Yo solo te digo que no confundas brillo con bondad...'
+            },
+            rules: {
+              text: 'Porque esto es el Patio, no la carretera real. Voy a forzar los seguros para que practiques ataque normal y proyectil aunque el chasis no cumpla las reglas PoCoBOT. Pero recuerda: Fuera de esta misión, un mecha mal montado no recibe ese perdón.'
+            }
+          }
+        },
+        {
+          speaker: 'Mara Oxido',
+          side: 'right',
+          figure: 'assets/Historia/Brutos/mara_pose_4.png',
+          figureClass: 'figure-mara',
+          figureRaised: true,
+          figureShiftVh: -32,
+          figureMobileShiftVh: -24,
+          figureScale: 0.84,
+          figureMobileScale: 0.72,
+          text: 'La prueba es simple: vénceme en un combate usando las reglas alteradas de este Patio: ¡Ofensiva y más ofensiva! Además debes usar al menos un ataque normal con combustible y un proyectil. Que el chasis esté incompleto no te salva de pensar... ¡Y recuerda que yo también sé ponerme en guardia!'
+        }
+      ]
+    };
+
+    storySceneScripts.hangar = hangarZoneScene;
+    storySceneScripts.hangar_intro = {
+      ...hangarZoneScene,
+      startAmbient: true,
+      lines: [...sharedMaraIntroLines, ...hangarZoneScene.lines]
+    };
+    storySceneScripts.patio = patioZoneScene;
+    storySceneScripts.patio_intro = {
+      ...patioZoneScene,
+      startAmbient: true,
+      lines: [...sharedMaraIntroLines, ...patioZoneScene.lines]
     };
 
     const storyMissionScripts = {
@@ -2540,6 +2950,13 @@
         copy: 'Monta tu PoCoBOT hasta dejarlo listo para atacar antes que Mara Óxido. Ella ensamblará en paralelo, y si llega antes, la prueba se pierde.',
         tip: 'Un mecha valido para PoCoBOT necesita al menos <strong>6 cartas</strong> repartidas entre <strong>Ataque, Defensa y Armadura</strong>, y al menos <strong>1 Piloto</strong>.',
         url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race&story_embed=1&story_audio=external'
+      },
+      patio: {
+        chip: 'Combate con reglas especiales',
+        title: 'Patio de Pruebas del Taller',
+        copy: 'Entra con un chasis prestado del taller, usa al menos un ataque normal con combustible, dispara un proyectil y derrota a Mara Óxido.',
+        tip: 'Circunstancia especial del Patio: Mara fuerza los seguros del chasis para que puedas atacar aunque el mecha no cumpla las reglas PoCoBOT. Fuera de esta prueba, un PoCoBOT incompleto no recibe ese perdón.',
+        url: 'poker_combat_bot_ONLINE.html?story_mission=patio_duel&story_embed=1&story_audio=external'
       }
     };
 
@@ -2552,8 +2969,41 @@
       });
     }
 
+    function getCompletedStoryNodeIds() {
+      return Object.keys(storyProgressState.completedNodes || {}).filter((nodeId) => !!storyProgressState.completedNodes[nodeId]);
+    }
+
+    function hasCompletedStoryNode(nodeId) {
+      return !!(storyProgressState.completedNodes && storyProgressState.completedNodes[nodeId]);
+    }
+
+    function syncCompletedCountFromNodes() {
+      const orderedNodes = Object.values(storyDraftNodes).sort((a, b) => a.order - b.order);
+      let contiguousCount = 0;
+      for (const node of orderedNodes) {
+        if (!hasCompletedStoryNode(node.id)) break;
+        contiguousCount = node.order;
+      }
+      storyProgressState.completedCount = contiguousCount;
+      queueStoryMapTheme(getCompletedStoryNodeIds().length ? 'chapter_clear' : 'exploration');
+    }
+
+    function haveCompletedWorkshopTrials() {
+      return hasCompletedStoryNode('hangar') && hasCompletedStoryNode('patio');
+    }
+
     function getStoryNodeStatus(node) {
       if (!node) return 'locked';
+      if (hasCompletedStoryNode(node.id)) return 'completed';
+      if (node.id === 'hangar' || node.id === 'patio') {
+        if (!haveCompletedWorkshopTrials()) {
+          if (!hasCompletedStoryNode('hangar') && !hasCompletedStoryNode('patio')) {
+            return node.id === 'hangar' ? 'current' : 'available';
+          }
+          return 'current';
+        }
+      }
+      if (!haveCompletedWorkshopTrials() && node.order > 2) return 'locked';
       if (node.order <= storyProgressState.completedCount) return 'completed';
       if (node.order === storyProgressState.completedCount + 1) return 'current';
       if (node.order === storyProgressState.completedCount + 2) return 'available';
@@ -2577,6 +3027,7 @@
       storyMapFrame.contentWindow.postMessage({
         type: 'pocobot-story-map-progress',
         completedCount: storyProgressState.completedCount,
+        completedNodes: getCompletedStoryNodeIds(),
         selectedId: currentStoryNodeId
       }, '*');
     }
@@ -2601,7 +3052,23 @@
 
     function setStoryCompletedCount(nextCompletedCount, options = {}) {
       storyProgressState.completedCount = Math.max(0, Math.min(Object.keys(storyDraftNodes).length, nextCompletedCount));
+      Object.values(storyDraftNodes).forEach((node) => {
+        if (node.order <= storyProgressState.completedCount) {
+          storyProgressState.completedNodes[node.id] = true;
+        }
+      });
       queueStoryMapTheme(storyProgressState.completedCount >= 1 ? 'chapter_clear' : 'exploration');
+      if (options.selectedId && storyDraftNodes[options.selectedId]) {
+        currentStoryNodeId = options.selectedId;
+      }
+      renderMobileRoute();
+      syncStoryMapState();
+    }
+
+    function markStoryNodeCompleted(nodeId, options = {}) {
+      if (!storyDraftNodes[nodeId]) return;
+      storyProgressState.completedNodes[nodeId] = true;
+      syncCompletedCountFromNodes();
       if (options.selectedId && storyDraftNodes[options.selectedId]) {
         currentStoryNodeId = options.selectedId;
       }
@@ -2663,6 +3130,14 @@
       return activeSceneScriptKey || activeSceneNodeId || null;
     }
 
+    function resolveEntrySceneKey(nodeId, sceneKey = nodeId) {
+      if (sceneKey && sceneKey !== nodeId) return sceneKey;
+      if ((nodeId === 'hangar' || nodeId === 'patio') && !storyProgressState.maraIntroSeen) {
+        return `${nodeId}_intro`;
+      }
+      return sceneKey || nodeId;
+    }
+
     function getSceneChoiceKey(lineIndex = sceneLineIndex, sceneKey = getActiveSceneScriptKey()) {
       return `${sceneKey || 'none'}:${lineIndex}`;
     }
@@ -2671,14 +3146,28 @@
       return sceneChoiceSelections[getSceneChoiceKey(lineIndex, sceneKey)] || null;
     }
 
+    function matchesSceneCondition(conditionKey) {
+      if (conditionKey === 'hangarCompleted') return hasCompletedStoryNode('hangar');
+      if (conditionKey === 'hangarPending') return !hasCompletedStoryNode('hangar');
+      if (conditionKey === 'patioCompleted') return hasCompletedStoryNode('patio');
+      if (conditionKey === 'patioPending') return !hasCompletedStoryNode('patio');
+      return false;
+    }
+
+    function resolveConditionalSceneLine(line) {
+      if (!line || !Array.isArray(line.conditions)) return line;
+      const condition = line.conditions.find((entry) => matchesSceneCondition(entry.when));
+      return condition ? { ...line, ...condition } : line;
+    }
+
     function resolveSceneLine(scene, lineIndex = sceneLineIndex) {
       if (!scene || !Array.isArray(scene.lines) || !scene.lines.length) return null;
       const baseLine = scene.lines[Math.min(lineIndex, scene.lines.length - 1)];
       const variantSourceLine = Number.isInteger(baseLine.variantSourceLine) ? baseLine.variantSourceLine : null;
-      if (variantSourceLine === null || !baseLine.variants) return baseLine;
+      if (variantSourceLine === null || !baseLine.variants) return resolveConditionalSceneLine(baseLine);
       const choiceId = getSceneChoiceSelection(variantSourceLine);
       const variant = choiceId ? baseLine.variants[choiceId] : null;
-      return variant ? { ...baseLine, ...variant } : baseLine;
+      return resolveConditionalSceneLine(variant ? { ...baseLine, ...variant } : baseLine);
     }
 
     function setSceneAvatar(line, scene) {
@@ -2739,7 +3228,7 @@
     function syncScenePresentation(line) {
       if (!storySceneStage) return;
       const activeSceneKey = getActiveSceneScriptKey();
-      const showIntroTag = !!(activeSceneKey === 'hangar' && sceneAmbientMode && sceneAmbientStep === 1 && line);
+      const showIntroTag = !!((activeSceneKey === 'hangar_intro' || activeSceneKey === 'patio_intro') && sceneAmbientMode && sceneAmbientStep === 1 && line);
       const raiseFigure = !!(line && line.figureRaised);
       const figureShift = Number.isFinite(line?.figureShiftVh) ? line.figureShiftVh : 0;
       const figureMobileShift = Number.isFinite(line?.figureMobileShiftVh) ? line.figureMobileShiftVh : figureShift;
@@ -2748,6 +3237,7 @@
       storySceneStage.classList.toggle('show-intro-tag', showIntroTag);
       storySceneStage.classList.toggle('figure-raised', raiseFigure);
       storySceneStage.classList.toggle('hangar-scene', activeSceneNodeId === 'hangar');
+      storySceneStage.classList.toggle('patio-scene', activeSceneNodeId === 'patio');
       storySceneStage.style.setProperty('--scene-figure-shift', `${figureShift}vh`);
       storySceneStage.style.setProperty('--scene-figure-mobile-shift', `${figureMobileShift}vh`);
       storySceneStage.style.setProperty('--scene-figure-scale', String(figureScale));
@@ -2838,7 +3328,7 @@
         storySceneResponse.textContent = selectedChoice.response || `Tu respuesta: "${selectedChoice.label}"`;
       } else {
         storySceneResponse.hidden = false;
-        storySceneResponse.textContent = 'Elige una respuesta para continuar.';
+        storySceneResponse.textContent = line.choicePrompt || 'Elige una respuesta para continuar.';
       }
 
       return !selectedChoice;
@@ -2889,11 +3379,15 @@
 
     function openStoryScene(nodeId, sceneKey = nodeId) {
       const localNode = storyDraftNodes[nodeId];
-      const scene = storySceneScripts[sceneKey];
+      const resolvedSceneKey = resolveEntrySceneKey(nodeId, sceneKey);
+      const scene = storySceneScripts[resolvedSceneKey];
       if (!localNode || !scene) return;
       runStoryTransition(() => {
         activeSceneNodeId = nodeId;
-        activeSceneScriptKey = sceneKey;
+        activeSceneScriptKey = resolvedSceneKey;
+        if (resolvedSceneKey === 'hangar_intro' || resolvedSceneKey === 'patio_intro') {
+          storyProgressState.maraIntroSeen = true;
+        }
         sceneLineIndex = 0;
         sceneAmbientMode = !!scene.startAmbient;
         sceneAmbientStep = sceneAmbientMode ? 0 : 2;
@@ -2924,6 +3418,7 @@
       syncScenePresentation(null);
       updateAmbientHint();
       storySceneStage.classList.remove('hangar-scene');
+      storySceneStage.classList.remove('patio-scene');
       storySceneStage.style.setProperty('--scene-figure-shift', '0vh');
       storySceneStage.style.setProperty('--scene-figure-mobile-shift', '0vh');
       storySceneStage.style.setProperty('--scene-figure-scale', '1');
@@ -2997,17 +3492,41 @@
       }, '*');
     }
 
+    const storyMissionResults = {
+      hangar_race: {
+        fallbackNodeId: 'hangar',
+        successScene: 'hangar_outcome_win',
+        failureScene: 'hangar_outcome_lose',
+        onSuccess() {
+          queueStoryMapTheme('chapter_clear');
+          markStoryNodeCompleted('hangar', { selectedId: hasCompletedStoryNode('patio') ? 'mercado' : 'patio' });
+        },
+        onFailure() {
+          renderStoryNode('hangar');
+        }
+      },
+      patio_duel: {
+        fallbackNodeId: 'patio',
+        successScene: 'patio_outcome_win',
+        failureScene: 'patio_outcome_lose',
+        onSuccess() {
+          queueStoryMapTheme('chapter_clear');
+          markStoryNodeCompleted('patio', { selectedId: hasCompletedStoryNode('hangar') ? 'mercado' : 'hangar' });
+        },
+        onFailure() {
+          renderStoryNode('patio');
+        }
+      }
+    };
+
     function handleStoryMissionResult(result) {
-      if (!result || result.mission !== 'hangar_race') return;
-      const missionNodeId = activeMissionNodeId || 'hangar';
+      const missionConfig = result ? storyMissionResults[result.mission] : null;
+      if (!result || !missionConfig) return;
+      const missionNodeId = activeMissionNodeId || missionConfig.fallbackNodeId;
       const success = !!result.success;
       storyProgressState.lastMissionResult = success ? 'success' : 'failure';
-      if (success) {
-        queueStoryMapTheme('chapter_clear');
-        setStoryCompletedCount(Math.max(storyProgressState.completedCount, 1), { selectedId: 'patio' });
-      } else {
-        renderStoryNode('hangar');
-      }
+      if (success) missionConfig.onSuccess();
+      else missionConfig.onFailure();
       closeStoryMission({
         preserveMissionId: true,
         onClosed: () => {
@@ -3020,7 +3539,7 @@
             storySceneStage.classList.remove('active');
             storySceneStage.hidden = true;
           }
-          openStoryScene(missionNodeId, success ? 'hangar_outcome_win' : 'hangar_outcome_lose');
+          openStoryScene(missionNodeId, success ? missionConfig.successScene : missionConfig.failureScene);
         }
       });
     }
@@ -3283,7 +3802,9 @@
       const scene = storySceneScripts[getActiveSceneScriptKey()];
       if (!scene) return;
       if (sceneLineIndex >= scene.lines.length - 1) {
-        const completeAction = scene.completeAction || ((getActiveSceneScriptKey() === activeSceneNodeId && storyMissionScripts[activeSceneNodeId]) ? 'mission' : 'map');
+        const activeSceneKey = getActiveSceneScriptKey();
+        const isEntrySceneForActiveNode = activeSceneKey === activeSceneNodeId || activeSceneKey === `${activeSceneNodeId}_intro`;
+        const completeAction = scene.completeAction || ((isEntrySceneForActiveNode && storyMissionScripts[activeSceneNodeId]) ? 'mission' : 'map');
         if (completeAction === 'mission') {
           openStoryMission(activeSceneNodeId);
         } else {

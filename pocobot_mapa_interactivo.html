@@ -763,6 +763,7 @@
 
     const state = {
       completedCount: 0,
+      completedNodes: [],
       selectedId: nodes[0].id,
     };
     const nodeById = new Map(nodes.map(node => [node.id, node]));
@@ -842,14 +843,46 @@
           ...node,
           status: getNodeState(node),
           completedCount: state.completedCount,
+          completedNodes: [...state.completedNodes],
           totalNodes: nodes.length,
         }
       }, "*");
     }
 
+    function normalizeCompletedNodes(value) {
+      if (!Array.isArray(value)) return [];
+      return value.filter((nodeId, index, list) => (
+        typeof nodeId === "string"
+        && nodeById.has(nodeId)
+        && list.indexOf(nodeId) === index
+      ));
+    }
+
+    function applyCompletedCountToNodes() {
+      nodes.forEach(node => {
+        if (node.order <= state.completedCount && !state.completedNodes.includes(node.id)) {
+          state.completedNodes.push(node.id);
+        }
+      });
+    }
+
+    function syncCompletedCountFromNodes() {
+      let contiguousCount = 0;
+      for (const node of nodes) {
+        if (!state.completedNodes.includes(node.id)) break;
+        contiguousCount = node.order;
+      }
+      state.completedCount = contiguousCount;
+    }
+
+    function haveCompletedWorkshopTrials() {
+      return state.completedNodes.includes("hangar") && state.completedNodes.includes("patio");
+    }
+
     function loadState() {
       if (IMMERSIVE_MODE) {
         state.completedCount = 0;
+        state.completedNodes = [];
         state.selectedId = nodes[0].id;
         return;
       }
@@ -860,9 +893,15 @@
         if (typeof parsed.completedCount === "number") {
           state.completedCount = Math.max(0, Math.min(nodes.length, parsed.completedCount));
         }
+        if (Array.isArray(parsed.completedNodes)) {
+          state.completedNodes = normalizeCompletedNodes(parsed.completedNodes);
+        } else {
+          applyCompletedCountToNodes();
+        }
         if (parsed.selectedId && nodes.some(n => n.id === parsed.selectedId)) {
           state.selectedId = parsed.selectedId;
         }
+        syncCompletedCountFromNodes();
       } catch (error) {
         console.warn("No se pudo recuperar el progreso:", error);
       }
@@ -874,11 +913,22 @@
       if (IMMERSIVE_MODE) return;
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         completedCount: state.completedCount,
+        completedNodes: [...state.completedNodes],
         selectedId: state.selectedId,
       }));
     }
 
     function getNodeState(node) {
+      if (state.completedNodes.includes(node.id)) return "completed";
+      if (node.id === "hangar" || node.id === "patio") {
+        if (!haveCompletedWorkshopTrials()) {
+          if (!state.completedNodes.includes("hangar") && !state.completedNodes.includes("patio")) {
+            return node.id === "hangar" ? "current" : "available";
+          }
+          return "current";
+        }
+      }
+      if (!haveCompletedWorkshopTrials() && node.order > 2) return "locked";
       if (node.order <= state.completedCount) return "completed";
       if (node.order === state.completedCount + 1) return "current";
       if (node.order === state.completedCount + 2) return "available";
@@ -1041,9 +1091,10 @@
     }
 
     function renderProgress() {
-      const percent = (state.completedCount / nodes.length) * 100;
+      const completedTotal = state.completedNodes.length || state.completedCount;
+      const percent = (completedTotal / nodes.length) * 100;
       progressFill.style.width = `${percent}%`;
-      progressText.textContent = `${state.completedCount} / ${nodes.length}`;
+      progressText.textContent = `${completedTotal} / ${nodes.length}`;
     }
 
     function render(reason = "sync") {
@@ -1069,6 +1120,12 @@
         if (typeof data.completedCount === "number") {
           state.completedCount = Math.max(0, Math.min(nodes.length, data.completedCount));
         }
+        if (Array.isArray(data.completedNodes)) {
+          state.completedNodes = normalizeCompletedNodes(data.completedNodes);
+        } else {
+          applyCompletedCountToNodes();
+        }
+        syncCompletedCountFromNodes();
         if (typeof data.selectedId === "string" && nodes.some(node => node.id === data.selectedId)) {
           state.selectedId = data.selectedId;
         }
@@ -1086,14 +1143,18 @@
     completeBtn.addEventListener("click", () => {
       const selected = nodes.find(n => n.id === state.selectedId);
       if (getNodeState(selected) !== "current") return;
-      state.completedCount = Math.min(nodes.length, selected.order);
-      const next = nodes.find(n => n.order === selected.order + 1);
+      if (!state.completedNodes.includes(selected.id)) {
+        state.completedNodes.push(selected.id);
+      }
+      syncCompletedCountFromNodes();
+      const next = nodes.find(n => getNodeState(n) !== "completed" && getNodeState(n) !== "locked");
       if (next) state.selectedId = next.id;
       render();
     });
 
     resetBtn.addEventListener("click", () => {
       state.completedCount = 0;
+      state.completedNodes = [];
       state.selectedId = nodes[0].id;
       render("state-change");
     });
