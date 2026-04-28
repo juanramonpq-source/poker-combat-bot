@@ -989,11 +989,15 @@
       padding-top:clamp(64px, 10vh, 118px);
     }
     .scene-dialog-card{
+      --scene-dialog-max-height:min(68svh, calc(100svh - 118px));
+      --scene-dialog-scroll-max:min(36svh, 420px);
       position:relative;
       z-index:2;
       width:min(1160px, calc(100% - 32px));
       margin:0 auto clamp(34px, 5vh, 54px);
       padding:18px;
+      max-height:var(--scene-dialog-max-height);
+      overflow:hidden;
       border-radius:28px;
       border:1px solid rgba(255,255,255,.08);
       background:linear-gradient(180deg, rgba(8,13,19,.86), rgba(8,13,19,.78));
@@ -1010,11 +1014,13 @@
       display:grid;
       grid-template-columns:minmax(124px, 18vw) 1fr;
       gap:18px;
-      align-items:end;
+      align-items:stretch;
+      min-height:0;
+      max-height:calc(var(--scene-dialog-max-height) - 36px);
     }
     .scene-avatar-wrap{
       position:relative;
-      min-height:100%;
+      min-height:0;
       display:flex;
       align-items:flex-end;
       justify-content:center;
@@ -1040,6 +1046,39 @@
     }
     .scene-dialog-copy{
       min-width:0;
+      min-height:0;
+      max-height:calc(var(--scene-dialog-max-height) - 36px);
+      display:grid;
+      grid-template-rows:auto auto auto auto minmax(0, 1fr) auto;
+    }
+    .scene-dialog-scroll{
+      min-height:0;
+      max-height:var(--scene-dialog-scroll-max);
+      margin-top:0;
+      padding-right:8px;
+      margin-right:-4px;
+      overflow-y:auto;
+      overflow-x:hidden;
+      overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;
+      touch-action:pan-y;
+      scrollbar-gutter:stable;
+    }
+    .scene-dialog-scroll:focus{
+      outline:1px solid rgba(143,244,255,.32);
+      outline-offset:4px;
+      border-radius:14px;
+    }
+    .scene-dialog-scroll::-webkit-scrollbar{
+      width:8px;
+    }
+    .scene-dialog-scroll::-webkit-scrollbar-track{
+      background:rgba(255,255,255,.04);
+      border-radius:999px;
+    }
+    .scene-dialog-scroll::-webkit-scrollbar-thumb{
+      background:linear-gradient(180deg, rgba(143,244,255,.48), rgba(255,185,109,.38));
+      border-radius:999px;
     }
     .scene-dialog-card.line-transition .scene-context,
     .scene-dialog-card.line-transition .scene-speaker,
@@ -1147,6 +1186,9 @@
       font-size:.78rem;
       font-weight:800;
       letter-spacing:.04em;
+      line-height:1.35;
+      text-align:left;
+      white-space:normal;
       cursor:pointer;
       transition:transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
     }
@@ -1264,6 +1306,7 @@
       display:none;
     }
     .story-scene-stage.minimal-dialogue .scene-dialog-card{
+      --scene-dialog-scroll-max:min(42svh, 480px);
       width:min(980px, calc(100% - 28px));
       margin:0 auto clamp(24px, 4vh, 42px);
       padding:16px 18px 18px;
@@ -1485,12 +1528,14 @@
         transform:translateY(calc(var(--scene-figure-shift) - 10svh)) scale(var(--scene-figure-scale));
       }
       .scene-dialog-card{
+        --scene-dialog-max-height:min(50svh, calc(100svh - 92px));
+        --scene-dialog-scroll-max:clamp(120px, 22svh, 260px);
         width:min(980px, calc(100% - 24px));
         margin:0 auto 18px;
         padding:14px 16px;
         border-radius:24px;
-        max-height:46svh;
-        overflow:auto;
+        max-height:var(--scene-dialog-max-height);
+        overflow:hidden;
         overscroll-behavior:contain;
       }
       .scene-dialog-main{
@@ -1634,11 +1679,13 @@
         display:none;
       }
       .scene-dialog-card{
+        --scene-dialog-max-height:min(72svh, calc(100svh - 106px));
+        --scene-dialog-scroll-max:clamp(160px, 28svh, 300px);
         width:calc(100% - 24px);
-        margin:0 12px 86px;
-        padding:16px 16px 18px;
-        max-height:min(56svh, calc(100svh - 208px));
-        overflow:auto;
+        margin:0 12px max(16px, env(safe-area-inset-bottom));
+        padding:14px 14px 16px;
+        max-height:var(--scene-dialog-max-height);
+        overflow:hidden;
         overscroll-behavior:contain;
       }
       .scene-dialog-main{
@@ -1657,6 +1704,7 @@
       }
       .scene-line{
         font-size:.95rem;
+        line-height:1.54;
       }
       .scene-actions{
         flex-direction:column;
@@ -1675,14 +1723,20 @@
       }
       .scene-choices{
         flex-direction:column;
+        gap:8px;
       }
       .scene-choice{
         width:100%;
+        min-height:48px;
+        padding:11px 13px;
+        border-radius:16px;
         justify-content:flex-start;
+        align-items:flex-start;
       }
       .story-scene-stage.minimal-dialogue .scene-dialog-card{
-        margin:0 12px 72px;
-        max-height:min(58svh, calc(100svh - 196px));
+        --scene-dialog-scroll-max:clamp(220px, 42svh, 430px);
+        margin:0 12px max(16px, env(safe-area-inset-bottom));
+        max-height:min(74svh, calc(100svh - 96px));
       }
       .mission-shell{
         padding:14px 12px 12px;
@@ -1842,12 +1896,14 @@
                     <p class="scene-objective" id="storySceneObjective">Objetivo: Construir un bot válido para el taller.</p>
                   </div>
 
-                  <div class="scene-speaker" id="storySceneSpeaker">Mara Oxido</div>
-                  <p class="scene-line" id="storySceneLine">Si no sabes ensamblarlo, tampoco sabrás salvarlo.</p>
-                  <p class="scene-response" id="storySceneResponse" hidden></p>
-                  <div class="scene-choices" id="storySceneChoices"></div>
+                  <div class="scene-dialog-scroll" id="storySceneScroll" tabindex="0" aria-label="Texto y opciones del diálogo">
+                    <div class="scene-speaker" id="storySceneSpeaker">Mara Oxido</div>
+                    <p class="scene-line" id="storySceneLine">Si no sabes ensamblarlo, tampoco sabrás salvarlo.</p>
+                    <p class="scene-response" id="storySceneResponse" hidden></p>
+                    <div class="scene-choices" id="storySceneChoices"></div>
 
-                  <div class="scene-cast" id="storySceneCast"></div>
+                    <div class="scene-cast" id="storySceneCast"></div>
+                  </div>
 
                   <div class="scene-actions">
                     <button class="scene-btn" id="storySceneNextBtn" type="button">Adelante</button>
@@ -1932,6 +1988,7 @@
     const storySceneSubtitle = document.getElementById('storySceneSubtitle');
     const storySceneTypeChip = document.getElementById('storySceneTypeChip');
     const storySceneObjective = document.getElementById('storySceneObjective');
+    const storySceneScroll = document.getElementById('storySceneScroll');
     const storySceneSpeaker = document.getElementById('storySceneSpeaker');
     const storySceneLine = document.getElementById('storySceneLine');
     const storySceneResponse = document.getElementById('storySceneResponse');
@@ -3315,6 +3372,7 @@
       setSceneFigure(line, scene);
       syncScenePresentation(line);
       const needsChoice = renderSceneChoices(line);
+      if (storySceneScroll) storySceneScroll.scrollTop = 0;
       storySceneNextBtn.disabled = needsChoice;
       storySceneNextBtn.textContent = sceneLineIndex >= scene.lines.length - 1 ? (scene.completeActionLabel || 'Volver al mapa') : 'Adelante';
     }
