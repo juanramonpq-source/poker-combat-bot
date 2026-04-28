@@ -5392,6 +5392,11 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
     0 12px 28px rgba(0,0,0,.34),
     0 0 24px rgba(255,152,64,.20);
   backdrop-filter:blur(6px);
+  transform-origin:center;
+  will-change:transform, filter, opacity;
+}
+.attack-special-popup-overlay.show .attack-special-popup-shell{
+  animation:attackMonitorPowerOn .48s cubic-bezier(.2, .78, .2, 1.08) both;
 }
 .attack-special-popup-shell::before,
 .attack-special-popup-shell::after{
@@ -5457,6 +5462,10 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.05),
     inset 0 0 16px rgba(72,214,255,.10);
+  will-change:clip-path, filter;
+}
+.attack-special-popup-overlay.show .attack-special-popup-frame{
+  animation:attackMonitorTubeBloom .56s cubic-bezier(.18, .82, .22, 1) both;
 }
 .attack-special-popup-frame::before{
   content:"";
@@ -5468,6 +5477,9 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   mix-blend-mode:screen;
   opacity:.24;
   pointer-events:none;
+}
+.attack-special-popup-overlay.show .attack-special-popup-frame::before{
+  animation:attackMonitorScanWake .68s steps(6, end) both;
 }
 .attack-special-popup-frame::after{
   content:"";
@@ -5485,6 +5497,10 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   max-height:min(38vh, 320px);
   object-fit:contain;
   background:transparent;
+  will-change:opacity, filter, transform;
+}
+.attack-special-popup-overlay.show .attack-special-popup-video{
+  animation:attackMonitorSignalIn .62s steps(5, end) both;
 }
 .attack-special-monitor-foot{
   display:flex;
@@ -5502,6 +5518,92 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
 .attack-special-monitor-foot span:nth-child(2){
   background:rgba(255,213,95,.58);
   box-shadow:0 0 8px rgba(255,213,95,.35);
+}
+@keyframes attackMonitorPowerOn{
+  0%{
+    opacity:.72;
+    transform:scaleX(.62) scaleY(.025);
+    filter:brightness(2.5) saturate(.55);
+  }
+  14%{
+    opacity:1;
+    transform:scaleX(1.1) scaleY(.035);
+    filter:brightness(3.4) saturate(.72);
+  }
+  42%{
+    transform:scaleX(.96) scaleY(1.08);
+    filter:brightness(1.55) saturate(1.15);
+  }
+  68%{
+    transform:scaleX(1.02) scaleY(.97);
+    filter:brightness(1.16) saturate(1.06);
+  }
+  100%{
+    opacity:1;
+    transform:scale(1);
+    filter:brightness(1) saturate(1);
+  }
+}
+@keyframes attackMonitorTubeBloom{
+  0%{
+    clip-path:inset(49% 2% 49% 2% round 9px);
+    filter:brightness(2.8) contrast(1.35);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.08), inset 0 0 28px rgba(143,244,255,.28), 0 0 18px rgba(143,244,255,.22);
+  }
+  24%{
+    clip-path:inset(45% 0 45% 0 round 9px);
+    filter:brightness(3.15) contrast(1.42);
+  }
+  58%{
+    clip-path:inset(7% 0 7% 0 round 9px);
+    filter:brightness(1.38) contrast(1.12);
+  }
+  100%{
+    clip-path:inset(0 0 0 0 round 9px);
+    filter:brightness(1) contrast(1);
+  }
+}
+@keyframes attackMonitorSignalIn{
+  0%, 30%{
+    opacity:0;
+    transform:scaleY(.04);
+    filter:brightness(2.6) contrast(1.8) saturate(.45);
+  }
+  42%{
+    opacity:.34;
+    transform:scaleY(.26);
+  }
+  58%{
+    opacity:.85;
+    transform:scaleY(1.04);
+    filter:brightness(1.42) contrast(1.24) saturate(1.18);
+  }
+  72%{
+    opacity:.62;
+    filter:brightness(.86) contrast(1.28) saturate(1.04);
+  }
+  100%{
+    opacity:1;
+    transform:scaleY(1);
+    filter:brightness(1) contrast(1) saturate(1);
+  }
+}
+@keyframes attackMonitorScanWake{
+  0%{
+    opacity:.88;
+    background-size:100% 2px;
+    transform:translateY(-8%);
+  }
+  38%{
+    opacity:.58;
+    background-size:100% 3px;
+    transform:translateY(6%);
+  }
+  100%{
+    opacity:.24;
+    background-size:100% 5px;
+    transform:translateY(0);
+  }
 }
 @media(max-width:760px){
   .attack-special-popup-shell{
