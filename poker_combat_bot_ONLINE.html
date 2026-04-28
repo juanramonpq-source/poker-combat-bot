@@ -885,6 +885,16 @@ body.victory .winner-banner.show{
 }
 .confetti-piece.square{ border-radius:2px; }
 .confetti-piece.rect{ width:8px; height:20px; border-radius:2px; }
+.confetti-piece.streamer{
+  width:6px;
+  height:46px;
+  border-radius:999px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.92), var(--bg, #ffd65c) 34%, rgba(255,255,255,.34) 58%, var(--bg, #ffd65c));
+  box-shadow:0 0 12px rgba(255,255,255,.20), 0 0 18px color-mix(in srgb, var(--bg, #ffd65c) 42%, transparent);
+  transform-origin:50% 0%;
+  animation:streamerFall var(--dur, 4.8s) ease-in forwards;
+}
 .confetti-piece.tri{
   width:0; height:0; background:transparent;
   border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:16px solid var(--bg, #ffd65c);
@@ -893,6 +903,12 @@ body.victory .winner-banner.show{
   0%{transform:translate(0,-5vh) rotate(0deg); opacity:0}
   8%{opacity:1}
   100%{transform:translate(var(--drift, 0px), 115vh) rotate(var(--rot, 540deg)); opacity:1}
+}
+@keyframes streamerFall{
+  0%{transform:translate(0,-10vh) rotate(0deg) scaleY(.72); opacity:0}
+  10%{opacity:1}
+  52%{transform:translate(calc(var(--drift, 0px) * .46), 48vh) rotate(calc(var(--twist, 720deg) * .54)) scaleY(1)}
+  100%{transform:translate(var(--drift, 0px), 116vh) rotate(var(--twist, 720deg)) scaleY(.88); opacity:1}
 }
 
 @media (max-width:1120px){
@@ -7252,6 +7268,19 @@ body.desktop-compact-mode > footer{
   text-shadow:0 1px 0 rgba(95,0,0,.24) !important;
 }
 
+#compactActionAddBtn,
+#compactMobileModifyBtn{
+  border-color:rgba(255,184,112,.95) !important;
+  background:linear-gradient(180deg, #ffe7c8, #ffbd7c 50%, #ff8b42) !important;
+  color:#5a2100 !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.35) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    inset 0 -2px 0 rgba(128,54,0,.22),
+    0 4px 0 rgba(106,45,0,.22),
+    0 0 16px rgba(255,139,66,.18) !important;
+}
+
 .compact-hand-panel{
   display:grid;
   grid-template-rows:auto minmax(0, 1fr);
@@ -8150,6 +8179,12 @@ body.desktop-compact-mode > footer{
     padding:4px 6px !important;
     font-size:.5rem !important;
     line-height:1 !important;
+  }
+  .app.mobile-panorama-mode #compactMobileModifyBtn{
+    min-height:32px;
+    padding:6px 7px !important;
+    font-size:.58rem !important;
+    letter-spacing:.04em !important;
   }
   .app.mobile-panorama-mode .compact-mobile-action-grid button.compact-action-hidden{
     display:none !important;
@@ -10390,26 +10425,32 @@ function clearConfetti(){
   const layer = document.getElementById('confettiLayer');
   if(layer) layer.innerHTML = '';
 }
-function spawnConfetti(count=140){
+function spawnConfetti(count=140, options={}){
   const layer = document.getElementById('confettiLayer');
   if(!layer) return;
   layer.innerHTML = '';
   const colors = ['#ffd65c','#74fff2','#ff7b61','#8affcb','#ffe67f','#23d8ff'];
-  const shapes = ['square','rect','tri'];
+  const useStreamers = options.streamers || document.body?.classList.contains('mobile-panorama-mode');
+  const shapes = useStreamers ? ['square','rect','tri','streamer','streamer'] : ['square','rect','tri'];
   for(let i=0;i<count;i++){
     const piece = document.createElement('div');
     const shape = shapes[Math.floor(Math.random()*shapes.length)];
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    const isStreamer = shape === 'streamer';
     piece.className = `confetti-piece ${shape}`;
     piece.style.setProperty('--x', `${Math.random()*100}vw`);
-    piece.style.setProperty('--drift', `${(Math.random()*260)-130}px`);
-    piece.style.setProperty('--dur', `${3 + Math.random()*2.6}s`);
+    piece.style.setProperty('--drift', `${(Math.random()*(isStreamer ? 360 : 260))-(isStreamer ? 180 : 130)}px`);
+    piece.style.setProperty('--dur', `${(isStreamer ? 4.2 : 3) + Math.random()*(isStreamer ? 2.8 : 2.6)}s`);
     piece.style.setProperty('--delay', `${Math.random()*0.9}s`);
     piece.style.setProperty('--rot', `${360 + Math.floor(Math.random()*720)}deg`);
-    piece.style.setProperty('--bg', colors[Math.floor(Math.random()*colors.length)]);
-    if(shape!=='tri'){
-      piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.setProperty('--twist', `${720 + Math.floor(Math.random()*1080)}deg`);
+    piece.style.setProperty('--bg', color);
+    if(shape==='tri'){
+      piece.style.borderBottomColor = color;
+    }else if(!isStreamer){
+      piece.style.background = color;
     }else{
-      piece.style.borderBottomColor = colors[Math.floor(Math.random()*colors.length)];
+      piece.style.rotate = `${Math.floor(Math.random()*90)-45}deg`;
     }
     layer.appendChild(piece);
   }
@@ -10422,7 +10463,8 @@ function triggerVictorySequence(){
   document.body.classList.add('victory');
   stopAllMusic(false);
   state.musicPhase = 'none';
-  spawnConfetti(180);
+  const mobilePanoramaVictory = !!document.body?.classList.contains('mobile-panorama-mode');
+  spawnConfetti(mobilePanoramaVictory ? 260 : 180, { streamers: mobilePanoramaVictory });
   playUiSound('victory');
   triggerScreenRipple('amber');
   pulseVibrate([60, 40, 60, 40, 120]);
@@ -14339,6 +14381,7 @@ function drawWithDiamond(){
   // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
   if (_ol.active && _ol.role === 'guest') {
     console.log('[ONLINE] Guest drawWithDiamond: sending action to Host instead of executing locally');
+    closeCompactMobileDrawersForCombat();
     olSendAction({ type: 'drawWithDiamond', selected: state.selected.slice() });
     return;
   }
@@ -14397,6 +14440,7 @@ function drawWithDiamond(){
   log(`⛽ ${player.name} descarta ${cardText(card)} y procesa ${drawnCount} carta(s) de robo.`);
   state.lastActionType = 'diamondDraw';
   state.players[playerIdx].flags.lastOwnAction = 'diamondDraw';
+  closeCompactMobileDrawersForCombat();
   advanceTurn();
 }
 
