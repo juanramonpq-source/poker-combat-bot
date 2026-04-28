@@ -5354,6 +5354,160 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   font-size:.84rem;
   line-height:1.35;
 }
+.attack-special-popup-overlay{
+  position:fixed;
+  left:50%;
+  top:38%;
+  z-index:1004;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translate(-50%, -50%) scale(.86);
+  filter:drop-shadow(0 0 18px rgba(255,180,62,.26));
+  transition:opacity .16s ease, visibility .16s ease, transform .16s ease;
+}
+.attack-special-popup-overlay.show{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%, -50%) scale(1);
+}
+body.mobile-panorama-mode .attack-special-popup-overlay,
+body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
+  z-index:1405;
+}
+.attack-special-popup-shell{
+  position:relative;
+  width:clamp(126px, 12vw, 190px);
+  padding:7px 7px 8px;
+  border-radius:14px;
+  border:1px solid rgba(255,214,110,.55);
+  background:
+    linear-gradient(90deg, rgba(255,221,92,.18), transparent 18%, transparent 82%, rgba(96,225,255,.14)),
+    radial-gradient(circle at 50% 0%, rgba(255,186,71,.18), transparent 48%),
+    linear-gradient(180deg, rgba(16,33,58,.88), rgba(5,11,20,.94));
+  box-shadow:
+    0 0 0 1px rgba(146,245,255,.10),
+    inset 0 0 0 1px rgba(255,255,255,.06),
+    inset 0 -10px 18px rgba(0,0,0,.30),
+    0 12px 28px rgba(0,0,0,.34),
+    0 0 24px rgba(255,152,64,.20);
+  backdrop-filter:blur(6px);
+}
+.attack-special-popup-shell::before,
+.attack-special-popup-shell::after{
+  content:"";
+  position:absolute;
+  top:18px;
+  bottom:14px;
+  width:3px;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(255,213,95,.78), rgba(72,220,255,.18));
+  opacity:.72;
+}
+.attack-special-popup-shell::before{left:-5px}
+.attack-special-popup-shell::after{right:-5px}
+.attack-special-monitor-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  min-height:18px;
+  padding:0 2px 5px;
+}
+.attack-special-monitor-id{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#9df8ff;
+  font-size:.58rem;
+  font-weight:1000;
+  letter-spacing:0;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.attack-special-monitor-led{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#ffd65f;
+  box-shadow:0 0 9px rgba(255,214,95,.86);
+}
+.attack-special-monitor-bars{
+  display:flex;
+  gap:2px;
+  align-items:flex-end;
+}
+.attack-special-monitor-bars span{
+  width:3px;
+  border-radius:4px;
+  background:rgba(143,244,255,.72);
+  box-shadow:0 0 6px rgba(143,244,255,.28);
+}
+.attack-special-monitor-bars span:nth-child(1){height:5px}
+.attack-special-monitor-bars span:nth-child(2){height:9px}
+.attack-special-monitor-bars span:nth-child(3){height:7px}
+.attack-special-popup-frame{
+  position:relative;
+  overflow:hidden;
+  border-radius:9px;
+  border:1px solid rgba(150,245,255,.32);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(143,244,255,.10), transparent 42%),
+    linear-gradient(180deg, rgba(5,12,22,.98), rgba(2,6,12,.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.05),
+    inset 0 0 16px rgba(72,214,255,.10);
+}
+.attack-special-popup-frame::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px);
+  background-size:100% 5px;
+  mix-blend-mode:screen;
+  opacity:.24;
+  pointer-events:none;
+}
+.attack-special-popup-frame::after{
+  content:"";
+  position:absolute;
+  inset:4px;
+  z-index:2;
+  border:1px solid rgba(255,213,95,.22);
+  box-shadow:inset 0 0 18px rgba(255,120,50,.10);
+  pointer-events:none;
+}
+.attack-special-popup-video{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:min(38vh, 320px);
+  object-fit:contain;
+  background:transparent;
+}
+.attack-special-monitor-foot{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  padding-top:6px;
+}
+.attack-special-monitor-foot span{
+  width:14px;
+  height:3px;
+  border-radius:999px;
+  background:rgba(143,244,255,.26);
+}
+.attack-special-monitor-foot span:nth-child(2){
+  background:rgba(255,213,95,.58);
+  box-shadow:0 0 8px rgba(255,213,95,.35);
+}
+@media(max-width:760px){
+  .attack-special-popup-shell{
+    width:clamp(108px, 28vw, 148px);
+  }
+}
 
 /* ===== RESPONSIVE DESIGN ===== */
 
@@ -8981,6 +9135,26 @@ body.desktop-compact-mode > footer{
   <div class="footer-note">RETRO COCKPIT INTERFACE · COMBAT READY BUILD</div>
 </div>
 
+<div class="attack-special-popup-overlay" id="attackSpecialPopupOverlay" aria-hidden="true">
+  <div class="attack-special-popup-shell">
+    <div class="attack-special-monitor-head" aria-hidden="true">
+      <div class="attack-special-monitor-id"><span class="attack-special-monitor-led"></span>COMBAT CAM</div>
+      <div class="attack-special-monitor-bars"><span></span><span></span><span></span></div>
+    </div>
+    <div class="attack-special-popup-frame">
+      <video
+        class="attack-special-popup-video"
+        id="attackSpecialPopupVideo"
+        src="assets/videos/Ataque1.mp4"
+        muted
+        playsinline
+        preload="auto"
+      ></video>
+    </div>
+    <div class="attack-special-monitor-foot" aria-hidden="true"><span></span><span></span><span></span></div>
+  </div>
+</div>
+
 <div class="toast-stack" id="toastStack"></div>
 <button class="tutorial-attack-jump-btn" id="tutorialAttackJumpBtn" type="button" aria-hidden="true">
   <span><strong>Tutorial</strong>Bajar al panel del mecha para elegir combustible y cartas de ataque</span>
@@ -9226,11 +9400,14 @@ var _ol = {
 
 let defenseUiCueKey = '';
 let defenseAlertTimer = null;
+let attackSpecialPopupTimer = null;
 let olLastFxCueId = null;
 let olWaitingRevealBlockedUntil = 0;
 let olWaitingRevealTimer = null;
 let desktopHudMode = 'expanded';
 let mobilePanoramaRequested = false;
+let devHudModeOverride = 'auto';
+let devMobilePanoramaCssCache = null;
 let desktopHudTransitionTimer = null;
 let desktopHudTransitionCleanupTimer = null;
 let compactTurnFeedbackTimer = null;
@@ -9436,6 +9613,7 @@ function hideTransientOverlays(){
     const overlay = document.getElementById(id);
     if(overlay) overlay.classList.remove('show');
   });
+  hideAttackSpecialPopup();
 }
 function mountFloatingHudToBody(){
   ['defenseGuideBar'].forEach(id => {
@@ -12207,13 +12385,62 @@ function isDesktopCompactModeActive(){
   return !!app && app.classList.contains('desktop-compact-mode');
 }
 
+function isDevHorizontalHudOverride(){
+  return devHudModeOverride === 'horizontal' || devHudModeOverride === 'mobile-horizontal';
+}
+
+function collectDevMobilePanoramaCss(){
+  if(devMobilePanoramaCssCache !== null) return devMobilePanoramaCssCache;
+  const chunks = [];
+  Array.from(document.styleSheets || []).forEach(sheet => {
+    let rules = null;
+    try{
+      rules = sheet.cssRules;
+    }catch(_err){
+      return;
+    }
+    Array.from(rules || []).forEach(rule => {
+      const innerRules = rule.cssRules ? Array.from(rule.cssRules) : [];
+      if(!innerRules.length) return;
+      const cssText = innerRules.map(inner => inner.cssText || '').join('\n');
+      if(cssText.includes('mobile-panorama-mode') || cssText.includes('mobile-panorama-toggle')){
+        chunks.push(cssText);
+      }
+    });
+  });
+  devMobilePanoramaCssCache = chunks.join('\n');
+  return devMobilePanoramaCssCache;
+}
+
+function syncDevMobilePanoramaEmulation(active){
+  document.body?.classList.toggle('dev-mobile-panorama-emulation', !!active);
+  let style = document.getElementById('devMobilePanoramaEmulationStyle');
+  if(active){
+    if(!style){
+      style = document.createElement('style');
+      style.id = 'devMobilePanoramaEmulationStyle';
+      style.textContent = collectDevMobilePanoramaCss();
+      document.head.appendChild(style);
+    }
+  }else if(style){
+    style.remove();
+  }
+}
+
 function syncDesktopHudAvailability(){
   const app = document.querySelector('.app');
   if(!app) return false;
-  const desktopAvailable = canUseDesktopCompactHud();
-  const mobilePanoramaAvailable = canUseMobilePanoramaHud();
+  let desktopAvailable = canUseDesktopCompactHud();
+  let mobilePanoramaAvailable = canUseMobilePanoramaHud();
+  syncDevMobilePanoramaEmulation(devHudModeOverride === 'mobile-horizontal');
+  if(devHudModeOverride === 'compact' || isDevHorizontalHudOverride()){
+    desktopAvailable = devHudModeOverride === 'compact';
+    mobilePanoramaAvailable = isDevHorizontalHudOverride();
+    desktopHudMode = 'compact';
+    mobilePanoramaRequested = isDevHorizontalHudOverride();
+  }
   const available = desktopAvailable || mobilePanoramaAvailable;
-  if(!available){
+  if(!available && devHudModeOverride === 'auto'){
     desktopHudMode = 'expanded';
     mobilePanoramaRequested = false;
   }
@@ -12255,7 +12482,7 @@ function syncDesktopHudAvailability(){
 }
 
 function setDesktopHudMode(mode){
-  if(mode === 'compact' && !(canUseDesktopCompactHud() || canUseMobilePanoramaHud())) return;
+  if(mode === 'compact' && devHudModeOverride === 'auto' && !(canUseDesktopCompactHud() || canUseMobilePanoramaHud())) return;
   desktopHudMode = mode === 'compact' ? 'compact' : 'expanded';
   syncDesktopHudAvailability();
   render();
@@ -12263,7 +12490,7 @@ function setDesktopHudMode(mode){
 
 function triggerDesktopHudModeTransition(mode){
   if(mode !== 'compact' && mode !== 'expanded') return;
-  if(mode === 'compact' && !(canUseDesktopCompactHud() || canUseMobilePanoramaHud())) return;
+  if(mode === 'compact' && devHudModeOverride === 'auto' && !(canUseDesktopCompactHud() || canUseMobilePanoramaHud())) return;
 
   const app = document.querySelector('.app');
   const overlay = document.getElementById('desktopHudTransition');
@@ -13362,6 +13589,117 @@ function positionShowcaseNearPlayer(playerIdx, overlay){
   overlay.style.top = `${top}px`;
 }
 
+function prefersReducedMotion(){
+  try{
+    return !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }catch(_err){
+    return false;
+  }
+}
+
+function isCompleteAttackMecha(player){
+  const image = getMechaPhaseImage(player);
+  return image === MECHA_IMAGES.completo || image === MECHA_IMAGES.piloto_completo;
+}
+
+function positionAttackSpecialPopup(attackerIdx){
+  const overlay = document.getElementById('attackSpecialPopupOverlay');
+  if(!overlay) return;
+  const vw = window.innerWidth || document.documentElement.clientWidth;
+  const vh = window.innerHeight || document.documentElement.clientHeight;
+  let left = vw / 2;
+  let top = vh * .38;
+  const compactTarget = isDesktopCompactModeActive()
+    ? document.getElementById(`compactMechaStage-${attackerIdx}`)
+    : null;
+  const target = compactTarget
+    || document.getElementById(`mechaDial-${attackerIdx}`)
+    || document.getElementById(`player-panel-${attackerIdx}`)
+    || document.getElementById('tacticalScreen');
+
+  if(target){
+    const rect = target.getBoundingClientRect();
+    left = rect.left + rect.width * (attackerIdx === 0 ? .68 : .32);
+    top = rect.top + rect.height * (isDesktopCompactModeActive() ? .42 : .46);
+  }
+
+  left = Math.max(70, Math.min(left, vw - 70));
+  top = Math.max(84, Math.min(top, vh - 84));
+  overlay.style.left = `${left}px`;
+  overlay.style.top = `${top}px`;
+}
+
+function hideAttackSpecialPopup(){
+  if(attackSpecialPopupTimer){
+    window.clearTimeout(attackSpecialPopupTimer);
+    attackSpecialPopupTimer = null;
+  }
+  const overlay = document.getElementById('attackSpecialPopupOverlay');
+  const video = document.getElementById('attackSpecialPopupVideo');
+  if(overlay){
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+  if(video){
+    video.pause();
+    try{
+      video.currentTime = 0;
+    }catch(_err){}
+  }
+}
+
+function playAttackSpecialVideo(video){
+  if(!video) return;
+  video.muted = true;
+  video.defaultMuted = true;
+  video.playsInline = true;
+  video.setAttribute('muted', '');
+  video.setAttribute('playsinline', '');
+
+  const attemptPlay = () => {
+    const playAttempt = video.play();
+    if(playAttempt && typeof playAttempt.catch === 'function'){
+      playAttempt.catch(() => {
+        if(video.readyState < 2){
+          video.addEventListener('loadeddata', attemptPlay, { once:true });
+        }
+      });
+    }
+  };
+
+  try{
+    if(video.readyState < 2) video.load();
+  }catch(_err){}
+  attemptPlay();
+  window.setTimeout(() => {
+    if(video.paused) attemptPlay();
+  }, 120);
+}
+
+function showAttackSpecialPopup(attackerIdx){
+  if(prefersReducedMotion()) return;
+  const player = state.players?.[attackerIdx];
+  if(!player || !isCompleteAttackMecha(player)) return;
+  const overlay = document.getElementById('attackSpecialPopupOverlay');
+  const video = document.getElementById('attackSpecialPopupVideo');
+  if(!overlay || !video) return;
+
+  hideAttackSpecialPopup();
+  positionAttackSpecialPopup(attackerIdx);
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden', 'false');
+  spawnElementSparks(document.getElementById(`player-panel-${attackerIdx}`) || document.getElementById('tacticalScreen'), 26, 'amber');
+
+  video.pause();
+  try{
+    video.currentTime = 0;
+  }catch(_err){}
+  playAttackSpecialVideo(video);
+  attackSpecialPopupTimer = window.setTimeout(() => {
+    hideAttackSpecialPopup();
+  }, 3200);
+}
+
 function showProjectileUnlockedPrompt(playerIdx, callback){
   if(tutorialIsGuided()){
     if(callback) callback();
@@ -13968,6 +14306,7 @@ function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
   window.setTimeout(() => {
     triggerBeam();
     triggerCombatCinematic(attackerIdx, withProjectile);
+    showAttackSpecialPopup(attackerIdx);
     triggerSideRadarAttack(attackerIdx, withProjectile);
     playUiSound(withProjectile ? 'heavy' : 'attack');
     triggerScreenShake(withProjectile ? 'heavy' : 'light');
@@ -19198,6 +19537,14 @@ function devGetSnapshot(){
       statusBarVisible: !document.getElementById('olStatusBar')?.classList.contains('ol-hidden'),
       lobbyStatus: onlineStatus && !onlineStatus.classList.contains('ol-hidden') ? onlineStatus.textContent : ''
     },
+    viewport: {
+      mode: document.body?.classList.contains('mobile-panorama-mode')
+        ? (devHudModeOverride === 'mobile-horizontal' ? 'mobile-horizontal' : 'horizontal')
+        : document.body?.classList.contains('desktop-compact-mode')
+          ? 'compact'
+          : 'expanded',
+      forced: devHudModeOverride
+    },
     mecha: (state.players || []).map((player, idx) => ({
       idx,
       name: player.name,
@@ -19282,6 +19629,17 @@ function devSetAttacker(playerIdx=0){
   return devGetSnapshot();
 }
 
+function devSetViewportMode(mode='expanded'){
+  if(!state.players || state.players.length<2) devBootArena();
+  const normalized = mode === 'compact' || mode === 'horizontal' || mode === 'mobile-horizontal' ? mode : 'expanded';
+  devHudModeOverride = normalized === 'expanded' ? 'auto' : normalized;
+  desktopHudMode = normalized === 'expanded' ? 'expanded' : 'compact';
+  mobilePanoramaRequested = normalized === 'horizontal' || normalized === 'mobile-horizontal';
+  setCompactMobileDrawer('');
+  render();
+  return devGetSnapshot();
+}
+
 function devPrimeAudio(){
   ensureAudio();
   ensureSfxBank();
@@ -19307,6 +19665,7 @@ window.__pocobotDev = {
   previewDefense: devPreviewDefense,
   previewProjectilePrompt: devPreviewProjectilePrompt,
   setAttacker: devSetAttacker,
+  setViewportMode: devSetViewportMode,
   playSound(kind='tap'){
     ensureAudio();
     playUiSound(kind);
@@ -19353,6 +19712,50 @@ window.__pocobotDev = {
     return devGetSnapshot();
   }
 };
+
+function postDevBridgeMessage(targetWindow, targetOrigin, payload){
+  if(!targetWindow) return;
+  targetWindow.postMessage(payload, targetOrigin && targetOrigin !== 'null' ? targetOrigin : '*');
+}
+
+window.addEventListener('message', async event => {
+  const data = event.data || {};
+  if(data.source !== 'pocobot-dev-lab') return;
+  if(data.type === 'ping'){
+    postDevBridgeMessage(event.source, event.origin, { source:'pocobot-dev-bridge', type:'ready' });
+    return;
+  }
+  if(data.type !== 'call') return;
+  const { id, method, args=[] } = data;
+  try{
+    const api = window.__pocobotDev;
+    if(!api || typeof api[method] !== 'function'){
+      throw new Error(`Método de laboratorio no disponible: ${method}`);
+    }
+    const result = await api[method](...(Array.isArray(args) ? args : []));
+    postDevBridgeMessage(event.source, event.origin, {
+      source:'pocobot-dev-bridge',
+      type:'result',
+      id,
+      ok:true,
+      result
+    });
+  }catch(err){
+    postDevBridgeMessage(event.source, event.origin, {
+      source:'pocobot-dev-bridge',
+      type:'result',
+      id,
+      ok:false,
+      error: err?.message || 'Error remoto en el runtime del juego.'
+    });
+  }
+});
+
+try{
+  if(window.parent && window.parent !== window){
+    postDevBridgeMessage(window.parent, '*', { source:'pocobot-dev-bridge', type:'ready' });
+  }
+}catch(err){}
 
 syncIntroInstallTip();
 render();

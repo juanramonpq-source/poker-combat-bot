@@ -195,6 +195,41 @@
     .panel-header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px}
     .panel-header h2{margin:0;font-family:"Arial Black","Impact",sans-serif;font-size:clamp(1.2rem, 2.2vw, 1.9rem);letter-spacing:.06em;text-transform:uppercase}
     .panel-header p{margin:8px 0 0;color:var(--muted);line-height:1.45;max-width:58ch}
+    .viewport-quick-panel{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin:-2px 0 14px;
+      padding:12px 14px;
+      border-radius:22px;
+      border:1px solid rgba(255,213,95,.22);
+      background:
+        linear-gradient(90deg, rgba(255,213,95,.11), rgba(143,244,255,.07)),
+        rgba(7,15,29,.46);
+      box-shadow:inset 0 0 18px rgba(255,213,95,.05);
+    }
+    .viewport-quick-copy strong{
+      display:block;
+      color:var(--gold);
+      font-size:.76rem;
+      letter-spacing:.13em;
+      text-transform:uppercase;
+    }
+    .viewport-quick-copy span{
+      display:block;
+      margin-top:4px;
+      color:var(--muted);
+      font-size:.82rem;
+      line-height:1.35;
+    }
+    .viewport-quick-actions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      gap:8px;
+    }
+    .viewport-quick-actions .ui-btn{min-height:38px;padding:9px 12px;font-size:.72rem}
     .screen-frame{
       padding:14px;
       border-radius:28px;
@@ -275,7 +310,8 @@
     .control-btn.primary{background:linear-gradient(180deg, #ffd560, #ff9f42);color:var(--ink);border-color:rgba(255,213,95,.45)}
     .control-btn.secondary,.utility-btn.secondary{background:linear-gradient(180deg, #effcff, #aeeeff 52%, #60d8ff);color:#123263;border-color:rgba(143,244,255,.4)}
     .control-btn.danger,.utility-btn.danger{background:linear-gradient(180deg, #ffb067, #ff7c54);color:#34120c;border-color:rgba(255,149,66,.5)}
-    .mecha-btn.active{background:linear-gradient(180deg, rgba(255,213,95,.22), rgba(38,58,104,.92));border-color:rgba(255,213,95,.38);color:#fff8da}
+    .mecha-btn.active,
+    .viewport-btn.active{background:linear-gradient(180deg, rgba(255,213,95,.22), rgba(38,58,104,.92));border-color:rgba(255,213,95,.38);color:#fff8da}
     .preset-btn{
       text-align:left;
       line-height:1.25;
@@ -313,6 +349,8 @@
       .lab-shell{width:min(100% - 16px, 100%)}
       .lab-topbar{flex-direction:column}
       .hero-panel{padding:20px;border-radius:28px}
+      .viewport-quick-panel{align-items:stretch;flex-direction:column}
+      .viewport-quick-actions{justify-content:flex-start}
       .hero-points,.control-groups,.control-groups-expanded,.status-row,.sound-grid,.mecha-grid,.preset-grid{grid-template-columns:1fr}
       .runtime-frame{width:1320px;height:1110px}
     }
@@ -376,6 +414,19 @@
           <span class="mini-label" id="labPhasePill">Inicializando</span>
         </div>
 
+        <div class="viewport-quick-panel" aria-label="Cambiar vista del sandbox">
+          <div class="viewport-quick-copy">
+            <strong>Vista del sandbox</strong>
+            <span>Cambia aquí directamente entre pantalla normal, compacto, horizontal y horizontal móvil antes de pulsar “Probar ataque”.</span>
+          </div>
+          <div class="viewport-quick-actions">
+            <button class="ui-btn secondary viewport-btn active" type="button" data-viewport-mode="expanded">Normal</button>
+            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="compact">Compacto</button>
+            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="horizontal">Horizontal</button>
+            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="mobile-horizontal">Horizontal móvil</button>
+          </div>
+        </div>
+
         <div class="screen-frame">
           <div class="runtime-viewport" id="runtimeViewport">
             <div class="runtime-loading" id="runtimeLoading">
@@ -429,6 +480,18 @@
               <button class="control-btn danger" type="button" data-action="clear-last">Limpiar feedback</button>
             </div>
           </article>
+
+          <article class="control-group">
+            <h3>Pantallas de vista</h3>
+            <p>El mismo selector también está justo encima de la cabina. Úsalo para cambiar el layout y después dispara el ataque de prueba.</p>
+            <div class="control-grid">
+              <button class="control-btn secondary viewport-btn active" type="button" data-viewport-mode="expanded">Normal</button>
+              <button class="control-btn viewport-btn" type="button" data-viewport-mode="compact">Compacto</button>
+              <button class="control-btn viewport-btn" type="button" data-viewport-mode="horizontal">Horizontal</button>
+              <button class="control-btn viewport-btn" type="button" data-viewport-mode="mobile-horizontal">Horizontal móvil</button>
+              <button class="control-btn primary" type="button" data-action="attack">Probar ataque</button>
+            </div>
+          </article>
         </div>
 
         <div class="control-groups control-groups-expanded" style="margin-top:12px;">
@@ -451,7 +514,6 @@
           </article>
         </div>
 
-        <div class="lab-note">Esta primera versión ya está atada al juego real. Si después quieres meter comprobadores de reglas, presets concretos de online, ventanas exactas del tutorial o escenas de final de partida, la base buena ya está construida.</div>
       </section>
 
       <aside class="side-column">
@@ -519,9 +581,46 @@
       viewerPlayerIdx: 0,
       currentPresetKey: null,
       currentPresetLabel: 'Sin preset',
-      soundOn: true
+      soundOn: true,
+      viewportMode: 'expanded'
     };
     let bootPromise = null;
+    const devBridge = {
+      ready: false,
+      nextId: 1,
+      pending: new Map(),
+      api: null
+    };
+    const DEV_BRIDGE_METHODS = [
+      'boot',
+      'getSnapshot',
+      'getMechaPresets',
+      'getRulePresets',
+      'getTutorialPresets',
+      'getOnlinePresets',
+      'getSoundKinds',
+      'setViewerPreset',
+      'loadRulePreset',
+      'loadTutorialPreset',
+      'loadOnlinePreset',
+      'previewModify',
+      'previewAttack',
+      'previewImpact',
+      'previewDefense',
+      'previewProjectilePrompt',
+      'setAttacker',
+      'setViewportMode',
+      'playSound',
+      'startIntroMusic',
+      'startBattleMusic',
+      'stopMusic',
+      'setSoundEnabled',
+      'primeAudio',
+      'toast',
+      'ripple',
+      'sparkPlayer',
+      'victory'
+    ];
 
     function byId(id){
       return document.getElementById(id);
@@ -548,19 +647,91 @@
       if(chip) chip.textContent = text;
     }
 
+    function getViewportConfig(mode=labState.viewportMode){
+      if(mode === 'compact') return { width:1280, height:760, minHeight:360, label:'Compacto' };
+      if(mode === 'horizontal') return { width:960, height:540, minHeight:320, label:'Horizontal' };
+      if(mode === 'mobile-horizontal') return { width:844, height:390, minHeight:300, label:'Horizontal móvil' };
+      return { width:1320, height:1110, minHeight:320, label:'Normal' };
+    }
+
     function resizeRuntime(){
       const viewport = byId('runtimeViewport');
       const wrap = byId('runtimeScaleWrap');
+      const frame = byId('gameSandboxFrame');
       if(!viewport || !wrap) return;
-      const baseWidth = 1320;
-      const baseHeight = 1110;
+      const config = getViewportConfig();
+      const baseWidth = config.width;
+      const baseHeight = config.height;
       const available = viewport.clientWidth;
       const scale = Math.min(1, available / baseWidth);
       wrap.style.width = `${baseWidth}px`;
       wrap.style.height = `${baseHeight}px`;
       wrap.style.transform = `scale(${scale})`;
-      viewport.style.height = `${Math.max(320, Math.round(baseHeight * scale))}px`;
+      if(frame){
+        frame.style.width = `${baseWidth}px`;
+        frame.style.height = `${baseHeight}px`;
+      }
+      viewport.style.height = `${Math.max(config.minHeight, Math.round(baseHeight * scale))}px`;
     }
+
+    function syncViewportButtons(){
+      document.querySelectorAll('[data-viewport-mode]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.viewportMode === labState.viewportMode);
+      });
+    }
+
+    function getSandboxWindow(){
+      return byId('gameSandboxFrame')?.contentWindow || null;
+    }
+
+    function postBridgePing(){
+      const sandboxWindow = getSandboxWindow();
+      if(!sandboxWindow) return;
+      try{
+        sandboxWindow.postMessage({ source:'pocobot-dev-lab', type:'ping' }, '*');
+      }catch(err){}
+    }
+
+    function callBridgeMethod(method, args=[]){
+      const sandboxWindow = getSandboxWindow();
+      if(!sandboxWindow) return Promise.reject(new Error('El iframe del juego aún no está disponible.'));
+      const id = devBridge.nextId++;
+      return new Promise((resolve, reject) => {
+        const timer = window.setTimeout(() => {
+          devBridge.pending.delete(id);
+          reject(new Error(`Timeout llamando a ${method} en el runtime del juego.`));
+        }, 16000);
+        devBridge.pending.set(id, { resolve, reject, timer });
+        sandboxWindow.postMessage({ source:'pocobot-dev-lab', type:'call', id, method, args }, '*');
+      });
+    }
+
+    function makeBridgeApi(){
+      if(devBridge.api) return devBridge.api;
+      devBridge.api = DEV_BRIDGE_METHODS.reduce((api, method) => {
+        api[method] = (...args) => callBridgeMethod(method, args);
+        return api;
+      }, {});
+      return devBridge.api;
+    }
+
+    window.addEventListener('message', event => {
+      const sandboxWindow = getSandboxWindow();
+      if(sandboxWindow && event.source !== sandboxWindow) return;
+      const data = event.data || {};
+      if(data.source !== 'pocobot-dev-bridge') return;
+      if(data.type === 'ready'){
+        devBridge.ready = true;
+        return;
+      }
+      if(data.type !== 'result') return;
+      const pending = devBridge.pending.get(data.id);
+      if(!pending) return;
+      devBridge.pending.delete(data.id);
+      window.clearTimeout(pending.timer);
+      if(data.ok) pending.resolve(data.result);
+      else pending.reject(new Error(data.error || 'Error remoto en la API del juego.'));
+    });
 
     async function waitForApi(timeoutMs = 12000){
       const frame = byId('gameSandboxFrame');
@@ -570,6 +741,8 @@
           const api = frame?.contentWindow?.__pocobotDev;
           if(api && typeof api.boot === 'function') return api;
         }catch(err){}
+        postBridgePing();
+        if(devBridge.ready) return makeBridgeApi();
         await new Promise(resolve => setTimeout(resolve, 120));
       }
       throw new Error('No se pudo conectar con la API oculta del juego.');
@@ -625,11 +798,11 @@
       setLoading('Cargando el juego embebido y esperando a que el runtime exponga su API interna...');
       labState.api = await waitForApi();
       resizeRuntime();
-      const presets = labState.api.getMechaPresets();
-      const rulePresets = labState.api.getRulePresets();
-      const tutorialPresets = labState.api.getTutorialPresets();
-      const onlinePresets = labState.api.getOnlinePresets();
-      const sounds = labState.api.getSoundKinds();
+      const presets = await labState.api.getMechaPresets();
+      const rulePresets = await labState.api.getRulePresets();
+      const tutorialPresets = await labState.api.getTutorialPresets();
+      const onlinePresets = await labState.api.getOnlinePresets();
+      const sounds = await labState.api.getSoundKinds();
       buildMechaButtons(presets);
       buildPresetButtons('rulePresetGrid', rulePresets, 'rule');
       buildPresetButtons('tutorialPresetGrid', tutorialPresets, 'tutorial');
@@ -640,6 +813,7 @@
       labState.currentPresetLabel = presets[0]?.label || 'Preset';
       syncSnapshot(snapshot);
       setRuntimeChip('Runtime real enlazado');
+      syncViewportButtons();
       hideLoading();
       noteEvent('Sandbox inicializado');
     }
@@ -698,6 +872,16 @@
       byId('viewerPill').textContent = label;
       syncSnapshot(snapshot);
       noteEvent(`Preset visual · ${label}`);
+    }
+
+    async function setViewportMode(mode){
+      labState.viewportMode = mode === 'compact' || mode === 'horizontal' || mode === 'mobile-horizontal' ? mode : 'expanded';
+      resizeRuntime();
+      syncViewportButtons();
+      const snapshot = await callApi(api => api.setViewportMode(labState.viewportMode));
+      syncSnapshot(snapshot);
+      const label = getViewportConfig(labState.viewportMode).label;
+      noteEvent(`Pantalla de prueba · ${label}`);
     }
 
     async function handleAction(action){
@@ -832,8 +1016,8 @@
         const soundBtn = event.target.closest('[data-sound-kind]');
         if(soundBtn){
           try{
-            labState.api?.primeAudio();
-            labState.api?.playSound(soundBtn.dataset.soundKind);
+            await labState.api?.primeAudio?.();
+            await labState.api?.playSound?.(soundBtn.dataset.soundKind);
             noteSound(soundBtn.dataset.soundLabel);
             noteEvent(`SFX · ${soundBtn.dataset.soundLabel}`);
           }catch(err){
@@ -863,10 +1047,21 @@
           return;
         }
 
+        const viewportBtn = event.target.closest('[data-viewport-mode]');
+        if(viewportBtn){
+          try{
+            await setViewportMode(viewportBtn.dataset.viewportMode);
+          }catch(err){
+            console.error(err);
+            setLoading(err.message || 'No se pudo cambiar la pantalla de prueba.', { title:'Error del laboratorio', error:true });
+          }
+          return;
+        }
+
         const actionBtn = event.target.closest('[data-action]');
         if(actionBtn){
           try{
-            labState.api?.primeAudio();
+            await labState.api?.primeAudio?.();
             await handleAction(actionBtn.dataset.action);
           }catch(err){
             console.error(err);
@@ -906,6 +1101,11 @@
         }
       }catch(err){
         console.error(err);
+        ensureBootedApi().catch(bootErr => {
+          console.error(bootErr);
+          setRuntimeChip('Error de enlace');
+          setLoading(bootErr.message || 'No se pudo enlazar el runtime real de PoCoBOT.', { title:'Error del laboratorio', error:true });
+        });
       }
 
       window.addEventListener('resize', resizeRuntime);
