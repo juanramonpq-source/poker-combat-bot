@@ -2433,7 +2433,7 @@
         title: 'Hangar de la Fosa Azul',
         subtitle: 'La primera criba del metal ya ha hablado.',
         contextChip: 'Resultado · Aprobado',
-        objective: 'Regresar al mapa con el Hangar completado y avanzar al Patio de Pruebas.',
+        objective: 'Regresar al mapa con el Hangar completado y continuar según las pruebas pendientes de la Ruta Ceniza.',
         completeActionLabel: 'Volver al mapa',
         completeAction: 'map',
         portraits: {
@@ -2464,7 +2464,17 @@
             figureMobileShiftVh: -12,
             figureScale: 0.94,
             figureMobileScale: 0.8,
-            text: 'No te recrees todavía. La Ruta Ceniza no premia el brillo de un solo acierto: premia a quien puede repetirlo bajo presión. Vuelve al mapa. El Patio de Pruebas te espera.'
+            text: 'No te recrees todavía. La Ruta Ceniza no premia el brillo de un solo acierto: premia a quien puede repetirlo bajo presión. Vuelve al mapa. El Patio de Pruebas te espera.',
+            conditions: [
+              {
+                when: 'patioPending',
+                text: 'No te recrees todavía. La Ruta Ceniza no premia el brillo de un solo acierto: premia a quien puede repetirlo bajo presión. Vuelve al mapa. El Patio de Pruebas te espera.'
+              },
+              {
+                when: 'patioCompleted',
+                text: 'No te recrees todavía. La Ruta Ceniza no premia el brillo de un solo acierto: premia a quien puede repetirlo bajo presión. Vuelve al mapa. El Mercado de Relés Muertos ya empieza a olerte llegar.'
+              }
+            ]
           }
         ]
       },
@@ -2509,13 +2519,13 @@
       },
       patio: {
         title: 'Patio de Pruebas del Taller',
-        subtitle: 'El hangar ya te dejó tocar el metal. Aquí toca comprobar si sabes hacerlo responder cuando el turno aprieta.',
-        contextChip: 'Combate · Tutorial',
-        objective: 'Entra al Patio, completa al menos un ataque con combustible y derrota a Mara en el primer duelo real de la Ruta Ceniza.',
+        subtitle: 'El Patio no pregunta si el chasis es perfecto. Pregunta si puedes leer una ventana de combate cuando Mara la abre a la fuerza.',
+        contextChip: 'Combate · Proyectil',
+        objective: 'Comprende la diferencia entre un mecha de Argós y un PoCoBOT, y vence a Mara usando proyectil y ataque normal en una prueba con reglas especiales.',
         portraits: {
-          right: { src: 'assets/Historia/Brutos/MaraOXIDO3.PNG', alt: 'Mara Oxido' }
+          right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
         },
-        startAmbient: true,
+        startAmbient: false,
         minimalDialogue: true,
         completeActionLabel: 'Entrar al Patio de Pruebas',
         lines: [
@@ -2523,117 +2533,67 @@
             speaker: 'Mara Oxido',
             side: 'right',
             figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
-            figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+            figure: 'assets/Historia/Brutos/mara_pose_3.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -24,
-            figureMobileShiftVh: -18,
-            figureScale: 0.88,
-            figureMobileScale: 0.78,
-            text: 'Muy bien. Ya has demostrado que puedes montar un chasis sin que se te venga abajo en las manos. Ahora toca algo más feo: hacerlo responder a tiempo.',
+            figureShiftVh: -33,
+            figureMobileShiftVh: -25,
+            figureScale: 0.86,
+            figureMobileScale: 0.74,
+            text: '¿Recuerdas cómo se hacía eso de atacar? Ya sabes... Fuego, disparos, ¡pum pum!. Lo bueno es que desde este Patio de pruebas aquí no vas a montar desde cero: Te doy un chasis prestado, irregular y con los seguros del taller abiertos. Podrá atacar aunque fuera de esta prueba no debería...',
+            choicePrompt: 'Pero antes...',
             choices: [
               {
-                id: 'tempo',
-                label: 'Quiero entender cuándo atacar, no solo pegar por pegar.',
-                response: 'Tú: "Quiero entender cuándo atacar, no solo pegar por pegar."'
+                id: 'mecha',
+                label: 'Explícame la diferencia entre un mecha de Argós y un PoCoBOT.',
+                response: 'Tú: "Explícame la diferencia entre un mecha de Argós y un PoCoBOT."'
               },
               {
-                id: 'pressure',
-                label: 'Prefiero entrar apretando desde el primer turno.',
-                response: 'Tú: "Prefiero entrar apretando desde el primer turno."'
+                id: 'ruta',
+                label: 'Estoy dispuesto a cumplir La Ruta Ceniza al completo, como en los viejos tiempos. "Buscar el camino a la excelencia". Al menos eso era lo que se decía ¿no?.',
+                response: 'Tú: "Estoy dispuesto a cumplir La Ruta Ceniza al completo, como en los viejos tiempos. \"Buscar el camino a la excelencia\". Al menos eso era lo que se decía ¿no?."'
               },
               {
-                id: 'test',
-                label: 'Solo quiero comprobar si el mecha aguanta una pelea de verdad.',
-                response: 'Tú: "Solo quiero comprobar si el mecha aguanta una pelea de verdad."'
+                id: 'rules',
+                label: 'Si el chasis es irregular, ¿por qué dices que me permitirá atacar?',
+                response: 'Tú: "Si el chasis es irregular, ¿por qué dices que me permitirá atacar?"'
               }
             ]
           },
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_2.png',
+            figure: 'assets/Historia/Brutos/mara_pose_3.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -30,
-            figureMobileShiftVh: -22,
+            figureShiftVh: -33,
+            figureMobileShiftVh: -25,
             figureScale: 0.86,
             figureMobileScale: 0.74,
             variantSourceLine: 0,
             variants: {
-              tempo: {
-                text: 'Entonces escucha bien: el Patio no examina fuerza bruta. Examina secuencia. Preparar, cargar, abrir el ataque y leer la respuesta del otro. Si rompes el orden, el metal se vuelve en tu contra.'
+              mecha: {
+                text: 'Un mecha de Argós no solo se pilota: te integra. Convierte disciplina, dolor y obediencia en una sola fe mecánica. Un PoCoBOT hace lo contrario: preserva la mente del piloto y depende de cooperación humana, piloto y copiloto, criterio y apoyo desde tierra. ¡Es la lucha del ser humano contra la máquina elevada a la enésima potencia!'
               },
-              pressure: {
-                text: 'La presión sirve si sabes sostenerla. Si entras al Patio solo a empujar botones, el primer bloqueo te deja vendido. Antes del golpe viene el montaje, y antes del daño viene el ritmo.'
+              ruta: {
+                text: 'Eso se decía... sí. Pero a mi siempre me olió a chamusquina. Esa era la Ruta Ceniza idealizada: mérito, honor, protección de Argós. Es una promesa bonita, y por eso sigue siendo peligrosa. Si de verdad crees que debajo de la ruina queda una verdad noble, adelante. Yo solo te digo que no confundas brillo con bondad...'
               },
-              test: {
-                text: 'Aguantar no basta. Un mecha que solo resiste termina convertido en chatarra cara. El Patio te pide algo más simple y más difícil: que conviertas el montaje en una acción limpia cuando llegue el momento.'
-              }
-            },
-            choices: [
-              {
-                id: 'fuel',
-                label: 'Entonces la clave es abrir el ataque con combustible y no precipitarme.',
-                response: 'Tú: "Entonces la clave es abrir el ataque con combustible y no precipitarme."'
-              },
-              {
-                id: 'defense',
-                label: 'Y si ella responde, tendré que leer la defensa y el orden del turno.',
-                response: 'Tú: "Y si ella responde, tendré que leer la defensa y el orden del turno."'
-              },
-              {
-                id: 'win',
-                label: 'Entendido: primero demostrar técnica, luego buscar la victoria.',
-                response: 'Tú: "Entendido: primero demostrar técnica, luego buscar la victoria."'
-              }
-            ]
-          },
-          {
-            speaker: 'Mara Oxido',
-            side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_4.png',
-            figureClass: 'figure-mara',
-            figureRaised: true,
-            figureShiftVh: -32,
-            figureMobileShiftVh: -24,
-            figureScale: 0.84,
-            figureMobileScale: 0.72,
-            variantSourceLine: 1,
-            variants: {
-              fuel: {
-                text: 'Eso es. Quiero ver un ataque de verdad: combustible, lectura limpia y un mecha capaz de sostener el turno completo. Luego, si todavía sigues en pie, me ganas.'
-              },
-              defense: {
-                text: 'Exacto. Aquí no basta con montar bonito. Quiero ver que sabes cuándo cargar, cuándo abrir el ataque y cuándo aceptar que el otro también juega. El turno completo es la verdadera prueba.'
-              },
-              win: {
-                text: 'Por fin hablas como alguien que quiere durar más de una estación. La victoria importa, pero solo después de demostrar que sabes activar el mecha como toca.'
+              rules: {
+                text: 'Porque esto es el Patio, no la carretera real. Voy a forzar los seguros para que practiques ataque normal y proyectil aunque el chasis no cumpla las reglas PoCoBOT. Pero recuerda: Fuera de esta misión, un mecha mal montado no recibe ese perdón.'
               }
             }
           },
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_4.png',
+            figure: 'assets/Historia/Brutos/mara_pose_3.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -32,
-            figureMobileShiftVh: -24,
-            figureScale: 0.84,
-            figureMobileScale: 0.72,
-            variantSourceLine: 1,
-            variants: {
-              fuel: {
-                text: 'Entra al Patio. Monta tu PoCoBOT, completa al menos un ataque con combustible y luego derríbame si puedes. Si no haces esas dos cosas, la Ruta Ceniza seguirá cerrada para ti.'
-              },
-              defense: {
-                text: 'Vamos al Patio. Quiero verte montar, atacar con combustible al menos una vez y sostener el combate hasta el final. Si te saltas una de esas partes, no habrás aprendido nada.'
-              },
-              win: {
-                text: 'Muy bien. Pasa al Patio y dímelo con hechos: primer ataque con combustible, turno bien leído y victoria. Solo entonces admitiré que has salido del hangar de verdad.'
-              }
-            }
+            figureShiftVh: -33,
+            figureMobileShiftVh: -25,
+            figureScale: 0.86,
+            figureMobileScale: 0.74,
+            text: 'La prueba es simple: vénceme en un combate usando las reglas alteradas de este Patio: ¡Ofensiva y más ofensiva! Además debes usar al menos un ataque normal con combustible y un proyectil. Que el chasis esté incompleto no te salva de pensar... ¡Y recuerda que yo también sé ponerme en guardia!'
           }
         ]
       },
@@ -2645,20 +2605,20 @@
         completeActionLabel: 'Volver al mapa',
         completeAction: 'map',
         portraits: {
-          right: { src: 'assets/Historia/Brutos/MaraOXIDO3.PNG', alt: 'Mara Oxido' }
+          right: { src: 'assets/Historia/Brutos/MaraOxido.png', alt: 'Mara Oxido' }
         },
         lines: [
           {
             speaker: 'Mara Oxido',
             side: 'right',
             figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
-            figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+            figure: 'assets/Historia/Brutos/MaraOxido.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -22,
-            figureMobileShiftVh: -14,
-            figureScale: 0.9,
-            figureMobileScale: 0.78,
+            figureShiftVh: -20,
+            figureMobileShiftVh: -12,
+            figureScale: 0.94,
+            figureMobileScale: 0.8,
             text: 'No te acomodes. Fuera del taller nadie te va a esperar a que pienses dos veces. Vuelve al mapa. El Mercado de Relés Muertos ya empieza a olerte llegar.',
             conditions: [
               {
@@ -2681,33 +2641,33 @@
         completeActionLabel: 'Reintentar la prueba',
         completeAction: 'mission',
         portraits: {
-          right: { src: 'assets/Historia/Brutos/MaraOXIDO3.PNG', alt: 'Mara Oxido' }
+          right: { src: 'assets/Historia/Brutos/MaraOxido.png', alt: 'Mara Oxido' }
         },
         lines: [
           {
             speaker: 'Mara Oxido',
             side: 'right',
             figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
-            figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+            figure: 'assets/Historia/Brutos/MaraOxido.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -22,
-            figureMobileShiftVh: -14,
-            figureScale: 0.9,
-            figureMobileScale: 0.78,
+            figureShiftVh: -20,
+            figureMobileShiftVh: -12,
+            figureScale: 0.94,
+            figureMobileScale: 0.8,
             text: 'Has entrado al Patio con más ganas que secuencia. Y el combate siempre castiga antes a quien se acelera que a quien duda un segundo de más.'
           },
           {
             speaker: 'Mara Oxido',
             side: 'right',
             figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
-            figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+            figure: 'assets/Historia/Brutos/MaraOxido.png',
             figureClass: 'figure-mara',
             figureRaised: true,
-            figureShiftVh: -22,
-            figureMobileShiftVh: -14,
-            figureScale: 0.9,
-            figureMobileScale: 0.78,
+            figureShiftVh: -20,
+            figureMobileShiftVh: -12,
+            figureScale: 0.94,
+            figureMobileScale: 0.8,
             text: 'Respira, vuelve a montar si hace falta y recuerda la prueba: no quiero una victoria cualquiera. Quiero ver un ataque con combustible y una cabeza fría hasta el final. ¡Repite y aprende!'
           }
         ]
@@ -2855,7 +2815,7 @@
       contextChip: 'Combate · Proyectil',
       objective: 'Comprende la diferencia entre un mecha de Argós y un PoCoBOT, y vence a Mara usando proyectil y ataque normal en una prueba con reglas especiales.',
       portraits: {
-        right: { src: 'assets/Historia/Brutos/MaraOXIDO3.PNG', alt: 'Mara Oxido' }
+        right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
       },
       startAmbient: false,
       minimalDialogue: true,
@@ -2865,13 +2825,13 @@
           speaker: 'Mara Oxido',
           side: 'right',
           figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
-          figure: 'assets/Historia/Brutos/MaraOXIDO3.PNG',
+          figure: 'assets/Historia/Brutos/mara_pose_3.png',
           figureClass: 'figure-mara',
           figureRaised: true,
-          figureShiftVh: -24,
-          figureMobileShiftVh: -18,
-          figureScale: 0.88,
-          figureMobileScale: 0.78,
+          figureShiftVh: -33,
+          figureMobileShiftVh: -25,
+          figureScale: 0.86,
+          figureMobileScale: 0.74,
           text: '¿Recuerdas cómo se hacía eso de atacar? Ya sabes... Fuego, disparos, ¡pum pum!. Lo bueno es que desde este Patio de pruebas aquí no vas a montar desde cero: Te doy un chasis prestado, irregular y con los seguros del taller abiertos. Podrá atacar aunque fuera de esta prueba no debería...',
           choicePrompt: 'Pero antes...',
           choices: [
@@ -2895,11 +2855,11 @@
         {
           speaker: 'Mara Oxido',
           side: 'right',
-          figure: 'assets/Historia/Brutos/mara_pose_2.png',
+          figure: 'assets/Historia/Brutos/mara_pose_3.png',
           figureClass: 'figure-mara',
           figureRaised: true,
-          figureShiftVh: -30,
-          figureMobileShiftVh: -22,
+          figureShiftVh: -33,
+          figureMobileShiftVh: -25,
           figureScale: 0.86,
           figureMobileScale: 0.74,
           variantSourceLine: 0,
@@ -2918,13 +2878,13 @@
         {
           speaker: 'Mara Oxido',
           side: 'right',
-          figure: 'assets/Historia/Brutos/mara_pose_4.png',
+          figure: 'assets/Historia/Brutos/mara_pose_3.png',
           figureClass: 'figure-mara',
           figureRaised: true,
-          figureShiftVh: -32,
-          figureMobileShiftVh: -24,
-          figureScale: 0.84,
-          figureMobileScale: 0.72,
+          figureShiftVh: -33,
+          figureMobileShiftVh: -25,
+          figureScale: 0.86,
+          figureMobileScale: 0.74,
           text: 'La prueba es simple: vénceme en un combate usando las reglas alteradas de este Patio: ¡Ofensiva y más ofensiva! Además debes usar al menos un ataque normal con combustible y un proyectil. Que el chasis esté incompleto no te salva de pensar... ¡Y recuerda que yo también sé ponerme en guardia!'
         }
       ]
