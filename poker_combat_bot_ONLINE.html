@@ -126,6 +126,16 @@ body.story-embed-mode .story-embed-nav-btn[aria-pressed="true"]{
   background:linear-gradient(180deg, rgba(18,34,48,.96), rgba(8,20,30,.98));
   color:#f7fbff;
 }
+body.story-embed-mode .zone.story-scroll-focus{
+  animation:storyScrollFocusPulse 1200ms ease;
+}
+@keyframes storyScrollFocusPulse{
+  0%,100%{box-shadow:var(--shadow)}
+  24%,70%{
+    border-color:rgba(255,214,97,.78);
+    box-shadow:0 0 0 3px rgba(255,214,97,.22), 0 0 32px rgba(255,214,97,.26), var(--shadow);
+  }
+}
 .side-tower{
   padding:8px;
   display:flex;
@@ -6323,6 +6333,26 @@ button.desktop-view-toggle{
   overflow:hidden;
 }
 
+body.story-embed-mode .app.desktop-compact-mode{
+  width:100%;
+  height:100svh;
+  max-height:100svh;
+  min-height:100svh;
+}
+
+@media (max-height: 760px) and (pointer: fine){
+  body.story-embed-mode .app.desktop-compact-mode{
+    --compact-gap:6px;
+    --compact-panel-pad:7px;
+    --compact-topbar-btn-h:34px;
+    --compact-action-btn-h:34px;
+    padding:7px !important;
+  }
+  body.story-embed-mode .app.desktop-compact-mode .desktop-compact-shell{
+    grid-template-rows:auto minmax(0, 1fr) minmax(156px, .52fr);
+  }
+}
+
 body.desktop-compact-mode .defense-guide-bar,
 body.desktop-compact-mode .tutorial-attack-jump-btn{
   display:none !important;
@@ -10059,6 +10089,9 @@ function setupStoryPatioDuelScenario(){
 }
 
 function broadcastStoryMissionOutcome(payload){
+  if(STORY_EMBED_MODE && storyHudMode === 'horizontal'){
+    exitStoryEmbedSpecialMode({ transition:false });
+  }
   const message = {
     type: 'pocobot-story-mission-result',
     ...payload
@@ -10631,7 +10664,8 @@ const STORY_BOOT_PARAMS = new URLSearchParams(window.location.search);
 const STORY_MISSION_BOOT = STORY_BOOT_PARAMS.get('story_mission') || '';
 const STORY_EMBED_MODE = STORY_BOOT_PARAMS.get('story_embed') === '1';
 const STORY_AUDIO_MODE = STORY_BOOT_PARAMS.get('story_audio') || '';
-let storyCompactHudForced = STORY_BOOT_PARAMS.get('story_compact') === '1';
+let storyHudMode = STORY_BOOT_PARAMS.get('story_ui') || (STORY_BOOT_PARAMS.get('story_compact') === '1' ? 'compact' : 'scroll');
+if(!['scroll', 'compact', 'horizontal'].includes(storyHudMode)) storyHudMode = 'scroll';
 const AUDIO_SFX_URIS = {
   uiClick: "assets/sfx/ui_click.wav",
   shuffle: "assets/sfx/card_shuffle.wav",
@@ -11110,21 +11144,35 @@ function scrollToPlayerPanel(playerIdx, behavior='smooth', align='top'){
   });
 }
 
+function getStoryEmbedHumanPlayerIndex(){
+  if(STORY_EMBED_MODE && state.storyMission) return 0;
+  const humanIdx = typeof getInteractivePlayerIndex === 'function' ? getInteractivePlayerIndex() : 0;
+  return humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0);
+}
+
+function pulseStoryScrollTarget(targetEl){
+  if(!targetEl) return;
+  targetEl.classList.remove('story-scroll-focus');
+  void targetEl.offsetWidth;
+  targetEl.classList.add('story-scroll-focus');
+  window.setTimeout(() => targetEl.classList.remove('story-scroll-focus'), 1250);
+}
+
 function scrollToHandZone(playerIdx, behavior='smooth'){
-  const handCards = document.getElementById(`hand-${playerIdx}`);
   const handZone = document.getElementById(`hand-zone-${playerIdx}`);
-  const targetEl = handCards || handZone;
+  const handCards = document.getElementById(`hand-${playerIdx}`);
+  const targetEl = handZone || handCards;
   if(!targetEl) return;
   const rect = targetEl.getBoundingClientRect();
   const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-  // Anchor to the real hand row so the cards stay visible at the bottom
-  // while still leaving some of the module panel in view above.
-  const bottomPadding = 28;
-  const top = window.scrollY + rect.bottom - viewportHeight + bottomPadding;
+  const visibleTargetHeight = Math.min(rect.height || 0, viewportHeight * 0.72);
+  const centerOffset = Math.max(18, (viewportHeight - visibleTargetHeight) / 2);
+  const top = window.scrollY + rect.top - centerOffset;
   window.scrollTo({
     top: Math.max(0, top),
     behavior
   });
+  pulseStoryScrollTarget(targetEl);
 }
 
 function scrollToSharedControls(behavior='smooth'){
@@ -11176,13 +11224,12 @@ function setupStoryEmbedNavigation(){
   if(handBtn.dataset.bound !== '1'){
     handBtn.dataset.bound = '1';
     handBtn.addEventListener('click', () => {
-      const humanIdx = typeof getInteractivePlayerIndex === 'function' ? getInteractivePlayerIndex() : 0;
-      scrollToHandZone(humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0), 'smooth');
+      scrollToHandZone(getStoryEmbedHumanPlayerIndex(), 'smooth');
     });
   }
   if(compactBtn.dataset.bound !== '1'){
     compactBtn.dataset.bound = '1';
-    compactBtn.addEventListener('click', forceStoryEmbedCompactMode);
+    compactBtn.addEventListener('click', toggleStoryEmbedInterfaceMode);
   }
 }
 
@@ -11190,18 +11237,56 @@ function syncStoryEmbedNavigationVisibility(){
   const nav = document.getElementById('storyEmbedNav');
   if(!nav) return;
   const compactActive = isDesktopCompactModeActive();
-  const compactRequested = storyCompactHudForced && desktopHudMode === 'compact';
+  const compactRequested = storyHudMode !== 'scroll' && desktopHudMode === 'compact';
   nav.hidden = !STORY_EMBED_MODE || compactActive || compactRequested;
   const compactBtn = document.getElementById('storyEmbedCompactBtn');
-  if(compactBtn) compactBtn.setAttribute('aria-pressed', compactActive ? 'true' : 'false');
+  if(compactBtn){
+    compactBtn.setAttribute('aria-pressed', compactActive ? 'true' : 'false');
+    compactBtn.textContent = getStoryEmbedSpecialModeLabel();
+  }
+  broadcastStoryEmbedUiState(compactActive, compactRequested);
 }
 
-function forceStoryEmbedCompactMode(){
+function broadcastStoryEmbedUiState(compactActive, compactRequested){
+  if(!STORY_EMBED_MODE || window.parent === window) return;
+  try{
+    window.parent.postMessage({
+      type: 'pocobot-story-embed-ui-state',
+      compactActive: !!compactActive,
+      compactRequested: !!compactRequested,
+      storyHudMode,
+      quickActionsHidden: !!compactActive || !!compactRequested,
+      modeActionLabel: (!!compactActive || !!compactRequested) ? 'Modo scroll' : getStoryEmbedSpecialModeLabel()
+    }, '*');
+  }catch(_err){}
+}
+
+function getStoryEmbedSpecialModeLabel(){
+  return isStoryMobileViewport() ? 'Modo horizontal' : 'Modo compacto';
+}
+
+function isStoryMobileViewport(){
+  if(!STORY_EMBED_MODE) return false;
+  try{
+    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const compactViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
+    return hasCoarsePointer && compactViewport;
+  }catch(_err){
+    return false;
+  }
+}
+
+function setStoryHudMode(mode){
+  storyHudMode = ['scroll', 'compact', 'horizontal'].includes(mode) ? mode : 'scroll';
+}
+
+function activateStoryEmbedSpecialMode(){
   if(!STORY_EMBED_MODE) return;
-  storyCompactHudForced = true;
+  const useHorizontal = isStoryMobileViewport();
+  setStoryHudMode(useHorizontal ? 'horizontal' : 'compact');
   desktopHudMode = 'compact';
-  mobilePanoramaRequested = shouldUseStoryMobileCompactMode();
-  if(mobilePanoramaRequested) requestLandscapeOrientationBestEffort();
+  mobilePanoramaRequested = useHorizontal;
+  if(useHorizontal) requestLandscapeOrientationBestEffort();
   const nav = document.getElementById('storyEmbedNav');
   if(nav) nav.hidden = true;
   syncStoryEmbedNavigationVisibility();
@@ -11210,6 +11295,30 @@ function forceStoryEmbedCompactMode(){
     syncDesktopHudAvailability();
     render();
   }, 220);
+}
+
+function exitStoryEmbedSpecialMode(options = {}){
+  if(!STORY_EMBED_MODE) return;
+  setStoryHudMode('scroll');
+  desktopHudMode = 'expanded';
+  mobilePanoramaRequested = false;
+  setCompactMobileDrawer('');
+  if(options.releaseFullscreen !== false) releaseOrientationLockBestEffort();
+  syncStoryEmbedNavigationVisibility();
+  if(options.transition === false){
+    setDesktopHudMode('expanded');
+  }else{
+    triggerDesktopHudModeTransition('expanded');
+  }
+}
+
+function toggleStoryEmbedInterfaceMode(){
+  if(!STORY_EMBED_MODE) return;
+  if(storyHudMode !== 'scroll' || isDesktopCompactModeActive()){
+    exitStoryEmbedSpecialMode();
+    return;
+  }
+  activateStoryEmbedSpecialMode();
 }
 
 function scheduleStoryEmbedNavigationSetup(){
@@ -11229,12 +11338,15 @@ function handleStoryEmbedMessage(event){
     return;
   }
   if(data.command === 'hand'){
-    const humanIdx = typeof getInteractivePlayerIndex === 'function' ? getInteractivePlayerIndex() : 0;
-    scrollToHandZone(humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0), 'smooth');
+    scrollToHandZone(getStoryEmbedHumanPlayerIndex(), 'smooth');
     return;
   }
-  if(data.command === 'compact'){
-    forceStoryEmbedCompactMode();
+  if(data.command === 'compact' || data.command === 'interface-toggle'){
+    if(data.command === 'interface-toggle') {
+      toggleStoryEmbedInterfaceMode();
+    } else {
+      activateStoryEmbedSpecialMode();
+    }
   }
 }
 
@@ -12694,20 +12806,13 @@ function isDesktopCompactLikelyFullscreen(){
 }
 
 function shouldUseStoryMobileCompactMode(){
-  if(!STORY_EMBED_MODE || !storyCompactHudForced) return false;
-  try{
-    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-    const compactViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
-    return hasCoarsePointer && compactViewport;
-  }catch(_err){
-    return false;
-  }
+  return STORY_EMBED_MODE && storyHudMode === 'horizontal' && isStoryMobileViewport();
 }
 
 function canUseDesktopCompactHud(){
   const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
-  const storyForcedDesktop = STORY_EMBED_MODE && storyCompactHudForced && !shouldUseStoryMobileCompactMode();
+  const storyForcedDesktop = STORY_EMBED_MODE && storyHudMode === 'compact';
   return !!state.gameStarted && introHidden && lobbyHidden && (storyForcedDesktop || (isDesktopCompactCapable() && isDesktopCompactLikelyFullscreen()));
 }
 
@@ -12870,7 +12975,7 @@ function syncDesktopHudAvailability(){
   if(topToggleBtn){
     topToggleBtn.hidden = !desktopAvailable;
     topToggleBtn.disabled = !desktopAvailable;
-    topToggleBtn.textContent = 'Interfaz compacta';
+    topToggleBtn.textContent = STORY_EMBED_MODE ? 'Modo compacto' : 'Interfaz compacta';
   }
   const mobileToggleBtn = document.getElementById('mobilePanoramaToggleBtn');
   if(mobileToggleBtn){
@@ -12883,7 +12988,7 @@ function syncDesktopHudAvailability(){
   syncMobilePanoramaVitalityPanels();
   const compactExpandedBtn = document.getElementById('compactExpandedToggleBtn');
   if(compactExpandedBtn){
-    compactExpandedBtn.textContent = mobilePanoramaActive ? 'Modo vertical' : 'Interfaz expandida';
+    compactExpandedBtn.textContent = STORY_EMBED_MODE ? 'Modo scroll' : (mobilePanoramaActive ? 'Modo vertical' : 'Interfaz expandida');
   }
   syncStoryEmbedNavigationVisibility();
   return available;
@@ -17146,6 +17251,10 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
   }
   if(btn.dataset.viewMode){
     if(btn.dataset.viewMode === 'expanded'){
+      if(STORY_EMBED_MODE){
+        exitStoryEmbedSpecialMode();
+        return;
+      }
       mobilePanoramaRequested = false;
       releaseOrientationLockBestEffort();
       setCompactMobileDrawer('');

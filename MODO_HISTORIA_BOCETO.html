@@ -1458,6 +1458,29 @@
       flex-wrap:wrap;
       gap:10px;
     }
+    .mission-quick-actions{
+      position:absolute;
+      right:clamp(10px, 1.8vw, 18px);
+      top:clamp(10px, 1.8vw, 18px);
+      z-index:4;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:flex-end;
+      pointer-events:auto;
+    }
+    .story-mission-stage.compact-controls-hidden .mission-quick-actions{
+      display:none;
+    }
+    .mission-quick-actions .scene-btn{
+      min-width:122px;
+      min-height:42px;
+      padding:9px 14px;
+      border-color:rgba(143,244,255,.22);
+      background:linear-gradient(180deg, rgba(11,20,29,.88), rgba(6,10,16,.96));
+      box-shadow:0 14px 28px rgba(0,0,0,.32), inset 0 0 0 1px rgba(255,255,255,.04);
+      backdrop-filter:blur(10px);
+    }
     .mission-frame-wrap{
       position:relative;
       min-height:0;
@@ -1742,6 +1765,21 @@
       .mission-actions .scene-btn{
         width:100%;
       }
+      .mission-quick-actions{
+        right:10px;
+        top:10px;
+        flex-direction:row;
+        flex-wrap:wrap;
+        max-width:calc(100% - 20px);
+        justify-content:flex-end;
+      }
+      .mission-quick-actions .scene-btn{
+        min-width:0;
+        width:auto;
+        min-height:38px;
+        padding:8px 11px;
+        font-size:.68rem;
+      }
       .mission-frame{
         min-height:64svh;
       }
@@ -1915,19 +1953,23 @@
                   <p class="mission-tip-copy">Un mecha valido para PoCoBOT necesita al menos <strong>6 cartas</strong> repartidas entre <strong>Ataque, Defensa y Armadura</strong>, y al menos <strong>1 Piloto</strong>.</p>
                 </aside>
                 <div class="mission-actions">
-                  <button class="scene-btn secondary" id="storyMissionPanelBtn" type="button">Panel</button>
-                  <button class="scene-btn secondary" id="storyMissionHandBtn" type="button">Mano</button>
-                  <button class="scene-btn secondary" id="storyMissionCompactBtn" type="button">Modo compacto</button>
                   <button class="scene-btn secondary" id="storyMissionMapBtn" type="button">Volver al mapa</button>
                   <button class="scene-btn secondary" id="storyMissionRestartBtn" type="button">Reiniciar misión</button>
                 </div>
               </article>
               <div class="mission-frame-wrap">
+                <div class="mission-quick-actions" id="storyMissionQuickActions" aria-label="Accesos rápidos de la misión">
+                  <button class="scene-btn secondary" id="storyMissionPanelBtn" type="button">Panel</button>
+                  <button class="scene-btn secondary" id="storyMissionHandBtn" type="button">Mano</button>
+                  <button class="scene-btn secondary" id="storyMissionCompactBtn" type="button">Modo compacto</button>
+                </div>
                 <iframe
                   class="mission-frame"
                   id="storyMissionFrame"
                   title="Escena jugable del modo historia"
                   src="about:blank"
+                  allow="fullscreen"
+                  allowfullscreen
                   loading="lazy"></iframe>
               </div>
             </div>
@@ -1990,6 +2032,7 @@
     const storyMissionTitle = document.getElementById('storyMissionTitle');
     const storyMissionCopy = document.getElementById('storyMissionCopy');
     const storyMissionTip = document.getElementById('storyMissionTip');
+    const storyMissionQuickActions = document.getElementById('storyMissionQuickActions');
     const storyMissionPanelBtn = document.getElementById('storyMissionPanelBtn');
     const storyMissionHandBtn = document.getElementById('storyMissionHandBtn');
     const storyMissionCompactBtn = document.getElementById('storyMissionCompactBtn');
@@ -2361,7 +2404,7 @@
             speaker: 'Mara Oxido',
             side: 'right',
             figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
-            figure: 'assets/Historia/Brutos/MaraOxido.png',
+            figure: 'assets/Historia/Brutos/mara_pose_2.png',
             figureClass: 'figure-mara',
             figureShiftVh: -24,
             figureMobileShiftVh: -20,
@@ -2429,7 +2472,7 @@
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figure: 'assets/Historia/Brutos/mara_pose_2.png',
             figureClass: 'figure-mara',
             figureRaised: true,
             figureShiftVh: -33,
@@ -2452,7 +2495,7 @@
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figure: 'assets/Historia/Brutos/mara_pose_4.png',
             figureClass: 'figure-mara',
             figureRaised: true,
             figureShiftVh: -33,
@@ -2578,7 +2621,7 @@
             speaker: 'Mara Oxido',
             side: 'right',
             figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
-            figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figure: 'assets/Historia/Brutos/mara_pose_2.png',
             figureClass: 'figure-mara',
             figureRaised: true,
             figureShiftVh: -33,
@@ -2608,7 +2651,7 @@
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figure: 'assets/Historia/Brutos/mara_pose_1.png',
             figureClass: 'figure-mara',
             figureRaised: true,
             figureShiftVh: -33,
@@ -2631,7 +2674,7 @@
           {
             speaker: 'Mara Oxido',
             side: 'right',
-            figure: 'assets/Historia/Brutos/mara_pose_3.png',
+            figure: 'assets/Historia/Brutos/mara_pose_4.png',
             figureClass: 'figure-mara',
             figureRaised: true,
             figureShiftVh: -33,
@@ -2724,7 +2767,7 @@
         speaker: 'Mara Oxido',
         side: 'right',
         figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
-        figure: 'assets/Historia/Brutos/MaraOxido.png',
+        figure: 'assets/Historia/Brutos/mara_pose_2.png',
         figureClass: 'figure-mara',
         figureShiftVh: -24,
         figureMobileShiftVh: -20,
@@ -2819,7 +2862,7 @@
         {
           speaker: 'Mara Oxido',
           side: 'right',
-          figure: 'assets/Historia/Brutos/mara_pose_3.png',
+          figure: 'assets/Historia/Brutos/mara_pose_2.png',
           figureClass: 'figure-mara',
           figureRaised: true,
           figureShiftVh: -33,
@@ -2842,7 +2885,7 @@
         {
           speaker: 'Mara Oxido',
           side: 'right',
-          figure: 'assets/Historia/Brutos/mara_pose_3.png',
+          figure: 'assets/Historia/Brutos/mara_pose_4.png',
           figureClass: 'figure-mara',
           figureRaised: true,
           figureShiftVh: -33,
@@ -2870,7 +2913,7 @@
           speaker: 'Mara Oxido',
           side: 'right',
           figureLow: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
-          figure: 'assets/Historia/Brutos/mara_pose_3.png',
+          figure: 'assets/Historia/Brutos/mara_pose_2.png',
           figureClass: 'figure-mara',
           figureRaised: true,
           figureShiftVh: -33,
@@ -2900,7 +2943,7 @@
         {
           speaker: 'Mara Oxido',
           side: 'right',
-          figure: 'assets/Historia/Brutos/mara_pose_3.png',
+          figure: 'assets/Historia/Brutos/mara_pose_1.png',
           figureClass: 'figure-mara',
           figureRaised: true,
           figureShiftVh: -33,
@@ -2923,7 +2966,7 @@
         {
           speaker: 'Mara Oxido',
           side: 'right',
-          figure: 'assets/Historia/Brutos/mara_pose_3.png',
+          figure: 'assets/Historia/Brutos/mara_pose_4.png',
           figureClass: 'figure-mara',
           figureRaised: true,
           figureShiftVh: -33,
@@ -3475,6 +3518,8 @@
       const mission = storyMissionScripts[nodeId];
       if (!localNode || !mission || !storyMissionStage) return;
       activeMissionNodeId = nodeId;
+      syncStoryMissionModeButton();
+      syncStoryMissionQuickActions(false);
       closeStoryScene();
       playMapMusic();
       if (storyMissionBackdrop) {
@@ -3495,9 +3540,61 @@
       requestAnimationFrame(() => storyMissionStage.classList.add('active'));
     }
 
+    function syncStoryMissionQuickActions(hidden) {
+      if (!storyMissionStage || !storyMissionQuickActions) return;
+      const shouldHide = !!hidden;
+      storyMissionStage.classList.toggle('compact-controls-hidden', shouldHide);
+      storyMissionQuickActions.hidden = shouldHide;
+    }
+
+    function isStoryMissionMobileViewport() {
+      try {
+        return !!window.matchMedia && window.matchMedia('(pointer: coarse) and (max-width: 820px)').matches;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function getStoryMissionSpecialModeLabel() {
+      return isStoryMissionMobileViewport() ? 'Modo horizontal' : 'Modo compacto';
+    }
+
+    function syncStoryMissionModeButton(label) {
+      if (!storyMissionCompactBtn) return;
+      storyMissionCompactBtn.textContent = label || getStoryMissionSpecialModeLabel();
+    }
+
+    async function requestStoryMissionFullscreenBestEffort() {
+      if (!storyMissionStage) return false;
+      const target = storyMissionFrame || storyMissionStage;
+      try {
+        if (target.requestFullscreen && !document.fullscreenElement) {
+          await target.requestFullscreen();
+        }
+      } catch (error) {}
+      try {
+        if (screen.orientation?.lock) {
+          await screen.orientation.lock('landscape');
+        }
+      } catch (error) {}
+      return !!document.fullscreenElement;
+    }
+
+    async function releaseStoryMissionFullscreenBestEffort() {
+      try {
+        if (screen.orientation?.unlock) screen.orientation.unlock();
+      } catch (error) {}
+      try {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          await document.exitFullscreen();
+        }
+      } catch (error) {}
+    }
+
     function closeStoryMission(options = {}) {
       const onClosed = typeof options.onClosed === 'function' ? options.onClosed : null;
       const preserveMissionId = options.preserveMissionId === true;
+      releaseStoryMissionFullscreenBestEffort();
       if (!preserveMissionId) {
         activeMissionNodeId = null;
       }
@@ -3827,12 +3924,16 @@
     storySceneAmbientNextBtn.addEventListener('click', activateSceneDialogue);
     storySceneMapBtn.addEventListener('click', stepBackStorySceneLine);
     storyMissionPanelBtn.addEventListener('click', () => {
-      postStoryMissionEmbedCommand('panel');
+      postStoryMissionEmbedCommand('panel', 3);
     });
     storyMissionHandBtn.addEventListener('click', () => {
-      postStoryMissionEmbedCommand('hand');
+      postStoryMissionEmbedCommand('hand', 4);
     });
     storyMissionCompactBtn.addEventListener('click', () => {
+      if (isStoryMissionMobileViewport()) {
+        requestStoryMissionFullscreenBestEffort();
+      }
+      syncStoryMissionQuickActions(true);
       postStoryMissionEmbedCommand('compact', 6);
     });
     storyMissionMapBtn.addEventListener('click', closeStoryMission);
@@ -3895,6 +3996,11 @@
       }
       if (data.type === 'pocobot-story-mission-result') {
         handleStoryMissionResult(data);
+        return;
+      }
+      if (data.type === 'pocobot-story-embed-ui-state') {
+        syncStoryMissionModeButton(data.modeActionLabel);
+        syncStoryMissionQuickActions(!!data.quickActionsHidden);
       }
     });
 
@@ -3908,7 +4014,11 @@
 
     primeTitleArtwork();
     window.addEventListener('resize', handleStoryViewportChange);
-    window.addEventListener('orientationchange', handleStoryViewportChange);
+    window.addEventListener('resize', () => syncStoryMissionModeButton());
+    window.addEventListener('orientationchange', () => {
+      handleStoryViewportChange();
+      syncStoryMissionModeButton();
+    });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden || workspacePanel.classList.contains('active')) return;
       bootstrapTitleMusicAutoplay();
