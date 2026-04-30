@@ -2539,7 +2539,7 @@
             figureMobileShiftVh: -12,
             figureScale: 0.94,
             figureMobileScale: 0.8,
-            text: 'Eso ya se parece a un PoCoBOT y no a un montón de piezas pegadas. Bien. La Fosa Azul te ha visto empezar, y créeme, Argós toma nota de los que saben poner orden antes de pedir potencia. Ya veo que era cierto: no buscabas una cita conmigo...'
+            text: 'Eso ya se parece a un PoCoBOT y no a un montón de piezas pegadas. Bien. La Fosa Azul te ha visto empezar, y créeme, Argós toma nota de los que saben poner orden antes de pedir potencia. Ya veo era cierto: no buscabas una cita conmigo...'
           },
           {
             speaker: 'Mara Oxido',
@@ -2805,15 +2805,33 @@
         variantSourceLine: 0,
         variants: {
           me: {
-            text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Ruta Ceniza se viniera abajo. Dime qué buscas antes de que el metal empiece a responder.'
+            text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Fosa Azul se viniera abajo. Intuyo que no has venido solo a verme... ¿O sí?'
           },
           scare: {
-            text: 'Para ti entrar sin avisar no es interrupción: es costumbre. Lo raro sería verte llamar primero. Ya que has aparecido, dime qué buscas antes de tocar nada.'
+            text: 'Para tí entrar sin avisar no es interrupción: es costumbre. Lo raro sería verte llamar primero. Intuyo que venir a verme no era suficiente motivación para tí...'
           },
           looking: {
-            text: 'Sigue así y conseguirás que acabe cobrando entrada por escuchar mis propias leyendas. Vamos, habla: ¿vienes a aprender o a hacer ruido?'
+            text: 'Sigue así y conseguirás que acabe cobrando entrada por escuchar mis propias leyendas. Intuyo que no has venido solo a verme.'
           }
         }
+      }
+    ];
+
+    const hangarTopicChoices = [
+      {
+        id: 'ceniza',
+        label: 'He oído que la Ruta Ceniza no es una ruta: es un filtro viejo de Argós.',
+        response: 'Tú: "He oído que la Ruta Ceniza no es una ruta: es un filtro viejo de Argós."'
+      },
+      {
+        id: 'lore',
+        label: 'Quiero entender por qué todo el mundo habla de los PoCoBOT como si fueran salvación y condena a la vez.',
+        response: 'Tú: "Quiero entender por qué todo el mundo habla de los PoCoBOT como si fueran salvación y condena a la vez."'
+      },
+      {
+        id: 'survive',
+        label: 'Quiero aprender a seguir ahí fuera sin que la ruina me pase por encima.',
+        response: 'Tú: "Quiero aprender a seguir ahí fuera sin que la ruina me pase por encima."'
       }
     ];
 
@@ -2821,7 +2839,7 @@
       title: 'Hangar de la Fosa Azul',
       subtitle: 'El taller no te recibe como héroe. Te recibe como alguien que aún debe demostrar que entiende el metal.',
       contextChip: 'Briefing · Construcción',
-      objective: 'Entiende el oficio de Mara y supera la primera prueba de ensamblaje.',
+      objective: 'Escucha a Mara, entiende lo que se juega en la Ruta Ceniza y supera la primera prueba de ensamblaje.',
       portraits: {
         right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
       },
@@ -2840,24 +2858,8 @@
           figureMobileShiftVh: -25,
           figureScale: 0.86,
           figureMobileScale: 0.74,
-          text: 'Si has venido al Hangar, empiezas por lo único que no perdona atajos: montar. Un PoCoBOT no nace cuando dispara. Nace cuando cada pieza sabe por qué está ahí.',
-          choices: [
-            {
-              id: 'ceniza',
-              label: 'He oído que la Ruta Ceniza prueba si alguien merece llegar a Argós.',
-              response: 'Tú: "He oído que la Ruta Ceniza prueba si alguien merece llegar a Argós."'
-            },
-            {
-              id: 'lore',
-              label: 'Quiero entender por qué los PoCoBOT siguen importando después de La Caída.',
-              response: 'Tú: "Quiero entender por qué los PoCoBOT siguen importando después de La Caída."'
-            },
-            {
-              id: 'survive',
-              label: 'Quiero aprender a seguir ahí fuera sin que la ruina me pase por encima.',
-              response: 'Tú: "Quiero aprender a seguir ahí fuera sin que la ruina me pase por encima."'
-            }
-          ]
+          text: 'Intuyo que no has venido solo a verme.',
+          choices: hangarTopicChoices
         },
         {
           speaker: 'Mara Oxido',
@@ -2872,13 +2874,13 @@
           variantSourceLine: 0,
           variants: {
             ceniza: {
-              text: 'Esa es la versión limpia que se cuenta desde fuera. Aquí, antes de hablar de merecer nada, quiero ver si sabes construir sin convertir el metal en una superstición.'
+              text: 'No vas desencaminado. La Ruta Ceniza no era solo un paseo con nombre dramático: se trataba de una criba de Argós. Talleres, torres, puentes... cada parada medía si el piloto entendía la máquina o solo quería que obedeciera. El mundo cayó, pero la criba siguió funcionando a medias, ahora desde el punto de vista de la máquina...'
             },
             lore: {
-              text: 'Importan porque no fueron solo armas. Fueron una forma de combatir sin entregar la voluntad a una máquina. Pero ese símbolo no vale nada si no sabes ensamblarlo.'
+              text: 'Porque los PoCoBOT lo fueron casi todo. Son robots de combate modulares: marcos pensados para custodiar rutas, sostener enclaves y sostener la paz. En manos buenas pueden salvar una comunidad. En manos torpes la condenan entera en dos turnos mal montados. Como ocurrió en la caída...'
             },
             survive: {
-              text: 'Entonces empieza por aceptar algo sencillo: sobrevive quien vuelve con margen. El margen se construye carta a carta, no con frases bonitas.'
+              text: 'Entonces empieza por aceptar esto: ahí fuera no sobrevive el más ruidoso. Sobrevive quien deja margen, quien vuelve con el mecha entero y con algo humano todavía dentro. El viejo Corvo lo diría de otra forma, pero en el fondo te estaría diciendo esto mismo.'
             }
           }
         },
@@ -2892,7 +2894,18 @@
           figureMobileShiftVh: -25,
           figureScale: 0.86,
           figureMobileScale: 0.74,
-          text: 'Monta un PoCoBOT y déjalo listo para atacar antes que yo. Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+          variantSourceLine: 0,
+          variants: {
+            ceniza: {
+              text: 'Si quieres afrontar la antigua Ruta Ceniza, empieza por el principio: monta un PoCoBOT y déjalo listo para atacar, antes de que lo haga yo. Las viejas pruebas de Argós siguen filtrando al que vale y al que no. Ya sabes lo que digo siempre: Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+            },
+            lore: {
+              text: 'Si quieres hablar de PoCoBOT con propiedad, deja de nombrarlos como reliquias y móntame uno ahora. Quiero verlo nacer, ajustarse y quedar listo para atacar. Yo haré lo mismo, ¡Intenta superarme! Ya sabes lo que digo siempre: Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+            },
+            survive: {
+              text: 'Si quieres arreglar algo de este mundo, primero demuéstrame que puedes darle forma a un PoCoBOT sin despeinarte. Si no puedes superarme a mí, entonces no tienes nada que hacer. Cuando el metal responda, hablamos de la Ruta Ceniza. Ya sabes lo que digo siempre: Si no sabes ensamblarlo, tampoco sabrás salvarlo.'
+            }
+          }
         }
       ]
     };
@@ -2991,13 +3004,20 @@
     }
 
     const sharedMaraIntroLineCount = sharedMaraIntroLines.length;
+    const hangarIntroLines = copySceneLines(sharedMaraIntroLines);
+    if (hangarIntroLines[1]) {
+      hangarIntroLines[1] = {
+        ...hangarIntroLines[1],
+        choices: hangarTopicChoices
+      };
+    }
 
     storySceneScripts.hangar_intro = {
       ...hangarZoneScene,
       startAmbient: true,
       lines: [
-        ...copySceneLines(sharedMaraIntroLines),
-        ...copySceneLines(hangarZoneScene.lines, sharedMaraIntroLineCount)
+        ...hangarIntroLines,
+        ...copySceneLines(hangarZoneScene.lines.slice(1), sharedMaraIntroLineCount - 1)
       ]
     };
     storySceneScripts.patio = patioZoneScene;
