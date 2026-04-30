@@ -1443,9 +1443,10 @@ button:disabled{
   box-shadow:inset 0 0 22px rgba(255,193,92,.18), 0 0 22px rgba(255,151,72,.18) !important;
 }
 .board .card.compact-draft-origin{
-  opacity:.22;
-  transform:translateY(8px) scale(.94);
-  filter:saturate(.48);
+  opacity:.68;
+  transform:translateY(4px) scale(.98);
+  filter:saturate(.72);
+  outline:2px dashed rgba(255,151,72,.62);
 }
 .board .cards .card.compact-draft-preview{
   outline:2px dashed rgba(255,151,72,.92) !important;
@@ -8478,7 +8479,6 @@ body.desktop-compact-mode > footer{
 <div class="story-embed-nav" id="storyEmbedNav" hidden>
   <button class="story-embed-nav-btn" id="storyEmbedTopBtn" type="button">Panel</button>
   <button class="story-embed-nav-btn" id="storyEmbedHandBtn" type="button">Mano</button>
-  <button class="story-embed-nav-btn" id="storyEmbedCompactBtn" type="button" aria-pressed="false">Compacto</button>
 </div>
 
 <div class="intro-screen" id="introScreen">
@@ -9991,13 +9991,32 @@ function autoStartStoryMissionIfRequested(){
       addToast('Mision historia: ofensiva y mas ofensiva en el Patio', 'warn');
       window.setTimeout(() => {
         scrollToPlayerPanel(0, 'smooth');
-        notifySelection('Objetivo: usa un ataque normal con combustible, dispara un proyectil y derrota a Mara Óxido.');
+        notifySelection('Objetivo: usa combustible para atacar y dispara un proyectil. Puedes hacerlo por separado o en ataque combinado.');
         scheduleStoryEmbedNavigationSetup();
       }, 260);
       break;
     default:
       break;
   }
+}
+
+function ensureStoryMissionEmbedStillRunning(){
+  if(!STORY_EMBED_MODE || !STORY_MISSION_BOOT) return;
+  if(state.storyMissionAnnounced && state.winner) return;
+  const intro = document.getElementById('introScreen');
+  const lobby = document.getElementById('olLobbyScreen');
+  if(!state.gameStarted){
+    autoStartStoryMissionIfRequested();
+    return;
+  }
+  if(intro && !intro.classList.contains('hidden')){
+    hideIntroScreen();
+    render();
+  }
+  if(lobby && !lobby.classList.contains('ol-hidden')){
+    lobby.classList.add('ol-hidden');
+  }
+  scheduleStoryEmbedNavigationSetup();
 }
 
 function applyStoryMissionPlayerSetup(){
@@ -10077,7 +10096,7 @@ function setupStoryPatioDuelScenario(){
     patioProjectileUsed: false
   };
   state.log = [
-    '🎯 Objetivo: usa ataque normal con combustible, dispara al menos un proyectil y derrota a Mara Oxido.',
+    '🎯 Objetivo: usa combustible para abrir ataque y dispara al menos un proyectil. Cuenta separado o combinado.',
     '⚠️ Regla especial: el Patio fuerza los seguros. En esta misión puedes atacar con un chasis irregular; fuera de aquí, un PoCoBOT mal montado no recibe ese perdón.',
     '📜 Mision historia: Patio de Pruebas con reglas alteradas.'
   ];
@@ -10150,11 +10169,11 @@ function maybeFinalizeStoryMissionAfterWinner(){
   state.storyMissionAnnounced = true;
 
   if(success){
-    log('🏁 Mision completada: has dominado el Patio con ataque normal, proyectil y victoria final.');
+    log('🏁 Mision completada: has dominado el Patio con combustible, proyectil y victoria final.');
     addToast('Mision completada: Patio superado', 'ok');
   }else if(playerWon){
-    log('⚠️ Has ganado el duelo, pero la prueba del Patio exige usar ataque normal con combustible y al menos un proyectil.');
-    addToast('Victoria incompleta: faltó una ofensiva del Patio', 'warn');
+    log('⚠️ Has ganado el duelo, pero la prueba del Patio exige demostrar combustible y proyectil. Puede ser en ataques separados o en un combinado.');
+    addToast('Victoria incompleta: faltó combustible o proyectil', 'warn');
   }else{
     log('⚠️ Mara Oxido se impone en el Patio de Pruebas.');
     addToast('Mara Oxido gana el Patio de Pruebas', 'warn');
@@ -11209,7 +11228,7 @@ function setupStoryEmbedNavigation(){
   const topBtn = document.getElementById('storyEmbedTopBtn');
   const handBtn = document.getElementById('storyEmbedHandBtn');
   const compactBtn = document.getElementById('storyEmbedCompactBtn');
-  if(!nav || !topBtn || !handBtn || !compactBtn) return;
+  if(!nav || !topBtn || !handBtn) return;
   if(!STORY_EMBED_MODE){
     nav.hidden = true;
     return;
@@ -11227,7 +11246,7 @@ function setupStoryEmbedNavigation(){
       scrollToHandZone(getStoryEmbedHumanPlayerIndex(), 'smooth');
     });
   }
-  if(compactBtn.dataset.bound !== '1'){
+  if(compactBtn && compactBtn.dataset.bound !== '1'){
     compactBtn.dataset.bound = '1';
     compactBtn.addEventListener('click', toggleStoryEmbedInterfaceMode);
   }
@@ -12813,7 +12832,8 @@ function canUseDesktopCompactHud(){
   const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
   const storyForcedDesktop = STORY_EMBED_MODE && storyHudMode === 'compact';
-  return !!state.gameStarted && introHidden && lobbyHidden && (storyForcedDesktop || (isDesktopCompactCapable() && isDesktopCompactLikelyFullscreen()));
+  if(storyForcedDesktop) return introHidden && lobbyHidden;
+  return !!state.gameStarted && introHidden && lobbyHidden && isDesktopCompactCapable() && isDesktopCompactLikelyFullscreen();
 }
 
 function canUseMobilePanoramaHud(){
@@ -13008,6 +13028,11 @@ function triggerDesktopHudModeTransition(mode){
   const app = document.querySelector('.app');
   const overlay = document.getElementById('desktopHudTransition');
   const transitionClass = mode === 'compact' ? 'desktop-hud-enter-compact' : 'desktop-hud-enter-expanded';
+  const compactActive = isDesktopCompactModeActive();
+  if((mode === 'compact' && compactActive) || (mode === 'expanded' && !compactActive && desktopHudMode === 'expanded')){
+    setDesktopHudMode(mode);
+    return;
+  }
 
   if(!app || !overlay){
     setDesktopHudMode(mode);
@@ -13392,6 +13417,11 @@ function teardownCompactHandDrag(){
   window.removeEventListener('pointermove', handleCompactHandDragMove);
   window.removeEventListener('pointerup', handleCompactHandDragEnd);
   window.removeEventListener('pointercancel', handleCompactHandDragEnd);
+  try{
+    if(compactPointerDragState.sourceEl?.releasePointerCapture && compactPointerDragState.pointerId !== undefined){
+      compactPointerDragState.sourceEl.releasePointerCapture(compactPointerDragState.pointerId);
+    }
+  }catch(_err){}
   if(compactPointerDragState.ghost && compactPointerDragState.ghost.parentNode){
     compactPointerDragState.ghost.parentNode.removeChild(compactPointerDragState.ghost);
   }
@@ -13399,13 +13429,20 @@ function teardownCompactHandDrag(){
   compactPointerDragState = null;
 }
 
-function beginCompactHandDrag(event, cardEl, cardId){
-  const playerIdx = getDesktopCompactPlayerIndex();
+function beginCompactHandDrag(event, cardEl, cardId, ownerIdx = getDesktopCompactPlayerIndex()){
+  const playerIdx = Number.isInteger(ownerIdx) ? ownerIdx : getDesktopCompactPlayerIndex();
   const legalZones = getCompactDraftLegalZones(playerIdx, cardId);
   if(!legalZones.length) return;
+  event.preventDefault();
+  try{
+    if(cardEl.setPointerCapture && event.pointerId !== undefined){
+      cardEl.setPointerCapture(event.pointerId);
+    }
+  }catch(_err){}
   compactPointerDragState = {
     cardId,
     ownerIdx: playerIdx,
+    pointerId: event.pointerId,
     startX: event.clientX,
     startY: event.clientY,
     latestX: event.clientX,
@@ -14967,7 +15004,8 @@ function confirmAttack(projectileOnly=false){
 
   if(state.storyMission === 'patio_duel' && attackerIdx === 0){
     if(!state.storyMissionProgress) state.storyMissionProgress = {};
-    if(!projectileOnly && sel.fuelCards.length > 0 && mainValue > 0){
+    const usedFuelForOffense = !projectileOnly && sel.fuelCards.length > 0 && (mainValue > 0 || !!projectile);
+    if(usedFuelForOffense){
       state.storyMissionProgress.patioNormalAttackUsed = true;
     }
     if(projectileOnly || !!projectile){
@@ -15818,21 +15856,21 @@ function updateHints(){
     if(mainHint) mainHint.innerHTML = !specialAttackReady
       ? '⚔️ Misión historia: Patio con chasis irregular. Prepara combustible y picas para forzar la ofensiva.'
       : (!fuelAttackDone
-        ? '⚔️ Misión historia: usa un ataque normal con combustible. Aquí el Patio te deja hacerlo aunque el chasis sea irregular.'
+        ? '⚔️ Misión historia: usa combustible para abrir ataque. Si activas proyectil en el mismo golpe, también cuenta.'
         : (!projectileDone
-          ? '🚀 Misión historia: ahora dispara al menos un proyectil.'
+          ? '🚀 Misión historia: ahora dispara al menos un proyectil, solo o combinado con combustible.'
           : '⚔️ Misión historia: ofensiva validada. Vence a Mara Óxido.'));
     if(attackHint) attackHint.innerHTML = !specialAttackReady
       ? 'Regla especial del Patio: busca cartas de ataque y combustible para activar la prueba.'
       : (!fuelAttackDone
-        ? 'Ofensiva y más ofensiva: declara ataque principal con combustible.'
+        ? 'Ofensiva y más ofensiva: declara combustible y picas. El combinado sirve si el límite no alcanza.'
         : (!projectileDone
-          ? 'El proyectil puede ir combinado con el ataque normal o dispararse después desde el módulo de ataque.'
+          ? 'El proyectil puede ir combinado con el ataque de combustible o dispararse después desde el módulo de ataque.'
           : 'Mara también puede ponerse en guardia: calcula el daño antes de regalar tus picas.'));
     if(attackSubHint) attackSubHint.textContent = !specialAttackReady
       ? 'Excepción del Patio: en el juego normal un PoCoBOT incompleto o mal montado no puede atacar.'
       : (!fuelAttackDone
-        ? 'Circunstancia especial: estos seguros forzados solo existen en esta misión del Patio.'
+        ? 'La prueba valida combustible y proyectil; un ataque combinado con ambos recursos registra las dos partes.'
         : (!projectileDone
           ? 'La prueba no se completará sin al menos un proyectil.'
           : 'Ya cumpliste ataque normal y proyectil. Ahora cierra el duelo.'));
@@ -15840,21 +15878,21 @@ function updateHints(){
     if(tutorialPanelText) tutorialPanelText.textContent = !specialAttackReady
       ? 'Mara ha abierto los seguros del taller para que practiques con un chasis prestado e irregular.'
       : (!fuelAttackDone
-        ? 'Primero demuestra el ciclo normal: combustible, límite de ataque y golpe principal.'
+        ? 'Primero demuestra combustible y límite de ataque. Si sumas proyectil en ese mismo golpe, el Patio lo acepta como combinado.'
         : (!projectileDone
           ? 'Después demuestra la ventana de proyectil: una pica numérica sale disparada desde el módulo de ataque.'
           : 'La técnica ya está demostrada. Solo queda derrotar a Mara sin perder el orden del turno.'));
     if(tutorialPanelTip) tutorialPanelTip.textContent = !specialAttackReady
       ? 'Fuera de esta misión, el mismo chasis no podría atacar si incumple las reglas PoCoBOT.'
       : (!fuelAttackDone
-        ? 'Pulsa Atacar, selecciona combustible y una o más picas numéricas para el ataque principal.'
+        ? 'Pulsa Atacar, selecciona combustible y picas. Activa Modo proyectil si quieres combinarlo en el mismo golpe.'
         : (!projectileDone
           ? 'Activa proyectil o usa Disparo de proyectil para registrar la segunda condición.'
           : 'No confundas ventaja con victoria: Mara puede defenderse con diamantes.'));
     if(tutorialPanelObjective) tutorialPanelObjective.textContent = !specialAttackReady
       ? 'Objetivo: preparar la ofensiva del Patio.'
       : (!fuelAttackDone
-        ? 'Objetivo: completar un ataque normal con combustible.'
+        ? 'Objetivo: usar combustible para atacar, separado o combinado con proyectil.'
         : (!projectileDone
           ? 'Objetivo: disparar al menos un proyectil.'
           : 'Objetivo: derrotar a Mara Óxido.'));
@@ -15864,14 +15902,14 @@ function updateHints(){
     if(tutorialPanelFocus) tutorialPanelFocus.textContent = !specialAttackReady
       ? 'Mira el módulo de ataque y el combustible: son las piezas que Mara ha dejado listas para esta excepción.'
       : (!fuelAttackDone
-        ? 'El primer salto es técnico: ataque normal, combustible y daño suficiente para abrir la guardia.'
+        ? 'El primer salto es técnico: combustible, daño y, si lo necesitas, un proyectil añadido al mismo ataque.'
         : (!projectileDone
           ? 'El segundo salto es el proyectil. Recuerda que también cuenta si lo combinas con el ataque normal.'
           : 'Ahora juega con cabeza: la prueba ya no examina montar, sino cerrar el combate.'));
     if(tutorialPanelStatus) tutorialPanelStatus.textContent = !specialAttackReady
       ? 'El Patio ha alterado las reglas, pero todavía necesitas recursos ofensivos para actuar.'
       : (!fuelAttackDone
-        ? 'Pendiente: ataque normal con combustible.'
+        ? 'Pendiente: ataque con combustible. Si lleva proyectil, quedarán validadas ambas partes.'
         : (!projectileDone
           ? 'Pendiente: proyectil.'
           : 'Ataque normal y proyectil registrados. Si ganas, el Patio quedará superado.'));
@@ -17294,7 +17332,7 @@ document.getElementById('desktopCompactShell').addEventListener('pointerdown', (
   if(!isDesktopCompactModeActive() || !canUseInteractiveTurnAction()) return;
   const cardEl = event.target.closest('#compactHandCards .card[data-card-id]');
   if(!cardEl) return;
-  beginCompactHandDrag(event, cardEl, cardEl.dataset.cardId);
+  beginCompactHandDrag(event, cardEl, cardEl.dataset.cardId, getDesktopCompactPlayerIndex());
 });
 document.getElementById('board').addEventListener('pointerdown', (event) => {
   if(event.button !== 0) return;
@@ -17303,7 +17341,7 @@ document.getElementById('board').addEventListener('pointerdown', (event) => {
   if(playerIdx < 0 || !canUseExpandedDraftDropForPlayer(playerIdx)) return;
   const cardEl = event.target.closest(`#hand-${playerIdx} .card[data-card-id]`);
   if(!cardEl) return;
-  beginCompactHandDrag(event, cardEl, cardEl.dataset.cardId);
+  beginCompactHandDrag(event, cardEl, cardEl.dataset.cardId, playerIdx);
 });
 document.addEventListener('fullscreenchange', () => {
   syncDesktopHudAvailability();
@@ -19490,6 +19528,7 @@ window.addEventListener('load', () => {
   syncIntroInstallTip();
   startMenuMusic(false);
   autoStartStoryMissionIfRequested();
+  ensureStoryMissionEmbedStillRunning();
   scheduleStoryEmbedNavigationSetup();
   try{
     const displayMode = window.matchMedia('(display-mode: standalone)');
@@ -19498,7 +19537,14 @@ window.addEventListener('load', () => {
     }
   }catch(_err){}
 });
-window.addEventListener('pageshow', syncIntroInstallTip);
+window.addEventListener('pageshow', () => {
+  syncIntroInstallTip();
+  window.setTimeout(ensureStoryMissionEmbedStillRunning, 80);
+});
+window.addEventListener('focus', () => window.setTimeout(ensureStoryMissionEmbedStillRunning, 80));
+document.addEventListener('visibilitychange', () => {
+  if(!document.hidden) window.setTimeout(ensureStoryMissionEmbedStillRunning, 80);
+});
 window.addEventListener('pointerdown', maybeResumeMenuMusic, { passive:true });
 window.addEventListener('keydown', maybeResumeMenuMusic);
 

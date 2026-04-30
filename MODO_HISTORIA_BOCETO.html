@@ -1005,6 +1005,8 @@
       --scene-dialog-scroll-max:min(36svh, 420px);
       position:relative;
       z-index:2;
+      display:flex;
+      flex-direction:column;
       width:min(1160px, calc(100% - 32px));
       margin:0 auto clamp(34px, 5vh, 54px);
       padding:18px;
@@ -1027,8 +1029,10 @@
       grid-template-columns:minmax(124px, 18vw) 1fr;
       gap:18px;
       align-items:stretch;
+      flex:1 1 auto;
       min-height:0;
       max-height:calc(var(--scene-dialog-max-height) - 36px);
+      overflow:hidden;
     }
     .scene-avatar-wrap{
       position:relative;
@@ -1062,10 +1066,11 @@
       max-height:calc(var(--scene-dialog-max-height) - 36px);
       display:grid;
       grid-template-rows:auto auto auto auto minmax(0, 1fr) auto;
+      overflow:hidden;
     }
     .scene-dialog-scroll{
       min-height:0;
-      max-height:var(--scene-dialog-scroll-max);
+      max-height:none;
       margin-top:0;
       padding-right:8px;
       margin-right:-4px;
@@ -1458,28 +1463,21 @@
       flex-wrap:wrap;
       gap:10px;
     }
-    .mission-quick-actions{
-      position:absolute;
-      right:clamp(10px, 1.8vw, 18px);
-      top:clamp(10px, 1.8vw, 18px);
-      z-index:4;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:flex-end;
-      pointer-events:auto;
-    }
-    .story-mission-stage.compact-controls-hidden .mission-quick-actions{
+    .mission-brief-toggle{
       display:none;
-    }
-    .mission-quick-actions .scene-btn{
-      min-width:122px;
-      min-height:42px;
-      padding:9px 14px;
-      border-color:rgba(143,244,255,.22);
-      background:linear-gradient(180deg, rgba(11,20,29,.88), rgba(6,10,16,.96));
-      box-shadow:0 14px 28px rgba(0,0,0,.32), inset 0 0 0 1px rgba(255,255,255,.04);
-      backdrop-filter:blur(10px);
+      align-items:center;
+      justify-content:center;
+      min-height:34px;
+      padding:0 12px;
+      border-radius:999px;
+      border:1px solid rgba(143,244,255,.22);
+      background:rgba(10,19,27,.82);
+      color:#dff9ff;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      cursor:pointer;
     }
     .mission-frame-wrap{
       position:relative;
@@ -1498,6 +1496,59 @@
       border:0;
       display:block;
       background:#05080d;
+    }
+    .story-mission-stage:fullscreen .mission-shell{
+      height:100dvh;
+      min-height:100dvh;
+      grid-template-rows:auto minmax(0, 1fr);
+      gap:6px;
+      padding:max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom));
+    }
+    .story-mission-stage:fullscreen .mission-brief{
+      width:100%;
+      max-width:none;
+      grid-template-columns:minmax(0, 1fr) auto;
+      gap:6px 8px;
+      padding:8px 10px;
+      border-radius:16px;
+    }
+    .story-mission-stage:fullscreen .mission-brief-toggle{
+      display:inline-flex;
+    }
+    .story-mission-stage:fullscreen .mission-chip{
+      min-height:24px;
+      padding:0 8px;
+      font-size:.58rem;
+    }
+    .story-mission-stage:fullscreen .mission-title{
+      grid-column:1 / -1;
+      font-size:.92rem;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .story-mission-stage:fullscreen .mission-copy,
+    .story-mission-stage:fullscreen .mission-tip,
+    .story-mission-stage:fullscreen .mission-actions{
+      grid-column:1 / -1;
+    }
+    .story-mission-stage:fullscreen:not(.mission-brief-expanded) .mission-copy,
+    .story-mission-stage:fullscreen:not(.mission-brief-expanded) .mission-tip{
+      display:none;
+    }
+    .story-mission-stage:fullscreen:not(.mission-brief-expanded) .mission-actions{
+      grid-column:1 / -1;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:6px;
+    }
+    .story-mission-stage:fullscreen:not(.mission-brief-expanded) #storyMissionRestartBtn{
+      display:none;
+    }
+    .story-mission-stage:fullscreen .mission-frame-wrap,
+    .story-mission-stage:fullscreen .mission-frame{
+      height:100%;
+      min-height:0;
     }
 
     @keyframes buttonPulse{
@@ -1542,8 +1593,8 @@
         transform:translateY(calc(var(--scene-figure-shift) - 10svh)) scale(var(--scene-figure-scale));
       }
       .scene-dialog-card{
-        --scene-dialog-max-height:min(50svh, calc(100svh - 92px));
-        --scene-dialog-scroll-max:clamp(120px, 22svh, 260px);
+        --scene-dialog-max-height:min(72svh, calc(100svh - 76px));
+        --scene-dialog-scroll-max:clamp(180px, 42svh, 360px);
         width:min(980px, calc(100% - 24px));
         margin:0 auto 18px;
         padding:14px 16px;
@@ -1765,23 +1816,85 @@
       .mission-actions .scene-btn{
         width:100%;
       }
-      .mission-quick-actions{
-        right:10px;
-        top:10px;
-        flex-direction:row;
-        flex-wrap:wrap;
-        max-width:calc(100% - 20px);
-        justify-content:flex-end;
-      }
-      .mission-quick-actions .scene-btn{
-        min-width:0;
-        width:auto;
-        min-height:38px;
-        padding:8px 11px;
-        font-size:.68rem;
-      }
       .mission-frame{
         min-height:64svh;
+      }
+      .story-mission-stage.mobile-play-focus .mission-shell,
+      .story-mission-stage:fullscreen .mission-shell{
+        height:100dvh;
+        min-height:100dvh;
+        grid-template-rows:auto minmax(0, 1fr);
+        gap:6px;
+        padding:max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom));
+      }
+      .story-mission-stage.mobile-play-focus .mission-brief,
+      .story-mission-stage:fullscreen .mission-brief{
+        width:100%;
+        max-width:none;
+        grid-template-columns:minmax(0, 1fr) auto;
+        gap:6px 8px;
+        padding:8px 10px;
+        border-radius:16px;
+      }
+      .story-mission-stage.mobile-play-focus .mission-chip,
+      .story-mission-stage:fullscreen .mission-chip{
+        min-height:24px;
+        padding:0 8px;
+        font-size:.58rem;
+      }
+      .story-mission-stage.mobile-play-focus .mission-title,
+      .story-mission-stage:fullscreen .mission-title{
+        grid-column:1 / -1;
+        font-size:.92rem;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .story-mission-stage.mobile-play-focus .mission-copy,
+      .story-mission-stage.mobile-play-focus .mission-tip,
+      .story-mission-stage.mobile-play-focus .mission-actions,
+      .story-mission-stage:fullscreen .mission-copy,
+      .story-mission-stage:fullscreen .mission-tip,
+      .story-mission-stage:fullscreen .mission-actions{
+        grid-column:1 / -1;
+      }
+      .story-mission-stage.mobile-play-focus .mission-brief-toggle,
+      .story-mission-stage:fullscreen .mission-brief-toggle{
+        display:inline-flex;
+      }
+      .story-mission-stage.mobile-play-focus:not(.mission-brief-expanded) .mission-copy,
+      .story-mission-stage.mobile-play-focus:not(.mission-brief-expanded) .mission-tip,
+      .story-mission-stage:fullscreen:not(.mission-brief-expanded) .mission-copy,
+      .story-mission-stage:fullscreen:not(.mission-brief-expanded) .mission-tip{
+        display:none;
+      }
+      .story-mission-stage.mobile-play-focus:not(.mission-brief-expanded) .mission-actions,
+      .story-mission-stage:fullscreen:not(.mission-brief-expanded) .mission-actions{
+        grid-column:1 / -1;
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:6px;
+      }
+      .story-mission-stage.mobile-play-focus:not(.mission-brief-expanded) #storyMissionRestartBtn,
+      .story-mission-stage:fullscreen:not(.mission-brief-expanded) #storyMissionRestartBtn{
+        display:none;
+      }
+      .story-mission-stage.mobile-play-focus .mission-actions .scene-btn,
+      .story-mission-stage:fullscreen .mission-actions .scene-btn{
+        min-height:34px;
+        padding:8px 10px;
+        font-size:.68rem;
+      }
+      .story-mission-stage.mobile-play-focus .mission-frame-wrap,
+      .story-mission-stage:fullscreen .mission-frame-wrap{
+        height:100%;
+        min-height:0;
+        border-radius:14px;
+      }
+      .story-mission-stage.mobile-play-focus .mission-frame,
+      .story-mission-stage:fullscreen .mission-frame{
+        height:100%;
+        min-height:0;
       }
     }
     @keyframes stormFlashA{
@@ -1946,6 +2059,7 @@
             <div class="mission-shell">
               <article class="mission-brief">
                 <span class="mission-chip" id="storyMissionChip">Misión de construcción</span>
+                <button class="mission-brief-toggle" id="storyMissionBriefToggleBtn" type="button" aria-expanded="false">Mostrar info</button>
                 <h2 class="mission-title" id="storyMissionTitle">Taller de la Fosa Azul</h2>
                 <p class="mission-copy" id="storyMissionCopy">Mara ya ha hablado. Ahora toca pasar del relato al metal y construir un bot válido dentro del taller.</p>
                 <aside class="mission-tip" id="storyMissionTip">
@@ -1955,14 +2069,10 @@
                 <div class="mission-actions">
                   <button class="scene-btn secondary" id="storyMissionMapBtn" type="button">Volver al mapa</button>
                   <button class="scene-btn secondary" id="storyMissionRestartBtn" type="button">Reiniciar misión</button>
+                  <button class="scene-btn secondary" id="storyMissionCompactBtn" type="button">Modo compacto</button>
                 </div>
               </article>
               <div class="mission-frame-wrap">
-                <div class="mission-quick-actions" id="storyMissionQuickActions" aria-label="Accesos rápidos de la misión">
-                  <button class="scene-btn secondary" id="storyMissionPanelBtn" type="button">Panel</button>
-                  <button class="scene-btn secondary" id="storyMissionHandBtn" type="button">Mano</button>
-                  <button class="scene-btn secondary" id="storyMissionCompactBtn" type="button">Modo compacto</button>
-                </div>
                 <iframe
                   class="mission-frame"
                   id="storyMissionFrame"
@@ -2035,6 +2145,7 @@
     const storyMissionQuickActions = document.getElementById('storyMissionQuickActions');
     const storyMissionPanelBtn = document.getElementById('storyMissionPanelBtn');
     const storyMissionHandBtn = document.getElementById('storyMissionHandBtn');
+    const storyMissionBriefToggleBtn = document.getElementById('storyMissionBriefToggleBtn');
     const storyMissionCompactBtn = document.getElementById('storyMissionCompactBtn');
     const storyMissionMapBtn = document.getElementById('storyMissionMapBtn');
     const storyMissionRestartBtn = document.getElementById('storyMissionRestartBtn');
@@ -2044,10 +2155,13 @@
       desktop: 'assets/Historia/low/titulo1_fondo_compacto.webp',
       mobile: 'assets/Historia/low/titulo_smartphone_compacto_1080.webp'
     };
+    const MARA_PRESENTATION_FIGURE = 'assets/Historia/low/mara_oxido_compacto_1080.webp';
     const STORY_MAP_THEMES = {
       exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
       chapter_clear: 'assets/Historia/cancionMundo.mp3'
     };
+    const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
+    const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
     const STORY_UI_SFX = {
       hover: { src: 'assets/sfx/ui_click.wav', volume: 0.12 },
       click: { src: 'assets/sfx/ui_click.wav', volume: 0.26 },
@@ -2077,6 +2191,32 @@
       lastMissionResult: null
     };
     let lastStoryHoverSfxAt = 0;
+
+    function setStorySessionFlag(key, value) {
+      try {
+        if (value === null || value === false || value === '') {
+          sessionStorage.removeItem(key);
+        } else {
+          sessionStorage.setItem(key, String(value));
+        }
+      } catch (error) {}
+    }
+
+    function getStorySessionFlag(key) {
+      try {
+        return sessionStorage.getItem(key);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function rememberStoryWorkspace(active) {
+      setStorySessionFlag(STORY_WORKSPACE_SESSION_KEY, active ? '1' : null);
+    }
+
+    function rememberActiveStoryMission(nodeId) {
+      setStorySessionFlag(STORY_ACTIVE_MISSION_SESSION_KEY, nodeId || null);
+    }
 
     if (storyTitleMusic) {
       storyTitleMusic.volume = 0.42;
@@ -2295,7 +2435,7 @@
         sceneChip: 'Proyectil',
         image: 'assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG',
         lead: 'Primer nodo claramente vinculado a Argós. Buen lugar para la misión de proyectil y para subir misterio.',
-        mission: 'Lanzar al menos un proyectil para completar el nodo.',
+        mission: 'Demostrar ataque con combustible y proyectil, por separado o combinados.',
         learn: 'Activación de proyectiles y timing ofensivo.',
         tension: 'La infraestructura vieja de Argós empieza a mirar al jugador de vuelta.',
         dialogue: '“No todos los disparos son para matar. Algunos son para abrir puertas.”',
@@ -2394,7 +2534,7 @@
         contextChip: 'Briefing · Construcción',
         objective: 'Escucha a Mara, entiende lo que se juega en la Ruta Ceniza y supera la primera prueba de ensamblaje.',
         portraits: {
-          right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
+          right: { src: 'assets/Historia/Brutos/MaraOxido.png', alt: 'Mara Oxido' }
         },
         startAmbient: true,
         minimalDialogue: true,
@@ -2442,13 +2582,13 @@
             variantSourceLine: 0,
             variants: {
               me: {
-                text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Fosa Azul se viniera abajo. Intuyo que no has venido solo a verme... ¿O sí?'
+                text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Fosa Azul se viniera abajo. Bienvenido al Hangar de la Fosa Azul, que no te nuble la vista el antiguo resplandor de los núcleos desechados...'
               },
               scare: {
-                text: 'Para tí entrar sin avisar no es interrupción: es costumbre. Lo raro sería verte llamar primero. Intuyo que venir a verme no era suficiente motivación para tí...'
+                text: 'Para tí entrar sin avisar no es interrupción: es costumbre. Lo raro sería verte llamar primero. Bienvenido al Hangar de la Fosa Azul, que no te nuble la vista el antiguo resplandor de los núcleos desechados...'
               },
               looking: {
-                text: 'Sigue así y conseguirás que acabe cobrando entrada por escuchar mis propias leyendas. Intuyo que no has venido solo a verme.'
+                text: 'Sigue así y conseguirás que acabe cobrando entrada por escuchar mis propias leyendas. Bienvenido al Hangar de la Fosa Azul, que no te nuble la vista el antiguo resplandor de los núcleos desechados...'
               }
             },
             choices: [
@@ -2609,9 +2749,9 @@
         title: 'Patio de Pruebas del Taller',
         subtitle: 'El Patio no pregunta si el chasis es perfecto. Pregunta si puedes leer una ventana de combate cuando Mara la abre a la fuerza.',
         contextChip: 'Combate · Proyectil',
-        objective: 'Comprende la diferencia entre un mecha de Argós y un PoCoBOT, y vence a Mara usando proyectil y ataque normal en una prueba con reglas especiales.',
+        objective: 'Comprende la diferencia entre un mecha de Argós y un PoCoBOT, y vence a Mara demostrando ataque con combustible y proyectil, por separado o combinados.',
         portraits: {
-          right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
+          right: { src: 'assets/Historia/Brutos/MaraOxido.png', alt: 'Mara Oxido' }
         },
         startAmbient: false,
         minimalDialogue: true,
@@ -2681,7 +2821,7 @@
             figureMobileShiftVh: -25,
             figureScale: 0.86,
             figureMobileScale: 0.74,
-            text: 'La prueba es simple: vénceme en un combate usando las reglas alteradas de este Patio: ¡Ofensiva y más ofensiva! Además debes usar al menos un ataque normal con combustible y un proyectil. Que el chasis esté incompleto no te salva de pensar... ¡Y recuerda que yo también sé ponerme en guardia!'
+            text: 'La prueba es simple: vénceme en un combate usando las reglas alteradas de este Patio: ¡Ofensiva y más ofensiva! Debes demostrar que sabes atacar con combustible y que sabes disparar un proyectil. Puedes hacerlo en dos ataques separados o combinarlos si el combustible no te llega. Que el chasis esté incompleto no te salva de pensar... ¡Y recuerda que yo también sé ponerme en guardia!'
           }
         ]
       },
@@ -2725,7 +2865,7 @@
         title: 'Patio de Pruebas del Taller',
         subtitle: 'El primer combate todavía te está enseñando dónde se rompe el ritmo.',
         contextChip: 'Resultado · Reintento',
-        objective: 'Repetir el duelo hasta completar un ataque con combustible y derrotar a Mara dentro del Patio.',
+        objective: 'Repetir el duelo hasta completar ataque con combustible y proyectil, por separado o combinados, y derrotar a Mara dentro del Patio.',
         completeActionLabel: 'Reintentar la prueba',
         completeAction: 'mission',
         portraits: {
@@ -2756,7 +2896,7 @@
             figureMobileShiftVh: -12,
             figureScale: 0.94,
             figureMobileScale: 0.8,
-            text: 'Respira, vuelve a montar si hace falta y recuerda la prueba: no quiero una victoria cualquiera. Quiero ver un ataque con combustible y una cabeza fría hasta el final. ¡Repite y aprende!'
+            text: 'Respira, vuelve a montar si hace falta y recuerda la prueba: no quiero una victoria cualquiera. Quiero ver combustible abriendo ataque y al menos un proyectil, separados o combinados si el límite no alcanza. ¡Repite y aprende!'
           }
         ]
       }
@@ -2805,13 +2945,13 @@
         variantSourceLine: 0,
         variants: {
           me: {
-            text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Fosa Azul se viniera abajo. Intuyo que no has venido solo a verme... ¿O sí?'
+            text: 'Claro que eras tú. Esa forma de pisar chatarra la reconocería aunque media Fosa Azul se viniera abajo. Bienvenido al Hangar de la Fosa Azul, que no te nuble la vista el antiguo resplandor de los núcleos desechados...'
           },
           scare: {
-            text: 'Para tí entrar sin avisar no es interrupción: es costumbre. Lo raro sería verte llamar primero. Intuyo que venir a verme no era suficiente motivación para tí...'
+            text: 'Para tí entrar sin avisar no es interrupción: es costumbre. Lo raro sería verte llamar primero. Bienvenido al Hangar de la Fosa Azul, que no te nuble la vista el antiguo resplandor de los núcleos desechados...'
           },
           looking: {
-            text: 'Sigue así y conseguirás que acabe cobrando entrada por escuchar mis propias leyendas. Intuyo que no has venido solo a verme.'
+            text: 'Sigue así y conseguirás que acabe cobrando entrada por escuchar mis propias leyendas. Bienvenido al Hangar de la Fosa Azul, que no te nuble la vista el antiguo resplandor de los núcleos desechados...'
           }
         }
       }
@@ -2841,7 +2981,7 @@
       contextChip: 'Briefing · Construcción',
       objective: 'Escucha a Mara, entiende lo que se juega en la Ruta Ceniza y supera la primera prueba de ensamblaje.',
       portraits: {
-        right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
+        right: { src: 'assets/Historia/Brutos/MaraOxido.png', alt: 'Mara Oxido' }
       },
       startAmbient: false,
       minimalDialogue: true,
@@ -2858,7 +2998,7 @@
           figureMobileShiftVh: -25,
           figureScale: 0.86,
           figureMobileScale: 0.74,
-          text: 'Intuyo que no has venido solo a verme.',
+          text: 'Bienvenido al Hangar de la Fosa Azul, que no te nuble la vista el antiguo resplandor de los núcleos desechados...',
           choices: hangarTopicChoices
         },
         {
@@ -2914,9 +3054,9 @@
       title: 'Patio de Pruebas del Taller',
       subtitle: 'El Patio no pregunta si el chasis es perfecto. Pregunta si puedes leer una ventana de combate cuando Mara la abre a la fuerza.',
       contextChip: 'Combate · Proyectil',
-      objective: 'Comprende la diferencia entre un mecha de Argós y un PoCoBOT, y vence a Mara usando proyectil y ataque normal en una prueba con reglas especiales.',
+      objective: 'Comprende la diferencia entre un mecha de Argós y un PoCoBOT, y vence a Mara demostrando ataque con combustible y proyectil, por separado o combinados.',
       portraits: {
-        right: { src: 'assets/Historia/Brutos/MaraOXIDO1.PNG', alt: 'Mara Oxido' }
+        right: { src: 'assets/Historia/Brutos/MaraOxido.png', alt: 'Mara Oxido' }
       },
       startAmbient: false,
       minimalDialogue: true,
@@ -2986,7 +3126,7 @@
           figureMobileShiftVh: -25,
           figureScale: 0.86,
           figureMobileScale: 0.74,
-          text: 'La prueba es simple: vénceme en un combate usando las reglas alteradas de este Patio: ¡Ofensiva y más ofensiva! Además debes usar al menos un ataque normal con combustible y un proyectil. Que el chasis esté incompleto no te salva de pensar... ¡Y recuerda que yo también sé ponerme en guardia!'
+          text: 'La prueba es simple: vénceme en un combate usando las reglas alteradas de este Patio: ¡Ofensiva y más ofensiva! Debes demostrar que sabes atacar con combustible y que sabes disparar un proyectil. Puedes hacerlo en dos ataques separados o combinarlos si el combustible no te llega. Que el chasis esté incompleto no te salva de pensar... ¡Y recuerda que yo también sé ponerme en guardia!'
         }
       ]
     };
@@ -3041,7 +3181,7 @@
       patio: {
         chip: 'Combate con reglas especiales',
         title: 'Patio de Pruebas del Taller',
-        copy: 'Entra con un chasis prestado del taller, usa al menos un ataque normal con combustible, dispara un proyectil y derrota a Mara Óxido.',
+        copy: 'Entra con un chasis prestado del taller, usa combustible para abrir ataque y dispara un proyectil. Puedes resolverlo en ataques separados o con un ataque combinado si el límite de combustible se queda corto.',
         tip: 'Circunstancia especial del Patio: Mara fuerza los seguros del chasis para que puedas atacar aunque el mecha no cumpla las reglas PoCoBOT. Fuera de esta prueba, un PoCoBOT incompleto no recibe ese perdón.',
         url: 'poker_combat_bot_ONLINE.html?story_mission=patio_duel&story_embed=1&story_audio=external'
       }
@@ -3353,8 +3493,13 @@
     function showAmbientFigure(scene) {
       const introLine = resolveSceneLine(scene, 0) || scene.lines?.[0] || null;
       if (!introLine) return;
-      setSceneFigure(introLine, scene);
-      syncScenePresentation(introLine);
+      const presentationLine = {
+        ...introLine,
+        figure: MARA_PRESENTATION_FIGURE,
+        figureLow: MARA_PRESENTATION_FIGURE
+      };
+      setSceneFigure(presentationLine, scene);
+      syncScenePresentation(presentationLine);
     }
 
     function setScenePortrait(slot, portrait, activeSide) {
@@ -3538,8 +3683,11 @@
       const mission = storyMissionScripts[nodeId];
       if (!localNode || !mission || !storyMissionStage) return;
       activeMissionNodeId = nodeId;
+      rememberStoryWorkspace(true);
+      rememberActiveStoryMission(nodeId);
       syncStoryMissionModeButton();
       syncStoryMissionQuickActions(false);
+      setStoryMissionBriefExpanded(false);
       closeStoryScene();
       playMapMusic();
       if (storyMissionBackdrop) {
@@ -3557,11 +3705,22 @@
         storyMissionFrame.src = mission.url;
       }
       storyMissionStage.hidden = false;
-      requestAnimationFrame(() => storyMissionStage.classList.add('active'));
+      storyMissionStage.classList.toggle('mobile-play-focus', isStoryMissionMobileViewport());
+      if (isStoryMissionMobileViewport()) {
+        requestStoryMissionFullscreenBestEffort({ target: 'stage', landscape: false });
+      }
+      requestAnimationFrame(() => {
+        storyMissionStage.classList.add('active');
+        syncStoryMissionMobileFocus();
+      });
     }
 
     function syncStoryMissionQuickActions(hidden) {
-      if (!storyMissionStage || !storyMissionQuickActions) return;
+      if (!storyMissionStage) return;
+      if (!storyMissionQuickActions) {
+        storyMissionStage.classList.remove('compact-controls-hidden');
+        return;
+      }
       const shouldHide = !!hidden;
       storyMissionStage.classList.toggle('compact-controls-hidden', shouldHide);
       storyMissionQuickActions.hidden = shouldHide;
@@ -3584,16 +3743,35 @@
       storyMissionCompactBtn.textContent = label || getStoryMissionSpecialModeLabel();
     }
 
-    async function requestStoryMissionFullscreenBestEffort() {
+    function setStoryMissionBriefExpanded(expanded) {
+      if (!storyMissionStage) return;
+      const shouldExpand = !!expanded;
+      storyMissionStage.classList.toggle('mission-brief-expanded', shouldExpand);
+      if (storyMissionBriefToggleBtn) {
+        storyMissionBriefToggleBtn.textContent = shouldExpand ? 'Ocultar info' : 'Mostrar info';
+        storyMissionBriefToggleBtn.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+      }
+    }
+
+    function syncStoryMissionMobileFocus() {
+      if (!storyMissionStage) return;
+      const mobileFocus = isStoryMissionMobileViewport() && storyMissionStage.classList.contains('active');
+      storyMissionStage.classList.toggle('mobile-play-focus', mobileFocus);
+      if (mobileFocus && !storyMissionStage.classList.contains('mission-brief-expanded')) {
+        setStoryMissionBriefExpanded(false);
+      }
+    }
+
+    async function requestStoryMissionFullscreenBestEffort(options = {}) {
       if (!storyMissionStage) return false;
-      const target = storyMissionFrame || storyMissionStage;
+      const target = options.target === 'frame' && storyMissionFrame ? storyMissionFrame : storyMissionStage;
       try {
         if (target.requestFullscreen && !document.fullscreenElement) {
           await target.requestFullscreen();
         }
       } catch (error) {}
       try {
-        if (screen.orientation?.lock) {
+        if (options.landscape && screen.orientation?.lock) {
           await screen.orientation.lock('landscape');
         }
       } catch (error) {}
@@ -3617,9 +3795,10 @@
       releaseStoryMissionFullscreenBestEffort();
       if (!preserveMissionId) {
         activeMissionNodeId = null;
+        rememberActiveStoryMission(null);
       }
       if (!storyMissionStage) return;
-      storyMissionStage.classList.remove('active');
+      storyMissionStage.classList.remove('active', 'mobile-play-focus', 'mission-brief-expanded');
       window.setTimeout(() => {
         if (!storyMissionStage.classList.contains('active')) {
           storyMissionStage.hidden = true;
@@ -3630,6 +3809,7 @@
           }
           if (!preserveMissionId) {
             activeMissionNodeId = null;
+            rememberActiveStoryMission(null);
           }
           if (onClosed) onClosed();
         }
@@ -3684,6 +3864,7 @@
       const missionNodeId = activeMissionNodeId || missionConfig.fallbackNodeId;
       const success = !!result.success;
       storyProgressState.lastMissionResult = success ? 'success' : 'failure';
+      rememberActiveStoryMission(null);
       if (success) missionConfig.onSuccess();
       else missionConfig.onFailure();
       closeStoryMission({
@@ -3892,6 +4073,7 @@
 
     function showWorkspace() {
       if (workspacePanel.classList.contains('active')) return;
+      rememberStoryWorkspace(true);
       stopTitleMusic();
       runStoryTransition(() => {
         document.body.classList.remove('story-title-lock');
@@ -3913,6 +4095,8 @@
     }
 
     function showIntro() {
+      rememberStoryWorkspace(false);
+      rememberActiveStoryMission(null);
       workspacePanel.classList.remove('active');
       titleStage.classList.remove('hidden');
       document.body.classList.add('story-title-lock');
@@ -3925,6 +4109,23 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function restoreStorySessionIfNeeded() {
+      if (getStorySessionFlag(STORY_WORKSPACE_SESSION_KEY) !== '1') return;
+      document.body.classList.remove('story-title-lock');
+      titleStage.classList.add('hidden');
+      workspacePanel.classList.add('active');
+      pauseMapMusic();
+      renderStoryNode(currentStoryNodeId);
+      window.setTimeout(() => {
+        resetStoryMapViewport();
+        syncStoryMapState();
+        const missionId = getStorySessionFlag(STORY_ACTIVE_MISSION_SESSION_KEY);
+        if (missionId && storyMissionScripts[missionId]) {
+          openStoryMission(missionId);
+        }
+      }, 80);
+    }
+
     primeStoryUiSfx();
     bindStoryUiSfx(enterStoryBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(storySceneCloseBtn);
@@ -3932,9 +4133,10 @@
     bindStoryUiSfx(storySceneAmbientNextBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(storySceneMapBtn);
     bindStoryUiSfx(storySceneNextBtn, { clickKind: 'click' });
-    bindStoryUiSfx(storyMissionPanelBtn);
-    bindStoryUiSfx(storyMissionHandBtn);
-    bindStoryUiSfx(storyMissionCompactBtn, { clickKind: 'confirm' });
+    if (storyMissionPanelBtn) bindStoryUiSfx(storyMissionPanelBtn);
+    if (storyMissionHandBtn) bindStoryUiSfx(storyMissionHandBtn);
+    if (storyMissionBriefToggleBtn) bindStoryUiSfx(storyMissionBriefToggleBtn);
+    if (storyMissionCompactBtn) bindStoryUiSfx(storyMissionCompactBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(storyMissionMapBtn);
     bindStoryUiSfx(storyMissionRestartBtn, { clickKind: 'confirm' });
 
@@ -3943,24 +4145,35 @@
     storySceneAmbientMapBtn.addEventListener('click', closeStoryScene);
     storySceneAmbientNextBtn.addEventListener('click', activateSceneDialogue);
     storySceneMapBtn.addEventListener('click', stepBackStorySceneLine);
-    storyMissionPanelBtn.addEventListener('click', () => {
-      postStoryMissionEmbedCommand('panel', 3);
-    });
-    storyMissionHandBtn.addEventListener('click', () => {
-      postStoryMissionEmbedCommand('hand', 4);
-    });
-    storyMissionCompactBtn.addEventListener('click', () => {
-      if (isStoryMissionMobileViewport()) {
-        requestStoryMissionFullscreenBestEffort();
-      }
-      syncStoryMissionQuickActions(true);
-      postStoryMissionEmbedCommand('compact', 6);
-    });
+    if (storyMissionPanelBtn) {
+      storyMissionPanelBtn.addEventListener('click', () => {
+        postStoryMissionEmbedCommand('panel', 3);
+      });
+    }
+    if (storyMissionHandBtn) {
+      storyMissionHandBtn.addEventListener('click', () => {
+        postStoryMissionEmbedCommand('hand', 4);
+      });
+    }
+    if (storyMissionCompactBtn) {
+      storyMissionCompactBtn.addEventListener('click', async () => {
+        if (isStoryMissionMobileViewport()) {
+          await requestStoryMissionFullscreenBestEffort({ target: 'stage', landscape: true });
+        }
+        postStoryMissionEmbedCommand('interface-toggle', 1);
+      });
+    }
+    if (storyMissionBriefToggleBtn) {
+      storyMissionBriefToggleBtn.addEventListener('click', () => {
+        setStoryMissionBriefExpanded(!storyMissionStage.classList.contains('mission-brief-expanded'));
+      });
+    }
     storyMissionMapBtn.addEventListener('click', closeStoryMission);
     storyMissionRestartBtn.addEventListener('click', () => {
       if (!activeMissionNodeId) return;
       const mission = storyMissionScripts[activeMissionNodeId];
       if (!mission || !storyMissionFrame) return;
+      syncStoryMissionModeButton();
       storyMissionFrame.src = 'about:blank';
       window.setTimeout(() => {
         storyMissionFrame.src = mission.url;
@@ -4034,10 +4247,14 @@
 
     primeTitleArtwork();
     window.addEventListener('resize', handleStoryViewportChange);
-    window.addEventListener('resize', () => syncStoryMissionModeButton());
+    window.addEventListener('resize', () => {
+      syncStoryMissionModeButton();
+      syncStoryMissionMobileFocus();
+    });
     window.addEventListener('orientationchange', () => {
       handleStoryViewportChange();
       syncStoryMissionModeButton();
+      window.setTimeout(syncStoryMissionMobileFocus, 120);
     });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden || workspacePanel.classList.contains('active')) return;
@@ -4049,6 +4266,7 @@
     }, 220);
     renderStoryNode(currentStoryNodeId);
     closeStoryScene();
+    restoreStorySessionIfNeeded();
   </script>
 </body>
 </html>
