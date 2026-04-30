@@ -41,6 +41,11 @@
         linear-gradient(180deg, #19120f 0%, #0b131c 30%, #06090f 100%);
       overflow-x:hidden;
     }
+    body.story-title-lock{
+      height:100svh;
+      overflow:hidden;
+      overscroll-behavior:none;
+    }
     body::before{
       content:"";
       position:fixed;
@@ -77,6 +82,11 @@
       margin:0;
       padding:0 0 36px;
     }
+    body.story-title-lock .page-shell{
+      height:100svh;
+      padding:0;
+      overflow:hidden;
+    }
 
     .title-stage,
     .workspace,
@@ -102,8 +112,7 @@
         linear-gradient(315deg, rgba(143,244,255,.05), transparent 20%);
       pointer-events:none;
     }
-    .enter-btn,
-    .back-link{
+    .enter-btn{
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -123,8 +132,7 @@
       transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
       cursor:pointer;
     }
-    .enter-btn:hover,
-    .back-link:hover{
+    .enter-btn:hover{
       transform:translateY(-1px);
       border-color:rgba(255,185,109,.28);
       box-shadow:0 12px 20px rgba(255,185,109,.12);
@@ -146,6 +154,10 @@
         radial-gradient(circle at 78% 22%, rgba(74,199,227,.16), transparent 18%),
         linear-gradient(180deg, rgba(37,25,18,.96), rgba(9,14,22,.98));
       transition:opacity .45s ease, transform .45s ease, min-height .45s ease, padding .45s ease, margin .45s ease;
+    }
+    body.story-title-lock .title-stage{
+      height:100svh;
+      margin:0;
     }
     .title-stage.hidden{
       opacity:0;
@@ -1464,27 +1476,6 @@
       display:block;
       background:#05080d;
     }
-    .bottom-back{
-      position:fixed;
-      left:50%;
-      bottom:16px;
-      transform:translateX(-50%);
-      z-index:12;
-      display:flex;
-      justify-content:center;
-      pointer-events:none;
-    }
-    .back-link{
-      min-height:36px;
-      padding:8px 14px;
-      font-size:.72rem;
-      letter-spacing:.1em;
-      background:linear-gradient(180deg, rgba(18,28,39,.92), rgba(8,13,19,.96));
-      border-color:rgba(143,244,255,.18);
-      box-shadow:0 12px 24px rgba(0,0,0,.24);
-      pointer-events:auto;
-      backdrop-filter:blur(8px);
-    }
 
     @keyframes buttonPulse{
       0%,100%{transform:scale(.8);opacity:.38}
@@ -1754,7 +1745,6 @@
       .mission-frame{
         min-height:64svh;
       }
-      .bottom-back{bottom:12px}
     }
     @keyframes stormFlashA{
       0%, 11%, 100%{opacity:0}
@@ -1804,7 +1794,7 @@
     }
   </style>
 </head>
-<body>
+<body class="story-title-lock">
   <div class="story-transition-veil" id="storyTransitionVeil" aria-hidden="true"></div>
   <main class="page-shell">
     <section class="title-stage" id="titleStage">
@@ -1907,7 +1897,7 @@
 
                   <div class="scene-actions">
                     <button class="scene-btn" id="storySceneNextBtn" type="button">Adelante</button>
-                    <button class="scene-btn secondary" id="storySceneMapBtn" type="button">Volver al mapa</button>
+                    <button class="scene-btn secondary" id="storySceneMapBtn" type="button">Atrás</button>
                   </div>
                 </div>
               </div>
@@ -1927,6 +1917,7 @@
                 <div class="mission-actions">
                   <button class="scene-btn secondary" id="storyMissionPanelBtn" type="button">Panel</button>
                   <button class="scene-btn secondary" id="storyMissionHandBtn" type="button">Mano</button>
+                  <button class="scene-btn secondary" id="storyMissionCompactBtn" type="button">Modo compacto</button>
                   <button class="scene-btn secondary" id="storyMissionMapBtn" type="button">Volver al mapa</button>
                   <button class="scene-btn secondary" id="storyMissionRestartBtn" type="button">Reiniciar misión</button>
                 </div>
@@ -1945,10 +1936,6 @@
       </div>
     </section>
   </main>
-
-  <div class="bottom-back">
-    <a class="back-link" href="MODO_HISTORIA_POCObot.html?tab=boceto#panel-boceto">Volver</a>
-  </div>
 
   <audio id="storyTitleMusic" preload="auto" autoplay playsinline loop>
     <source src="assets/Historia/CenizaMetalica.mp3" type="audio/mpeg">
@@ -2005,6 +1992,7 @@
     const storyMissionTip = document.getElementById('storyMissionTip');
     const storyMissionPanelBtn = document.getElementById('storyMissionPanelBtn');
     const storyMissionHandBtn = document.getElementById('storyMissionHandBtn');
+    const storyMissionCompactBtn = document.getElementById('storyMissionCompactBtn');
     const storyMissionMapBtn = document.getElementById('storyMissionMapBtn');
     const storyMissionRestartBtn = document.getElementById('storyMissionRestartBtn');
     const storyMissionFrame = document.getElementById('storyMissionFrame');
@@ -2948,16 +2936,35 @@
     };
 
     storySceneScripts.hangar = hangarZoneScene;
+
+    function copySceneLines(lines, variantOffset = 0) {
+      return lines.map((line) => {
+        const nextLine = { ...line };
+        if (Number.isInteger(line.variantSourceLine)) {
+          nextLine.variantSourceLine = line.variantSourceLine + variantOffset;
+        }
+        return nextLine;
+      });
+    }
+
+    const sharedMaraIntroLineCount = sharedMaraIntroLines.length;
+
     storySceneScripts.hangar_intro = {
       ...hangarZoneScene,
       startAmbient: true,
-      lines: [...sharedMaraIntroLines, ...hangarZoneScene.lines]
+      lines: [
+        ...copySceneLines(sharedMaraIntroLines),
+        ...copySceneLines(hangarZoneScene.lines, sharedMaraIntroLineCount)
+      ]
     };
     storySceneScripts.patio = patioZoneScene;
     storySceneScripts.patio_intro = {
       ...patioZoneScene,
       startAmbient: true,
-      lines: [...sharedMaraIntroLines, ...patioZoneScene.lines]
+      lines: [
+        ...copySceneLines(sharedMaraIntroLines),
+        ...copySceneLines(patioZoneScene.lines, sharedMaraIntroLineCount)
+      ]
     };
 
     const storyMissionScripts = {
@@ -3375,6 +3382,16 @@
       if (storySceneScroll) storySceneScroll.scrollTop = 0;
       storySceneNextBtn.disabled = needsChoice;
       storySceneNextBtn.textContent = sceneLineIndex >= scene.lines.length - 1 ? (scene.completeActionLabel || 'Volver al mapa') : 'Adelante';
+      storySceneMapBtn.disabled = sceneLineIndex <= 0;
+      storySceneMapBtn.textContent = 'Atrás';
+    }
+
+    function stepBackStorySceneLine() {
+      if (!activeSceneNodeId) return;
+      const scene = storySceneScripts[getActiveSceneScriptKey()];
+      if (!scene || sceneLineIndex <= 0) return;
+      sceneLineIndex -= 1;
+      renderSceneLine();
     }
 
     function activateSceneDialogue() {
@@ -3502,12 +3519,19 @@
       }, 260);
     }
 
-    function postStoryMissionEmbedCommand(command) {
+    function postStoryMissionEmbedCommand(command, attempts = 1) {
       if (!storyMissionFrame || !storyMissionFrame.contentWindow || !command) return;
-      storyMissionFrame.contentWindow.postMessage({
-        type: 'pocobot-story-embed-scroll',
-        command
-      }, '*');
+      const sendCommand = () => {
+        storyMissionFrame.contentWindow.postMessage({
+          type: 'pocobot-story-embed-scroll',
+          command
+        }, '*');
+      };
+      sendCommand();
+      const repeatCount = Math.max(1, Number(attempts) || 1);
+      for (let index = 1; index < repeatCount; index += 1) {
+        window.setTimeout(sendCommand, index * 140);
+      }
     }
 
     const storyMissionResults = {
@@ -3753,6 +3777,7 @@
       if (workspacePanel.classList.contains('active')) return;
       stopTitleMusic();
       runStoryTransition(() => {
+        document.body.classList.remove('story-title-lock');
         titleStage.classList.add('hidden');
         workspacePanel.classList.add('active');
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -3773,6 +3798,7 @@
     function showIntro() {
       workspacePanel.classList.remove('active');
       titleStage.classList.remove('hidden');
+      document.body.classList.add('story-title-lock');
       document.documentElement.style.setProperty('--enter-shift', '0px');
       document.documentElement.style.setProperty('--enter-scale', '1');
       pauseMapMusic();
@@ -3791,6 +3817,7 @@
     bindStoryUiSfx(storySceneNextBtn, { clickKind: 'click' });
     bindStoryUiSfx(storyMissionPanelBtn);
     bindStoryUiSfx(storyMissionHandBtn);
+    bindStoryUiSfx(storyMissionCompactBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(storyMissionMapBtn);
     bindStoryUiSfx(storyMissionRestartBtn, { clickKind: 'confirm' });
 
@@ -3798,12 +3825,15 @@
     storySceneCloseBtn.addEventListener('click', closeStoryScene);
     storySceneAmbientMapBtn.addEventListener('click', closeStoryScene);
     storySceneAmbientNextBtn.addEventListener('click', activateSceneDialogue);
-    storySceneMapBtn.addEventListener('click', closeStoryScene);
+    storySceneMapBtn.addEventListener('click', stepBackStorySceneLine);
     storyMissionPanelBtn.addEventListener('click', () => {
       postStoryMissionEmbedCommand('panel');
     });
     storyMissionHandBtn.addEventListener('click', () => {
       postStoryMissionEmbedCommand('hand');
+    });
+    storyMissionCompactBtn.addEventListener('click', () => {
+      postStoryMissionEmbedCommand('compact', 6);
     });
     storyMissionMapBtn.addEventListener('click', closeStoryMission);
     storyMissionRestartBtn.addEventListener('click', () => {

@@ -99,6 +99,9 @@ body.story-embed-mode .story-embed-nav{
   flex-direction:column;
   gap:8px;
 }
+body.story-embed-mode .story-embed-nav[hidden]{
+  display:none !important;
+}
 body.story-embed-mode .story-embed-nav-btn{
   min-width:96px;
   min-height:42px;
@@ -117,6 +120,11 @@ body.story-embed-mode .story-embed-nav-btn{
 body.story-embed-mode .story-embed-nav-btn:hover{
   border-color:rgba(35,216,255,.48);
   color:#fff6e8;
+}
+body.story-embed-mode .story-embed-nav-btn[aria-pressed="true"]{
+  border-color:rgba(35,216,255,.62);
+  background:linear-gradient(180deg, rgba(18,34,48,.96), rgba(8,20,30,.98));
+  color:#f7fbff;
 }
 .side-tower{
   padding:8px;
@@ -8440,6 +8448,7 @@ body.desktop-compact-mode > footer{
 <div class="story-embed-nav" id="storyEmbedNav" hidden>
   <button class="story-embed-nav-btn" id="storyEmbedTopBtn" type="button">Panel</button>
   <button class="story-embed-nav-btn" id="storyEmbedHandBtn" type="button">Mano</button>
+  <button class="story-embed-nav-btn" id="storyEmbedCompactBtn" type="button" aria-pressed="false">Compacto</button>
 </div>
 
 <div class="intro-screen" id="introScreen">
@@ -9919,24 +9928,26 @@ function autoStartStoryMissionIfRequested(){
       primeOfflineMode('local');
       newGame();
       hideIntroScreen();
+      scheduleStoryEmbedNavigationSetup();
       addToast('Mision historia: construye un bot valido para el taller', 'warn');
       log('📜 Mision historia: construye un bot valido para el taller.');
       window.setTimeout(() => {
         scrollToPlayerPanel(state.currentPlayer, 'smooth');
         notifySelection('Mision historia: construye un bot valido para el taller.');
-        setupStoryEmbedNavigation();
+        scheduleStoryEmbedNavigationSetup();
       }, 260);
       break;
     case 'hangar_race':
       primeOfflineMode('single', 'hard');
       newGame();
       hideIntroScreen();
+      scheduleStoryEmbedNavigationSetup();
       addToast('Mision historia: deja tu PoCoBOT listo para atacar antes que Mara', 'warn');
       log('📜 Mision historia: adelántate a Mara y deja tu PoCoBOT listo para atacar.');
       window.setTimeout(() => {
         scrollToPlayerPanel(0, 'smooth');
         notifySelection('Objetivo: deja tu PoCoBOT listo para atacar antes que Mara Óxido.');
-        setupStoryEmbedNavigation();
+        scheduleStoryEmbedNavigationSetup();
       }, 260);
       break;
     case 'patio_duel':
@@ -9946,11 +9957,12 @@ function autoStartStoryMissionIfRequested(){
       setupStoryPatioDuelScenario();
       render();
       hideIntroScreen();
+      scheduleStoryEmbedNavigationSetup();
       addToast('Mision historia: ofensiva y mas ofensiva en el Patio', 'warn');
       window.setTimeout(() => {
         scrollToPlayerPanel(0, 'smooth');
         notifySelection('Objetivo: usa un ataque normal con combustible, dispara un proyectil y derrota a Mara Óxido.');
-        setupStoryEmbedNavigation();
+        scheduleStoryEmbedNavigationSetup();
       }, 260);
       break;
     default:
@@ -10619,6 +10631,7 @@ const STORY_BOOT_PARAMS = new URLSearchParams(window.location.search);
 const STORY_MISSION_BOOT = STORY_BOOT_PARAMS.get('story_mission') || '';
 const STORY_EMBED_MODE = STORY_BOOT_PARAMS.get('story_embed') === '1';
 const STORY_AUDIO_MODE = STORY_BOOT_PARAMS.get('story_audio') || '';
+let storyCompactHudForced = STORY_BOOT_PARAMS.get('story_compact') === '1';
 const AUDIO_SFX_URIS = {
   uiClick: "assets/sfx/ui_click.wav",
   shuffle: "assets/sfx/card_shuffle.wav",
@@ -11147,12 +11160,13 @@ function setupStoryEmbedNavigation(){
   const nav = document.getElementById('storyEmbedNav');
   const topBtn = document.getElementById('storyEmbedTopBtn');
   const handBtn = document.getElementById('storyEmbedHandBtn');
-  if(!nav || !topBtn || !handBtn) return;
+  const compactBtn = document.getElementById('storyEmbedCompactBtn');
+  if(!nav || !topBtn || !handBtn || !compactBtn) return;
   if(!STORY_EMBED_MODE){
     nav.hidden = true;
     return;
   }
-  nav.hidden = false;
+  syncStoryEmbedNavigationVisibility();
   if(topBtn.dataset.bound !== '1'){
     topBtn.dataset.bound = '1';
     topBtn.addEventListener('click', () => {
@@ -11166,6 +11180,44 @@ function setupStoryEmbedNavigation(){
       scrollToHandZone(humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0), 'smooth');
     });
   }
+  if(compactBtn.dataset.bound !== '1'){
+    compactBtn.dataset.bound = '1';
+    compactBtn.addEventListener('click', forceStoryEmbedCompactMode);
+  }
+}
+
+function syncStoryEmbedNavigationVisibility(){
+  const nav = document.getElementById('storyEmbedNav');
+  if(!nav) return;
+  const compactActive = isDesktopCompactModeActive();
+  const compactRequested = storyCompactHudForced && desktopHudMode === 'compact';
+  nav.hidden = !STORY_EMBED_MODE || compactActive || compactRequested;
+  const compactBtn = document.getElementById('storyEmbedCompactBtn');
+  if(compactBtn) compactBtn.setAttribute('aria-pressed', compactActive ? 'true' : 'false');
+}
+
+function forceStoryEmbedCompactMode(){
+  if(!STORY_EMBED_MODE) return;
+  storyCompactHudForced = true;
+  desktopHudMode = 'compact';
+  mobilePanoramaRequested = shouldUseStoryMobileCompactMode();
+  if(mobilePanoramaRequested) requestLandscapeOrientationBestEffort();
+  const nav = document.getElementById('storyEmbedNav');
+  if(nav) nav.hidden = true;
+  syncStoryEmbedNavigationVisibility();
+  triggerDesktopHudModeTransition('compact');
+  window.setTimeout(() => {
+    syncDesktopHudAvailability();
+    render();
+  }, 220);
+}
+
+function scheduleStoryEmbedNavigationSetup(){
+  if(!STORY_EMBED_MODE) return;
+  setupStoryEmbedNavigation();
+  window.requestAnimationFrame(() => setupStoryEmbedNavigation());
+  window.setTimeout(() => setupStoryEmbedNavigation(), 120);
+  window.setTimeout(() => setupStoryEmbedNavigation(), 420);
 }
 
 function handleStoryEmbedMessage(event){
@@ -11179,6 +11231,10 @@ function handleStoryEmbedMessage(event){
   if(data.command === 'hand'){
     const humanIdx = typeof getInteractivePlayerIndex === 'function' ? getInteractivePlayerIndex() : 0;
     scrollToHandZone(humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0), 'smooth');
+    return;
+  }
+  if(data.command === 'compact'){
+    forceStoryEmbedCompactMode();
   }
 }
 
@@ -12637,10 +12693,22 @@ function isDesktopCompactLikelyFullscreen(){
   return Math.abs(targetWidth - window.innerWidth) <= 32 && Math.abs(targetHeight - window.innerHeight) <= 108;
 }
 
+function shouldUseStoryMobileCompactMode(){
+  if(!STORY_EMBED_MODE || !storyCompactHudForced) return false;
+  try{
+    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const compactViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
+    return hasCoarsePointer && compactViewport;
+  }catch(_err){
+    return false;
+  }
+}
+
 function canUseDesktopCompactHud(){
   const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
-  return !!state.gameStarted && introHidden && lobbyHidden && isDesktopCompactCapable() && isDesktopCompactLikelyFullscreen();
+  const storyForcedDesktop = STORY_EMBED_MODE && storyCompactHudForced && !shouldUseStoryMobileCompactMode();
+  return !!state.gameStarted && introHidden && lobbyHidden && (storyForcedDesktop || (isDesktopCompactCapable() && isDesktopCompactLikelyFullscreen()));
 }
 
 function canUseMobilePanoramaHud(){
@@ -12650,12 +12718,13 @@ function canUseMobilePanoramaHud(){
     const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
     const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
     const portraitReady = !!window.matchMedia && window.matchMedia('(max-width: 820px) and (orientation: portrait) and (pointer: coarse)').matches;
+    const storyForcedMobile = shouldUseStoryMobileCompactMode();
     return !!state.gameStarted
       && introHidden
       && lobbyHidden
       && hasCoarsePointer
       && compactMobileViewport
-      && (portraitReady || mobilePanoramaRequested);
+      && (storyForcedMobile || portraitReady || mobilePanoramaRequested);
   }catch(_err){
     return false;
   }
@@ -12816,6 +12885,7 @@ function syncDesktopHudAvailability(){
   if(compactExpandedBtn){
     compactExpandedBtn.textContent = mobilePanoramaActive ? 'Modo vertical' : 'Interfaz expandida';
   }
+  syncStoryEmbedNavigationVisibility();
   return available;
 }
 
@@ -19311,7 +19381,7 @@ window.addEventListener('load', () => {
   syncIntroInstallTip();
   startMenuMusic(false);
   autoStartStoryMissionIfRequested();
-  setupStoryEmbedNavigation();
+  scheduleStoryEmbedNavigationSetup();
   try{
     const displayMode = window.matchMedia('(display-mode: standalone)');
     if(displayMode && typeof displayMode.addEventListener === 'function'){
