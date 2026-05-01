@@ -224,6 +224,37 @@
       opacity:1;
       transform:translateY(0) scale(1);
     }
+    .story-transition-veil.mission-spiral{
+      background:
+        repeating-conic-gradient(from 0deg, rgba(143,244,255,.0) 0deg, rgba(143,244,255,.2) 18deg, rgba(255,185,109,.34) 34deg, rgba(7,11,17,.98) 56deg, rgba(7,11,17,.98) 72deg),
+        radial-gradient(circle, rgba(7,11,17,0) 0 18%, rgba(7,11,17,.76) 42%, rgba(7,11,17,.98) 72%);
+      filter:none;
+      transform:scale(.18) rotate(0turn);
+      transition:none;
+    }
+    .story-transition-veil.mission-spiral::before{
+      inset:-30%;
+      background:repeating-conic-gradient(from 90deg, transparent 0deg, rgba(255,255,255,.18) 12deg, transparent 28deg);
+      filter:blur(18px);
+      mix-blend-mode:screen;
+    }
+    .story-transition-veil.mission-spiral.active{
+      animation:missionSpiralOpen .82s cubic-bezier(.2,.86,.2,1) forwards;
+      opacity:1;
+    }
+    .story-transition-veil.mission-spiral.active::before{
+      animation:missionSpiralGlow .82s cubic-bezier(.2,.86,.2,1) forwards;
+    }
+    @keyframes missionSpiralOpen{
+      0%{opacity:0; transform:scale(.18) rotate(0turn)}
+      34%{opacity:1}
+      100%{opacity:1; transform:scale(1.95) rotate(1.24turn)}
+    }
+    @keyframes missionSpiralGlow{
+      0%{opacity:0; transform:scale(.5) rotate(0turn)}
+      55%{opacity:.9}
+      100%{opacity:.16; transform:scale(1.35) rotate(-.7turn)}
+    }
     .title-art-wrap{
       position:relative;
       width:100%;
@@ -1036,7 +1067,11 @@
       margin:0 auto clamp(34px, 5vh, 54px);
       padding:18px;
       max-height:var(--scene-dialog-max-height);
-      overflow:hidden;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;
+      touch-action:pan-y;
+      scrollbar-gutter:stable;
       border-radius:28px;
       border:1px solid rgba(255,255,255,.08);
       background:linear-gradient(180deg, rgba(8,13,19,.86), rgba(8,13,19,.78));
@@ -1054,10 +1089,10 @@
       grid-template-columns:minmax(124px, 18vw) 1fr;
       gap:18px;
       align-items:stretch;
-      flex:1 1 auto;
+      flex:0 0 auto;
       min-height:0;
-      max-height:calc(var(--scene-dialog-max-height) - 36px);
-      overflow:hidden;
+      max-height:none;
+      overflow:visible;
     }
     .scene-avatar-wrap{
       position:relative;
@@ -1088,10 +1123,10 @@
     .scene-dialog-copy{
       min-width:0;
       min-height:0;
-      max-height:calc(var(--scene-dialog-max-height) - 36px);
+      max-height:none;
       display:grid;
       grid-template-rows:auto auto auto auto minmax(0, 1fr) auto;
-      overflow:hidden;
+      overflow:visible;
     }
     .scene-dialog-scroll{
       min-height:0;
@@ -1099,7 +1134,7 @@
       margin-top:0;
       padding-right:8px;
       margin-right:-4px;
-      overflow-y:auto;
+      overflow-y:visible;
       overflow-x:hidden;
       overscroll-behavior:contain;
       -webkit-overflow-scrolling:touch;
@@ -1119,6 +1154,17 @@
       border-radius:999px;
     }
     .scene-dialog-scroll::-webkit-scrollbar-thumb{
+      background:linear-gradient(180deg, rgba(143,244,255,.48), rgba(255,185,109,.38));
+      border-radius:999px;
+    }
+    .scene-dialog-card::-webkit-scrollbar{
+      width:8px;
+    }
+    .scene-dialog-card::-webkit-scrollbar-track{
+      background:rgba(255,255,255,.04);
+      border-radius:999px;
+    }
+    .scene-dialog-card::-webkit-scrollbar-thumb{
       background:linear-gradient(180deg, rgba(143,244,255,.48), rgba(255,185,109,.38));
       border-radius:999px;
     }
@@ -1896,13 +1942,23 @@
         padding:14px 16px;
         border-radius:24px;
         max-height:var(--scene-dialog-max-height);
-        overflow:hidden;
+        overflow-y:auto;
+        -webkit-overflow-scrolling:touch;
         overscroll-behavior:contain;
       }
       .scene-dialog-main{
         grid-template-columns:92px 1fr;
         gap:14px;
         align-items:start;
+        max-height:none;
+        overflow:visible;
+      }
+      .scene-dialog-copy{
+        max-height:none;
+        overflow:visible;
+      }
+      .scene-dialog-scroll{
+        overflow:visible;
       }
       .scene-avatar{
         max-height:150px;
@@ -1928,6 +1984,12 @@
       }
     }
     @media (max-height:760px) and (orientation: landscape){
+      .story-scene-stage{
+        align-items:stretch;
+        overflow-y:auto;
+        overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+      }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
       .story-scene-stage.mercado-scene .scene-focus-wrap{
@@ -1950,13 +2012,61 @@
         transform:translateY(calc(var(--scene-figure-shift) - 12svh)) scale(.74);
       }
       .scene-dialog-card{
-        --scene-dialog-max-height:min(58svh, calc(100svh - 82px));
+        --scene-dialog-max-height:calc(100svh - 84px);
         --scene-dialog-scroll-max:clamp(138px, 34svh, 280px);
         width:min(1180px, calc(100% - 36px));
-        margin:0 auto max(12px, env(safe-area-inset-bottom));
+        margin:auto auto max(12px, env(safe-area-inset-bottom));
+        overflow-y:auto;
+        -webkit-overflow-scrolling:touch;
+      }
+      .scene-dialog-main,
+      .scene-dialog-copy{
+        max-height:none;
+        overflow:visible;
+      }
+      .scene-dialog-copy{
+        display:block;
+      }
+      .scene-dialog-scroll{
+        overflow:visible;
+      }
+      .scene-actions{
+        position:sticky;
+        bottom:0;
+        z-index:2;
+        padding-top:10px;
+        background:linear-gradient(180deg, rgba(8,13,19,0), rgba(8,13,19,.92) 28%, rgba(8,13,19,.98));
       }
       .story-scene-stage.minimal-dialogue .scene-dialog-card{
-        --scene-dialog-max-height:min(54svh, calc(100svh - 76px));
+        --scene-dialog-max-height:calc(100svh - 76px);
+      }
+      .story-market-stage{
+        overflow-y:auto;
+        overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+      }
+      .market-shell{
+        min-height:auto;
+        padding:12px 0 max(12px, env(safe-area-inset-bottom));
+      }
+      .market-layout{
+        grid-template-columns:minmax(190px, .8fr) minmax(360px, 1.3fr) minmax(210px, .82fr);
+        gap:12px;
+      }
+      .market-vendor-panel,
+      .market-store-panel,
+      .inventory-panel{
+        padding:14px;
+        border-radius:20px;
+      }
+      .market-portrait{
+        max-height:210px;
+      }
+      .market-grid{
+        gap:10px;
+      }
+      .market-item-card{
+        min-height:150px;
       }
     }
     @media (orientation:portrait){
@@ -2013,6 +2123,12 @@
     @media (max-width:760px) and (orientation:portrait){
       .page-shell{padding:0 0 24px}
       .story-playfield{min-height:100svh}
+      .story-scene-stage{
+        overflow-y:auto;
+        overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y;
+      }
       .story-map-shell{
         min-height:100svh;
         height:100svh;
@@ -2088,22 +2204,28 @@
         margin:0 12px max(16px, env(safe-area-inset-bottom));
         padding:14px 14px 16px;
         max-height:var(--scene-dialog-max-height);
-        overflow:hidden;
+        overflow-y:auto;
         overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y;
       }
       .scene-dialog-main{
         grid-template-columns:92px 1fr;
         gap:12px;
         align-items:start;
-        height:100%;
+        height:auto;
         max-height:none;
+        overflow:visible;
       }
       .scene-dialog-copy{
-        height:100%;
+        height:auto;
         max-height:none;
+        display:block;
+        overflow:visible;
       }
       .scene-dialog-scroll{
         max-height:none;
+        overflow:visible;
       }
       .scene-avatar{
         max-height:160px;
@@ -2183,6 +2305,7 @@
         margin:0 12px max(16px, env(safe-area-inset-bottom));
         height:min(74svh, calc(100svh - 96px));
         max-height:min(74svh, calc(100svh - 96px));
+        overflow-y:auto;
       }
       .mission-shell{
         padding:14px 12px 12px;
@@ -2607,7 +2730,8 @@
     const MERCADO_RELES_IMAGE = 'assets/Historia/Brutos/3MERCADO_RELES_MUERTOS.PNG';
     const STORY_MAP_THEMES = {
       exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
-      chapter_clear: 'assets/Historia/cancionMundo.mp3'
+      chapter_clear: 'assets/Historia/cancionMundo.mp3',
+      market: 'assets/Historia/MercadodeChatarra.mp3'
     };
     const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
     const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
@@ -3943,14 +4067,14 @@
         title: 'Taller de la Fosa Azul',
         copy: 'Monta tu PoCoBOT hasta dejarlo listo para atacar antes que Mara Óxido. Ella ensamblará en paralelo, y si llega antes, la prueba se pierde.',
         tip: 'Un mecha valido para PoCoBOT necesita al menos <strong>6 cartas</strong> repartidas entre <strong>Ataque, Defensa y Armadura</strong>, y al menos <strong>1 Piloto</strong>.',
-        url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race&story_embed=1&story_audio=external'
+        url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race&story_embed=1&story_audio=carry'
       },
       patio: {
         chip: 'Combate con reglas especiales',
         title: 'Patio de Pruebas del Taller',
         copy: 'Entra con un chasis prestado del taller, usa combustible para abrir ataque y dispara un proyectil. Puedes resolverlo en ataques separados o con un ataque combinado si el límite de combustible se queda corto.',
         tip: 'Circunstancia especial del Patio: Mara fuerza los seguros del chasis para que puedas atacar aunque el mecha no cumpla las reglas PoCoBOT. Fuera de esta prueba, un PoCoBOT incompleto no recibe ese perdón.',
-        url: 'poker_combat_bot_ONLINE.html?story_mission=patio_duel&story_embed=1&story_audio=external'
+        url: 'poker_combat_bot_ONLINE.html?story_mission=patio_duel&story_embed=1&story_audio=carry'
       }
     };
 
@@ -4016,6 +4140,13 @@
       }
     }
 
+    function syncStoryThemeForNode(nodeId) {
+      if (nodeId === 'mercado' && !hasCompletedStoryNode('mercado')) {
+        queueStoryMapTheme('market');
+        if (workspacePanel.classList.contains('active')) playMapMusic();
+      }
+    }
+
     function postStoryProgressToMap() {
       if (!storyMapFrame || !storyMapFrame.contentWindow) return;
       storyMapFrame.contentWindow.postMessage({
@@ -4035,6 +4166,7 @@
       const shouldSyncMap = options.syncMap !== false;
       const localNode = storyDraftNodes[nodeId] || storyDraftNodes.hangar;
       currentStoryNodeId = localNode.id;
+      syncStoryThemeForNode(localNode.id);
       renderStoryCast(localNode.cast);
       renderMobileRoute();
       if (shouldSyncMap) syncStoryMapState();
@@ -4557,8 +4689,9 @@
 
     function openStoryMarket() {
       ensureStoryMarketInventory();
+      queueStoryMapTheme('market');
       closeStoryScene();
-      pauseMapMusic();
+      playMapMusic();
       renderStoryMarket();
       if (!storyMarketStage) return;
       storyMarketStage.hidden = false;
@@ -4612,6 +4745,11 @@
       targetUrl.searchParams.set('story_standalone', '1');
       targetUrl.searchParams.set('story_node', nodeId);
       targetUrl.searchParams.set('story_return', window.location.href);
+      const activeMapSource = storyMapMusic?.querySelector('source')?.getAttribute('src') || STORY_MAP_THEMES[storyProgressState.pendingThemeKey || ''] || STORY_MAP_THEMES.exploration;
+      targetUrl.searchParams.set('story_audio', 'carry');
+      targetUrl.searchParams.set('story_bgm', activeMapSource);
+      targetUrl.searchParams.set('story_bgm_time', String(Math.max(0, storyMapMusic?.currentTime || 0)));
+      targetUrl.searchParams.set('story_bgm_volume', String(Math.max(0, Math.min(1, storyMapMusic?.volume || 0.34))));
 
       const navigate = () => {
         window.location.href = targetUrl.href;
@@ -4623,8 +4761,8 @@
       }
 
       storyTransitionBusy = true;
-      storyTransitionVeil.classList.add('active');
-      window.setTimeout(navigate, 220);
+      storyTransitionVeil.classList.add('mission-spiral', 'active');
+      window.setTimeout(navigate, 760);
     }
 
     function syncStoryMissionQuickActions(hidden) {
@@ -4857,6 +4995,7 @@
       }
       if (storyTransitionBusy) return;
       storyTransitionBusy = true;
+      storyTransitionVeil.classList.remove('mission-spiral');
       storyTransitionVeil.classList.add('active');
       window.setTimeout(() => {
         onMidpoint();

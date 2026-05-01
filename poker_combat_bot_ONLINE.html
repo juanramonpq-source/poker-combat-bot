@@ -126,6 +126,56 @@ body.story-embed-mode .story-embed-nav-btn[aria-pressed="true"]{
   background:linear-gradient(180deg, rgba(18,34,48,.96), rgba(8,20,30,.98));
   color:#f7fbff;
 }
+body.story-embed-mode .story-mission-brief-bar{
+  position:fixed;
+  left:max(12px, env(safe-area-inset-left));
+  right:max(12px, env(safe-area-inset-right));
+  top:max(10px, env(safe-area-inset-top));
+  z-index:121;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  width:min(920px, calc(100vw - 24px));
+  padding:12px 14px;
+  border-radius:18px;
+  border:1px solid rgba(35,216,255,.22);
+  background:linear-gradient(180deg, rgba(8,13,19,.92), rgba(8,13,19,.78));
+  box-shadow:0 16px 34px rgba(0,0,0,.32);
+  backdrop-filter:blur(14px);
+}
+body.story-embed-mode .story-mission-brief-bar[hidden]{
+  display:none !important;
+}
+body.story-embed-mode .story-mission-brief-copy{
+  display:grid;
+  gap:4px;
+  min-width:0;
+}
+body.story-embed-mode .story-mission-brief-kicker{
+  color:#8ff4ff;
+  font-size:.68rem;
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+body.story-embed-mode .story-mission-brief-title{
+  margin:0;
+  color:#fff4dd;
+  font-size:1rem;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+body.story-embed-mode .story-mission-brief-text{
+  margin:0;
+  color:#dceaf6;
+  font-size:.82rem;
+  line-height:1.38;
+}
+body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-text{
+  display:none;
+}
 body.story-embed-mode .zone.story-scroll-focus{
   animation:storyScrollFocusPulse 1200ms ease;
 }
@@ -8520,6 +8570,14 @@ body.desktop-compact-mode > footer{
   <button class="story-embed-nav-btn" id="storyEmbedHandBtn" type="button">Mano</button>
   <button class="story-embed-nav-btn story-return-map-btn" id="storyStandaloneReturnBtn" type="button" hidden>Volver al mapa</button>
 </div>
+<div class="story-mission-brief-bar" id="storyMissionBriefBar" hidden>
+  <div class="story-mission-brief-copy">
+    <span class="story-mission-brief-kicker" id="storyMissionBriefKicker">Misión historia</span>
+    <strong class="story-mission-brief-title" id="storyMissionBriefTitle">Ruta Ceniza</strong>
+    <p class="story-mission-brief-text" id="storyMissionBriefText">Completa el objetivo especial para volver al modo historia.</p>
+  </div>
+  <button class="story-embed-nav-btn" id="storyMissionBriefToggleBtn" type="button">Ocultar info</button>
+</div>
 <div class="story-orientation-toast" id="storyOrientationToast" role="status" aria-live="polite">
   <span class="story-orientation-toast-icon" aria-hidden="true">🔒↻</span>
   <span>Activa el bloqueo de pantalla</span>
@@ -9996,6 +10054,7 @@ function primeOfflineMode(gameMode, difficulty=null){
 
 function autoStartStoryMissionIfRequested(){
   if(!STORY_MISSION_BOOT) return;
+  storyMissionBriefCollapsed = false;
 
   switch(STORY_MISSION_BOOT){
     case 'hangar_build':
@@ -10152,6 +10211,7 @@ function setupStoryPatioDuelScenario(){
 }
 
 function broadcastStoryMissionOutcome(payload){
+  syncStoryMissionBriefBar();
   if(STORY_EMBED_MODE && storyHudMode === 'horizontal'){
     exitStoryEmbedSpecialMode({ transition:false });
   }
@@ -10740,10 +10800,14 @@ const STORY_EMBED_MODE = STORY_BOOT_PARAMS.get('story_embed') === '1' || STORY_S
 const STORY_AUDIO_MODE = STORY_BOOT_PARAMS.get('story_audio') || '';
 const STORY_RETURN_URL = STORY_BOOT_PARAMS.get('story_return') || '';
 const STORY_NODE_BOOT = STORY_BOOT_PARAMS.get('story_node') || '';
+const STORY_CARRIED_BGM_SRC = STORY_BOOT_PARAMS.get('story_bgm') || '';
+const STORY_CARRIED_BGM_TIME = Number(STORY_BOOT_PARAMS.get('story_bgm_time') || 0) || 0;
+const STORY_CARRIED_BGM_VOLUME = Number(STORY_BOOT_PARAMS.get('story_bgm_volume') || 0.34) || 0.34;
 const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v1';
 let storyHudMode = STORY_BOOT_PARAMS.get('story_ui') || (STORY_BOOT_PARAMS.get('story_compact') === '1' ? 'compact' : 'scroll');
 if(!['scroll', 'compact', 'horizontal'].includes(storyHudMode)) storyHudMode = 'scroll';
 let storyOrientationToastTimer = null;
+let storyMissionBriefCollapsed = false;
 const AUDIO_SFX_URIS = {
   uiClick: "assets/sfx/ui_click.wav",
   shuffle: "assets/sfx/card_shuffle.wav",
@@ -10755,6 +10819,10 @@ const AUDIO_SFX_URIS = {
 
 function isStoryMissionExternalAudio(){
   return STORY_EMBED_MODE && STORY_AUDIO_MODE === 'external';
+}
+
+function isStoryMissionCarriedAudio(){
+  return STORY_EMBED_MODE && STORY_AUDIO_MODE === 'carry' && !!STORY_CARRIED_BGM_SRC;
 }
 
 function ensureSfxBank(){
@@ -10805,6 +10873,40 @@ function ensureMusicElements(){
     state.bgm2.volume = 0.30;
   }
 }
+function ensureStoryCarriedMusic(){
+  if(!isStoryMissionCarriedAudio()) return null;
+  if(!state.storyCarriedBgm){
+    state.storyCarriedBgm = new Audio(STORY_CARRIED_BGM_SRC);
+    state.storyCarriedBgm.loop = true;
+    state.storyCarriedBgm.preload = 'auto';
+    state.storyCarriedBgm.volume = Math.max(0, Math.min(1, STORY_CARRIED_BGM_VOLUME || 0.34));
+    state.storyCarriedBgm._baseVolume = state.storyCarriedBgm.volume;
+    try{
+      if(Number.isFinite(STORY_CARRIED_BGM_TIME) && STORY_CARRIED_BGM_TIME > 0){
+        state.storyCarriedBgm.currentTime = STORY_CARRIED_BGM_TIME;
+      }
+    }catch(_err){}
+    state.storyCarriedBgm.addEventListener('loadedmetadata', () => {
+      try{
+        if(Number.isFinite(STORY_CARRIED_BGM_TIME) && STORY_CARRIED_BGM_TIME > 0){
+          state.storyCarriedBgm.currentTime = Math.min(STORY_CARRIED_BGM_TIME, state.storyCarriedBgm.duration || STORY_CARRIED_BGM_TIME);
+        }
+      }catch(_err){}
+    }, { once:true });
+  }
+  return state.storyCarriedBgm;
+}
+function playStoryCarriedMusic(restart=false){
+  if(!state.soundOn) return;
+  const audio = ensureStoryCarriedMusic();
+  if(!audio) return;
+  try{
+    if(restart) audio.currentTime = Math.max(0, STORY_CARRIED_BGM_TIME || 0);
+    const p = audio.play();
+    if(p && typeof p.catch === 'function') p.catch(() => {});
+    state.musicPhase = 'story';
+  }catch(_err){}
+}
 function pauseMusic(audio, reset=false){
   if(!audio) return;
   try{
@@ -10816,8 +10918,10 @@ function stopAllMusic(reset=true){
   pauseMusic(state.bgmMenu, reset);
   pauseMusic(state.bgm1, reset);
   pauseMusic(state.bgm2, reset);
+  pauseMusic(state.storyCarriedBgm, reset);
 }
 function getActiveMusic(){
+  if(state.musicPhase === 'story') return state.storyCarriedBgm;
   if(state.musicPhase === 'menu') return state.bgmMenu;
   if(state.musicPhase === 'battle') return state.bgm2;
   if(state.musicPhase === 'intro') return state.bgm1;
@@ -10830,7 +10934,7 @@ function duckMusic(duration=320, toVolume=0.12){
     active.volume = Math.min(active.volume, toVolume);
     clearTimeout(active._duckTimer);
     active._duckTimer = setTimeout(() => {
-      active.volume = 0.30;
+      active.volume = active._baseVolume || 0.30;
     }, duration);
   }catch(e){}
 }
@@ -10843,6 +10947,13 @@ function playMusicTrack(audio, restart=false){
   }catch(e){}
 }
 function startIntroMusic(forceRestart=false){
+  if(isStoryMissionCarriedAudio()){
+    pauseMusic(state.bgmMenu, false);
+    pauseMusic(state.bgm1, false);
+    pauseMusic(state.bgm2, false);
+    playStoryCarriedMusic(false);
+    return;
+  }
   if(isStoryMissionExternalAudio()){
     stopAllMusic(false);
     state.musicPhase = 'none';
@@ -10855,6 +10966,13 @@ function startIntroMusic(forceRestart=false){
   playMusicTrack(state.bgm1, forceRestart);
 }
 function startMenuMusic(forceRestart=false){
+  if(isStoryMissionCarriedAudio()){
+    pauseMusic(state.bgmMenu, false);
+    pauseMusic(state.bgm1, false);
+    pauseMusic(state.bgm2, false);
+    playStoryCarriedMusic(false);
+    return;
+  }
   if(isStoryMissionExternalAudio()){
     stopAllMusic(false);
     state.musicPhase = 'none';
@@ -10869,6 +10987,14 @@ function startMenuMusic(forceRestart=false){
   playMusicTrack(state.bgmMenu, forceRestart);
 }
 function switchToBattleMusic(){
+  if(isStoryMissionCarriedAudio()){
+    state.firstAttackTriggered = true;
+    pauseMusic(state.bgmMenu, false);
+    pauseMusic(state.bgm1, false);
+    pauseMusic(state.bgm2, false);
+    playStoryCarriedMusic(false);
+    return;
+  }
   if(isStoryMissionExternalAudio()){
     stopAllMusic(false);
     state.musicPhase = 'none';
@@ -10883,6 +11009,13 @@ function switchToBattleMusic(){
   playMusicTrack(state.bgm2, true);
 }
 function syncMusicToState(){
+  if(isStoryMissionCarriedAudio()){
+    pauseMusic(state.bgmMenu, false);
+    pauseMusic(state.bgm1, false);
+    pauseMusic(state.bgm2, false);
+    playStoryCarriedMusic(false);
+    return;
+  }
   if(isStoryMissionExternalAudio()){
     stopAllMusic(false);
     state.musicPhase = 'none';
@@ -10925,6 +11058,10 @@ function syncMusicToState(){
   }
 }
 function maybeResumeMenuMusic(){
+  if(isStoryMissionCarriedAudio()){
+    playStoryCarriedMusic(false);
+    return;
+  }
   if(isStoryMissionExternalAudio()) return;
   const intro = document.getElementById('introScreen');
   if(!state.soundOn || state.gameStarted || !intro || intro.classList.contains('hidden')) return;
@@ -11228,6 +11365,53 @@ function getStoryEmbedHumanPlayerIndex(){
   return humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0);
 }
 
+const STORY_MISSION_BRIEFS = {
+  hangar_race: {
+    kicker: 'Carrera de ensamblaje',
+    title: 'Taller de la Fosa Azul',
+    text: 'Monta tu PoCoBOT y déjalo listo para atacar antes que Mara Óxido. Esto es una prueba especial de la Ruta Ceniza.'
+  },
+  patio_duel: {
+    kicker: 'Combate con reglas especiales',
+    title: 'Patio de Pruebas',
+    text: 'Usa combustible para abrir ataque y dispara al menos un proyectil. Puede ser por separado o con ataque combinado.'
+  }
+};
+
+function getStoryMissionBrief(){
+  return STORY_MISSION_BRIEFS[state.storyMission || STORY_MISSION_BOOT] || null;
+}
+
+function syncStoryMissionBriefBar(){
+  const bar = document.getElementById('storyMissionBriefBar');
+  if(!bar) return;
+  const brief = getStoryMissionBrief();
+  const shouldShow = STORY_EMBED_MODE && !!brief && state.gameStarted && !state.storyMissionAnnounced;
+  bar.hidden = !shouldShow;
+  if(!shouldShow) return;
+  const kicker = document.getElementById('storyMissionBriefKicker');
+  const title = document.getElementById('storyMissionBriefTitle');
+  const text = document.getElementById('storyMissionBriefText');
+  const toggle = document.getElementById('storyMissionBriefToggleBtn');
+  if(kicker) kicker.textContent = brief.kicker;
+  if(title) title.textContent = brief.title;
+  if(text) text.textContent = brief.text;
+  bar.classList.toggle('collapsed', storyMissionBriefCollapsed);
+  if(toggle) toggle.textContent = storyMissionBriefCollapsed ? 'Mostrar info' : 'Ocultar info';
+}
+
+function setupStoryMissionBriefBar(){
+  const toggle = document.getElementById('storyMissionBriefToggleBtn');
+  if(toggle && toggle.dataset.bound !== '1'){
+    toggle.dataset.bound = '1';
+    toggle.addEventListener('click', () => {
+      storyMissionBriefCollapsed = !storyMissionBriefCollapsed;
+      syncStoryMissionBriefBar();
+    });
+  }
+  syncStoryMissionBriefBar();
+}
+
 function returnToStoryMap() {
   if(!STORY_RETURN_URL) return false;
   try {
@@ -11303,6 +11487,7 @@ function setupStoryEmbedNavigation(){
     nav.hidden = true;
     return;
   }
+  setupStoryMissionBriefBar();
   if(returnBtn) returnBtn.hidden = !STORY_RETURN_URL;
   syncStoryEmbedNavigationVisibility();
   if(topBtn.dataset.bound !== '1'){
