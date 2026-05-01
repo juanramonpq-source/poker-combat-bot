@@ -8503,7 +8503,7 @@ body.desktop-compact-mode > footer{
 <script>
   (function(){
     const params = new URLSearchParams(window.location.search);
-    if(params.get('story_embed') === '1'){
+    if(params.get('story_embed') === '1' || params.get('story_standalone') === '1'){
       document.documentElement.classList.add('story-embed-mode');
       document.body.classList.add('story-embed-mode');
     }
@@ -8518,6 +8518,7 @@ body.desktop-compact-mode > footer{
 <div class="story-embed-nav" id="storyEmbedNav" hidden>
   <button class="story-embed-nav-btn" id="storyEmbedTopBtn" type="button">Panel</button>
   <button class="story-embed-nav-btn" id="storyEmbedHandBtn" type="button">Mano</button>
+  <button class="story-embed-nav-btn story-return-map-btn" id="storyStandaloneReturnBtn" type="button" hidden>Volver al mapa</button>
 </div>
 <div class="story-orientation-toast" id="storyOrientationToast" role="status" aria-live="polite">
   <span class="story-orientation-toast-icon" aria-hidden="true">🔒↻</span>
@@ -10156,8 +10157,18 @@ function broadcastStoryMissionOutcome(payload){
   }
   const message = {
     type: 'pocobot-story-mission-result',
+    nodeId: STORY_NODE_BOOT || undefined,
+    savedAt: Date.now(),
     ...payload
   };
+  if(STORY_RETURN_URL){
+    try{
+      localStorage.setItem(STORY_PENDING_MISSION_RESULT_KEY, JSON.stringify(message));
+    }catch(error){}
+    window.setTimeout(() => {
+      returnToStoryMap();
+    }, 760);
+  }
   [window.parent !== window ? window.parent : null, window.opener].forEach((targetWindow) => {
     if(!targetWindow) return;
     try{
@@ -10724,8 +10735,12 @@ const AUDIO_BGM_MENU_URI = "assets/GravitSilence.mp3";
 const STORY_AUDIO_PRIORITY_KEY = "pocobot_story_audio_priority";
 const STORY_BOOT_PARAMS = new URLSearchParams(window.location.search);
 const STORY_MISSION_BOOT = STORY_BOOT_PARAMS.get('story_mission') || '';
-const STORY_EMBED_MODE = STORY_BOOT_PARAMS.get('story_embed') === '1';
+const STORY_STANDALONE_MODE = STORY_BOOT_PARAMS.get('story_standalone') === '1';
+const STORY_EMBED_MODE = STORY_BOOT_PARAMS.get('story_embed') === '1' || STORY_STANDALONE_MODE;
 const STORY_AUDIO_MODE = STORY_BOOT_PARAMS.get('story_audio') || '';
+const STORY_RETURN_URL = STORY_BOOT_PARAMS.get('story_return') || '';
+const STORY_NODE_BOOT = STORY_BOOT_PARAMS.get('story_node') || '';
+const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v1';
 let storyHudMode = STORY_BOOT_PARAMS.get('story_ui') || (STORY_BOOT_PARAMS.get('story_compact') === '1' ? 'compact' : 'scroll');
 if(!['scroll', 'compact', 'horizontal'].includes(storyHudMode)) storyHudMode = 'scroll';
 let storyOrientationToastTimer = null;
@@ -11213,6 +11228,16 @@ function getStoryEmbedHumanPlayerIndex(){
   return humanIdx >= 0 ? humanIdx : (state.currentPlayer || 0);
 }
 
+function returnToStoryMap() {
+  if(!STORY_RETURN_URL) return false;
+  try {
+    window.location.href = STORY_RETURN_URL;
+    return true;
+  } catch(_err) {
+    return false;
+  }
+}
+
 function pulseStoryScrollTarget(targetEl){
   if(!targetEl) return;
   targetEl.classList.remove('story-scroll-focus');
@@ -11272,11 +11297,13 @@ function setupStoryEmbedNavigation(){
   const topBtn = document.getElementById('storyEmbedTopBtn');
   const handBtn = document.getElementById('storyEmbedHandBtn');
   const compactBtn = document.getElementById('storyEmbedCompactBtn');
+  const returnBtn = document.getElementById('storyStandaloneReturnBtn');
   if(!nav || !topBtn || !handBtn) return;
   if(!STORY_EMBED_MODE){
     nav.hidden = true;
     return;
   }
+  if(returnBtn) returnBtn.hidden = !STORY_RETURN_URL;
   syncStoryEmbedNavigationVisibility();
   if(topBtn.dataset.bound !== '1'){
     topBtn.dataset.bound = '1';
@@ -11293,6 +11320,10 @@ function setupStoryEmbedNavigation(){
   if(compactBtn && compactBtn.dataset.bound !== '1'){
     compactBtn.dataset.bound = '1';
     compactBtn.addEventListener('click', toggleStoryEmbedInterfaceMode);
+  }
+  if(returnBtn && returnBtn.dataset.bound !== '1'){
+    returnBtn.dataset.bound = '1';
+    returnBtn.addEventListener('click', returnToStoryMap);
   }
 }
 
@@ -13069,6 +13100,10 @@ function syncDesktopHudAvailability(){
   if(compactExpandedBtn){
     compactExpandedBtn.textContent = STORY_EMBED_MODE ? 'Modo scroll' : (mobilePanoramaActive ? 'Modo vertical' : 'Interfaz expandida');
   }
+  const compactReturnBtn = document.getElementById('compactReturnBtn');
+  if(compactReturnBtn && STORY_RETURN_URL){
+    compactReturnBtn.textContent = 'Volver al mapa';
+  }
   syncStoryEmbedNavigationVisibility();
   return available;
 }
@@ -14531,6 +14566,12 @@ function triggerModifyFeedbackSequence(playerIdx, callback){
   triggerScreenRipple('amber');
   pulseVibrate([12, 20, 12]);
   triggerCompactBuildFeedback(playerIdx);
+  if(document.body?.classList.contains('mobile-panorama-mode')){
+    window.setTimeout(() => {
+      if(callback) callback();
+    }, 760);
+    return;
+  }
   showMechaUpdateShowcase(playerIdx, callback);
 }
 
@@ -17338,6 +17379,10 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
   }
   const btn = event.target.closest('button');
   if(!btn) return;
+  if(btn.id === 'compactReturnBtn' && STORY_RETURN_URL){
+    returnToStoryMap();
+    return;
+  }
   if(btn.dataset.mobileDrawer){
     setCompactMobileDrawer(btn.dataset.mobileDrawer);
     return;

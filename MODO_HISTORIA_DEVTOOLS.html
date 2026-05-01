@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PoCoBOT - Laboratorio Ruta Ceniza</title>
+  <style>
+    :root{
+      --bg:#05080d;
+      --panel:rgba(9,15,22,.88);
+      --panel-strong:rgba(12,20,30,.96);
+      --cyan:#8ff4ff;
+      --amber:#ffd8a8;
+      --green:#8affc2;
+      --red:#ff7b61;
+      --text:#edf7ff;
+      --muted:#abc0d1;
+      --line:rgba(255,255,255,.1);
+    }
+    *{box-sizing:border-box}
+    body{
+      min-height:100svh;
+      margin:0;
+      color:var(--text);
+      font-family:"Trebuchet MS", "Arial Narrow", sans-serif;
+      background:
+        radial-gradient(circle at 22% 12%, rgba(143,244,255,.16), transparent 34%),
+        radial-gradient(circle at 78% 4%, rgba(255,216,168,.14), transparent 30%),
+        linear-gradient(180deg, rgba(5,8,13,.8), rgba(5,8,13,.98)),
+        #05080d url("assets/Historia/low/mapaok_ultraligero_1080.webp") center / cover fixed;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size:42px 42px;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,.8), transparent 88%);
+    }
+    .shell{
+      position:relative;
+      z-index:1;
+      width:min(1180px, calc(100% - 28px));
+      margin:0 auto;
+      padding:clamp(18px, 4vw, 42px) 0 44px;
+    }
+    .hero{
+      display:grid;
+      gap:14px;
+      margin-bottom:18px;
+      padding:24px;
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(135deg, rgba(9,15,22,.92), rgba(9,15,22,.62));
+      box-shadow:0 26px 60px rgba(0,0,0,.34);
+      backdrop-filter:blur(16px);
+    }
+    .kicker{
+      width:max-content;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(143,244,255,.22);
+      color:var(--cyan);
+      background:rgba(143,244,255,.08);
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    h1,h2,h3,p{margin:0}
+    h1{
+      font-family:Impact, "Arial Black", sans-serif;
+      font-size:clamp(2.2rem, 7vw, 5rem);
+      line-height:.95;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .hero p{
+      max-width:76ch;
+      color:#d8e8f4;
+      font-size:1rem;
+      line-height:1.6;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:16px;
+      align-items:start;
+    }
+    .panel{
+      border:1px solid var(--line);
+      border-radius:24px;
+      background:linear-gradient(180deg, var(--panel), rgba(6,10,16,.9));
+      box-shadow:0 20px 42px rgba(0,0,0,.28);
+      backdrop-filter:blur(14px);
+      overflow:hidden;
+    }
+    .panel-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+    }
+    .panel-head h2{
+      color:#f7fbff;
+      font-size:.94rem;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    .panel-body{
+      display:grid;
+      gap:14px;
+      padding:16px;
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    button, select{
+      min-height:42px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      background:linear-gradient(180deg, rgba(25,34,44,.96), rgba(11,18,26,.98));
+      color:var(--text);
+      font:inherit;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      cursor:pointer;
+    }
+    button{
+      padding:0 15px;
+    }
+    button.primary{
+      border-color:rgba(143,244,255,.38);
+      background:linear-gradient(180deg, rgba(22,58,70,.96), rgba(8,24,34,.98));
+    }
+    button.warn{
+      border-color:rgba(255,216,168,.42);
+      color:#fff0dd;
+    }
+    button.danger{
+      border-color:rgba(255,123,97,.42);
+      color:#ffd8d0;
+    }
+    button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+    .node-list{
+      display:grid;
+      gap:10px;
+    }
+    .node-card{
+      display:grid;
+      gap:9px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,.09);
+      border-radius:18px;
+      background:rgba(255,255,255,.035);
+    }
+    .node-card.completed{
+      border-color:rgba(138,255,194,.34);
+      box-shadow:0 0 0 1px rgba(138,255,194,.08) inset;
+    }
+    .node-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .node-state{
+      min-width:max-content;
+      color:var(--cyan);
+      font-size:.68rem;
+      letter-spacing:.12em;
+    }
+    .node-card.completed .node-state{
+      color:var(--green);
+    }
+    .node-summary{
+      color:var(--muted);
+      line-height:1.5;
+      font-size:.9rem;
+    }
+    textarea{
+      width:100%;
+      min-height:240px;
+      resize:vertical;
+      border:1px solid rgba(143,244,255,.18);
+      border-radius:18px;
+      padding:14px;
+      color:#dffbff;
+      background:rgba(3,7,12,.84);
+      font:600 .86rem/1.45 "SFMono-Regular", Consolas, monospace;
+      outline:none;
+    }
+    .music-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+    }
+    select{
+      width:100%;
+      min-width:0;
+      padding:0 14px;
+      appearance:none;
+    }
+    audio{
+      width:100%;
+      filter:saturate(.9);
+    }
+    .status{
+      min-height:32px;
+      padding:9px 12px;
+      border-radius:12px;
+      color:#dffbff;
+      background:rgba(143,244,255,.08);
+      border:1px solid rgba(143,244,255,.14);
+      font-weight:800;
+      line-height:1.35;
+    }
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr}
+      .music-row{grid-template-columns:1fr}
+      button, select{width:100%}
+      .actions{display:grid}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <span class="kicker">Laboratorio oculto</span>
+      <h1>Ruta Ceniza Debug</h1>
+      <p>Panel independiente para probar capítulos, forzar progreso, simular guardados y escuchar las pistas del modo historia sin tocar el flujo normal del jugador.</p>
+      <div class="actions">
+        <button class="primary" id="backToStoryBtn" type="button">Volver al modo historia</button>
+        <button class="warn" id="reloadBtn" type="button">Recargar laboratorio</button>
+      </div>
+    </header>
+
+    <section class="grid">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Selector de niveles</h2>
+          <span class="kicker" id="progressChip">0/10</span>
+        </div>
+        <div class="panel-body">
+          <div class="actions">
+            <button class="primary" id="completeWorkshopBtn" type="button">Completar Hangar + Patio</button>
+            <button class="warn" id="unlockAllBtn" type="button">Desbloquear todo</button>
+            <button class="danger" id="resetBtn" type="button">Reset progreso</button>
+          </div>
+          <div class="node-list" id="nodeList"></div>
+        </div>
+      </article>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <h2>Modo programador</h2>
+        </div>
+        <div class="panel-body">
+          <div class="status" id="statusBox">Listo para probar la ruta.</div>
+          <textarea id="saveJson" spellcheck="false" aria-label="JSON de progreso"></textarea>
+          <div class="actions">
+            <button class="primary" id="copyJsonBtn" type="button">Copiar JSON</button>
+            <button class="warn" id="applyJsonBtn" type="button">Aplicar JSON</button>
+          </div>
+        </div>
+      </aside>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Menú de canciones</h2>
+        </div>
+        <div class="panel-body">
+          <div class="music-row">
+            <select id="musicSelect" aria-label="Canción de prueba"></select>
+            <button class="primary" id="playMusicBtn" type="button">Reproducir</button>
+          </div>
+          <audio id="musicPlayer" controls preload="none"></audio>
+          <div class="actions">
+            <button id="stopMusicBtn" type="button">Detener</button>
+            <button class="warn" id="saveMusicBtn" type="button">Recordar pista debug</button>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const STORY_PAGE = 'MODO_HISTORIA_BOCETO.html';
+    const STORY_PROGRESS_SAVE_KEY = 'pocobot_story_progress_v1';
+    const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v1';
+    const STORY_DEBUG_MUSIC_KEY = 'pocobot_story_debug_music';
+
+    const nodes = [
+      { id:'hangar', order:1, title:'Hangar de la Fosa Azul', summary:'Carrera de ensamblaje con Mara Oxido.', mission:'hangar_race' },
+      { id:'patio', order:2, title:'Patio de Pruebas del Taller', summary:'Combate con combustible y proyectil bajo reglas alteradas.', mission:'patio_duel' },
+      { id:'mercado', order:3, title:'Mercado de Reles Muertos', summary:'Siguiente nodo previsto de la Ruta Ceniza.' },
+      { id:'puente', order:4, title:'Puente de Ferralla', summary:'Nodo bloqueado de estructura futura.' },
+      { id:'torre', order:5, title:'Torre de Senales Rotas', summary:'Nodo bloqueado de estructura futura.' },
+      { id:'cantera', order:6, title:'Cantera de Humo Blanco', summary:'Nodo bloqueado de estructura futura.' },
+      { id:'estacion', order:7, title:'Estacion de Valvulas', summary:'Nodo bloqueado de estructura futura.' },
+      { id:'santuario', order:8, title:'Santuario del Nucleo Frio', summary:'Nodo bloqueado de estructura futura.' },
+      { id:'argonauta', order:9, title:'Bastion Argonauta', summary:'Nodo bloqueado de estructura futura.' },
+      { id:'ceniza', order:10, title:'Corazon de la Ruta Ceniza', summary:'Cierre de capitulo previsto.' }
+    ];
+
+    const musicTracks = [
+      { label:'Mapa - Engranes de Titanio', src:'assets/Historia/EngranesdeTitanio(Exploración).mp3' },
+      { label:'Mapa - Capitulo superado', src:'assets/Historia/cancionMundo.mp3' },
+      { label:'Combate - Audio 01', src:'assets/audio_01.mp3' },
+      { label:'Combate - Audio 02', src:'assets/audio_02.mp3' },
+      { label:'Menu - Gravit Silence', src:'assets/GravitSilence.mp3' },
+      { label:'Historia - Ceniza Metalica', src:'assets/Historia/CenizaMetalica.mp3' }
+    ];
+
+    const nodeList = document.getElementById('nodeList');
+    const saveJson = document.getElementById('saveJson');
+    const progressChip = document.getElementById('progressChip');
+    const statusBox = document.getElementById('statusBox');
+    const musicSelect = document.getElementById('musicSelect');
+    const musicPlayer = document.getElementById('musicPlayer');
+
+    function setStatus(text){
+      statusBox.textContent = text;
+    }
+
+    function readSave(){
+      try{
+        const raw = localStorage.getItem(STORY_PROGRESS_SAVE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      }catch(error){
+        return null;
+      }
+    }
+
+    function getBaseSave(){
+      return {
+        version:1,
+        savedAt:Date.now(),
+        reason:'debug',
+        selectedId:'hangar',
+        completedCount:0,
+        completedNodes:{},
+        maraIntroSeen:false,
+        pendingThemeKey:'exploration',
+        lastMissionResult:null
+      };
+    }
+
+    function getSave(){
+      const save = readSave();
+      return save && save.version === 1 ? save : getBaseSave();
+    }
+
+    function syncCompletedCount(save){
+      let count = 0;
+      for(const node of nodes){
+        if(!save.completedNodes?.[node.id]) break;
+        count = node.order;
+      }
+      save.completedCount = count;
+      save.pendingThemeKey = count > 0 ? 'chapter_clear' : 'exploration';
+      return save;
+    }
+
+    function writeSave(save, reason='debug'){
+      const next = syncCompletedCount({
+        ...getBaseSave(),
+        ...save,
+        reason,
+        savedAt:Date.now(),
+        completedNodes:{ ...(save.completedNodes || {}) }
+      });
+      localStorage.setItem(STORY_PROGRESS_SAVE_KEY, JSON.stringify(next));
+      render();
+    }
+
+    function markCompleted(nodeId, completed=true){
+      const save = getSave();
+      save.completedNodes = { ...(save.completedNodes || {}) };
+      if(completed) save.completedNodes[nodeId] = true;
+      else delete save.completedNodes[nodeId];
+      save.selectedId = nodeId;
+      if(nodeId === 'hangar' || nodeId === 'patio') save.maraIntroSeen = true;
+      writeSave(save, `debug-${completed ? 'complete' : 'uncomplete'}-${nodeId}`);
+      setStatus(`${completed ? 'Marcado como completado' : 'Marcado como pendiente'}: ${nodeId}.`);
+    }
+
+    function openMission(node){
+      if(!node.mission) return;
+      const url = new URL('poker_combat_bot_ONLINE.html', window.location.href);
+      url.searchParams.set('story_mission', node.mission);
+      url.searchParams.set('story_embed', '1');
+      url.searchParams.set('story_standalone', '1');
+      url.searchParams.set('story_audio', 'external');
+      url.searchParams.set('story_node', node.id);
+      url.searchParams.set('story_return', new URL(STORY_PAGE, window.location.href).href);
+      window.location.href = url.href;
+    }
+
+    function render(){
+      const save = getSave();
+      const completedNodes = save.completedNodes || {};
+      progressChip.textContent = `${Object.keys(completedNodes).length}/${nodes.length}`;
+      saveJson.value = JSON.stringify(save, null, 2);
+      nodeList.innerHTML = '';
+      nodes.forEach((node) => {
+        const completed = !!completedNodes[node.id];
+        const card = document.createElement('article');
+        card.className = `node-card${completed ? ' completed' : ''}`;
+        card.innerHTML = `
+          <div class="node-title">
+            <span>${node.order}. ${node.title}</span>
+            <span class="node-state">${completed ? 'Completado' : 'Pendiente'}</span>
+          </div>
+          <p class="node-summary">${node.summary}</p>
+          <div class="actions">
+            <button class="primary" data-select="${node.id}" type="button">Seleccionar</button>
+            <button class="warn" data-complete="${node.id}" type="button">${completed ? 'Marcar pendiente' : 'Marcar completado'}</button>
+            ${node.mission ? `<button data-mission="${node.id}" type="button">Abrir misión</button>` : ''}
+          </div>
+        `;
+        nodeList.appendChild(card);
+      });
+    }
+
+    nodeList.addEventListener('click', (event) => {
+      const selectId = event.target.closest('[data-select]')?.dataset.select;
+      const completeId = event.target.closest('[data-complete]')?.dataset.complete;
+      const missionId = event.target.closest('[data-mission]')?.dataset.mission;
+      if(selectId){
+        const save = getSave();
+        save.selectedId = selectId;
+        writeSave(save, `debug-select-${selectId}`);
+        setStatus(`Nodo seleccionado: ${selectId}.`);
+      }
+      if(completeId){
+        const save = getSave();
+        markCompleted(completeId, !save.completedNodes?.[completeId]);
+      }
+      if(missionId){
+        const node = nodes.find(item => item.id === missionId);
+        openMission(node);
+      }
+    });
+
+    document.getElementById('completeWorkshopBtn').addEventListener('click', () => {
+      const save = getSave();
+      save.completedNodes = { ...(save.completedNodes || {}), hangar:true, patio:true };
+      save.maraIntroSeen = true;
+      save.selectedId = 'mercado';
+      writeSave(save, 'debug-complete-workshop');
+      setStatus('Hangar y Patio completados. Mercado listo para pruebas.');
+    });
+
+    document.getElementById('unlockAllBtn').addEventListener('click', () => {
+      const save = getBaseSave();
+      save.completedNodes = Object.fromEntries(nodes.map(node => [node.id, true]));
+      save.selectedId = 'ceniza';
+      save.maraIntroSeen = true;
+      writeSave(save, 'debug-unlock-all');
+      setStatus('Ruta completa desbloqueada para depuracion.');
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      localStorage.removeItem(STORY_PROGRESS_SAVE_KEY);
+      localStorage.removeItem(STORY_PENDING_MISSION_RESULT_KEY);
+      render();
+      setStatus('Progreso reseteado.');
+    });
+
+    document.getElementById('copyJsonBtn').addEventListener('click', async () => {
+      try{
+        await navigator.clipboard.writeText(saveJson.value);
+        setStatus('JSON copiado al portapapeles.');
+      }catch(error){
+        saveJson.select();
+        setStatus('No se pudo copiar automaticamente; el JSON queda seleccionado.');
+      }
+    });
+
+    document.getElementById('applyJsonBtn').addEventListener('click', () => {
+      try{
+        const parsed = JSON.parse(saveJson.value);
+        if(!parsed || parsed.version !== 1) throw new Error('Version no valida');
+        writeSave(parsed, 'debug-apply-json');
+        setStatus('JSON aplicado correctamente.');
+      }catch(error){
+        setStatus('JSON invalido. Revisa la estructura antes de aplicarlo.');
+      }
+    });
+
+    document.getElementById('backToStoryBtn').addEventListener('click', () => {
+      window.location.href = STORY_PAGE;
+    });
+
+    document.getElementById('reloadBtn').addEventListener('click', () => {
+      window.location.reload();
+    });
+
+    musicTracks.forEach((track, index) => {
+      const option = document.createElement('option');
+      option.value = track.src;
+      option.textContent = track.label;
+      musicSelect.appendChild(option);
+      if(localStorage.getItem(STORY_DEBUG_MUSIC_KEY) === track.src) musicSelect.selectedIndex = index;
+    });
+
+    function syncMusicSource(){
+      if(musicPlayer.getAttribute('src') !== musicSelect.value){
+        musicPlayer.src = musicSelect.value;
+      }
+    }
+
+    document.getElementById('playMusicBtn').addEventListener('click', () => {
+      syncMusicSource();
+      musicPlayer.play().catch(() => {});
+      setStatus(`Reproduciendo: ${musicSelect.options[musicSelect.selectedIndex].textContent}.`);
+    });
+
+    document.getElementById('stopMusicBtn').addEventListener('click', () => {
+      musicPlayer.pause();
+      musicPlayer.currentTime = 0;
+      setStatus('Musica detenida.');
+    });
+
+    document.getElementById('saveMusicBtn').addEventListener('click', () => {
+      localStorage.setItem(STORY_DEBUG_MUSIC_KEY, musicSelect.value);
+      setStatus('Pista debug recordada.');
+    });
+
+    musicSelect.addEventListener('change', syncMusicSource);
+    syncMusicSource();
+    render();
+  </script>
+</body>
+</html>

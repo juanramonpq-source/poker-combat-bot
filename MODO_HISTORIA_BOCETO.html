@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PoCoBOT - Boceto Historia</title>
+  <title>PoCoBOT - Modo Historia Ruta Ceniza</title>
   <meta name="robots" content="noindex,nofollow">
   <style>
     :root{
@@ -593,6 +593,8 @@
       text-transform:uppercase;
       box-shadow:0 12px 26px rgba(0,0,0,.22);
       backdrop-filter:blur(10px);
+      cursor:pointer;
+      user-select:none;
     }
     .mobile-route-kicker::before{
       content:"";
@@ -805,6 +807,8 @@
       letter-spacing:.16em;
       text-transform:uppercase;
       color:#ffe2c0;
+      cursor:pointer;
+      user-select:none;
     }
     .story-kicker::before{
       content:"";
@@ -1649,6 +1653,36 @@
         margin-top:14px;
       }
     }
+    @media (max-height:760px) and (orientation: landscape){
+      .story-scene-stage.hangar-scene .scene-focus-wrap,
+      .story-scene-stage.patio-scene .scene-focus-wrap{
+        align-items:start;
+        justify-items:end;
+        padding-top:clamp(44px, 7svh, 72px);
+        padding-right:max(28px, env(safe-area-inset-right));
+      }
+      .story-scene-stage.hangar-scene .scene-focus-figure,
+      .story-scene-stage.patio-scene .scene-focus-figure{
+        width:min(30vw, 380px);
+        max-height:42svh;
+        opacity:.94;
+      }
+      .story-scene-stage.dialogue-live .scene-focus-figure{
+        transform:translateY(calc(var(--scene-figure-shift) - 4svh)) scale(.78);
+      }
+      .story-scene-stage.figure-raised .scene-focus-figure{
+        transform:translateY(calc(var(--scene-figure-shift) - 12svh)) scale(.74);
+      }
+      .scene-dialog-card{
+        --scene-dialog-max-height:min(58svh, calc(100svh - 82px));
+        --scene-dialog-scroll-max:clamp(138px, 34svh, 280px);
+        width:min(1180px, calc(100% - 36px));
+        margin:0 auto max(12px, env(safe-area-inset-bottom));
+      }
+      .story-scene-stage.minimal-dialogue .scene-dialog-card{
+        --scene-dialog-max-height:min(54svh, calc(100svh - 76px));
+      }
+    }
     @media (orientation:portrait){
       .story-map-shell{
         height:auto;
@@ -1760,10 +1794,10 @@
         padding-top:86px;
       }
       .story-scene-stage.dialogue-live .scene-focus-figure{
-        transform:translateY(var(--scene-figure-mobile-shift)) scale(var(--scene-figure-mobile-scale));
+        transform:translateY(calc(var(--scene-figure-mobile-shift) - 4svh)) scale(.78);
       }
       .story-scene-stage.figure-raised .scene-focus-figure{
-        transform:translateY(calc(var(--scene-figure-mobile-shift) - 5svh)) scale(var(--scene-figure-mobile-scale));
+        transform:translateY(calc(var(--scene-figure-mobile-shift) - 10svh)) scale(.74);
       }
       .scene-intro-tag{
         display:none;
@@ -2003,11 +2037,11 @@
           </picture>
           <div class="title-overlay">
             <div class="title-copy">
-              <strong>Modo Historia · Boceto vivo</strong>
-              <p>El viaje comienza aquí. Entra al corredor de ruinas, metal y protocolos antiguos para empezar a construir la campaña real de PoCoBOT.</p>
+              <strong>Modo Historia · Ruta Ceniza</strong>
+              <p>La Ruta Ceniza despierta bajo la chatarra de Argós. Cruza sus pruebas, reconstruye tu PoCoBOT y decide qué queda de humanidad cuando el metal exige obediencia.</p>
             </div>
             <div class="title-actions">
-              <button class="enter-btn" id="enterStoryBtn" type="button">Entrar en Boceto</button>
+              <button class="enter-btn" id="enterStoryBtn" type="button">Comenzar nueva partida</button>
               <button class="enter-btn load-story-btn" id="loadStoryBtn" type="button" hidden>Cargar partida</button>
             </div>
           </div>
@@ -2203,6 +2237,8 @@
     const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
     const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
     const STORY_PROGRESS_SAVE_KEY = 'pocobot_story_progress_v1';
+    const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v1';
+    const STORY_DEVTOOLS_PAGE = 'MODO_HISTORIA_DEVTOOLS.html';
     const STORY_UI_SFX = {
       hover: { src: 'assets/sfx/ui_click.wav', volume: 0.12 },
       click: { src: 'assets/sfx/ui_click.wav', volume: 0.26 },
@@ -2303,6 +2339,28 @@
       try {
         localStorage.setItem(STORY_PROGRESS_SAVE_KEY, JSON.stringify(buildStoryProgressSave(reason)));
       } catch (error) {}
+      syncLoadStoryButton();
+    }
+
+    function resetStoryProgressForNewGame() {
+      try {
+        localStorage.removeItem(STORY_PROGRESS_SAVE_KEY);
+        localStorage.removeItem(STORY_PENDING_MISSION_RESULT_KEY);
+      } catch (error) {}
+      rememberStoryWorkspace(false);
+      rememberActiveStoryMission(null);
+      storyProgressState.completedCount = 0;
+      storyProgressState.completedNodes = {};
+      storyProgressState.maraIntroSeen = false;
+      storyProgressState.pendingThemeKey = 'exploration';
+      storyProgressState.lastMissionResult = null;
+      currentStoryNodeId = 'hangar';
+      activeMissionNodeId = null;
+      Object.keys(sceneChoiceSelections).forEach((key) => {
+        delete sceneChoiceSelections[key];
+      });
+      renderMobileRoute();
+      syncStoryMapState();
       syncLoadStoryButton();
     }
 
@@ -3809,38 +3867,30 @@
     function openStoryMission(nodeId) {
       const localNode = storyDraftNodes[nodeId];
       const mission = storyMissionScripts[nodeId];
-      if (!localNode || !mission || !storyMissionStage) return;
+      if (!localNode || !mission) return;
       activeMissionNodeId = nodeId;
       rememberStoryWorkspace(true);
       rememberActiveStoryMission(nodeId);
-      syncStoryMissionModeButton();
-      syncStoryMissionQuickActions(false);
-      setStoryMissionBriefExpanded(false);
-      closeStoryScene();
-      playMapMusic();
-      if (storyMissionBackdrop) {
-        storyMissionBackdrop.style.backgroundImage = `url("${localNode.image}")`;
+      saveStoryProgress(`mission-open-${nodeId}`);
+
+      const targetUrl = new URL(mission.url, window.location.href);
+      targetUrl.searchParams.set('story_embed', '1');
+      targetUrl.searchParams.set('story_standalone', '1');
+      targetUrl.searchParams.set('story_node', nodeId);
+      targetUrl.searchParams.set('story_return', window.location.href);
+
+      const navigate = () => {
+        window.location.href = targetUrl.href;
+      };
+
+      if (!storyTransitionVeil || storyTransitionBusy) {
+        navigate();
+        return;
       }
-      if (storyMissionChip) storyMissionChip.textContent = mission.chip;
-      if (storyMissionTitle) storyMissionTitle.textContent = mission.title;
-      if (storyMissionCopy) storyMissionCopy.textContent = mission.copy;
-      if (storyMissionTip) {
-        const tipCopy = storyMissionTip.querySelector('.mission-tip-copy');
-        if (tipCopy) tipCopy.innerHTML = mission.tip || '';
-        storyMissionTip.hidden = !mission.tip;
-      }
-      if (storyMissionFrame) {
-        storyMissionFrame.src = mission.url;
-      }
-      storyMissionStage.hidden = false;
-      storyMissionStage.classList.toggle('mobile-play-focus', isStoryMissionMobileViewport());
-      if (isStoryMissionMobileViewport()) {
-        requestStoryMissionFullscreenBestEffort({ target: 'stage', landscape: false });
-      }
-      requestAnimationFrame(() => {
-        storyMissionStage.classList.add('active');
-        syncStoryMissionMobileFocus();
-      });
+
+      storyTransitionBusy = true;
+      storyTransitionVeil.classList.add('active');
+      window.setTimeout(navigate, 220);
     }
 
     function syncStoryMissionQuickActions(hidden) {
@@ -3989,7 +4039,7 @@
     function handleStoryMissionResult(result) {
       const missionConfig = result ? storyMissionResults[result.mission] : null;
       if (!result || !missionConfig) return;
-      const missionNodeId = activeMissionNodeId || missionConfig.fallbackNodeId;
+      const missionNodeId = activeMissionNodeId || result.nodeId || missionConfig.fallbackNodeId;
       const success = !!result.success;
       storyProgressState.lastMissionResult = success ? 'success' : 'failure';
       rememberActiveStoryMission(null);
@@ -4010,6 +4060,33 @@
           openStoryScene(missionNodeId, success ? missionConfig.successScene : missionConfig.failureScene);
         }
       });
+    }
+
+    function consumePendingStoryMissionResult() {
+      let result = null;
+      try {
+        const raw = localStorage.getItem(STORY_PENDING_MISSION_RESULT_KEY);
+        if (!raw) return false;
+        localStorage.removeItem(STORY_PENDING_MISSION_RESULT_KEY);
+        result = JSON.parse(raw);
+      } catch (error) {
+        return false;
+      }
+      const missionConfig = result && storyMissionResults[result.mission];
+      if (!missionConfig) return false;
+
+      const nodeId = result.nodeId || missionConfig.fallbackNodeId;
+      activeMissionNodeId = nodeId;
+      rememberStoryWorkspace(true);
+      rememberActiveStoryMission(null);
+      stopTitleMusic();
+      document.body.classList.remove('story-title-lock');
+      titleStage.classList.add('hidden');
+      workspacePanel.classList.add('active');
+      renderStoryNode(nodeId, { skipSave: true });
+      syncStoryMapState();
+      handleStoryMissionResult(result);
+      return true;
     }
 
     function resetStoryMapViewport() {
@@ -4247,11 +4324,25 @@
       window.setTimeout(() => {
         resetStoryMapViewport();
         syncStoryMapState();
-        const missionId = getStorySessionFlag(STORY_ACTIVE_MISSION_SESSION_KEY);
-        if (missionId && storyMissionScripts[missionId]) {
-          openStoryMission(missionId);
-        }
+        rememberActiveStoryMission(null);
       }, 80);
+    }
+
+    let storyDevTapCount = 0;
+    let storyDevTapTimer = null;
+    function handleStoryDeveloperTap() {
+      window.clearTimeout(storyDevTapTimer);
+      storyDevTapCount += 1;
+      if (storyDevTapCount >= 5) {
+        storyDevTapCount = 0;
+        rememberStoryWorkspace(true);
+        saveStoryProgress('open-devtools');
+        window.location.href = STORY_DEVTOOLS_PAGE;
+        return;
+      }
+      storyDevTapTimer = window.setTimeout(() => {
+        storyDevTapCount = 0;
+      }, 1600);
     }
 
     primeStoryUiSfx();
@@ -4269,7 +4360,10 @@
     bindStoryUiSfx(storyMissionMapBtn);
     bindStoryUiSfx(storyMissionRestartBtn, { clickKind: 'confirm' });
 
-    enterStoryBtn.addEventListener('click', showWorkspace);
+    enterStoryBtn.addEventListener('click', () => {
+      resetStoryProgressForNewGame();
+      showWorkspace();
+    });
     if (loadStoryBtn) {
       loadStoryBtn.addEventListener('click', () => {
         if (loadStoryProgress({ openWorkspace: true })) return;
@@ -4342,6 +4436,9 @@
       if (workspacePanel.classList.contains('active')) return;
       startTitleMusic();
     }, { passive: true });
+    document.querySelectorAll('.mobile-route-kicker, .story-kicker').forEach((kicker) => {
+      kicker.addEventListener('click', handleStoryDeveloperTap);
+    });
     window.addEventListener('keydown', () => {
       if (workspacePanel.classList.contains('active')) return;
       startTitleMusic();
@@ -4410,7 +4507,9 @@
     renderStoryNode(currentStoryNodeId, { skipSave: true });
     syncLoadStoryButton();
     closeStoryScene();
-    restoreStorySessionIfNeeded();
+    if (!consumePendingStoryMissionResult()) {
+      restoreStorySessionIfNeeded();
+    }
   </script>
 </body>
 </html>
