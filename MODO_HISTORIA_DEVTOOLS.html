@@ -308,19 +308,20 @@
     const nodes = [
       { id:'hangar', order:1, title:'Hangar de la Fosa Azul', summary:'Carrera de ensamblaje con Mara Oxido.', mission:'hangar_race' },
       { id:'patio', order:2, title:'Patio de Pruebas del Taller', summary:'Combate con combustible y proyectil bajo reglas alteradas.', mission:'patio_duel' },
-      { id:'mercado', order:3, title:'Mercado de Reles Muertos', summary:'Siguiente nodo previsto de la Ruta Ceniza.' },
-      { id:'puente', order:4, title:'Puente de Ferralla', summary:'Nodo bloqueado de estructura futura.' },
-      { id:'torre', order:5, title:'Torre de Senales Rotas', summary:'Nodo bloqueado de estructura futura.' },
-      { id:'cantera', order:6, title:'Cantera de Humo Blanco', summary:'Nodo bloqueado de estructura futura.' },
-      { id:'estacion', order:7, title:'Estacion de Valvulas', summary:'Nodo bloqueado de estructura futura.' },
-      { id:'santuario', order:8, title:'Santuario del Nucleo Frio', summary:'Nodo bloqueado de estructura futura.' },
-      { id:'argonauta', order:9, title:'Bastion Argonauta', summary:'Nodo bloqueado de estructura futura.' },
-      { id:'ceniza', order:10, title:'Corazon de la Ruta Ceniza', summary:'Cierre de capitulo previsto.' }
+      { id:'mercado', order:3, title:'Mercado de Reles Muertos', summary:'Encuentro con Vera Hex, mercado inicial e inventario persistente.' },
+      { id:'torre', order:4, title:'Torre de Seguimiento 4B', summary:'Nodo previsto para precision y proyectil.' },
+      { id:'campamento', order:5, title:'Campamento de las Placas Rojas', summary:'Evento de personaje y criterio moral.' },
+      { id:'foso', order:6, title:'Foso de Viento Negro', summary:'Nodo previsto para defensa activa.' },
+      { id:'subestacion', order:7, title:'Subestacion de Ceniza', summary:'Nodo previsto para reconfiguracion de tripulacion.' },
+      { id:'puente', order:8, title:'Puente de los Relampagos Quietos', summary:'Duelo tactico contra Corvo Vanta.' },
+      { id:'cupula', order:9, title:'Cupula Hendida de Argos', summary:'Aproximacion final y revelacion.' },
+      { id:'protocolo', order:10, title:'Protocolo Ceniza', summary:'Cierre de capitulo y desbloqueo previsto.' }
     ];
 
     const musicTracks = [
       { label:'Mapa - Engranes de Titanio', src:'assets/Historia/EngranesdeTitanio(Exploración).mp3' },
       { label:'Mapa - Capitulo superado', src:'assets/Historia/cancionMundo.mp3' },
+      { label:'Historia - Mercado de Chatarra', src:'assets/Historia/Mercado de Chatarra.mp3' },
       { label:'Combate - Audio 01', src:'assets/audio_01.mp3' },
       { label:'Combate - Audio 02', src:'assets/audio_02.mp3' },
       { label:'Menu - Gravit Silence', src:'assets/GravitSilence.mp3' },
@@ -357,7 +358,10 @@
         completedNodes:{},
         maraIntroSeen:false,
         pendingThemeKey:'exploration',
-        lastMissionResult:null
+        lastMissionResult:null,
+        marketUnlocked:false,
+        inventory:null,
+        marketPurchases:{}
       };
     }
 
@@ -396,6 +400,11 @@
       else delete save.completedNodes[nodeId];
       save.selectedId = nodeId;
       if(nodeId === 'hangar' || nodeId === 'patio') save.maraIntroSeen = true;
+      if(nodeId === 'mercado' && completed){
+        save.marketUnlocked = true;
+        save.inventory = save.inventory || { credits:9, cards:[], artifacts:[] };
+        save.marketPurchases = save.marketPurchases || {};
+      }
       writeSave(save, `debug-${completed ? 'complete' : 'uncomplete'}-${nodeId}`);
       setStatus(`${completed ? 'Marcado como completado' : 'Marcado como pendiente'}: ${nodeId}.`);
     }
@@ -470,8 +479,11 @@
     document.getElementById('unlockAllBtn').addEventListener('click', () => {
       const save = getBaseSave();
       save.completedNodes = Object.fromEntries(nodes.map(node => [node.id, true]));
-      save.selectedId = 'ceniza';
+      save.selectedId = 'protocolo';
       save.maraIntroSeen = true;
+      save.marketUnlocked = true;
+      save.inventory = { credits:9, cards:[], artifacts:[] };
+      save.marketPurchases = {};
       writeSave(save, 'debug-unlock-all');
       setStatus('Ruta completa desbloqueada para depuracion.');
     });

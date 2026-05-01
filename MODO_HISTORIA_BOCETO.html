@@ -1002,7 +1002,8 @@
       transform:translateY(calc(18px + var(--scene-figure-shift))) scale(var(--scene-figure-scale));
       transition:opacity .34s ease, transform .34s ease, filter .34s ease;
     }
-    .scene-focus-figure.figure-mara{
+    .scene-focus-figure.figure-mara,
+    .scene-focus-figure.figure-vera{
       object-position:center top;
     }
     .story-scene-stage.dialogue-live .scene-focus-figure{
@@ -1013,12 +1014,14 @@
       transform:translateY(calc(var(--scene-figure-shift) - 8svh)) scale(var(--scene-figure-scale));
     }
     .story-scene-stage.hangar-scene .scene-focus-figure,
-    .story-scene-stage.patio-scene .scene-focus-figure{
+    .story-scene-stage.patio-scene .scene-focus-figure,
+    .story-scene-stage.mercado-scene .scene-focus-figure{
       width:min(48vw, 700px);
       max-height:min(86svh, 920px);
     }
     .story-scene-stage.hangar-scene .scene-focus-wrap,
-    .story-scene-stage.patio-scene .scene-focus-wrap{
+    .story-scene-stage.patio-scene .scene-focus-wrap,
+    .story-scene-stage.mercado-scene .scene-focus-wrap{
       align-items:start;
       padding-top:clamp(64px, 10vh, 118px);
     }
@@ -1372,6 +1375,275 @@
     .story-scene-stage.minimal-dialogue .scene-actions{
       margin-top:18px;
     }
+    .story-market-stage{
+      position:fixed;
+      inset:0;
+      z-index:8;
+      display:block;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior:contain;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .35s ease;
+      background:#05080d;
+    }
+    .story-market-stage.active{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .market-backdrop{
+      position:fixed;
+      inset:0;
+      background:#05080d var(--market-bg, none) no-repeat center center / cover;
+      transform:scale(1.02);
+    }
+    .market-backdrop::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(4,7,11,.36), rgba(4,7,11,.12) 28%, rgba(4,7,11,.88) 100%),
+        radial-gradient(circle at 18% 16%, rgba(255,185,109,.2), transparent 20%),
+        radial-gradient(circle at 78% 20%, rgba(143,244,255,.12), transparent 18%);
+    }
+    .market-shell{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:18px;
+      width:min(1220px, calc(100% - 32px));
+      min-height:100svh;
+      margin:0 auto;
+      padding:clamp(18px, 3vw, 34px) 0 max(28px, env(safe-area-inset-bottom));
+    }
+    .market-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .market-chip{
+      display:inline-flex;
+      align-items:center;
+      min-height:40px;
+      padding:0 16px;
+      border-radius:999px;
+      border:1px solid rgba(255,185,109,.22);
+      background:rgba(10,14,18,.72);
+      color:#ffe0bc;
+      font-size:.76rem;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      box-shadow:0 18px 34px rgba(0,0,0,.26);
+      backdrop-filter:blur(12px);
+    }
+    .market-layout{
+      display:grid;
+      grid-template-columns:minmax(240px, .82fr) minmax(360px, 1.26fr) minmax(250px, .78fr);
+      gap:18px;
+      align-items:stretch;
+    }
+    .market-panel{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(8,13,19,.86), rgba(8,13,19,.76));
+      box-shadow:0 28px 54px rgba(0,0,0,.34);
+      backdrop-filter:blur(18px);
+    }
+    .market-vendor-panel{
+      display:grid;
+      gap:16px;
+      align-content:start;
+      padding:18px;
+    }
+    .market-portrait{
+      width:100%;
+      max-height:420px;
+      object-fit:contain;
+      object-position:center top;
+      filter:drop-shadow(0 22px 32px rgba(0,0,0,.34));
+    }
+    .market-copy{
+      display:grid;
+      gap:10px;
+    }
+    .market-kicker{
+      color:#8ff4ff;
+      font-size:.74rem;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .market-copy h2,
+    .inventory-panel h2{
+      margin:0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:clamp(1.22rem, 2vw, 1.72rem);
+      line-height:1.08;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .market-copy p,
+    .market-intro,
+    .inventory-note{
+      margin:0;
+      color:#dce9f4;
+      font-size:.94rem;
+      line-height:1.58;
+    }
+    .market-feedback{
+      min-height:44px;
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid rgba(143,244,255,.14);
+      background:rgba(7,17,24,.7);
+      color:#dff9ff;
+      font-size:.86rem;
+      line-height:1.46;
+    }
+    .market-store-panel{
+      display:grid;
+      gap:14px;
+      padding:20px;
+    }
+    .market-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+    .market-item-card{
+      display:grid;
+      gap:10px;
+      min-height:178px;
+      padding:14px;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.08);
+      background:
+        linear-gradient(180deg, rgba(14,26,34,.88), rgba(8,13,19,.88)),
+        radial-gradient(circle at 18% 18%, rgba(143,244,255,.08), transparent 24%);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .market-item-card.purchased{
+      border-color:rgba(143,244,255,.24);
+      background:linear-gradient(180deg, rgba(16,44,50,.84), rgba(8,13,19,.88));
+    }
+    .market-item-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .market-item-type,
+    .market-cost{
+      display:inline-flex;
+      align-items:center;
+      min-height:26px;
+      padding:0 10px;
+      border-radius:999px;
+      font-size:.68rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .market-item-type{
+      border:1px solid rgba(143,244,255,.16);
+      color:#bdf7ff;
+      background:rgba(143,244,255,.08);
+    }
+    .market-cost{
+      border:1px solid rgba(255,185,109,.18);
+      color:#ffe2c0;
+      background:rgba(255,185,109,.1);
+    }
+    .market-item-card h3{
+      margin:0;
+      color:#f5fbff;
+      font-size:1rem;
+      line-height:1.24;
+    }
+    .market-item-card p{
+      margin:0;
+      color:#d4e4ef;
+      font-size:.84rem;
+      line-height:1.5;
+    }
+    .market-buy-btn{
+      align-self:end;
+      min-height:38px;
+      padding:0 13px;
+      border-radius:999px;
+      border:1px solid rgba(143,244,255,.18);
+      background:linear-gradient(180deg, rgba(22,47,59,.95), rgba(11,18,24,.98));
+      color:#eef9ff;
+      font-size:.7rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      cursor:pointer;
+    }
+    .market-buy-btn:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+    }
+    .inventory-panel{
+      display:grid;
+      gap:14px;
+      align-content:start;
+      padding:20px;
+    }
+    .inventory-credits{
+      display:grid;
+      gap:4px;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid rgba(255,185,109,.2);
+      background:rgba(255,185,109,.1);
+      color:#ffe4c6;
+    }
+    .inventory-credits strong{
+      font-size:1.7rem;
+      line-height:1;
+    }
+    .inventory-group{
+      display:grid;
+      gap:8px;
+    }
+    .inventory-label{
+      color:#8ff4ff;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+    }
+    .inventory-list{
+      display:grid;
+      gap:8px;
+    }
+    .inventory-pill{
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.05);
+      color:#e9f6ff;
+      font-size:.82rem;
+      line-height:1.42;
+    }
+    .inventory-empty{
+      color:#aebcc8;
+      font-size:.84rem;
+      line-height:1.45;
+    }
+    .market-actions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      gap:10px;
+    }
     .story-mission-stage{
       position:fixed;
       inset:0;
@@ -1603,12 +1875,14 @@
         max-height:58svh;
       }
       .story-scene-stage.hangar-scene .scene-focus-figure,
-      .story-scene-stage.patio-scene .scene-focus-figure{
+      .story-scene-stage.patio-scene .scene-focus-figure,
+      .story-scene-stage.mercado-scene .scene-focus-figure{
         width:min(42vw, 560px);
         max-height:64svh;
       }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
-      .story-scene-stage.patio-scene .scene-focus-wrap{
+      .story-scene-stage.patio-scene .scene-focus-wrap,
+      .story-scene-stage.mercado-scene .scene-focus-wrap{
         padding-top:74px;
       }
       .story-scene-stage.figure-raised .scene-focus-figure{
@@ -1655,14 +1929,16 @@
     }
     @media (max-height:760px) and (orientation: landscape){
       .story-scene-stage.hangar-scene .scene-focus-wrap,
-      .story-scene-stage.patio-scene .scene-focus-wrap{
+      .story-scene-stage.patio-scene .scene-focus-wrap,
+      .story-scene-stage.mercado-scene .scene-focus-wrap{
         align-items:start;
         justify-items:end;
         padding-top:clamp(44px, 7svh, 72px);
         padding-right:max(28px, env(safe-area-inset-right));
       }
       .story-scene-stage.hangar-scene .scene-focus-figure,
-      .story-scene-stage.patio-scene .scene-focus-figure{
+      .story-scene-stage.patio-scene .scene-focus-figure,
+      .story-scene-stage.mercado-scene .scene-focus-figure{
         width:min(30vw, 380px);
         max-height:42svh;
         opacity:.94;
@@ -1785,12 +2061,14 @@
         transform:translateY(calc(18px + var(--scene-figure-mobile-shift))) scale(var(--scene-figure-mobile-scale));
       }
       .story-scene-stage.hangar-scene .scene-focus-figure,
-      .story-scene-stage.patio-scene .scene-focus-figure{
+      .story-scene-stage.patio-scene .scene-focus-figure,
+      .story-scene-stage.mercado-scene .scene-focus-figure{
         width:min(74vw, 360px);
         max-height:56svh;
       }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
-      .story-scene-stage.patio-scene .scene-focus-wrap{
+      .story-scene-stage.patio-scene .scene-focus-wrap,
+      .story-scene-stage.mercado-scene .scene-focus-wrap{
         padding-top:86px;
       }
       .story-scene-stage.dialogue-live .scene-focus-figure{
@@ -1854,6 +2132,39 @@
       }
       .scene-ambient-hint{
         text-align:left;
+      }
+      .market-shell{
+        width:calc(100% - 24px);
+        gap:12px;
+        padding:16px 0 max(18px, env(safe-area-inset-bottom));
+      }
+      .market-header{
+        align-items:stretch;
+        flex-direction:column;
+      }
+      .market-header .scene-btn{
+        width:100%;
+      }
+      .market-layout{
+        grid-template-columns:1fr;
+      }
+      .market-vendor-panel,
+      .market-store-panel,
+      .inventory-panel{
+        padding:16px;
+        border-radius:22px;
+      }
+      .market-portrait{
+        max-height:280px;
+      }
+      .market-grid{
+        grid-template-columns:1fr;
+      }
+      .market-actions{
+        flex-direction:column;
+      }
+      .market-actions .scene-btn{
+        width:100%;
       }
       .scene-choices{
         flex-direction:column;
@@ -2127,6 +2438,56 @@
               </div>
             </article>
           </section>
+          <section class="story-market-stage" id="storyMarketStage" hidden>
+            <div class="market-backdrop" id="storyMarketBackdrop"></div>
+            <div class="market-shell">
+              <header class="market-header">
+                <span class="market-chip">Mercado de Relés Muertos</span>
+                <button class="scene-btn secondary" id="storyMarketCloseBtn" type="button">Volver al mapa</button>
+              </header>
+
+              <div class="market-layout">
+                <article class="market-panel market-vendor-panel">
+                  <img class="market-portrait" src="assets/Historia/Brutos/VeraHEX.PNG" alt="Vera Hex" loading="lazy">
+                  <div class="market-copy">
+                    <span class="market-kicker">Vera Hex · Chatarrera intermediaria</span>
+                    <h2>Ruina útil</h2>
+                    <p>En este mercado los restos de Argós no son reliquias: son piezas, secretos y memoria intercambiable. Vera vende lo que aguanta y se guarda lo que todavía puede matar.</p>
+                  </div>
+                  <div class="market-feedback" id="storyMarketFeedback">Compra una carta o artefacto para activar el inventario del protagonista y cerrar el primer trato con Vera.</div>
+                </article>
+
+                <article class="market-panel market-store-panel">
+                  <div class="market-copy">
+                    <span class="market-kicker">Mostrador de Vera</span>
+                    <h2>Cartas y artefactos</h2>
+                    <p class="market-intro">Elige con criterio: no todo lo barato salva, y no todo lo antiguo merece obediencia.</p>
+                  </div>
+                  <div class="market-grid" id="storyMarketItems"></div>
+                </article>
+
+                <aside class="market-panel inventory-panel">
+                  <span class="market-kicker">Protagonista</span>
+                  <h2>Inventario</h2>
+                  <div class="inventory-credits" id="storyInventoryCredits"></div>
+                  <div class="inventory-group">
+                    <span class="inventory-label">Cartas compradas</span>
+                    <div class="inventory-list" id="storyInventoryCards"></div>
+                  </div>
+                  <div class="inventory-group">
+                    <span class="inventory-label">Artefactos</span>
+                    <div class="inventory-list" id="storyInventoryArtifacts"></div>
+                  </div>
+                  <p class="inventory-note">Este inventario queda activado desde el Mercado y se guarda con el progreso de la Ruta Ceniza.</p>
+                </aside>
+              </div>
+
+              <div class="market-actions">
+                <button class="scene-btn secondary" id="storyMarketMapBtn" type="button">Volver al mapa</button>
+                <button class="scene-btn" id="storyMarketCompleteBtn" type="button">Cerrar trato y seguir ruta</button>
+              </div>
+            </div>
+          </section>
           <section class="story-mission-stage" id="storyMissionStage" hidden>
             <div class="mission-backdrop" id="storyMissionBackdrop"></div>
             <div class="mission-shell">
@@ -2210,6 +2571,16 @@
     const storySceneCast = document.getElementById('storySceneCast');
     const storySceneNextBtn = document.getElementById('storySceneNextBtn');
     const storySceneMapBtn = document.getElementById('storySceneMapBtn');
+    const storyMarketStage = document.getElementById('storyMarketStage');
+    const storyMarketBackdrop = document.getElementById('storyMarketBackdrop');
+    const storyMarketItems = document.getElementById('storyMarketItems');
+    const storyMarketFeedback = document.getElementById('storyMarketFeedback');
+    const storyInventoryCredits = document.getElementById('storyInventoryCredits');
+    const storyInventoryCards = document.getElementById('storyInventoryCards');
+    const storyInventoryArtifacts = document.getElementById('storyInventoryArtifacts');
+    const storyMarketCloseBtn = document.getElementById('storyMarketCloseBtn');
+    const storyMarketMapBtn = document.getElementById('storyMarketMapBtn');
+    const storyMarketCompleteBtn = document.getElementById('storyMarketCompleteBtn');
     const storyMissionStage = document.getElementById('storyMissionStage');
     const storyMissionBackdrop = document.getElementById('storyMissionBackdrop');
     const storyMissionChip = document.getElementById('storyMissionChip');
@@ -2230,6 +2601,10 @@
       mobile: 'assets/Historia/low/titulo_smartphone_compacto_1080.webp'
     };
     const MARA_PRESENTATION_FIGURE = 'assets/Historia/low/mara_oxido_compacto_1080.webp';
+    const VERA_HEX_PORTRAIT = 'assets/Historia/Brutos/VeraHEX.PNG';
+    const VERA_HEX_POSE_ONE = 'assets/Historia/Brutos/VeraHEX1.PNG';
+    const VERA_HEX_POSE_TWO = 'assets/Historia/Brutos/VeraHEX2.PNG';
+    const MERCADO_RELES_IMAGE = 'assets/Historia/Brutos/3MERCADO_RELES_MUERTOS.PNG';
     const STORY_MAP_THEMES = {
       exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
       chapter_clear: 'assets/Historia/cancionMundo.mp3'
@@ -2244,6 +2619,45 @@
       click: { src: 'assets/sfx/ui_click.wav', volume: 0.26 },
       confirm: { src: 'assets/sfx/unlock.wav', volume: 0.3 }
     };
+    const STORY_MARKET_STARTING_CREDITS = 9;
+    const STORY_MARKET_CATALOG = [
+      {
+        id: 'relay_spades_attack',
+        type: 'card',
+        label: 'Carta',
+        name: 'Relé de ataque 7♠',
+        cost: 3,
+        summary: 'Una carta de ataque recuperada de un bastidor muerto. No promete gloria: promete una ventana de daño si sabes encajarla.',
+        inventoryText: '7♠ · ataque reciclado'
+      },
+      {
+        id: 'shield_diamonds_six',
+        type: 'card',
+        label: 'Carta',
+        name: 'Fusible de defensa 6♦',
+        cost: 2,
+        summary: 'Un diamante de taller con el aislamiento raspado. Sirve para recordar que sobrevivir también se compra por piezas.',
+        inventoryText: '6♦ · defensa de chatarra'
+      },
+      {
+        id: 'dead_memory_relay',
+        type: 'artifact',
+        label: 'Artefacto',
+        name: 'Relé de memoria muerta',
+        cost: 4,
+        summary: 'Conserva ecos de rutas antiguas de Argós. Vera no sabe si guía o vigila; por eso no lo vende barato.',
+        inventoryText: 'Relé de memoria muerta'
+      },
+      {
+        id: 'cracked_argos_seal',
+        type: 'artifact',
+        label: 'Artefacto',
+        name: 'Sello rajado de Argós',
+        cost: 5,
+        summary: 'Un resto ceremonial de la Ruta Ceniza idealizada: mérito, honor y obediencia escondidos bajo el mismo brillo.',
+        inventoryText: 'Sello rajado de Argós'
+      }
+    ];
 
     let glowTick = 0;
     let manualGlowTimeout = null;
@@ -2265,7 +2679,10 @@
       completedNodes: {},
       maraIntroSeen: false,
       pendingThemeKey: 'exploration',
-      lastMissionResult: null
+      lastMissionResult: null,
+      marketUnlocked: false,
+      inventory: null,
+      marketPurchases: {}
     };
     let lastStoryHoverSfxAt = 0;
 
@@ -2314,6 +2731,46 @@
       return currentStoryNodeId && storyDraftNodes[currentStoryNodeId] ? currentStoryNodeId : 'hangar';
     }
 
+    function createDefaultStoryInventory() {
+      return {
+        credits: STORY_MARKET_STARTING_CREDITS,
+        cards: [],
+        artifacts: []
+      };
+    }
+
+    function normalizeInventoryItems(items) {
+      if (!Array.isArray(items)) return [];
+      return items
+        .filter((item) => item && typeof item.id === 'string' && typeof item.name === 'string')
+        .map((item) => ({
+          id: item.id,
+          name: item.name,
+          text: item.text || item.name,
+          source: item.source || 'Mercado de Relés Muertos'
+        }));
+    }
+
+    function normalizeStoryInventory(inventory, options = {}) {
+      const defaults = createDefaultStoryInventory();
+      if (!inventory || typeof inventory !== 'object') return options.withCredits ? defaults : { ...defaults, credits: 0 };
+      const credits = Number.isFinite(inventory.credits) ? Math.max(0, Math.floor(inventory.credits)) : (options.withCredits ? STORY_MARKET_STARTING_CREDITS : 0);
+      return {
+        credits,
+        cards: normalizeInventoryItems(inventory.cards),
+        artifacts: normalizeInventoryItems(inventory.artifacts)
+      };
+    }
+
+    function ensureStoryMarketInventory() {
+      const wasUnlocked = !!storyProgressState.marketUnlocked;
+      storyProgressState.marketUnlocked = true;
+      storyProgressState.inventory = normalizeStoryInventory(storyProgressState.inventory, { withCredits: true });
+      storyProgressState.marketPurchases = { ...(storyProgressState.marketPurchases || {}) };
+      if (!wasUnlocked) saveStoryProgress('market-inventory-unlocked');
+      return storyProgressState.inventory;
+    }
+
     function buildStoryProgressSave(reason = 'auto') {
       return {
         version: 1,
@@ -2324,7 +2781,10 @@
         completedNodes: { ...(storyProgressState.completedNodes || {}) },
         maraIntroSeen: !!storyProgressState.maraIntroSeen,
         pendingThemeKey: storyProgressState.pendingThemeKey || 'exploration',
-        lastMissionResult: storyProgressState.lastMissionResult || null
+        lastMissionResult: storyProgressState.lastMissionResult || null,
+        marketUnlocked: !!storyProgressState.marketUnlocked,
+        inventory: normalizeStoryInventory(storyProgressState.inventory, { withCredits: !!storyProgressState.marketUnlocked }),
+        marketPurchases: { ...(storyProgressState.marketPurchases || {}) }
       };
     }
 
@@ -2354,6 +2814,9 @@
       storyProgressState.maraIntroSeen = false;
       storyProgressState.pendingThemeKey = 'exploration';
       storyProgressState.lastMissionResult = null;
+      storyProgressState.marketUnlocked = false;
+      storyProgressState.inventory = null;
+      storyProgressState.marketPurchases = {};
       currentStoryNodeId = 'hangar';
       activeMissionNodeId = null;
       Object.keys(sceneChoiceSelections).forEach((key) => {
@@ -2374,6 +2837,9 @@
       storyProgressState.maraIntroSeen = !!save.maraIntroSeen;
       storyProgressState.pendingThemeKey = save.pendingThemeKey || (Object.keys(nextCompletedNodes).length ? 'chapter_clear' : 'exploration');
       storyProgressState.lastMissionResult = save.lastMissionResult || null;
+      storyProgressState.marketUnlocked = !!save.marketUnlocked;
+      storyProgressState.inventory = normalizeStoryInventory(save.inventory, { withCredits: !!save.marketUnlocked });
+      storyProgressState.marketPurchases = { ...(save.marketPurchases || {}) };
       syncCompletedCountFromNodes();
       if (save.selectedId && storyDraftNodes[save.selectedId]) {
         currentStoryNodeId = save.selectedId;
@@ -2598,12 +3064,12 @@
         order: 3,
         title: 'Mercado de Relés Muertos',
         type: 'Encuentro',
-        sceneChip: 'Encargo',
-        image: 'assets/Historia/Brutos/3MERCADO_RELES_MUERTOS.PNG',
-        lead: 'Se abre el mundo. Encargo, chatarra, información y sensación de economía de supervivencia.',
-        mission: 'Montar defensa y armadura mínimas en turnos limitados.',
-        learn: 'Decisiones de montaje bajo restricción.',
-        tension: 'La ruta deja el taller y entra en un mundo donde todo vale si aguanta.',
+        sceneChip: 'Mercado',
+        image: MERCADO_RELES_IMAGE,
+        lead: 'Vera Hex abre el primer mercado de la Ruta Ceniza: compra cartas, artefactos y activa el inventario del protagonista.',
+        mission: 'Comprar una carta o artefacto para cerrar trato con Vera Hex.',
+        learn: 'Economía de ruina, inventario persistente y preparación antes de abandonar el taller.',
+        tension: 'La ruta deja el taller y entra en un mundo donde todo vale si aguanta, pero no todo lo que aguanta merece obediencia.',
         dialogue: '“La chatarra no miente: o aguanta, o te mata.”',
         cast: ['Vera Hex']
       },
@@ -3311,6 +3777,127 @@
       ]
     };
 
+    const mercadoZoneScene = {
+      title: 'Mercado de Relés Muertos',
+      subtitle: 'La ruina convertida en economía. Donde otros ven chatarra, Vera Hex ve memoria intercambiable.',
+      contextChip: 'Encuentro · Mercado',
+      objective: 'Conoce a Vera Hex, activa el inventario del protagonista y compra una carta o artefacto para preparar el siguiente tramo de la Ruta Ceniza.',
+      portraits: {
+        right: { src: VERA_HEX_PORTRAIT, alt: 'Vera Hex' }
+      },
+      figure: VERA_HEX_POSE_ONE,
+      figureClass: 'figure-vera',
+      startAmbient: false,
+      minimalDialogue: false,
+      completeAction: 'market',
+      completeActionLabel: 'Abrir mercado de Vera',
+      lines: [
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_HEX_POSE_ONE,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -25,
+          figureMobileShiftVh: -18,
+          figureScale: 0.9,
+          figureMobileScale: 0.78,
+          text: 'Si vienes de la Fosa Azul y del Patio, traes olor a tutorial y a metal recién obligado. Bien. Aquí eso no compra respeto, pero compra una conversación.',
+          choices: [
+            {
+              id: 'parts',
+              label: 'Necesito piezas que aguanten fuera del taller.',
+              response: 'Tú: "Necesito piezas que aguanten fuera del taller."'
+            },
+            {
+              id: 'memory',
+              label: 'Mara dijo que aquí la chatarra también guarda memoria.',
+              response: 'Tú: "Mara dijo que aquí la chatarra también guarda memoria."'
+            },
+            {
+              id: 'argos',
+              label: 'Quiero saber qué queda de Argós debajo de tanta ruina útil.',
+              response: 'Tú: "Quiero saber qué queda de Argós debajo de tanta ruina útil."'
+            }
+          ]
+        },
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_HEX_POSE_TWO,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -25,
+          figureMobileShiftVh: -18,
+          figureScale: 0.9,
+          figureMobileScale: 0.78,
+          variantSourceLine: 0,
+          variants: {
+            parts: {
+              text: 'Entonces aprende la primera ley del mercado: una pieza no es buena porque brille, sino porque aguanta cuando el mundo deja de explicarse. La chatarra no miente: o aguanta, o te mata.'
+            },
+            memory: {
+              text: 'Mara habla demasiado, pero ahí no se equivoca. Cada relé muerto trae rutas, nombres, órdenes y miedo soldado por dentro. Yo vendo piezas; a veces, sin querer, también vendo recuerdos.'
+            },
+            argos: {
+              text: 'De Argós queda lo peor y lo más útil: sistemas que todavía obedecen, símbolos que todavía convencen y gente dispuesta a confundir una orden vieja con una verdad. Cuidado con eso.'
+            }
+          }
+        },
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_HEX_POSE_ONE,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -25,
+          figureMobileShiftVh: -18,
+          figureScale: 0.9,
+          figureMobileScale: 0.78,
+          text: 'Te abriré inventario propio. Nueve créditos de relé para empezar, una compra obligatoria y una advertencia gratis: no compres como quien busca poder. Compra como quien piensa volver vivo.'
+        }
+      ]
+    };
+
+    storySceneScripts.mercado = mercadoZoneScene;
+    storySceneScripts.mercado_outcome = {
+      title: 'Mercado de Relés Muertos',
+      subtitle: 'El primer trato de la carretera ya ha dejado marca en tu inventario.',
+      contextChip: 'Resultado · Trato cerrado',
+      objective: 'Regresar al mapa con el Mercado completado y continuar hacia la siguiente prueba de la Ruta Ceniza.',
+      completeActionLabel: 'Volver al mapa',
+      completeAction: 'map',
+      portraits: {
+        right: { src: VERA_HEX_PORTRAIT, alt: 'Vera Hex' }
+      },
+      lines: [
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_HEX_POSE_TWO,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -25,
+          figureMobileShiftVh: -18,
+          figureScale: 0.9,
+          figureMobileScale: 0.78,
+          text: 'Trato cerrado. Tu inventario ya pesa un poco más, y eso significa dos cosas: tienes más opciones y más responsabilidad cuando algo salga mal.'
+        },
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_HEX_POSE_ONE,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -25,
+          figureMobileShiftVh: -18,
+          figureScale: 0.9,
+          figureMobileScale: 0.78,
+          text: 'Sigue la Ruta Ceniza si quieres. Pero recuerda esto: Argós convirtió la excelencia en una jaula con buen nombre. Si vas a buscar la verdad, que no sea porque todavía te deslumbra.'
+        }
+      ]
+    };
+
     storySceneScripts.hangar = hangarZoneScene;
 
     function copySceneLines(lines, variantOffset = 0) {
@@ -3650,6 +4237,7 @@
       storySceneStage.classList.toggle('figure-raised', raiseFigure);
       storySceneStage.classList.toggle('hangar-scene', activeSceneNodeId === 'hangar');
       storySceneStage.classList.toggle('patio-scene', activeSceneNodeId === 'patio');
+      storySceneStage.classList.toggle('mercado-scene', activeSceneNodeId === 'mercado');
       storySceneStage.style.setProperty('--scene-figure-shift', `${figureShift}vh`);
       storySceneStage.style.setProperty('--scene-figure-mobile-shift', `${figureMobileShift}vh`);
       storySceneStage.style.setProperty('--scene-figure-scale', String(figureScale));
@@ -3848,6 +4436,7 @@
       updateAmbientHint();
       storySceneStage.classList.remove('hangar-scene');
       storySceneStage.classList.remove('patio-scene');
+      storySceneStage.classList.remove('mercado-scene');
       storySceneStage.style.setProperty('--scene-figure-shift', '0vh');
       storySceneStage.style.setProperty('--scene-figure-mobile-shift', '0vh');
       storySceneStage.style.setProperty('--scene-figure-scale', '1');
@@ -3856,12 +4445,157 @@
       window.setTimeout(() => {
         if (!storySceneStage.classList.contains('active')) {
           storySceneStage.hidden = true;
-          if (workspacePanel.classList.contains('active') && (!storyMissionStage || !storyMissionStage.classList.contains('active'))) {
+          if (workspacePanel.classList.contains('active') && (!storyMissionStage || !storyMissionStage.classList.contains('active')) && (!storyMarketStage || !storyMarketStage.classList.contains('active'))) {
             resetStoryMapViewport();
             playMapMusic();
           }
         }
       }, 260);
+    }
+
+    function getStoryMarketItem(itemId) {
+      return STORY_MARKET_CATALOG.find((item) => item.id === itemId) || null;
+    }
+
+    function hasStoryMarketPurchase() {
+      return Object.values(storyProgressState.marketPurchases || {}).some(Boolean);
+    }
+
+    function setStoryMarketFeedback(text) {
+      if (storyMarketFeedback) storyMarketFeedback.textContent = text;
+    }
+
+    function renderInventoryList(container, items) {
+      if (!container) return;
+      container.innerHTML = '';
+      if (!items.length) {
+        const empty = document.createElement('span');
+        empty.className = 'inventory-empty';
+        empty.textContent = 'Todavía vacío.';
+        container.appendChild(empty);
+        return;
+      }
+      items.forEach((item) => {
+        const pill = document.createElement('span');
+        pill.className = 'inventory-pill';
+        pill.textContent = item.text || item.name;
+        container.appendChild(pill);
+      });
+    }
+
+    function renderStoryMarket() {
+      const inventory = ensureStoryMarketInventory();
+      const purchases = storyProgressState.marketPurchases || {};
+      if (storyMarketBackdrop) {
+        storyMarketBackdrop.style.setProperty('--market-bg', `url("${MERCADO_RELES_IMAGE}")`);
+      }
+      if (storyInventoryCredits) {
+        storyInventoryCredits.innerHTML = `<span>Créditos de relé</span><strong>${inventory.credits}</strong>`;
+      }
+      renderInventoryList(storyInventoryCards, inventory.cards);
+      renderInventoryList(storyInventoryArtifacts, inventory.artifacts);
+      if (storyMarketItems) {
+        storyMarketItems.innerHTML = '';
+        STORY_MARKET_CATALOG.forEach((item) => {
+          const purchased = !!purchases[item.id];
+          const affordable = inventory.credits >= item.cost;
+          const card = document.createElement('article');
+          card.className = `market-item-card${purchased ? ' purchased' : ''}`;
+          card.innerHTML = `
+            <div class="market-item-top">
+              <span class="market-item-type">${item.label}</span>
+              <span class="market-cost">${item.cost} créditos</span>
+            </div>
+            <h3>${item.name}</h3>
+            <p>${item.summary}</p>
+            <button class="market-buy-btn" data-market-buy="${item.id}" type="button" ${purchased || !affordable ? 'disabled' : ''}>
+              ${purchased ? 'Comprado' : affordable ? 'Comprar' : 'Sin créditos'}
+            </button>
+          `;
+          const button = card.querySelector('.market-buy-btn');
+          bindStoryUiSfx(button, { clickKind: 'confirm' });
+          storyMarketItems.appendChild(card);
+        });
+      }
+      if (storyMarketCompleteBtn) {
+        const canComplete = hasStoryMarketPurchase();
+        storyMarketCompleteBtn.disabled = !canComplete;
+        storyMarketCompleteBtn.textContent = canComplete ? 'Cerrar trato y seguir ruta' : 'Compra algo para seguir';
+      }
+    }
+
+    function buyStoryMarketItem(itemId) {
+      const item = getStoryMarketItem(itemId);
+      if (!item) return;
+      const inventory = ensureStoryMarketInventory();
+      storyProgressState.marketPurchases = { ...(storyProgressState.marketPurchases || {}) };
+      if (storyProgressState.marketPurchases[item.id]) {
+        setStoryMarketFeedback('Vera ya apartó esa pieza para ti. En este mercado repetir compra es mala señal.');
+        renderStoryMarket();
+        return;
+      }
+      if (inventory.credits < item.cost) {
+        setStoryMarketFeedback('Vera niega con la cabeza: no hay crédito suficiente para ese trato.');
+        renderStoryMarket();
+        return;
+      }
+      inventory.credits -= item.cost;
+      const inventoryEntry = {
+        id: item.id,
+        name: item.name,
+        text: item.inventoryText || item.name,
+        source: 'Mercado de Relés Muertos'
+      };
+      if (item.type === 'artifact') inventory.artifacts.push(inventoryEntry);
+      else inventory.cards.push(inventoryEntry);
+      storyProgressState.inventory = inventory;
+      storyProgressState.marketPurchases[item.id] = true;
+      setStoryMarketFeedback(`Vera cierra los dedos sobre los créditos: "${item.name}" pasa a tu inventario.`);
+      saveStoryProgress(`market-buy-${item.id}`);
+      renderStoryMarket();
+    }
+
+    function openStoryMarket() {
+      ensureStoryMarketInventory();
+      closeStoryScene();
+      pauseMapMusic();
+      renderStoryMarket();
+      if (!storyMarketStage) return;
+      storyMarketStage.hidden = false;
+      requestAnimationFrame(() => storyMarketStage.classList.add('active'));
+    }
+
+    function closeStoryMarket(options = {}) {
+      const onClosed = typeof options.onClosed === 'function' ? options.onClosed : null;
+      if (!storyMarketStage) {
+        if (onClosed) onClosed();
+        return;
+      }
+      storyMarketStage.classList.remove('active');
+      window.setTimeout(() => {
+        if (!storyMarketStage.classList.contains('active')) {
+          storyMarketStage.hidden = true;
+          if (workspacePanel.classList.contains('active') && (!storyMissionStage || !storyMissionStage.classList.contains('active')) && (!storySceneStage || !storySceneStage.classList.contains('active'))) {
+            resetStoryMapViewport();
+            playMapMusic();
+          }
+          if (onClosed) onClosed();
+        }
+      }, 260);
+    }
+
+    function completeStoryMarketChapter() {
+      if (!hasStoryMarketPurchase()) {
+        setStoryMarketFeedback('Vera no abre la salida todavía: primero compra una carta o artefacto y activa tu inventario.');
+        return;
+      }
+      queueStoryMapTheme('chapter_clear');
+      markStoryNodeCompleted('mercado', { selectedId: 'torre' });
+      closeStoryMarket({
+        onClosed: () => {
+          openStoryScene('mercado', 'mercado_outcome');
+        }
+      });
     }
 
     function openStoryMission(nodeId) {
@@ -4290,6 +5024,7 @@
         playMapMusic();
         closeStoryMission();
         closeStoryScene();
+        closeStoryMarket();
         renderStoryNode(currentStoryNodeId);
         setTimeout(() => {
           resetStoryMapViewport();
@@ -4310,6 +5045,7 @@
       pauseMapMusic();
       closeStoryMission();
       closeStoryScene();
+      closeStoryMarket();
       if (titleMusicUnlocked) startTitleMusic();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -4353,6 +5089,9 @@
     bindStoryUiSfx(storySceneAmbientNextBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(storySceneMapBtn);
     bindStoryUiSfx(storySceneNextBtn, { clickKind: 'click' });
+    bindStoryUiSfx(storyMarketCloseBtn);
+    bindStoryUiSfx(storyMarketMapBtn);
+    bindStoryUiSfx(storyMarketCompleteBtn, { clickKind: 'confirm' });
     if (storyMissionPanelBtn) bindStoryUiSfx(storyMissionPanelBtn);
     if (storyMissionHandBtn) bindStoryUiSfx(storyMissionHandBtn);
     if (storyMissionBriefToggleBtn) bindStoryUiSfx(storyMissionBriefToggleBtn);
@@ -4374,6 +5113,14 @@
     storySceneAmbientMapBtn.addEventListener('click', closeStoryScene);
     storySceneAmbientNextBtn.addEventListener('click', activateSceneDialogue);
     storySceneMapBtn.addEventListener('click', stepBackStorySceneLine);
+    storyMarketCloseBtn.addEventListener('click', closeStoryMarket);
+    storyMarketMapBtn.addEventListener('click', closeStoryMarket);
+    storyMarketCompleteBtn.addEventListener('click', completeStoryMarketChapter);
+    storyMarketItems.addEventListener('click', (event) => {
+      const buyId = event.target.closest('[data-market-buy]')?.dataset.marketBuy;
+      if (!buyId) return;
+      buyStoryMarketItem(buyId);
+    });
     if (storyMissionPanelBtn) {
       storyMissionPanelBtn.addEventListener('click', () => {
         postStoryMissionEmbedCommand('panel', 3);
@@ -4418,6 +5165,8 @@
         const completeAction = scene.completeAction || ((isEntrySceneForActiveNode && storyMissionScripts[activeSceneNodeId]) ? 'mission' : 'map');
         if (completeAction === 'mission') {
           openStoryMission(activeSceneNodeId);
+        } else if (completeAction === 'market') {
+          openStoryMarket();
         } else {
           closeStoryScene();
         }
