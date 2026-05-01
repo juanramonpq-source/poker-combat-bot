@@ -176,6 +176,33 @@ body.story-embed-mode .story-mission-brief-text{
 body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-text{
   display:none;
 }
+body.story-embed-mode .story-mission-brief-bar.collapsed{
+  right:auto;
+  width:min(520px, calc(100vw - 24px));
+  grid-template-columns:minmax(0, 1fr) auto;
+  padding:8px 10px 8px 12px;
+  border-radius:16px;
+}
+body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-copy{
+  overflow:hidden;
+}
+body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-kicker,
+body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-title{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-kicker{
+  font-size:.62rem;
+}
+body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-title{
+  font-size:.92rem;
+}
+@media (pointer:coarse) and (orientation:landscape){
+  body.story-embed-mode .story-mission-brief-bar.collapsed{
+    width:min(46vw, 520px);
+  }
+}
 body.story-embed-mode .zone.story-scroll-focus{
   animation:storyScrollFocusPulse 1200ms ease;
 }
@@ -10054,7 +10081,7 @@ function primeOfflineMode(gameMode, difficulty=null){
 
 function autoStartStoryMissionIfRequested(){
   if(!STORY_MISSION_BOOT) return;
-  storyMissionBriefCollapsed = false;
+  storyMissionBriefCollapsed = true;
 
   switch(STORY_MISSION_BOOT){
     case 'hangar_build':
@@ -10800,6 +10827,7 @@ const STORY_EMBED_MODE = STORY_BOOT_PARAMS.get('story_embed') === '1' || STORY_S
 const STORY_AUDIO_MODE = STORY_BOOT_PARAMS.get('story_audio') || '';
 const STORY_RETURN_URL = STORY_BOOT_PARAMS.get('story_return') || '';
 const STORY_NODE_BOOT = STORY_BOOT_PARAMS.get('story_node') || '';
+const STORY_BRIEF_MODE = STORY_BOOT_PARAMS.get('story_brief') || '';
 const STORY_CARRIED_BGM_SRC = STORY_BOOT_PARAMS.get('story_bgm') || '';
 const STORY_CARRIED_BGM_TIME = Number(STORY_BOOT_PARAMS.get('story_bgm_time') || 0) || 0;
 const STORY_CARRIED_BGM_VOLUME = Number(STORY_BOOT_PARAMS.get('story_bgm_volume') || 0.34) || 0.34;
@@ -11386,7 +11414,7 @@ function syncStoryMissionBriefBar(){
   const bar = document.getElementById('storyMissionBriefBar');
   if(!bar) return;
   const brief = getStoryMissionBrief();
-  const shouldShow = STORY_EMBED_MODE && !!brief && state.gameStarted && !state.storyMissionAnnounced;
+  const shouldShow = STORY_BRIEF_MODE !== 'off' && STORY_EMBED_MODE && !!brief && state.gameStarted && !state.storyMissionAnnounced;
   bar.hidden = !shouldShow;
   if(!shouldShow) return;
   const kicker = document.getElementById('storyMissionBriefKicker');

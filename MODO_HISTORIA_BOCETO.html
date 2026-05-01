@@ -415,6 +415,112 @@
       animation:boltFlashA 16.4s linear infinite;
       animation-delay:5.1s;
     }
+    .title-dual-cameo{
+      position:absolute;
+      top:clamp(24px, 7.5vh, 86px);
+      left:50%;
+      z-index:1;
+      display:grid;
+      place-items:center;
+      width:min(30vw, 430px);
+      height:min(30vh, 300px);
+      opacity:0;
+      transform:translateX(-50%) translateY(-3svh) scale(.94);
+      pointer-events:none;
+      filter:drop-shadow(0 0 14px rgba(255,185,109,.74)) drop-shadow(0 0 34px rgba(143,244,255,.36));
+    }
+    .title-dual-cameo::before{
+      content:"";
+      position:absolute;
+      top:-60%;
+      left:50%;
+      width:92%;
+      height:165%;
+      transform:translateX(-50%) rotate(-8deg);
+      background:linear-gradient(180deg, rgba(255,255,255,0), rgba(143,244,255,.34) 24%, rgba(255,185,109,.22) 62%, rgba(255,255,255,0));
+      clip-path:polygon(46% 0, 55% 0, 58% 100%, 41% 100%);
+      opacity:0;
+      filter:blur(14px);
+      mix-blend-mode:screen;
+    }
+    .title-dual-cameo svg{
+      width:100%;
+      max-width:100%;
+      overflow:visible;
+    }
+    .dual-cameo-path{
+      fill:none;
+      stroke:rgba(255,244,219,.98);
+      stroke-width:5.6;
+      stroke-linecap:square;
+      stroke-linejoin:miter;
+      stroke-dasharray:520;
+      stroke-dashoffset:520;
+    }
+    .dual-cameo-path.echo{
+      stroke:rgba(143,244,255,.58);
+      stroke-width:13;
+      filter:blur(8px);
+    }
+    .dual-cameo-spark{
+      fill:rgba(255,226,176,.98);
+      opacity:0;
+      filter:drop-shadow(0 0 12px rgba(255,185,109,.86));
+    }
+    .title-stage.dual-cameo-active .title-dual-cameo{
+      animation:dualCameoAppear var(--dual-cameo-duration, 3s) cubic-bezier(.18,.82,.2,1) both;
+    }
+    .title-stage.dual-cameo-active .title-dual-cameo::before{
+      animation:dualCameoBeam var(--dual-cameo-duration, 3s) ease both;
+    }
+    .title-stage.dual-cameo-active .dual-cameo-path{
+      animation:dualCameoDraw 1.55s cubic-bezier(.16,.86,.2,1) .18s forwards, dualCameoFlicker var(--dual-cameo-duration, 3s) steps(1,end) both;
+    }
+    .title-stage.dual-cameo-active .dual-cameo-path.echo{
+      animation:dualCameoDraw 1.55s cubic-bezier(.16,.86,.2,1) .18s forwards, dualCameoEcho var(--dual-cameo-duration, 3s) ease both;
+    }
+    .title-stage.dual-cameo-active .dual-cameo-spark{
+      animation:dualCameoSpark var(--dual-cameo-duration, 3s) ease both;
+    }
+    @keyframes dualCameoAppear{
+      0%,7%{opacity:0; transform:translateX(-50%) translateY(-6svh) scale(.88)}
+      18%{opacity:1; transform:translateX(-50%) translateY(-3svh) scale(1.02)}
+      72%{opacity:.96; transform:translateX(-50%) translateY(-3svh) scale(1)}
+      100%{opacity:0; transform:translateX(-50%) translateY(-1svh) scale(1.04)}
+    }
+    @keyframes dualCameoBeam{
+      0%,10%,100%{opacity:0}
+      16%{opacity:.88}
+      25%{opacity:.34}
+      34%{opacity:.76}
+      44%{opacity:.28}
+      54%{opacity:.66}
+      62%{opacity:.3}
+      72%{opacity:.58}
+      84%{opacity:.16}
+    }
+    @keyframes dualCameoDraw{
+      0%{stroke-dashoffset:520}
+      100%{stroke-dashoffset:0}
+    }
+    @keyframes dualCameoEcho{
+      0%,8%,100%{opacity:0}
+      18%{opacity:.92}
+      28%{opacity:.36}
+      38%{opacity:.74}
+      54%{opacity:.32}
+      66%{opacity:.68}
+      80%{opacity:.2}
+    }
+    @keyframes dualCameoFlicker{
+      0%,8%,13%,18%,25%,32%,41%,52%,63%,74%,84%,100%{opacity:.98}
+      10%,16%,22%,29%,37%,47%,58%,69%,79%,91%{opacity:.32}
+    }
+    @keyframes dualCameoSpark{
+      0%,10%,88%,100%{opacity:0}
+      16%,24%,36%,52%,68%,78%{opacity:.96}
+      20%,30%,44%,60%,73%{opacity:.18}
+    }
     .title-image{
       width:100%;
       height:100svh;
@@ -1362,6 +1468,10 @@
       opacity:1;
       transform:translateY(0);
     }
+    .story-scene-stage.show-intro-tag.scene-ambient-figure .scene-intro-tag{
+      left:clamp(16px, 3vw, 34px);
+      right:auto;
+    }
     .scene-ambient-actions{
       position:absolute;
       right:clamp(16px, 2.8vw, 28px);
@@ -2069,6 +2179,54 @@
         min-height:150px;
       }
     }
+    @media (max-height:760px) and (orientation: landscape) and (pointer:fine){
+      .story-scene-stage{
+        align-items:end;
+        overflow:hidden;
+      }
+      .story-scene-stage.hangar-scene .scene-focus-wrap,
+      .story-scene-stage.patio-scene .scene-focus-wrap,
+      .story-scene-stage.mercado-scene .scene-focus-wrap{
+        align-items:start;
+        justify-items:end;
+        padding-top:clamp(72px, 12svh, 104px);
+        padding-right:clamp(24px, 5vw, 72px);
+      }
+      .story-scene-stage.hangar-scene .scene-focus-figure,
+      .story-scene-stage.patio-scene .scene-focus-figure,
+      .story-scene-stage.mercado-scene .scene-focus-figure{
+        width:min(28vw, 360px);
+        max-height:58svh;
+      }
+      .story-scene-stage.dialogue-live .scene-focus-figure{
+        transform:translateY(calc(var(--scene-figure-shift) - 8svh)) scale(.72);
+      }
+      .story-scene-stage.figure-raised .scene-focus-figure{
+        transform:translateY(calc(var(--scene-figure-shift) - 14svh)) scale(.7);
+      }
+      .scene-dialog-card{
+        --scene-dialog-max-height:min(48svh, 360px);
+        width:min(1040px, calc(100% - 56px));
+        margin:0 auto clamp(18px, 3.4vh, 30px);
+        padding:14px 16px 16px;
+        align-self:end;
+      }
+      .story-scene-stage.minimal-dialogue .scene-dialog-card{
+        --scene-dialog-max-height:min(42svh, 320px);
+        width:min(980px, calc(100% - 56px));
+      }
+      .scene-dialog-main{
+        grid-template-columns:96px 1fr;
+      }
+      .story-scene-stage.minimal-dialogue .scene-dialog-main{
+        grid-template-columns:1fr;
+      }
+      .scene-actions{
+        position:static;
+        padding-top:0;
+        background:none;
+      }
+    }
     @media (orientation:portrait){
       .story-map-shell{
         height:auto;
@@ -2442,7 +2600,8 @@
     }
     @media (prefers-reduced-motion: reduce){
       .title-storm-flash,
-      .title-bolt{
+      .title-bolt,
+      .title-dual-cameo{
         animation:none;
         opacity:0;
       }
@@ -2464,6 +2623,15 @@
             <span class="title-bolt title-bolt-c"></span>
             <span class="title-bolt title-bolt-subtle title-bolt-d"></span>
             <span class="title-bolt title-bolt-subtle title-bolt-e"></span>
+            <div class="title-dual-cameo" id="titleDualCameo">
+              <svg viewBox="0 0 160 142" role="img" aria-label="Símbolo dual en forma de rayo">
+                <path class="dual-cameo-path echo" pathLength="520" d="M58 18 H114 V72 H140 M86 18 V106 H136 M58 18 V96 Q58 124 31 124 H22 M78 48 V115" />
+                <path class="dual-cameo-path" pathLength="520" d="M58 18 H114 V72 H140 M86 18 V106 H136 M58 18 V96 Q58 124 31 124 H22 M78 48 V115" />
+                <circle class="dual-cameo-spark" cx="58" cy="18" r="4" />
+                <circle class="dual-cameo-spark" cx="140" cy="72" r="3.4" />
+                <circle class="dual-cameo-spark" cx="22" cy="124" r="3.8" />
+              </svg>
+            </div>
           </div>
           <picture class="title-picture">
             <source media="(orientation: portrait)" srcset="assets/Historia/Brutos/TituloSmartphone1.png">
@@ -2659,6 +2827,7 @@
     const storyTransitionVeil = document.getElementById('storyTransitionVeil');
     const titleStage = document.getElementById('titleStage');
     const titleArtWrap = document.getElementById('titleArtWrap');
+    const titleDualCameo = document.getElementById('titleDualCameo');
     const enterStoryBtn = document.getElementById('enterStoryBtn');
     const loadStoryBtn = document.getElementById('loadStoryBtn');
     const workspacePanel = document.getElementById('workspacePanel');
@@ -2788,6 +2957,13 @@
     let mapMusicUnlocked = false;
     let titleMusicUnlocked = false;
     let titleMusicFadeFrame = null;
+    let titleDualCameoTimer = null;
+    let titleDualCameoHideTimer = null;
+    let titleDualCameoReturnTimer = null;
+    const TITLE_DUAL_CAMEO_FIRST_DELAY_MS = 39000;
+    const TITLE_DUAL_CAMEO_FIRST_DURATION_MS = 5000;
+    const TITLE_DUAL_CAMEO_RETURN_GAP_MS = 3000;
+    const TITLE_DUAL_CAMEO_RETURN_DURATION_MS = 3000;
     let currentStoryNodeId = 'hangar';
     let activeSceneNodeId = null;
     let activeSceneScriptKey = null;
@@ -4731,6 +4907,50 @@
       });
     }
 
+    function buildStoryMissionUrl(nodeId, options = {}) {
+      const mission = storyMissionScripts[nodeId];
+      if (!mission) return '';
+      const targetUrl = new URL(mission.url, window.location.href);
+      targetUrl.searchParams.set('story_embed', '1');
+      targetUrl.searchParams.set('story_node', nodeId);
+      targetUrl.searchParams.set('story_audio', options.audioMode || 'external');
+      targetUrl.searchParams.set('story_brief', options.showInnerBrief ? 'on' : 'off');
+      if (options.standalone) {
+        targetUrl.searchParams.set('story_standalone', '1');
+        targetUrl.searchParams.set('story_return', window.location.href);
+        const activeMapSource = storyMapMusic?.querySelector('source')?.getAttribute('src') || STORY_MAP_THEMES[storyProgressState.pendingThemeKey || ''] || STORY_MAP_THEMES.exploration;
+        targetUrl.searchParams.set('story_audio', 'carry');
+        targetUrl.searchParams.set('story_bgm', activeMapSource);
+        targetUrl.searchParams.set('story_bgm_time', String(Math.max(0, storyMapMusic?.currentTime || 0)));
+        targetUrl.searchParams.set('story_bgm_volume', String(Math.max(0, Math.min(1, storyMapMusic?.volume || 0.34))));
+      } else {
+        targetUrl.searchParams.delete('story_standalone');
+        targetUrl.searchParams.delete('story_return');
+        targetUrl.searchParams.delete('story_bgm');
+        targetUrl.searchParams.delete('story_bgm_time');
+        targetUrl.searchParams.delete('story_bgm_volume');
+      }
+      return targetUrl.href;
+    }
+
+    function syncStoryMissionBrief(nodeId, localNode, mission) {
+      if (storyMissionBackdrop) {
+        const backdrop = resolveStoryAssetSource(localNode?.lowImage || localNode?.image || '');
+        storyMissionBackdrop.style.backgroundImage = backdrop ? `url("${backdrop}")` : '';
+      }
+      if (storyMissionChip) storyMissionChip.textContent = mission.chip || localNode?.sceneChip || 'Misión historia';
+      if (storyMissionTitle) storyMissionTitle.textContent = mission.title || localNode?.title || 'Ruta Ceniza';
+      if (storyMissionCopy) storyMissionCopy.textContent = mission.copy || localNode?.mission || '';
+      if (storyMissionTip) {
+        storyMissionTip.innerHTML = `
+          <span class="mission-tip-label">${nodeId === 'patio' ? 'Regla especial' : 'Definicion de mecha'}</span>
+          <p class="mission-tip-copy">${mission.tip || ''}</p>
+        `;
+      }
+      syncStoryMissionModeButton();
+      setStoryMissionBriefExpanded(false);
+    }
+
     function openStoryMission(nodeId) {
       const localNode = storyDraftNodes[nodeId];
       const mission = storyMissionScripts[nodeId];
@@ -4739,20 +4959,50 @@
       rememberStoryWorkspace(true);
       rememberActiveStoryMission(nodeId);
       saveStoryProgress(`mission-open-${nodeId}`);
+      syncStoryMissionBrief(nodeId, localNode, mission);
 
-      const targetUrl = new URL(mission.url, window.location.href);
-      targetUrl.searchParams.set('story_embed', '1');
-      targetUrl.searchParams.set('story_standalone', '1');
-      targetUrl.searchParams.set('story_node', nodeId);
-      targetUrl.searchParams.set('story_return', window.location.href);
-      const activeMapSource = storyMapMusic?.querySelector('source')?.getAttribute('src') || STORY_MAP_THEMES[storyProgressState.pendingThemeKey || ''] || STORY_MAP_THEMES.exploration;
-      targetUrl.searchParams.set('story_audio', 'carry');
-      targetUrl.searchParams.set('story_bgm', activeMapSource);
-      targetUrl.searchParams.set('story_bgm_time', String(Math.max(0, storyMapMusic?.currentTime || 0)));
-      targetUrl.searchParams.set('story_bgm_volume', String(Math.max(0, Math.min(1, storyMapMusic?.volume || 0.34))));
+      const missionUrl = buildStoryMissionUrl(nodeId, { audioMode: 'external', showInnerBrief: false });
+      const navigateStandalone = () => {
+        window.location.href = buildStoryMissionUrl(nodeId, { standalone: true, showInnerBrief: true });
+      };
+
+      if (!storyMissionFrame || !storyMissionStage) {
+        navigateStandalone();
+        return;
+      }
+
+      const launchMissionFrame = () => {
+        storyMissionFrame.src = 'about:blank';
+        storyMissionStage.hidden = false;
+        storyMissionStage.classList.remove('mission-brief-expanded');
+        syncStoryMissionMobileFocus();
+        requestAnimationFrame(() => {
+          storyMissionFrame.src = missionUrl;
+          storyMissionStage.classList.add('active');
+          syncStoryMissionMobileFocus();
+        });
+        window.setTimeout(() => {
+          if (storyTransitionVeil) storyTransitionVeil.classList.remove('active', 'mission-spiral');
+          storyTransitionBusy = false;
+        }, 260);
+      };
+
+      if (!storyTransitionVeil || storyTransitionBusy) {
+        launchMissionFrame();
+        return;
+      }
+
+      storyTransitionBusy = true;
+      storyTransitionVeil.classList.add('mission-spiral', 'active');
+      window.setTimeout(launchMissionFrame, 620);
+    }
+
+    function openStoryMissionStandalone(nodeId) {
+      const targetUrl = buildStoryMissionUrl(nodeId, { standalone: true, showInnerBrief: true });
+      if (!targetUrl) return;
 
       const navigate = () => {
-        window.location.href = targetUrl.href;
+        window.location.href = targetUrl;
       };
 
       if (!storyTransitionVeil || storyTransitionBusy) {
@@ -5109,6 +5359,52 @@
       requestAnimationFrame(animateAmbientGlow);
     }
 
+    function isTitleScreenVisible() {
+      return !!titleStage && !!titleDualCameo && !workspacePanel.classList.contains('active') && !titleStage.classList.contains('hidden');
+    }
+
+    function cancelTitleDualCameo(options = {}) {
+      window.clearTimeout(titleDualCameoTimer);
+      window.clearTimeout(titleDualCameoHideTimer);
+      window.clearTimeout(titleDualCameoReturnTimer);
+      titleDualCameoTimer = null;
+      titleDualCameoHideTimer = null;
+      titleDualCameoReturnTimer = null;
+      if (options.keepActive !== true) {
+        titleStage?.classList.remove('dual-cameo-active');
+      }
+    }
+
+    function playTitleDualCameoPulse(durationMs) {
+      if (!isTitleScreenVisible()) return;
+      window.clearTimeout(titleDualCameoHideTimer);
+      titleDualCameoHideTimer = null;
+      titleStage.style.setProperty('--dual-cameo-duration', `${durationMs}ms`);
+      titleStage.classList.remove('dual-cameo-active');
+      void titleStage.offsetWidth;
+      titleStage.classList.add('dual-cameo-active');
+      titleDualCameoHideTimer = window.setTimeout(() => {
+        titleStage.classList.remove('dual-cameo-active');
+        titleDualCameoHideTimer = null;
+      }, durationMs);
+    }
+
+    function triggerTitleDualCameo() {
+      titleDualCameoTimer = null;
+      if (!isTitleScreenVisible()) return;
+      playTitleDualCameoPulse(TITLE_DUAL_CAMEO_FIRST_DURATION_MS);
+      titleDualCameoReturnTimer = window.setTimeout(() => {
+        titleDualCameoReturnTimer = null;
+        playTitleDualCameoPulse(TITLE_DUAL_CAMEO_RETURN_DURATION_MS);
+      }, TITLE_DUAL_CAMEO_FIRST_DURATION_MS + TITLE_DUAL_CAMEO_RETURN_GAP_MS);
+    }
+
+    function scheduleTitleDualCameo() {
+      cancelTitleDualCameo();
+      if (!isTitleScreenVisible()) return;
+      titleDualCameoTimer = window.setTimeout(triggerTitleDualCameo, TITLE_DUAL_CAMEO_FIRST_DELAY_MS);
+    }
+
     titleArtWrap.addEventListener('mousemove', (event) => {
       const rect = titleArtWrap.getBoundingClientRect();
       const x = ((event.clientX - rect.left) / rect.width) * 100;
@@ -5151,6 +5447,7 @@
 
     function showWorkspace() {
       if (workspacePanel.classList.contains('active')) return;
+      cancelTitleDualCameo();
       rememberStoryWorkspace(true);
       stopTitleMusic();
       runStoryTransition(() => {
@@ -5186,11 +5483,13 @@
       closeStoryScene();
       closeStoryMarket();
       if (titleMusicUnlocked) startTitleMusic();
+      scheduleTitleDualCameo();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function restoreStorySessionIfNeeded() {
       if (getStorySessionFlag(STORY_WORKSPACE_SESSION_KEY) !== '1') return;
+      cancelTitleDualCameo();
       document.body.classList.remove('story-title-lock');
       titleStage.classList.add('hidden');
       workspacePanel.classList.add('active');
@@ -5291,7 +5590,7 @@
       syncStoryMissionModeButton();
       storyMissionFrame.src = 'about:blank';
       window.setTimeout(() => {
-        storyMissionFrame.src = mission.url;
+        storyMissionFrame.src = buildStoryMissionUrl(activeMissionNodeId, { audioMode: 'external', showInnerBrief: false });
       }, 60);
     });
     storySceneNextBtn.addEventListener('click', () => {
@@ -5378,11 +5677,13 @@
     });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
+        cancelTitleDualCameo();
         if (workspacePanel.classList.contains('active')) saveStoryProgress('visibility-hidden');
         return;
       }
       if (workspacePanel.classList.contains('active')) return;
       bootstrapTitleMusicAutoplay();
+      scheduleTitleDualCameo();
     });
     window.addEventListener('pagehide', () => {
       if (workspacePanel.classList.contains('active')) saveStoryProgress('pagehide');
@@ -5398,6 +5699,7 @@
     if (!consumePendingStoryMissionResult()) {
       restoreStorySessionIfNeeded();
     }
+    scheduleTitleDualCameo();
   </script>
 </body>
 </html>
