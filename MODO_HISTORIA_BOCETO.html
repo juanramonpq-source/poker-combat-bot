@@ -463,6 +463,24 @@
       animation:buttonSweep 3.6s linear infinite;
       pointer-events:none;
     }
+    .title-actions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:12px;
+      width:min(680px, 100%);
+    }
+    .title-actions .enter-btn{
+      min-width:min(300px, 100%);
+    }
+    .load-story-btn{
+      border-color:rgba(255,185,109,.32);
+      background:linear-gradient(180deg, rgba(73,50,30,.94), rgba(14,18,24,.98));
+      box-shadow:0 0 0 1px rgba(255,185,109,.12), 0 18px 34px rgba(255,185,109,.14);
+    }
+    .load-story-btn[hidden]{
+      display:none;
+    }
 
     .workspace{
       width:100%;
@@ -1674,6 +1692,13 @@
       .enter-btn{
         width:min(320px, 100%);
       }
+      .title-actions{
+        width:min(320px, 100%);
+        gap:10px;
+      }
+      .title-actions .enter-btn{
+        width:100%;
+      }
     }
     @media (max-width:760px) and (orientation:portrait){
       .page-shell{padding:0 0 24px}
@@ -1747,6 +1772,7 @@
         --scene-dialog-max-height:min(72svh, calc(100svh - 106px));
         --scene-dialog-scroll-max:clamp(160px, 28svh, 300px);
         width:calc(100% - 24px);
+        height:var(--scene-dialog-max-height);
         margin:0 12px max(16px, env(safe-area-inset-bottom));
         padding:14px 14px 16px;
         max-height:var(--scene-dialog-max-height);
@@ -1757,6 +1783,15 @@
         grid-template-columns:92px 1fr;
         gap:12px;
         align-items:start;
+        height:100%;
+        max-height:none;
+      }
+      .scene-dialog-copy{
+        height:100%;
+        max-height:none;
+      }
+      .scene-dialog-scroll{
+        max-height:none;
       }
       .scene-avatar{
         max-height:160px;
@@ -1801,6 +1836,7 @@
       .story-scene-stage.minimal-dialogue .scene-dialog-card{
         --scene-dialog-scroll-max:clamp(220px, 42svh, 430px);
         margin:0 12px max(16px, env(safe-area-inset-bottom));
+        height:min(74svh, calc(100svh - 96px));
         max-height:min(74svh, calc(100svh - 96px));
       }
       .mission-shell{
@@ -1970,7 +2006,10 @@
               <strong>Modo Historia · Boceto vivo</strong>
               <p>El viaje comienza aquí. Entra al corredor de ruinas, metal y protocolos antiguos para empezar a construir la campaña real de PoCoBOT.</p>
             </div>
-            <button class="enter-btn" id="enterStoryBtn" type="button">Entrar en Boceto</button>
+            <div class="title-actions">
+              <button class="enter-btn" id="enterStoryBtn" type="button">Entrar en Boceto</button>
+              <button class="enter-btn load-story-btn" id="loadStoryBtn" type="button" hidden>Cargar partida</button>
+            </div>
           </div>
         </div>
       </div>
@@ -2080,7 +2119,7 @@
                   src="about:blank"
                   allow="fullscreen"
                   allowfullscreen
-                  loading="lazy"></iframe>
+                  loading="eager"></iframe>
               </div>
             </div>
           </section>
@@ -2103,6 +2142,7 @@
     const titleStage = document.getElementById('titleStage');
     const titleArtWrap = document.getElementById('titleArtWrap');
     const enterStoryBtn = document.getElementById('enterStoryBtn');
+    const loadStoryBtn = document.getElementById('loadStoryBtn');
     const workspacePanel = document.getElementById('workspacePanel');
     const storyMapShell = document.getElementById('storyMapShell');
     const storyTitleMusic = document.getElementById('storyTitleMusic');
@@ -2162,6 +2202,7 @@
     };
     const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
     const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
+    const STORY_PROGRESS_SAVE_KEY = 'pocobot_story_progress_v1';
     const STORY_UI_SFX = {
       hover: { src: 'assets/sfx/ui_click.wav', volume: 0.12 },
       click: { src: 'assets/sfx/ui_click.wav', volume: 0.26 },
@@ -2216,6 +2257,87 @@
 
     function rememberActiveStoryMission(nodeId) {
       setStorySessionFlag(STORY_ACTIVE_MISSION_SESSION_KEY, nodeId || null);
+    }
+
+    function readStoryProgressSave() {
+      try {
+        const raw = localStorage.getItem(STORY_PROGRESS_SAVE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || parsed.version !== 1) return null;
+        return parsed;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function getFallbackStoryNodeFromProgress() {
+      if (hasCompletedStoryNode('hangar') && hasCompletedStoryNode('patio') && storyDraftNodes.mercado) return 'mercado';
+      if (hasCompletedStoryNode('hangar') && !hasCompletedStoryNode('patio')) return 'patio';
+      if (hasCompletedStoryNode('patio') && !hasCompletedStoryNode('hangar')) return 'hangar';
+      return currentStoryNodeId && storyDraftNodes[currentStoryNodeId] ? currentStoryNodeId : 'hangar';
+    }
+
+    function buildStoryProgressSave(reason = 'auto') {
+      return {
+        version: 1,
+        savedAt: Date.now(),
+        reason,
+        selectedId: currentStoryNodeId,
+        completedCount: storyProgressState.completedCount,
+        completedNodes: { ...(storyProgressState.completedNodes || {}) },
+        maraIntroSeen: !!storyProgressState.maraIntroSeen,
+        pendingThemeKey: storyProgressState.pendingThemeKey || 'exploration',
+        lastMissionResult: storyProgressState.lastMissionResult || null
+      };
+    }
+
+    function syncLoadStoryButton() {
+      if (!loadStoryBtn) return;
+      const hasSave = !!readStoryProgressSave();
+      loadStoryBtn.hidden = !hasSave;
+      loadStoryBtn.disabled = !hasSave;
+    }
+
+    function saveStoryProgress(reason = 'auto') {
+      try {
+        localStorage.setItem(STORY_PROGRESS_SAVE_KEY, JSON.stringify(buildStoryProgressSave(reason)));
+      } catch (error) {}
+      syncLoadStoryButton();
+    }
+
+    function applyStoryProgressSave(save) {
+      if (!save || save.version !== 1) return false;
+      const nextCompletedNodes = {};
+      Object.entries(save.completedNodes || {}).forEach(([nodeId, completed]) => {
+        if (completed && storyDraftNodes[nodeId]) nextCompletedNodes[nodeId] = true;
+      });
+      storyProgressState.completedNodes = nextCompletedNodes;
+      storyProgressState.maraIntroSeen = !!save.maraIntroSeen;
+      storyProgressState.pendingThemeKey = save.pendingThemeKey || (Object.keys(nextCompletedNodes).length ? 'chapter_clear' : 'exploration');
+      storyProgressState.lastMissionResult = save.lastMissionResult || null;
+      syncCompletedCountFromNodes();
+      if (save.selectedId && storyDraftNodes[save.selectedId]) {
+        currentStoryNodeId = save.selectedId;
+      } else {
+        currentStoryNodeId = getFallbackStoryNodeFromProgress();
+      }
+      return true;
+    }
+
+    function loadStoryProgress(options = {}) {
+      const save = readStoryProgressSave();
+      if (!applyStoryProgressSave(save)) {
+        syncLoadStoryButton();
+        return false;
+      }
+      if (options.render !== false) {
+        renderStoryNode(currentStoryNodeId, { skipSave: true });
+        syncStoryMapState();
+      }
+      syncLoadStoryButton();
+      if (options.openWorkspace) showWorkspace();
+      return true;
     }
 
     if (storyTitleMusic) {
@@ -3271,6 +3393,9 @@
       renderStoryCast(localNode.cast);
       renderMobileRoute();
       if (shouldSyncMap) syncStoryMapState();
+      if (workspacePanel.classList.contains('active') && options.skipSave !== true) {
+        saveStoryProgress('selected-node');
+      }
     }
 
     function isMobileStoryRouteMode() {
@@ -3290,6 +3415,7 @@
       }
       renderMobileRoute();
       syncStoryMapState();
+      saveStoryProgress('set-completed-count');
     }
 
     function markStoryNodeCompleted(nodeId, options = {}) {
@@ -3301,6 +3427,7 @@
       }
       renderMobileRoute();
       syncStoryMapState();
+      saveStoryProgress(`completed-${nodeId}`);
     }
 
     function renderMobileRoute() {
@@ -3630,6 +3757,7 @@
         activeSceneScriptKey = resolvedSceneKey;
         if (resolvedSceneKey === 'hangar_intro' || resolvedSceneKey === 'patio_intro') {
           storyProgressState.maraIntroSeen = true;
+          saveStoryProgress('mara-intro-seen');
         }
         sceneLineIndex = 0;
         sceneAmbientMode = !!scene.startAmbient;
@@ -4128,6 +4256,7 @@
 
     primeStoryUiSfx();
     bindStoryUiSfx(enterStoryBtn, { clickKind: 'confirm' });
+    if (loadStoryBtn) bindStoryUiSfx(loadStoryBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(storySceneCloseBtn);
     bindStoryUiSfx(storySceneAmbientMapBtn);
     bindStoryUiSfx(storySceneAmbientNextBtn, { clickKind: 'confirm' });
@@ -4141,6 +4270,12 @@
     bindStoryUiSfx(storyMissionRestartBtn, { clickKind: 'confirm' });
 
     enterStoryBtn.addEventListener('click', showWorkspace);
+    if (loadStoryBtn) {
+      loadStoryBtn.addEventListener('click', () => {
+        if (loadStoryProgress({ openWorkspace: true })) return;
+        syncLoadStoryButton();
+      });
+    }
     storySceneCloseBtn.addEventListener('click', closeStoryScene);
     storySceneAmbientMapBtn.addEventListener('click', closeStoryScene);
     storySceneAmbientNextBtn.addEventListener('click', activateSceneDialogue);
@@ -4257,14 +4392,23 @@
       window.setTimeout(syncStoryMissionMobileFocus, 120);
     });
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden || workspacePanel.classList.contains('active')) return;
+      if (document.hidden) {
+        if (workspacePanel.classList.contains('active')) saveStoryProgress('visibility-hidden');
+        return;
+      }
+      if (workspacePanel.classList.contains('active')) return;
       bootstrapTitleMusicAutoplay();
+    });
+    window.addEventListener('pagehide', () => {
+      if (workspacePanel.classList.contains('active')) saveStoryProgress('pagehide');
     });
     animateAmbientGlow();
     window.setTimeout(() => {
       if (!workspacePanel.classList.contains('active')) bootstrapTitleMusicAutoplay();
     }, 220);
-    renderStoryNode(currentStoryNodeId);
+    loadStoryProgress({ render: false });
+    renderStoryNode(currentStoryNodeId, { skipSave: true });
+    syncLoadStoryButton();
     closeStoryScene();
     restoreStorySessionIfNeeded();
   </script>

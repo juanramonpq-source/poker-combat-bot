@@ -129,6 +129,45 @@ body.story-embed-mode .story-embed-nav-btn[aria-pressed="true"]{
 body.story-embed-mode .zone.story-scroll-focus{
   animation:storyScrollFocusPulse 1200ms ease;
 }
+body.story-embed-mode .story-orientation-toast{
+  position:fixed;
+  left:50%;
+  top:calc(14px + env(safe-area-inset-top));
+  z-index:10050;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  max-width:min(92vw, 420px);
+  padding:12px 16px;
+  border-radius:999px;
+  border:1px solid rgba(255,214,97,.42);
+  background:
+    linear-gradient(180deg, rgba(20,23,28,.94), rgba(7,10,15,.98)),
+    radial-gradient(circle at 18% 50%, rgba(255,214,97,.20), transparent 32%);
+  box-shadow:0 18px 38px rgba(0,0,0,.34), 0 0 0 1px rgba(255,255,255,.05) inset;
+  color:#fff4dd;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  transform:translate(-50%, -18px) scale(.96);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .24s ease, transform .24s ease;
+}
+body.story-embed-mode .story-orientation-toast.show{
+  opacity:1;
+  transform:translate(-50%, 0) scale(1);
+}
+body.story-embed-mode .story-orientation-toast-icon{
+  display:inline-grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  background:rgba(255,214,97,.16);
+  box-shadow:0 0 18px rgba(255,214,97,.18);
+  font-size:1.14rem;
+}
 @keyframes storyScrollFocusPulse{
   0%,100%{box-shadow:var(--shadow)}
   24%,70%{
@@ -8480,6 +8519,10 @@ body.desktop-compact-mode > footer{
   <button class="story-embed-nav-btn" id="storyEmbedTopBtn" type="button">Panel</button>
   <button class="story-embed-nav-btn" id="storyEmbedHandBtn" type="button">Mano</button>
 </div>
+<div class="story-orientation-toast" id="storyOrientationToast" role="status" aria-live="polite">
+  <span class="story-orientation-toast-icon" aria-hidden="true">🔒↻</span>
+  <span>Activa el bloqueo de pantalla</span>
+</div>
 
 <div class="intro-screen" id="introScreen">
   <div class="intro-card" data-menu="root">
@@ -10685,6 +10728,7 @@ const STORY_EMBED_MODE = STORY_BOOT_PARAMS.get('story_embed') === '1';
 const STORY_AUDIO_MODE = STORY_BOOT_PARAMS.get('story_audio') || '';
 let storyHudMode = STORY_BOOT_PARAMS.get('story_ui') || (STORY_BOOT_PARAMS.get('story_compact') === '1' ? 'compact' : 'scroll');
 if(!['scroll', 'compact', 'horizontal'].includes(storyHudMode)) storyHudMode = 'scroll';
+let storyOrientationToastTimer = null;
 const AUDIO_SFX_URIS = {
   uiClick: "assets/sfx/ui_click.wav",
   shuffle: "assets/sfx/card_shuffle.wav",
@@ -11299,13 +11343,27 @@ function setStoryHudMode(mode){
   storyHudMode = ['scroll', 'compact', 'horizontal'].includes(mode) ? mode : 'scroll';
 }
 
+function showStoryOrientationLockToast(){
+  if(!STORY_EMBED_MODE || !isStoryMobileViewport()) return;
+  const toast = document.getElementById('storyOrientationToast');
+  if(!toast) return;
+  window.clearTimeout(storyOrientationToastTimer);
+  toast.classList.add('show');
+  storyOrientationToastTimer = window.setTimeout(() => {
+    toast.classList.remove('show');
+  }, 4000);
+}
+
 function activateStoryEmbedSpecialMode(){
   if(!STORY_EMBED_MODE) return;
   const useHorizontal = isStoryMobileViewport();
   setStoryHudMode(useHorizontal ? 'horizontal' : 'compact');
   desktopHudMode = 'compact';
   mobilePanoramaRequested = useHorizontal;
-  if(useHorizontal) requestLandscapeOrientationBestEffort();
+  if(useHorizontal){
+    requestLandscapeOrientationBestEffort();
+    showStoryOrientationLockToast();
+  }
   const nav = document.getElementById('storyEmbedNav');
   if(nav) nav.hidden = true;
   syncStoryEmbedNavigationVisibility();
@@ -11318,6 +11376,7 @@ function activateStoryEmbedSpecialMode(){
 
 function exitStoryEmbedSpecialMode(options = {}){
   if(!STORY_EMBED_MODE) return;
+  document.getElementById('storyOrientationToast')?.classList.remove('show');
   setStoryHudMode('scroll');
   desktopHudMode = 'expanded';
   mobilePanoramaRequested = false;
