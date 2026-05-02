@@ -2315,7 +2315,7 @@
       .page-shell{padding:0 0 24px}
       .story-playfield{min-height:100svh}
       .title-dual-cameo{
-        top:50%;
+        top:44%;
         width:min(58vw, 320px);
         height:min(26vh, 260px);
         transform:translateX(-50%) translateY(-50%) scale(.94);
@@ -2865,6 +2865,7 @@
   <audio id="storyTitleMusic" preload="auto" autoplay playsinline loop>
     <source src="assets/Historia/CenizaMetalica.mp3" type="audio/mpeg">
   </audio>
+  <button id="storyTitleAudioPrimeBtn" type="button" hidden aria-hidden="true" tabindex="-1"></button>
 
   <audio id="storyMapMusic" preload="none" loop>
     <source src="assets/Historia/EngranesdeTitanio(Exploración).mp3" type="audio/mpeg">
@@ -2881,6 +2882,7 @@
     const workspacePanel = document.getElementById('workspacePanel');
     const storyMapShell = document.getElementById('storyMapShell');
     const storyTitleMusic = document.getElementById('storyTitleMusic');
+    const storyTitleAudioPrimeBtn = document.getElementById('storyTitleAudioPrimeBtn');
     const storyMapMusic = document.getElementById('storyMapMusic');
     const storyMapFrame = document.getElementById('storyMapFrame');
     const storyMobileRoute = document.getElementById('storyMobileRoute');
@@ -3233,9 +3235,14 @@
       storyTitleMusic.volume = 0.42;
       storyTitleMusic.addEventListener('canplay', () => {
         if (!workspacePanel.classList.contains('active')) {
-          bootstrapTitleMusicAutoplay();
+          triggerTitleMusicAutostart();
         }
       }, { once: true });
+    }
+    if (storyTitleAudioPrimeBtn) {
+      storyTitleAudioPrimeBtn.addEventListener('click', () => {
+        bootstrapTitleMusicAutoplay();
+      });
     }
 
     if (storyMapMusic) {
@@ -4742,6 +4749,28 @@
       return true;
     }
 
+    function isWheelInsideActiveStoryScene(event) {
+      if (!storySceneStage || !getStorySceneScrollContainer()) return false;
+      const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
+      if (path.includes(storySceneStage)) return true;
+      const target = event.target instanceof Element ? event.target : null;
+      return !!target && storySceneStage.contains(target);
+    }
+
+    function normalizeStorySceneWheelDelta(event) {
+      if (!event) return 0;
+      if (event.deltaMode === 1) return event.deltaY * 18;
+      if (event.deltaMode === 2) return event.deltaY * (storySceneCard?.clientHeight || 320);
+      return event.deltaY;
+    }
+
+    function handleStorySceneWheel(event) {
+      if (event.ctrlKey || !isWheelInsideActiveStoryScene(event)) return;
+      if (!scrollStorySceneDialogBy(normalizeStorySceneWheelDelta(event))) return;
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     function renderSceneLine(skipTransition = false) {
       const localNode = storyDraftNodes[activeSceneNodeId] || storyDraftNodes.hangar;
       const scene = storySceneScripts[getActiveSceneScriptKey()] || storySceneScripts.hangar;
@@ -5443,6 +5472,11 @@
       }
     }
 
+    function triggerTitleMusicAutostart() {
+      if (storyTitleAudioPrimeBtn) storyTitleAudioPrimeBtn.click();
+      else bootstrapTitleMusicAutoplay();
+    }
+
     function stopTitleMusic() {
       if (!storyTitleMusic) return;
       if (titleMusicFadeFrame) {
@@ -5728,15 +5762,8 @@
       playStoryUiSfx('confirm');
       activateSceneDialogue();
     });
-    storySceneStage.addEventListener('wheel', (event) => {
-      const deltaY = event.deltaMode === 1
-        ? event.deltaY * 18
-        : event.deltaMode === 2
-          ? event.deltaY * (storySceneCard?.clientHeight || 320)
-          : event.deltaY;
-      if (!scrollStorySceneDialogBy(deltaY)) return;
-      event.preventDefault();
-    }, { passive: false });
+    storySceneStage.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
+    document.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
     storySceneStage.addEventListener('touchstart', (event) => {
       storySceneTouchY = getStorySceneScrollContainer() && event.touches.length === 1 ? event.touches[0].clientY : null;
     }, { passive: true });
@@ -5817,7 +5844,7 @@
         return;
       }
       if (workspacePanel.classList.contains('active')) return;
-      bootstrapTitleMusicAutoplay();
+      triggerTitleMusicAutostart();
       scheduleTitleDualCameo();
     });
     window.addEventListener('pagehide', () => {
@@ -5825,7 +5852,7 @@
     });
     animateAmbientGlow();
     window.setTimeout(() => {
-      if (!workspacePanel.classList.contains('active')) bootstrapTitleMusicAutoplay();
+      if (!workspacePanel.classList.contains('active')) triggerTitleMusicAutostart();
     }, 220);
     loadStoryProgress({ render: false });
     renderStoryNode(currentStoryNodeId, { skipSave: true });

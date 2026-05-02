@@ -8573,8 +8573,39 @@ body.desktop-compact-mode > footer{
     left:0;
     top:0;
     width:100dvw;
-    height:100dvh;
+    height:min(100dvh, 100svh);
     transform:none;
+  }
+}
+
+@media (max-height: 680px) and (orientation: landscape) and (pointer: coarse){
+  .app.mobile-panorama-mode .desktop-compact-shell{
+    grid-template-columns:164px minmax(0, 1fr) 124px;
+    grid-template-rows:36px minmax(0, 1fr) minmax(104px, .32fr);
+    gap:4px;
+    padding:4px max(4px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
+  }
+  .app.mobile-panorama-mode .compact-topbar-actions{
+    gap:4px;
+  }
+  .app.mobile-panorama-mode .compact-topbar-actions button{
+    min-height:27px;
+    padding:4px 6px !important;
+    font-size:.56rem !important;
+  }
+  .app.mobile-panorama-mode .compact-mobile-action-grid{
+    grid-auto-rows:minmax(22px, auto);
+    gap:3px;
+  }
+  .app.mobile-panorama-mode .compact-mobile-action-grid button{
+    min-height:23px;
+    padding:3px 5px !important;
+    font-size:.45rem !important;
+  }
+  .app.mobile-panorama-mode #compactMobileModifyBtn{
+    min-height:28px;
+    padding:4px 5px !important;
+    font-size:.52rem !important;
   }
 }
 
@@ -8616,6 +8647,7 @@ body.desktop-compact-mode > footer{
   <span class="story-orientation-toast-icon" aria-hidden="true">🔒↻</span>
   <span>Activa el bloqueo de pantalla</span>
 </div>
+<button id="storyAudioAutostartBtn" type="button" hidden aria-hidden="true" tabindex="-1"></button>
 
 <div class="intro-screen" id="introScreen">
   <div class="intro-card" data-menu="root">
@@ -10938,9 +10970,70 @@ function playStoryCarriedMusic(restart=false){
   try{
     if(restart) audio.currentTime = Math.max(0, STORY_CARRIED_BGM_TIME || 0);
     const p = audio.play();
-    if(p && typeof p.catch === 'function') p.catch(() => {});
+    if(p && typeof p.catch === 'function') p.catch(() => {
+      bootstrapStoryCarriedMusicAutoplay();
+    });
     state.musicPhase = 'story';
   }catch(_err){}
+}
+function fadeStoryAudioVolume(audio, targetVolume, duration=900){
+  if(!audio) return;
+  const startVolume = Number.isFinite(audio.volume) ? audio.volume : 0;
+  const safeTarget = Math.max(0, Math.min(1, targetVolume));
+  const startAt = performance.now();
+  const tick = (now) => {
+    const progress = Math.min(1, (now - startAt) / Math.max(1, duration));
+    const eased = 1 - Math.pow(1 - progress, 3);
+    audio.volume = startVolume + (safeTarget - startVolume) * eased;
+    if(progress < 1) requestAnimationFrame(tick);
+    else audio.volume = safeTarget;
+  };
+  requestAnimationFrame(tick);
+}
+async function bootstrapStoryCarriedMusicAutoplay(){
+  if(!state.soundOn || !isStoryMissionCarriedAudio()) return false;
+  const audio = ensureStoryCarriedMusic();
+  if(!audio) return false;
+  const targetVolume = Math.max(0, Math.min(1, audio._baseVolume || STORY_CARRIED_BGM_VOLUME || 0.34));
+  try{
+    audio.muted = false;
+    audio.volume = targetVolume;
+    await audio.play();
+    state.musicPhase = 'story';
+    return true;
+  }catch(_err){}
+  try{
+    audio.pause();
+    audio.muted = true;
+    audio.volume = 0;
+    await audio.play();
+    state.musicPhase = 'story';
+    window.setTimeout(() => {
+      if(!state.soundOn || !isStoryMissionCarriedAudio()) return;
+      audio.muted = false;
+      fadeStoryAudioVolume(audio, targetVolume, 1100);
+    }, 140);
+    return true;
+  }catch(_err){
+    try{
+      audio.muted = false;
+      audio.volume = targetVolume;
+    }catch(_inner){}
+    return false;
+  }
+}
+function triggerStoryAudioAutostart(){
+  const button = document.getElementById('storyAudioAutostartBtn');
+  if(button) button.click();
+  else bootstrapStoryCarriedMusicAutoplay();
+}
+function setupStoryAudioAutostartButton(){
+  const button = document.getElementById('storyAudioAutostartBtn');
+  if(!button || button.dataset.bound === '1') return;
+  button.dataset.bound = '1';
+  button.addEventListener('click', () => {
+    bootstrapStoryCarriedMusicAutoplay();
+  });
 }
 function pauseMusic(audio, reset=false){
   if(!audio) return;
@@ -11602,7 +11695,7 @@ function showStoryOrientationLockToast(){
   toast.classList.add('show');
   storyOrientationToastTimer = window.setTimeout(() => {
     toast.classList.remove('show');
-  }, 4000);
+  }, 3000);
 }
 
 function activateStoryEmbedSpecialMode(){
@@ -13726,6 +13819,46 @@ function getCompactDragActiveZone(clientX, clientY, legalZones){
   return legalZones.includes(zone) ? zone : '';
 }
 
+function resolveCompactHandCardFromPoint(clientX, clientY){
+  const tray = document.getElementById('compactHandCards');
+  if(!tray || !document.body?.classList.contains('mobile-panorama-mode')) return null;
+  const trayRect = tray.getBoundingClientRect();
+  const hitMargin = 18;
+  if(clientX < trayRect.left - hitMargin || clientX > trayRect.right + hitMargin || clientY < trayRect.top - hitMargin || clientY > trayRect.bottom + hitMargin){
+    return null;
+  }
+  const entries = Array.from(tray.querySelectorAll('.card[data-card-id]'))
+    .map((el, index) => {
+      const rect = el.getBoundingClientRect();
+      return {
+        el,
+        index,
+        rect,
+        centerX: rect.left + rect.width / 2,
+        centerY: rect.top + rect.height / 2
+      };
+    })
+    .filter(entry => entry.rect.width > 0 && entry.rect.height > 0);
+  if(!entries.length) return null;
+
+  const spreadX = Math.max(...entries.map(entry => entry.centerX)) - Math.min(...entries.map(entry => entry.centerX));
+  const spreadY = Math.max(...entries.map(entry => entry.centerY)) - Math.min(...entries.map(entry => entry.centerY));
+  const axis = spreadX >= spreadY ? 'centerX' : 'centerY';
+  const pointValue = axis === 'centerX' ? clientX : clientY;
+  const sorted = entries.slice().sort((a, b) => a[axis] - b[axis]);
+
+  for(let index = 0; index < sorted.length; index += 1){
+    const previousMid = index === 0 ? -Infinity : (sorted[index - 1][axis] + sorted[index][axis]) / 2;
+    const nextMid = index === sorted.length - 1 ? Infinity : (sorted[index][axis] + sorted[index + 1][axis]) / 2;
+    if(pointValue >= previousMid && pointValue < nextMid) return sorted[index].el;
+  }
+
+  return sorted.reduce((best, entry) => {
+    const distance = Math.hypot(entry.centerX - clientX, entry.centerY - clientY);
+    return !best || distance < best.distance ? { el: entry.el, distance } : best;
+  }, null)?.el || null;
+}
+
 function teardownCompactHandDrag(){
   if(!compactPointerDragState) return;
   window.removeEventListener('pointermove', handleCompactHandDragMove);
@@ -13743,10 +13876,10 @@ function teardownCompactHandDrag(){
   compactPointerDragState = null;
 }
 
-function beginCompactHandDrag(event, cardEl, cardId, ownerIdx = getDesktopCompactPlayerIndex()){
+function beginCompactHandDrag(event, cardEl, cardId, ownerIdx = getDesktopCompactPlayerIndex(), options = {}){
   const playerIdx = Number.isInteger(ownerIdx) ? ownerIdx : getDesktopCompactPlayerIndex();
   const legalZones = getCompactDraftLegalZones(playerIdx, cardId);
-  if(!legalZones.length) return;
+  if(!legalZones.length) return false;
   event.preventDefault();
   try{
     if(cardEl.setPointerCapture && event.pointerId !== undefined){
@@ -13765,11 +13898,13 @@ function beginCompactHandDrag(event, cardEl, cardId, ownerIdx = getDesktopCompac
     ghost: null,
     dragging: false,
     legalZones,
-    activeZone: ''
+    activeZone: '',
+    tapSelectOnRelease: !!options.tapSelectOnRelease
   };
   window.addEventListener('pointermove', handleCompactHandDragMove);
   window.addEventListener('pointerup', handleCompactHandDragEnd);
   window.addEventListener('pointercancel', handleCompactHandDragEnd);
+  return true;
 }
 
 function handleCompactHandDragMove(event){
@@ -13809,7 +13944,14 @@ function handleCompactHandDragEnd(event){
     ? getCompactDragActiveZone(event.clientX, event.clientY, dragState.legalZones)
     : '';
   teardownCompactHandDrag();
-  if(!completedDrag) return;
+  if(!completedDrag){
+    if(dragState.tapSelectOnRelease){
+      compactSuppressCardClickUntil = Date.now() + 360;
+      compactSuppressCardClickId = dragState.cardId;
+      toggleSelect(dragState.cardId);
+    }
+    return;
+  }
 
   compactSuppressCardClickUntil = Date.now() + 320;
   compactSuppressCardClickId = dragState.cardId;
@@ -16289,7 +16431,13 @@ function renderCardsIntoContainer(container, cards, playerIdx, zone){
     container.appendChild(empty);
     return;
   }
-  visibleCards.forEach(card => container.appendChild(createCardEl(card, playerIdx, zone)));
+  visibleCards.forEach((card, index) => {
+    const cardEl = createCardEl(card, playerIdx, zone);
+    if(zone === 'hand'){
+      cardEl.style.zIndex = String(index + 1);
+    }
+    container.appendChild(cardEl);
+  });
 }
 function renderCoreCardsIntoContainer(container, cards, playerIdx){
   if(!container) return;
@@ -17654,9 +17802,20 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
 document.getElementById('desktopCompactShell').addEventListener('pointerdown', (event) => {
   if(event.button !== 0) return;
   if(!isDesktopCompactModeActive() || !canUseInteractiveTurnAction()) return;
-  const cardEl = event.target.closest('#compactHandCards .card[data-card-id]');
+  const mobilePanorama = document.body?.classList.contains('mobile-panorama-mode');
+  const cardEl = mobilePanorama
+    ? resolveCompactHandCardFromPoint(event.clientX, event.clientY)
+    : event.target.closest('#compactHandCards .card[data-card-id]');
   if(!cardEl) return;
-  beginCompactHandDrag(event, cardEl, cardEl.dataset.cardId, getDesktopCompactPlayerIndex());
+  const dragStarted = beginCompactHandDrag(event, cardEl, cardEl.dataset.cardId, getDesktopCompactPlayerIndex(), {
+    tapSelectOnRelease: mobilePanorama
+  });
+  if(mobilePanorama && !dragStarted){
+    event.preventDefault();
+    compactSuppressCardClickUntil = Date.now() + 360;
+    compactSuppressCardClickId = cardEl.dataset.cardId;
+    toggleSelect(cardEl.dataset.cardId);
+  }
 });
 document.getElementById('board').addEventListener('pointerdown', (event) => {
   if(event.button !== 0) return;
@@ -19850,7 +20009,9 @@ window.addEventListener('message', handleStoryEmbedMessage);
 window.addEventListener('load', () => {
   preloadDetailedCardAssets();
   syncIntroInstallTip();
+  setupStoryAudioAutostartButton();
   startMenuMusic(false);
+  if(isStoryMissionCarriedAudio()) triggerStoryAudioAutostart();
   autoStartStoryMissionIfRequested();
   ensureStoryMissionEmbedStillRunning();
   scheduleStoryEmbedNavigationSetup();
@@ -19863,6 +20024,8 @@ window.addEventListener('load', () => {
 });
 window.addEventListener('pageshow', () => {
   syncIntroInstallTip();
+  setupStoryAudioAutostartButton();
+  if(isStoryMissionCarriedAudio()) triggerStoryAudioAutostart();
   window.setTimeout(ensureStoryMissionEmbedStillRunning, 80);
 });
 window.addEventListener('focus', () => window.setTimeout(ensureStoryMissionEmbedStillRunning, 80));
