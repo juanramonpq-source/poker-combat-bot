@@ -18,6 +18,10 @@
       --line:rgba(255,255,255,.1);
     }
     *{box-sizing:border-box}
+    html{
+      min-height:100%;
+      overscroll-behavior:none;
+    }
     body{
       min-height:100svh;
       margin:0;
@@ -231,10 +235,59 @@
       line-height:1.35;
     }
     @media (max-width:860px){
+      body{
+        height:100svh;
+        overflow:hidden;
+      }
+      .shell{
+        width:100%;
+        height:100svh;
+        min-height:0;
+        padding:14px 14px 0;
+        display:flex;
+        flex-direction:column;
+        overflow:hidden;
+      }
+      .hero{
+        flex:0 0 auto;
+        margin-bottom:12px;
+        padding:18px;
+        border-radius:22px;
+      }
+      h1{
+        font-size:clamp(1.9rem, 11vw, 3.2rem);
+      }
+      .hero p{
+        font-size:.9rem;
+        line-height:1.5;
+      }
       .grid{grid-template-columns:1fr}
+      .grid{
+        flex:1 1 auto;
+        min-height:0;
+        overflow-y:auto;
+        overflow-x:hidden;
+        padding:0 0 max(18px, env(safe-area-inset-bottom));
+        -webkit-overflow-scrolling:touch;
+        overscroll-behavior:contain;
+        touch-action:pan-y;
+      }
       .music-row{grid-template-columns:1fr}
       button, select{width:100%}
       .actions{display:grid}
+      .panel{
+        border-radius:20px;
+      }
+      .panel + .panel{
+        margin-top:12px;
+      }
+      .panel-body{
+        padding:14px;
+      }
+      .node-title{
+        align-items:flex-start;
+        flex-direction:column;
+      }
     }
   </style>
 </head>

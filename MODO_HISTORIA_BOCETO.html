@@ -685,10 +685,14 @@
       position:relative;
       z-index:3;
       min-height:100svh;
+      height:100%;
+      max-height:100svh;
       padding:clamp(16px, 4vw, 28px) clamp(14px, 4vw, 24px) clamp(120px, 18svh, 168px);
       overflow-y:auto;
       overflow-x:hidden;
       -webkit-overflow-scrolling:touch;
+      overscroll-behavior:contain;
+      touch-action:pan-y;
     }
     .mobile-route-hero{
       position:relative;
@@ -1372,6 +1376,12 @@
       max-height:none;
       overflow:visible;
     }
+    .scene-dialog-card:not(.has-avatar) .scene-dialog-main{
+      grid-template-columns:1fr;
+    }
+    .scene-dialog-card:not(.has-avatar) .scene-avatar-wrap{
+      display:none;
+    }
     .scene-avatar-wrap{
       position:relative;
       min-height:0;
@@ -1479,6 +1489,7 @@
     .scene-context{
       display:grid;
       gap:10px;
+      min-width:0;
       margin-top:14px;
       padding:14px;
       border-radius:18px;
@@ -1491,6 +1502,7 @@
       display:inline-flex;
       align-items:center;
       width:max-content;
+      max-width:100%;
       min-height:28px;
       padding:0 12px;
       border-radius:999px;
@@ -1501,12 +1513,16 @@
       font-weight:900;
       letter-spacing:.12em;
       text-transform:uppercase;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      line-height:1.35;
     }
     .scene-objective{
       margin:0;
       color:#f3f8fd;
       font-size:.9rem;
       line-height:1.55;
+      overflow-wrap:anywhere;
     }
     .scene-speaker{
       margin-top:14px;
@@ -2856,10 +2872,9 @@
     }
     @media (orientation:portrait){
       .story-map-shell{
-        height:auto;
+        height:100svh;
         min-height:100svh;
-        overflow-y:auto;
-        overflow-x:hidden;
+        overflow:hidden;
       }
       .story-map-frame,
       .story-map-hud{
@@ -2867,6 +2882,10 @@
       }
       .story-mobile-route{
         display:block;
+        height:100svh;
+        max-height:100svh;
+        overflow-y:auto;
+        overflow-x:hidden;
       }
       .title-art-wrap{
         background:#060a10 url("assets/Historia/low/titulo_smartphone_compacto_1080.webp") no-repeat center top / cover;
@@ -3043,6 +3062,16 @@
       }
       .scene-context{
         padding:12px;
+      }
+      .scene-chip{
+        width:100%;
+        min-height:0;
+        padding:8px 12px;
+        border-radius:16px;
+        align-items:flex-start;
+        font-size:.66rem;
+        letter-spacing:.1em;
+        line-height:1.35;
       }
       .scene-title{
         font-size:1.28rem;
@@ -3794,6 +3823,7 @@
     };
     let lastStoryHoverSfxAt = 0;
     let storySceneTouchY = null;
+    let storyMobileRouteTouchY = null;
     let storyMarketTouchY = null;
 
     function setStorySessionFlag(key, value) {
@@ -5118,7 +5148,7 @@
           figureMobileShiftVh: -12,
           figureScale: 0.86,
           figureMobileScale: 0.72,
-          text: 'Muévete por el Mercado, vuelve a hablar conmigo si quieres y reta al PoCoBOT de entrenamiento para probar tu mazo ampliado. Si lo vences, te llevas una antigua moneda extra. Este te va a gustar.'
+          text: 'Muévete por el Mercado, vuelve a hablar conmigo si quieres y reta a Viajero para probar tu mazo ampliado. Si lo vences, te llevas una antigua moneda extra. Este te va a gustar.'
         }
       ]
     };
@@ -5155,13 +5185,51 @@
           figureMobileShiftVh: -12,
           figureScale: 0.86,
           figureMobileScale: 0.72,
-          text: 'Si quieres probar el mazo ampliado, busca al PoCoBOT de entrenamiento. No es elegante, pero sabe castigar manos blandas. Y si ganas, te pago una moneda extra. Me gusta apostar por quien vuelve entero.'
+          text: 'Si quieres probar el mazo ampliado, busca a Viajero. No es elegante, pero sabe castigar manos blandas. Y si ganas, te pago una moneda extra. Me gusta apostar por quien vuelve entero.'
+        }
+      ]
+    };
+    storySceneScripts.mercado_sparring_intro = {
+      title: 'Mercado de Relés Muertos',
+      subtitle: 'Viajero despierta donde antes se vendían piezas para un futuro que ya no llegó.',
+      contextChip: 'Sparring · Combate de historia',
+      objective: 'Entra en un combate especial del modo historia para probar tu mazo ampliado. El botón Volver regresará al Mercado explorable.',
+      completeActionLabel: 'Iniciar combate',
+      completeAction: 'mission',
+      completeMissionId: 'mercado_sparring',
+      portraits: {
+        right: { src: VERA_POSE_FOUR, alt: 'Vera Hex' }
+      },
+      lines: [
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_POSE_FOUR,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -20,
+          figureMobileShiftVh: -12,
+          figureScale: 0.86,
+          figureMobileScale: 0.72,
+          text: '¿Ves a Viajero, quieto junto al montón de relés? Lleva años esperando a alguien. Antes estos puestos prometían rutas, repuestos y regreso. Ahora solo queda metal que recuerda mejor que nosotros.'
+        },
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_POSE_THREE,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -20,
+          figureMobileShiftVh: -12,
+          figureScale: 0.86,
+          figureMobileScale: 0.72,
+          text: 'Será un combate del modo historia, no una partida cualquiera: tu deck propio entra en juego y si pulsas Volver regresarás aquí, al Mercado explorable. Si lo vences, te daré una antigua moneda extra. No vale mucho... salvo por lo triste: aún conserva la forma de un mundo que creyó tener mañana.'
         }
       ]
     };
     storySceneScripts.mercado_sparring_win = {
       title: 'Mercado de Relés Muertos',
-      subtitle: 'El PoCoBOT de entrenamiento cae y Vera sonríe como quien ya había calculado el golpe.',
+      subtitle: 'Viajero cae y Vera sonríe como quien ya había calculado el golpe.',
       contextChip: 'Sparring · Victoria',
       objective: 'Has probado el mazo ampliado y puedes volver al mercado explorable o salir al mapa con el botón flotante.',
       completeActionLabel: 'Volver al mercado',
@@ -5291,10 +5359,12 @@
       mercado_sparring: {
         storyNodeId: 'mercado',
         chip: 'Sparring de mercado',
-        title: 'PoCoBOT de entrenamiento',
-        copy: 'Prueba tu mazo ampliado contra un PoCoBOT de entrenamiento del Mercado de Relés Muertos. Si lo vences, Vera te pagará una antigua moneda extra.',
+        title: 'Viajero',
+        copy: 'Prueba tu mazo ampliado contra Viajero, un NPC del Mercado de Relés Muertos. Si lo vences, Vera te pagará una antigua moneda extra.',
         tip: 'Desde este combate el protagonista usa deck propio de historia: las cartas compradas se añaden a tu baraja, mientras el rival conserva su propio mazo.',
-        url: 'poker_combat_bot_ONLINE.html?story_mission=mercado_sparring&story_embed=1&story_audio=carry'
+        audioMode: 'internal',
+        showInnerBriefInFrame: true,
+        url: 'poker_combat_bot_ONLINE.html?story_mission=mercado_sparring&story_embed=1&story_audio=internal'
       }
     };
 
@@ -5507,6 +5577,16 @@
       });
     }
 
+    function scrollStoryMobileRouteBy(deltaY) {
+      if (!storyMobileRoute || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
+      const maxScroll = Math.max(0, storyMobileRoute.scrollHeight - storyMobileRoute.clientHeight);
+      if (maxScroll <= 1) return false;
+      const nextScrollTop = Math.max(0, Math.min(maxScroll, storyMobileRoute.scrollTop + deltaY));
+      if (Math.abs(nextScrollTop - storyMobileRoute.scrollTop) < 0.1) return false;
+      storyMobileRoute.scrollTop = nextScrollTop;
+      return true;
+    }
+
     function getActiveSceneScriptKey() {
       return activeSceneScriptKey || activeSceneNodeId || null;
     }
@@ -5555,10 +5635,12 @@
       if (!storySceneAvatar) return;
       const portrait = scene.portraits?.[line.side] || scene.portraits?.right || scene.portraits?.left || null;
       if (!portrait) {
+        if (storySceneCard) storySceneCard.classList.remove('has-avatar');
         storySceneAvatar.hidden = true;
         storySceneAvatar.removeAttribute('src');
         return;
       }
+      if (storySceneCard) storySceneCard.classList.add('has-avatar');
       storySceneAvatar.hidden = false;
       storySceneAvatar.src = portrait.src;
       storySceneAvatar.alt = portrait.alt || line.speaker || '';
@@ -5742,7 +5824,9 @@
       if (!scroller || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
       const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
       if (maxScroll <= 1) return false;
-      scroller.scrollTop = Math.max(0, Math.min(maxScroll, scroller.scrollTop + deltaY));
+      const nextScrollTop = Math.max(0, Math.min(maxScroll, scroller.scrollTop + deltaY));
+      if (Math.abs(nextScrollTop - scroller.scrollTop) < 0.1) return false;
+      scroller.scrollTop = nextScrollTop;
       return true;
     }
 
@@ -5754,10 +5838,8 @@
       }
     }
 
-    function shouldUseNativeStorySceneTouchScroll(event) {
-      if (!isCoarseLandscapeStoryScene() || !storySceneCard || !getStorySceneScrollContainer()) return false;
-      const target = event.target instanceof Element ? event.target : null;
-      return !!target && storySceneCard.contains(target);
+    function shouldUseNativeStorySceneTouchScroll() {
+      return false;
     }
 
     function isWheelInsideActiveStoryScene(event) {
@@ -6309,11 +6391,19 @@
         return;
       }
       if (action === 'sparring') {
-        closeStoryMarketExploration({
-          applyExitTheme: false,
-          onClosed: () => openStoryMission('mercado_sparring')
-        });
+        openStoryMarketExplorationScene('mercado_sparring_intro');
       }
+    }
+
+    function handleStoryMissionCancel(data) {
+      const mission = data?.mission || activeMissionNodeId || '';
+      if (mission === 'mercado_sparring') {
+        closeStoryMission({
+          onClosed: () => openStoryMarketExploration()
+        });
+        return;
+      }
+      closeStoryMission();
     }
 
     function restoreStorySceneSurface(surface) {
@@ -6388,9 +6478,10 @@
       const mission = storyMissionScripts[nodeId];
       if (!mission) return '';
       const targetUrl = new URL(mission.url, window.location.href);
+      const effectiveAudioMode = options.audioMode || mission.audioMode || (options.standalone ? 'carry' : 'external');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', mission.storyNodeId || nodeId);
-      targetUrl.searchParams.set('story_audio', options.audioMode || 'external');
+      targetUrl.searchParams.set('story_audio', effectiveAudioMode);
       targetUrl.searchParams.set('story_brief', options.showInnerBrief ? 'on' : 'off');
       const extraDeckCards = (hasCompletedStoryNode('mercado') || hasStoryMarketPurchase()) && nodeId !== 'hangar' && nodeId !== 'patio'
         ? encodeStoryDeckCardsParam()
@@ -6400,11 +6491,16 @@
       if (options.standalone) {
         targetUrl.searchParams.set('story_standalone', '1');
         targetUrl.searchParams.set('story_return', window.location.href);
-        const activeMapSource = storyMapMusic?.querySelector('source')?.getAttribute('src') || STORY_MAP_THEMES[storyProgressState.pendingThemeKey || ''] || STORY_MAP_THEMES.exploration;
-        targetUrl.searchParams.set('story_audio', 'carry');
-        targetUrl.searchParams.set('story_bgm', activeMapSource);
-        targetUrl.searchParams.set('story_bgm_time', String(Math.max(0, storyMapMusic?.currentTime || 0)));
-        targetUrl.searchParams.set('story_bgm_volume', String(Math.max(0, Math.min(1, storyMapMusic?.volume || 0.34))));
+        if (effectiveAudioMode === 'carry') {
+          const activeMapSource = storyMapMusic?.querySelector('source')?.getAttribute('src') || STORY_MAP_THEMES[storyProgressState.pendingThemeKey || ''] || STORY_MAP_THEMES.exploration;
+          targetUrl.searchParams.set('story_bgm', activeMapSource);
+          targetUrl.searchParams.set('story_bgm_time', String(Math.max(0, storyMapMusic?.currentTime || 0)));
+          targetUrl.searchParams.set('story_bgm_volume', String(Math.max(0, Math.min(1, storyMapMusic?.volume || 0.34))));
+        } else {
+          targetUrl.searchParams.delete('story_bgm');
+          targetUrl.searchParams.delete('story_bgm_time');
+          targetUrl.searchParams.delete('story_bgm_volume');
+        }
       } else {
         targetUrl.searchParams.delete('story_standalone');
         targetUrl.searchParams.delete('story_return');
@@ -6449,10 +6545,17 @@
         return;
       }
 
-      const missionUrl = buildStoryMissionUrl(nodeId, { audioMode: 'external', showInnerBrief: false });
+      const missionAudioMode = mission.audioMode || 'external';
+      const missionUrl = buildStoryMissionUrl(nodeId, {
+        audioMode: missionAudioMode,
+        showInnerBrief: !!mission.showInnerBriefInFrame
+      });
       const navigateStandalone = () => {
         window.location.href = buildStoryMissionUrl(nodeId, { standalone: true, showInnerBrief: true });
       };
+      if (missionAudioMode === 'internal') {
+        pauseMapMusic();
+      }
 
       if (!storyMissionFrame || !storyMissionStage) {
         navigateStandalone();
@@ -6652,10 +6755,12 @@
         successScene: 'mercado_sparring_win',
         failureScene: 'mercado_sparring_lose',
         onSuccess() {
+          queueStoryMapTheme('market');
           grantStoryAncientCoinReward('mercado_sparring', 'market-sparring-reward');
           renderStoryNode('torre');
         },
         onFailure() {
+          queueStoryMapTheme('market');
           renderStoryNode('torre');
         }
       }
@@ -7158,7 +7263,7 @@
         const isEntrySceneForActiveNode = activeSceneKey === activeSceneNodeId || activeSceneKey === `${activeSceneNodeId}_intro`;
         const completeAction = scene.completeAction || ((isEntrySceneForActiveNode && storyMissionScripts[activeSceneNodeId]) ? 'mission' : 'map');
         if (completeAction === 'mission') {
-          openStoryMission(activeSceneNodeId);
+          openStoryMission(scene.completeMissionId || activeSceneNodeId);
         } else if (completeAction === 'market') {
           openStoryMarket();
         } else if (completeAction === 'exploration') {
@@ -7177,6 +7282,26 @@
       playStoryUiSfx('confirm');
       activateSceneDialogue();
     });
+    if (storyMobileRoute) {
+      storyMobileRoute.addEventListener('touchstart', (event) => {
+        storyMobileRouteTouchY = event.touches.length === 1 ? event.touches[0].clientY : null;
+      }, { passive: true, capture: true });
+      storyMobileRoute.addEventListener('touchmove', (event) => {
+        if (storyMobileRouteTouchY === null || event.touches.length !== 1) return;
+        const nextY = event.touches[0].clientY;
+        const deltaY = storyMobileRouteTouchY - nextY;
+        storyMobileRouteTouchY = nextY;
+        if (!scrollStoryMobileRouteBy(deltaY)) return;
+        event.preventDefault();
+        event.stopPropagation();
+      }, { passive: false, capture: true });
+      storyMobileRoute.addEventListener('touchend', () => {
+        storyMobileRouteTouchY = null;
+      }, { passive: true });
+      storyMobileRoute.addEventListener('touchcancel', () => {
+        storyMobileRouteTouchY = null;
+      }, { passive: true });
+    }
     storySceneStage.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
     document.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
     storySceneStage.addEventListener('touchstart', (event) => {
@@ -7194,6 +7319,7 @@
       storySceneTouchY = nextY;
       if (!scrollStorySceneDialogBy(deltaY)) return;
       event.preventDefault();
+      event.stopPropagation();
     }, { passive: false });
     storySceneStage.addEventListener('touchend', () => {
       storySceneTouchY = null;
@@ -7251,6 +7377,10 @@
       }
       if (data.type === 'pocobot-story-mission-result') {
         handleStoryMissionResult(data);
+        return;
+      }
+      if (data.type === 'pocobot-story-mission-cancel') {
+        handleStoryMissionCancel(data);
         return;
       }
       if (data.type === 'pocobot-story-market-tutorial-action') {

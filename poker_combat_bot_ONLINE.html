@@ -10295,6 +10295,7 @@ function autoStartStoryMissionIfRequested(){
       }, 260);
       break;
     case 'mercado_sparring':
+      storyMissionBriefCollapsed = false;
       primeOfflineMode('single', 'easy');
       newGame();
       hideIntroScreen();
@@ -10303,7 +10304,7 @@ function autoStartStoryMissionIfRequested(){
       log('📜 Mision historia: sparring del Mercado de Relés Muertos con deck propio.');
       window.setTimeout(() => {
         scrollToPlayerPanel(0, 'smooth');
-        notifySelection('Objetivo: vence al PoCoBOT de entrenamiento para ganar una antigua moneda extra.');
+        notifySelection('Objetivo: vence a Viajero para ganar una antigua moneda extra.');
         scheduleStoryEmbedNavigationSetup();
       }, 260);
       break;
@@ -10340,7 +10341,7 @@ function applyStoryMissionPlayerSetup(){
     if(state.players[1]) state.players[1].name = 'Mara Oxido';
   }else if(state.storyMission === 'mercado_sparring'){
     if(state.players[0]) state.players[0].name = 'Piloto';
-    if(state.players[1]) state.players[1].name = 'PoCoBOT de entrenamiento';
+    if(state.players[1]) state.players[1].name = 'Viajero';
   }
 }
 
@@ -10492,8 +10493,8 @@ function maybeFinalizeStoryMissionAfterWinner(){
     state.phase = 'Mision';
     state.storyMissionAnnounced = true;
     log(playerWon
-      ? '🏁 Mision completada: has vencido al PoCoBOT de entrenamiento con tu mazo ampliado.'
-      : '⚠️ El PoCoBOT de entrenamiento gana el sparring del Mercado.');
+      ? '🏁 Mision completada: has vencido a Viajero con tu mazo ampliado.'
+      : '⚠️ Viajero gana el sparring del Mercado.');
     addToast(playerWon ? 'Sparring superado: moneda extra desbloqueada' : 'Sparring perdido: puedes repetirlo', playerWon ? 'ok' : 'warn');
     broadcastStoryMissionOutcome({
       mission: state.storyMission,
@@ -11044,6 +11045,9 @@ const STORY_CARRIED_BGM_TIME = Number(STORY_BOOT_PARAMS.get('story_bgm_time') ||
 const STORY_CARRIED_BGM_VOLUME = Number(STORY_BOOT_PARAMS.get('story_bgm_volume') || 0.34) || 0.34;
 const STORY_EXTRA_DECK_CARDS_PARAM = STORY_BOOT_PARAMS.get('story_deck_cards') || '';
 const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v1';
+const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
+const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
+const STORY_ACTIVE_SURFACE_SESSION_KEY = 'pocobot_story_active_surface_v1';
 let storyHudMode = STORY_BOOT_PARAMS.get('story_ui') || (STORY_BOOT_PARAMS.get('story_compact') === '1' ? 'compact' : 'scroll');
 if(!['scroll', 'compact', 'horizontal'].includes(storyHudMode)) storyHudMode = 'scroll';
 let storyOrientationToastTimer = null;
@@ -11763,9 +11767,9 @@ const STORY_MISSION_BRIEFS = {
     text: 'Usa combustible para abrir ataque y dispara al menos un proyectil. Puede ser por separado o con ataque combinado.'
   },
   mercado_sparring: {
-    kicker: 'Sparring de mercado',
-    title: 'PoCoBOT de entrenamiento',
-    text: 'Prueba el deck propio de historia con las cartas compradas. Si vences al PoCoBOT, ganas una antigua moneda extra.'
+    kicker: 'Combate del modo historia',
+    title: 'Viajero',
+    text: 'Sparring especial del Mercado: prueba el deck propio de historia con las cartas compradas. Si pulsas Volver, regresarás al Mercado explorable.'
   }
 };
 
@@ -11804,13 +11808,36 @@ function setupStoryMissionBriefBar(){
 }
 
 function returnToStoryMap() {
+  const mission = state.storyMission || STORY_MISSION_BOOT || '';
+  if(STORY_EMBED_MODE && window.parent && window.parent !== window){
+    try{
+      window.parent.postMessage({
+        type: 'pocobot-story-mission-cancel',
+        mission,
+        nodeId: STORY_NODE_BOOT || undefined,
+        savedAt: Date.now()
+      }, '*');
+      return true;
+    }catch(_err){}
+  }
   if(!STORY_RETURN_URL) return false;
+  if(mission === 'mercado_sparring'){
+    try{
+      sessionStorage.setItem(STORY_WORKSPACE_SESSION_KEY, '1');
+      sessionStorage.removeItem(STORY_ACTIVE_MISSION_SESSION_KEY);
+      sessionStorage.setItem(STORY_ACTIVE_SURFACE_SESSION_KEY, JSON.stringify({ type: 'exploration', nodeId: 'mercado' }));
+    }catch(_err){}
+  }
   try {
     window.location.href = STORY_RETURN_URL;
     return true;
   } catch(_err) {
     return false;
   }
+}
+
+function getStoryReturnButtonLabel(){
+  return (state.storyMission || STORY_MISSION_BOOT) === 'mercado_sparring' ? 'Volver al mercado' : 'Volver al mapa';
 }
 
 function pulseStoryScrollTarget(targetEl){
@@ -11879,7 +11906,10 @@ function setupStoryEmbedNavigation(){
     return;
   }
   setupStoryMissionBriefBar();
-  if(returnBtn) returnBtn.hidden = !STORY_RETURN_URL;
+  if(returnBtn) {
+    returnBtn.hidden = !STORY_RETURN_URL;
+    returnBtn.textContent = getStoryReturnButtonLabel();
+  }
   syncStoryEmbedNavigationVisibility();
   if(topBtn.dataset.bound !== '1'){
     topBtn.dataset.bound = '1';
@@ -13690,8 +13720,8 @@ function syncDesktopHudAvailability(){
     compactExpandedBtn.textContent = STORY_EMBED_MODE ? 'Modo scroll' : (mobilePanoramaActive ? 'Modo vertical' : 'Interfaz expandida');
   }
   const compactReturnBtn = document.getElementById('compactReturnBtn');
-  if(compactReturnBtn && STORY_RETURN_URL){
-    compactReturnBtn.textContent = 'Volver al mapa';
+  if(compactReturnBtn && STORY_EMBED_MODE){
+    compactReturnBtn.textContent = getStoryReturnButtonLabel();
   }
   syncStoryEmbedNavigationVisibility();
   return available;
@@ -17897,7 +17927,13 @@ function requestNewGame(){
 
 // Eventos
 document.getElementById('newGameBtn').addEventListener('click', requestNewGame);
-document.getElementById('returnHomeBtn').addEventListener('click', returnToMainMenu);
+document.getElementById('returnHomeBtn').addEventListener('click', () => {
+  if(STORY_EMBED_MODE && (state.storyMission || STORY_MISSION_BOOT)){
+    returnToStoryMap();
+    return;
+  }
+  returnToMainMenu();
+});
 document.getElementById('saveGameBtn').addEventListener('click', requestSaveGame);
 document.getElementById('olWaitingSaveBtn').addEventListener('click', requestOnlineWaitingSave);
 document.getElementById('loadGameBtn').addEventListener('click', requestLoadGame);
@@ -18030,7 +18066,7 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
   }
   const btn = event.target.closest('button');
   if(!btn) return;
-  if(btn.id === 'compactReturnBtn' && STORY_RETURN_URL){
+  if(btn.id === 'compactReturnBtn' && STORY_EMBED_MODE){
     returnToStoryMap();
     return;
   }

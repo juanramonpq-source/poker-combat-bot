@@ -175,9 +175,9 @@ const interactables = [
     x: 812,
     y: 338,
     radius: 148,
-    label: "PoCoBOT de entrenamiento",
+    label: "Viajero",
     hint: "Probar mazo ampliado",
-    message: "PoCoBOT de entrenamiento: iniciando sparring con tu mazo ampliado.",
+    message: "Viajero: iniciando sparring con tu mazo ampliado.",
   },
 ];
 
@@ -746,7 +746,7 @@ function updateInteractions(dt) {
         postStoryTutorialAction("sparring");
       }
     } else {
-      setInteractionMessage("Acercate a Vera Hex o al PoCoBOT de entrenamiento para interactuar.", 2.4);
+      setInteractionMessage("Acercate a Vera Hex o a Viajero para interactuar.", 2.4);
     }
 
     input.interactQueued = false;
