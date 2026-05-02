@@ -1230,6 +1230,13 @@
       opacity:1;
       pointer-events:auto;
     }
+    @media (hover:hover) and (pointer:fine){
+      .story-scene-stage.active{
+        overflow-y:auto;
+        overscroll-behavior:contain;
+        scrollbar-gutter:stable;
+      }
+    }
     .scene-backdrop{
       position:absolute;
       inset:0;
@@ -5944,6 +5951,13 @@
 
     function isStoryElementScrollable(element) {
       if (!element || getStoryScrollableMax(element) <= 1) return false;
+      const coreStorySurface = element === storySceneCard
+        || element === storySceneScroll
+        || element === storySceneStage
+        || element === storyMarketShell
+        || element === storyMarketStage
+        || element === storyMobileRoute;
+      if (coreStorySurface) return true;
       const overflowY = window.getComputedStyle(element).overflowY;
       return overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay';
     }
