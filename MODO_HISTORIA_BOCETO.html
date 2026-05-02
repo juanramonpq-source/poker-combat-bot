@@ -488,6 +488,12 @@
       72%{opacity:.96; transform:translateX(-50%) translateY(-3svh) scale(1)}
       100%{opacity:0; transform:translateX(-50%) translateY(-1svh) scale(1.04)}
     }
+    @keyframes dualCameoAppearMobile{
+      0%,7%{opacity:0; transform:translateX(-50%) translateY(-50%) scale(.88)}
+      18%{opacity:1; transform:translateX(-50%) translateY(-50%) scale(1.02)}
+      72%{opacity:.96; transform:translateX(-50%) translateY(-50%) scale(1)}
+      100%{opacity:0; transform:translateX(-50%) translateY(-50%) scale(1.04)}
+    }
     @keyframes dualCameoBeam{
       0%,10%,100%{opacity:0}
       16%{opacity:.88}
@@ -1751,12 +1757,39 @@
     }
     .inventory-credits{
       display:grid;
-      gap:4px;
+      grid-template-columns:auto minmax(0, 1fr) auto;
+      gap:10px;
+      align-items:center;
       padding:16px;
       border-radius:18px;
       border:1px solid rgba(255,185,109,.2);
-      background:rgba(255,185,109,.1);
+      background:
+        radial-gradient(circle at 18% 24%, rgba(255,185,109,.22), transparent 34%),
+        rgba(255,185,109,.1);
       color:#ffe4c6;
+    }
+    .inventory-coin-img{
+      width:44px;
+      height:44px;
+      object-fit:contain;
+      border-radius:999px;
+      filter:drop-shadow(0 0 13px rgba(255,146,62,.42));
+    }
+    .inventory-coin-label{
+      display:grid;
+      gap:2px;
+      min-width:0;
+    }
+    .inventory-coin-label span{
+      font-size:.7rem;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    .inventory-coin-label small{
+      color:#f7c893;
+      font-size:.72rem;
+      line-height:1.25;
     }
     .inventory-credits strong{
       font-size:1.7rem;
@@ -2281,6 +2314,15 @@
     @media (max-width:760px) and (orientation:portrait){
       .page-shell{padding:0 0 24px}
       .story-playfield{min-height:100svh}
+      .title-dual-cameo{
+        top:50%;
+        width:min(58vw, 320px);
+        height:min(26vh, 260px);
+        transform:translateX(-50%) translateY(-50%) scale(.94);
+      }
+      .title-stage.dual-cameo-active .title-dual-cameo{
+        animation:dualCameoAppearMobile var(--dual-cameo-duration, 3s) cubic-bezier(.18,.82,.2,1) both;
+      }
       .story-scene-stage{
         overflow-y:auto;
         overscroll-behavior:contain;
@@ -2400,6 +2442,12 @@
       }
       .scene-actions{
         flex-direction:column;
+        position:sticky;
+        bottom:0;
+        z-index:3;
+        margin:12px -2px -2px;
+        padding-top:18px;
+        background:linear-gradient(180deg, rgba(8,13,19,0), rgba(8,13,19,.92) 34%, rgba(8,13,19,.98));
       }
       .scene-btn{
         width:100%;
@@ -2745,7 +2793,7 @@
                     <h2>Ruina útil</h2>
                     <p>En este mercado los restos de Argós no son reliquias: son piezas, secretos y memoria intercambiable. Vera vende lo que aguanta y se guarda lo que todavía puede matar.</p>
                   </div>
-                  <div class="market-feedback" id="storyMarketFeedback">Compra una carta o artefacto para activar el inventario del protagonista y cerrar el primer trato con Vera.</div>
+                  <div class="market-feedback" id="storyMarketFeedback">Compra una carta o artefacto con tus antiguas monedas para activar el inventario del protagonista y cerrar el primer trato con Vera.</div>
                 </article>
 
                 <article class="market-panel market-store-panel">
@@ -2912,7 +2960,11 @@
       click: { src: 'assets/sfx/ui_click.wav', volume: 0.26 },
       confirm: { src: 'assets/sfx/unlock.wav', volume: 0.3 }
     };
-    const STORY_MARKET_STARTING_CREDITS = 9;
+    const STORY_ANCIENT_COIN_IMAGE = 'assets/Historia/low/dual_nube_web_ligera.webp';
+    const STORY_ANCIENT_COIN_REWARD = 5;
+    const STORY_ANCIENT_COIN_REWARD_NODES = ['hangar', 'patio'];
+    const STORY_LEGACY_MARKET_STARTING_CREDITS = 9;
+    const STORY_MARKET_STARTING_CREDITS = 0;
     const STORY_MARKET_CATALOG = [
       {
         id: 'relay_spades_attack',
@@ -2985,6 +3037,7 @@
       marketPurchases: {}
     };
     let lastStoryHoverSfxAt = 0;
+    let storySceneTouchY = null;
 
     function setStorySessionFlag(key, value) {
       try {
@@ -3035,7 +3088,8 @@
       return {
         credits: STORY_MARKET_STARTING_CREDITS,
         cards: [],
-        artifacts: []
+        artifacts: [],
+        coinRewards: []
       };
     }
 
@@ -3054,11 +3108,20 @@
     function normalizeStoryInventory(inventory, options = {}) {
       const defaults = createDefaultStoryInventory();
       if (!inventory || typeof inventory !== 'object') return options.withCredits ? defaults : { ...defaults, credits: 0 };
-      const credits = Number.isFinite(inventory.credits) ? Math.max(0, Math.floor(inventory.credits)) : (options.withCredits ? STORY_MARKET_STARTING_CREDITS : 0);
+      let credits = Number.isFinite(inventory.credits) ? Math.max(0, Math.floor(inventory.credits)) : (options.withCredits ? STORY_MARKET_STARTING_CREDITS : 0);
+      const coinRewards = Array.isArray(inventory.coinRewards)
+        ? Array.from(new Set(inventory.coinRewards.filter((nodeId) => STORY_ANCIENT_COIN_REWARD_NODES.includes(nodeId))))
+        : [];
+      const cards = normalizeInventoryItems(inventory.cards);
+      const artifacts = normalizeInventoryItems(inventory.artifacts);
+      if (!coinRewards.length && !cards.length && !artifacts.length && credits === STORY_LEGACY_MARKET_STARTING_CREDITS) {
+        credits = STORY_MARKET_STARTING_CREDITS;
+      }
       return {
         credits,
-        cards: normalizeInventoryItems(inventory.cards),
-        artifacts: normalizeInventoryItems(inventory.artifacts)
+        cards,
+        artifacts,
+        coinRewards
       };
     }
 
@@ -3066,6 +3129,7 @@
       const wasUnlocked = !!storyProgressState.marketUnlocked;
       storyProgressState.marketUnlocked = true;
       storyProgressState.inventory = normalizeStoryInventory(storyProgressState.inventory, { withCredits: true });
+      syncStoryAncientCoinRewardsFromCompletedNodes();
       storyProgressState.marketPurchases = { ...(storyProgressState.marketPurchases || {}) };
       if (!wasUnlocked) saveStoryProgress('market-inventory-unlocked');
       return storyProgressState.inventory;
@@ -3141,6 +3205,7 @@
       storyProgressState.inventory = normalizeStoryInventory(save.inventory, { withCredits: !!save.marketUnlocked });
       storyProgressState.marketPurchases = { ...(save.marketPurchases || {}) };
       syncCompletedCountFromNodes();
+      syncStoryAncientCoinRewardsFromCompletedNodes();
       if (save.selectedId && storyDraftNodes[save.selectedId]) {
         currentStoryNodeId = save.selectedId;
       } else {
@@ -3625,7 +3690,7 @@
             figureMobileShiftVh: -12,
             figureScale: 0.94,
             figureMobileScale: 0.8,
-            text: 'Eso ya se parece a un PoCoBOT y no a un montón de piezas pegadas. Bien. La Fosa Azul te ha visto empezar, y créeme, Argós toma nota de los que saben poner orden antes de pedir potencia. Ya veo era cierto: no buscabas una cita conmigo...'
+            text: 'Eso ya se parece a un PoCoBOT y no a un montón de piezas pegadas. Bien. La Fosa Azul te ha visto empezar, y créeme, Argós toma nota de los que saben poner orden antes de pedir potencia. Ya veo era cierto: no buscabas una cita conmigo... Toma una antigua moneda. No es chatarra: viene de los años en los que Argós vendía prosperidad como si fuera una promesa limpia.'
           },
           {
             speaker: 'Mara Oxido',
@@ -3797,11 +3862,11 @@
             conditions: [
               {
                 when: 'hangarPending',
-                text: '¡Bien hecho! Lo has llevado hasta el ataque y has sostenido el duelo sin perder el hilo. Eso ya se parece a un piloto de la Ruta Ceniza. El combate es fundamental, pero todavía debes dominar el montaje, el acero fundido y el estaño.'
+                text: '¡Bien hecho! Lo has llevado hasta el ataque y has sostenido el duelo sin perder el hilo. Eso ya se parece a un piloto de la Ruta Ceniza. El combate es fundamental, pero todavía debes dominar el montaje, el acero fundido y el estaño. Toma una antigua moneda: no vale por el metal, vale por lo que recuerda de los tiempos de prosperidad.'
               },
               {
                 when: 'hangarCompleted',
-                text: 'No te acomodes. Fuera del taller nadie te va a esperar a que pienses dos veces. Vuelve al mapa. El Mercado de Relés Muertos ya empieza a olerte llegar.'
+                text: 'No te acomodes. Fuera del taller nadie te va a esperar a que pienses dos veces. Lleva esta antigua moneda contigo: Vera sabrá leer ese resto de prosperidad mejor que nadie. Vuelve al mapa. El Mercado de Relés Muertos ya empieza a olerte llegar.'
               }
             ]
           }
@@ -4102,7 +4167,7 @@
           figureMobileShiftVh: -18,
           figureScale: 0.9,
           figureMobileScale: 0.78,
-          text: 'Si vienes de la Fosa Azul y del Patio, traes olor a tutorial y a metal recién obligado. Bien. Aquí eso no compra respeto, pero compra una conversación.',
+          text: 'Si vienes de la Fosa Azul y del Patio, traes olor a tutorial y a metal recién obligado. Y si además traes antiguas monedas, mejor. Eso no es simple calderilla: son restos de cuando la prosperidad todavía tenía un símbolo limpio que enseñar.',
           choices: [
             {
               id: 'parts',
@@ -4154,7 +4219,7 @@
           figureMobileShiftVh: -18,
           figureScale: 0.9,
           figureMobileScale: 0.78,
-          text: 'Te abriré inventario propio. Nueve créditos de relé para empezar, una compra obligatoria y una advertencia gratis: no compres como quien busca poder. Compra como quien piensa volver vivo.'
+          text: 'Te abriré inventario propio. Las antiguas monedas que ganaste en las pruebas valen aquí, aunque pesan más por lo que recuerdan que por lo que compran. Representan tiempos de prosperidad, o al menos la versión de prosperidad que Argós sabía vender. Una compra obligatoria y una advertencia gratis: no compres como quien busca poder. Compra como quien piensa volver vivo.'
         }
       ]
     };
@@ -4286,6 +4351,20 @@
       return hasCompletedStoryNode('hangar') && hasCompletedStoryNode('patio');
     }
 
+    function syncStoryAncientCoinRewardsFromCompletedNodes(options = {}) {
+      const inventory = normalizeStoryInventory(storyProgressState.inventory, { withCredits: true });
+      let changed = false;
+      STORY_ANCIENT_COIN_REWARD_NODES.forEach((nodeId) => {
+        if (!hasCompletedStoryNode(nodeId) || inventory.coinRewards.includes(nodeId)) return;
+        inventory.coinRewards.push(nodeId);
+        inventory.credits += STORY_ANCIENT_COIN_REWARD;
+        changed = true;
+      });
+      storyProgressState.inventory = inventory;
+      if (changed && options.save) saveStoryProgress('ancient-coin-rewards-sync');
+      return changed;
+    }
+
     function getStoryNodeStatus(node) {
       if (!node) return 'locked';
       if (hasCompletedStoryNode(node.id)) return 'completed';
@@ -4375,6 +4454,7 @@
       if (!storyDraftNodes[nodeId]) return;
       storyProgressState.completedNodes[nodeId] = true;
       syncCompletedCountFromNodes();
+      syncStoryAncientCoinRewardsFromCompletedNodes();
       if (options.selectedId && storyDraftNodes[options.selectedId]) {
         currentStoryNodeId = options.selectedId;
       }
@@ -4647,6 +4727,21 @@
       return !selectedChoice;
     }
 
+    function getStorySceneScrollContainer() {
+      if (!storySceneStage || !storySceneCard) return null;
+      if (storySceneStage.hidden || !storySceneStage.classList.contains('active') || sceneAmbientMode) return null;
+      return storySceneCard;
+    }
+
+    function scrollStorySceneDialogBy(deltaY) {
+      const scroller = getStorySceneScrollContainer();
+      if (!scroller || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
+      const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+      if (maxScroll <= 1) return false;
+      scroller.scrollTop = Math.max(0, Math.min(maxScroll, scroller.scrollTop + deltaY));
+      return true;
+    }
+
     function renderSceneLine(skipTransition = false) {
       const localNode = storyDraftNodes[activeSceneNodeId] || storyDraftNodes.hangar;
       const scene = storySceneScripts[getActiveSceneScriptKey()] || storySceneScripts.hangar;
@@ -4669,6 +4764,7 @@
       syncScenePresentation(line);
       const needsChoice = renderSceneChoices(line);
       if (storySceneScroll) storySceneScroll.scrollTop = 0;
+      if (storySceneCard) storySceneCard.scrollTop = 0;
       storySceneNextBtn.disabled = needsChoice;
       storySceneNextBtn.textContent = sceneLineIndex >= scene.lines.length - 1 ? (scene.completeActionLabel || 'Volver al mapa') : 'Adelante';
       storySceneMapBtn.disabled = sceneLineIndex <= 0;
@@ -4798,7 +4894,14 @@
         storyMarketBackdrop.style.setProperty('--market-bg', `url("${MERCADO_RELES_IMAGE}")`);
       }
       if (storyInventoryCredits) {
-        storyInventoryCredits.innerHTML = `<span>Créditos de relé</span><strong>${inventory.credits}</strong>`;
+        storyInventoryCredits.innerHTML = `
+          <img class="inventory-coin-img" src="${STORY_ANCIENT_COIN_IMAGE}" alt="Antigua moneda">
+          <span class="inventory-coin-label">
+            <span>Antigua moneda</span>
+            <small>Restos de una prosperidad que Argós convirtió en símbolo.</small>
+          </span>
+          <strong>${inventory.credits}</strong>
+        `;
       }
       renderInventoryList(storyInventoryCards, inventory.cards);
       renderInventoryList(storyInventoryArtifacts, inventory.artifacts);
@@ -4812,12 +4915,12 @@
           card.innerHTML = `
             <div class="market-item-top">
               <span class="market-item-type">${item.label}</span>
-              <span class="market-cost">${item.cost} créditos</span>
+              <span class="market-cost">${item.cost} monedas</span>
             </div>
             <h3>${item.name}</h3>
             <p>${item.summary}</p>
             <button class="market-buy-btn" data-market-buy="${item.id}" type="button" ${purchased || !affordable ? 'disabled' : ''}>
-              ${purchased ? 'Comprado' : affordable ? 'Comprar' : 'Sin créditos'}
+              ${purchased ? 'Comprado' : affordable ? 'Comprar' : 'Sin monedas'}
             </button>
           `;
           const button = card.querySelector('.market-buy-btn');
@@ -4843,7 +4946,7 @@
         return;
       }
       if (inventory.credits < item.cost) {
-        setStoryMarketFeedback('Vera niega con la cabeza: no hay crédito suficiente para ese trato.');
+        setStoryMarketFeedback('Vera niega con la cabeza: no hay antiguas monedas suficientes para ese trato.');
         renderStoryMarket();
         return;
       }
@@ -4858,7 +4961,7 @@
       else inventory.cards.push(inventoryEntry);
       storyProgressState.inventory = inventory;
       storyProgressState.marketPurchases[item.id] = true;
-      setStoryMarketFeedback(`Vera cierra los dedos sobre los créditos: "${item.name}" pasa a tu inventario.`);
+      setStoryMarketFeedback(`Vera cierra los dedos sobre las antiguas monedas: "${item.name}" pasa a tu inventario.`);
       saveStoryProgress(`market-buy-${item.id}`);
       renderStoryMarket();
     }
@@ -4961,6 +5064,11 @@
       saveStoryProgress(`mission-open-${nodeId}`);
       syncStoryMissionBrief(nodeId, localNode, mission);
 
+      if (isStoryMissionMobileViewport()) {
+        openStoryMissionStandalone(nodeId);
+        return;
+      }
+
       const missionUrl = buildStoryMissionUrl(nodeId, { audioMode: 'external', showInnerBrief: false });
       const navigateStandalone = () => {
         window.location.href = buildStoryMissionUrl(nodeId, { standalone: true, showInnerBrief: true });
@@ -4998,10 +5106,11 @@
     }
 
     function openStoryMissionStandalone(nodeId) {
-      const targetUrl = buildStoryMissionUrl(nodeId, { standalone: true, showInnerBrief: true });
-      if (!targetUrl) return;
+      if (!storyMissionScripts[nodeId]) return;
 
       const navigate = () => {
+        const targetUrl = buildStoryMissionUrl(nodeId, { standalone: true, showInnerBrief: true });
+        if (!targetUrl) return;
         window.location.href = targetUrl;
       };
 
@@ -5619,6 +5728,32 @@
       playStoryUiSfx('confirm');
       activateSceneDialogue();
     });
+    storySceneStage.addEventListener('wheel', (event) => {
+      const deltaY = event.deltaMode === 1
+        ? event.deltaY * 18
+        : event.deltaMode === 2
+          ? event.deltaY * (storySceneCard?.clientHeight || 320)
+          : event.deltaY;
+      if (!scrollStorySceneDialogBy(deltaY)) return;
+      event.preventDefault();
+    }, { passive: false });
+    storySceneStage.addEventListener('touchstart', (event) => {
+      storySceneTouchY = getStorySceneScrollContainer() && event.touches.length === 1 ? event.touches[0].clientY : null;
+    }, { passive: true });
+    storySceneStage.addEventListener('touchmove', (event) => {
+      if (storySceneTouchY === null || event.touches.length !== 1) return;
+      const nextY = event.touches[0].clientY;
+      const deltaY = storySceneTouchY - nextY;
+      storySceneTouchY = nextY;
+      if (!scrollStorySceneDialogBy(deltaY)) return;
+      event.preventDefault();
+    }, { passive: false });
+    storySceneStage.addEventListener('touchend', () => {
+      storySceneTouchY = null;
+    }, { passive: true });
+    storySceneStage.addEventListener('touchcancel', () => {
+      storySceneTouchY = null;
+    }, { passive: true });
     titleStage.addEventListener('pointerdown', () => {
       if (workspacePanel.classList.contains('active')) return;
       startTitleMusic();
