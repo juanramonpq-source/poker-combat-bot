@@ -5917,7 +5917,10 @@
       if (!event) return 0;
       if (event.deltaMode === 1) return event.deltaY * 18;
       if (event.deltaMode === 2) return event.deltaY * (storySceneCard?.clientHeight || 320);
-      return event.deltaY;
+      if (Number.isFinite(event.deltaY) && Math.abs(event.deltaY) > 0.1) return event.deltaY;
+      if (Number.isFinite(event.wheelDelta) && Math.abs(event.wheelDelta) > 0.1) return -event.wheelDelta;
+      if (Number.isFinite(event.detail) && Math.abs(event.detail) > 0.1) return event.detail * 18;
+      return 0;
     }
 
     function handleStorySceneWheel(event) {
@@ -5925,6 +5928,7 @@
       if (!scrollStorySceneDialogBy(normalizeStorySceneWheelDelta(event), event)) return;
       event.preventDefault();
       event.stopPropagation();
+      if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
     }
 
     function rememberCurrentStorySceneSurface() {
@@ -6105,7 +6109,10 @@
       if (!event) return 0;
       if (event.deltaMode === 1) return event.deltaY * 18;
       if (event.deltaMode === 2) return event.deltaY * (storyMarketShell?.clientHeight || 320);
-      return event.deltaY;
+      if (Number.isFinite(event.deltaY) && Math.abs(event.deltaY) > 0.1) return event.deltaY;
+      if (Number.isFinite(event.wheelDelta) && Math.abs(event.wheelDelta) > 0.1) return -event.wheelDelta;
+      if (Number.isFinite(event.detail) && Math.abs(event.detail) > 0.1) return event.detail * 18;
+      return 0;
     }
 
     function handleStoryMarketWheel(event) {
@@ -6113,6 +6120,7 @@
       if (!scrollStoryMarketBy(normalizeStoryMarketWheelDelta(event), event)) return;
       event.preventDefault();
       event.stopPropagation();
+      if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
     }
 
     function getStoryMarketItem(itemId) {
@@ -7377,6 +7385,10 @@
         storyMobileRouteTouchY = null;
       }, { passive: true });
     }
+    // Regression guard: desktop PC/PC-window story scroll must be driven by wheel.
+    // Keep these wheel listeners separate from mobile touch handlers so fixing mouse
+    // scroll never breaks the working vertical/horizontal mobile scroll again.
+    window.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
     storySceneStage.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
     document.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
     storySceneStage.addEventListener('touchstart', (event) => {
@@ -7403,6 +7415,7 @@
       storySceneTouchY = null;
     }, { passive: true });
     if (storyMarketStage) {
+      window.addEventListener('wheel', handleStoryMarketWheel, { passive: false, capture: true });
       storyMarketStage.addEventListener('wheel', handleStoryMarketWheel, { passive: false, capture: true });
       document.addEventListener('wheel', handleStoryMarketWheel, { passive: false, capture: true });
       storyMarketStage.addEventListener('touchstart', (event) => {
