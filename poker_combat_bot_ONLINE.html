@@ -447,6 +447,14 @@ body.story-embed-mode .story-orientation-toast-icon{
 .mecha-blueprint.focused{
   filter:drop-shadow(0 0 12px rgba(35,216,255,.16));
 }
+@keyframes pocobotMechaFloat{
+  0%,100%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(0,0,0) rotate(var(--mecha-float-rot-start, 0deg));
+  }
+  50%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(0,var(--mecha-float-rise, -5px),0) rotate(var(--mecha-float-rot-mid, .35deg));
+  }
+}
 /* Dial specific scaling */
 .dual-mecha-stage{
   position:absolute;
@@ -470,11 +478,14 @@ body.story-embed-mode .story-orientation-toast-icon{
   filter:drop-shadow(0 0 10px rgba(35,216,255,.18));
 }
 .dial-head{
+  position:relative;
+  z-index:5;
   color:var(--amber);
   font-size:.66rem;
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:.12em;
+  text-shadow:0 0 10px rgba(255,178,46,.22);
 }
 .dial-ring-wrap{
   position:relative;
@@ -482,6 +493,67 @@ body.story-embed-mode .story-orientation-toast-icon{
   height:147px;
   display:grid;
   place-items:center;
+  isolation:isolate;
+}
+.dial-ring-wrap::before,
+.dial-ring-wrap::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+}
+.dial-ring-wrap::before{
+  inset:-5px;
+  z-index:0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(35,216,255,.16), rgba(35,216,255,.04) 36%, transparent 62%),
+    conic-gradient(from 0deg, rgba(35,216,255,.10), rgba(255,178,46,.32), rgba(66,255,222,.20), rgba(35,216,255,.10));
+  filter:blur(.15px) drop-shadow(0 0 12px rgba(35,216,255,.18));
+  opacity:.68;
+  animation:pocobotDialHaloSpin 9s linear infinite;
+}
+.dial-ring-wrap::after{
+  inset:18px;
+  z-index:1;
+  border:1px solid rgba(35,216,255,.24);
+  background:
+    repeating-radial-gradient(circle at center, transparent 0 16px, rgba(35,216,255,.08) 17px 18px),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.10), transparent 58%);
+  box-shadow:inset 0 0 20px rgba(35,216,255,.08), 0 0 14px rgba(255,178,46,.08);
+  animation:pocobotDialBreath 3.8s ease-in-out infinite;
+}
+.mecha-dial.ready .dial-ring-wrap::before{
+  opacity:.82;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(66,255,222,.22), rgba(35,216,255,.05) 36%, transparent 64%),
+    conic-gradient(from 0deg, rgba(66,255,222,.18), rgba(255,214,92,.36), rgba(66,255,222,.32), rgba(35,216,255,.14));
+}
+.mecha-dial.active .dial-ring-wrap::after{
+  border-color:rgba(255,214,92,.42);
+  box-shadow:inset 0 0 22px rgba(35,216,255,.10), 0 0 18px rgba(255,214,92,.12);
+}
+.mecha-dial:nth-child(2) .dial-ring-wrap::before,
+.mecha-dial:nth-child(2) .dial-ring-wrap::after{
+  animation-delay:.65s;
+}
+@keyframes pocobotDialHaloSpin{
+  to{ transform:rotate(360deg); }
+}
+@keyframes pocobotDialBreath{
+  0%,100%{ opacity:.72; transform:scale(.985); }
+  50%{ opacity:1; transform:scale(1.02); }
+}
+@media (prefers-reduced-motion: reduce){
+  .dial-ring-wrap::before,
+  .dial-ring-wrap::after,
+  .compact-mecha-ring::before,
+  .compact-mecha-ring::after,
+  .mecha-phase-img,
+  .compact-mecha-ring img,
+  .academy-preview-mecha,
+  .academy-certificate-mecha{
+    animation:none !important;
+  }
 }
 .dial-ring{
   position:absolute;
@@ -489,13 +561,15 @@ body.story-embed-mode .story-orientation-toast-icon{
   width:147px;
   height:147px;
   transform:rotate(-90deg);
+  z-index:2;
+  filter:drop-shadow(0 0 8px rgba(35,216,255,.12));
 }
-.dial-track{ fill:none; stroke:rgba(255,156,28,.22); stroke-width:8; }
+.dial-track{ fill:none; stroke:rgba(255,178,46,.30); stroke-width:8; }
 .dial-progress{
   fill:none;
   stroke:var(--cyan);
   stroke-width:9;
-  stroke-linecap:butt;
+  stroke-linecap:round;
   stroke-dasharray:100 100;
   stroke-dashoffset:100;
   filter:drop-shadow(0 0 8px rgba(35,216,255,.24));
@@ -506,13 +580,24 @@ body.story-embed-mode .story-orientation-toast-icon{
   filter:drop-shadow(0 0 10px rgba(66,255,222,.28));
 }
 .mecha-blueprint.mini{
+  z-index:3;
   width:120px;
   height:120px;
   transform:translateY(-5px) scale(.65);
   transform-origin:center;
 }
+.mecha-phase-img{
+  --mecha-float-base:translate3d(0,0,0);
+  --mecha-float-rise:-5px;
+  animation:pocobotMechaFloat 4.8s ease-in-out infinite;
+  will-change:transform;
+}
+#mechaImg-1{
+  animation-delay:.62s;
+}
 .dial-progress-label{
   position:absolute;
+  z-index:4;
   bottom:4px;
   left:50%;
   transform:translateX(-50%);
@@ -523,6 +608,8 @@ body.story-embed-mode .story-orientation-toast-icon{
   text-shadow:0 0 8px rgba(35,216,255,.22);
 }
 .dial-status{
+  position:relative;
+  z-index:5;
   min-width:104px;
   text-align:center;
   color:var(--muted);
@@ -4267,6 +4354,8 @@ body.victory .frame{
   opacity:.94;
   pointer-events:none;
   filter:drop-shadow(0 10px 16px rgba(0,0,0,.42));
+  --mecha-float-rise:-6px;
+  animation:pocobotMechaFloat 5.2s ease-in-out infinite;
 }
 .academy-preview-kicker,
 .academy-preview-name,
@@ -4416,6 +4505,9 @@ body.victory .frame{
   opacity:.94;
   pointer-events:none;
   filter:drop-shadow(0 12px 24px rgba(0,0,0,.42));
+  --mecha-float-rise:-7px;
+  --mecha-float-rot-mid:-.25deg;
+  animation:pocobotMechaFloat 5.6s ease-in-out infinite;
 }
 .academy-certificate-badge{
   position:absolute;
@@ -5891,7 +5983,8 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
     display:block;
     object-fit:contain;
     object-position:center bottom;
-    transform:translateX(-50%);
+    --mecha-float-base:translateX(-50%);
+    transform:var(--mecha-float-base);
   }
 }
 
@@ -6995,8 +7088,14 @@ body.desktop-compact-mode > footer{
   border:11px solid rgba(20,60,124,.14);
   background:
     radial-gradient(circle at center, rgba(255,255,255,.28), rgba(255,255,255,0) 56%),
-    radial-gradient(circle at center, rgba(60,140,255,.16), rgba(255,255,255,0) 68%);
+    radial-gradient(circle at center, rgba(60,140,255,.16), rgba(255,255,255,0) 68%),
+    conic-gradient(from 210deg, rgba(60,140,255,.08), rgba(255,214,97,.22), rgba(66,255,222,.18), rgba(60,140,255,.08));
+  box-shadow:
+    inset 0 0 32px rgba(255,255,255,.12),
+    0 0 0 1px rgba(255,255,255,.18),
+    0 18px 28px rgba(23,48,111,.12);
   overflow:visible;
+  isolation:isolate;
 }
 
 .compact-mecha-ring::before{
@@ -7005,7 +7104,23 @@ body.desktop-compact-mode > footer{
   inset:0;
   border-radius:50%;
   background:conic-gradient(from 0deg, transparent 0 70%, rgba(48,103,255,.48) 86%, transparent 100%);
+  z-index:0;
   animation:compactRadarSweep 3s linear infinite;
+}
+
+.compact-mecha-ring::after{
+  content:"";
+  position:absolute;
+  inset:18px;
+  border-radius:50%;
+  border:1px solid rgba(42,94,190,.22);
+  background:
+    repeating-radial-gradient(circle at center, transparent 0 22px, rgba(42,94,190,.10) 23px 24px),
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,.16), transparent 62%);
+  box-shadow:inset 0 0 28px rgba(35,216,255,.08), 0 0 18px rgba(255,214,97,.10);
+  z-index:0;
+  pointer-events:none;
+  animation:pocobotDialBreath 4.2s ease-in-out infinite;
 }
 
 .compact-mecha-ring-fill{
@@ -7013,6 +7128,7 @@ body.desktop-compact-mode > footer{
   inset:15px;
   border-radius:50%;
   border:5px solid rgba(31,76,162,.18);
+  z-index:0;
 }
 
 .compact-mecha-stage.compact-build-overdrive .compact-mecha-ring-fill{
@@ -7021,15 +7137,23 @@ body.desktop-compact-mode > footer{
 
 .compact-mecha-ring img{
   position:relative;
-  z-index:1;
+  z-index:2;
   width:auto;
   height:138%;
   max-width:none;
   max-height:none;
   object-fit:contain;
   object-position:center center;
-  transform:translateY(-9px);
+  --mecha-float-base:translateY(-9px);
+  --mecha-float-rise:-6px;
+  transform:var(--mecha-float-base);
   filter:drop-shadow(0 16px 16px rgba(12,20,48,.2));
+  animation:pocobotMechaFloat 5s ease-in-out infinite;
+  will-change:transform;
+}
+
+#compactMechaImg-1{
+  animation-delay:.72s;
 }
 
 .compact-mecha-stage.is-focus .compact-mecha-ring{
@@ -8213,7 +8337,8 @@ body.desktop-compact-mode > footer{
   }
   .app.mobile-panorama-mode .compact-mecha-ring img{
     height:132%;
-    transform:translateY(-6px);
+    --mecha-float-base:translateY(-6px);
+    transform:var(--mecha-float-base);
   }
   .app.mobile-panorama-mode .compact-mecha-stage-head{
     position:relative;
