@@ -10294,6 +10294,19 @@ function autoStartStoryMissionIfRequested(){
         scheduleStoryEmbedNavigationSetup();
       }, 260);
       break;
+    case 'mercado_sparring':
+      primeOfflineMode('single', 'easy');
+      newGame();
+      hideIntroScreen();
+      scheduleStoryEmbedNavigationSetup();
+      addToast('Mision historia: prueba tu mazo ampliado en el Mercado', 'warn');
+      log('📜 Mision historia: sparring del Mercado de Relés Muertos con deck propio.');
+      window.setTimeout(() => {
+        scrollToPlayerPanel(0, 'smooth');
+        notifySelection('Objetivo: vence al PoCoBOT de entrenamiento para ganar una antigua moneda extra.');
+        scheduleStoryEmbedNavigationSetup();
+      }, 260);
+      break;
     default:
       break;
   }
@@ -10325,6 +10338,9 @@ function applyStoryMissionPlayerSetup(){
   if(state.storyMission === 'hangar_race' || state.storyMission === 'patio_duel'){
     if(state.players[0]) state.players[0].name = 'Piloto';
     if(state.players[1]) state.players[1].name = 'Mara Oxido';
+  }else if(state.storyMission === 'mercado_sparring'){
+    if(state.players[0]) state.players[0].name = 'Piloto';
+    if(state.players[1]) state.players[1].name = 'PoCoBOT de entrenamiento';
   }
 }
 
@@ -10469,7 +10485,25 @@ function maybeResolveStoryMission(){
 }
 
 function maybeFinalizeStoryMissionAfterWinner(){
-  if(state.storyMission !== 'patio_duel' || !state.winner || state.storyMissionAnnounced || !state.players || state.players.length < 2) return;
+  if(!state.winner || state.storyMissionAnnounced || !state.players || state.players.length < 2) return;
+
+  if(state.storyMission === 'mercado_sparring'){
+    const playerWon = state.winner === state.players[0].name;
+    state.phase = 'Mision';
+    state.storyMissionAnnounced = true;
+    log(playerWon
+      ? '🏁 Mision completada: has vencido al PoCoBOT de entrenamiento con tu mazo ampliado.'
+      : '⚠️ El PoCoBOT de entrenamiento gana el sparring del Mercado.');
+    addToast(playerWon ? 'Sparring superado: moneda extra desbloqueada' : 'Sparring perdido: puedes repetirlo', playerWon ? 'ok' : 'warn');
+    broadcastStoryMissionOutcome({
+      mission: state.storyMission,
+      success: playerWon,
+      winner: state.winner
+    });
+    return;
+  }
+
+  if(state.storyMission !== 'patio_duel') return;
 
   const playerWon = state.winner === state.players[0].name;
   const progress = state.storyMissionProgress || {};
@@ -11727,6 +11761,11 @@ const STORY_MISSION_BRIEFS = {
     kicker: 'Combate con reglas especiales',
     title: 'Patio de Pruebas',
     text: 'Usa combustible para abrir ataque y dispara al menos un proyectil. Puede ser por separado o con ataque combinado.'
+  },
+  mercado_sparring: {
+    kicker: 'Sparring de mercado',
+    title: 'PoCoBOT de entrenamiento',
+    text: 'Prueba el deck propio de historia con las cartas compradas. Si vences al PoCoBOT, ganas una antigua moneda extra.'
   }
 };
 

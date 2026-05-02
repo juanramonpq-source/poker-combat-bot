@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PoCoBOT · Mercado de Relés Muertos</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <aside
+      id="orientation-overlay"
+      class="orientation-overlay"
+      aria-live="polite"
+      hidden
+    >
+      <div class="orientation-card">
+        <p class="orientation-kicker">Modo horizontal recomendado</p>
+        <h2>Gira el móvil para jugar</h2>
+        <p>
+          Este tutorial está pensado para jugar en horizontal, con más campo de
+          visión y controles táctiles cómodos. Si tienes la rotación bloqueada,
+          desbloquéala o gira el teléfono físicamente.
+        </p>
+        <button id="orientation-lock-button" type="button">
+          Intentar activar horizontal
+        </button>
+        <small id="orientation-lock-status">
+          Algunos navegadores solo permiten bloquear orientación desde pantalla
+          completa.
+        </small>
+      </div>
+    </aside>
+
+    <main class="layout">
+      <button id="story-map-button" class="floating-map-button" type="button">
+        Volver al mapa
+      </button>
+      <section class="panel">
+        <h1>PoCoBOT // Mercado de Relés Muertos</h1>
+        <p>
+          Tutorial de movimiento en el mercado de Vera Hex. Desliza el PoCoBOT
+          con <strong>WASD</strong>, <strong>flechas</strong>, ratón o táctil, e
+          interactúa con <strong>E</strong> cuando aparezca el aviso.
+        </p>
+      </section>
+
+      <canvas
+        id="game"
+        width="960"
+        height="540"
+        aria-label="Ejemplo de juego cenital"
+      ></canvas>
+    </main>
+
+    <script src="./game.js"></script>
+  </body>
+</html>

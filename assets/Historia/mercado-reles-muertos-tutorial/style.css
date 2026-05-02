@@ -1,0 +1,193 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b1018;
+  --bg-soft: #1d2833;
+  --panel: rgba(14, 20, 30, 0.88);
+  --text: #eef8ff;
+  --accent: #ffd55f;
+  --cyan: #92f6ff;
+  --rust: #a15c3d;
+  --border: rgba(162, 200, 255, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overscroll-behavior: none;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 16% 10%, rgba(255, 181, 113, 0.18), transparent 18%),
+    radial-gradient(circle at 82% 14%, rgba(146, 246, 255, 0.12), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(255, 110, 100, 0.08), transparent 26%),
+    linear-gradient(180deg, #291c16 0%, #17151a 24%, #0c121b 54%, #06090f 100%);
+}
+
+body.story-embed-mode {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.orientation-overlay[hidden] {
+  display: none;
+}
+
+.orientation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(146, 246, 255, 0.2), transparent 24%),
+    linear-gradient(180deg, rgba(7, 11, 17, 0.96), rgba(26, 17, 13, 0.98));
+}
+
+.orientation-card {
+  width: min(420px, 100%);
+  padding: 24px;
+  border: 1px solid rgba(146, 246, 255, 0.28);
+  border-radius: 24px;
+  background: rgba(9, 16, 25, 0.92);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.48),
+    0 0 44px rgba(37, 219, 255, 0.1) inset;
+  text-align: center;
+}
+
+.orientation-kicker {
+  margin: 0 0 8px;
+  color: var(--cyan);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.orientation-card h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.8rem, 8vw, 2.6rem);
+}
+
+.orientation-card p {
+  margin: 0 0 18px;
+  color: rgba(238, 248, 255, 0.82);
+  line-height: 1.45;
+}
+
+.orientation-card button {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 13px 16px;
+  border: 0;
+  border-radius: 999px;
+  color: #06111c;
+  background: linear-gradient(135deg, #92f6ff, #ffd55f);
+  font: inherit;
+  font-weight: 800;
+}
+
+.orientation-card small {
+  display: block;
+  color: rgba(238, 248, 255, 0.62);
+  line-height: 1.35;
+}
+
+.layout {
+  width: min(1100px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 24px 0 36px;
+}
+
+body.story-embed-mode .layout {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.panel {
+  margin-bottom: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel);
+  backdrop-filter: blur(6px);
+}
+
+body.story-embed-mode .panel {
+  display: none;
+}
+
+.panel h1 {
+  margin: 0 0 10px;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.panel p {
+  margin: 0;
+  color: rgba(238, 248, 255, 0.82);
+}
+
+#game {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: none;
+  touch-action: none;
+  user-select: none;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: #08111d;
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(146, 246, 255, 0.08) inset;
+}
+
+body.story-embed-mode #game {
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.floating-map-button {
+  position: fixed;
+  z-index: 8;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1px solid rgba(146, 246, 255, 0.32);
+  border-radius: 999px;
+  color: #eef8ff;
+  background: linear-gradient(180deg, rgba(7, 12, 19, 0.94), rgba(8, 13, 20, 0.78));
+  box-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.42),
+    0 0 24px rgba(65, 230, 255, 0.1) inset;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  touch-action: manipulation;
+}
+
+.floating-map-button:hover {
+  border-color: rgba(255, 213, 95, 0.48);
+  color: #ffd55f;
+}
+
+body.story-embed-mode .floating-map-button {
+  display: none;
+}
