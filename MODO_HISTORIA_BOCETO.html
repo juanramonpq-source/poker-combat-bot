@@ -946,6 +946,7 @@
       background:rgba(7,11,17,.76);
       box-shadow:0 18px 34px rgba(0,0,0,.24);
       backdrop-filter:blur(10px);
+      font-family:inherit;
       font-size:.72rem;
       font-weight:900;
       letter-spacing:.16em;
@@ -962,13 +963,46 @@
       background:radial-gradient(circle, #8ff4ff 0%, #4ac7e3 62%, rgba(74,199,227,.2) 100%);
       box-shadow:0 0 16px rgba(143,244,255,.72);
     }
+    .story-kicker[data-inventory-count]:not([data-inventory-count="0"])::after{
+      content:"Inv " attr(data-inventory-count);
+      display:inline-flex;
+      align-items:center;
+      min-height:20px;
+      padding:0 7px;
+      border-radius:999px;
+      background:rgba(143,244,255,.14);
+      border:1px solid rgba(143,244,255,.22);
+      color:#dffbff;
+      font-size:.58rem;
+      letter-spacing:.1em;
+    }
     .story-map-hud p{
+      order:-1;
       margin:0;
       max-width:34ch;
+      max-height:0;
+      overflow:hidden;
+      padding:0 14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0);
+      background:rgba(7,11,17,0);
       color:#d8e7f4;
+      opacity:0;
       font-size:.88rem;
       line-height:1.5;
       text-shadow:0 8px 22px rgba(0,0,0,.52);
+      pointer-events:none;
+      transform:translateY(8px);
+      transition:max-height .24s ease, opacity .2s ease, transform .2s ease, padding .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .story-map-hud.expanded p{
+      max-height:160px;
+      padding:12px 14px;
+      border-color:rgba(255,255,255,.1);
+      background:rgba(7,11,17,.76);
+      opacity:1;
+      pointer-events:auto;
+      transform:translateY(0);
     }
     .story-map-inventory{
       position:fixed;
@@ -981,6 +1015,19 @@
       max-width:min(320px, calc(100vw - 32px));
     }
     .story-map-inventory[hidden]{
+      display:none;
+    }
+    .story-map-inventory:not(.panel-open){
+      pointer-events:none;
+    }
+    .story-map-inventory:not(.panel-open) .story-map-inventory-toggle,
+    .story-map-inventory:not(.panel-open) .story-map-inventory-drawer{
+      display:none;
+    }
+    .story-map-inventory.panel-open{
+      pointer-events:auto;
+    }
+    .story-map-inventory.panel-open .story-map-inventory-toggle{
       display:none;
     }
     .story-map-inventory-toggle{
@@ -3053,9 +3100,9 @@
             <div class="mobile-route-list" id="storyMobileRouteList"></div>
           </section>
 
-          <div class="story-map-hud">
-            <span class="story-kicker">Bienvenido a la aventura</span>
-            <p>Empieza la Ruta Ceniza. Ve al Hangar de la Fosa Azul o al Patio de Pruebas, los dos lugares marcados en azul.</p>
+          <div class="story-map-hud" id="storyMapHud">
+            <button class="story-kicker" id="storyMapHudToggle" type="button" aria-expanded="false" aria-controls="storyMapHudText storyMapInventoryDrawer">Bienvenido a la aventura</button>
+            <p id="storyMapHudText" aria-hidden="true">Empieza la Ruta Ceniza. Ve al Hangar de la Fosa Azul o al Patio de Pruebas, los dos lugares marcados en azul.</p>
           </div>
           <aside class="story-map-inventory" id="storyMapInventory" hidden>
             <button class="story-map-inventory-toggle" id="storyMapInventoryToggle" type="button" aria-expanded="false">
@@ -3231,6 +3278,9 @@
     const storyMapFrame = document.getElementById('storyMapFrame');
     const storyMobileRoute = document.getElementById('storyMobileRoute');
     const storyMobileRouteList = document.getElementById('storyMobileRouteList');
+    const storyMapHud = document.getElementById('storyMapHud');
+    const storyMapHudToggle = document.getElementById('storyMapHudToggle');
+    const storyMapHudText = document.getElementById('storyMapHudText');
     const storyMapInventory = document.getElementById('storyMapInventory');
     const storyMapInventoryToggle = document.getElementById('storyMapInventoryToggle');
     const storyMapInventoryCount = document.getElementById('storyMapInventoryCount');
@@ -5338,14 +5388,49 @@
       return inventory.cards.filter((item) => item.rank && item.suit);
     }
 
+    function closeStoryMapInventoryDrawer() {
+      if (storyMapInventoryDrawer) storyMapInventoryDrawer.hidden = true;
+      if (storyMapInventoryToggle) storyMapInventoryToggle.setAttribute('aria-expanded', 'false');
+      if (storyMapInventory) storyMapInventory.classList.remove('panel-open');
+    }
+
+    function setStoryMapHudExpanded(expanded) {
+      const shouldExpand = !!expanded;
+      if (storyMapHud) storyMapHud.classList.toggle('expanded', shouldExpand);
+      if (storyMapHudToggle) storyMapHudToggle.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+      if (storyMapHudText) storyMapHudText.setAttribute('aria-hidden', shouldExpand ? 'false' : 'true');
+      if (!shouldExpand) {
+        closeStoryMapInventoryDrawer();
+        return;
+      }
+      if (storyMapInventory && !storyMapInventory.hidden && getStoryPurchasedCards().length > 0) {
+        storyMapInventory.classList.add('panel-open');
+        if (storyMapInventoryDrawer) storyMapInventoryDrawer.hidden = false;
+        if (storyMapInventoryToggle) storyMapInventoryToggle.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    function toggleStoryMapHudPanel() {
+      setStoryMapHudExpanded(!(storyMapHud && storyMapHud.classList.contains('expanded')));
+    }
+
     function renderStoryMapInventoryWidget() {
       if (!storyMapInventory || !storyMapInventoryList || !storyMapInventoryCount) return;
       const cards = getStoryPurchasedCards();
       const shouldShow = cards.length > 0;
       storyMapInventory.hidden = !shouldShow;
+      if (storyMapHud) storyMapHud.classList.toggle('has-inventory', shouldShow);
+      if (storyMapHudToggle) {
+        if (shouldShow) {
+          storyMapHudToggle.dataset.inventoryCount = String(cards.length);
+          storyMapHudToggle.title = 'Abrir informacion e inventario';
+        } else {
+          delete storyMapHudToggle.dataset.inventoryCount;
+          storyMapHudToggle.title = 'Abrir informacion de la Ruta Ceniza';
+        }
+      }
       if (!shouldShow) {
-        if (storyMapInventoryDrawer) storyMapInventoryDrawer.hidden = true;
-        if (storyMapInventoryToggle) storyMapInventoryToggle.setAttribute('aria-expanded', 'false');
+        closeStoryMapInventoryDrawer();
         return;
       }
       storyMapInventoryCount.textContent = String(cards.length);
@@ -6191,6 +6276,7 @@
     bindStoryUiSfx(storyMarketCloseBtn);
     bindStoryUiSfx(storyMarketMapBtn);
     bindStoryUiSfx(storyMarketCompleteBtn, { clickKind: 'confirm' });
+    if (storyMapHudToggle) bindStoryUiSfx(storyMapHudToggle, { clickKind: 'confirm', hover: false });
     if (storyMissionPanelBtn) bindStoryUiSfx(storyMissionPanelBtn);
     if (storyMissionHandBtn) bindStoryUiSfx(storyMissionHandBtn);
     if (storyMissionBriefToggleBtn) bindStoryUiSfx(storyMissionBriefToggleBtn);
@@ -6208,6 +6294,7 @@
         syncLoadStoryButton();
       });
     }
+    if (storyMapHudToggle) storyMapHudToggle.addEventListener('click', toggleStoryMapHudPanel);
     storySceneCloseBtn.addEventListener('click', closeStoryScene);
     storySceneAmbientMapBtn.addEventListener('click', closeStoryScene);
     storySceneAmbientNextBtn.addEventListener('click', activateSceneDialogue);
@@ -6239,13 +6326,13 @@
         const open = storyMapInventoryDrawer.hidden;
         storyMapInventoryDrawer.hidden = !open;
         storyMapInventoryToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (storyMapInventory) storyMapInventory.classList.toggle('panel-open', open);
       });
     }
     if (storyMapInventoryClose) {
       bindStoryUiSfx(storyMapInventoryClose, { clickKind: 'click', hover: false });
       storyMapInventoryClose.addEventListener('click', () => {
-        if (storyMapInventoryDrawer) storyMapInventoryDrawer.hidden = true;
-        if (storyMapInventoryToggle) storyMapInventoryToggle.setAttribute('aria-expanded', 'false');
+        closeStoryMapInventoryDrawer();
       });
     }
     if (storyMissionPanelBtn) {
