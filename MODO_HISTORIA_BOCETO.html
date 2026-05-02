@@ -3830,7 +3830,9 @@
     const STORY_CURRENCY_VERSION = 2;
     const STORY_ANCIENT_COIN_REWARD = 1;
     const STORY_ANCIENT_COIN_REWARD_NODES = ['hangar', 'patio'];
-    const STORY_ANCIENT_COIN_REWARD_IDS = [...STORY_ANCIENT_COIN_REWARD_NODES, 'mercado_sparring'];
+    const STORY_VIAJERO_LEGACY_REWARD_ID = 'mercado_sparring';
+    const STORY_VIAJERO_REWARD_PREFIX = 'mercado_sparring_';
+    const STORY_VIAJERO_BASE_UNLOCK_COUNT = 3;
     const STORY_LEGACY_MARKET_STARTING_CREDITS = 9;
     const STORY_MARKET_STARTING_CREDITS = 0;
     const STORY_MARKET_CATALOG = [
@@ -3920,6 +3922,8 @@
       pendingThemeKey: 'exploration',
       lastMissionResult: null,
       marketUnlocked: false,
+      marketVisited: false,
+      viajeroLastVictoryCompletedCount: null,
       inventory: null,
       marketPurchases: {}
     };
@@ -4020,12 +4024,41 @@
         }));
     }
 
+    function isStoryViajeroRewardId(rewardId) {
+      return rewardId === STORY_VIAJERO_LEGACY_REWARD_ID
+        || (typeof rewardId === 'string' && rewardId.startsWith(STORY_VIAJERO_REWARD_PREFIX));
+    }
+
+    function isStoryAncientCoinRewardId(rewardId) {
+      return STORY_ANCIENT_COIN_REWARD_NODES.includes(rewardId) || isStoryViajeroRewardId(rewardId);
+    }
+
+    function getStoryViajeroRewardCountFromId(rewardId) {
+      if (rewardId === STORY_VIAJERO_LEGACY_REWARD_ID) return STORY_VIAJERO_BASE_UNLOCK_COUNT;
+      if (typeof rewardId !== 'string' || !rewardId.startsWith(STORY_VIAJERO_REWARD_PREFIX)) return null;
+      const parsedCount = Number.parseInt(rewardId.slice(STORY_VIAJERO_REWARD_PREFIX.length), 10);
+      return Number.isFinite(parsedCount) ? Math.max(STORY_VIAJERO_BASE_UNLOCK_COUNT, parsedCount) : null;
+    }
+
+    function getStoryViajeroRewardIdForCompletedCount(completedCount = storyProgressState.completedCount) {
+      const safeCount = Math.max(STORY_VIAJERO_BASE_UNLOCK_COUNT, Math.floor(Number(completedCount) || 0));
+      return `${STORY_VIAJERO_REWARD_PREFIX}${safeCount}`;
+    }
+
+    function inferStoryViajeroLastVictoryCompletedCount(inventory) {
+      const rewards = Array.isArray(inventory?.coinRewards) ? inventory.coinRewards : [];
+      const rewardCounts = rewards
+        .map(getStoryViajeroRewardCountFromId)
+        .filter((count) => Number.isFinite(count));
+      return rewardCounts.length ? Math.max(...rewardCounts) : null;
+    }
+
     function normalizeStoryInventory(inventory, options = {}) {
       const defaults = createDefaultStoryInventory();
       if (!inventory || typeof inventory !== 'object') return options.withCredits ? defaults : { ...defaults, credits: 0 };
       let credits = Number.isFinite(inventory.credits) ? Math.max(0, Math.floor(inventory.credits)) : (options.withCredits ? STORY_MARKET_STARTING_CREDITS : 0);
       const coinRewards = Array.isArray(inventory.coinRewards)
-        ? Array.from(new Set(inventory.coinRewards.filter((rewardId) => STORY_ANCIENT_COIN_REWARD_IDS.includes(rewardId))))
+        ? Array.from(new Set(inventory.coinRewards.filter(isStoryAncientCoinRewardId)))
         : [];
       const cards = normalizeInventoryItems(inventory.cards);
       const artifacts = normalizeInventoryItems(inventory.artifacts);
@@ -4070,6 +4103,32 @@
       return storyProgressState.inventory;
     }
 
+    function markStoryMarketVisited(reason = 'market-visited') {
+      if (storyProgressState.marketVisited) return false;
+      storyProgressState.marketVisited = true;
+      saveStoryProgress(reason);
+      return true;
+    }
+
+    function canChallengeStoryViajero() {
+      const lastVictoryCount = Number(storyProgressState.viajeroLastVictoryCompletedCount);
+      if (!Number.isFinite(lastVictoryCount)) return true;
+      return storyProgressState.completedCount > lastVictoryCount;
+    }
+
+    function hasStoryViajeroRewardHistory() {
+      const rewards = storyProgressState.inventory?.coinRewards || [];
+      return rewards.some(isStoryViajeroRewardId);
+    }
+
+    function recordStoryViajeroVictory() {
+      const completedCountAtVictory = Math.max(STORY_VIAJERO_BASE_UNLOCK_COUNT, Math.floor(Number(storyProgressState.completedCount) || 0));
+      grantStoryAncientCoinReward(getStoryViajeroRewardIdForCompletedCount(completedCountAtVictory), 'market-sparring-reward');
+      storyProgressState.viajeroLastVictoryCompletedCount = completedCountAtVictory;
+      saveStoryProgress('viajero-victory-lock');
+      renderStoryMapInventoryWidget();
+    }
+
     function buildStoryProgressSave(reason = 'auto') {
       return {
         version: 1,
@@ -4083,6 +4142,10 @@
         pendingThemeKey: storyProgressState.pendingThemeKey || 'exploration',
         lastMissionResult: storyProgressState.lastMissionResult || null,
         marketUnlocked: !!storyProgressState.marketUnlocked,
+        marketVisited: !!storyProgressState.marketVisited,
+        viajeroLastVictoryCompletedCount: Number.isFinite(storyProgressState.viajeroLastVictoryCompletedCount)
+          ? storyProgressState.viajeroLastVictoryCompletedCount
+          : null,
         inventory: normalizeStoryInventory(storyProgressState.inventory, { withCredits: !!storyProgressState.marketUnlocked }),
         marketPurchases: normalizeStoryMarketPurchases(storyProgressState.marketPurchases)
       };
@@ -4116,6 +4179,8 @@
       storyProgressState.pendingThemeKey = 'exploration';
       storyProgressState.lastMissionResult = null;
       storyProgressState.marketUnlocked = false;
+      storyProgressState.marketVisited = false;
+      storyProgressState.viajeroLastVictoryCompletedCount = null;
       storyProgressState.inventory = null;
       storyProgressState.marketPurchases = {};
       currentStoryNodeId = 'hangar';
@@ -4142,6 +4207,11 @@
       storyProgressState.marketUnlocked = !!save.marketUnlocked;
       storyProgressState.inventory = normalizeStoryInventory(save.inventory, { withCredits: !!save.marketUnlocked });
       storyProgressState.marketPurchases = normalizeStoryMarketPurchases(save.marketPurchases);
+      storyProgressState.marketVisited = !!(save.marketVisited || save.marketUnlocked || nextCompletedNodes.mercado || Object.keys(storyProgressState.marketPurchases).length);
+      const savedViajeroCount = Number(save.viajeroLastVictoryCompletedCount);
+      storyProgressState.viajeroLastVictoryCompletedCount = Number.isFinite(savedViajeroCount)
+        ? Math.max(STORY_VIAJERO_BASE_UNLOCK_COUNT, Math.floor(savedViajeroCount))
+        : inferStoryViajeroLastVictoryCompletedCount(storyProgressState.inventory);
       reconcileStoryCurrencyForSave(save);
       syncCompletedCountFromNodes();
       syncStoryAncientCoinRewardsFromCompletedNodes();
@@ -5329,6 +5399,33 @@
         }
       ]
     };
+    storySceneScripts.mercado_sparring_locked = {
+      title: 'Mercado de Relés Muertos',
+      subtitle: 'Viajero permanece quieto, como si el mercado aún no hubiera cambiado lo suficiente.',
+      contextChip: 'Sparring · En espera',
+      objective: 'Completa otro nivel de la Ruta Ceniza para poder retar de nuevo a Viajero y ganar otra antigua moneda.',
+      completeActionLabel: 'Volver al mercado',
+      completeAction: 'exploration',
+      lines: [
+        {
+          speaker: 'Viajero',
+          side: 'right',
+          text: '...'
+        },
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_POSE_TWO,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -20,
+          figureMobileShiftVh: -12,
+          figureScale: 0.86,
+          figureMobileScale: 0.72,
+          text: 'No insistas. Viajero ya te pagó por este tramo de la Ruta. Completa otro nivel, vuelve con metal nuevo en la memoria y entonces te lo dejaré despertar otra vez. El mercado premia progreso, no vueltas en círculo.'
+        }
+      ]
+    };
     storySceneScripts.mercado_sparring_win = {
       title: 'Mercado de Relés Muertos',
       subtitle: 'Viajero cae y Vera sonríe como quien ya había calculado el golpe.',
@@ -5517,7 +5614,7 @@
     }
 
     function grantStoryAncientCoinReward(rewardId, reason = 'ancient-coin-reward') {
-      if (!STORY_ANCIENT_COIN_REWARD_IDS.includes(rewardId)) return false;
+      if (!isStoryAncientCoinRewardId(rewardId)) return false;
       const inventory = normalizeStoryInventory(storyProgressState.inventory, { withCredits: true });
       if (inventory.coinRewards.includes(rewardId)) return false;
       inventory.coinRewards.push(rewardId);
@@ -5694,12 +5791,26 @@
         bindStoryUiSfx(actionButton, { clickKind: available ? 'confirm' : 'click', hover: false });
         actionButton.addEventListener('click', () => {
           if (!available) return;
-          renderStoryNode(node.id);
-          openStoryScene(node.id);
+          enterStoryNode(node.id);
         });
 
         storyMobileRouteList.appendChild(card);
       });
+    }
+
+    function shouldOpenStoryMarketExplorationDirectly(nodeId) {
+      return nodeId === 'mercado' && !!storyProgressState.marketVisited;
+    }
+
+    function enterStoryNode(nodeId) {
+      const node = storyDraftNodes[nodeId];
+      if (!node) return;
+      renderStoryNode(nodeId);
+      if (shouldOpenStoryMarketExplorationDirectly(nodeId)) {
+        openStoryMarketExploration();
+        return;
+      }
+      openStoryScene(nodeId);
     }
 
     function scrollStoryMobileRouteBy(deltaY) {
@@ -6143,6 +6254,9 @@
         queueStoryMapTheme('market');
         playMapMusic();
       }
+      if (nodeId === 'mercado' && resolvedSceneKey === 'mercado') {
+        markStoryMarketVisited('market-first-entry');
+      }
       runStoryTransition(() => {
         activeSceneNodeId = nodeId;
         activeSceneScriptKey = resolvedSceneKey;
@@ -6494,6 +6608,7 @@
 
     function openStoryMarket() {
       ensureStoryMarketInventory();
+      markStoryMarketVisited('market-open');
       storyMarketAllocatedCoins = {};
       currentStoryNodeId = 'mercado';
       rememberStoryWorkspace(true);
@@ -6540,8 +6655,11 @@
       targetUrl.searchParams.set('story_node', 'mercado');
       const extraDeckCards = encodeStoryDeckCardsParam();
       if (extraDeckCards) targetUrl.searchParams.set('story_deck_cards', extraDeckCards);
-      if (storyProgressState.inventory?.coinRewards?.includes('mercado_sparring')) {
+      if (hasStoryViajeroRewardHistory()) {
         targetUrl.searchParams.set('story_sparring_rewarded', '1');
+      }
+      if (!canChallengeStoryViajero()) {
+        targetUrl.searchParams.set('story_sparring_locked', '1');
       }
       return targetUrl.href;
     }
@@ -6549,6 +6667,7 @@
     function openStoryMarketExploration() {
       if (!storyExplorationStage || !storyExplorationFrame) return;
       ensureStoryMarketInventory();
+      markStoryMarketVisited('market-exploration-open');
       if (!hasCompletedStoryNode('mercado')) {
         markStoryNodeCompleted('mercado', { selectedId: 'torre' });
       }
@@ -6608,6 +6727,10 @@
         return;
       }
       if (action === 'sparring') {
+        if (!canChallengeStoryViajero()) {
+          openStoryMarketExplorationScene('mercado_sparring_locked');
+          return;
+        }
         openStoryMarketExplorationScene('mercado_sparring_intro');
       }
     }
@@ -6973,7 +7096,7 @@
         failureScene: 'mercado_sparring_lose',
         onSuccess() {
           queueStoryMapTheme('market');
-          grantStoryAncientCoinReward('mercado_sparring', 'market-sparring-reward');
+          recordStoryViajeroVictory();
           renderStoryNode('torre');
         },
         onFailure() {
@@ -7597,9 +7720,10 @@
         return;
       }
       if (data.type === 'pocobot-story-map-selection' && data.node && data.node.id) {
-        renderStoryNode(data.node.id, { syncMap: false });
         if (data.reason === 'user-select' && data.node.status !== 'locked') {
-          openStoryScene(data.node.id);
+          enterStoryNode(data.node.id);
+        } else {
+          renderStoryNode(data.node.id, { syncMap: false });
         }
         return;
       }

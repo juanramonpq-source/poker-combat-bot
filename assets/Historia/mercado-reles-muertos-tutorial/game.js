@@ -7,6 +7,7 @@ const storyMapButton = document.getElementById("story-map-button");
 const storyParams = new URLSearchParams(window.location.search);
 const storyEmbedMode = storyParams.get("story_embed") === "1";
 const storyReturnUrl = storyParams.get("story_return") || "";
+const storySparringLocked = storyParams.get("story_sparring_locked") === "1";
 
 if (storyEmbedMode) {
   document.body.classList.add("story-embed-mode");
@@ -176,8 +177,10 @@ const interactables = [
     y: 338,
     radius: 148,
     label: "Viajero",
-    hint: "Probar mazo ampliado",
-    message: "Viajero: iniciando sparring con tu mazo ampliado.",
+    hint: storySparringLocked ? "Completa otro nivel" : "Probar mazo ampliado",
+    message: storySparringLocked
+      ? "Viajero espera otra marca de la Ruta Ceniza."
+      : "Viajero: iniciando sparring con tu mazo ampliado.",
   },
 ];
 
