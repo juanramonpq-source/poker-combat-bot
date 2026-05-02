@@ -680,6 +680,83 @@
     .story-map-frame.loaded{
       opacity:1;
     }
+    .story-map-loader{
+      position:absolute;
+      inset:0;
+      z-index:4;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      pointer-events:none;
+      opacity:1;
+      visibility:visible;
+      transition:opacity .38s ease, visibility .38s ease;
+      background:
+        radial-gradient(circle at 50% 46%, rgba(143,244,255,.14), transparent 28%),
+        linear-gradient(180deg, rgba(5,8,13,.36), rgba(5,8,13,.74));
+    }
+    .story-map-loader.is-hidden{
+      opacity:0;
+      visibility:hidden;
+    }
+    .story-map-loader-card{
+      width:min(420px, calc(100vw - 48px));
+      padding:20px 22px 18px;
+      border-radius:24px;
+      border:1px solid rgba(143,244,255,.18);
+      background:linear-gradient(180deg, rgba(8,13,19,.92), rgba(8,13,19,.82));
+      box-shadow:0 28px 64px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter:blur(18px);
+    }
+    .story-map-loader-kicker,
+    .story-map-loader-card strong,
+    .story-map-loader-card small{
+      display:block;
+    }
+    .story-map-loader-kicker{
+      color:#91f4ff;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+    }
+    .story-map-loader-card strong{
+      margin-top:8px;
+      color:#f7efe2;
+      font-family:var(--display-font);
+      font-size:clamp(1.3rem, 2.4vw, 1.85rem);
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .story-map-loader-card small{
+      margin-top:10px;
+      color:#b7c7d3;
+      font-size:.78rem;
+      letter-spacing:.04em;
+    }
+    .story-map-loader-bar{
+      position:relative;
+      overflow:hidden;
+      height:10px;
+      margin-top:16px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+    .story-map-loader-bar span{
+      position:absolute;
+      inset:0 auto 0 0;
+      width:46%;
+      border-radius:inherit;
+      background:linear-gradient(90deg, rgba(143,244,255,.22), rgba(143,244,255,.95), rgba(255,185,109,.82));
+      box-shadow:0 0 24px rgba(143,244,255,.32);
+      animation:storyMapLoaderSweep 1.34s ease-in-out infinite;
+    }
+    @keyframes storyMapLoaderSweep{
+      0%{transform:translateX(-105%)}
+      58%{transform:translateX(78%)}
+      100%{transform:translateX(235%)}
+    }
     .story-mobile-route{
       display:none;
       position:relative;
@@ -2883,7 +2960,8 @@
         overflow:hidden;
       }
       .story-map-frame,
-      .story-map-hud{
+      .story-map-hud,
+      .story-map-loader{
         display:none;
       }
       .story-mobile-route{
@@ -3437,6 +3515,14 @@
             id="storyMapFrame"
             title="Mapa interactivo inmersivo del modo historia"
             src="pocobot_mapa_interactivo.html?immersive=1"></iframe>
+          <div class="story-map-loader" id="storyMapLoader" role="status" aria-live="polite">
+            <div class="story-map-loader-card">
+              <span class="story-map-loader-kicker">Cargando escenario</span>
+              <strong>Ruta Ceniza</strong>
+              <div class="story-map-loader-bar" aria-hidden="true"><span></span></div>
+              <small>Calibrando objetivos del mapa...</small>
+            </div>
+          </div>
 
           <section class="story-mobile-route" id="storyMobileRoute">
             <header class="mobile-route-hero">
@@ -3636,6 +3722,7 @@
     const storyTitleAudioPrimeBtn = document.getElementById('storyTitleAudioPrimeBtn');
     const storyMapMusic = document.getElementById('storyMapMusic');
     const storyMapFrame = document.getElementById('storyMapFrame');
+    const storyMapLoader = document.getElementById('storyMapLoader');
     const storyMobileRoute = document.getElementById('storyMobileRoute');
     const storyMobileRouteList = document.getElementById('storyMobileRouteList');
     const storyMapHud = document.getElementById('storyMapHud');
@@ -3802,6 +3889,8 @@
     let titleDualCameoTimer = null;
     let titleDualCameoHideTimer = null;
     let titleDualCameoReturnTimer = null;
+    let storyMapHasReportedReady = false;
+    let storyMapLoaderFallbackTimer = null;
     const TITLE_DUAL_CAMEO_FIRST_DELAY_MS = 39000;
     const TITLE_DUAL_CAMEO_FIRST_DURATION_MS = 5000;
     const TITLE_DUAL_CAMEO_RETURN_GAP_MS = 3000;
@@ -5479,6 +5568,29 @@
       }, '*');
     }
 
+    function showStoryMapLoader(options = {}) {
+      if (!storyMapLoader || (storyMapHasReportedReady && !options.force)) return;
+      window.clearTimeout(storyMapLoaderFallbackTimer);
+      storyMapFrame?.classList.remove('loaded');
+      storyMapLoader.classList.remove('is-hidden');
+    }
+
+    function hideStoryMapLoader() {
+      storyMapHasReportedReady = true;
+      window.clearTimeout(storyMapLoaderFallbackTimer);
+      storyMapFrame?.classList.add('loaded');
+      storyMapLoader?.classList.add('is-hidden');
+    }
+
+    function requestStoryMapReadyState() {
+      if (!storyMapFrame || !storyMapFrame.contentWindow) return;
+      storyMapFrame.contentWindow.postMessage({ type: 'pocobot-story-map-ready-request' }, '*');
+      window.clearTimeout(storyMapLoaderFallbackTimer);
+      storyMapLoaderFallbackTimer = window.setTimeout(() => {
+        if (!storyMapHasReportedReady) hideStoryMapLoader();
+      }, 3200);
+    }
+
     function syncStoryMapState() {
       postStoryProgressToMap();
       postNodeSelectionToMap(currentStoryNodeId);
@@ -5830,9 +5942,15 @@
       return Math.max(0, element.scrollHeight - element.clientHeight);
     }
 
+    function isStoryElementScrollable(element) {
+      if (!element || getStoryScrollableMax(element) <= 1) return false;
+      const overflowY = window.getComputedStyle(element).overflowY;
+      return overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay';
+    }
+
     function canScrollStoryElement(element, deltaY) {
+      if (!isStoryElementScrollable(element)) return false;
       const maxScroll = getStoryScrollableMax(element);
-      if (maxScroll <= 1) return false;
       if (deltaY > 0) return element.scrollTop < maxScroll - 1;
       if (deltaY < 0) return element.scrollTop > 1;
       return true;
@@ -5840,12 +5958,13 @@
 
     function scrollStoryElementBy(element, deltaY) {
       if (!element || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
+      if (!isStoryElementScrollable(element)) return false;
       const maxScroll = getStoryScrollableMax(element);
-      if (maxScroll <= 1) return false;
       const nextScrollTop = Math.max(0, Math.min(maxScroll, element.scrollTop + deltaY));
-      if (Math.abs(nextScrollTop - element.scrollTop) < 0.1) return false;
+      const previousScrollTop = element.scrollTop;
+      if (Math.abs(nextScrollTop - previousScrollTop) < 0.1) return false;
       element.scrollTop = nextScrollTop;
-      return true;
+      return Math.abs(element.scrollTop - previousScrollTop) > 0.1;
     }
 
     function getStoryEventPathElements(event, root) {
@@ -5861,7 +5980,7 @@
       return candidates.filter((candidate) => {
         if (!candidate || seen.has(candidate)) return false;
         seen.add(candidate);
-        return getStoryScrollableMax(candidate) > 1;
+        return isStoryElementScrollable(candidate);
       });
     }
 
@@ -5874,10 +5993,11 @@
 
     function getStorySceneWheelCandidates(event) {
       return [
-        ...getStoryEventPathElements(event, storySceneStage),
+        getStorySceneScrollContainer(),
         storySceneScroll,
         storySceneCard,
-        storySceneStage
+        storySceneStage,
+        ...getStoryEventPathElements(event, storySceneStage)
       ];
     }
 
@@ -6080,9 +6200,9 @@
 
     function getStoryMarketWheelCandidates(event) {
       return [
-        ...getStoryEventPathElements(event, storyMarketStage),
         storyMarketShell,
-        storyMarketStage
+        storyMarketStage,
+        ...getStoryEventPathElements(event, storyMarketStage)
       ];
     }
 
@@ -7146,6 +7266,7 @@
       cancelTitleDualCameo();
       rememberStoryWorkspace(true);
       rememberStorySurface(null);
+      showStoryMapLoader();
       stopTitleMusic();
       runStoryTransition(() => {
         document.body.classList.remove('story-title-lock');
@@ -7457,6 +7578,10 @@
     window.addEventListener('message', (event) => {
       const data = event.data;
       if (!data || !data.type) return;
+      if (data.type === 'pocobot-story-map-ready') {
+        hideStoryMapLoader();
+        return;
+      }
       if (data.type === 'pocobot-story-map-selection' && data.node && data.node.id) {
         renderStoryNode(data.node.id, { syncMap: false });
         if (data.reason === 'user-select' && data.node.status !== 'locked') {
@@ -7484,9 +7609,9 @@
 
     if (storyMapFrame) {
       storyMapFrame.addEventListener('load', () => {
-        storyMapFrame.classList.add('loaded');
         resetStoryMapViewport();
         syncStoryMapState();
+        requestStoryMapReadyState();
       });
     }
 

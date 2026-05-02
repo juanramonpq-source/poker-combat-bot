@@ -830,17 +830,35 @@
       });
     }
 
+    let mapArtworkReady = false;
+
+    function notifyParentMapReady(reason = "image-ready") {
+      if (!window.parent || window.parent === window) return;
+      window.parent.postMessage({
+        type: "pocobot-story-map-ready",
+        reason,
+        nodes: nodes.length
+      }, "*");
+    }
+
     function primeMapArtwork() {
       if (!mapShell || !mapImage) return;
-      const markReady = () => {
+      const markReady = (reason = "image-ready") => {
+        if (mapArtworkReady) {
+          notifyParentMapReady(reason);
+          return;
+        }
+        mapArtworkReady = true;
         mapShell.classList.add("map-ready");
         scheduleNodeLayout();
+        requestAnimationFrame(() => notifyParentMapReady(reason));
       };
-      if (mapImage.complete) {
-        markReady();
+      if (mapImage.complete && mapImage.naturalWidth > 0) {
+        markReady("image-cached");
         return;
       }
-      mapImage.addEventListener("load", markReady, { once: true });
+      mapImage.addEventListener("load", () => markReady("image-loaded"), { once: true });
+      mapImage.addEventListener("error", () => markReady("image-fallback"), { once: true });
     }
 
     function broadcastSelection(node, reason = "sync") {
@@ -1119,6 +1137,10 @@
     window.addEventListener("message", (event) => {
       const data = event.data;
       if (!data || !data.type) return;
+      if (data.type === "pocobot-story-map-ready-request") {
+        if (mapArtworkReady) notifyParentMapReady("parent-request");
+        return;
+      }
       if (data.type === "pocobot-story-map-select" && typeof data.id === "string") {
         if (!nodes.some(node => node.id === data.id)) return;
         state.selectedId = data.id;
