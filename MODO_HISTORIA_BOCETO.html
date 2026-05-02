@@ -1725,6 +1725,7 @@
       inset:0;
       background:#05080d var(--market-bg, none) no-repeat center center / cover;
       transform:scale(1.02);
+      pointer-events:none;
     }
     .market-backdrop::after{
       content:"";
@@ -2466,6 +2467,218 @@
       }
     }
     @media (max-height:760px) and (orientation: landscape) and (pointer:coarse){
+      .story-market-stage{
+        overflow:hidden;
+        touch-action:pan-y;
+      }
+      .market-backdrop{
+        background-position:center center;
+        transform:scale(1.04);
+      }
+      .market-shell{
+        width:calc(100vw - max(20px, env(safe-area-inset-left)) - max(20px, env(safe-area-inset-right)));
+        height:100svh;
+        min-height:0;
+        overflow-y:auto;
+        overflow-x:hidden;
+        -webkit-overflow-scrolling:touch;
+        overscroll-behavior:contain;
+        touch-action:pan-y;
+        gap:8px;
+        padding:
+          max(8px, env(safe-area-inset-top))
+          0
+          max(14px, env(safe-area-inset-bottom));
+      }
+      .market-header{
+        position:sticky;
+        top:0;
+        z-index:5;
+        flex-direction:row;
+        align-items:center;
+        padding:6px 0;
+        background:linear-gradient(180deg, rgba(5,8,13,.96), rgba(5,8,13,.76) 72%, rgba(5,8,13,0));
+      }
+      .market-chip{
+        min-height:30px;
+        padding:0 11px;
+        font-size:.58rem;
+        letter-spacing:.12em;
+      }
+      .market-header .scene-btn{
+        width:auto;
+        min-height:34px;
+        padding:0 13px;
+        font-size:.58rem;
+      }
+      .market-layout{
+        display:grid;
+        grid-template-columns:minmax(142px, .62fr) minmax(0, 1.38fr);
+        grid-template-areas:
+          "vendor store"
+          "inventory store";
+        gap:8px;
+        align-items:start;
+      }
+      .market-vendor-panel{grid-area:vendor}
+      .market-store-panel{grid-area:store}
+      .inventory-panel{grid-area:inventory}
+      .market-vendor-panel,
+      .market-store-panel,
+      .inventory-panel{
+        min-width:0;
+        padding:9px;
+        border-radius:16px;
+      }
+      .market-vendor-panel{
+        display:grid;
+        grid-template-columns:52px minmax(0, 1fr);
+        gap:8px;
+      }
+      .market-vendor-panel .market-feedback{
+        grid-column:1 / -1;
+      }
+      .market-portrait{
+        max-height:82px;
+      }
+      .market-copy{
+        gap:5px;
+      }
+      .market-kicker{
+        font-size:.52rem;
+        letter-spacing:.12em;
+      }
+      .market-copy h2,
+      .inventory-panel h2{
+        font-size:.86rem;
+      }
+      .market-copy p,
+      .market-intro,
+      .inventory-note{
+        font-size:.68rem;
+        line-height:1.34;
+      }
+      .market-feedback{
+        min-height:0;
+        padding:8px 9px;
+        border-radius:12px;
+        font-size:.66rem;
+        line-height:1.32;
+      }
+      .market-store-panel{
+        gap:8px;
+      }
+      .market-grid{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        gap:8px;
+      }
+      .market-item-card{
+        grid-template-columns:50px minmax(0, 1fr);
+        gap:8px;
+        min-height:0;
+        padding:8px;
+        border-radius:14px;
+      }
+      .market-card-art{
+        min-height:78px;
+        border-radius:11px;
+      }
+      .market-card-art img{
+        width:40px;
+        max-height:68px;
+      }
+      .market-item-content{
+        gap:6px;
+      }
+      .market-item-top{
+        flex-wrap:wrap;
+        gap:4px;
+      }
+      .market-item-type,
+      .market-cost{
+        min-height:20px;
+        padding:0 7px;
+        font-size:.48rem;
+        letter-spacing:.09em;
+      }
+      .market-item-card h3{
+        font-size:.72rem;
+        line-height:1.16;
+      }
+      .market-item-card p{
+        font-size:.62rem;
+        line-height:1.3;
+      }
+      .market-coin-slot{
+        grid-template-columns:auto minmax(0, 1fr) auto;
+        gap:5px;
+        padding:5px;
+        border-radius:11px;
+      }
+      .market-coin-token{
+        width:22px;
+        height:22px;
+      }
+      .market-coin-meter{
+        font-size:.56rem;
+      }
+      .market-coin-controls button{
+        width:26px;
+        height:26px;
+      }
+      .market-buy-btn{
+        min-height:30px;
+        padding:0 9px;
+        font-size:.52rem;
+      }
+      .inventory-credits{
+        grid-template-columns:28px minmax(0,1fr) auto;
+        gap:7px;
+        padding:8px;
+        border-radius:12px;
+      }
+      .inventory-coin-img{
+        width:28px;
+        height:28px;
+      }
+      .inventory-coin-label span{
+        font-size:.52rem;
+      }
+      .inventory-coin-label small,
+      .inventory-empty,
+      .inventory-pill{
+        font-size:.62rem;
+        line-height:1.3;
+      }
+      .inventory-credits strong{
+        font-size:1.08rem;
+      }
+      .inventory-note{
+        display:none;
+      }
+      .inventory-list{
+        gap:6px;
+      }
+      .inventory-pill{
+        padding:7px 8px;
+        border-radius:10px;
+      }
+      .market-actions{
+        position:sticky;
+        bottom:0;
+        z-index:5;
+        display:flex;
+        justify-content:flex-end;
+        gap:8px;
+        padding:8px 0 0;
+        background:linear-gradient(180deg, rgba(5,8,13,0), rgba(5,8,13,.92) 32%, rgba(5,8,13,.98));
+      }
+      .market-actions .scene-btn{
+        width:auto;
+        min-height:34px;
+        padding:0 13px;
+        font-size:.58rem;
+      }
       .story-scene-stage{
         align-items:end;
         overflow:hidden;
@@ -2814,48 +3027,92 @@
       .scene-ambient-hint{
         text-align:left;
       }
+      .story-market-stage{
+        overflow:hidden;
+        touch-action:pan-y;
+      }
+      .market-backdrop{
+        background-position:center center;
+      }
       .market-shell{
-        width:calc(100% - 24px);
+        width:100%;
+        height:100svh;
+        min-height:0;
+        overflow-y:auto;
+        overflow-x:hidden;
+        -webkit-overflow-scrolling:touch;
+        overscroll-behavior:contain;
+        touch-action:pan-y;
         gap:12px;
-        padding:16px 0 max(18px, env(safe-area-inset-bottom));
+        padding:
+          max(12px, env(safe-area-inset-top))
+          max(12px, env(safe-area-inset-right))
+          calc(max(18px, env(safe-area-inset-bottom)) + 6px)
+          max(12px, env(safe-area-inset-left));
       }
       .market-header{
         position:sticky;
-        top:8px;
-        z-index:3;
+        top:0;
+        z-index:5;
         align-items:stretch;
         flex-direction:column;
+        padding-bottom:8px;
+        background:linear-gradient(180deg, rgba(5,8,13,.97), rgba(5,8,13,.82) 78%, rgba(5,8,13,0));
       }
       .market-header .scene-btn{
         width:100%;
       }
+      .market-chip{
+        justify-content:center;
+        width:100%;
+        min-height:34px;
+        font-size:.66rem;
+        text-align:center;
+      }
       .market-layout{
         grid-template-columns:1fr;
+        gap:12px;
       }
       .market-vendor-panel,
       .market-store-panel,
       .inventory-panel{
+        min-width:0;
         padding:16px;
         border-radius:22px;
       }
       .market-vendor-panel{
-        grid-template-columns:86px minmax(0, 1fr);
+        grid-template-columns:76px minmax(0, 1fr);
         gap:12px;
       }
       .market-vendor-panel .market-feedback{
         grid-column:1 / -1;
       }
       .market-portrait{
-        max-height:150px;
+        max-height:132px;
         align-self:start;
+      }
+      .market-copy h2,
+      .inventory-panel h2{
+        font-size:1.08rem;
+      }
+      .market-copy p,
+      .market-intro,
+      .inventory-note{
+        font-size:.84rem;
+        line-height:1.5;
+      }
+      .market-feedback{
+        font-size:.8rem;
       }
       .market-grid{
         grid-template-columns:1fr;
+        gap:10px;
       }
       .market-item-card{
         grid-template-columns:74px minmax(0, 1fr);
         min-height:auto;
         padding:12px;
+        gap:10px;
       }
       .market-card-art{
         min-height:116px;
@@ -2864,16 +3121,28 @@
         width:60px;
         max-height:100px;
       }
+      .market-item-top{
+        flex-wrap:wrap;
+      }
+      .market-coin-slot{
+        grid-template-columns:auto minmax(0, 1fr) auto;
+      }
+      .inventory-credits{
+        padding:12px;
+      }
       .market-actions{
         position:sticky;
-        bottom:8px;
-        z-index:3;
+        bottom:0;
+        z-index:5;
         display:grid;
         grid-template-columns:1fr;
-        padding-top:6px;
+        gap:8px;
+        padding:10px 0 0;
+        background:linear-gradient(180deg, rgba(5,8,13,0), rgba(5,8,13,.92) 34%, rgba(5,8,13,.98));
       }
       .market-actions .scene-btn{
         width:100%;
+        min-height:44px;
       }
       .scene-choices{
         flex-direction:column;
@@ -3182,7 +3451,7 @@
 
               <div class="market-layout">
                 <article class="market-panel market-vendor-panel">
-                  <img class="market-portrait" src="assets/Historia/Brutos/VeraHEX.PNG" alt="Vera Hex" loading="lazy">
+                  <img class="market-portrait" src="assets/Historia/low/Vera2.webp" alt="Vera Hex" loading="lazy">
                   <div class="market-copy">
                     <span class="market-kicker">Vera Hex · Chatarrera intermediaria</span>
                     <h2>Cartas de segunda vida</h2>
@@ -3343,10 +3612,13 @@
       mobile: 'assets/Historia/low/titulo_smartphone_compacto_1080.webp'
     };
     const MARA_PRESENTATION_FIGURE = 'assets/Historia/low/mara_oxido_compacto_1080.webp';
-    const VERA_HEX_PORTRAIT = 'assets/Historia/Brutos/VeraHEX.PNG';
-    const VERA_HEX_POSE_ONE = 'assets/Historia/Brutos/VeraHEX1.PNG';
-    const VERA_HEX_POSE_TWO = 'assets/Historia/Brutos/VeraHEX2.PNG';
-    const MERCADO_RELES_IMAGE = 'assets/Historia/Brutos/3MERCADO_RELES_MUERTOS.PNG';
+    const VERA_PRESENTATION_FIGURE = 'assets/Historia/Brutos/VeraPresentacion.png';
+    const VERA_FAREWELL_FIGURE = 'assets/Historia/Brutos/VeraEntera.png';
+    const VERA_POSE_ONE = 'assets/Historia/low/Vera1.webp';
+    const VERA_POSE_TWO = 'assets/Historia/low/Vera2.webp';
+    const VERA_POSE_THREE = 'assets/Historia/low/Vera3.webp';
+    const VERA_POSE_FOUR = 'assets/Historia/low/Vera4.webp';
+    const MERCADO_RELES_IMAGE = 'assets/Historia/low/mercado_reles_muertos_web_1600.webp';
     const STORY_MAP_THEMES = {
       exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
       chapter_clear: 'assets/Historia/cancionMundo.mp3',
@@ -4601,11 +4873,19 @@
       contextChip: 'Encuentro · Mercado',
       objective: 'Conoce a Vera Hex, activa el inventario del protagonista y compra una carta o artefacto para preparar el siguiente tramo de la Ruta Ceniza.',
       portraits: {
-        right: { src: VERA_HEX_PORTRAIT, alt: 'Vera Hex' }
+        right: { src: VERA_POSE_ONE, alt: 'Vera Hex' }
       },
-      figure: VERA_HEX_POSE_ONE,
+      figure: VERA_POSE_ONE,
       figureClass: 'figure-vera',
-      startAmbient: false,
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: VERA_PRESENTATION_FIGURE,
+      presentationFigureLow: VERA_PRESENTATION_FIGURE,
+      presentationFigureClass: 'figure-vera',
+      presentationFigureShiftVh: 0,
+      presentationFigureMobileShiftVh: 0,
+      presentationFigureScale: 0.92,
+      presentationFigureMobileScale: 0.76,
       minimalDialogue: false,
       completeAction: 'market',
       completeActionLabel: 'Abrir mercado de Vera',
@@ -4613,13 +4893,13 @@
         {
           speaker: 'Vera Hex',
           side: 'right',
-          figure: VERA_HEX_POSE_ONE,
+          figure: VERA_POSE_ONE,
           figureClass: 'figure-vera',
           figureRaised: true,
-          figureShiftVh: -25,
-          figureMobileShiftVh: -18,
-          figureScale: 0.9,
-          figureMobileScale: 0.78,
+          figureShiftVh: -22,
+          figureMobileShiftVh: -15,
+          figureScale: 0.84,
+          figureMobileScale: 0.72,
           text: 'Si vienes de la Fosa Azul y del Patio, traes olor a tutorial y a metal recién obligado. Y si además traes antiguas monedas, mejor. Eso no es simple calderilla: son restos de cuando la prosperidad todavía tenía un símbolo limpio que enseñar.',
           choices: [
             {
@@ -4642,22 +4922,25 @@
         {
           speaker: 'Vera Hex',
           side: 'right',
-          figure: VERA_HEX_POSE_TWO,
+          figure: VERA_POSE_TWO,
           figureClass: 'figure-vera',
           figureRaised: true,
-          figureShiftVh: -25,
-          figureMobileShiftVh: -18,
-          figureScale: 0.9,
-          figureMobileScale: 0.78,
+          figureShiftVh: -22,
+          figureMobileShiftVh: -15,
+          figureScale: 0.84,
+          figureMobileScale: 0.72,
           variantSourceLine: 0,
           variants: {
             parts: {
+              figure: VERA_POSE_TWO,
               text: 'Entonces aprende la primera ley del mercado: una pieza no es buena porque brille, sino porque aguanta cuando el mundo deja de explicarse. La chatarra no miente: o aguanta, o te mata.'
             },
             memory: {
+              figure: VERA_POSE_THREE,
               text: 'Mara habla demasiado, pero ahí no se equivoca. Cada relé muerto trae rutas, nombres, órdenes y miedo soldado por dentro. Yo vendo piezas; a veces, sin querer, también vendo recuerdos.'
             },
             argos: {
+              figure: VERA_POSE_FOUR,
               text: 'De Argós queda lo peor y lo más útil: sistemas que todavía obedecen, símbolos que todavía convencen y gente dispuesta a confundir una orden vieja con una verdad. Cuidado con eso.'
             }
           }
@@ -4665,13 +4948,13 @@
         {
           speaker: 'Vera Hex',
           side: 'right',
-          figure: VERA_HEX_POSE_ONE,
+          figure: VERA_POSE_TWO,
           figureClass: 'figure-vera',
           figureRaised: true,
-          figureShiftVh: -25,
-          figureMobileShiftVh: -18,
-          figureScale: 0.9,
-          figureMobileScale: 0.78,
+          figureShiftVh: -22,
+          figureMobileShiftVh: -15,
+          figureScale: 0.84,
+          figureMobileScale: 0.72,
           text: 'Te abriré inventario propio. Las antiguas monedas que ganaste en las pruebas valen aquí, aunque pesan más por lo que recuerdan que por lo que compran. Representan tiempos de prosperidad, o al menos la versión de prosperidad que Argós sabía vender. Una compra obligatoria y una advertencia gratis: no compres como quien busca poder. Compra como quien piensa volver vivo.'
         }
       ]
@@ -4686,31 +4969,31 @@
       completeActionLabel: 'Volver al mapa',
       completeAction: 'map',
       portraits: {
-        right: { src: VERA_HEX_PORTRAIT, alt: 'Vera Hex' }
+        right: { src: VERA_POSE_THREE, alt: 'Vera Hex' }
       },
       lines: [
         {
           speaker: 'Vera Hex',
           side: 'right',
-          figure: VERA_HEX_POSE_TWO,
+          figure: VERA_FAREWELL_FIGURE,
           figureClass: 'figure-vera',
           figureRaised: true,
-          figureShiftVh: -25,
-          figureMobileShiftVh: -18,
+          figureShiftVh: -18,
+          figureMobileShiftVh: -10,
           figureScale: 0.9,
-          figureMobileScale: 0.78,
+          figureMobileScale: 0.74,
           text: 'Trato cerrado. Tu inventario ya pesa un poco más, y eso significa dos cosas: tienes más opciones y más responsabilidad cuando algo salga mal.'
         },
         {
           speaker: 'Vera Hex',
           side: 'right',
-          figure: VERA_HEX_POSE_ONE,
+          figure: VERA_FAREWELL_FIGURE,
           figureClass: 'figure-vera',
           figureRaised: true,
-          figureShiftVh: -25,
-          figureMobileShiftVh: -18,
+          figureShiftVh: -18,
+          figureMobileShiftVh: -10,
           figureScale: 0.9,
-          figureMobileScale: 0.78,
+          figureMobileScale: 0.74,
           text: 'Sigue la Ruta Ceniza si quieres. Pero recuerda esto: Argós convirtió la excelencia en una jaula con buen nombre. Si vas a buscar la verdad, que no sea porque todavía te deslumbra.'
         }
       ]
@@ -5071,7 +5354,8 @@
     function syncScenePresentation(line) {
       if (!storySceneStage) return;
       const activeSceneKey = getActiveSceneScriptKey();
-      const showIntroTag = !!((activeSceneKey === 'hangar_intro' || activeSceneKey === 'patio_intro') && sceneAmbientMode && sceneAmbientStep === 1 && line);
+      const activeScene = storySceneScripts[activeSceneKey] || null;
+      const showIntroTag = !!(((activeSceneKey === 'hangar_intro' || activeSceneKey === 'patio_intro') || activeScene?.showIntroTag) && sceneAmbientMode && sceneAmbientStep === 1 && line);
       const raiseFigure = !!(line && line.figureRaised);
       const figureShift = Number.isFinite(line?.figureShiftVh) ? line.figureShiftVh : 0;
       const figureMobileShift = Number.isFinite(line?.figureMobileShiftVh) ? line.figureMobileShiftVh : figureShift;
@@ -5093,13 +5377,16 @@
 
     function updateAmbientHint() {
       if (!storySceneAmbientHint || !storySceneAmbientNextBtn) return;
+      const activeScene = storySceneScripts[getActiveSceneScriptKey()] || null;
+      const introLine = activeScene ? (resolveSceneLine(activeScene, 0) || activeScene.lines?.[0] || null) : null;
+      const revealName = introLine?.speaker || 'Mara Óxido';
       if (!sceneAmbientMode) {
         storySceneAmbientHint.innerHTML = 'Pulsa <strong>Adelante</strong> o toca la pantalla para continuar.';
         storySceneAmbientNextBtn.textContent = 'Adelante';
         return;
       }
       if (sceneAmbientStep === 0) {
-        storySceneAmbientHint.innerHTML = 'Pulsa <strong>Adelante</strong> o toca la pantalla para revelar a Mara Óxido.';
+        storySceneAmbientHint.innerHTML = `Pulsa <strong>Adelante</strong> o toca la pantalla para revelar a ${revealName}.`;
         storySceneAmbientNextBtn.textContent = 'Adelante';
         return;
       }
@@ -5110,10 +5397,16 @@
     function showAmbientFigure(scene) {
       const introLine = resolveSceneLine(scene, 0) || scene.lines?.[0] || null;
       if (!introLine) return;
+      const presentationFigure = scene.presentationFigure || MARA_PRESENTATION_FIGURE;
       const presentationLine = {
         ...introLine,
-        figure: MARA_PRESENTATION_FIGURE,
-        figureLow: MARA_PRESENTATION_FIGURE
+        figure: presentationFigure,
+        figureLow: scene.presentationFigureLow || presentationFigure,
+        figureClass: scene.presentationFigureClass || introLine.figureClass,
+        figureShiftVh: Number.isFinite(scene.presentationFigureShiftVh) ? scene.presentationFigureShiftVh : introLine.figureShiftVh,
+        figureMobileShiftVh: Number.isFinite(scene.presentationFigureMobileShiftVh) ? scene.presentationFigureMobileShiftVh : introLine.figureMobileShiftVh,
+        figureScale: Number.isFinite(scene.presentationFigureScale) ? scene.presentationFigureScale : introLine.figureScale,
+        figureMobileScale: Number.isFinite(scene.presentationFigureMobileScale) ? scene.presentationFigureMobileScale : introLine.figureMobileScale
       };
       setSceneFigure(presentationLine, scene);
       syncScenePresentation(presentationLine);
