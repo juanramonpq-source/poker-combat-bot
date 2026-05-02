@@ -840,7 +840,7 @@ function drawInteractionMarker(interactable) {
   ctx.restore();
 
   if (isActive) {
-    drawWorldLabel(interactable.x, interactable.y - interactable.radius * 0.46, interactable.label, `Pulsa E - ${interactable.hint}`);
+    drawWorldLabel(interactable.x, interactable.y - interactable.radius * 0.46, interactable.label, interactable.hint);
   }
 }
 
@@ -1142,12 +1142,12 @@ function drawHud() {
   ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
   ctx.font = "14px Trebuchet MS";
   ctx.fillText("WASD / Flechas o manten raton/dedo para moverte", 32, 68);
-  ctx.fillText("E o toque corto para interactuar · boton flotante para volver al mapa", 32, 88);
+  ctx.fillText("Acercate a un punto activo · boton flotante para volver al mapa", 32, 88);
 
   if (interactionState.messageTimer > 0 || interactionState.active) {
     const message = interactionState.messageTimer > 0
       ? interactionState.message
-      : `${interactionState.active.label}: pulsa E para ${interactionState.active.hint.toLowerCase()}.`;
+      : `${interactionState.active.label}: ${interactionState.active.hint.toLowerCase()} disponible.`;
 
     ctx.fillStyle = "rgba(8, 17, 29, 0.88)";
     ctx.fillRect(18, viewport.height - 76, viewport.width - 36, 52);
