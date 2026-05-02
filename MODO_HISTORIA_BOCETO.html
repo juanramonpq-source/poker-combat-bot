@@ -925,13 +925,14 @@
     }
     .story-map-hud{
       position:fixed;
-      right:clamp(16px, 3vw, 36px);
+      left:clamp(16px, 3vw, 36px);
+      right:auto;
       bottom:clamp(18px, 3vh, 30px);
       z-index:3;
       display:grid;
       gap:8px;
-      justify-items:end;
-      text-align:right;
+      justify-items:start;
+      text-align:left;
       max-width:min(30vw, 400px);
     }
     .story-kicker{
@@ -968,6 +969,124 @@
       font-size:.88rem;
       line-height:1.5;
       text-shadow:0 8px 22px rgba(0,0,0,.52);
+    }
+    .story-map-inventory{
+      position:fixed;
+      left:clamp(14px, 2vw, 28px);
+      bottom:calc(clamp(18px, 3vh, 30px) + clamp(92px, 13vh, 128px));
+      z-index:4;
+      display:grid;
+      justify-items:start;
+      gap:8px;
+      max-width:min(320px, calc(100vw - 32px));
+    }
+    .story-map-inventory[hidden]{
+      display:none;
+    }
+    .story-map-inventory-toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      min-height:44px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,185,109,.22);
+      background:linear-gradient(180deg, rgba(33,25,19,.88), rgba(7,11,17,.9));
+      color:#ffe3c1;
+      box-shadow:0 18px 36px rgba(0,0,0,.32), inset 0 0 0 1px rgba(255,255,255,.04);
+      backdrop-filter:blur(12px);
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.13em;
+      text-transform:uppercase;
+      cursor:pointer;
+    }
+    .story-map-inventory-toggle strong{
+      display:grid;
+      place-items:center;
+      min-width:28px;
+      height:28px;
+      border-radius:999px;
+      background:rgba(143,244,255,.14);
+      border:1px solid rgba(143,244,255,.2);
+      color:#dffbff;
+      font-size:.8rem;
+    }
+    .story-map-inventory-drawer{
+      width:min(320px, calc(100vw - 32px));
+      padding:12px;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.1);
+      background:linear-gradient(180deg, rgba(8,13,19,.93), rgba(8,13,19,.86));
+      box-shadow:0 24px 42px rgba(0,0,0,.36);
+      backdrop-filter:blur(16px);
+    }
+    .story-map-inventory-drawer[hidden]{
+      display:none;
+    }
+    .story-map-inventory-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color:#8ff4ff;
+      font-size:.7rem;
+      font-weight:900;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+    }
+    .story-map-inventory-head button{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.06);
+      color:#eef9ff;
+      font-size:1.05rem;
+      cursor:pointer;
+    }
+    .story-map-inventory-list{
+      display:grid;
+      gap:8px;
+      margin-top:10px;
+    }
+    .story-map-inventory-card{
+      display:grid;
+      grid-template-columns:34px minmax(0, 1fr);
+      gap:9px;
+      align-items:center;
+      padding:8px;
+      border-radius:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.07);
+      color:#edf7ff;
+      font-size:.78rem;
+      line-height:1.25;
+    }
+    .story-map-inventory-card img{
+      width:34px;
+      height:48px;
+      object-fit:contain;
+      border-radius:5px;
+      filter:drop-shadow(0 6px 8px rgba(0,0,0,.28));
+    }
+    .story-map-inventory-card span{
+      display:block;
+      min-width:0;
+    }
+    .story-map-inventory-card small{
+      display:block;
+      margin-top:2px;
+      color:#aedadf;
+      font-size:.68rem;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .story-map-inventory-drawer p{
+      margin:10px 0 0;
+      color:#b9c9d5;
+      font-size:.75rem;
+      line-height:1.42;
     }
     .story-scene-stage{
       position:fixed;
@@ -1603,7 +1722,7 @@
     }
     .market-layout{
       display:grid;
-      grid-template-columns:minmax(240px, .82fr) minmax(360px, 1.26fr) minmax(250px, .78fr);
+      grid-template-columns:minmax(220px, .72fr) minmax(430px, 1.48fr) minmax(240px, .7fr);
       gap:18px;
       align-items:stretch;
     }
@@ -1677,8 +1796,9 @@
     }
     .market-item-card{
       display:grid;
-      gap:10px;
-      min-height:178px;
+      grid-template-columns:82px minmax(0, 1fr);
+      gap:12px;
+      min-height:206px;
       padding:14px;
       border-radius:20px;
       border:1px solid rgba(255,255,255,.08);
@@ -1686,6 +1806,31 @@
         linear-gradient(180deg, rgba(14,26,34,.88), rgba(8,13,19,.88)),
         radial-gradient(circle at 18% 18%, rgba(143,244,255,.08), transparent 24%);
       box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .market-card-art{
+      position:relative;
+      display:grid;
+      place-items:center;
+      align-self:start;
+      min-height:132px;
+      border-radius:16px;
+      border:1px solid rgba(143,244,255,.1);
+      background:
+        radial-gradient(circle at 50% 22%, rgba(143,244,255,.16), transparent 44%),
+        rgba(4,9,14,.55);
+      overflow:hidden;
+    }
+    .market-card-art img{
+      width:68px;
+      max-height:112px;
+      object-fit:contain;
+      border-radius:6px;
+      filter:drop-shadow(0 12px 18px rgba(0,0,0,.38));
+    }
+    .market-item-content{
+      display:grid;
+      gap:9px;
+      min-width:0;
     }
     .market-item-card.purchased{
       border-color:rgba(143,244,255,.24);
@@ -1722,7 +1867,7 @@
     .market-item-card h3{
       margin:0;
       color:#f5fbff;
-      font-size:1rem;
+      font-size:.98rem;
       line-height:1.24;
     }
     .market-item-card p{
@@ -1730,6 +1875,58 @@
       color:#d4e4ef;
       font-size:.84rem;
       line-height:1.5;
+    }
+    .market-coin-slot{
+      display:grid;
+      grid-template-columns:auto minmax(0, 1fr) auto;
+      gap:8px;
+      align-items:center;
+      margin-top:2px;
+      padding:8px;
+      border-radius:16px;
+      border:1px dashed rgba(255,185,109,.28);
+      background:rgba(255,185,109,.07);
+    }
+    .market-coin-slot.ready{
+      border-style:solid;
+      background:rgba(115,255,186,.08);
+      border-color:rgba(115,255,186,.24);
+    }
+    .market-coin-token{
+      width:30px;
+      height:30px;
+      object-fit:contain;
+      border-radius:999px;
+      filter:drop-shadow(0 0 10px rgba(255,146,62,.34));
+    }
+    .market-coin-meter{
+      color:#ffe3c1;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .market-coin-controls{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+    }
+    .market-coin-controls button{
+      display:grid;
+      place-items:center;
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.08);
+      color:#eef9ff;
+      font-size:1rem;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .market-coin-controls button:disabled{
+      opacity:.42;
+      cursor:not-allowed;
     }
     .market-buy-btn{
       align-self:end;
@@ -2209,7 +2406,99 @@
         gap:10px;
       }
       .market-item-card{
-        min-height:150px;
+        grid-template-columns:70px minmax(0, 1fr);
+        min-height:156px;
+        padding:12px;
+      }
+      .market-card-art{
+        min-height:112px;
+      }
+      .market-card-art img{
+        width:58px;
+        max-height:96px;
+      }
+    }
+    @media (max-height:760px) and (orientation: landscape) and (pointer:coarse){
+      .story-scene-stage{
+        align-items:end;
+        overflow:hidden;
+      }
+      .story-scene-stage.hangar-scene .scene-focus-wrap,
+      .story-scene-stage.patio-scene .scene-focus-wrap,
+      .story-scene-stage.mercado-scene .scene-focus-wrap{
+        align-items:end;
+        justify-items:end;
+        padding-top:clamp(40px, 7svh, 64px);
+        padding-right:max(10px, env(safe-area-inset-right));
+        padding-bottom:max(8px, env(safe-area-inset-bottom));
+      }
+      .story-scene-stage.hangar-scene .scene-focus-figure,
+      .story-scene-stage.patio-scene .scene-focus-figure,
+      .story-scene-stage.mercado-scene .scene-focus-figure{
+        width:min(31vw, 300px);
+        max-height:78svh;
+        opacity:.96;
+      }
+      .story-scene-stage.dialogue-live .scene-focus-figure{
+        transform:translateY(-2svh) scale(.74);
+      }
+      .story-scene-stage.figure-raised .scene-focus-figure{
+        transform:translateY(-4svh) scale(.72);
+      }
+      .scene-dialog-card{
+        --scene-dialog-max-height:calc(100svh - 58px);
+        --scene-dialog-scroll-max:clamp(128px, 34svh, 260px);
+        width:min(64vw, 760px);
+        margin:auto auto max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+        padding:12px 14px 14px;
+        border-radius:22px;
+        overflow-y:auto;
+        overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y;
+      }
+      .scene-dialog-main{
+        grid-template-columns:74px minmax(0, 1fr);
+        gap:10px;
+      }
+      .scene-avatar{
+        max-height:128px;
+      }
+      .scene-title{
+        font-size:1.05rem;
+      }
+      .scene-subtitle,
+      .scene-context,
+      .scene-cast{
+        display:none;
+      }
+      .scene-speaker{
+        margin-top:0;
+      }
+      .scene-line{
+        font-size:.9rem;
+        line-height:1.48;
+      }
+      .scene-choice{
+        min-height:34px;
+        padding:8px 11px;
+        font-size:.72rem;
+      }
+      .scene-actions{
+        position:sticky;
+        bottom:0;
+        display:flex;
+        flex-direction:row;
+        gap:8px;
+      }
+      .scene-actions .scene-btn{
+        width:auto;
+        min-height:36px;
+        padding:0 14px;
+        font-size:.68rem;
+      }
+      .story-scene-stage.minimal-dialogue .scene-dialog-card{
+        width:min(62vw, 720px);
       }
     }
     @media (max-height:760px) and (orientation: landscape) and (pointer:fine){
@@ -2315,10 +2604,10 @@
       .page-shell{padding:0 0 24px}
       .story-playfield{min-height:100svh}
       .title-dual-cameo{
-        top:44%;
-        width:min(58vw, 320px);
-        height:min(26vh, 260px);
-        transform:translateX(-50%) translateY(-50%) scale(.94);
+        top:42%;
+        width:min(52vw, 292px);
+        height:min(23vh, 232px);
+        transform:translateX(-50%) translateY(-50%) scale(.9);
       }
       .title-stage.dual-cameo-active .title-dual-cameo{
         animation:dualCameoAppearMobile var(--dual-cameo-duration, 3s) cubic-bezier(.18,.82,.2,1) both;
@@ -2351,6 +2640,23 @@
       .story-map-hud p{
         max-width:30ch;
         font-size:.86rem;
+      }
+      .story-map-inventory{
+        left:14px;
+        right:14px;
+        bottom:14px;
+        max-width:none;
+      }
+      .story-map-inventory-toggle{
+        min-height:40px;
+        padding:0 12px;
+        font-size:.66rem;
+      }
+      .story-map-inventory-drawer{
+        width:100%;
+        max-height:42svh;
+        overflow:auto;
+        -webkit-overflow-scrolling:touch;
       }
       .scene-header{
         left:16px;
@@ -2467,6 +2773,9 @@
         padding:16px 0 max(18px, env(safe-area-inset-bottom));
       }
       .market-header{
+        position:sticky;
+        top:8px;
+        z-index:3;
         align-items:stretch;
         flex-direction:column;
       }
@@ -2482,14 +2791,39 @@
         padding:16px;
         border-radius:22px;
       }
+      .market-vendor-panel{
+        grid-template-columns:86px minmax(0, 1fr);
+        gap:12px;
+      }
+      .market-vendor-panel .market-feedback{
+        grid-column:1 / -1;
+      }
       .market-portrait{
-        max-height:280px;
+        max-height:150px;
+        align-self:start;
       }
       .market-grid{
         grid-template-columns:1fr;
       }
+      .market-item-card{
+        grid-template-columns:74px minmax(0, 1fr);
+        min-height:auto;
+        padding:12px;
+      }
+      .market-card-art{
+        min-height:116px;
+      }
+      .market-card-art img{
+        width:60px;
+        max-height:100px;
+      }
       .market-actions{
-        flex-direction:column;
+        position:sticky;
+        bottom:8px;
+        z-index:3;
+        display:grid;
+        grid-template-columns:1fr;
+        padding-top:6px;
       }
       .market-actions .scene-btn{
         width:100%;
@@ -2723,6 +3057,20 @@
             <span class="story-kicker">Bienvenido a la aventura</span>
             <p>Empieza la Ruta Ceniza. Ve al Hangar de la Fosa Azul o al Patio de Pruebas, los dos lugares marcados en azul.</p>
           </div>
+          <aside class="story-map-inventory" id="storyMapInventory" hidden>
+            <button class="story-map-inventory-toggle" id="storyMapInventoryToggle" type="button" aria-expanded="false">
+              <span>Inventario</span>
+              <strong id="storyMapInventoryCount">0</strong>
+            </button>
+            <div class="story-map-inventory-drawer" id="storyMapInventoryDrawer" hidden>
+              <div class="story-map-inventory-head">
+                <span>Cartas extra</span>
+                <button id="storyMapInventoryClose" type="button" aria-label="Cerrar inventario">×</button>
+              </div>
+              <div class="story-map-inventory-list" id="storyMapInventoryList"></div>
+              <p>Estas cartas viajarán en tu deck propio cuando la Ruta Ceniza deje atrás el taller.</p>
+            </div>
+          </aside>
 
           <section class="story-scene-stage" id="storySceneStage" hidden>
             <div class="scene-backdrop" id="storySceneBackdrop"></div>
@@ -2790,17 +3138,17 @@
                   <img class="market-portrait" src="assets/Historia/Brutos/VeraHEX.PNG" alt="Vera Hex" loading="lazy">
                   <div class="market-copy">
                     <span class="market-kicker">Vera Hex · Chatarrera intermediaria</span>
-                    <h2>Ruina útil</h2>
-                    <p>En este mercado los restos de Argós no son reliquias: son piezas, secretos y memoria intercambiable. Vera vende lo que aguanta y se guarda lo que todavía puede matar.</p>
+                    <h2>Cartas de segunda vida</h2>
+                    <p>Vera no vende reliquias: vende cartas con memoria, piezas que sobrevivieron a Argós y todavía saben cambiar una partida.</p>
                   </div>
-                  <div class="market-feedback" id="storyMarketFeedback">Compra una carta o artefacto con tus antiguas monedas para activar el inventario del protagonista y cerrar el primer trato con Vera.</div>
+                  <div class="market-feedback" id="storyMarketFeedback">Arrastra la decisión con cuidado: entrega antiguas monedas con + o - bajo cada moneda y compra una carta para activar tu inventario.</div>
                 </article>
 
                 <article class="market-panel market-store-panel">
                   <div class="market-copy">
                     <span class="market-kicker">Mostrador de Vera</span>
-                    <h2>Cartas y artefactos</h2>
-                    <p class="market-intro">Elige con criterio: no todo lo barato salva, y no todo lo antiguo merece obediencia.</p>
+                    <h2>Tienda de cartas</h2>
+                    <p class="market-intro">Tus antiguas monedas representan tiempos de prosperidad. Vera las acepta porque sabe que los símbolos viejos todavía compran oportunidades nuevas.</p>
                   </div>
                   <div class="market-grid" id="storyMarketItems"></div>
                 </article>
@@ -2813,11 +3161,7 @@
                     <span class="inventory-label">Cartas compradas</span>
                     <div class="inventory-list" id="storyInventoryCards"></div>
                   </div>
-                  <div class="inventory-group">
-                    <span class="inventory-label">Artefactos</span>
-                    <div class="inventory-list" id="storyInventoryArtifacts"></div>
-                  </div>
-                  <p class="inventory-note">Este inventario queda activado desde el Mercado y se guarda con el progreso de la Ruta Ceniza.</p>
+                  <p class="inventory-note">Desde este capítulo el protagonista tendrá inventario propio. Las cartas compradas se añadirán a su baraja histórica cuando la Ruta Ceniza avance más allá del taller.</p>
                 </aside>
               </div>
 
@@ -2887,6 +3231,12 @@
     const storyMapFrame = document.getElementById('storyMapFrame');
     const storyMobileRoute = document.getElementById('storyMobileRoute');
     const storyMobileRouteList = document.getElementById('storyMobileRouteList');
+    const storyMapInventory = document.getElementById('storyMapInventory');
+    const storyMapInventoryToggle = document.getElementById('storyMapInventoryToggle');
+    const storyMapInventoryCount = document.getElementById('storyMapInventoryCount');
+    const storyMapInventoryDrawer = document.getElementById('storyMapInventoryDrawer');
+    const storyMapInventoryClose = document.getElementById('storyMapInventoryClose');
+    const storyMapInventoryList = document.getElementById('storyMapInventoryList');
     const storySceneStage = document.getElementById('storySceneStage');
     const storySceneCard = document.getElementById('storySceneCard');
     const storySceneBackdrop = document.getElementById('storySceneBackdrop');
@@ -2950,7 +3300,8 @@
     const STORY_MAP_THEMES = {
       exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
       chapter_clear: 'assets/Historia/cancionMundo.mp3',
-      market: 'assets/Historia/MercadodeChatarra.mp3'
+      market: 'assets/Historia/MercadodeChatarra.mp3',
+      post_market: 'assets/Historia/Silencio de Acero.mp3'
     };
     const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
     const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
@@ -2963,46 +3314,63 @@
       confirm: { src: 'assets/sfx/unlock.wav', volume: 0.3 }
     };
     const STORY_ANCIENT_COIN_IMAGE = 'assets/Historia/low/dual_nube_web_ligera.webp';
-    const STORY_ANCIENT_COIN_REWARD = 5;
+    const STORY_CURRENCY_VERSION = 2;
+    const STORY_ANCIENT_COIN_REWARD = 1;
     const STORY_ANCIENT_COIN_REWARD_NODES = ['hangar', 'patio'];
     const STORY_LEGACY_MARKET_STARTING_CREDITS = 9;
     const STORY_MARKET_STARTING_CREDITS = 0;
     const STORY_MARKET_CATALOG = [
       {
-        id: 'relay_spades_attack',
+        id: 'auxiliary_pilot_diamonds',
         type: 'card',
         label: 'Carta',
-        name: 'Relé de ataque 7♠',
-        cost: 3,
-        summary: 'Una carta de ataque recuperada de un bastidor muerto. No promete gloria: promete una ventana de daño si sabes encajarla.',
-        inventoryText: '7♠ · ataque reciclado'
-      },
-      {
-        id: 'shield_diamonds_six',
-        type: 'card',
-        label: 'Carta',
-        name: 'Fusible de defensa 6♦',
+        name: 'Piloto auxiliar de Vera',
         cost: 2,
-        summary: 'Un diamante de taller con el aislamiento raspado. Sirve para recordar que sobrevivir también se compra por piezas.',
-        inventoryText: '6♦ · defensa de chatarra'
+        rank: 'J',
+        suit: 'diamonds',
+        cardImage: 'assets/cards/hayeah-full/jack_of_diamonds.svg',
+        summary: 'Una figura de diamantes preparada para actuar como copiloto de emergencia cuando el metal exija una segunda voz.',
+        inventoryText: 'J♦ · piloto auxiliar',
+        deckText: 'Piloto auxiliar'
       },
       {
-        id: 'dead_memory_relay',
-        type: 'artifact',
-        label: 'Artefacto',
-        name: 'Relé de memoria muerta',
-        cost: 4,
-        summary: 'Conserva ecos de rutas antiguas de Argós. Vera no sabe si guía o vigila; por eso no lo vende barato.',
-        inventoryText: 'Relé de memoria muerta'
+        id: 'diamond_boost_extra',
+        type: 'card',
+        label: 'Carta',
+        name: 'Boost de prosperidad',
+        cost: 3,
+        rank: 'A',
+        suit: 'diamonds',
+        cardImage: 'assets/cards/hayeah-full/ace_of_diamonds.svg',
+        summary: 'Un As de diamantes que huele a época dorada: caro, brillante y peligroso si olvidas por qué sobrevivió.',
+        inventoryText: 'A♦ · boost extra',
+        deckText: 'Boost extra'
       },
       {
-        id: 'cracked_argos_seal',
-        type: 'artifact',
-        label: 'Artefacto',
-        name: 'Sello rajado de Argós',
-        cost: 5,
-        summary: 'Un resto ceremonial de la Ruta Ceniza idealizada: mérito, honor y obediencia escondidos bajo el mismo brillo.',
-        inventoryText: 'Sello rajado de Argós'
+        id: 'spades_attack_extra',
+        type: 'card',
+        label: 'Carta',
+        name: 'Pica de impacto',
+        cost: 2,
+        rank: '8',
+        suit: 'spades',
+        cardImage: 'assets/cards/hayeah-full/8_of_spades.svg',
+        summary: 'Un ocho de picas calibrado como carta de ataque extra. No pregunta, solo abre hueco.',
+        inventoryText: '8♠ · extra de ataque',
+        deckText: 'Extra de ataque'
+      },
+      {
+        id: 'diamond_fuel_extra',
+        type: 'card',
+        label: 'Carta',
+        name: 'Combustible de rele seco',
+        cost: 3,
+        rank: '8',
+        suit: 'diamonds',
+        cardImage: 'assets/cards/hayeah-full/8_of_diamonds.svg',
+        summary: 'Un ocho de diamantes que Vera llama combustible paciente: no arde rápido, pero cuando arde convence.',
+        inventoryText: '8♦ · extra de combustible',
+        deckText: 'Extra de combustible'
       }
     ];
 
@@ -3026,6 +3394,7 @@
     let sceneAmbientMode = false;
     let sceneAmbientStep = 0;
     let storyTransitionBusy = false;
+    let storyMarketAllocatedCoins = {};
     const sceneChoiceSelections = {};
     const storyUiSfxBank = {};
     const storyProgressState = {
@@ -3103,7 +3472,11 @@
           id: item.id,
           name: item.name,
           text: item.text || item.name,
-          source: item.source || 'Mercado de Relés Muertos'
+          source: item.source || 'Mercado de Relés Muertos',
+          rank: item.rank || '',
+          suit: item.suit || '',
+          cardImage: item.cardImage || '',
+          deckText: item.deckText || item.text || item.name
         }));
     }
 
@@ -3127,12 +3500,32 @@
       };
     }
 
+    function normalizeStoryMarketPurchases(purchases) {
+      const normalized = {};
+      if (!purchases || typeof purchases !== 'object') return normalized;
+      STORY_MARKET_CATALOG.forEach((item) => {
+        if (purchases[item.id]) normalized[item.id] = true;
+      });
+      return normalized;
+    }
+
+    function getStoryMarketSpentFromPurchases(purchases = {}) {
+      return STORY_MARKET_CATALOG.reduce((total, item) => total + (purchases[item.id] ? item.cost : 0), 0);
+    }
+
+    function reconcileStoryCurrencyForSave(save) {
+      if (!save || save.currencyVersion === STORY_CURRENCY_VERSION || !storyProgressState.inventory) return;
+      const earned = (storyProgressState.inventory.coinRewards || []).length * STORY_ANCIENT_COIN_REWARD;
+      const spent = getStoryMarketSpentFromPurchases(storyProgressState.marketPurchases || {});
+      storyProgressState.inventory.credits = Math.max(0, earned - spent);
+    }
+
     function ensureStoryMarketInventory() {
       const wasUnlocked = !!storyProgressState.marketUnlocked;
       storyProgressState.marketUnlocked = true;
       storyProgressState.inventory = normalizeStoryInventory(storyProgressState.inventory, { withCredits: true });
       syncStoryAncientCoinRewardsFromCompletedNodes();
-      storyProgressState.marketPurchases = { ...(storyProgressState.marketPurchases || {}) };
+      storyProgressState.marketPurchases = normalizeStoryMarketPurchases(storyProgressState.marketPurchases);
       if (!wasUnlocked) saveStoryProgress('market-inventory-unlocked');
       return storyProgressState.inventory;
     }
@@ -3140,6 +3533,7 @@
     function buildStoryProgressSave(reason = 'auto') {
       return {
         version: 1,
+        currencyVersion: STORY_CURRENCY_VERSION,
         savedAt: Date.now(),
         reason,
         selectedId: currentStoryNodeId,
@@ -3150,7 +3544,7 @@
         lastMissionResult: storyProgressState.lastMissionResult || null,
         marketUnlocked: !!storyProgressState.marketUnlocked,
         inventory: normalizeStoryInventory(storyProgressState.inventory, { withCredits: !!storyProgressState.marketUnlocked }),
-        marketPurchases: { ...(storyProgressState.marketPurchases || {}) }
+        marketPurchases: normalizeStoryMarketPurchases(storyProgressState.marketPurchases)
       };
     }
 
@@ -3189,6 +3583,7 @@
         delete sceneChoiceSelections[key];
       });
       renderMobileRoute();
+      renderStoryMapInventoryWidget();
       syncStoryMapState();
       syncLoadStoryButton();
     }
@@ -3205,7 +3600,8 @@
       storyProgressState.lastMissionResult = save.lastMissionResult || null;
       storyProgressState.marketUnlocked = !!save.marketUnlocked;
       storyProgressState.inventory = normalizeStoryInventory(save.inventory, { withCredits: !!save.marketUnlocked });
-      storyProgressState.marketPurchases = { ...(save.marketPurchases || {}) };
+      storyProgressState.marketPurchases = normalizeStoryMarketPurchases(save.marketPurchases);
+      reconcileStoryCurrencyForSave(save);
       syncCompletedCountFromNodes();
       syncStoryAncientCoinRewardsFromCompletedNodes();
       if (save.selectedId && storyDraftNodes[save.selectedId]) {
@@ -4431,6 +4827,7 @@
       syncStoryThemeForNode(localNode.id);
       renderStoryCast(localNode.cast);
       renderMobileRoute();
+      renderStoryMapInventoryWidget();
       if (shouldSyncMap) syncStoryMapState();
       if (workspacePanel.classList.contains('active') && options.skipSave !== true) {
         saveStoryProgress('selected-node');
@@ -4453,6 +4850,7 @@
         currentStoryNodeId = options.selectedId;
       }
       renderMobileRoute();
+      renderStoryMapInventoryWidget();
       syncStoryMapState();
       saveStoryProgress('set-completed-count');
     }
@@ -4466,6 +4864,7 @@
         currentStoryNodeId = options.selectedId;
       }
       renderMobileRoute();
+      renderStoryMapInventoryWidget();
       syncStoryMapState();
       saveStoryProgress(`completed-${nodeId}`);
     }
@@ -4749,6 +5148,20 @@
       return true;
     }
 
+    function isCoarseLandscapeStoryScene() {
+      try {
+        return !!window.matchMedia && window.matchMedia('(orientation: landscape) and (pointer: coarse)').matches;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function shouldUseNativeStorySceneTouchScroll(event) {
+      if (!isCoarseLandscapeStoryScene() || !storySceneCard || !getStorySceneScrollContainer()) return false;
+      const target = event.target instanceof Element ? event.target : null;
+      return !!target && storySceneCard.contains(target);
+    }
+
     function isWheelInsideActiveStoryScene(event) {
       if (!storySceneStage || !getStorySceneScrollContainer()) return false;
       const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
@@ -4831,6 +5244,10 @@
       const resolvedSceneKey = resolveEntrySceneKey(nodeId, sceneKey);
       const scene = storySceneScripts[resolvedSceneKey];
       if (!localNode || !scene) return;
+      if (nodeId === 'mercado' && !hasCompletedStoryNode('mercado')) {
+        queueStoryMapTheme('market');
+        playMapMusic();
+      }
       runStoryTransition(() => {
         activeSceneNodeId = nodeId;
         activeSceneScriptKey = resolvedSceneKey;
@@ -4891,7 +5308,7 @@
     }
 
     function hasStoryMarketPurchase() {
-      return Object.values(storyProgressState.marketPurchases || {}).some(Boolean);
+      return Object.values(normalizeStoryMarketPurchases(storyProgressState.marketPurchases)).some(Boolean);
     }
 
     function setStoryMarketFeedback(text) {
@@ -4916,9 +5333,70 @@
       });
     }
 
+    function getStoryPurchasedCards() {
+      const inventory = normalizeStoryInventory(storyProgressState.inventory, { withCredits: !!storyProgressState.marketUnlocked });
+      return inventory.cards.filter((item) => item.rank && item.suit);
+    }
+
+    function renderStoryMapInventoryWidget() {
+      if (!storyMapInventory || !storyMapInventoryList || !storyMapInventoryCount) return;
+      const cards = getStoryPurchasedCards();
+      const shouldShow = cards.length > 0;
+      storyMapInventory.hidden = !shouldShow;
+      if (!shouldShow) {
+        if (storyMapInventoryDrawer) storyMapInventoryDrawer.hidden = true;
+        if (storyMapInventoryToggle) storyMapInventoryToggle.setAttribute('aria-expanded', 'false');
+        return;
+      }
+      storyMapInventoryCount.textContent = String(cards.length);
+      storyMapInventoryList.innerHTML = '';
+      cards.forEach((item) => {
+        const entry = document.createElement('article');
+        entry.className = 'story-map-inventory-card';
+        entry.innerHTML = `
+          <img src="${item.cardImage || STORY_ANCIENT_COIN_IMAGE}" alt="${item.text || item.name}" loading="lazy">
+          <span>${item.text || item.name}<small>${item.deckText || 'Carta de mercado'}</small></span>
+        `;
+        storyMapInventoryList.appendChild(entry);
+      });
+    }
+
+    function setStoryMarketAllocation(itemId, nextAmount) {
+      const item = getStoryMarketItem(itemId);
+      if (!item) return;
+      const inventory = ensureStoryMarketInventory();
+      const purchases = storyProgressState.marketPurchases || {};
+      if (purchases[item.id]) {
+        storyMarketAllocatedCoins[item.id] = 0;
+        return;
+      }
+      const allocatedElsewhere = Object.entries(storyMarketAllocatedCoins).reduce((total, [id, amount]) => (
+        id === item.id || purchases[id] ? total : total + Math.max(0, Number(amount) || 0)
+      ), 0);
+      const availableForItem = Math.max(0, inventory.credits - allocatedElsewhere);
+      storyMarketAllocatedCoins[item.id] = Math.max(0, Math.min(item.cost, availableForItem, Math.floor(nextAmount || 0)));
+    }
+
+    function encodeStoryDeckCardsParam() {
+      const cards = getStoryPurchasedCards().map((item) => ({
+        id: item.id,
+        name: item.name,
+        text: item.deckText || item.text || item.name,
+        rank: item.rank,
+        suit: item.suit
+      }));
+      if (!cards.length) return '';
+      try {
+        return btoa(unescape(encodeURIComponent(JSON.stringify(cards))));
+      } catch (error) {
+        return '';
+      }
+    }
+
     function renderStoryMarket() {
       const inventory = ensureStoryMarketInventory();
       const purchases = storyProgressState.marketPurchases || {};
+      storyMarketAllocatedCoins = Object.fromEntries(Object.entries(storyMarketAllocatedCoins).filter(([id]) => STORY_MARKET_CATALOG.some((item) => item.id === id)));
       if (storyMarketBackdrop) {
         storyMarketBackdrop.style.setProperty('--market-bg', `url("${MERCADO_RELES_IMAGE}")`);
       }
@@ -4939,21 +5417,41 @@
         STORY_MARKET_CATALOG.forEach((item) => {
           const purchased = !!purchases[item.id];
           const affordable = inventory.credits >= item.cost;
+          const allocated = Math.max(0, Math.min(item.cost, Number(storyMarketAllocatedCoins[item.id]) || 0));
+          const allocatedElsewhere = Object.entries(storyMarketAllocatedCoins).reduce((total, [id, amount]) => (
+            id === item.id || purchases[id] ? total : total + Math.max(0, Number(amount) || 0)
+          ), 0);
+          const canAddCoin = !purchased && allocated < item.cost && allocated < Math.max(0, inventory.credits - allocatedElsewhere);
+          const ready = allocated >= item.cost;
           const card = document.createElement('article');
           card.className = `market-item-card${purchased ? ' purchased' : ''}`;
           card.innerHTML = `
-            <div class="market-item-top">
-              <span class="market-item-type">${item.label}</span>
-              <span class="market-cost">${item.cost} monedas</span>
+            <div class="market-card-art">
+              <img src="${item.cardImage}" alt="${item.name}" loading="lazy">
             </div>
-            <h3>${item.name}</h3>
-            <p>${item.summary}</p>
-            <button class="market-buy-btn" data-market-buy="${item.id}" type="button" ${purchased || !affordable ? 'disabled' : ''}>
-              ${purchased ? 'Comprado' : affordable ? 'Comprar' : 'Sin monedas'}
-            </button>
+            <div class="market-item-content">
+              <div class="market-item-top">
+                <span class="market-item-type">${item.label}</span>
+                <span class="market-cost">${item.cost} monedas</span>
+              </div>
+              <h3>${item.name}</h3>
+              <p>${item.summary}</p>
+              <div class="market-coin-slot${ready ? ' ready' : ''}" aria-label="Caja de pago para ${item.name}">
+                <img class="market-coin-token" src="${STORY_ANCIENT_COIN_IMAGE}" alt="Antigua moneda">
+                <span class="market-coin-meter">${allocated}/${item.cost}</span>
+                <span class="market-coin-controls">
+                  <button data-market-coin-remove="${item.id}" type="button" ${purchased || allocated <= 0 ? 'disabled' : ''}>-</button>
+                  <button data-market-coin-add="${item.id}" type="button" ${!canAddCoin || !affordable ? 'disabled' : ''}>+</button>
+                </span>
+              </div>
+              <button class="market-buy-btn" data-market-buy="${item.id}" type="button" ${purchased || !ready ? 'disabled' : ''}>
+                ${purchased ? 'Comprado' : ready ? 'Comprar carta' : 'Entrega monedas'}
+              </button>
+            </div>
           `;
           const button = card.querySelector('.market-buy-btn');
           bindStoryUiSfx(button, { clickKind: 'confirm' });
+          card.querySelectorAll('.market-coin-controls button').forEach((coinButton) => bindStoryUiSfx(coinButton, { clickKind: 'click', hover: false }));
           storyMarketItems.appendChild(card);
         });
       }
@@ -4962,6 +5460,7 @@
         storyMarketCompleteBtn.disabled = !canComplete;
         storyMarketCompleteBtn.textContent = canComplete ? 'Cerrar trato y seguir ruta' : 'Compra algo para seguir';
       }
+      renderStoryMapInventoryWidget();
     }
 
     function buyStoryMarketItem(itemId) {
@@ -4979,17 +5478,26 @@
         renderStoryMarket();
         return;
       }
+      if ((storyMarketAllocatedCoins[item.id] || 0) < item.cost) {
+        setStoryMarketFeedback('Vera golpea la caja con un dedo: primero coloca todas las antiguas monedas de ese trato.');
+        renderStoryMarket();
+        return;
+      }
       inventory.credits -= item.cost;
       const inventoryEntry = {
         id: item.id,
         name: item.name,
         text: item.inventoryText || item.name,
-        source: 'Mercado de Relés Muertos'
+        source: 'Mercado de Relés Muertos',
+        rank: item.rank,
+        suit: item.suit,
+        cardImage: item.cardImage,
+        deckText: item.deckText || item.name
       };
-      if (item.type === 'artifact') inventory.artifacts.push(inventoryEntry);
-      else inventory.cards.push(inventoryEntry);
+      inventory.cards.push(inventoryEntry);
       storyProgressState.inventory = inventory;
       storyProgressState.marketPurchases[item.id] = true;
+      storyMarketAllocatedCoins[item.id] = 0;
       setStoryMarketFeedback(`Vera cierra los dedos sobre las antiguas monedas: "${item.name}" pasa a tu inventario.`);
       saveStoryProgress(`market-buy-${item.id}`);
       renderStoryMarket();
@@ -4997,6 +5505,7 @@
 
     function openStoryMarket() {
       ensureStoryMarketInventory();
+      storyMarketAllocatedCoins = {};
       queueStoryMapTheme('market');
       closeStoryScene();
       playMapMusic();
@@ -5011,6 +5520,10 @@
       if (!storyMarketStage) {
         if (onClosed) onClosed();
         return;
+      }
+      const wasMarketOpen = !storyMarketStage.hidden || storyMarketStage.classList.contains('active');
+      if (wasMarketOpen && options.applyExitTheme !== false) {
+        queueStoryMapTheme(options.exitThemeKey || 'post_market');
       }
       storyMarketStage.classList.remove('active');
       window.setTimeout(() => {
@@ -5030,7 +5543,7 @@
         setStoryMarketFeedback('Vera no abre la salida todavía: primero compra una carta o artefacto y activa tu inventario.');
         return;
       }
-      queueStoryMapTheme('chapter_clear');
+      queueStoryMapTheme('post_market');
       markStoryNodeCompleted('mercado', { selectedId: 'torre' });
       closeStoryMarket({
         onClosed: () => {
@@ -5047,6 +5560,11 @@
       targetUrl.searchParams.set('story_node', nodeId);
       targetUrl.searchParams.set('story_audio', options.audioMode || 'external');
       targetUrl.searchParams.set('story_brief', options.showInnerBrief ? 'on' : 'off');
+      const extraDeckCards = (hasCompletedStoryNode('mercado') || hasStoryMarketPurchase()) && nodeId !== 'hangar' && nodeId !== 'patio'
+        ? encodeStoryDeckCardsParam()
+        : '';
+      if (extraDeckCards) targetUrl.searchParams.set('story_deck_cards', extraDeckCards);
+      else targetUrl.searchParams.delete('story_deck_cards');
       if (options.standalone) {
         targetUrl.searchParams.set('story_standalone', '1');
         targetUrl.searchParams.set('story_return', window.location.href);
@@ -5698,10 +6216,38 @@
     storyMarketMapBtn.addEventListener('click', closeStoryMarket);
     storyMarketCompleteBtn.addEventListener('click', completeStoryMarketChapter);
     storyMarketItems.addEventListener('click', (event) => {
+      const addId = event.target.closest('[data-market-coin-add]')?.dataset.marketCoinAdd;
+      if (addId) {
+        setStoryMarketAllocation(addId, (storyMarketAllocatedCoins[addId] || 0) + 1);
+        renderStoryMarket();
+        return;
+      }
+      const removeId = event.target.closest('[data-market-coin-remove]')?.dataset.marketCoinRemove;
+      if (removeId) {
+        setStoryMarketAllocation(removeId, (storyMarketAllocatedCoins[removeId] || 0) - 1);
+        renderStoryMarket();
+        return;
+      }
       const buyId = event.target.closest('[data-market-buy]')?.dataset.marketBuy;
       if (!buyId) return;
       buyStoryMarketItem(buyId);
     });
+    if (storyMapInventoryToggle) {
+      bindStoryUiSfx(storyMapInventoryToggle, { clickKind: 'confirm', hover: false });
+      storyMapInventoryToggle.addEventListener('click', () => {
+        if (!storyMapInventoryDrawer) return;
+        const open = storyMapInventoryDrawer.hidden;
+        storyMapInventoryDrawer.hidden = !open;
+        storyMapInventoryToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+    if (storyMapInventoryClose) {
+      bindStoryUiSfx(storyMapInventoryClose, { clickKind: 'click', hover: false });
+      storyMapInventoryClose.addEventListener('click', () => {
+        if (storyMapInventoryDrawer) storyMapInventoryDrawer.hidden = true;
+        if (storyMapInventoryToggle) storyMapInventoryToggle.setAttribute('aria-expanded', 'false');
+      });
+    }
     if (storyMissionPanelBtn) {
       storyMissionPanelBtn.addEventListener('click', () => {
         postStoryMissionEmbedCommand('panel', 3);
@@ -5765,9 +6311,14 @@
     storySceneStage.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
     document.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
     storySceneStage.addEventListener('touchstart', (event) => {
+      if (shouldUseNativeStorySceneTouchScroll(event)) {
+        storySceneTouchY = null;
+        return;
+      }
       storySceneTouchY = getStorySceneScrollContainer() && event.touches.length === 1 ? event.touches[0].clientY : null;
     }, { passive: true });
     storySceneStage.addEventListener('touchmove', (event) => {
+      if (shouldUseNativeStorySceneTouchScroll(event)) return;
       if (storySceneTouchY === null || event.touches.length !== 1) return;
       const nextY = event.touches[0].clientY;
       const deltaY = storySceneTouchY - nextY;

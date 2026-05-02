@@ -7648,12 +7648,15 @@ body.desktop-compact-mode > footer{
 
 .compact-drag-ghost{
   position:fixed;
-  z-index:1400;
+  z-index:10090;
   pointer-events:none;
   margin:0 !important;
   transform:translate(-50%, -50%) rotate(-4deg) scale(1.04);
-  box-shadow:0 14px 24px rgba(8,16,42,.28) !important;
-  filter:drop-shadow(0 8px 16px rgba(8,16,42,.22));
+  opacity:.98;
+  visibility:visible !important;
+  box-shadow:0 18px 30px rgba(8,16,42,.34) !important;
+  filter:drop-shadow(0 12px 18px rgba(8,16,42,.34)) drop-shadow(0 0 12px rgba(116,255,242,.18));
+  will-change:left, top, transform;
 }
 
 @keyframes compactRadarSweep{
@@ -9725,6 +9728,8 @@ const state = {
   storyMission: null,
   storyMissionAnnounced: false,
   storyMissionProgress: {},
+  storyDeckMode: false,
+  storyPlayerDecks: null,
 };
 
 
@@ -10245,6 +10250,8 @@ function setupStoryPatioDuelScenario(){
 
   state.deck = deck;
   state.discard = [];
+  state.storyDeckMode = false;
+  state.storyPlayerDecks = null;
   state.removed = [];
   state.players = players;
   state.currentPlayer = 0;
@@ -10607,11 +10614,17 @@ function isNumericDiamondCard(card){
 function isPlayableProjectileCard(card){
   return !!card && card.suit === 'spades' && isNumericCard(card);
 }
-function createDeck(){
+function createDeck(options = {}){
   let id = 0;
   const deck = [];
+  const owner = Number.isInteger(options.owner) ? options.owner : null;
+  const prefix = options.prefix || 'c';
   Object.keys(SUITS).forEach(suit => {
-    RANKS.forEach(rank => deck.push({ id:`c${id++}`, rank, suit, value:rankValue(rank) }));
+    RANKS.forEach(rank => {
+      const card = { id:`${prefix}${id++}`, rank, suit, value:rankValue(rank) };
+      if(owner !== null) card.storyDeckOwner = owner;
+      deck.push(card);
+    });
   });
   return shuffle(deck);
 }
@@ -10870,11 +10883,33 @@ const STORY_BRIEF_MODE = STORY_BOOT_PARAMS.get('story_brief') || '';
 const STORY_CARRIED_BGM_SRC = STORY_BOOT_PARAMS.get('story_bgm') || '';
 const STORY_CARRIED_BGM_TIME = Number(STORY_BOOT_PARAMS.get('story_bgm_time') || 0) || 0;
 const STORY_CARRIED_BGM_VOLUME = Number(STORY_BOOT_PARAMS.get('story_bgm_volume') || 0.34) || 0.34;
+const STORY_EXTRA_DECK_CARDS_PARAM = STORY_BOOT_PARAMS.get('story_deck_cards') || '';
 const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v1';
 let storyHudMode = STORY_BOOT_PARAMS.get('story_ui') || (STORY_BOOT_PARAMS.get('story_compact') === '1' ? 'compact' : 'scroll');
 if(!['scroll', 'compact', 'horizontal'].includes(storyHudMode)) storyHudMode = 'scroll';
 let storyOrientationToastTimer = null;
+let storyOrientationToastShownForMode = false;
 let storyMissionBriefCollapsed = false;
+function decodeStoryExtraDeckCards(){
+  if(!STORY_EXTRA_DECK_CARDS_PARAM) return [];
+  try{
+    const json = decodeURIComponent(escape(atob(STORY_EXTRA_DECK_CARDS_PARAM)));
+    const parsed = JSON.parse(json);
+    if(!Array.isArray(parsed)) return [];
+    return parsed
+      .filter(card => card && RANKS.includes(card.rank) && Object.prototype.hasOwnProperty.call(SUITS, card.suit))
+      .map((card, index) => ({
+        id: String(card.id || `market-${index}`),
+        name: String(card.name || card.text || 'Carta de mercado'),
+        text: String(card.text || card.name || 'Carta de mercado'),
+        rank: card.rank,
+        suit: card.suit
+      }));
+  }catch(_err){
+    return [];
+  }
+}
+const STORY_EXTRA_DECK_CARDS = decodeStoryExtraDeckCards();
 const AUDIO_SFX_URIS = {
   uiClick: "assets/sfx/ui_click.wav",
   shuffle: "assets/sfx/card_shuffle.wav",
@@ -11412,7 +11447,9 @@ function drawFromDeck(options = {}){
   if(state.tutorial && Array.isArray(state.tutorialRiggedDraws) && state.tutorialRiggedDraws.length){
     return state.tutorialRiggedDraws.shift() || null;
   }
-  if(state.deck.length===0){
+  const storyDrawPlayerIdx = getStoryDrawPlayerIndex(options);
+  let activeDeck = getActiveDeckForPlayer(storyDrawPlayerIdx);
+  if(activeDeck.length===0){
     if(!allowRecycle){
       if(announce){
         log('📭 El mazo de robo se ha agotado. Este robo se detiene aquí.');
@@ -11420,7 +11457,10 @@ function drawFromDeck(options = {}){
       }
       return null;
     }
-    if(state.discard.length===0){
+    const recycleSource = state.storyDeckMode
+      ? state.discard.filter(card => card && card.storyDeckOwner === storyDrawPlayerIdx)
+      : state.discard;
+    if(recycleSource.length===0){
       if(announce){
         log('📭 El mazo y el descarte están vacíos.');
         addToast('No quedan cartas para robar', 'warn');
@@ -11431,10 +11471,19 @@ function drawFromDeck(options = {}){
       log('♻️ Mazo agotado. El descarte se baraja y se convierte en nuevo mazo.');
       addToast('Mazo agotado: se recicla el descarte', 'warn');
     }
-    state.deck = shuffle(state.discard);
-    state.discard = [];
+    activeDeck = shuffle(recycleSource);
+    if(state.storyDeckMode && Array.isArray(state.storyPlayerDecks)){
+      state.storyPlayerDecks[storyDrawPlayerIdx] = activeDeck;
+      state.discard = state.discard.filter(card => !card || card.storyDeckOwner !== storyDrawPlayerIdx);
+      if(storyDrawPlayerIdx === 0) state.deck = activeDeck;
+    }else{
+      state.deck = activeDeck;
+      state.discard = [];
+    }
   }
-  return state.deck.pop() || null;
+  const drawn = activeDeck.pop() || null;
+  if(state.storyDeckMode && storyDrawPlayerIdx === 0) state.deck = activeDeck;
+  return drawn;
 }
 const MAX_HAND_SIZE = 18;
 const SAVE_CODE_PREFIX_V1 = 'PCB1.';
@@ -11467,6 +11516,56 @@ function receiveDrawnCard(player, card){
   }
   player.hand.push(card);
   return { accepted:true, discarded:false, card };
+}
+
+function shouldUseStoryIndividualDecks(){
+  if(!STORY_EMBED_MODE || !STORY_EXTRA_DECK_CARDS.length) return false;
+  return !['hangar_build', 'hangar_race', 'patio_duel'].includes(STORY_MISSION_BOOT);
+}
+
+function makeStoryMarketCard(def, index, owner){
+  const card = {
+    id: `story-market-${owner}-${def.id || index}-${index}`,
+    rank: def.rank,
+    suit: def.suit,
+    value: rankValue(def.rank),
+    storyDeckOwner: owner,
+    storyMarketCard: true,
+    storyMarketName: def.text || def.name || 'Carta de mercado'
+  };
+  return card;
+}
+
+function setupStoryIndividualDecks(){
+  state.storyDeckMode = false;
+  state.storyPlayerDecks = null;
+  if(!shouldUseStoryIndividualDecks()) return false;
+  const playerDeck = createDeck({ owner:0, prefix:'s0-c' }).concat(STORY_EXTRA_DECK_CARDS.map((def, index) => makeStoryMarketCard(def, index, 0)));
+  const rivalDeck = createDeck({ owner:1, prefix:'s1-c' });
+  state.storyPlayerDecks = [shuffle(playerDeck), rivalDeck];
+  state.deck = state.storyPlayerDecks[0];
+  state.storyDeckMode = true;
+  return true;
+}
+
+function getStoryDrawPlayerIndex(options = {}){
+  if(Number.isInteger(options.playerIdx)) return Math.max(0, Math.min(1, options.playerIdx));
+  if(state.pendingDefense && Number.isInteger(state.pendingDefense.defenderIndex)) return state.pendingDefense.defenderIndex;
+  return Number.isInteger(state.currentPlayer) ? Math.max(0, Math.min(1, state.currentPlayer)) : 0;
+}
+
+function getActiveDeckForPlayer(playerIdx){
+  if(!state.storyDeckMode || !Array.isArray(state.storyPlayerDecks)) return state.deck;
+  return state.storyPlayerDecks[playerIdx] || state.storyPlayerDecks[0] || [];
+}
+
+function getVisibleDeckCount(playerIdx = getStoryEmbedHumanPlayerIndex()){
+  return getActiveDeckForPlayer(playerIdx).length;
+}
+
+function getVisibleDiscardCount(playerIdx = getStoryEmbedHumanPlayerIndex()){
+  if(!state.storyDeckMode) return state.discard.length;
+  return state.discard.filter(card => card && card.storyDeckOwner === playerIdx).length;
 }
 
 function scrollToPlayerPanel(playerIdx, behavior='smooth', align='top'){
@@ -11688,7 +11787,8 @@ function setStoryHudMode(mode){
 }
 
 function showStoryOrientationLockToast(){
-  if(!STORY_EMBED_MODE || !isStoryMobileViewport()) return;
+  const mobilePanoramaActive = !!document.body?.classList.contains('mobile-panorama-mode');
+  if(!STORY_EMBED_MODE || (!isStoryMobileViewport() && !mobilePanoramaActive)) return;
   const toast = document.getElementById('storyOrientationToast');
   if(!toast) return;
   window.clearTimeout(storyOrientationToastTimer);
@@ -11706,7 +11806,7 @@ function activateStoryEmbedSpecialMode(){
   mobilePanoramaRequested = useHorizontal;
   if(useHorizontal){
     requestLandscapeOrientationBestEffort();
-    showStoryOrientationLockToast();
+    window.setTimeout(showStoryOrientationLockToast, 120);
   }
   const nav = document.getElementById('storyEmbedNav');
   if(nav) nav.hidden = true;
@@ -11721,6 +11821,7 @@ function activateStoryEmbedSpecialMode(){
 function exitStoryEmbedSpecialMode(options = {}){
   if(!STORY_EMBED_MODE) return;
   document.getElementById('storyOrientationToast')?.classList.remove('show');
+  storyOrientationToastShownForMode = false;
   setStoryHudMode('scroll');
   desktopHudMode = 'expanded';
   mobilePanoramaRequested = false;
@@ -12286,6 +12387,8 @@ function newGame(){
   state.figureBurstPromptPlayer = null;
   state.figureBurstPromptActive = false;
   state.storyMissionProgress = {};
+  state.storyDeckMode = false;
+  state.storyPlayerDecks = null;
   state.players = initPlayers();
   academyApplyOfflineBadges(state.players);
   if(_ol.active){
@@ -12296,10 +12399,11 @@ function newGame(){
     if(state.players[1]) state.players[1].name = onlineNames[1];
   }
   applyStoryMissionPlayerSetup();
+  const storyDecksActive = setupStoryIndividualDecks();
 
   for(let r=0;r<5;r++){
     state.players.forEach((p, idx) => {
-      const c = drawFromDeck();
+      const c = drawFromDeck({ playerIdx: idx });
       if(c) receiveDrawnCard(p, c);
     });
   }
@@ -12307,6 +12411,7 @@ function newGame(){
   state.phase = 'Montaje';
   state.turnCount = 1;
   log('🆕 Nueva partida iniciada.');
+  if(storyDecksActive) log(`📜 Deck propio de historia activo: ${state.storyPlayerDecks?.[0]?.length || 0} cartas restantes tras el reparto.`);
   addToast('Nueva partida iniciada', 'ok');
   render();
   startIntroMusic(true);
@@ -12319,7 +12424,7 @@ function newGame(){
 
 function decideFirstPlayer(){
   while(true){
-    const c1 = drawFromDeck(), c2 = drawFromDeck();
+    const c1 = drawFromDeck({ playerIdx:0 }), c2 = drawFromDeck({ playerIdx:1 });
     if(!c1 || !c2) return;
     state.discard.push(c1,c2);
     log(`🎲 Iniciativa: J1 ${cardText(c1)} / J2 ${cardText(c2)}.`);
@@ -13393,7 +13498,14 @@ function syncDesktopHudAvailability(){
   document.body.classList.toggle('desktop-compact-mode', compactActive);
   document.body.classList.toggle('mobile-panorama-mode', mobilePanoramaActive);
   document.body.classList.toggle('compact-tutorial-popup-active', mobilePanoramaActive && (state.tutorial || tutorialSystem.enabled));
-  if(!mobilePanoramaActive) setCompactMobileDrawer('');
+  if(mobilePanoramaActive && STORY_EMBED_MODE && !storyOrientationToastShownForMode){
+    storyOrientationToastShownForMode = true;
+    window.setTimeout(showStoryOrientationLockToast, 160);
+  }
+  if(!mobilePanoramaActive){
+    storyOrientationToastShownForMode = false;
+    setCompactMobileDrawer('');
+  }
   const topToggleBtn = document.getElementById('desktopCompactToggleTopBtn');
   if(topToggleBtn){
     topToggleBtn.hidden = !desktopAvailable;
@@ -13921,6 +14033,12 @@ function handleCompactHandDragMove(event){
     ghost.classList.remove('selected', 'pending', 'compact-draft-origin');
     ghost.style.width = `${rect.width}px`;
     ghost.style.height = `${rect.height}px`;
+    ghost.style.left = `${event.clientX}px`;
+    ghost.style.top = `${event.clientY}px`;
+    ghost.style.zIndex = '10090';
+    ghost.style.opacity = '0.98';
+    ghost.style.visibility = 'visible';
+    ghost.style.pointerEvents = 'none';
     document.body.appendChild(ghost);
     compactPointerDragState.ghost = ghost;
   }
@@ -14486,17 +14604,17 @@ function renderDesktopCompactHud(){
   const compactHandOwner = document.getElementById('compactHandOwner');
   if(compactHandOwner) compactHandOwner.textContent = player.name;
   const compactDeckCount = document.getElementById('compactDeckCount');
-  if(compactDeckCount) compactDeckCount.textContent = String(state.deck.length);
+  if(compactDeckCount) compactDeckCount.textContent = String(getVisibleDeckCount());
   const compactDiscardCount = document.getElementById('compactDiscardCount');
-  if(compactDiscardCount) compactDiscardCount.textContent = String(state.discard.length);
+  if(compactDiscardCount) compactDiscardCount.textContent = String(getVisibleDiscardCount());
   const compactCapacityText = document.getElementById('compactCapacityText');
   if(compactCapacityText) compactCapacityText.textContent = getCompactHandMetricText(player, playerIdx);
   const compactMobileHandOwner = document.getElementById('compactMobileHandOwner');
   if(compactMobileHandOwner) compactMobileHandOwner.textContent = player.name;
   const compactMobileDeckCount = document.getElementById('compactMobileDeckCount');
-  if(compactMobileDeckCount) compactMobileDeckCount.textContent = String(state.deck.length);
+  if(compactMobileDeckCount) compactMobileDeckCount.textContent = String(getVisibleDeckCount());
   const compactMobileDiscardCount = document.getElementById('compactMobileDiscardCount');
-  if(compactMobileDiscardCount) compactMobileDiscardCount.textContent = String(state.discard.length);
+  if(compactMobileDiscardCount) compactMobileDiscardCount.textContent = String(getVisibleDiscardCount());
   const compactMobileCapacityText = document.getElementById('compactMobileCapacityText');
   if(compactMobileCapacityText){
     const handCount = player.hand?.length || 0;
@@ -17242,8 +17360,8 @@ function render(){
     : state.pendingDefense
       ? 'Esquiva con ♦'
       : state.phase;
-  document.getElementById('deckCount').textContent = state.deck.length;
-  document.getElementById('discardCount').textContent = state.discard.length;
+  document.getElementById('deckCount').textContent = getVisibleDeckCount();
+  document.getElementById('discardCount').textContent = getVisibleDiscardCount();
 
   // Detach tutorial panel before innerHTML wipe (preserves its state/listeners)
   const _tutPanel = document.getElementById('tutorialPanel');
@@ -17512,8 +17630,9 @@ function buildSideTowers(){
   left.innerHTML = '';
   right.innerHTML = '';
   const total = 15;
-  const deckPct = Math.max(1, Math.round((state.deck.length / 52) * total));
-  const discardPct = Math.max(1, Math.round((Math.min(state.discard.length,52) / 52) * total));
+  const visibleDeckTotal = state.storyDeckMode ? Math.max(52, 52 + STORY_EXTRA_DECK_CARDS.length) : 52;
+  const deckPct = Math.max(1, Math.round((getVisibleDeckCount() / visibleDeckTotal) * total));
+  const discardPct = Math.max(1, Math.round((Math.min(getVisibleDiscardCount(), visibleDeckTotal) / visibleDeckTotal) * total));
   for(let i=0;i<total;i++){
     const barL = document.createElement('div');
     barL.className = 'tower-bar';
