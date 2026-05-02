@@ -1724,8 +1724,7 @@
       inset:0;
       z-index:8;
       display:block;
-      overflow:auto;
-      -webkit-overflow-scrolling:touch;
+      overflow:hidden;
       overscroll-behavior:contain;
       opacity:0;
       pointer-events:none;
@@ -1758,9 +1757,16 @@
       display:grid;
       gap:18px;
       width:min(1220px, calc(100% - 32px));
-      min-height:100svh;
+      height:100svh;
+      min-height:0;
       margin:0 auto;
       padding:clamp(18px, 3vw, 34px) 0 max(28px, env(safe-area-inset-bottom));
+      overflow-y:auto;
+      overflow-x:hidden;
+      overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;
+      touch-action:pan-y;
+      scrollbar-gutter:stable;
     }
     .market-header{
       display:flex;
@@ -5819,15 +5825,71 @@
       return storySceneCard;
     }
 
-    function scrollStorySceneDialogBy(deltaY) {
+    function getStoryScrollableMax(element) {
+      if (!element) return 0;
+      return Math.max(0, element.scrollHeight - element.clientHeight);
+    }
+
+    function canScrollStoryElement(element, deltaY) {
+      const maxScroll = getStoryScrollableMax(element);
+      if (maxScroll <= 1) return false;
+      if (deltaY > 0) return element.scrollTop < maxScroll - 1;
+      if (deltaY < 0) return element.scrollTop > 1;
+      return true;
+    }
+
+    function scrollStoryElementBy(element, deltaY) {
+      if (!element || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
+      const maxScroll = getStoryScrollableMax(element);
+      if (maxScroll <= 1) return false;
+      const nextScrollTop = Math.max(0, Math.min(maxScroll, element.scrollTop + deltaY));
+      if (Math.abs(nextScrollTop - element.scrollTop) < 0.1) return false;
+      element.scrollTop = nextScrollTop;
+      return true;
+    }
+
+    function getStoryEventPathElements(event, root) {
+      const path = typeof event?.composedPath === 'function' ? event.composedPath() : [];
+      return path.filter((node) => (
+        node instanceof HTMLElement
+        && (!root || node === root || root.contains(node))
+      ));
+    }
+
+    function uniqueStoryScrollCandidates(candidates) {
+      const seen = new Set();
+      return candidates.filter((candidate) => {
+        if (!candidate || seen.has(candidate)) return false;
+        seen.add(candidate);
+        return getStoryScrollableMax(candidate) > 1;
+      });
+    }
+
+    function scrollFirstAvailableStorySurface(candidates, deltaY) {
+      const scrollables = uniqueStoryScrollCandidates(candidates);
+      const directionalCandidate = scrollables.find((candidate) => canScrollStoryElement(candidate, deltaY));
+      if (directionalCandidate) return scrollStoryElementBy(directionalCandidate, deltaY);
+      return scrollables.some((candidate) => scrollStoryElementBy(candidate, deltaY));
+    }
+
+    function getStorySceneWheelCandidates(event) {
+      return [
+        ...getStoryEventPathElements(event, storySceneStage),
+        storySceneScroll,
+        storySceneCard,
+        storySceneStage
+      ];
+    }
+
+    function scrollStorySceneDialogBy(deltaY, event = null) {
       const scroller = getStorySceneScrollContainer();
       if (!scroller || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
-      const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
-      if (maxScroll <= 1) return false;
-      const nextScrollTop = Math.max(0, Math.min(maxScroll, scroller.scrollTop + deltaY));
-      if (Math.abs(nextScrollTop - scroller.scrollTop) < 0.1) return false;
-      scroller.scrollTop = nextScrollTop;
-      return true;
+      return scrollFirstAvailableStorySurface(getStorySceneWheelCandidates(event), deltaY);
+    }
+
+    function isStorySceneWheelReady() {
+      if (!storySceneStage || !storySceneCard) return false;
+      return !storySceneStage.hidden && storySceneStage.classList.contains('active') && !sceneAmbientMode;
     }
 
     function isCoarseLandscapeStoryScene() {
@@ -5843,11 +5905,12 @@
     }
 
     function isWheelInsideActiveStoryScene(event) {
-      if (!storySceneStage || !getStorySceneScrollContainer()) return false;
+      if (!isStorySceneWheelReady()) return false;
       const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
       if (path.includes(storySceneStage)) return true;
       const target = event.target instanceof Element ? event.target : null;
-      return !!target && storySceneStage.contains(target);
+      if (!target) return true;
+      return storySceneStage.contains(target) || target === document.body || target === document.documentElement;
     }
 
     function normalizeStorySceneWheelDelta(event) {
@@ -5859,7 +5922,7 @@
 
     function handleStorySceneWheel(event) {
       if (event.ctrlKey || !isWheelInsideActiveStoryScene(event)) return;
-      if (!scrollStorySceneDialogBy(normalizeStorySceneWheelDelta(event))) return;
+      if (!scrollStorySceneDialogBy(normalizeStorySceneWheelDelta(event), event)) return;
       event.preventDefault();
       event.stopPropagation();
     }
@@ -6003,27 +6066,39 @@
 
     function getStoryMarketScrollContainer() {
       if (!storyMarketStage || !storyMarketShell) return null;
-      if (storyMarketStage.hidden || !storyMarketStage.classList.contains('active')) return null;
+      if (!isStoryMarketWheelReady()) return null;
       return storyMarketShell;
     }
 
-    function scrollStoryMarketBy(deltaY) {
-      const scroller = getStoryMarketScrollContainer();
-      if (!scroller || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
-      const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
-      if (maxScroll <= 1) return false;
-      const nextScrollTop = Math.max(0, Math.min(maxScroll, scroller.scrollTop + deltaY));
-      if (Math.abs(nextScrollTop - scroller.scrollTop) < 0.1) return false;
-      scroller.scrollTop = nextScrollTop;
-      return true;
+    function isStoryMarketWheelReady() {
+      return !!storyMarketStage && !storyMarketStage.hidden && storyMarketStage.classList.contains('active');
+    }
+
+    function getStoryMarketWheelCandidates(event) {
+      return [
+        ...getStoryEventPathElements(event, storyMarketStage),
+        storyMarketShell,
+        storyMarketStage
+      ];
+    }
+
+    function scrollStoryMarketBy(deltaY, event = null) {
+      if (!isStoryMarketWheelReady() || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
+      return scrollFirstAvailableStorySurface(getStoryMarketWheelCandidates(event), deltaY);
+    }
+
+    function scrollStoryMarketContainerToTop() {
+      if (storyMarketShell) storyMarketShell.scrollTop = 0;
+      if (storyMarketStage) storyMarketStage.scrollTop = 0;
     }
 
     function isWheelInsideActiveStoryMarket(event) {
-      if (!storyMarketStage || !getStoryMarketScrollContainer()) return false;
+      if (!isStoryMarketWheelReady()) return false;
       const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
       if (path.includes(storyMarketStage)) return true;
       const target = event.target instanceof Element ? event.target : null;
-      return !!target && storyMarketStage.contains(target);
+      if (!target) return true;
+      return storyMarketStage.contains(target) || target === document.body || target === document.documentElement;
     }
 
     function normalizeStoryMarketWheelDelta(event) {
@@ -6035,7 +6110,7 @@
 
     function handleStoryMarketWheel(event) {
       if (event.ctrlKey || !isWheelInsideActiveStoryMarket(event)) return;
-      if (!scrollStoryMarketBy(normalizeStoryMarketWheelDelta(event))) return;
+      if (!scrollStoryMarketBy(normalizeStoryMarketWheelDelta(event), event)) return;
       event.preventDefault();
       event.stopPropagation();
     }
@@ -6288,7 +6363,7 @@
       renderStoryMarket();
       if (!storyMarketStage) return;
       storyMarketStage.hidden = false;
-      if (storyMarketShell) storyMarketShell.scrollTop = 0;
+      scrollStoryMarketContainerToTop();
       requestAnimationFrame(() => storyMarketStage.classList.add('active'));
     }
 
@@ -7317,7 +7392,7 @@
       const nextY = event.touches[0].clientY;
       const deltaY = storySceneTouchY - nextY;
       storySceneTouchY = nextY;
-      if (!scrollStorySceneDialogBy(deltaY)) return;
+      if (!scrollStorySceneDialogBy(deltaY, event)) return;
       event.preventDefault();
       event.stopPropagation();
     }, { passive: false });
@@ -7329,6 +7404,7 @@
     }, { passive: true });
     if (storyMarketStage) {
       storyMarketStage.addEventListener('wheel', handleStoryMarketWheel, { passive: false, capture: true });
+      document.addEventListener('wheel', handleStoryMarketWheel, { passive: false, capture: true });
       storyMarketStage.addEventListener('touchstart', (event) => {
         storyMarketTouchY = getStoryMarketScrollContainer() && event.touches.length === 1 ? event.touches[0].clientY : null;
       }, { passive: true, capture: true });
@@ -7337,7 +7413,7 @@
         const nextY = event.touches[0].clientY;
         const deltaY = storyMarketTouchY - nextY;
         storyMarketTouchY = nextY;
-        if (!scrollStoryMarketBy(deltaY)) return;
+        if (!scrollStoryMarketBy(deltaY, event)) return;
         event.preventDefault();
         event.stopPropagation();
       }, { passive: false, capture: true });
