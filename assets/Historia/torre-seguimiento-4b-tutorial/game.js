@@ -36,6 +36,8 @@ const chapterMusic = {
   started: false,
 };
 
+const radioOpenSoundSrc = "../sfx/walkie_roger_beep_cc0.mp3";
+
 const defaultChapterState = {
   chapterFlowVersion,
   exteriorDroneDefeated: false,
@@ -329,6 +331,10 @@ function playAudioClip(source, volume = 0.5, duration = 2.4) {
   }
 }
 
+function playRadioOpenSound() {
+  playAudioClip(radioOpenSoundSrc, 0.34, 0.95);
+}
+
 function startChapterMusic() {
   if (storyAudioMode === "external") {
     return;
@@ -374,6 +380,7 @@ function showNextRadio() {
 
   radioState.text = next;
   radioState.timer = clamp(9 + next.length * 0.07, 10.4, 19.6);
+  playRadioOpenSound();
 }
 
 function updateRadio(dt) {
@@ -541,47 +548,98 @@ const keyMap = {
   D: "right",
 };
 
-window.addEventListener("keydown", (event) => {
+function isStoryInteractKey(key) {
+  return key === "e" || key === "E" || key === "Enter" || key === " ";
+}
+
+function setMovementKey(key, isPressed) {
+  const action = keyMap[key];
+  if (!action) {
+    return false;
+  }
+
+  input[action] = isPressed;
+  return true;
+}
+
+function handleStoryExplorationKeyDown(key, options = {}) {
   startChapterMusic();
 
   if (xavorPresentation.active) {
-    if (
-      event.key === "e" ||
-      event.key === "E" ||
-      event.key === "Enter" ||
-      event.key === " " ||
-      event.key === "Escape"
-    ) {
+    if (isStoryInteractKey(key) || key === "Escape") {
       advanceXavorPresentation();
     }
-    event.preventDefault();
+    return true;
+  }
+
+  if (isStoryInteractKey(key)) {
+    if (!options.repeat) {
+      input.interactQueued = true;
+    }
+    return true;
+  }
+
+  return setMovementKey(key, true);
+}
+
+function handleStoryExplorationKeyUp(key) {
+  return setMovementKey(key, false);
+}
+
+window.addEventListener("keydown", (event) => {
+  if (!handleStoryExplorationKeyDown(event.key, { repeat: event.repeat })) {
     return;
   }
 
-  if (event.key === "e" || event.key === "E" || event.key === "Enter") {
-    input.interactQueued = true;
-    event.preventDefault();
-    return;
-  }
-
-  const action = keyMap[event.key];
-  if (!action) {
-    return;
-  }
-
-  input[action] = true;
   event.preventDefault();
 });
 
 window.addEventListener("keyup", (event) => {
-  const action = keyMap[event.key];
-  if (!action) {
+  if (!handleStoryExplorationKeyUp(event.key)) {
     return;
   }
 
-  input[action] = false;
   event.preventDefault();
 });
+
+window.addEventListener("message", (event) => {
+  const data = event.data;
+  if (!data || data.type !== "pocobot-story-exploration-key") {
+    return;
+  }
+
+  if (data.phase === "up") {
+    handleStoryExplorationKeyUp(data.key);
+    return;
+  }
+
+  handleStoryExplorationKeyDown(data.key, { repeat: false });
+});
+
+function bindExplorationControls() {
+  document.querySelectorAll("[data-control-key]").forEach((button) => {
+    const key = button.dataset.controlKey;
+    if (!key) return;
+    const setPressed = (pressed) => button.classList.toggle("is-pressed", pressed);
+    const release = (event) => {
+      if (event) event.preventDefault();
+      setPressed(false);
+      if (key !== "e") handleStoryExplorationKeyUp(key);
+    };
+    button.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      button.setPointerCapture?.(event.pointerId);
+      setPressed(true);
+      handleStoryExplorationKeyDown(key, { repeat: false });
+    }, { passive: false });
+    button.addEventListener("pointerup", release, { passive: false });
+    button.addEventListener("pointercancel", release, { passive: false });
+    button.addEventListener("pointerleave", release, { passive: false });
+    button.addEventListener("contextmenu", (event) => event.preventDefault());
+  });
+}
+
+bindExplorationControls();
 
 storyMapButton?.addEventListener("click", () => {
   startChapterMusic();
@@ -2159,6 +2217,58 @@ function drawImageContain(image, x, y, width, height) {
   ctx.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
 }
 
+function isXavorKnownOnRadio() {
+  return !!chapterState.xavorIntroduced;
+}
+
+function getRadioSpeakerLabel() {
+  return isXavorKnownOnRadio() ? "XAVOR GLITCH" : "X4V-0R // 4B-CRYPT";
+}
+
+function getRadioDisplayText() {
+  if (isXavorKnownOnRadio()) return radioState.text;
+  return radioState.text.replace(/^Xavor(?:\s+Glitch)?:\s*/i, "Voz cifrada: ");
+}
+
+function drawRadioPortrait(x, y, width, height) {
+  const known = isXavorKnownOnRadio();
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, height, 14);
+  ctx.clip();
+  drawImageCover(assets.xavorPortrait, x, y, width, height);
+  if (!known) {
+    ctx.globalCompositeOperation = "source-atop";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.78)";
+    ctx.fillRect(x, y, width, height);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = "rgba(132, 234, 255, 0.36)";
+    ctx.lineWidth = 1;
+    for (let line = y + 8; line < y + height; line += 9) {
+      ctx.beginPath();
+      ctx.moveTo(x, line);
+      ctx.lineTo(x + width, line + 2);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function drawRadioInterference(x, y, width, height) {
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = "#84eaff";
+  for (let line = y + 8; line < y + height; line += 5) {
+    ctx.fillRect(x + 2, line, width - 4, 1);
+  }
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = "#ffd55f";
+  const pulse = Math.sin(performance.now() * 0.018) * 8;
+  ctx.fillRect(x + 20 + pulse, y + 6, Math.max(24, width * 0.16), 1);
+  ctx.fillRect(x + width * 0.62 - pulse, y + height - 10, Math.max(18, width * 0.12), 1);
+  ctx.restore();
+}
+
 function drawXavorPresentationOverlay() {
   if (!xavorPresentation.active) {
     return;
@@ -2263,21 +2373,17 @@ function drawRadioOverlay() {
   ctx.roundRect(x, y, width, height, 18);
   ctx.fill();
   ctx.stroke();
+  drawRadioInterference(x, y, width, height);
 
-  ctx.save();
-  ctx.beginPath();
-  ctx.roundRect(x + 14, y + 14, 82, 82, 14);
-  ctx.clip();
-  drawImageCover(assets.xavorPortrait, x + 14, y + 14, 82, 82);
-  ctx.restore();
+  drawRadioPortrait(x + 14, y + 14, 82, 82);
 
   ctx.fillStyle = "#84eaff";
   ctx.font = "700 13px Trebuchet MS";
-  ctx.fillText("RADIO // XAVOR GLITCH", x + 112, y + 30);
+  ctx.fillText(`RADIO // ${getRadioSpeakerLabel()}`, x + 112, y + 30);
 
   ctx.fillStyle = "#eef8ff";
   ctx.font = "15px Trebuchet MS";
-  drawWrappedText(radioState.text, x + 112, y + 56, width - 132, 20, 3);
+  drawWrappedText(getRadioDisplayText(), x + 112, y + 56, width - 132, 20, 3);
 
   ctx.fillStyle = "rgba(255, 213, 95, 0.9)";
   ctx.font = "12px Trebuchet MS";

@@ -58,6 +58,18 @@
         preload="auto"
         playsinline
       ></audio>
+      <nav class="exploration-controls" aria-label="Controles de exploración">
+        <div class="control-pad" aria-label="Movimiento WASD">
+          <button class="control-button control-up" type="button" data-control-key="w">W</button>
+          <button class="control-button control-left" type="button" data-control-key="a">A</button>
+          <button class="control-button control-down" type="button" data-control-key="s">S</button>
+          <button class="control-button control-right" type="button" data-control-key="d">D</button>
+        </div>
+        <button class="control-button control-interact" type="button" data-control-key="e">
+          <span>E</span>
+          <small>Seleccionar</small>
+        </button>
+      </nav>
     </main>
 
     <script src="./game.js"></script>

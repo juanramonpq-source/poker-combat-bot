@@ -1517,7 +1517,7 @@
       margin-top:0;
       padding-right:8px;
       margin-right:-4px;
-      overflow-y:visible;
+      overflow-y:auto;
       overflow-x:hidden;
       overscroll-behavior:contain;
       -webkit-overflow-scrolling:touch;
@@ -6316,7 +6316,10 @@
     function scrollStorySceneDialogBy(deltaY, event = null) {
       const scroller = getStorySceneScrollContainer();
       if (!scroller || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
-      return scrollFirstAvailableStorySurface(getStorySceneWheelCandidates(event), deltaY);
+      return scrollStoryElementBy(storySceneScroll, deltaY)
+        || scrollStoryElementBy(storySceneCard, deltaY)
+        || scrollStoryElementBy(storySceneStage, deltaY)
+        || scrollFirstAvailableStorySurface(getStorySceneWheelCandidates(event), deltaY);
     }
 
     function isStorySceneWheelReady() {
@@ -6371,8 +6374,9 @@
       if (event.ctrlKey || !isWheelInsideActiveStoryScene(event)) return;
       const deltaY = normalizeStorySceneWheelDelta(event);
       if (!Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return;
-      if (!markStoryWheelEventHandled(event)) return;
+      if (handledStoryWheelEvents.has(event)) return;
       if (!scrollStorySceneDialogBy(deltaY, event)) return;
+      if (!markStoryWheelEventHandled(event)) return;
       event.preventDefault();
       event.stopPropagation();
       if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
@@ -6538,7 +6542,9 @@
 
     function scrollStoryMarketBy(deltaY, event = null) {
       if (!isStoryMarketWheelReady() || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
-      return scrollFirstAvailableStorySurface(getStoryMarketWheelCandidates(event), deltaY);
+      return scrollStoryElementBy(storyMarketShell, deltaY)
+        || scrollStoryElementBy(storyMarketStage, deltaY)
+        || scrollFirstAvailableStorySurface(getStoryMarketWheelCandidates(event), deltaY);
     }
 
     function scrollStoryMarketContainerToTop() {
@@ -6563,8 +6569,9 @@
       if (event.ctrlKey || !isWheelInsideActiveStoryMarket(event)) return;
       const deltaY = normalizeStoryMarketWheelDelta(event);
       if (!Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return;
-      if (!markStoryWheelEventHandled(event)) return;
+      if (handledStoryWheelEvents.has(event)) return;
       if (!scrollStoryMarketBy(deltaY, event)) return;
+      if (!markStoryWheelEventHandled(event)) return;
       event.preventDefault();
       event.stopPropagation();
       if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
@@ -7096,6 +7103,10 @@
       const mission = storyMissionScripts[nodeId];
       const localNode = storyDraftNodes[mission?.storyNodeId || nodeId];
       if (!localNode || !mission) return;
+      if (nodeId === 'torre') {
+        openStoryTowerScene('exterior');
+        return;
+      }
       activeMissionNodeId = nodeId;
       rememberStoryWorkspace(true);
       rememberActiveStoryMission(nodeId);
@@ -7103,52 +7114,7 @@
       saveStoryProgress(`mission-open-${nodeId}`);
       syncStoryMissionBrief(nodeId, localNode, mission);
 
-      if (isStoryMissionMobileViewport() && nodeId !== 'torre') {
-        openStoryMissionStandalone(nodeId);
-        return;
-      }
-
-      const missionAudioMode = mission.audioMode || 'external';
-      const missionUrl = buildStoryMissionUrl(nodeId, {
-        audioMode: missionAudioMode,
-        showInnerBrief: !!mission.showInnerBriefInFrame
-      });
-      const navigateStandalone = () => {
-        window.location.href = buildStoryMissionUrl(nodeId, { standalone: true, showInnerBrief: true });
-      };
-      if (missionAudioMode === 'internal') {
-        pauseMapMusic();
-      }
-
-      if (!storyMissionFrame || !storyMissionStage) {
-        navigateStandalone();
-        return;
-      }
-
-      const launchMissionFrame = () => {
-        storyMissionFrame.src = 'about:blank';
-        storyMissionStage.hidden = false;
-        storyMissionStage.classList.remove('mission-brief-expanded');
-        syncStoryMissionMobileFocus();
-        requestAnimationFrame(() => {
-          storyMissionFrame.src = missionUrl;
-          storyMissionStage.classList.add('active');
-          syncStoryMissionMobileFocus();
-        });
-        window.setTimeout(() => {
-          if (storyTransitionVeil) storyTransitionVeil.classList.remove('active', 'mission-spiral');
-          storyTransitionBusy = false;
-        }, 260);
-      };
-
-      if (!storyTransitionVeil || storyTransitionBusy) {
-        launchMissionFrame();
-        return;
-      }
-
-      storyTransitionBusy = true;
-      storyTransitionVeil.classList.add('mission-spiral', 'active');
-      window.setTimeout(launchMissionFrame, 620);
+      openStoryMissionStandalone(nodeId);
     }
 
     function openStoryMissionStandalone(nodeId) {
@@ -7365,10 +7331,11 @@
       requestAnimationFrame(() => {
         storyExplorationFrame.src = targetUrl;
         storyExplorationStage.classList.add('active');
+        storyExplorationFrame.focus?.();
       });
     }
 
-    function buildStoryTowerCombatUrl(payload = {}) {
+    function buildStoryTowerCombatUrl(payload = {}, options = {}) {
       const mission = payload.mission || '';
       const targetUrl = new URL('poker_combat_bot_ONLINE.html', window.location.href);
       targetUrl.searchParams.set('story_mission', mission);
@@ -7377,6 +7344,13 @@
       targetUrl.searchParams.set('story_audio', 'internal');
       targetUrl.searchParams.set('story_brief', 'on');
       targetUrl.searchParams.set('story_tower_return_scene', payload.returnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior');
+      if (options.standalone) {
+        targetUrl.searchParams.set('story_standalone', '1');
+        targetUrl.searchParams.set('story_return', window.location.href);
+      } else {
+        targetUrl.searchParams.delete('story_standalone');
+        targetUrl.searchParams.delete('story_return');
+      }
       if (payload.droneId) targetUrl.searchParams.set('story_tower_drone_id', payload.droneId);
       if (payload.enemyId) targetUrl.searchParams.set('story_tower_enemy_id', payload.enemyId);
       if (payload.rewardId) targetUrl.searchParams.set('story_tower_reward_id', payload.rewardId);
@@ -7390,30 +7364,51 @@
       const mission = payload.mission || '';
       if (!isStoryTowerCombatMission(mission)) return false;
       rememberStoryWorkspace(true);
+      rememberActiveStoryMission('torre');
+      rememberStorySurface({
+        type: 'exploration',
+        nodeId: 'torre',
+        sceneKey: payload.returnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior'
+      });
       syncStoryMissionBrief('torre', storyDraftNodes.torre, storyMissionScripts.torre);
       const launchCombat = () => {
         activeMissionNodeId = 'torre';
-        rememberActiveStoryMission('torre');
-        rememberStorySurface({ type: 'mission', nodeId: 'torre' });
-        if (!storyMissionFrame || !storyMissionStage) {
-          window.location.href = buildStoryTowerCombatUrl(payload);
-          return;
-        }
-        storyMissionStage.hidden = false;
-        storyMissionStage.classList.add('active');
-        syncStoryMissionMobileFocus();
-        storyMissionFrame.src = 'about:blank';
-        requestAnimationFrame(() => {
-          storyMissionFrame.src = buildStoryTowerCombatUrl(payload);
-          syncStoryMissionMobileFocus();
-        });
+        window.location.href = buildStoryTowerCombatUrl(payload, { standalone: true });
       };
-      if (storyExplorationStage && storyExplorationStage.classList.contains('active')) {
-        closeStoryMarketExploration({ applyExitTheme: false, onClosed: launchCombat });
-      } else {
+      if (!storyTransitionVeil || storyTransitionBusy) {
         launchCombat();
+        return true;
       }
+      storyTransitionBusy = true;
+      storyTransitionVeil.classList.add('mission-spiral', 'active');
+      window.setTimeout(launchCombat, 760);
       return true;
+    }
+
+    function isStoryExplorationKeyboardActive() {
+      return !!storyExplorationStage
+        && !!storyExplorationFrame
+        && !storyExplorationStage.hidden
+        && storyExplorationStage.classList.contains('active');
+    }
+
+    function forwardStoryExplorationKey(event, phase) {
+      if (!isStoryExplorationKeyboardActive() || event.metaKey || event.ctrlKey || event.altKey) return;
+      const key = event.key;
+      const code = event.code;
+      const isMovementKey = ['w', 'a', 's', 'd'].includes(String(key).toLowerCase())
+        || ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key);
+      const isInteractKey = key === 'e' || key === 'E' || key === 'Enter' || key === ' ';
+      if (!isMovementKey && !isInteractKey) return;
+      if (phase === 'down' && event.repeat && isInteractKey) return;
+      storyExplorationFrame.contentWindow?.postMessage({
+        type: 'pocobot-story-exploration-key',
+        phase,
+        key,
+        code,
+      }, '*');
+      event.preventDefault();
+      event.stopPropagation();
     }
 
     function readStoryTowerChapterState() {
@@ -8273,6 +8268,8 @@
       if (workspacePanel.classList.contains('active')) return;
       startTitleMusic();
     });
+    window.addEventListener('keydown', (event) => forwardStoryExplorationKey(event, 'down'), { capture: true });
+    window.addEventListener('keyup', (event) => forwardStoryExplorationKey(event, 'up'), { capture: true });
 
     workspacePanel.addEventListener('pointerdown', () => {
       if (!workspacePanel.classList.contains('active') || mapMusicUnlocked) return;

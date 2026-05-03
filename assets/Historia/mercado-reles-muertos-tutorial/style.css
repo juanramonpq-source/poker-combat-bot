@@ -191,3 +191,102 @@ body.story-embed-mode #game {
 body.story-embed-mode .floating-map-button {
   display: none;
 }
+
+.exploration-controls {
+  position: fixed;
+  z-index: 9;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  pointer-events: none;
+  user-select: none;
+}
+
+.control-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  grid-template-rows: repeat(2, 48px);
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(146, 246, 255, 0.2);
+  border-radius: 22px;
+  background: rgba(5, 10, 17, 0.44);
+  backdrop-filter: blur(10px);
+}
+
+.control-button {
+  pointer-events: auto;
+  min-width: 48px;
+  min-height: 48px;
+  border: 1px solid rgba(146, 246, 255, 0.36);
+  border-radius: 16px;
+  color: #eef8ff;
+  background: linear-gradient(180deg, rgba(14, 27, 42, 0.92), rgba(5, 10, 17, 0.84));
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.32),
+    0 0 18px rgba(65, 230, 255, 0.08) inset;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  touch-action: none;
+}
+
+.control-button.is-pressed,
+.control-button:active {
+  color: #06111c;
+  border-color: rgba(255, 213, 95, 0.84);
+  background: linear-gradient(135deg, #92f6ff, #ffd55f);
+}
+
+.control-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.control-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.control-down {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.control-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.control-interact {
+  width: 92px;
+  min-height: 78px;
+  border-radius: 22px;
+  color: #06111c;
+  background: linear-gradient(135deg, #ffd55f, #ff9f5d);
+}
+
+.control-interact span,
+.control-interact small {
+  display: block;
+}
+
+.control-interact small {
+  margin-top: 4px;
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+}
+
+@media (pointer: fine) {
+  .exploration-controls {
+    opacity: 0.78;
+  }
+
+  .exploration-controls:hover {
+    opacity: 1;
+  }
+}

@@ -352,6 +352,35 @@ const keyMap = {
   D: "right",
 };
 
+function isStoryInteractKey(key) {
+  return key === "e" || key === "E" || key === "Enter" || key === " ";
+}
+
+function setMovementKey(key, isPressed) {
+  const action = keyMap[key];
+  if (!action) {
+    return false;
+  }
+
+  input[action] = isPressed;
+  return true;
+}
+
+function handleStoryExplorationKeyDown(key, options = {}) {
+  if (isStoryInteractKey(key)) {
+    if (!options.repeat) {
+      input.interactQueued = true;
+    }
+    return true;
+  }
+
+  return setMovementKey(key, true);
+}
+
+function handleStoryExplorationKeyUp(key) {
+  return setMovementKey(key, false);
+}
+
 function getCanvasScreenPoint(event) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = viewport.width / rect.width;
@@ -400,30 +429,59 @@ function syncHudHelpCursor(event) {
 }
 
 window.addEventListener("keydown", (event) => {
-  if (event.key === "e" || event.key === "E" || event.key === "Enter") {
-    input.interactQueued = true;
-    event.preventDefault();
+  if (!handleStoryExplorationKeyDown(event.key, { repeat: event.repeat })) {
     return;
   }
 
-  const action = keyMap[event.key];
-  if (!action) {
-    return;
-  }
-
-  input[action] = true;
   event.preventDefault();
 });
 
 window.addEventListener("keyup", (event) => {
-  const action = keyMap[event.key];
-  if (!action) {
+  if (!handleStoryExplorationKeyUp(event.key)) {
     return;
   }
 
-  input[action] = false;
   event.preventDefault();
 });
+
+window.addEventListener("message", (event) => {
+  const data = event.data;
+  if (!data || data.type !== "pocobot-story-exploration-key") {
+    return;
+  }
+
+  if (data.phase === "up") {
+    handleStoryExplorationKeyUp(data.key);
+    return;
+  }
+
+  handleStoryExplorationKeyDown(data.key, { repeat: false });
+});
+
+function bindExplorationControls() {
+  document.querySelectorAll("[data-control-key]").forEach((button) => {
+    const key = button.dataset.controlKey;
+    if (!key) return;
+    const setPressed = (pressed) => button.classList.toggle("is-pressed", pressed);
+    const release = (event) => {
+      if (event) event.preventDefault();
+      setPressed(false);
+      if (key !== "e") handleStoryExplorationKeyUp(key);
+    };
+    button.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      button.setPointerCapture?.(event.pointerId);
+      setPressed(true);
+      handleStoryExplorationKeyDown(key, { repeat: false });
+    }, { passive: false });
+    button.addEventListener("pointerup", release, { passive: false });
+    button.addEventListener("pointercancel", release, { passive: false });
+    button.addEventListener("pointerleave", release, { passive: false });
+    button.addEventListener("contextmenu", (event) => event.preventDefault());
+  });
+}
+
+bindExplorationControls();
 
 storyMapButton?.addEventListener("click", () => {
   setInteractionMessage("Volviendo al mapa de la Ruta Ceniza...", 1.4);

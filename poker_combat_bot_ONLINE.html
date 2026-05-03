@@ -12199,8 +12199,18 @@ function returnToStoryMap() {
   }else if(isStoryTowerCombatMission(mission)){
     try{
       sessionStorage.setItem(STORY_WORKSPACE_SESSION_KEY, '1');
-      sessionStorage.setItem(STORY_ACTIVE_MISSION_SESSION_KEY, 'torre');
-      sessionStorage.setItem(STORY_ACTIVE_SURFACE_SESSION_KEY, JSON.stringify({ type: 'mission', nodeId: 'torre' }));
+      sessionStorage.removeItem(STORY_ACTIVE_MISSION_SESSION_KEY);
+      sessionStorage.setItem(STORY_ACTIVE_SURFACE_SESSION_KEY, JSON.stringify({
+        type: 'exploration',
+        nodeId: 'torre',
+        sceneKey: STORY_TOWER_RETURN_SCENE || 'exterior'
+      }));
+    }catch(_err){}
+  }else{
+    try{
+      sessionStorage.setItem(STORY_WORKSPACE_SESSION_KEY, '1');
+      sessionStorage.removeItem(STORY_ACTIVE_MISSION_SESSION_KEY);
+      sessionStorage.removeItem(STORY_ACTIVE_SURFACE_SESSION_KEY);
     }catch(_err){}
   }
   try {
