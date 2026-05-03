@@ -10308,6 +10308,30 @@ function autoStartStoryMissionIfRequested(){
         scheduleStoryEmbedNavigationSetup();
       }, 260);
       break;
+    case 'tower_drone_hearts':
+    case 'tower_drone_spades':
+    case 'tower_drone_clubs':
+    case 'tower_interior_drone':
+    case 'tower_control_guard':
+    case 'tower_argos_hack': {
+      const profile = getStoryTowerCombatProfile(STORY_MISSION_BOOT);
+      storyMissionBriefCollapsed = false;
+      primeOfflineMode('single', STORY_MISSION_BOOT === 'tower_argos_hack' ? 'normal' : 'easy');
+      newGame();
+      clearSinglePlayerAiTimer();
+      setupStoryTowerCombatScenario(STORY_MISSION_BOOT);
+      render();
+      hideIntroScreen();
+      scheduleStoryEmbedNavigationSetup();
+      addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');
+      log(`📜 Mision historia Torre 4B: ${profile?.intro || 'combate especial'}`);
+      window.setTimeout(() => {
+        scrollToPlayerPanel(0, 'smooth');
+        notifySelection(profile?.intro || 'Objetivo: vence y vuelve a la Torre 4B.');
+        scheduleStoryEmbedNavigationSetup();
+      }, 260);
+      break;
+    }
     default:
       break;
   }
@@ -10342,7 +10366,230 @@ function applyStoryMissionPlayerSetup(){
   }else if(state.storyMission === 'mercado_sparring'){
     if(state.players[0]) state.players[0].name = 'Piloto';
     if(state.players[1]) state.players[1].name = 'Viajero';
+  }else if(isStoryTowerCombatMission(state.storyMission)){
+    if(state.players[0]) state.players[0].name = 'Piloto';
+    if(state.players[1]) state.players[1].name = getStoryTowerCombatProfile(state.storyMission)?.enemyName || 'Argos';
   }
+}
+
+function isStoryTowerCombatMission(mission = state.storyMission || STORY_MISSION_BOOT){
+  return typeof mission === 'string' && mission.startsWith('tower_');
+}
+
+const STORY_TOWER_COMBAT_PROFILES = {
+  tower_drone_hearts: {
+    enemyName: 'Dron de corazones',
+    title: 'Dron de plaza',
+    suit: 'hearts',
+    suitLabel: 'corazones',
+    rank: '7',
+    enemyId: 'argos-perimeter-drone-plaza',
+    intro: 'Combate temático de Torre 4B: este dron solo conserva una carta de corazones. Si cae, no tiene forma de recuperar ese palo.'
+  },
+  tower_drone_spades: {
+    enemyName: 'Dron de picas',
+    title: 'Dron de rele',
+    suit: 'spades',
+    suitLabel: 'picas',
+    rank: '7',
+    enemyId: 'argos-perimeter-drone-relay',
+    intro: 'Combate temático de Torre 4B: este dron solo conserva una carta de picas. Argos lo diseñó para morder una vez y quedarse sin filo.'
+  },
+  tower_drone_clubs: {
+    enemyName: 'Dron de treboles',
+    title: 'Dron de antena',
+    suit: 'clubs',
+    suitLabel: 'treboles',
+    rank: '7',
+    enemyId: 'argos-perimeter-drone-north',
+    intro: 'Combate temático de Torre 4B: este dron solo conserva una carta de treboles. Rompe esa armadura y la ronda queda limpia.'
+  },
+  tower_interior_drone: {
+    enemyName: 'Dron interior',
+    title: 'Dron interior',
+    suit: 'diamonds',
+    suitLabel: 'diamantes',
+    rank: '6',
+    enemyId: 'tower-4b-floating-drone',
+    intro: 'Combate opcional de Torre 4B: un dron interior guarda una antigua moneda entre ruido electrico y polvo.'
+  },
+  tower_control_guard: {
+    enemyName: 'Guardia automatico',
+    title: 'Mecha sin cabina',
+    enemyId: 'argos-unmanned-control-guard',
+    intro: 'Combate del modo historia: un mecha de Argos sin humano bloquea el panel. No negocia: ejecuta.'
+  },
+  tower_argos_hack: {
+    enemyName: 'Panel de Argos',
+    title: 'Hackeo final 4B',
+    enemyId: 'argos-control-panel',
+    intro: 'Hackeo de Argos: combustible bloqueado. Consigue el As de picas, usa armadura como energia o remata con proyectiles sueltos antes de que los treboles del panel se apilen.'
+  }
+};
+
+function getStoryTowerCombatProfile(mission = state.storyMission || STORY_MISSION_BOOT){
+  return STORY_TOWER_COMBAT_PROFILES[mission] || null;
+}
+
+function setStoryCardOwner(card, owner){
+  if(card) card.storyDeckOwner = owner;
+  return card;
+}
+
+function takeStoryTowerCard(deck, rank, suit, customId, owner){
+  return setStoryCardOwner(tutorialTakeCard(deck, rank, suit, customId), owner);
+}
+
+function makeStoryTowerStaticCard(id, rank, suit, owner = 1){
+  return { id, rank, suit, value:rankValue(rank), storyDeckOwner:owner };
+}
+
+function buildStoryTowerEnemyDeck(profile, owner = 1){
+  const deck = createDeck({ owner, prefix:`tw${owner}-c` });
+  const blockedSuit = profile?.suit || null;
+  return shuffle(deck.filter((card) => !blockedSuit || card.suit !== blockedSuit));
+}
+
+function setupStoryTowerPlayerBase(player, playerDeck, options = {}){
+  player.name = 'Piloto';
+  player.core.pilot = takeStoryTowerCard(playerDeck, 'K', 'spades', `${options.prefix || 'tower'}-pilot`, 0);
+  player.core.copilot = takeStoryTowerCard(playerDeck, 'J', 'hearts', `${options.prefix || 'tower'}-copilot`, 0);
+  player.core.booster = options.withSpadeBooster
+    ? null
+    : takeStoryTowerCard(playerDeck, 'A', 'diamonds', `${options.prefix || 'tower'}-booster`, 0);
+  player.attack = [
+    takeStoryTowerCard(playerDeck, '10', 'spades', `${options.prefix || 'tower'}-attack-10`, 0),
+    takeStoryTowerCard(playerDeck, '8', 'spades', `${options.prefix || 'tower'}-attack-8`, 0),
+    takeStoryTowerCard(playerDeck, '6', 'spades', `${options.prefix || 'tower'}-attack-6`, 0)
+  ];
+  player.defense = [takeStoryTowerCard(playerDeck, '9', 'hearts', `${options.prefix || 'tower'}-defense`, 0)];
+  player.armor = [
+    takeStoryTowerCard(playerDeck, '9', 'clubs', `${options.prefix || 'tower'}-armor-9`, 0),
+    takeStoryTowerCard(playerDeck, '8', 'clubs', `${options.prefix || 'tower'}-armor-8`, 0)
+  ];
+  player.fuel = options.lockFuel ? [] : [takeStoryTowerCard(playerDeck, '7', 'diamonds', `${options.prefix || 'tower'}-fuel`, 0)];
+  player.hand = options.withSpadeBooster
+    ? [
+        takeStoryTowerCard(playerDeck, 'A', 'spades', `${options.prefix || 'tower'}-hand-as-spades`, 0),
+        takeStoryTowerCard(playerDeck, '4', 'spades', `${options.prefix || 'tower'}-hand-projectile`, 0),
+        takeStoryTowerCard(playerDeck, '6', 'clubs', `${options.prefix || 'tower'}-hand-armor`, 0)
+      ]
+    : [
+        takeStoryTowerCard(playerDeck, '4', 'diamonds', `${options.prefix || 'tower'}-hand-fuel`, 0),
+        takeStoryTowerCard(playerDeck, '5', 'spades', `${options.prefix || 'tower'}-hand-shot`, 0)
+      ];
+}
+
+function setupStoryTowerDroneEnemy(enemy, enemyDeck, profile){
+  enemy.name = profile.enemyName;
+  const safeSuits = ['clubs', 'spades', 'hearts', 'diamonds'].filter((suit) => suit !== profile.suit);
+  const pilotSuit = safeSuits.find((suit) => suit !== 'diamonds') || safeSuits[0] || 'clubs';
+  const copilotSuit = safeSuits.find((suit) => suit !== pilotSuit) || safeSuits[0] || 'diamonds';
+  enemy.core.pilot = makeStoryTowerStaticCard(`${profile.enemyId}-pilot`, 'Q', pilotSuit, 1);
+  enemy.core.copilot = makeStoryTowerStaticCard(`${profile.enemyId}-copilot`, 'J', copilotSuit, 1);
+  enemy.core.booster = null;
+  const themeCard = makeStoryTowerStaticCard(`${profile.enemyId}-${profile.suit}`, profile.rank, profile.suit, 1);
+  enemy.attack = [];
+  enemy.defense = profile.suit === 'clubs' ? [] : [themeCard];
+  enemy.armor = profile.suit === 'clubs' ? [themeCard] : [];
+  enemy.fuel = [];
+  enemy.hand = [];
+}
+
+function setupStoryTowerControlGuardEnemy(enemy, enemyDeck){
+  enemy.name = 'Guardia automatico';
+  enemy.core.pilot = takeStoryTowerCard(enemyDeck, 'Q', 'clubs', 'tower-control-guard-pilot', 1);
+  enemy.core.copilot = takeStoryTowerCard(enemyDeck, 'J', 'diamonds', 'tower-control-guard-copilot', 1);
+  enemy.core.booster = takeStoryTowerCard(enemyDeck, 'A', 'clubs', 'tower-control-guard-booster', 1);
+  enemy.attack = [
+    takeStoryTowerCard(enemyDeck, '5', 'spades', 'tower-control-guard-attack', 1),
+    takeStoryTowerCard(enemyDeck, '3', 'spades', 'tower-control-guard-attack-low', 1)
+  ];
+  enemy.defense = [takeStoryTowerCard(enemyDeck, '5', 'hearts', 'tower-control-guard-defense', 1)];
+  enemy.armor = [takeStoryTowerCard(enemyDeck, '5', 'clubs', 'tower-control-guard-armor', 1)];
+  enemy.fuel = [takeStoryTowerCard(enemyDeck, '3', 'diamonds', 'tower-control-guard-fuel', 1)];
+  enemy.hand = [takeStoryTowerCard(enemyDeck, '2', 'hearts', 'tower-control-guard-hand', 1)];
+}
+
+function setupStoryTowerArgosHackEnemy(enemy){
+  enemy.name = 'Panel de Argos';
+  enemy.core.pilot = makeStoryTowerStaticCard('tower-argos-pilot', 'Q', 'clubs', 1);
+  enemy.core.copilot = makeStoryTowerStaticCard('tower-argos-copilot', 'J', 'diamonds', 1);
+  enemy.core.booster = null;
+  enemy.attack = [];
+  enemy.defense = [
+    makeStoryTowerStaticCard('tower-argos-heart-2', '2', 'hearts', 1),
+    makeStoryTowerStaticCard('tower-argos-heart-5', '5', 'hearts', 1)
+  ];
+  enemy.armor = [
+    makeStoryTowerStaticCard('tower-argos-club-2', '2', 'clubs', 1),
+    makeStoryTowerStaticCard('tower-argos-club-3', '3', 'clubs', 1)
+  ];
+  enemy.fuel = [];
+  enemy.hand = [];
+}
+
+function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
+  const profile = getStoryTowerCombatProfile(mission);
+  if(!profile) return false;
+  const playerDeck = createDeck({ owner:0, prefix:'tw0-c' });
+  let enemyDeck = mission === 'tower_argos_hack'
+    ? ['4','5','6','7','8','9','10'].map(rank => ({ id:`tower-argos-club-${rank}`, rank, suit:'clubs', value:rankValue(rank), storyDeckOwner:1 }))
+    : buildStoryTowerEnemyDeck(profile, 1);
+  const players = initPlayers();
+  const pilot = players[0];
+  const enemy = players[1];
+  setupStoryTowerPlayerBase(pilot, playerDeck, {
+    prefix: mission,
+    lockFuel: mission === 'tower_argos_hack',
+    withSpadeBooster: mission === 'tower_argos_hack'
+  });
+  if(mission === 'tower_argos_hack') setupStoryTowerArgosHackEnemy(enemy);
+  else if(mission === 'tower_control_guard') setupStoryTowerControlGuardEnemy(enemy, enemyDeck);
+  else setupStoryTowerDroneEnemy(enemy, enemyDeck, profile);
+
+  const extraCards = STORY_EXTRA_DECK_CARDS.map((def, index) => makeStoryMarketCard(def, index, 0));
+  state.deck = playerDeck.concat(extraCards);
+  state.storyDeckMode = true;
+  state.storyPlayerDecks = [shuffle(state.deck), shuffle(enemyDeck)];
+  state.deck = state.storyPlayerDecks[0];
+  state.discard = [];
+  state.removed = [];
+  state.players = players;
+  state.currentPlayer = 0;
+  state.turnCount = 2;
+  state.phase = 'Torre 4B';
+  state.tutorial = true;
+  state.projectileUnlocked = true;
+  state.attackMode = false;
+  state.projectileMode = false;
+  state.pendingDefense = null;
+  state.defenseSelectionMode = false;
+  state.selected = [];
+  state.attackReadyPromptPlayer = null;
+  state.attackReadyPromptActive = false;
+  state.postAttackTopFocus = false;
+  state.winner = null;
+  state.storyMission = mission;
+  state.storyMissionAnnounced = false;
+  state.storyMissionProgress = {
+    towerFuelLocked: mission === 'tower_argos_hack',
+    towerReturnScene: STORY_TOWER_RETURN_SCENE || '',
+    towerDroneId: STORY_TOWER_DRONE_ID || '',
+    towerRewardId: STORY_TOWER_REWARD_ID || '',
+    towerSuit: STORY_TOWER_SUIT || profile.suit || ''
+  };
+  state.log = [
+    `📜 ${profile.intro}`,
+    mission === 'tower_argos_hack'
+      ? '⚠️ Hackeo de Argos: el combustible normal no cuenta. Instala el A♠ y quema armadura como energia, o usa proyectiles sueltos.'
+      : '🎯 Combate de Torre 4B: vence y vuelve a la exploracion con una antigua moneda.'
+  ];
+  players.forEach((player, idx) => {
+    setBestFlexTargets(player);
+    syncMilestones(idx);
+  });
+  return true;
 }
 
 function setupStoryPatioDuelScenario(){
@@ -10487,6 +10734,28 @@ function maybeResolveStoryMission(){
 
 function maybeFinalizeStoryMissionAfterWinner(){
   if(!state.winner || state.storyMissionAnnounced || !state.players || state.players.length < 2) return;
+
+  if(isStoryTowerCombatMission(state.storyMission)){
+    const profile = getStoryTowerCombatProfile(state.storyMission);
+    const playerWon = state.winner === state.players[0].name;
+    state.phase = 'Mision';
+    state.storyMissionAnnounced = true;
+    log(playerWon
+      ? `🏁 Torre 4B: ${profile?.title || 'combate'} superado.`
+      : `⚠️ Torre 4B: ${profile?.enemyName || 'Argos'} se impone.`);
+    addToast(playerWon ? 'Torre 4B: combate superado' : 'Torre 4B: combate perdido', playerWon ? 'ok' : 'warn');
+    broadcastStoryMissionOutcome({
+      mission: state.storyMission,
+      success: playerWon,
+      winner: state.winner,
+      towerReturnScene: state.storyMissionProgress?.towerReturnScene || STORY_TOWER_RETURN_SCENE || '',
+      towerDroneId: state.storyMissionProgress?.towerDroneId || STORY_TOWER_DRONE_ID || '',
+      towerRewardId: state.storyMissionProgress?.towerRewardId || STORY_TOWER_REWARD_ID || '',
+      towerSuit: state.storyMissionProgress?.towerSuit || STORY_TOWER_SUIT || '',
+      reward: playerWon ? { coins: state.storyMission === 'tower_argos_hack' ? 0 : 1 } : null
+    });
+    return;
+  }
 
   if(state.storyMission === 'mercado_sparring'){
     const playerWon = state.winner === state.players[0].name;
@@ -11031,6 +11300,7 @@ function ensureAudio(){
 const AUDIO_BGM_1_URI = "assets/audio_01.mp3";
 const AUDIO_BGM_2_URI = "assets/audio_02.mp3";
 const AUDIO_BGM_MENU_URI = "assets/GravitSilence.mp3";
+const STORY_TOWER_FINAL_BGM_URI = "assets/Historia/Silencio de Acero-2.mp3";
 const STORY_AUDIO_PRIORITY_KEY = "pocobot_story_audio_priority";
 const STORY_BOOT_PARAMS = new URLSearchParams(window.location.search);
 const STORY_MISSION_BOOT = STORY_BOOT_PARAMS.get('story_mission') || '';
@@ -11044,6 +11314,11 @@ const STORY_CARRIED_BGM_SRC = STORY_BOOT_PARAMS.get('story_bgm') || '';
 const STORY_CARRIED_BGM_TIME = Number(STORY_BOOT_PARAMS.get('story_bgm_time') || 0) || 0;
 const STORY_CARRIED_BGM_VOLUME = Number(STORY_BOOT_PARAMS.get('story_bgm_volume') || 0.34) || 0.34;
 const STORY_EXTRA_DECK_CARDS_PARAM = STORY_BOOT_PARAMS.get('story_deck_cards') || '';
+const STORY_TOWER_RETURN_SCENE = STORY_BOOT_PARAMS.get('story_tower_return_scene') || '';
+const STORY_TOWER_DRONE_ID = STORY_BOOT_PARAMS.get('story_tower_drone_id') || '';
+const STORY_TOWER_ENEMY_ID = STORY_BOOT_PARAMS.get('story_tower_enemy_id') || '';
+const STORY_TOWER_REWARD_ID = STORY_BOOT_PARAMS.get('story_tower_reward_id') || '';
+const STORY_TOWER_SUIT = STORY_BOOT_PARAMS.get('story_tower_suit') || '';
 const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v1';
 const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
 const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
@@ -11119,6 +11394,8 @@ function playImpactExplosion(heavy=false){
 }
 
 function ensureMusicElements(){
+  const introMusicUri = STORY_MISSION_BOOT === 'tower_argos_hack' ? STORY_TOWER_FINAL_BGM_URI : AUDIO_BGM_1_URI;
+  const battleMusicUri = STORY_MISSION_BOOT === 'tower_argos_hack' ? STORY_TOWER_FINAL_BGM_URI : AUDIO_BGM_2_URI;
   if(!state.bgmMenu){
     state.bgmMenu = new Audio(AUDIO_BGM_MENU_URI);
     state.bgmMenu.loop = true;
@@ -11126,16 +11403,16 @@ function ensureMusicElements(){
     state.bgmMenu.volume = 0.28;
   }
   if(!state.bgm1){
-    state.bgm1 = new Audio(AUDIO_BGM_1_URI);
+    state.bgm1 = new Audio(introMusicUri);
     state.bgm1.loop = true;
     state.bgm1.preload = 'auto';
-    state.bgm1.volume = 0.30;
+    state.bgm1.volume = STORY_MISSION_BOOT === 'tower_argos_hack' ? 0.38 : 0.30;
   }
   if(!state.bgm2){
-    state.bgm2 = new Audio(AUDIO_BGM_2_URI);
+    state.bgm2 = new Audio(battleMusicUri);
     state.bgm2.loop = true;
     state.bgm2.preload = 'auto';
-    state.bgm2.volume = 0.30;
+    state.bgm2.volume = STORY_MISSION_BOOT === 'tower_argos_hack' ? 0.38 : 0.30;
   }
 }
 function ensureStoryCarriedMusic(){
@@ -11328,6 +11605,14 @@ function switchToBattleMusic(){
   }
   ensureMusicElements();
   if(state.firstAttackTriggered) return;
+  if((state.storyMission || STORY_MISSION_BOOT) === 'tower_argos_hack'){
+    state.firstAttackTriggered = true;
+    state.musicPhase = 'intro';
+    pauseMusic(state.bgmMenu, true);
+    pauseMusic(state.bgm2, true);
+    playMusicTrack(state.bgm1, false);
+    return;
+  }
   state.firstAttackTriggered = true;
   state.musicPhase = 'battle';
   pauseMusic(state.bgmMenu, true);
@@ -11770,6 +12055,36 @@ const STORY_MISSION_BRIEFS = {
     kicker: 'Combate del modo historia',
     title: 'Viajero',
     text: 'Sparring especial del Mercado: prueba el deck propio de historia con las cartas compradas. Si pulsas Volver, regresarás al Mercado explorable.'
+  },
+  tower_drone_hearts: {
+    kicker: 'Combate del modo historia',
+    title: 'Torre 4B · Dron de corazones',
+    text: 'Dron temático: solo conserva una carta de corazones y no puede recuperar más corazones. Véncelo para ganar una antigua moneda.'
+  },
+  tower_drone_spades: {
+    kicker: 'Combate del modo historia',
+    title: 'Torre 4B · Dron de picas',
+    text: 'Dron temático: solo conserva una carta de picas y no puede recuperar más picas. Véncelo para ganar una antigua moneda.'
+  },
+  tower_drone_clubs: {
+    kicker: 'Combate del modo historia',
+    title: 'Torre 4B · Dron de tréboles',
+    text: 'Dron temático: solo conserva una carta de tréboles y no puede recuperar más tréboles. Véncelo para ganar una antigua moneda.'
+  },
+  tower_interior_drone: {
+    kicker: 'Combate opcional del modo historia',
+    title: 'Torre 4B · Dron interior',
+    text: 'Combate opcional de exploración. Si lo superas, vuelves al interior bajo con una antigua moneda extra.'
+  },
+  tower_control_guard: {
+    kicker: 'Combate del modo historia',
+    title: 'Torre 4B · Mecha sin cabina',
+    text: 'Un guardia automático bloquea el panel superior. La música de combate usa la rotación habitual del modo offline.'
+  },
+  tower_argos_hack: {
+    kicker: 'Hackeo final del modo historia',
+    title: 'Torre 4B · Panel de Argós',
+    text: 'Argós bloquea el combustible normal. Consigue el A♠ y usa armadura como energía, o remata con proyectiles sueltos. Su salud real son solo 2♥ y 5♥.'
   }
 };
 
@@ -11815,6 +12130,9 @@ function returnToStoryMap() {
         type: 'pocobot-story-mission-cancel',
         mission,
         nodeId: STORY_NODE_BOOT || undefined,
+        towerReturnScene: STORY_TOWER_RETURN_SCENE || undefined,
+        towerDroneId: STORY_TOWER_DRONE_ID || undefined,
+        towerRewardId: STORY_TOWER_REWARD_ID || undefined,
         savedAt: Date.now()
       }, '*');
       return true;
@@ -11827,6 +12145,12 @@ function returnToStoryMap() {
       sessionStorage.removeItem(STORY_ACTIVE_MISSION_SESSION_KEY);
       sessionStorage.setItem(STORY_ACTIVE_SURFACE_SESSION_KEY, JSON.stringify({ type: 'exploration', nodeId: 'mercado' }));
     }catch(_err){}
+  }else if(isStoryTowerCombatMission(mission)){
+    try{
+      sessionStorage.setItem(STORY_WORKSPACE_SESSION_KEY, '1');
+      sessionStorage.setItem(STORY_ACTIVE_MISSION_SESSION_KEY, 'torre');
+      sessionStorage.setItem(STORY_ACTIVE_SURFACE_SESSION_KEY, JSON.stringify({ type: 'mission', nodeId: 'torre' }));
+    }catch(_err){}
   }
   try {
     window.location.href = STORY_RETURN_URL;
@@ -11837,7 +12161,10 @@ function returnToStoryMap() {
 }
 
 function getStoryReturnButtonLabel(){
-  return (state.storyMission || STORY_MISSION_BOOT) === 'mercado_sparring' ? 'Volver al mercado' : 'Volver al mapa';
+  const mission = state.storyMission || STORY_MISSION_BOOT;
+  if(mission === 'mercado_sparring') return 'Volver al mercado';
+  if(isStoryTowerCombatMission(mission)) return 'Volver a Torre 4B';
+  return 'Volver al mapa';
 }
 
 function pulseStoryScrollTarget(targetEl){
@@ -12699,7 +13026,13 @@ function buildCompactModuleReadoutHtml(player){
 }
 function hasDiamondBoosterArmorFuel(player){
   if(!player || !player.core || !player.core.booster) return false;
-  return !!(player.core.booster.rank==='A' && player.core.booster.suit==='diamonds');
+  if(player.core.booster.rank !== 'A') return false;
+  if(player.core.booster.suit === 'diamonds') return true;
+  return state.storyMission === 'tower_argos_hack' && player.core.booster.suit === 'spades';
+}
+function getArmorFuelBoosterLabel(player){
+  if(!hasDiamondBoosterArmorFuel(player)) return '';
+  return state.storyMission === 'tower_argos_hack' && player?.core?.booster?.suit === 'spades' ? 'As♠' : 'As♦';
 }
 function getBuildStatus(player){
   if(!player || !player.core) return { mounted: false, combatReady: false };
@@ -15658,8 +15991,9 @@ function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
 
 function getAttackSelection(){
   const attacker = state.players[state.currentPlayer];
+  const fuelLockedByStory = state.storyMission === 'tower_argos_hack' && state.currentPlayer === 0;
   const armorAsFuelEnabled = hasDiamondBoosterArmorFuel(attacker);
-  const fuel = state.selected.filter(s => s.zone==='fuel');
+  const fuel = fuelLockedByStory ? [] : state.selected.filter(s => s.zone==='fuel');
   const armorFuel = armorAsFuelEnabled ? state.selected.filter(s => s.zone==='armor') : [];
   const fuelCards = [...fuel, ...armorFuel];
   const attackCards = state.selected.filter(s => s.zone==='attack' && isPlayableProjectileCard(s));
@@ -15769,9 +16103,11 @@ function confirmAttack(projectileOnly=false){
     projectileValue = projectile.value;
     mainValue = 0;
   }else{
-    if(sel.fuelCards.length===0) return notifySelection(sel.armorAsFuelEnabled
-      ? 'Selecciona combustible del panel o cartas de armadura para habilitar el ataque.'
-      : 'Selecciona combustible del panel para habilitar el ataque.');
+    if(sel.fuelCards.length===0) return notifySelection(state.storyMission === 'tower_argos_hack' && state.currentPlayer === 0
+      ? 'Argos bloquea el combustible normal. Instala el A♠ y selecciona armadura como energia, o usa proyectiles sueltos.'
+      : (sel.armorAsFuelEnabled
+        ? 'Selecciona combustible del panel o cartas de armadura para habilitar el ataque.'
+        : 'Selecciona combustible del panel para habilitar el ataque.'));
     if(mainValue > sel.limit) return notifySelection(`Has seleccionado ${mainValue} puntos de ataque, pero el combustible solo habilita ${sel.limit}.`);
     if(mainValue===0 && !projectile) return notifySelection('Selecciona picas numéricas para el ataque principal o 1 carta numérica de picas como proyectil.');
   }
@@ -15800,7 +16136,7 @@ function confirmAttack(projectileOnly=false){
     if(sel.armorFuel.length){
       queueFx(`module-box-armor-${attackerIdx}`, 'zone-pulse');
       addToast('Armadura usada como combustible', 'warn');
-      log(`♣ ${attacker.name} consume armadura como combustible por efecto del As♦: ${sel.armorFuel.map(cardText).join(', ')}.`);
+      log(`♣ ${attacker.name} consume armadura como combustible por efecto del ${getArmorFuelBoosterLabel(attacker) || 'As'}: ${sel.armorFuel.map(cardText).join(', ')}.`);
     }
     syncMilestones(attackerIdx);
   }
@@ -16222,7 +16558,7 @@ function createPlayerPanel(player, idx){
                 <div class="cards" id="defense-${idx}"></div>
               </div>
               <div class="${armorBoxClass}" id="module-box-armor-${idx}"${expandedDraftDropAttrs('armor')}>
-                <div class="zone-title"><span>♣ Armadura</span><span class="zone-value">${player.armor.length}/${limits.armor.max}${limits.armor.sources.length ? ' · ' + limits.armor.sources.join('+') : ''}${pilotReq.module==='armor' ? ' · piloto' : ''}${hasDiamondBoosterArmorFuel(player) ? ' · fuel As♦' : ''}</span></div>
+                <div class="zone-title"><span>♣ Armadura</span><span class="zone-value">${player.armor.length}/${limits.armor.max}${limits.armor.sources.length ? ' · ' + limits.armor.sources.join('+') : ''}${pilotReq.module==='armor' ? ' · piloto' : ''}${hasDiamondBoosterArmorFuel(player) ? ` · fuel ${getArmorFuelBoosterLabel(player)}` : ''}</span></div>
                 <div class="cards" id="armor-${idx}"></div>
               </div>
             </div>
@@ -16307,7 +16643,7 @@ function renderAttackConsole(){
   fuelRuleBanner.innerHTML = sel.fuelValue
     ? `Combustible activo: <strong>${sel.fuelValue} × 2 = ${sel.limit}</strong> puntos máximos de ataque con picas.${sel.armorFuel.length ? ` <strong>Incluye armadura:</strong> ${sel.armorFuel.map(cardText).join(', ')}.` : ''}`
     : (sel.armorAsFuelEnabled
-        ? 'Combustible activo: <strong>valor total × 2</strong> = límite de ataque con picas. <strong>As♦ activo:</strong> puedes usar ♣ armadura como combustible, pero no amplía ningún módulo.'
+        ? `Combustible activo: <strong>valor total × 2</strong> = límite de ataque con picas. <strong>${getArmorFuelBoosterLabel(focusPlayer)} activo:</strong> puedes usar ♣ armadura como combustible, pero no amplía ningún módulo.`
         : 'Combustible del panel: <strong>valor total × 2</strong> = límite de ataque con picas.');
   if(!state.projectileUnlocked){
     fuelRuleBanner.innerHTML += ' <strong>Proyectil bloqueado:</strong> se desbloquea cuando el primer mecha queda completamente operativo.';
@@ -16352,7 +16688,7 @@ function renderAttackConsole(){
       ? 'Mecha operativo. Puedes abrir el panel de ataque o disparar un proyectil si tienes picas disponibles.'
       : 'Mecha operativo. El ataque por proyectil acaba de quedar desbloqueado para toda la partida.';
     subHint.textContent = hasDiamondBoosterArmorFuel(focusPlayer)
-      ? 'Recuerda: el combustible seleccionado se multiplica ×2. Con As♦ también puedes gastar ♣ armadura como combustible.'
+      ? `Recuerda: el combustible seleccionado se multiplica ×2. Con ${getArmorFuelBoosterLabel(focusPlayer)} también puedes gastar ♣ armadura como combustible.`
       : 'Recuerda: el combustible del panel habilita un ataque de picas por valor total ×2.';
   }else if(build.mounted){
     status.textContent = 'Montado';
@@ -16370,7 +16706,7 @@ function renderAttackConsole(){
       ? 'Modo ataque activo: selecciona combustible del panel o ♣ armadura, y luego picas del módulo de ataque.'
       : 'Modo ataque activo: selecciona primero combustible del panel y luego picas del módulo de ataque.';
     subHint.textContent = hasDiamondBoosterArmorFuel(focusPlayer)
-      ? 'As♦ activo: la armadura usada como combustible se descartará y el mecha se recalculará después del ataque.'
+      ? `${getArmorFuelBoosterLabel(focusPlayer)} activo: la armadura usada como combustible se descartará y el mecha se recalculará después del ataque.`
       : 'El valor total del combustible seleccionado se multiplica ×2 para fijar el límite de ataque.';
   }
 
@@ -16709,10 +17045,10 @@ function updateHints(){
   const stepText = tutorialSteps[Math.min(state.tutorialStep, tutorialSteps.length-1)];
   if(mainHint) mainHint.innerHTML = `🎓 ${stepText}`;
   if(attackHint) attackHint.innerHTML = stepText;
-  if(attackSubHint) attackSubHint.textContent = hasDiamondBoosterArmorFuel(state.players[state.currentPlayer] || {}) ? 'As♦ activo: puedes consumir ♣ armadura como combustible, pero no amplía ningún módulo.' : 'La consola se ilumina solo cuando una acción es legal.';
+  if(attackSubHint) attackSubHint.textContent = hasDiamondBoosterArmorFuel(state.players[state.currentPlayer] || {}) ? `${getArmorFuelBoosterLabel(state.players[state.currentPlayer] || {})} activo: puedes consumir ♣ armadura como combustible, pero no amplía ningún módulo.` : 'La consola se ilumina solo cuando una acción es legal.';
   if(tutorialPanelTitle) tutorialPanelTitle.textContent = 'Tutorial activo';
   if(tutorialPanelText) tutorialPanelText.textContent = stepText;
-  if(tutorialPanelTip) tutorialPanelTip.textContent = hasDiamondBoosterArmorFuel(state.players[state.currentPlayer] || {}) ? 'As♦ activo: puedes consumir ♣ armadura como combustible, pero eso puede desmontar parte del mecha tras el disparo.' : 'Consejo clave: hasta que el cuadro de bloqueo del piloto no deje de estar en rojo, ese mecha no podrá iniciar el combate.';
+  if(tutorialPanelTip) tutorialPanelTip.textContent = hasDiamondBoosterArmorFuel(state.players[state.currentPlayer] || {}) ? `${getArmorFuelBoosterLabel(state.players[state.currentPlayer] || {})} activo: puedes consumir ♣ armadura como combustible, pero eso puede desmontar parte del mecha tras el disparo.` : 'Consejo clave: hasta que el cuadro de bloqueo del piloto no deje de estar en rojo, ese mecha no podrá iniciar el combate.';
   if(tutorialPanelObjective) tutorialPanelObjective.textContent = 'Objetivo: interpretar la situación del tablero y elegir una acción legal.';
   if(tutorialPanelStep) tutorialPanelStep.textContent = `Ayuda ${Math.min(state.tutorialStep + 1, tutorialSteps.length)}/${tutorialSteps.length}`;
   if(tutorialPanelMode) tutorialPanelMode.textContent = 'Contextual';

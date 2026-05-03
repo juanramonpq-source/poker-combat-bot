@@ -354,6 +354,7 @@
       <p>Panel independiente para probar capítulos, forzar progreso, simular guardados y escuchar las pistas del modo historia sin tocar el flujo normal del jugador.</p>
       <div class="actions">
         <button class="primary" id="backToStoryBtn" type="button">Volver al modo historia</button>
+        <button id="openLoreBtn" type="button">Abrir biblia lore</button>
         <button class="warn" id="reloadBtn" type="button">Recargar laboratorio</button>
       </div>
     </header>
@@ -427,14 +428,40 @@
     ];
 
     const musicTracks = [
-      { label:'Mapa - Engranes de Titanio', src:'assets/Historia/EngranesdeTitanio(Exploración).mp3' },
-      { label:'Mapa - Capitulo superado', src:'assets/Historia/cancionMundo.mp3' },
-      { label:'Historia - Mercado de Chatarra', src:'assets/Historia/MercadodeChatarra.mp3' },
-      { label:'Historia - Silencio de Acero', src:'assets/Historia/Silencio de Acero.mp3' },
       { label:'Combate - Audio 01', src:'assets/audio_01.mp3' },
       { label:'Combate - Audio 02', src:'assets/audio_02.mp3' },
       { label:'Menu - Gravit Silence', src:'assets/GravitSilence.mp3' },
-      { label:'Historia - Ceniza Metalica', src:'assets/Historia/CenizaMetalica.mp3' }
+      { label:'Historia - Acero y Ceniza', src:'assets/Historia/AceroyCeniza-Historia.mp3' },
+      { label:'Historia - Batalla Final de Titanes de Acero', src:'assets/Historia/Batalla Final de Titanes de Acero.mp3' },
+      { label:'Historia - Batalla Final de los Titanes de Acero', src:'assets/Historia/Batalla Final de los Titanes de Acero.mp3' },
+      { label:'Historia - Cancion de Acero y Ceniza', src:'assets/Historia/Canción de Acero y Ceniza.mp3' },
+      { label:'Historia - Cancion de Acero y Ceniza 2', src:'assets/Historia/Canción de Acero y Ceniza 2.mp3' },
+      { label:'Historia - Cancion de Acero y Ceniza epic', src:'assets/Historia/Canción de Acero y Ceniza epic.mp3' },
+      { label:'Historia - Cancion de Acero y Ceniza alternativa', src:'assets/Historia/Canción de Acero y Ceniza-2.mp3' },
+      { label:'Historia - Cancion Mundo', src:'assets/Historia/CanciónMUNDO.mp3' },
+      { label:'Historia - Cancion Mundo antigua', src:'assets/Historia/cancionMundo.mp3' },
+      { label:'Historia - Ceniza Metalica', src:'assets/Historia/CenizaMetalica.mp3' },
+      { label:'Historia - Ceniza Metalica Final', src:'assets/Historia/Ceniza Metálica FINAL.mp3' },
+      { label:'Historia - Cerulean Systems', src:'assets/Historia/Cerulean Systems.mp3' },
+      { label:'Historia - Cerulean Systems 2', src:'assets/Historia/Cerulean Systems 2.mp3' },
+      { label:'Historia - Cleo PoCoBOT', src:'assets/Historia/CleoPoCoBOT.mp3' },
+      { label:'Historia - Cleo PoCoBOT 2', src:'assets/Historia/CleoPoCoBOT 2.mp3' },
+      { label:'Historia - Coloso Final', src:'assets/Historia/Coloso Final_ Ascenso de los Mechas.mp3' },
+      { label:'Historia - Engranes de Titanio exploracion', src:'assets/Historia/EngranesdeTitanio(Exploración).mp3' },
+      { label:'Historia - Engranes de Titanio exploracion 2', src:'assets/Historia/Engranes de Titanio (Exploración)-2.mp3' },
+      { label:'Historia - Engranes de Titanio creditos', src:'assets/Historia/EngranesdeTitanio-Creditos.mp3' },
+      { label:'Historia - Engranes de Titanio creditos OLD', src:'assets/Historia/EngranesdeTitanio-CreditosOLD.mp3' },
+      { label:'Historia - Epic Engranes de Titanio', src:'assets/Historia/EpicEngranesdeTitanio.mp3' },
+      { label:'Historia - Gravedad de la Aventura', src:'assets/Historia/Gravedad de la Aventura.mp3' },
+      { label:'Historia - Gravite du Silence', src:'assets/Historia/Gravité du Silence.mp3' },
+      { label:'Historia - Guerreros de Acero', src:'assets/Historia/Guerreros de Acero.mp3' },
+      { label:'Historia - Mercado de Chatarra', src:'assets/Historia/Mercado de Chatarra.mp3' },
+      { label:'Historia - Mercado de Chatarra original', src:'assets/Historia/MercadodeChatarra.mp3' },
+      { label:'Historia - Neon Horizon Engine', src:'assets/Historia/Neon Horizon Engine.mp3' },
+      { label:'Historia - Silencio de Acero', src:'assets/Historia/Silencio de Acero.mp3' },
+      { label:'Historia - Silencio de Acero 2', src:'assets/Historia/Silencio de Acero-2.mp3' },
+      { label:'Historia - Titanium Gears', src:'assets/Historia/Titanium Gears.mp3' },
+      { label:'Ambiente - Mercado muchedumbre', src:'assets/Historia/mercado-reles-muertos-tutorial/assets/market-crowd-ambience-unstuntedsfx.mp3' }
     ];
 
     const nodeList = document.getElementById('nodeList');
@@ -627,6 +654,10 @@
 
     document.getElementById('backToStoryBtn').addEventListener('click', () => {
       window.location.href = STORY_PAGE;
+    });
+
+    document.getElementById('openLoreBtn').addEventListener('click', () => {
+      window.location.href = 'pocobot_lore_biblia.html';
     });
 
     document.getElementById('reloadBtn').addEventListener('click', () => {

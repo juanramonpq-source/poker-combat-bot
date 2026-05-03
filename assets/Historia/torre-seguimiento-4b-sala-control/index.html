@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PoCoBOT · Sala de Control 4B</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <aside
+      id="orientation-overlay"
+      class="orientation-overlay"
+      aria-live="polite"
+      hidden
+    >
+      <div class="orientation-card">
+        <p class="orientation-kicker">Modo horizontal recomendado</p>
+        <h2>Gira el móvil para jugar</h2>
+        <p>
+          Este tutorial está pensado para jugar en horizontal, con más campo de
+          visión y controles táctiles cómodos. Si tienes la rotación bloqueada,
+          desbloquéala o gira el teléfono físicamente.
+        </p>
+        <button id="orientation-lock-button" type="button">
+          Intentar activar horizontal
+        </button>
+        <small id="orientation-lock-status">
+          Algunos navegadores solo permiten bloquear orientación desde pantalla
+          completa.
+        </small>
+      </div>
+    </aside>
+
+    <main class="layout">
+      <button id="story-map-button" class="floating-map-button" type="button">
+        Volver al mapa
+      </button>
+      <section class="panel">
+        <h1>PoCoBOT // Sala de Control 4B</h1>
+        <p>
+          Segunda planta de la torre, dominada por pantallas radar y paneles de
+          Argos. Un mecha automático sin humano bloquea el paso al panel; al
+          vencerlo, el panel inicia el hackeo final sin combustible.
+        </p>
+      </section>
+
+      <canvas
+        id="game"
+        width="1280"
+        height="720"
+        aria-label="Sala de control de la Torre de Seguimiento 4B"
+      ></canvas>
+    </main>
+
+    <script src="./game.js"></script>
+  </body>
+</html>

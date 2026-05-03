@@ -3841,6 +3841,21 @@
     const STORY_VIAJERO_LEGACY_REWARD_ID = 'mercado_sparring';
     const STORY_VIAJERO_REWARD_PREFIX = 'mercado_sparring_';
     const STORY_VIAJERO_BASE_UNLOCK_COUNT = 3;
+    const STORY_TOWER_COIN_REWARD_PREFIX = 'torre_4b_';
+    const STORY_TOWER_CHAPTER_STATE_KEY = 'pocobot-tower-4b-chapter-v1';
+    const STORY_TOWER_ENTRY_URL = 'assets/Historia/torre-seguimiento-4b-tutorial/index.html';
+    const STORY_TOWER_INTERIOR_URL = 'assets/Historia/torre-seguimiento-4b-interior-baja/index.html';
+    const STORY_TOWER_CONTROL_URL = 'assets/Historia/torre-seguimiento-4b-sala-control/index.html';
+    const STORY_TOWER_REWARD_CARD = {
+      id: 'tower-4b-7-hearts',
+      name: '7 de corazones',
+      text: '7♥ · transmisiones restauradas',
+      source: 'Torre de Seguimiento 4B',
+      rank: '7',
+      suit: 'hearts',
+      cardImage: 'assets/cards/hayeah-full/7_of_hearts.svg',
+      deckText: '7 de corazones'
+    };
     const STORY_LEGACY_MARKET_STARTING_CREDITS = 9;
     const STORY_MARKET_STARTING_CREDITS = 0;
     const STORY_MARKET_CATALOG = [
@@ -4002,6 +4017,8 @@
     }
 
     function getFallbackStoryNodeFromProgress() {
+      if (hasCompletedStoryNode('torre') && storyDraftNodes.campamento) return 'campamento';
+      if (hasCompletedStoryNode('mercado') && storyDraftNodes.torre) return 'torre';
       if (hasCompletedStoryNode('hangar') && hasCompletedStoryNode('patio') && storyDraftNodes.mercado) return 'mercado';
       if (hasCompletedStoryNode('hangar') && !hasCompletedStoryNode('patio')) return 'patio';
       if (hasCompletedStoryNode('patio') && !hasCompletedStoryNode('hangar')) return 'hangar';
@@ -4039,7 +4056,9 @@
     }
 
     function isStoryAncientCoinRewardId(rewardId) {
-      return STORY_ANCIENT_COIN_REWARD_NODES.includes(rewardId) || isStoryViajeroRewardId(rewardId);
+      return STORY_ANCIENT_COIN_REWARD_NODES.includes(rewardId)
+        || isStoryViajeroRewardId(rewardId)
+        || (typeof rewardId === 'string' && rewardId.startsWith(STORY_TOWER_COIN_REWARD_PREFIX));
     }
 
     function getStoryViajeroRewardCountFromId(rewardId) {
@@ -4465,15 +4484,16 @@
         id: 'torre',
         order: 4,
         title: 'Torre de Seguimiento 4B',
-        type: 'Prueba táctica',
-        sceneChip: 'Proyectil',
-        image: 'assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG',
-        lead: 'Uno de los antiguos ojos de Argós. La torre demuestra que la vigilancia no desapareció con el pulso: solo aprendió a mirar desde la ruina.',
-        mission: 'Demostrar ataque con combustible y proyectil, por separado o combinados.',
-        learn: 'Activación de proyectiles y timing ofensivo.',
-        tension: 'La infraestructura vieja de Argós empieza a mirar al jugador de vuelta.',
-        dialogue: '“No todos los disparos son para matar. Algunos son para abrir puertas.”',
-        cast: ['Mara Oxido', 'Vera Hex']
+        type: 'Exploración táctica',
+        sceneChip: 'Transmisiones',
+        lowImage: 'assets/Historia/low/torre_4b_compacta.webp',
+        image: 'assets/Historia/low/torre_4b_compacta.webp',
+        lead: 'Uno de los antiguos ojos de Argós. La torre no solo vigilaba: enlazaba relés, rutas y voces humanas que La Caída dejó apagadas.',
+        mission: 'Explorar la Torre 4B con Xavor Glitch, despejar drones, restaurar transmisiones y sobrevivir al hackeo final de Argós.',
+        learn: 'Movimiento real del PoCoBOT, combates temáticos, hackeo sin combustible y progresión de inventario.',
+        tension: 'La infraestructura vieja de Argós empieza a mirar al jugador de vuelta mientras intenta reconstruirse tras el conflicto de hace dos años.',
+        dialogue: '“Donde otros ven silencio, Xavor oye una puerta que aún no sabe que puede abrirse.”',
+        cast: ['Xavor Glitch']
       },
       campamento: {
         id: 'campamento',
@@ -5573,6 +5593,15 @@
         audioMode: 'internal',
         showInnerBriefInFrame: true,
         url: 'poker_combat_bot_ONLINE.html?story_mission=mercado_sparring&story_embed=1&story_audio=internal'
+      },
+      torre: {
+        chip: 'Exploración táctica',
+        title: 'Torre de Seguimiento 4B',
+        copy: 'Mueve tu PoCoBOT por la Torre 4B, despeja drones de vigilancia, habla con Xavor Glitch y restaura las transmisiones apagadas desde La Caída.',
+        tip: 'Capítulo jugable: los drones abren combates especiales, cada victoria suma una antigua moneda y el hack final bloquea el combustible normal.',
+        audioMode: 'internal',
+        showInnerBriefInFrame: true,
+        url: `${STORY_TOWER_ENTRY_URL}?preserve_chapter=1`
       }
     };
 
@@ -5818,6 +5847,10 @@
       renderStoryNode(nodeId);
       if (shouldOpenStoryMarketExplorationDirectly(nodeId)) {
         openStoryMarketExploration();
+        return;
+      }
+      if (nodeId === 'torre') {
+        openStoryMission('torre');
         return;
       }
       openStoryScene(nodeId);
@@ -6783,6 +6816,14 @@
         });
         return;
       }
+      if (isStoryTowerCombatMission(mission)) {
+        openStoryTowerScene(data?.towerReturnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior');
+        return;
+      }
+      if (mission === 'torre') {
+        closeStoryMission();
+        return;
+      }
       closeStoryMission();
     }
 
@@ -6900,8 +6941,9 @@
       if (storyMissionTitle) storyMissionTitle.textContent = mission.title || localNode?.title || 'Ruta Ceniza';
       if (storyMissionCopy) storyMissionCopy.textContent = mission.copy || localNode?.mission || '';
       if (storyMissionTip) {
+        const tipLabel = nodeId === 'patio' ? 'Regla especial' : nodeId === 'torre' ? 'Regla de capítulo' : 'Definicion de mecha';
         storyMissionTip.innerHTML = `
-          <span class="mission-tip-label">${nodeId === 'patio' ? 'Regla especial' : 'Definicion de mecha'}</span>
+          <span class="mission-tip-label">${tipLabel}</span>
           <p class="mission-tip-copy">${mission.tip || ''}</p>
         `;
       }
@@ -6920,7 +6962,7 @@
       saveStoryProgress(`mission-open-${nodeId}`);
       syncStoryMissionBrief(nodeId, localNode, mission);
 
-      if (isStoryMissionMobileViewport()) {
+      if (isStoryMissionMobileViewport() && nodeId !== 'torre') {
         openStoryMissionStandalone(nodeId);
         return;
       }
@@ -7105,6 +7147,284 @@
       }
     }
 
+    const STORY_TOWER_SCENE_PATHS = {
+      exterior: STORY_TOWER_ENTRY_URL,
+      tutorial: STORY_TOWER_ENTRY_URL,
+      interior: STORY_TOWER_INTERIOR_URL,
+      control: STORY_TOWER_CONTROL_URL
+    };
+
+    const STORY_TOWER_COMBAT_RETURN_SCENES = {
+      tower_drone_hearts: 'exterior',
+      tower_drone_spades: 'exterior',
+      tower_drone_clubs: 'exterior',
+      tower_interior_drone: 'interior',
+      tower_control_guard: 'control',
+      tower_argos_hack: 'control'
+    };
+
+    function isStoryTowerActionType(type) {
+      return type === 'pocobot-story-tower-tutorial-action'
+        || type === 'pocobot-story-tower-interior-action'
+        || type === 'pocobot-story-tower-control-action';
+    }
+
+    function isStoryTowerCombatMission(mission) {
+      return typeof mission === 'string' && mission.startsWith('tower_');
+    }
+
+    function getStoryTowerScenePath(sceneKey = 'exterior') {
+      return STORY_TOWER_SCENE_PATHS[sceneKey] || STORY_TOWER_ENTRY_URL;
+    }
+
+    function buildStoryTowerSceneUrl(sceneKey = 'exterior', extraParams = {}) {
+      const targetUrl = new URL(getStoryTowerScenePath(sceneKey), window.location.href);
+      targetUrl.searchParams.set('story_embed', '1');
+      targetUrl.searchParams.set('story_node', 'torre');
+      targetUrl.searchParams.set('story_audio', 'internal');
+      targetUrl.searchParams.set('story_return', window.location.href);
+      targetUrl.searchParams.set('preserve_chapter', '1');
+      Object.entries(extraParams || {}).forEach(([key, value]) => {
+        if (value === null || value === undefined || value === '') targetUrl.searchParams.delete(key);
+        else targetUrl.searchParams.set(key, String(value));
+      });
+      return targetUrl.href;
+    }
+
+    function openStoryTowerScene(sceneKey = 'exterior', extraParams = {}) {
+      const localNode = storyDraftNodes.torre;
+      const mission = storyMissionScripts.torre;
+      if (!localNode || !mission) return;
+      activeMissionNodeId = 'torre';
+      currentStoryNodeId = 'torre';
+      rememberStoryWorkspace(true);
+      rememberActiveStoryMission('torre');
+      rememberStorySurface({ type: 'mission', nodeId: 'torre' });
+      renderStoryNode('torre', { skipSave: true });
+      syncStoryMissionBrief('torre', localNode, mission);
+      pauseMapMusic();
+
+      const targetUrl = buildStoryTowerSceneUrl(sceneKey, extraParams);
+      if (!storyMissionFrame || !storyMissionStage) {
+        window.location.href = targetUrl;
+        return;
+      }
+
+      storyMissionStage.hidden = false;
+      storyMissionStage.classList.remove('mission-brief-expanded');
+      syncStoryMissionMobileFocus();
+      storyMissionFrame.src = 'about:blank';
+      requestAnimationFrame(() => {
+        storyMissionFrame.src = targetUrl;
+        storyMissionStage.classList.add('active');
+        syncStoryMissionMobileFocus();
+      });
+    }
+
+    function buildStoryTowerCombatUrl(payload = {}) {
+      const mission = payload.mission || '';
+      const targetUrl = new URL('poker_combat_bot_ONLINE.html', window.location.href);
+      targetUrl.searchParams.set('story_mission', mission);
+      targetUrl.searchParams.set('story_embed', '1');
+      targetUrl.searchParams.set('story_node', 'torre');
+      targetUrl.searchParams.set('story_audio', 'internal');
+      targetUrl.searchParams.set('story_brief', 'on');
+      targetUrl.searchParams.set('story_tower_return_scene', payload.returnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior');
+      if (payload.droneId) targetUrl.searchParams.set('story_tower_drone_id', payload.droneId);
+      if (payload.enemyId) targetUrl.searchParams.set('story_tower_enemy_id', payload.enemyId);
+      if (payload.rewardId) targetUrl.searchParams.set('story_tower_reward_id', payload.rewardId);
+      if (payload.suitTheme) targetUrl.searchParams.set('story_tower_suit', payload.suitTheme);
+      const extraDeckCards = encodeStoryDeckCardsParam();
+      if (extraDeckCards) targetUrl.searchParams.set('story_deck_cards', extraDeckCards);
+      return targetUrl.href;
+    }
+
+    function openStoryTowerCombat(payload = {}) {
+      const mission = payload.mission || '';
+      if (!isStoryTowerCombatMission(mission)) return false;
+      activeMissionNodeId = 'torre';
+      rememberStoryWorkspace(true);
+      rememberActiveStoryMission('torre');
+      rememberStorySurface({ type: 'mission', nodeId: 'torre' });
+      syncStoryMissionBrief('torre', storyDraftNodes.torre, storyMissionScripts.torre);
+      if (!storyMissionFrame || !storyMissionStage) {
+        window.location.href = buildStoryTowerCombatUrl(payload);
+        return true;
+      }
+      storyMissionStage.hidden = false;
+      storyMissionStage.classList.add('active');
+      syncStoryMissionMobileFocus();
+      storyMissionFrame.src = 'about:blank';
+      requestAnimationFrame(() => {
+        storyMissionFrame.src = buildStoryTowerCombatUrl(payload);
+        syncStoryMissionMobileFocus();
+      });
+      return true;
+    }
+
+    function readStoryTowerChapterState() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORY_TOWER_CHAPTER_STATE_KEY) || '{}');
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function writeStoryTowerChapterState(nextState) {
+      try {
+        localStorage.setItem(STORY_TOWER_CHAPTER_STATE_KEY, JSON.stringify(nextState || {}));
+      } catch (error) {}
+    }
+
+    function patchStoryTowerChapterState(patch = {}) {
+      const previous = readStoryTowerChapterState();
+      const nextState = {
+        chapterFlowVersion: previous.chapterFlowVersion || 3,
+        ...previous,
+        ...patch
+      };
+      writeStoryTowerChapterState(nextState);
+      return nextState;
+    }
+
+    function grantStoryTowerRewardCard(card = STORY_TOWER_REWARD_CARD) {
+      const inventory = ensureStoryMarketInventory();
+      if (inventory.cards.some((entry) => entry.id === STORY_TOWER_REWARD_CARD.id)) return false;
+      inventory.cards.push({
+        ...STORY_TOWER_REWARD_CARD,
+        ...(card?.label ? { name: card.label, text: `${card.label} · transmisiones restauradas`, deckText: card.label } : {})
+      });
+      storyProgressState.inventory = inventory;
+      saveStoryProgress('tower-4b-card-reward');
+      renderStoryMapInventoryWidget();
+      return true;
+    }
+
+    function applyStoryTowerCoinReward(rewardId, reason = 'tower-4b-coin') {
+      const safeRewardId = typeof rewardId === 'string' && rewardId.startsWith(STORY_TOWER_COIN_REWARD_PREFIX)
+        ? rewardId
+        : `${STORY_TOWER_COIN_REWARD_PREFIX}${Date.now()}`;
+      ensureStoryMarketInventory();
+      return grantStoryAncientCoinReward(safeRewardId, reason);
+    }
+
+    function applyStoryTowerCombatVictory(result = {}) {
+      const mission = result.mission || '';
+      const towerState = readStoryTowerChapterState();
+      if (mission === 'tower_drone_hearts' || mission === 'tower_drone_spades' || mission === 'tower_drone_clubs') {
+        const droneId = result.towerDroneId || result.droneId || mission;
+        const defeatedIds = Array.isArray(towerState.exteriorDroneDefeatedIds)
+          ? [...towerState.exteriorDroneDefeatedIds]
+          : [];
+        const wasAlreadyDefeated = defeatedIds.includes(droneId);
+        if (!wasAlreadyDefeated) defeatedIds.push(droneId);
+        patchStoryTowerChapterState({
+          exteriorDroneDefeated: defeatedIds.length > 0,
+          exteriorDroneDefeatedIds: defeatedIds,
+          xavorArrived: true,
+          coins: (Number(towerState.coins) || 0) + (wasAlreadyDefeated ? 0 : 1)
+        });
+        if (!wasAlreadyDefeated) {
+          applyStoryTowerCoinReward(result.towerRewardId || `${STORY_TOWER_COIN_REWARD_PREFIX}${droneId}`, 'tower-drone-coin');
+        }
+        return;
+      }
+
+      if (mission === 'tower_interior_drone') {
+        const wasAlreadyDefeated = !!towerState.interiorDroneDefeated;
+        patchStoryTowerChapterState({
+          interiorDroneDefeated: true,
+          coins: (Number(towerState.coins) || 0) + (wasAlreadyDefeated ? 0 : 1)
+        });
+        if (!wasAlreadyDefeated) applyStoryTowerCoinReward(result.towerRewardId || `${STORY_TOWER_COIN_REWARD_PREFIX}interior_drone`, 'tower-interior-coin');
+        return;
+      }
+
+      if (mission === 'tower_control_guard') {
+        const wasAlreadyDefeated = !!towerState.controlMechaDefeated;
+        patchStoryTowerChapterState({
+          controlMechaDefeated: true,
+          coins: (Number(towerState.coins) || 0) + (wasAlreadyDefeated ? 0 : 1)
+        });
+        if (!wasAlreadyDefeated) applyStoryTowerCoinReward(result.towerRewardId || `${STORY_TOWER_COIN_REWARD_PREFIX}control_guard`, 'tower-control-coin');
+        return;
+      }
+
+      if (mission === 'tower_argos_hack') {
+        patchStoryTowerChapterState({ argosHackDefeated: true });
+      }
+    }
+
+    function handleStoryTowerCombatResult(result) {
+      if (!isStoryTowerCombatMission(result?.mission)) return false;
+      const success = !!result.success;
+      storyProgressState.lastMissionResult = success ? 'success' : 'failure';
+      if (success) applyStoryTowerCombatVictory(result);
+      saveStoryProgress(`tower-combat-${result.mission}-${success ? 'win' : 'lose'}`);
+      const returnScene = result.towerReturnScene || STORY_TOWER_COMBAT_RETURN_SCENES[result.mission] || 'exterior';
+      window.setTimeout(() => openStoryTowerScene(returnScene, returnScene === 'exterior' ? { mission_return: '1' } : {}), success ? 520 : 760);
+      return true;
+    }
+
+    function completeStoryTowerChapter(card) {
+      grantStoryTowerRewardCard(card);
+      patchStoryTowerChapterState({
+        missionComplete: true,
+        finalRewardClaimed: true,
+        inventoryRewards: [STORY_TOWER_REWARD_CARD.id]
+      });
+      queueStoryMapTheme('chapter_clear');
+      markStoryNodeCompleted('torre', { selectedId: 'campamento' });
+      storyProgressState.lastMissionResult = 'success';
+      closeStoryMission({
+        onClosed: () => {
+          renderStoryNode('campamento');
+        }
+      });
+    }
+
+    function handleStoryTowerAction(data) {
+      const action = data?.action || '';
+      if (action === 'return-map') {
+        closeStoryMission();
+        return true;
+      }
+      if (action === 'enter-interior') {
+        openStoryTowerScene('interior');
+        return true;
+      }
+      if (action === 'enter-control-room') {
+        openStoryTowerScene('control');
+        return true;
+      }
+      if (action === 'return-lower-interior') {
+        openStoryTowerScene('interior');
+        return true;
+      }
+      if (action === 'return-exterior-finale') {
+        openStoryTowerScene('exterior', { mission_return: '1' });
+        return true;
+      }
+      if (action === 'request-drone-combat' || action === 'request-control-mecha-combat' || action === 'request-interior-drone-combat' || action === 'request-argos-hack-combat') {
+        openStoryTowerCombat(data);
+        return true;
+      }
+      if (action === 'optional-drone-combat' && data.result === 'victory') {
+        applyStoryTowerCombatVictory({
+          mission: 'tower_interior_drone',
+          towerRewardId: `${STORY_TOWER_COIN_REWARD_PREFIX}interior_drone`
+        });
+        applyStoryTowerCoinReward(`${STORY_TOWER_COIN_REWARD_PREFIX}interior_drone`, 'tower-interior-coin');
+        return true;
+      }
+      if (action === 'tower-4b-mission-complete') {
+        completeStoryTowerChapter(data?.reward?.card);
+        return true;
+      }
+      return false;
+    }
+
     const storyMissionResults = {
       hangar_race: {
         fallbackNodeId: 'hangar',
@@ -7181,6 +7501,19 @@
         result = JSON.parse(raw);
       } catch (error) {
         return false;
+      }
+      if (isStoryTowerCombatMission(result?.mission)) {
+        activeMissionNodeId = 'torre';
+        rememberStoryWorkspace(true);
+        rememberActiveStoryMission('torre');
+        stopTitleMusic();
+        document.body.classList.remove('story-title-lock');
+        titleStage.classList.add('hidden');
+        workspacePanel.classList.add('active');
+        renderStoryNode('torre', { skipSave: true });
+        syncStoryMapState();
+        handleStoryTowerCombatResult(result);
+        return true;
       }
       const missionConfig = result && storyMissionResults[result.mission];
       if (!missionConfig) return false;
@@ -7779,11 +8112,16 @@
         return;
       }
       if (data.type === 'pocobot-story-mission-result') {
+        if (handleStoryTowerCombatResult(data)) return;
         handleStoryMissionResult(data);
         return;
       }
       if (data.type === 'pocobot-story-mission-cancel') {
         handleStoryMissionCancel(data);
+        return;
+      }
+      if (isStoryTowerActionType(data.type)) {
+        handleStoryTowerAction(data);
         return;
       }
       if (data.type === 'pocobot-story-market-tutorial-action') {
