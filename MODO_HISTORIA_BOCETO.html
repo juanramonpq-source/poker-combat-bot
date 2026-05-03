@@ -3930,6 +3930,7 @@
     let storySceneTouchY = null;
     let storyMobileRouteTouchY = null;
     let storyMarketTouchY = null;
+    const handledStoryWheelEvents = new WeakSet();
 
     function setStorySessionFlag(key, value) {
       try {
@@ -6093,10 +6094,18 @@
 
     function getStoryEventPathElements(event, root) {
       const path = typeof event?.composedPath === 'function' ? event.composedPath() : [];
-      return path.filter((node) => (
+      if (path.length) return path.filter((node) => (
         node instanceof HTMLElement
         && (!root || node === root || root.contains(node))
       ));
+      const fallbackPath = [];
+      let node = event?.target instanceof HTMLElement ? event.target : null;
+      while (node) {
+        if (!root || node === root || root.contains(node)) fallbackPath.push(node);
+        if (node === root) break;
+        node = node.parentElement;
+      }
+      return fallbackPath;
     }
 
     function uniqueStoryScrollCandidates(candidates) {
@@ -6117,11 +6126,11 @@
 
     function getStorySceneWheelCandidates(event) {
       return [
+        ...getStoryEventPathElements(event, storySceneStage),
         getStorySceneScrollContainer(),
         storySceneScroll,
         storySceneCard,
-        storySceneStage,
-        ...getStoryEventPathElements(event, storySceneStage)
+        storySceneStage
       ];
     }
 
@@ -6157,19 +6166,34 @@
       return storySceneStage.contains(target) || target === document.body || target === document.documentElement;
     }
 
-    function normalizeStorySceneWheelDelta(event) {
+    function normalizeStoryWheelDelta(event, fallbackHeight = 320) {
       if (!event) return 0;
       if (event.deltaMode === 1) return event.deltaY * 18;
-      if (event.deltaMode === 2) return event.deltaY * (storySceneCard?.clientHeight || 320);
+      if (event.deltaMode === 2) return event.deltaY * fallbackHeight;
       if (Number.isFinite(event.deltaY) && Math.abs(event.deltaY) > 0.1) return event.deltaY;
+      if (Number.isFinite(event.wheelDeltaY) && Math.abs(event.wheelDeltaY) > 0.1) return -event.wheelDeltaY;
       if (Number.isFinite(event.wheelDelta) && Math.abs(event.wheelDelta) > 0.1) return -event.wheelDelta;
       if (Number.isFinite(event.detail) && Math.abs(event.detail) > 0.1) return event.detail * 18;
       return 0;
     }
 
+    function normalizeStorySceneWheelDelta(event) {
+      return normalizeStoryWheelDelta(event, storySceneCard?.clientHeight || 320);
+    }
+
+    function markStoryWheelEventHandled(event) {
+      if (!event) return false;
+      if (handledStoryWheelEvents.has(event)) return false;
+      handledStoryWheelEvents.add(event);
+      return true;
+    }
+
     function handleStorySceneWheel(event) {
       if (event.ctrlKey || !isWheelInsideActiveStoryScene(event)) return;
-      if (!scrollStorySceneDialogBy(normalizeStorySceneWheelDelta(event), event)) return;
+      const deltaY = normalizeStorySceneWheelDelta(event);
+      if (!Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return;
+      if (!markStoryWheelEventHandled(event)) return;
+      if (!scrollStorySceneDialogBy(deltaY, event)) return;
       event.preventDefault();
       event.stopPropagation();
       if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
@@ -6327,9 +6351,9 @@
 
     function getStoryMarketWheelCandidates(event) {
       return [
+        ...getStoryEventPathElements(event, storyMarketStage),
         storyMarketShell,
-        storyMarketStage,
-        ...getStoryEventPathElements(event, storyMarketStage)
+        storyMarketStage
       ];
     }
 
@@ -6353,21 +6377,28 @@
     }
 
     function normalizeStoryMarketWheelDelta(event) {
-      if (!event) return 0;
-      if (event.deltaMode === 1) return event.deltaY * 18;
-      if (event.deltaMode === 2) return event.deltaY * (storyMarketShell?.clientHeight || 320);
-      if (Number.isFinite(event.deltaY) && Math.abs(event.deltaY) > 0.1) return event.deltaY;
-      if (Number.isFinite(event.wheelDelta) && Math.abs(event.wheelDelta) > 0.1) return -event.wheelDelta;
-      if (Number.isFinite(event.detail) && Math.abs(event.detail) > 0.1) return event.detail * 18;
-      return 0;
+      return normalizeStoryWheelDelta(event, storyMarketShell?.clientHeight || 320);
     }
 
     function handleStoryMarketWheel(event) {
       if (event.ctrlKey || !isWheelInsideActiveStoryMarket(event)) return;
-      if (!scrollStoryMarketBy(normalizeStoryMarketWheelDelta(event), event)) return;
+      const deltaY = normalizeStoryMarketWheelDelta(event);
+      if (!Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return;
+      if (!markStoryWheelEventHandled(event)) return;
+      if (!scrollStoryMarketBy(deltaY, event)) return;
       event.preventDefault();
       event.stopPropagation();
       if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+    }
+
+    function bindStoryDesktopWheelBridge(handler, targets) {
+      const wheelTypes = ['wheel', 'mousewheel', 'DOMMouseScroll'];
+      const uniqueTargets = [...new Set(targets.filter(Boolean))];
+      uniqueTargets.forEach((target) => {
+        wheelTypes.forEach((type) => {
+          target.addEventListener(type, handler, { passive: false, capture: true });
+        });
+      });
     }
 
     function getStoryMarketItem(itemId) {
@@ -7645,9 +7676,15 @@
     // Regression guard: desktop PC/PC-window story scroll must be driven by wheel.
     // Keep these wheel listeners separate from mobile touch handlers so fixing mouse
     // scroll never breaks the working vertical/horizontal mobile scroll again.
-    window.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
-    storySceneStage.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
-    document.addEventListener('wheel', handleStorySceneWheel, { passive: false, capture: true });
+    bindStoryDesktopWheelBridge(handleStorySceneWheel, [
+      window,
+      document,
+      document.documentElement,
+      document.body,
+      storySceneStage,
+      storySceneCard,
+      storySceneScroll
+    ]);
     storySceneStage.addEventListener('touchstart', (event) => {
       if (shouldUseNativeStorySceneTouchScroll(event)) {
         storySceneTouchY = null;
@@ -7672,9 +7709,14 @@
       storySceneTouchY = null;
     }, { passive: true });
     if (storyMarketStage) {
-      window.addEventListener('wheel', handleStoryMarketWheel, { passive: false, capture: true });
-      storyMarketStage.addEventListener('wheel', handleStoryMarketWheel, { passive: false, capture: true });
-      document.addEventListener('wheel', handleStoryMarketWheel, { passive: false, capture: true });
+      bindStoryDesktopWheelBridge(handleStoryMarketWheel, [
+        window,
+        document,
+        document.documentElement,
+        document.body,
+        storyMarketStage,
+        storyMarketShell
+      ]);
       storyMarketStage.addEventListener('touchstart', (event) => {
         storyMarketTouchY = getStoryMarketScrollContainer() && event.touches.length === 1 ? event.touches[0].clientY : null;
       }, { passive: true, capture: true });
