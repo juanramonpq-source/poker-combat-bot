@@ -964,6 +964,10 @@
       font-size:.9rem;
       line-height:1.58;
     }
+    .mobile-route-summary.locked{
+      color:#96a5b4;
+      font-style:italic;
+    }
     .mobile-route-meta{
       display:flex;
       flex-wrap:wrap;
@@ -982,6 +986,11 @@
       font-weight:800;
       letter-spacing:.06em;
       text-transform:uppercase;
+    }
+    .mobile-route-meta.locked span{
+      color:#aeb8c4;
+      border-color:rgba(255,255,255,.05);
+      background:rgba(255,255,255,.03);
     }
     .mobile-route-action{
       justify-self:start;
@@ -4413,7 +4422,7 @@
           mobile: 'assets/Historia/low/hangar_fosa_azul_ultraligero_1080.webp'
         },
         image: 'assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG',
-        lead: 'Briefing de arranque. Aquí definimos qué es un mecha, la necesidad de montaje y el tono del refugio técnico.',
+        lead: 'Pozo técnico de recuperación y reacondicionamiento. La Ruta Ceniza empieza desde abajo, entre hierro, paciencia y piezas que todavía recuerdan cómo sobrevivir.',
         mission: 'Construir un bot válido para un NPC.',
         learn: 'Piloto, módulos y condición de mecha montado.',
         tension: 'Todo arranca desde el oficio: ensamblar antes de merecer pilotar.',
@@ -4431,7 +4440,7 @@
           mobile: 'assets/Historia/low/patio_pruebas_compacto_1600.webp'
         },
         image: 'assets/Historia/Brutos/2PATIO DE PRUEBAS DEL TALLER.PNG',
-        lead: 'Primer combate funcional. Aquí el jugador ve que el bot responde y que construir bien importa.',
+        lead: 'Plataforma de validación del taller. Aquí el metal empieza a responder y el piloto descubre que combatir también exige calma, secuencia y criterio.',
         mission: 'Ganar el combate tutorializado.',
         learn: 'Ataque con combustible y orden del turno.',
         tension: 'La historia deja de ser promesa y se convierte en prueba visible.',
@@ -4445,7 +4454,7 @@
         type: 'Encuentro',
         sceneChip: 'Mercado',
         image: MERCADO_RELES_IMAGE,
-        lead: 'Vera Hex abre el primer mercado de la Ruta Ceniza: compra cartas, artefactos y activa el inventario del protagonista.',
+        lead: 'Cementerio técnico convertido en red comercial. En manos de Vera Hex, los restos de Argós son piezas, secretos y memoria intercambiable.',
         mission: 'Comprar una carta o artefacto para cerrar trato con Vera Hex.',
         learn: 'Economía de ruina, inventario persistente y preparación antes de abandonar el taller.',
         tension: 'La ruta deja el taller y entra en un mundo donde todo vale si aguanta, pero no todo lo que aguanta merece obediencia.',
@@ -4459,7 +4468,7 @@
         type: 'Prueba táctica',
         sceneChip: 'Proyectil',
         image: 'assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG',
-        lead: 'Primer nodo claramente vinculado a Argós. Buen lugar para la misión de proyectil y para subir misterio.',
+        lead: 'Uno de los antiguos ojos de Argós. La torre demuestra que la vigilancia no desapareció con el pulso: solo aprendió a mirar desde la ruina.',
         mission: 'Demostrar ataque con combustible y proyectil, por separado o combinados.',
         learn: 'Activación de proyectiles y timing ofensivo.',
         tension: 'La infraestructura vieja de Argós empieza a mirar al jugador de vuelta.',
@@ -4473,7 +4482,7 @@
         type: 'Diálogo',
         sceneChip: 'Veteranos',
         image: 'assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG',
-        lead: 'Pausa de personaje. Memoria de la guerra, tono humano y aparición de criterio moral.',
+        lead: 'Refugio de veteranos donde la guerra se recuerda sin épica. Aquí la memoria pesa tanto como la munición y la esperanza nunca sale gratis.',
         mission: 'Evento narrativo corto con recompensa de contexto.',
         learn: 'Tono del mundo y rivalidad futura.',
         tension: 'La ruta se humaniza justo antes de endurecerse de verdad.',
@@ -4487,7 +4496,7 @@
         type: 'Combate',
         sceneChip: 'Defensa activa',
         image: 'assets/Historia/Brutos/6FOSO DE VIENTO NEGRO.PNG',
-        lead: 'Terreno hostil ideal para defensa activa, emboscada y lectura de peligro real.',
+        lead: 'Una herida abierta en el terreno. El Foso enseña que el combate no siempre llega de frente: a veces es el propio mundo quien ataca primero.',
         mission: 'Mitigar un ataque usando diamantes en mano.',
         learn: 'Defensa activa y gestión táctica del daño.',
         tension: 'El mundo ataca primero y obliga a leer el peligro antes de poder responder.',
@@ -4501,7 +4510,7 @@
         type: 'Reconfiguración',
         sceneChip: 'Tripulación',
         image: 'assets/Historia/Brutos/7SUBESTACIÓN DE CENIZA.PNG',
-        lead: 'Reconfiguración del bot y coste táctico. Buen nodo para jugar con tripulación y cambio de límites.',
+        lead: 'Infraestructura energética en agonía. La Subestación recuerda que el mundo anterior no ha muerto del todo: sigue respirando mal bajo la ceniza.',
         mission: 'Completar una reconfiguración válida sin romper límites.',
         learn: 'Piloto, copiloto y descarte por exceso.',
         tension: 'Aquí el jugador entiende que cambiar la forma del bot siempre tiene precio.',
@@ -4515,7 +4524,7 @@
         type: 'Combate',
         sceneChip: 'Duelo',
         image: 'assets/Historia/Brutos/8PUENTE DE LOS RELÁMPAGOS QUIETOS.PNG',
-        lead: 'Duelo de criterio. Ya no es aprender: aquí el jugador debe demostrar que domina la tensión táctica.',
+        lead: 'Umbral de tensión contenida entre la supervivencia y el juicio. Cruzarlo significa aceptar que la Ruta Ceniza ya no enseña: examina.',
         mission: 'Vencer a un rival táctico de media dificultad.',
         learn: 'Lectura de amenaza y presión sostenida.',
         tension: 'Corvo deja de ser sombra narrativa y se convierte en examen vivo.',
@@ -4529,7 +4538,7 @@
         type: 'Aproximación final',
         sceneChip: 'Revelación',
         image: 'assets/Historia/Brutos/9EXTERIOR_CUPULA_HENDIDA_DE_ARGOS.PNG',
-        lead: 'Entrada al territorio del mito real. Revelación, escala y umbral narrativo antes del cierre.',
+        lead: 'Frontera entre leyenda y verdad. La ciudad fortificada de Argós aparece como herida, reliquia y amenaza de un orden que aún quiere justificarse.',
         mission: 'Atravesar el umbral de Argós y preparar el duelo final.',
         learn: 'Escala del conflicto y cierre de la ruta.',
         tension: 'La ruta deja de ser supervivencia y se vuelve ceremonia de acceso a algo mayor.',
@@ -4543,7 +4552,7 @@
         type: 'Cierre',
         sceneChip: 'Desbloqueo',
         image: 'assets/Historia/Brutos/9BINTERIOR DE LA CÚPULA HENDIDA DE ARGÓS.PNG',
-        lead: 'Resolución y desbloqueo. El final del viaje debe sentirse como examen y herencia del mundo anterior.',
+        lead: 'Última instrucción del viejo orden. En el corazón roto de la perfección se decide qué parte del pasado merece sobrevivir y quién puede tocarla.',
         mission: 'Activar SUPER DIFÍCIL en 1 jugador.',
         learn: 'Cierre sobrio, merecido y con sensación de rango.',
         tension: 'Todo converge en la pregunta final: quién merece operar lo que queda del viejo mundo.',
@@ -5757,6 +5766,10 @@
       nodes.forEach((node) => {
         const status = getStoryNodeStatus(node);
         const available = status !== 'locked';
+        const summaryText = available ? node.lead : 'Información bloqueada. La Ruta Ceniza aún no ha revelado este enclave.';
+        const metaMarkup = available
+          ? `<span>${node.type}</span><span>${node.sceneChip}</span>`
+          : '<span>Datos bloqueados</span>';
         const card = document.createElement('article');
         card.className = `mobile-route-card ${status}${currentStoryNodeId === node.id ? ' current' : ''}`;
 
@@ -5776,11 +5789,8 @@
               <span class="mobile-route-state ${status}">${stateLabel}</span>
             </div>
             <h3 class="mobile-route-name">${node.title}</h3>
-            <p class="mobile-route-summary">${node.lead}</p>
-            <div class="mobile-route-meta">
-              <span>${node.type}</span>
-              <span>${node.sceneChip}</span>
-            </div>
+            <p class="mobile-route-summary${available ? '' : ' locked'}">${summaryText}</p>
+            <div class="mobile-route-meta${available ? '' : ' locked'}">${metaMarkup}</div>
             <button class="mobile-route-action" type="button" ${available ? '' : 'disabled aria-disabled="true"'}>
               ${status === 'completed' ? 'Revisar' : available ? 'Entrar' : 'Aún no disponible'}
             </button>
@@ -6273,7 +6283,7 @@
       const resolvedSceneKey = resolveEntrySceneKey(nodeId, sceneKey);
       const scene = storySceneScripts[resolvedSceneKey];
       if (!localNode || !scene) return;
-      if (nodeId === 'mercado' && !hasCompletedStoryNode('mercado')) {
+      if (nodeId === 'mercado') {
         queueStoryMapTheme('market');
         playMapMusic();
       }

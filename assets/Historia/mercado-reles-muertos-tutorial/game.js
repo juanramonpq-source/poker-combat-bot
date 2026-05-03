@@ -4,6 +4,7 @@ const orientationOverlay = document.getElementById("orientation-overlay");
 const orientationLockButton = document.getElementById("orientation-lock-button");
 const orientationLockStatus = document.getElementById("orientation-lock-status");
 const storyMapButton = document.getElementById("story-map-button");
+const marketCrowdAmbience = document.getElementById("market-crowd-ambience");
 const storyParams = new URLSearchParams(window.location.search);
 const storyEmbedMode = storyParams.get("story_embed") === "1";
 const storyReturnUrl = storyParams.get("story_return") || "";
@@ -66,6 +67,9 @@ const camera = {
   y: 0,
   smoothness: 0.1,
 };
+
+const DESKTOP_CAMERA_ZOOM = 0.86;
+const desktopCameraMedia = window.matchMedia("(pointer: fine) and (hover: hover)");
 
 const assets = {
   map: new Image(),
@@ -190,7 +194,109 @@ const interactionState = {
   messageTimer: 0,
 };
 
+const hudHelp = {
+  expanded: true,
+  autoCollapse: true,
+  elapsed: 0,
+  collapseDelay: 5,
+  button: { x: 18, y: 18, width: 140, height: 38 },
+};
+
+const MARKET_CROWD_VOLUME = 0.24;
+let marketCrowdShouldPlay = true;
+let marketCrowdFadeFrame = null;
+
+function fadeMarketCrowdAmbience(targetVolume, duration = 700, onComplete = null) {
+  if (!marketCrowdAmbience) return;
+  if (marketCrowdFadeFrame) {
+    window.cancelAnimationFrame(marketCrowdFadeFrame);
+    marketCrowdFadeFrame = null;
+  }
+
+  const startVolume = Number.isFinite(marketCrowdAmbience.volume)
+    ? marketCrowdAmbience.volume
+    : 0;
+  const safeTarget = Math.max(0, Math.min(1, targetVolume));
+
+  if (duration <= 0) {
+    marketCrowdAmbience.volume = safeTarget;
+    onComplete?.();
+    return;
+  }
+
+  const startAt = performance.now();
+  const step = (now) => {
+    const progress = Math.min(1, (now - startAt) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    marketCrowdAmbience.volume = startVolume + (safeTarget - startVolume) * eased;
+    if (progress < 1) {
+      marketCrowdFadeFrame = window.requestAnimationFrame(step);
+      return;
+    }
+
+    marketCrowdFadeFrame = null;
+    marketCrowdAmbience.volume = safeTarget;
+    onComplete?.();
+  };
+
+  marketCrowdFadeFrame = window.requestAnimationFrame(step);
+}
+
+async function startMarketCrowdAmbience() {
+  if (!marketCrowdAmbience || !marketCrowdShouldPlay) return;
+
+  try {
+    marketCrowdAmbience.volume = 0;
+    await marketCrowdAmbience.play();
+    fadeMarketCrowdAmbience(MARKET_CROWD_VOLUME, 950);
+  } catch (error) {
+    // Some browsers still require the first pointer/key gesture. The listeners
+    // below retry without disturbing the exploration if autoplay is blocked.
+  }
+}
+
+function stopMarketCrowdAmbience(immediate = false) {
+  if (!marketCrowdAmbience) return;
+  marketCrowdShouldPlay = false;
+  if (marketCrowdFadeFrame) {
+    window.cancelAnimationFrame(marketCrowdFadeFrame);
+    marketCrowdFadeFrame = null;
+  }
+
+  if (immediate) {
+    marketCrowdAmbience.pause();
+    marketCrowdAmbience.volume = 0;
+    return;
+  }
+
+  fadeMarketCrowdAmbience(0, 260, () => {
+    marketCrowdAmbience.pause();
+  });
+}
+
+function resumeMarketCrowdAmbienceAfterGesture() {
+  if (!marketCrowdShouldPlay || !marketCrowdAmbience?.paused) return;
+  startMarketCrowdAmbience();
+}
+
+["pointerdown", "keydown", "touchstart"].forEach((eventName) => {
+  window.addEventListener(eventName, resumeMarketCrowdAmbienceAfterGesture, {
+    passive: true,
+  });
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (!marketCrowdAmbience) return;
+  if (document.hidden) {
+    marketCrowdAmbience.pause();
+    return;
+  }
+  resumeMarketCrowdAmbienceAfterGesture();
+});
+
 function postStoryTutorialAction(action, payload = {}) {
+  stopMarketCrowdAmbience(true);
+
   const message = {
     type: "pocobot-story-market-tutorial-action",
     action,
@@ -237,6 +343,53 @@ const keyMap = {
   D: "right",
 };
 
+function getCanvasScreenPoint(event) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = viewport.width / rect.width;
+  const scaleY = viewport.height / rect.height;
+
+  return {
+    x: (event.clientX - rect.left) * scaleX,
+    y: (event.clientY - rect.top) * scaleY,
+  };
+}
+
+function getCameraZoom() {
+  return desktopCameraMedia.matches ? DESKTOP_CAMERA_ZOOM : 1;
+}
+
+function getVisibleWorldSize() {
+  const zoom = getCameraZoom();
+  return {
+    width: viewport.width / zoom,
+    height: viewport.height / zoom,
+  };
+}
+
+function isPointInsideRect(point, rect) {
+  return (
+    point.x >= rect.x
+    && point.x <= rect.x + rect.width
+    && point.y >= rect.y
+    && point.y <= rect.y + rect.height
+  );
+}
+
+function toggleHudHelp() {
+  hudHelp.expanded = !hudHelp.expanded;
+  hudHelp.autoCollapse = false;
+  hudHelp.elapsed = 0;
+}
+
+function syncHudHelpCursor(event) {
+  if (event.pointerType !== "mouse") {
+    return;
+  }
+
+  const screenPoint = getCanvasScreenPoint(event);
+  canvas.style.cursor = isPointInsideRect(screenPoint, hudHelp.button) ? "pointer" : "none";
+}
+
 window.addEventListener("keydown", (event) => {
   if (event.key === "e" || event.key === "E" || event.key === "Enter") {
     input.interactQueued = true;
@@ -269,18 +422,22 @@ storyMapButton?.addEventListener("click", () => {
 });
 
 function updatePointerTarget(event) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = viewport.width / rect.width;
-  const scaleY = viewport.height / rect.height;
-  const screenX = (event.clientX - rect.left) * scaleX;
-  const screenY = (event.clientY - rect.top) * scaleY;
+  const screenPoint = getCanvasScreenPoint(event);
+  const zoom = getCameraZoom();
 
-  input.pointerX = clamp(camera.x + screenX, 0, world.width);
-  input.pointerY = clamp(camera.y + screenY, 0, world.height);
+  input.pointerX = clamp(camera.x + screenPoint.x / zoom, 0, world.width);
+  input.pointerY = clamp(camera.y + screenPoint.y / zoom, 0, world.height);
 }
 
 canvas.addEventListener("pointerdown", (event) => {
   if (event.pointerType === "mouse" && event.button !== 0) {
+    return;
+  }
+
+  const screenPoint = getCanvasScreenPoint(event);
+  if (isPointInsideRect(screenPoint, hudHelp.button)) {
+    toggleHudHelp();
+    event.preventDefault();
     return;
   }
 
@@ -295,6 +452,8 @@ canvas.addEventListener("pointerdown", (event) => {
 });
 
 canvas.addEventListener("pointermove", (event) => {
+  syncHudHelpCursor(event);
+
   if (!input.pointerActive || event.pointerId !== input.pointerId) {
     return;
   }
@@ -306,6 +465,10 @@ canvas.addEventListener("pointermove", (event) => {
   );
   input.pointerMoved ||= dragDistance > 18;
   event.preventDefault();
+});
+
+canvas.addEventListener("pointerleave", () => {
+  canvas.style.cursor = "none";
 });
 
 function stopPointerControl(event) {
@@ -374,6 +537,7 @@ orientationLockButton?.addEventListener("click", requestLandscapeLock);
 window.addEventListener("resize", updateLandscapePrompt);
 portraitMedia.addEventListener?.("change", updateLandscapePrompt);
 coarsePointerMedia.addEventListener?.("change", updateLandscapePrompt);
+desktopCameraMedia.addEventListener?.("change", snapCameraToPlayer);
 screen.orientation?.addEventListener?.("change", updateLandscapePrompt);
 updateLandscapePrompt();
 
@@ -544,10 +708,19 @@ function loadImage(source) {
 function getCameraTarget() {
   const leadX = clamp(player.vx * 0.28, -92, 92);
   const leadY = clamp(player.vy * 0.22, -70, 70);
+  const visibleWorld = getVisibleWorldSize();
 
   return {
-    x: clamp(player.x + leadX - viewport.width / 2, 0, world.width - viewport.width),
-    y: clamp(player.y + leadY - viewport.height / 2, 0, world.height - viewport.height),
+    x: clamp(
+      player.x + leadX - visibleWorld.width / 2,
+      0,
+      Math.max(0, world.width - visibleWorld.width),
+    ),
+    y: clamp(
+      player.y + leadY - visibleWorld.height / 2,
+      0,
+      Math.max(0, world.height - visibleWorld.height),
+    ),
   };
 }
 
@@ -576,6 +749,13 @@ async function loadAssets() {
 function update(dt) {
   if (!assets.ready) {
     return;
+  }
+
+  if (hudHelp.expanded && hudHelp.autoCollapse) {
+    hudHelp.elapsed += dt;
+    if (hudHelp.elapsed >= hudHelp.collapseDelay) {
+      hudHelp.expanded = false;
+    }
   }
 
   let moveX = 0;
@@ -1131,21 +1311,39 @@ function drawPlayer() {
 function drawHud() {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-  ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
-  ctx.fillRect(18, 18, 520, 92);
+  const helpWidth = Math.min(520, viewport.width - 36);
+  const helpHeight = hudHelp.expanded ? 92 : 38;
+  hudHelp.button = {
+    x: 18,
+    y: 18,
+    width: hudHelp.expanded ? helpWidth : 140,
+    height: helpHeight,
+  };
 
+  ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
+  ctx.fillRect(hudHelp.button.x, hudHelp.button.y, hudHelp.button.width, hudHelp.button.height);
   ctx.strokeStyle = "rgba(146, 246, 255, 0.3)";
   ctx.lineWidth = 2;
-  ctx.strokeRect(18, 18, 520, 92);
+  ctx.strokeRect(hudHelp.button.x, hudHelp.button.y, hudHelp.button.width, hudHelp.button.height);
 
   ctx.fillStyle = "#eef8ff";
-  ctx.font = "18px Trebuchet MS";
-  ctx.fillText("PoCoBOT // Mercado de Reles Muertos", 32, 46);
+  ctx.font = hudHelp.expanded ? "18px Trebuchet MS" : "700 14px Trebuchet MS";
+  ctx.fillText(
+    hudHelp.expanded ? "PoCoBOT // Mercado de Reles Muertos" : "Info controles",
+    32,
+    hudHelp.expanded ? 46 : 42,
+  );
 
-  ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
-  ctx.font = "14px Trebuchet MS";
-  ctx.fillText("WASD / Flechas o manten raton/dedo para moverte", 32, 68);
-  ctx.fillText("Acercate a un punto activo · boton flotante para volver al mapa", 32, 88);
+  if (hudHelp.expanded) {
+    ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
+    ctx.font = "14px Trebuchet MS";
+    ctx.fillText("WASD o manten raton/dedo para moverte", 32, 68);
+    ctx.fillText("Acercate a un punto activo · boton flotante para volver al mapa", 32, 88);
+  } else {
+    ctx.fillStyle = "rgba(146, 246, 255, 0.78)";
+    ctx.font = "14px Trebuchet MS";
+    ctx.fillText("+", hudHelp.button.x + hudHelp.button.width - 28, 42);
+  }
 
   if (interactionState.messageTimer > 0 || interactionState.active) {
     const message = interactionState.messageTimer > 0
@@ -1191,6 +1389,8 @@ function render() {
 
   ctx.clearRect(0, 0, viewport.width, viewport.height);
   ctx.save();
+  const cameraZoom = getCameraZoom();
+  ctx.scale(cameraZoom, cameraZoom);
   ctx.translate(-camera.x, -camera.y);
 
   drawMap();
@@ -1234,5 +1434,6 @@ loadAssets()
     console.error("No se pudieron cargar los activos del juego:", error);
   })
   .finally(() => {
+    startMarketCrowdAmbience();
     requestAnimationFrame(gameLoop);
   });
