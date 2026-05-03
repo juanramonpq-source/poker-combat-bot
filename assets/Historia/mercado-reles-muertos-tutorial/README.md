@@ -16,6 +16,7 @@ Prototipo jugable autocontenido para integrar en PoCoBOT como tutorial de movimi
 ## Sistemas incluidos
 
 - Movimiento con `WASD`, ratón o táctil.
+- Seleccion e interaccion con `E` o `Enter`.
 - Movimiento con raton o tactil manteniendo pulsado y arrastrando sobre el canvas.
 - Toque corto para interactuar en movil cuando el jugador esta cerca de Vera o del sparring.
 - Boton flotante de vuelta al mapa cuando se juega como experiencia independiente; en modo embebido lo aporta el contenedor del modo historia.

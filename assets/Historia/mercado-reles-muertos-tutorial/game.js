@@ -1348,8 +1348,8 @@ function drawHud() {
   if (hudHelp.expanded) {
     ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
     ctx.font = "14px Trebuchet MS";
-    ctx.fillText("WASD o manten raton/dedo para moverte", 32, 68);
-    ctx.fillText("Acercate a un punto activo · boton flotante para volver al mapa", 32, 88);
+    ctx.fillText("WASD para moverte · E / Enter para seleccionar", 32, 68);
+    ctx.fillText("Raton/dedo para moverte · acercate a puntos activos", 32, 88);
   } else {
     ctx.fillStyle = "rgba(146, 246, 255, 0.78)";
     ctx.font = "14px Trebuchet MS";

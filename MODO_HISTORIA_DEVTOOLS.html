@@ -235,21 +235,26 @@
       line-height:1.35;
     }
     @media (max-width:860px){
+      html{
+        min-height:100%;
+        overflow-x:hidden;
+        overflow-y:auto;
+        overscroll-behavior:auto;
+      }
       body{
-        height:100svh;
-        overflow:hidden;
+        min-height:100dvh;
+        overflow-x:hidden;
+        overflow-y:auto;
+        background-attachment:scroll;
       }
       .shell{
         width:100%;
-        height:100svh;
-        min-height:0;
-        padding:14px 14px 0;
-        display:flex;
-        flex-direction:column;
-        overflow:hidden;
+        min-height:100dvh;
+        padding:14px 14px max(22px, env(safe-area-inset-bottom));
+        display:block;
+        overflow:visible;
       }
       .hero{
-        flex:0 0 auto;
         margin-bottom:12px;
         padding:18px;
         border-radius:22px;
@@ -261,32 +266,82 @@
         font-size:.9rem;
         line-height:1.5;
       }
-      .grid{grid-template-columns:1fr}
       .grid{
-        flex:1 1 auto;
-        min-height:0;
-        overflow-y:auto;
-        overflow-x:hidden;
-        padding:0 0 max(18px, env(safe-area-inset-bottom));
-        -webkit-overflow-scrolling:touch;
-        overscroll-behavior:contain;
-        touch-action:pan-y;
+        grid-template-columns:1fr;
+        min-width:0;
+        overflow:visible;
+        padding:0;
+        touch-action:auto;
       }
       .music-row{grid-template-columns:1fr}
       button, select{width:100%}
       .actions{display:grid}
       .panel{
+        min-width:0;
         border-radius:20px;
+        overflow:visible;
       }
       .panel + .panel{
         margin-top:12px;
       }
+      .panel-head,
       .panel-body{
+        min-width:0;
         padding:14px;
+      }
+      .panel-head{
+        align-items:flex-start;
+        flex-direction:column;
       }
       .node-title{
         align-items:flex-start;
         flex-direction:column;
+      }
+      .node-card,
+      textarea,
+      audio{
+        min-width:0;
+      }
+      textarea{
+        min-height:220px;
+        max-height:52dvh;
+        overflow:auto;
+        -webkit-overflow-scrolling:touch;
+      }
+    }
+    @media (max-width:860px) and (orientation:landscape){
+      .shell{
+        padding:10px 12px max(18px, env(safe-area-inset-bottom));
+      }
+      .hero{
+        grid-template-columns:1fr auto;
+        align-items:center;
+        gap:10px 14px;
+        padding:12px;
+        border-radius:18px;
+      }
+      .hero .kicker,
+      .hero h1,
+      .hero p{
+        grid-column:1;
+      }
+      .hero .actions{
+        grid-column:2;
+        grid-row:1 / span 3;
+        min-width:180px;
+      }
+      h1{
+        font-size:clamp(1.45rem, 6vw, 2.35rem);
+      }
+      .hero p{
+        max-width:64ch;
+        font-size:.82rem;
+      }
+      .panel-body{
+        gap:10px;
+      }
+      textarea{
+        max-height:46dvh;
       }
     }
   </style>
