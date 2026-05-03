@@ -186,6 +186,15 @@ const interactables = [
       ? "Viajero espera otra marca de la Ruta Ceniza."
       : "Viajero: iniciando sparring con tu mazo ampliado.",
   },
+  {
+    id: "map_exit",
+    x: 768,
+    y: 850,
+    radius: 150,
+    label: "Salida del Mercado",
+    hint: "Volver al mapa",
+    message: "La salida del Mercado devuelve a la Ruta Ceniza.",
+  },
 ];
 
 const interactionState = {
@@ -202,7 +211,7 @@ const hudHelp = {
   button: { x: 18, y: 18, width: 140, height: 38 },
 };
 
-const MARKET_CROWD_VOLUME = 0.24;
+const MARKET_CROWD_VOLUME = 0.192;
 let marketCrowdShouldPlay = true;
 let marketCrowdFadeFrame = null;
 
@@ -927,9 +936,11 @@ function updateInteractions(dt) {
         postStoryTutorialAction("talk-vera");
       } else if (nearest.id === "sparring") {
         postStoryTutorialAction("sparring");
+      } else if (nearest.id === "map_exit") {
+        postStoryTutorialAction("return-map");
       }
     } else {
-      setInteractionMessage("Acercate a Vera Hex o a Viajero para interactuar.", 2.4);
+      setInteractionMessage("Acercate a Vera Hex, Viajero o la salida para interactuar.", 2.4);
     }
 
     input.interactQueued = false;
