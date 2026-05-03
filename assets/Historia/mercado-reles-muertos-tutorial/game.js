@@ -14,6 +14,19 @@ if (storyEmbedMode) {
   document.body.classList.add("story-embed-mode");
 }
 
+canvas.setAttribute("tabindex", "0");
+
+function focusExplorationInput() {
+  try {
+    window.focus();
+  } catch (error) {}
+  try {
+    canvas.focus({ preventScroll: true });
+  } catch (error) {
+    try { canvas.focus(); } catch (focusError) {}
+  }
+}
+
 const viewport = {
   width: canvas.width,
   height: canvas.height,
@@ -444,9 +457,22 @@ window.addEventListener("keyup", (event) => {
   event.preventDefault();
 });
 
+window.addEventListener("load", () => {
+  window.setTimeout(focusExplorationInput, 40);
+});
+
 window.addEventListener("message", (event) => {
   const data = event.data;
-  if (!data || data.type !== "pocobot-story-exploration-key") {
+  if (!data) {
+    return;
+  }
+
+  if (data.type === "pocobot-story-exploration-focus") {
+    focusExplorationInput();
+    return;
+  }
+
+  if (data.type !== "pocobot-story-exploration-key") {
     return;
   }
 
@@ -457,31 +483,6 @@ window.addEventListener("message", (event) => {
 
   handleStoryExplorationKeyDown(data.key, { repeat: false });
 });
-
-function bindExplorationControls() {
-  document.querySelectorAll("[data-control-key]").forEach((button) => {
-    const key = button.dataset.controlKey;
-    if (!key) return;
-    const setPressed = (pressed) => button.classList.toggle("is-pressed", pressed);
-    const release = (event) => {
-      if (event) event.preventDefault();
-      setPressed(false);
-      if (key !== "e") handleStoryExplorationKeyUp(key);
-    };
-    button.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
-      button.setPointerCapture?.(event.pointerId);
-      setPressed(true);
-      handleStoryExplorationKeyDown(key, { repeat: false });
-    }, { passive: false });
-    button.addEventListener("pointerup", release, { passive: false });
-    button.addEventListener("pointercancel", release, { passive: false });
-    button.addEventListener("pointerleave", release, { passive: false });
-    button.addEventListener("contextmenu", (event) => event.preventDefault());
-  });
-}
-
-bindExplorationControls();
 
 storyMapButton?.addEventListener("click", () => {
   setInteractionMessage("Volviendo al mapa de la Ruta Ceniza...", 1.4);
@@ -497,6 +498,8 @@ function updatePointerTarget(event) {
 }
 
 canvas.addEventListener("pointerdown", (event) => {
+  focusExplorationInput();
+
   if (event.pointerType === "mouse" && event.button !== 0) {
     return;
   }

@@ -3687,6 +3687,7 @@
               id="storyExplorationFrame"
               title="Tutorial de movimiento del Mercado de Relés Muertos"
               src="about:blank"
+              tabindex="0"
               allow="fullscreen"
               allowfullscreen
               loading="eager"></iframe>
@@ -6271,6 +6272,17 @@
       return Math.abs(element.scrollTop - previousScrollTop) > 0.1;
     }
 
+    function forceScrollStoryElementBy(element, deltaY) {
+      if (!element || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
+      const maxScroll = getStoryScrollableMax(element);
+      if (maxScroll <= 1) return false;
+      const previousScrollTop = element.scrollTop;
+      const nextScrollTop = Math.max(0, Math.min(maxScroll, previousScrollTop + deltaY));
+      if (Math.abs(nextScrollTop - previousScrollTop) < 0.1) return false;
+      element.scrollTop = nextScrollTop;
+      return Math.abs(element.scrollTop - previousScrollTop) > 0.1;
+    }
+
     function getStoryEventPathElements(event, root) {
       const path = typeof event?.composedPath === 'function' ? event.composedPath() : [];
       if (path.length) return path.filter((node) => (
@@ -6316,9 +6328,10 @@
     function scrollStorySceneDialogBy(deltaY, event = null) {
       const scroller = getStorySceneScrollContainer();
       if (!scroller || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
-      return scrollStoryElementBy(storySceneScroll, deltaY)
-        || scrollStoryElementBy(storySceneCard, deltaY)
-        || scrollStoryElementBy(storySceneStage, deltaY)
+      return forceScrollStoryElementBy(scroller, deltaY)
+        || forceScrollStoryElementBy(storySceneScroll, deltaY)
+        || forceScrollStoryElementBy(storySceneCard, deltaY)
+        || forceScrollStoryElementBy(storySceneStage, deltaY)
         || scrollFirstAvailableStorySurface(getStorySceneWheelCandidates(event), deltaY);
     }
 
@@ -6375,7 +6388,8 @@
       const deltaY = normalizeStorySceneWheelDelta(event);
       if (!Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return;
       if (handledStoryWheelEvents.has(event)) return;
-      if (!scrollStorySceneDialogBy(deltaY, event)) return;
+      const didScroll = scrollStorySceneDialogBy(deltaY, event);
+      if (!didScroll && getStoryScrollableMax(getStorySceneScrollContainer()) <= 1) return;
       if (!markStoryWheelEventHandled(event)) return;
       event.preventDefault();
       event.stopPropagation();
@@ -6542,8 +6556,10 @@
 
     function scrollStoryMarketBy(deltaY, event = null) {
       if (!isStoryMarketWheelReady() || !Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return false;
-      return scrollStoryElementBy(storyMarketShell, deltaY)
-        || scrollStoryElementBy(storyMarketStage, deltaY)
+      const scroller = getStoryMarketScrollContainer();
+      return forceScrollStoryElementBy(scroller, deltaY)
+        || forceScrollStoryElementBy(storyMarketShell, deltaY)
+        || forceScrollStoryElementBy(storyMarketStage, deltaY)
         || scrollFirstAvailableStorySurface(getStoryMarketWheelCandidates(event), deltaY);
     }
 
@@ -6570,7 +6586,8 @@
       const deltaY = normalizeStoryMarketWheelDelta(event);
       if (!Number.isFinite(deltaY) || Math.abs(deltaY) < 0.1) return;
       if (handledStoryWheelEvents.has(event)) return;
-      if (!scrollStoryMarketBy(deltaY, event)) return;
+      const didScroll = scrollStoryMarketBy(deltaY, event);
+      if (!didScroll && getStoryScrollableMax(getStoryMarketScrollContainer()) <= 1) return;
       if (!markStoryWheelEventHandled(event)) return;
       event.preventDefault();
       event.stopPropagation();
@@ -6897,9 +6914,14 @@
       rememberStorySurface({ type: 'exploration', nodeId: 'mercado' });
       queueStoryMapTheme('market');
       playMapMusic();
-      storyExplorationFrame.src = buildStoryMarketExplorationUrl();
+      const targetUrl = buildStoryMarketExplorationUrl();
       storyExplorationStage.hidden = false;
-      requestAnimationFrame(() => storyExplorationStage.classList.add('active'));
+      storyExplorationFrame.src = 'about:blank';
+      requestAnimationFrame(() => {
+        storyExplorationFrame.src = targetUrl;
+        storyExplorationStage.classList.add('active');
+        window.setTimeout(focusStoryExplorationFrame, 40);
+      });
     }
 
     function closeStoryMarketExploration(options = {}) {
@@ -7331,7 +7353,7 @@
       requestAnimationFrame(() => {
         storyExplorationFrame.src = targetUrl;
         storyExplorationStage.classList.add('active');
-        storyExplorationFrame.focus?.();
+        window.setTimeout(focusStoryExplorationFrame, 40);
       });
     }
 
@@ -7390,6 +7412,23 @@
         && !!storyExplorationFrame
         && !storyExplorationStage.hidden
         && storyExplorationStage.classList.contains('active');
+    }
+
+    function focusStoryExplorationFrame() {
+      if (!isStoryExplorationKeyboardActive()) return;
+      try {
+        storyExplorationFrame.focus({ preventScroll: true });
+      } catch (error) {
+        try { storyExplorationFrame.focus(); } catch (focusError) {}
+      }
+      try {
+        storyExplorationFrame.contentWindow?.focus();
+      } catch (error) {}
+      try {
+        storyExplorationFrame.contentWindow?.postMessage({
+          type: 'pocobot-story-exploration-focus'
+        }, '*');
+      } catch (error) {}
     }
 
     function forwardStoryExplorationKey(event, phase) {
@@ -8270,6 +8309,9 @@
     });
     window.addEventListener('keydown', (event) => forwardStoryExplorationKey(event, 'down'), { capture: true });
     window.addEventListener('keyup', (event) => forwardStoryExplorationKey(event, 'up'), { capture: true });
+    storyExplorationFrame?.addEventListener('load', () => {
+      window.setTimeout(focusStoryExplorationFrame, 40);
+    });
 
     workspacePanel.addEventListener('pointerdown', () => {
       if (!workspacePanel.classList.contains('active') || mapMusicUnlocked) return;

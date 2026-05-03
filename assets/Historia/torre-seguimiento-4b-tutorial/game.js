@@ -616,31 +616,6 @@ window.addEventListener("message", (event) => {
   handleStoryExplorationKeyDown(data.key, { repeat: false });
 });
 
-function bindExplorationControls() {
-  document.querySelectorAll("[data-control-key]").forEach((button) => {
-    const key = button.dataset.controlKey;
-    if (!key) return;
-    const setPressed = (pressed) => button.classList.toggle("is-pressed", pressed);
-    const release = (event) => {
-      if (event) event.preventDefault();
-      setPressed(false);
-      if (key !== "e") handleStoryExplorationKeyUp(key);
-    };
-    button.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
-      button.setPointerCapture?.(event.pointerId);
-      setPressed(true);
-      handleStoryExplorationKeyDown(key, { repeat: false });
-    }, { passive: false });
-    button.addEventListener("pointerup", release, { passive: false });
-    button.addEventListener("pointercancel", release, { passive: false });
-    button.addEventListener("pointerleave", release, { passive: false });
-    button.addEventListener("contextmenu", (event) => event.preventDefault());
-  });
-}
-
-bindExplorationControls();
-
 storyMapButton?.addEventListener("click", () => {
   startChapterMusic();
   setInteractionMessage("Volviendo al mapa de la Ruta Ceniza...", 1.4);
