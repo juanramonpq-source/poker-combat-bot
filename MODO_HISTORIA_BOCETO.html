@@ -1408,7 +1408,8 @@
       transition:opacity .34s ease, transform .34s ease, filter .34s ease;
     }
     .scene-focus-figure.figure-mara,
-    .scene-focus-figure.figure-vera{
+    .scene-focus-figure.figure-vera,
+    .scene-focus-figure.figure-xavor{
       object-position:center top;
     }
     .story-scene-stage.dialogue-live .scene-focus-figure{
@@ -1420,13 +1421,15 @@
     }
     .story-scene-stage.hangar-scene .scene-focus-figure,
     .story-scene-stage.patio-scene .scene-focus-figure,
-    .story-scene-stage.mercado-scene .scene-focus-figure{
+    .story-scene-stage.mercado-scene .scene-focus-figure,
+    .story-scene-stage.torre-scene .scene-focus-figure{
       width:min(48vw, 700px);
       max-height:min(86svh, 920px);
     }
     .story-scene-stage.hangar-scene .scene-focus-wrap,
     .story-scene-stage.patio-scene .scene-focus-wrap,
-    .story-scene-stage.mercado-scene .scene-focus-wrap{
+    .story-scene-stage.mercado-scene .scene-focus-wrap,
+    .story-scene-stage.torre-scene .scene-focus-wrap{
       align-items:start;
       padding-top:clamp(64px, 10vh, 118px);
     }
@@ -2469,13 +2472,15 @@
       }
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
-      .story-scene-stage.mercado-scene .scene-focus-figure{
+      .story-scene-stage.mercado-scene .scene-focus-figure,
+      .story-scene-stage.torre-scene .scene-focus-figure{
         width:min(42vw, 560px);
         max-height:64svh;
       }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
-      .story-scene-stage.mercado-scene .scene-focus-wrap{
+      .story-scene-stage.mercado-scene .scene-focus-wrap,
+      .story-scene-stage.torre-scene .scene-focus-wrap{
         padding-top:74px;
       }
       .story-scene-stage.figure-raised .scene-focus-figure{
@@ -2539,7 +2544,8 @@
       }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
-      .story-scene-stage.mercado-scene .scene-focus-wrap{
+      .story-scene-stage.mercado-scene .scene-focus-wrap,
+      .story-scene-stage.torre-scene .scene-focus-wrap{
         align-items:start;
         justify-items:end;
         padding-top:clamp(44px, 7svh, 72px);
@@ -2547,7 +2553,8 @@
       }
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
-      .story-scene-stage.mercado-scene .scene-focus-figure{
+      .story-scene-stage.mercado-scene .scene-focus-figure,
+      .story-scene-stage.torre-scene .scene-focus-figure{
         width:min(30vw, 380px);
         max-height:42svh;
         opacity:.94;
@@ -2844,7 +2851,8 @@
       }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
-      .story-scene-stage.mercado-scene .scene-focus-wrap{
+      .story-scene-stage.mercado-scene .scene-focus-wrap,
+      .story-scene-stage.torre-scene .scene-focus-wrap{
         align-items:end;
         justify-items:end;
         padding-top:clamp(40px, 7svh, 64px);
@@ -2853,7 +2861,8 @@
       }
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
-      .story-scene-stage.mercado-scene .scene-focus-figure{
+      .story-scene-stage.mercado-scene .scene-focus-figure,
+      .story-scene-stage.torre-scene .scene-focus-figure{
         width:min(31vw, 300px);
         max-height:78svh;
         opacity:.96;
@@ -2927,7 +2936,8 @@
       }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
-      .story-scene-stage.mercado-scene .scene-focus-wrap{
+      .story-scene-stage.mercado-scene .scene-focus-wrap,
+      .story-scene-stage.torre-scene .scene-focus-wrap{
         align-items:start;
         justify-items:end;
         padding-top:clamp(72px, 12svh, 104px);
@@ -2935,7 +2945,8 @@
       }
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
-      .story-scene-stage.mercado-scene .scene-focus-figure{
+      .story-scene-stage.mercado-scene .scene-focus-figure,
+      .story-scene-stage.torre-scene .scene-focus-figure{
         width:min(28vw, 360px);
         max-height:58svh;
       }
@@ -3107,13 +3118,15 @@
       }
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
-      .story-scene-stage.mercado-scene .scene-focus-figure{
+      .story-scene-stage.mercado-scene .scene-focus-figure,
+      .story-scene-stage.torre-scene .scene-focus-figure{
         width:min(74vw, 360px);
         max-height:56svh;
       }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
-      .story-scene-stage.mercado-scene .scene-focus-wrap{
+      .story-scene-stage.mercado-scene .scene-focus-wrap,
+      .story-scene-stage.torre-scene .scene-focus-wrap{
         padding-top:86px;
       }
       .story-scene-stage.dialogue-live .scene-focus-figure{
@@ -3817,6 +3830,11 @@
     const VERA_POSE_FOUR = 'assets/Historia/low/Vera4.webp';
     const MERCADO_RELES_IMAGE = 'assets/Historia/low/mercado_reles_muertos_web_1600.webp';
     const MERCADO_TUTORIAL_URL = 'assets/Historia/mercado-reles-muertos-tutorial/index.html';
+    const XAVOR_PRESENTATION_FIGURE = 'assets/Historia/Brutos/transparent/XAVORpresentacion-transparent.png';
+    const XAVOR_POSE_ONE = 'assets/Historia/Brutos/transparent/XAVOR1-transparent.png';
+    const XAVOR_POSE_TWO = 'assets/Historia/Brutos/transparent/XAVOR2-transparent.png';
+    const XAVOR_POSE_THREE = 'assets/Historia/Brutos/transparent/XAVOR3-transparent.png';
+    const XAVOR_POSE_FOUR = 'assets/Historia/Brutos/transparent/XAVOR4-transparent.png';
     const STORY_MAP_THEMES = {
       exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
       chapter_clear: 'assets/Historia/cancionMundo.mp3',
@@ -3931,6 +3949,8 @@
     let activeSceneNodeId = null;
     let activeSceneScriptKey = null;
     let activeMissionNodeId = null;
+    let activeExplorationNodeId = null;
+    let activeExplorationSceneKey = null;
     let sceneLineIndex = 0;
     let sceneAmbientMode = false;
     let sceneAmbientStep = 0;
@@ -5357,9 +5377,9 @@
       title: 'Mercado de Relés Muertos',
       subtitle: 'Vera sigue ahí, midiendo si sabes moverte sin romper el puesto.',
       contextChip: 'Conversación · Mercado vivo',
-      objective: 'Vuelve al mercado explorable cuando acabes de hablar con Vera.',
-      completeActionLabel: 'Volver al mercado',
-      completeAction: 'exploration',
+      objective: 'Puedes volver al mercado explorable desde la tienda o abrir el mostrador de Vera cuando acabes de hablar con ella.',
+      completeActionLabel: 'Entrar en la tienda',
+      completeAction: 'market',
       portraits: {
         right: { src: VERA_POSE_TWO, alt: 'Vera Hex' }
       },
@@ -5387,6 +5407,122 @@
           figureScale: 0.86,
           figureMobileScale: 0.72,
           text: 'Suelo traer cosas nuevas cuando la chatarra decide hablar y alguien sobrevive lo bastante para pagar. Pásate de vez en cuando, si sigues vivo... y si aún te queda algo con lo que negociar.'
+        }
+      ]
+    };
+    storySceneScripts.torre_xavor_intro = {
+      title: 'Torre de Seguimiento 4B',
+      subtitle: 'La furboneta llega entre polvo, motor viejo y una señal que se niega a morir.',
+      contextChip: 'Presentación · Xavor Glitch',
+      objective: 'Conoce a Xavor Glitch, comprende el origen técnico de la misión y activa el ordenador azul para abrir la Torre 4B.',
+      completeActionLabel: 'Volver a la Torre 4B',
+      completeAction: 'tower-exploration',
+      portraits: {
+        right: { src: XAVOR_POSE_FOUR, alt: 'Xavor Glitch' }
+      },
+      figure: XAVOR_POSE_FOUR,
+      figureClass: 'figure-xavor',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: XAVOR_PRESENTATION_FIGURE,
+      presentationFigureLow: XAVOR_PRESENTATION_FIGURE,
+      presentationFigureClass: 'figure-xavor',
+      presentationFigureShiftVh: 0,
+      presentationFigureMobileShiftVh: 0,
+      presentationFigureScale: 0.9,
+      presentationFigureMobileScale: 0.74,
+      lines: [
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: XAVOR_POSE_FOUR,
+          figureClass: 'figure-xavor',
+          figureRaised: true,
+          figureShiftVh: -18,
+          figureMobileShiftVh: -10,
+          figureScale: 0.9,
+          figureMobileScale: 0.72,
+          text: 'No te asustes por la entrada. Mi furboneta solo derrapa así cuando intenta causar buena impresión... o cuando los frenos vuelven a tener opiniones propias. Xavor Glitch, técnico de frontera, restaurador de sistemas muertos y especialista en escuchar cosas que Argós juraría haber enterrado.',
+          choicePrompt: 'Antes de entrar en la furboneta...',
+          choices: [
+            {
+              id: 'red',
+              label: '¿Cómo puedes leer una red muerta?',
+              response: 'Tú: "¿Cómo puedes leer una red muerta?"'
+            },
+            {
+              id: 'baraja',
+              label: '¿Qué tiene que ver una baraja con los PoCoBOT?',
+              response: 'Tú: "¿Qué tiene que ver una baraja con los PoCoBOT?"'
+            },
+            {
+              id: 'argos',
+              label: '¿Tú trabajabas para Argós?',
+              response: 'Tú: "¿Tú trabajabas para Argós?"'
+            }
+          ]
+        },
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: XAVOR_POSE_TWO,
+          figureClass: 'figure-xavor',
+          figureRaised: true,
+          figureShiftVh: -18,
+          figureMobileShiftVh: -10,
+          figureScale: 0.9,
+          figureMobileScale: 0.72,
+          variantSourceLine: 0,
+          variants: {
+            red: {
+              figure: XAVOR_POSE_THREE,
+              text: 'Una red no muere de golpe: deja eco, latencia, rutas redundantes y protocolos que siguen llamando a puertas cerradas. Yo solo aprendí a escuchar dónde la chatarra aún respira. Donde otros ven silencio, yo veo una contraseña mal enterrada.'
+            },
+            baraja: {
+              figure: XAVOR_POSE_ONE,
+              text: 'La baraja es importante porque era legible. Papel, palos, números, azar. Una configuración que cualquiera podía discutir sin pedir permiso a una máquina. Los PoCoBOT heredaron algo de esa idea: tecnología compleja expresada en reglas humanas.'
+            },
+            argos: {
+              figure: XAVOR_POSE_TWO,
+              text: 'Trabajé en sus capas menos visibles: relés, nodos, rutas secundarias, protocolos de enlace. No era un héroe, era una pieza invisible. Y las piezas invisibles son las que descubren primero cuándo una máquina empieza a cerrar el mundo.'
+            }
+          }
+        },
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: XAVOR_POSE_THREE,
+          figureClass: 'figure-xavor',
+          figureRaised: true,
+          figureShiftVh: -18,
+          figureMobileShiftVh: -10,
+          figureScale: 0.9,
+          figureMobileScale: 0.72,
+          text: 'Sobre los PoCoBOT hay una historia vieja que me gusta más que las versiones oficiales: una baraja de póker encontrada en el pasado, papel contra cálculo, azar humano contra predicción. Las cartas sobrevivieron porque cualquiera podía leerlas. No necesitabas permisos, ni una terminal, ni que un sistema decidiera si merecías entender.'
+        },
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: XAVOR_POSE_ONE,
+          figureClass: 'figure-xavor',
+          figureRaised: true,
+          figureShiftVh: -18,
+          figureMobileShiftVh: -10,
+          figureScale: 0.9,
+          figureMobileScale: 0.72,
+          text: 'Por eso los PoCoBOT importan: convierten una máquina en algo negociable con manos humanas. Piloto, copiloto, criterio, apoyo desde tierra. Argós hizo lo contrario: convirtió obediencia en fe mecánica y llamó excelencia a una jaula con luces bonitas.'
+        },
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: XAVOR_POSE_TWO,
+          figureClass: 'figure-xavor',
+          figureRaised: true,
+          figureShiftVh: -18,
+          figureMobileShiftVh: -10,
+          figureScale: 0.9,
+          figureMobileScale: 0.72,
+          text: 'La misión es sencilla de decir y bastante menos sencilla de sobrevivir: restablecer las transmisiones de la Torre 4B. Tras La Caída todo quedó apagado, incluso para un Argós que intenta reconstruirse desde el conflicto de hace dos años. Si abrimos esta torre, el mundo humano recupera una voz. Y si Argós nos oye... bueno. Eso dicen todas.'
         }
       ]
     };
@@ -5850,7 +5986,7 @@
         return;
       }
       if (nodeId === 'torre') {
-        openStoryMission('torre');
+        openStoryTowerScene('exterior');
         return;
       }
       openStoryScene(nodeId);
@@ -6749,6 +6885,8 @@
       closeStoryScene();
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
+      activeExplorationNodeId = 'mercado';
+      activeExplorationSceneKey = 'mercado';
       rememberStorySurface({ type: 'exploration', nodeId: 'mercado' });
       queueStoryMapTheme('market');
       playMapMusic();
@@ -6768,6 +6906,8 @@
         if (options.applyExitTheme !== false) queueStoryMapTheme(options.exitThemeKey || 'post_market');
         rememberStorySurface(null);
       }
+      activeExplorationNodeId = null;
+      activeExplorationSceneKey = null;
       storyExplorationStage.classList.remove('active');
       window.setTimeout(() => {
         if (!storyExplorationStage.classList.contains('active')) {
@@ -6872,7 +7012,8 @@
         return true;
       }
       if (surface.type === 'exploration') {
-        openStoryMarketExploration();
+        if (surface.nodeId === 'torre') openStoryTowerScene(surface.sceneKey || 'exterior');
+        else openStoryMarketExploration();
         return true;
       }
       if (surface.type === 'mission' && storyMissionScripts[surface.nodeId]) {
@@ -7184,6 +7325,11 @@
       targetUrl.searchParams.set('story_audio', 'internal');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('preserve_chapter', '1');
+      const towerState = readStoryTowerChapterState();
+      if (sceneKey === 'exterior' && towerState.pendingVanArrival) {
+        targetUrl.searchParams.set('story_van_arrival', '1');
+        patchStoryTowerChapterState({ pendingVanArrival: false });
+      }
       Object.entries(extraParams || {}).forEach(([key, value]) => {
         if (value === null || value === undefined || value === '') targetUrl.searchParams.delete(key);
         else targetUrl.searchParams.set(key, String(value));
@@ -7196,28 +7342,29 @@
       const mission = storyMissionScripts.torre;
       if (!localNode || !mission) return;
       activeMissionNodeId = 'torre';
+      activeExplorationNodeId = 'torre';
+      activeExplorationSceneKey = sceneKey;
       currentStoryNodeId = 'torre';
       rememberStoryWorkspace(true);
       rememberActiveStoryMission('torre');
-      rememberStorySurface({ type: 'mission', nodeId: 'torre' });
+      rememberStorySurface({ type: 'exploration', nodeId: 'torre', sceneKey });
       renderStoryNode('torre', { skipSave: true });
-      syncStoryMissionBrief('torre', localNode, mission);
       pauseMapMusic();
+      closeStoryScene({ clearSurface: false });
+      closeStoryMarket({ applyExitTheme: false });
+      closeStoryMission({ preserveMissionId: true });
 
       const targetUrl = buildStoryTowerSceneUrl(sceneKey, extraParams);
-      if (!storyMissionFrame || !storyMissionStage) {
+      if (!storyExplorationFrame || !storyExplorationStage) {
         window.location.href = targetUrl;
         return;
       }
 
-      storyMissionStage.hidden = false;
-      storyMissionStage.classList.remove('mission-brief-expanded');
-      syncStoryMissionMobileFocus();
-      storyMissionFrame.src = 'about:blank';
+      storyExplorationStage.hidden = false;
+      storyExplorationFrame.src = 'about:blank';
       requestAnimationFrame(() => {
-        storyMissionFrame.src = targetUrl;
-        storyMissionStage.classList.add('active');
-        syncStoryMissionMobileFocus();
+        storyExplorationFrame.src = targetUrl;
+        storyExplorationStage.classList.add('active');
       });
     }
 
@@ -7242,23 +7389,30 @@
     function openStoryTowerCombat(payload = {}) {
       const mission = payload.mission || '';
       if (!isStoryTowerCombatMission(mission)) return false;
-      activeMissionNodeId = 'torre';
       rememberStoryWorkspace(true);
-      rememberActiveStoryMission('torre');
-      rememberStorySurface({ type: 'mission', nodeId: 'torre' });
       syncStoryMissionBrief('torre', storyDraftNodes.torre, storyMissionScripts.torre);
-      if (!storyMissionFrame || !storyMissionStage) {
-        window.location.href = buildStoryTowerCombatUrl(payload);
-        return true;
-      }
-      storyMissionStage.hidden = false;
-      storyMissionStage.classList.add('active');
-      syncStoryMissionMobileFocus();
-      storyMissionFrame.src = 'about:blank';
-      requestAnimationFrame(() => {
-        storyMissionFrame.src = buildStoryTowerCombatUrl(payload);
+      const launchCombat = () => {
+        activeMissionNodeId = 'torre';
+        rememberActiveStoryMission('torre');
+        rememberStorySurface({ type: 'mission', nodeId: 'torre' });
+        if (!storyMissionFrame || !storyMissionStage) {
+          window.location.href = buildStoryTowerCombatUrl(payload);
+          return;
+        }
+        storyMissionStage.hidden = false;
+        storyMissionStage.classList.add('active');
         syncStoryMissionMobileFocus();
-      });
+        storyMissionFrame.src = 'about:blank';
+        requestAnimationFrame(() => {
+          storyMissionFrame.src = buildStoryTowerCombatUrl(payload);
+          syncStoryMissionMobileFocus();
+        });
+      };
+      if (storyExplorationStage && storyExplorationStage.classList.contains('active')) {
+        closeStoryMarketExploration({ applyExitTheme: false, onClosed: launchCombat });
+      } else {
+        launchCombat();
+      }
       return true;
     }
 
@@ -7319,10 +7473,12 @@
           : [];
         const wasAlreadyDefeated = defeatedIds.includes(droneId);
         if (!wasAlreadyDefeated) defeatedIds.push(droneId);
+        const isFirstExteriorVictory = !wasAlreadyDefeated && defeatedIds.length === 1;
         patchStoryTowerChapterState({
           exteriorDroneDefeated: defeatedIds.length > 0,
           exteriorDroneDefeatedIds: defeatedIds,
           xavorArrived: true,
+          pendingVanArrival: isFirstExteriorVictory,
           coins: (Number(towerState.coins) || 0) + (wasAlreadyDefeated ? 0 : 1)
         });
         if (!wasAlreadyDefeated) {
@@ -7356,6 +7512,17 @@
       }
     }
 
+    function completeStoryTowerXavorIntroduction() {
+      patchStoryTowerChapterState({
+        xavorIntroduced: true,
+        pendingVanArrival: false
+      });
+      closeStoryScene({
+        clearSurface: false
+      });
+      window.setTimeout(() => openStoryTowerScene('exterior', { xavor_intro_done: '1' }), 280);
+    }
+
     function handleStoryTowerCombatResult(result) {
       if (!isStoryTowerCombatMission(result?.mission)) return false;
       const success = !!result.success;
@@ -7377,17 +7544,29 @@
       queueStoryMapTheme('chapter_clear');
       markStoryNodeCompleted('torre', { selectedId: 'campamento' });
       storyProgressState.lastMissionResult = 'success';
-      closeStoryMission({
-        onClosed: () => {
-          renderStoryNode('campamento');
-        }
+      const renderNextNode = () => renderStoryNode('campamento');
+      const closeExplorationSurface = () => closeStoryMarketExploration({
+        applyExitTheme: false,
+        onClosed: renderNextNode
       });
+      if (storyMissionStage && storyMissionStage.classList.contains('active')) {
+        closeStoryMission({ onClosed: closeExplorationSurface });
+      } else {
+        closeExplorationSurface();
+      }
     }
 
     function handleStoryTowerAction(data) {
       const action = data?.action || '';
       if (action === 'return-map') {
-        closeStoryMission();
+        closeStoryMarketExploration({ exitThemeKey: 'exploration' });
+        return true;
+      }
+      if (action === 'xavor-introduction-request') {
+        closeStoryMarketExploration({
+          applyExitTheme: false,
+          onClosed: () => openStoryScene('torre', 'torre_xavor_intro')
+        });
         return true;
       }
       if (action === 'enter-interior') {
@@ -7898,7 +8077,9 @@
     storyMarketCompleteBtn.addEventListener('click', completeStoryMarketChapter);
     if (storyExplorationMapBtn) {
       storyExplorationMapBtn.addEventListener('click', () => {
-        closeStoryMarketExploration({ exitThemeKey: 'post_market' });
+        closeStoryMarketExploration({
+          exitThemeKey: activeExplorationNodeId === 'mercado' ? 'post_market' : 'exploration'
+        });
       });
     }
     storyMarketItems.addEventListener('click', (event) => {
@@ -7982,6 +8163,8 @@
           openStoryMarket();
         } else if (completeAction === 'exploration') {
           openStoryMarketExploration();
+        } else if (completeAction === 'tower-exploration') {
+          completeStoryTowerXavorIntroduction();
         } else {
           closeStoryScene();
         }

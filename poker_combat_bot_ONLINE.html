@@ -10383,8 +10383,9 @@ const STORY_TOWER_COMBAT_PROFILES = {
     suit: 'hearts',
     suitLabel: 'corazones',
     rank: '7',
+    limitedSuit: true,
     enemyId: 'argos-perimeter-drone-plaza',
-    intro: 'Combate temático de Torre 4B: este dron solo conserva una carta de corazones. Si cae, no tiene forma de recuperar ese palo.'
+    intro: 'Combate temático de Torre 4B: este dron conserva un mazo normal salvo por los corazones: solo mantiene una carta de ese palo y ya está montado para atacar desde el principio.'
   },
   tower_drone_spades: {
     enemyName: 'Dron de picas',
@@ -10392,8 +10393,9 @@ const STORY_TOWER_COMBAT_PROFILES = {
     suit: 'spades',
     suitLabel: 'picas',
     rank: '7',
+    limitedSuit: true,
     enemyId: 'argos-perimeter-drone-relay',
-    intro: 'Combate temático de Torre 4B: este dron solo conserva una carta de picas. Argos lo diseñó para morder una vez y quedarse sin filo.'
+    intro: 'Combate temático de Torre 4B: este dron conserva un mazo normal salvo por las picas: solo mantiene una carta de ese palo y ya está montado para atacar desde el principio.'
   },
   tower_drone_clubs: {
     enemyName: 'Dron de treboles',
@@ -10401,8 +10403,9 @@ const STORY_TOWER_COMBAT_PROFILES = {
     suit: 'clubs',
     suitLabel: 'treboles',
     rank: '7',
+    limitedSuit: true,
     enemyId: 'argos-perimeter-drone-north',
-    intro: 'Combate temático de Torre 4B: este dron solo conserva una carta de treboles. Rompe esa armadura y la ronda queda limpia.'
+    intro: 'Combate temático de Torre 4B: este dron conserva un mazo normal salvo por los tréboles: solo mantiene una carta de ese palo y ya está montado para atacar desde el principio.'
   },
   tower_interior_drone: {
     enemyName: 'Dron interior',
@@ -10440,60 +10443,106 @@ function takeStoryTowerCard(deck, rank, suit, customId, owner){
   return setStoryCardOwner(tutorialTakeCard(deck, rank, suit, customId), owner);
 }
 
+function takeStoryTowerAvailableCard(deck, specs, customId, owner){
+  const options = Array.isArray(specs) ? specs : [specs];
+  for(const spec of options){
+    if(!spec) continue;
+    const idx = deck.findIndex(card => card.rank === spec.rank && card.suit === spec.suit);
+    if(idx < 0) continue;
+    const card = deck.splice(idx, 1)[0];
+    card.id = customId;
+    return setStoryCardOwner(card, owner);
+  }
+  const fallback = options.find(Boolean) || { rank:'2', suit:'clubs' };
+  return makeStoryTowerStaticCard(customId, fallback.rank, fallback.suit, owner);
+}
+
 function makeStoryTowerStaticCard(id, rank, suit, owner = 1){
   return { id, rank, suit, value:rankValue(rank), storyDeckOwner:owner };
 }
 
 function buildStoryTowerEnemyDeck(profile, owner = 1){
   const deck = createDeck({ owner, prefix:`tw${owner}-c` });
-  const blockedSuit = profile?.suit || null;
-  return shuffle(deck.filter((card) => !blockedSuit || card.suit !== blockedSuit));
+  if(profile?.limitedSuit && profile?.suit){
+    return shuffle(deck.filter((card) => card.suit !== profile.suit || card.rank === profile.rank));
+  }
+  return shuffle(deck);
 }
 
 function setupStoryTowerPlayerBase(player, playerDeck, options = {}){
   player.name = 'Piloto';
-  player.core.pilot = takeStoryTowerCard(playerDeck, 'K', 'spades', `${options.prefix || 'tower'}-pilot`, 0);
-  player.core.copilot = takeStoryTowerCard(playerDeck, 'J', 'hearts', `${options.prefix || 'tower'}-copilot`, 0);
-  player.core.booster = options.withSpadeBooster
-    ? null
-    : takeStoryTowerCard(playerDeck, 'A', 'diamonds', `${options.prefix || 'tower'}-booster`, 0);
-  player.attack = [
-    takeStoryTowerCard(playerDeck, '10', 'spades', `${options.prefix || 'tower'}-attack-10`, 0),
-    takeStoryTowerCard(playerDeck, '8', 'spades', `${options.prefix || 'tower'}-attack-8`, 0),
-    takeStoryTowerCard(playerDeck, '6', 'spades', `${options.prefix || 'tower'}-attack-6`, 0)
-  ];
-  player.defense = [takeStoryTowerCard(playerDeck, '9', 'hearts', `${options.prefix || 'tower'}-defense`, 0)];
-  player.armor = [
-    takeStoryTowerCard(playerDeck, '9', 'clubs', `${options.prefix || 'tower'}-armor-9`, 0),
-    takeStoryTowerCard(playerDeck, '8', 'clubs', `${options.prefix || 'tower'}-armor-8`, 0)
-  ];
-  player.fuel = options.lockFuel ? [] : [takeStoryTowerCard(playerDeck, '7', 'diamonds', `${options.prefix || 'tower'}-fuel`, 0)];
+  player.core.pilot = null;
+  player.core.copilot = null;
+  player.core.booster = null;
+  player.attack = [];
+  player.defense = [];
+  player.armor = [];
+  player.fuel = [];
   player.hand = options.withSpadeBooster
     ? [
-        takeStoryTowerCard(playerDeck, 'A', 'spades', `${options.prefix || 'tower'}-hand-as-spades`, 0),
-        takeStoryTowerCard(playerDeck, '4', 'spades', `${options.prefix || 'tower'}-hand-projectile`, 0),
-        takeStoryTowerCard(playerDeck, '6', 'clubs', `${options.prefix || 'tower'}-hand-armor`, 0)
+        takeStoryTowerAvailableCard(playerDeck, { rank:'K', suit:'spades' }, `${options.prefix || 'tower'}-hand-pilot`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'J', suit:'hearts' }, `${options.prefix || 'tower'}-hand-copilot`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'A', suit:'spades' }, `${options.prefix || 'tower'}-hand-as-spades`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'10', suit:'spades' }, `${options.prefix || 'tower'}-hand-projectile`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'8', suit:'clubs' }, `${options.prefix || 'tower'}-hand-armor-8`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'6', suit:'clubs' }, `${options.prefix || 'tower'}-hand-armor-6`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'8', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-draw-diamond`, 0)
       ]
     : [
-        takeStoryTowerCard(playerDeck, '4', 'diamonds', `${options.prefix || 'tower'}-hand-fuel`, 0),
-        takeStoryTowerCard(playerDeck, '5', 'spades', `${options.prefix || 'tower'}-hand-shot`, 0)
+        takeStoryTowerAvailableCard(playerDeck, { rank:'K', suit:'spades' }, `${options.prefix || 'tower'}-hand-pilot`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'J', suit:'hearts' }, `${options.prefix || 'tower'}-hand-copilot`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'A', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-booster`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'10', suit:'spades' }, `${options.prefix || 'tower'}-hand-attack-10`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'8', suit:'spades' }, `${options.prefix || 'tower'}-hand-attack-8`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'9', suit:'hearts' }, `${options.prefix || 'tower'}-hand-defense`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'9', suit:'clubs' }, `${options.prefix || 'tower'}-hand-armor`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'7', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-fuel`, 0),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'4', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-draw`, 0)
       ];
 }
 
 function setupStoryTowerDroneEnemy(enemy, enemyDeck, profile){
   enemy.name = profile.enemyName;
-  const safeSuits = ['clubs', 'spades', 'hearts', 'diamonds'].filter((suit) => suit !== profile.suit);
-  const pilotSuit = safeSuits.find((suit) => suit !== 'diamonds') || safeSuits[0] || 'clubs';
-  const copilotSuit = safeSuits.find((suit) => suit !== pilotSuit) || safeSuits[0] || 'diamonds';
-  enemy.core.pilot = makeStoryTowerStaticCard(`${profile.enemyId}-pilot`, 'Q', pilotSuit, 1);
-  enemy.core.copilot = makeStoryTowerStaticCard(`${profile.enemyId}-copilot`, 'J', copilotSuit, 1);
-  enemy.core.booster = null;
-  const themeCard = makeStoryTowerStaticCard(`${profile.enemyId}-${profile.suit}`, profile.rank, profile.suit, 1);
-  enemy.attack = [];
-  enemy.defense = profile.suit === 'clubs' ? [] : [themeCard];
-  enemy.armor = profile.suit === 'clubs' ? [themeCard] : [];
-  enemy.fuel = [];
-  enemy.hand = [];
+  enemy.core.pilot = takeStoryTowerAvailableCard(enemyDeck, [
+    { rank:'Q', suit:'clubs' },
+    { rank:'Q', suit:'hearts' },
+    { rank:'Q', suit:'diamonds' },
+    { rank:'Q', suit:'spades' }
+  ], `${profile.enemyId}-pilot`, 1);
+  enemy.core.copilot = takeStoryTowerAvailableCard(enemyDeck, [
+    { rank:'J', suit:'diamonds' },
+    { rank:'J', suit:'hearts' },
+    { rank:'J', suit:'clubs' },
+    { rank:'J', suit:'spades' }
+  ], `${profile.enemyId}-copilot`, 1);
+  enemy.core.booster = takeStoryTowerAvailableCard(enemyDeck, [
+    { rank:'A', suit:'diamonds' },
+    { rank:'A', suit:'clubs' },
+    { rank:'A', suit:'hearts' },
+    { rank:'A', suit:'spades' }
+  ], `${profile.enemyId}-booster`, 1);
+  const themeCard = takeStoryTowerAvailableCard(enemyDeck, { rank:profile.rank, suit:profile.suit }, `${profile.enemyId}-${profile.suit}`, 1);
+  enemy.attack = [
+    profile.suit === 'spades'
+      ? themeCard
+      : takeStoryTowerAvailableCard(enemyDeck, [{ rank:'10', suit:'spades' }, { rank:'8', suit:'spades' }, { rank:'6', suit:'spades' }], `${profile.enemyId}-attack`, 1)
+  ];
+  enemy.defense = [
+    profile.suit === 'hearts'
+      ? themeCard
+      : takeStoryTowerAvailableCard(enemyDeck, [{ rank:'7', suit:'hearts' }, { rank:'5', suit:'hearts' }, { rank:'4', suit:'hearts' }], `${profile.enemyId}-defense`, 1)
+  ];
+  enemy.armor = [
+    profile.suit === 'clubs'
+      ? themeCard
+      : takeStoryTowerAvailableCard(enemyDeck, [{ rank:'7', suit:'clubs' }, { rank:'5', suit:'clubs' }, { rank:'4', suit:'clubs' }], `${profile.enemyId}-armor`, 1)
+  ];
+  enemy.fuel = [
+    takeStoryTowerAvailableCard(enemyDeck, [{ rank:'7', suit:'diamonds' }, { rank:'5', suit:'diamonds' }, { rank:'4', suit:'diamonds' }], `${profile.enemyId}-fuel`, 1)
+  ];
+  enemy.hand = [
+    takeStoryTowerAvailableCard(enemyDeck, [{ rank:'3', suit:'diamonds' }, { rank:'2', suit:'diamonds' }, { rank:'6', suit:'diamonds' }], `${profile.enemyId}-hand-diamond`, 1)
+  ];
 }
 
 function setupStoryTowerControlGuardEnemy(enemy, enemyDeck){
@@ -10583,7 +10632,9 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
     `📜 ${profile.intro}`,
     mission === 'tower_argos_hack'
       ? '⚠️ Hackeo de Argos: el combustible normal no cuenta. Instala el A♠ y quema armadura como energia, o usa proyectiles sueltos.'
-      : '🎯 Combate de Torre 4B: vence y vuelve a la exploracion con una antigua moneda.'
+      : profile.limitedSuit
+        ? '🎯 Combate de Torre 4B: el dron ya esta montado. Tu PoCoBOT empieza sin montar; ensambla, abre ataque y vuelve con una antigua moneda.'
+        : '🎯 Combate de Torre 4B: vence y vuelve a la exploracion con una antigua moneda.'
   ];
   players.forEach((player, idx) => {
     setBestFlexTargets(player);
@@ -12059,17 +12110,17 @@ const STORY_MISSION_BRIEFS = {
   tower_drone_hearts: {
     kicker: 'Combate del modo historia',
     title: 'Torre 4B · Dron de corazones',
-    text: 'Dron temático: solo conserva una carta de corazones y no puede recuperar más corazones. Véncelo para ganar una antigua moneda.'
+    text: 'El dron mantiene un deck normal salvo por corazones: solo conserva una carta de ese palo y ya empieza montado. Tú debes montar primero tu PoCoBOT y luego atacar.'
   },
   tower_drone_spades: {
     kicker: 'Combate del modo historia',
     title: 'Torre 4B · Dron de picas',
-    text: 'Dron temático: solo conserva una carta de picas y no puede recuperar más picas. Véncelo para ganar una antigua moneda.'
+    text: 'El dron mantiene un deck normal salvo por picas: solo conserva una carta de ese palo y ya empieza montado. Tú debes montar primero tu PoCoBOT y luego atacar.'
   },
   tower_drone_clubs: {
     kicker: 'Combate del modo historia',
     title: 'Torre 4B · Dron de tréboles',
-    text: 'Dron temático: solo conserva una carta de tréboles y no puede recuperar más tréboles. Véncelo para ganar una antigua moneda.'
+    text: 'El dron mantiene un deck normal salvo por tréboles: solo conserva una carta de ese palo y ya empieza montado. Tú debes montar primero tu PoCoBOT y luego atacar.'
   },
   tower_interior_drone: {
     kicker: 'Combate opcional del modo historia',

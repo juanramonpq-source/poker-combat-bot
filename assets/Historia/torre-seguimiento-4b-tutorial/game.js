@@ -9,6 +9,7 @@ const storyEmbedMode = storyParams.get("story_embed") === "1";
 const storyReturnUrl = storyParams.get("story_return") || "";
 const debugMode = storyParams.get("debug") === "1";
 const storyAudioMode = storyParams.get("story_audio") || "";
+const forceVanArrival = storyParams.get("story_van_arrival") === "1";
 const chapterStateKey = "pocobot-tower-4b-chapter-v1";
 const chapterFlowVersion = 3;
 
@@ -473,9 +474,9 @@ const xavorVan = {
   targetX: 282,
   targetY: 724,
   visible: chapterState.xavorArrived,
-  arrival: chapterState.xavorArrived ? 1 : 0,
-  skid: 0,
-  soundPlayed: chapterState.xavorArrived,
+  arrival: chapterState.xavorArrived && !forceVanArrival ? 1 : 0,
+  skid: forceVanArrival ? 1 : 0,
+  soundPlayed: chapterState.xavorArrived && !forceVanArrival,
 };
 
 const radioState = {
@@ -1125,11 +1126,13 @@ function shouldShowXavorVan() {
 }
 
 function beginXavorPresentation() {
-  xavorPresentation.active = true;
-  xavorPresentation.page = 0;
   input.pointerActive = false;
   input.pointerId = null;
   setInteractionMessage("", 0);
+  postStoryTutorialAction("xavor-introduction-request", {
+    unlocks: ["xavor-dialogue"],
+    lore: "cards-as-human-readable-mecha-configuration",
+  });
 }
 
 function completeXavorPresentation() {
@@ -1203,7 +1206,7 @@ function triggerExteriorDroneCombat(drone) {
     drone.combatCooldown = 2.2;
     setInteractionMessage(`${drone.label}: combate tematico detectado. Entrando a modo historia...`, 3.4);
     queueRadio([
-      `Xavor: ${drone.label.toLowerCase()} usa un nucleo de ${drone.suitTheme}. Una sola carta de ese palo y nada mas. Limpio, raro y muy de Argos.`,
+      `Xavor: ${drone.label.toLowerCase()} mantiene un mazo casi normal, pero de ${drone.suitTheme} solo conserva una carta. El dron ya esta montado; tu tendras que levantar el PoCoBOT desde cero.`,
     ]);
     postStoryTutorialAction("request-drone-combat", {
       mission: drone.mission,
@@ -1280,6 +1283,9 @@ function updateChapterActors(dt) {
   });
 
   xavorVan.visible = shouldShowXavorVan();
+  if (xavorVan.visible && !xavorVan.soundPlayed && xavorVan.arrival < 0.16) {
+    playVanArrivalSound();
+  }
   xavorVan.arrival = damp(xavorVan.arrival, xavorVan.visible ? 1 : 0, 2.8, dt);
   const easedArrival = 1 - Math.pow(1 - clamp(xavorVan.arrival, 0, 1), 3);
   xavorVan.x = xavorVan.startX + (xavorVan.targetX - xavorVan.startX) * easedArrival;
