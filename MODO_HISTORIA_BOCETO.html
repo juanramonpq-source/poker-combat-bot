@@ -1977,6 +1977,7 @@
       grid-template-columns:minmax(220px, .72fr) minmax(430px, 1.48fr) minmax(240px, .7fr);
       gap:18px;
       align-items:stretch;
+      min-height:0;
     }
     .market-panel{
       border:1px solid rgba(255,255,255,.08);
@@ -2038,8 +2039,10 @@
     }
     .market-store-panel{
       display:grid;
+      grid-template-rows:auto minmax(0, 1fr);
       gap:14px;
       padding:20px;
+      min-height:0;
     }
     .market-grid{
       display:grid;
@@ -2281,6 +2284,66 @@
       flex-wrap:wrap;
       justify-content:flex-end;
       gap:10px;
+    }
+    @media (pointer:fine) and (min-width:900px){
+      .market-shell{
+        grid-template-rows:auto minmax(0, 1fr) auto;
+        padding-bottom:18px;
+      }
+      .market-layout{
+        height:auto;
+        min-height:0;
+        overflow:hidden;
+      }
+      .market-panel{
+        min-height:0;
+        max-height:calc(100svh - 138px);
+      }
+      .market-vendor-panel,
+      .inventory-panel{
+        overflow-y:auto;
+        overflow-x:hidden;
+        scrollbar-width:auto;
+        scrollbar-color:rgba(255,213,95,.56) rgba(5,10,17,.54);
+      }
+      .market-store-panel{
+        overflow:hidden;
+      }
+      .market-grid{
+        min-height:0;
+        overflow-y:auto;
+        overflow-x:hidden;
+        padding-right:10px;
+        overscroll-behavior:contain;
+        scrollbar-gutter:stable;
+        scrollbar-width:auto;
+        scrollbar-color:rgba(255,213,95,.72) rgba(5,10,17,.72);
+      }
+      .market-vendor-panel::-webkit-scrollbar,
+      .inventory-panel::-webkit-scrollbar,
+      .market-grid::-webkit-scrollbar{
+        width:16px;
+      }
+      .market-vendor-panel::-webkit-scrollbar-track,
+      .inventory-panel::-webkit-scrollbar-track,
+      .market-grid::-webkit-scrollbar-track{
+        border-radius:999px;
+        background:rgba(5,10,17,.62);
+      }
+      .market-vendor-panel::-webkit-scrollbar-thumb,
+      .inventory-panel::-webkit-scrollbar-thumb,
+      .market-grid::-webkit-scrollbar-thumb{
+        min-height:54px;
+        border:4px solid rgba(5,10,17,.62);
+        border-radius:999px;
+        background:linear-gradient(180deg, rgba(255,213,95,.9), rgba(146,246,255,.7));
+        box-shadow:0 0 14px rgba(146,246,255,.18);
+      }
+      .market-actions{
+        position:relative;
+        z-index:2;
+        padding-top:2px;
+      }
     }
     .story-exploration-stage{
       position:fixed;
