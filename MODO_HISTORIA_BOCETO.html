@@ -2318,17 +2318,41 @@
         overflow:hidden;
       }
       .market-grid{
+        display:flex;
+        flex-direction:column;
+        align-content:normal;
         min-height:0;
         height:100%;
         max-height:100%;
         grid-template-columns:1fr;
         overflow-y:auto;
         overflow-x:hidden;
+        gap:14px;
         padding-right:10px;
         overscroll-behavior:contain;
         scrollbar-gutter:stable;
         scrollbar-width:auto;
         scrollbar-color:rgba(255,213,95,.72) rgba(5,10,17,.72);
+      }
+      .market-item-card{
+        flex:0 0 auto;
+        grid-template-columns:96px minmax(0, 1fr);
+        min-height:0;
+        height:auto;
+        overflow:visible;
+      }
+      .market-item-content{
+        display:flex;
+        flex-direction:column;
+        align-items:stretch;
+        min-height:0;
+        gap:10px;
+      }
+      .market-coin-slot{
+        margin-top:auto;
+      }
+      .market-buy-btn{
+        width:100%;
       }
       .market-vendor-panel::-webkit-scrollbar,
       .inventory-panel::-webkit-scrollbar,
@@ -2465,6 +2489,35 @@
       }
       .market-portrait{
         max-height:320px;
+      }
+    }
+    @media (pointer:fine) and (min-width:900px) and (max-height:820px),
+           (pointer:fine) and (min-width:900px) and (max-width:1380px){
+      .market-grid{
+        display:flex;
+        flex-direction:column;
+        align-content:normal;
+        gap:14px;
+      }
+      .market-item-card{
+        flex:0 0 auto;
+        grid-template-columns:96px minmax(0, 1fr);
+        min-height:0;
+        height:auto;
+        overflow:visible;
+      }
+      .market-item-content{
+        display:flex;
+        flex-direction:column;
+        align-items:stretch;
+        min-height:0;
+        gap:10px;
+      }
+      .market-coin-slot{
+        margin-top:auto;
+      }
+      .market-buy-btn{
+        width:100%;
       }
     }
     .story-exploration-stage{
@@ -7741,12 +7794,9 @@
       }
 
       storyExplorationStage.hidden = false;
-      storyExplorationFrame.src = 'about:blank';
-      requestAnimationFrame(() => {
-        storyExplorationFrame.src = targetUrl;
-        storyExplorationStage.classList.add('active');
-        window.setTimeout(focusStoryExplorationFrame, 40);
-      });
+      storyExplorationFrame.src = targetUrl;
+      storyExplorationStage.classList.add('active');
+      window.setTimeout(focusStoryExplorationFrame, 40);
     }
 
     function buildStoryTowerCombatUrl(payload = {}, options = {}) {
@@ -7933,6 +7983,7 @@
         if (!wasAlreadyDefeated) defeatedIds.push(droneId);
         const isFirstExteriorVictory = !wasAlreadyDefeated && defeatedIds.length === 1;
         patchStoryTowerChapterState({
+          exteriorDroneEncountered: true,
           exteriorDroneDefeated: defeatedIds.length > 0,
           exteriorDroneDefeatedIds: defeatedIds,
           xavorArrived: true,
@@ -7992,6 +8043,7 @@
       const returnPosition = towerState.lastReturnPosition?.sceneKey === returnScene ? towerState.lastReturnPosition : null;
       const returnParams = returnScene === 'exterior' ? { mission_return: '1' } : {};
       if (returnPosition) {
+        returnParams.story_restore_position = '1';
         returnParams.story_player_x = returnPosition.x;
         returnParams.story_player_y = returnPosition.y;
       }
@@ -8047,7 +8099,7 @@
         return true;
       }
       if (action === 'return-exterior-finale') {
-        openStoryTowerScene('exterior', { mission_return: '1' });
+        openStoryTowerScene('exterior', { mission_return: '1', from_interior: '1' });
         return true;
       }
       if (action === 'request-drone-combat' || action === 'request-control-mecha-combat' || action === 'request-interior-drone-combat' || action === 'request-argos-hack-combat') {

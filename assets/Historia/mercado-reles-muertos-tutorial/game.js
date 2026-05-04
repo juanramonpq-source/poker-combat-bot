@@ -1320,17 +1320,8 @@ function drawMechaFrame(frame, alpha) {
 function drawLeanFrameAnimation() {
   const frames = assets.botFrames;
   const framePosition = clamp(player.leanAmount, 0, 1) * (frames.length - 1);
-  const firstIndex = Math.floor(framePosition);
-  const secondIndex = Math.min(frames.length - 1, firstIndex + 1);
-  const blend = framePosition - firstIndex;
-
-  if (firstIndex === secondIndex) {
-    drawMechaFrame(frames[firstIndex], 0.97);
-    return;
-  }
-
-  drawMechaFrame(frames[firstIndex], 0.97);
-  drawMechaFrame(frames[secondIndex], 0.97 * blend);
+  const frameIndex = Math.min(frames.length - 1, Math.max(0, Math.round(framePosition)));
+  drawMechaFrame(frames[frameIndex], 1);
 }
 
 function drawThrusterGroundGlow(thruster, power) {

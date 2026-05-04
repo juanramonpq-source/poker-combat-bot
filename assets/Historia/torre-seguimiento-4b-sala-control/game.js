@@ -51,6 +51,7 @@ const defaultChapterState = {
   xavorArrived: false,
   xavorIntroduced: false,
   towerDoorOpen: false,
+  exteriorDroneEncountered: false,
   interiorDroneDefeated: false,
   controlMechaDefeated: false,
   argosHackDefeated: false,
@@ -142,12 +143,38 @@ const player = {
   spriteHeight: 170,
 };
 
-const spawnX = Number(storyParams.get("story_player_x"));
-const spawnY = Number(storyParams.get("story_player_y"));
-if (Number.isFinite(spawnX) && Number.isFinite(spawnY)) {
-  player.x = Math.max(player.radius, Math.min(world.width - player.radius, spawnX));
-  player.y = Math.max(player.radius, Math.min(world.height - player.radius, spawnY));
+const sceneSpawnPoints = {
+  default: { x: 404, y: 564 },
+  fromInterior: { x: 392, y: 582 },
+};
+
+function placePlayerAt(point) {
+  if (!point) return;
+  player.x = Math.max(player.radius, Math.min(world.width - player.radius, Number(point.x) || sceneSpawnPoints.default.x));
+  player.y = Math.max(player.radius, Math.min(world.height - player.radius, Number(point.y) || sceneSpawnPoints.default.y));
+  player.vx = 0;
+  player.vy = 0;
 }
+
+function applyInitialStorySpawn() {
+  if (storyParams.get("story_restore_position") === "1") {
+    const spawnX = Number(storyParams.get("story_player_x"));
+    const spawnY = Number(storyParams.get("story_player_y"));
+    if (Number.isFinite(spawnX) && Number.isFinite(spawnY)) {
+      placePlayerAt({ x: spawnX, y: spawnY });
+      return;
+    }
+  }
+
+  if (storyParams.get("from_interior") === "1") {
+    placePlayerAt(sceneSpawnPoints.fromInterior);
+    return;
+  }
+
+  placePlayerAt(sceneSpawnPoints.default);
+}
+
+applyInitialStorySpawn();
 
 const camera = {
   x: 0,
@@ -802,6 +829,50 @@ function canMoveTo(nextX, nextY) {
   return !hitsScenery && !actorCollisionHit(nextX, nextY, player.radius);
 }
 
+function ensureSafeInitialSpawn() {
+  if (canMoveTo(player.x, player.y)) {
+    snapCameraToPlayer();
+    return;
+  }
+
+  const bases = [
+    sceneSpawnPoints.default,
+    sceneSpawnPoints.fromInterior,
+  ];
+  const offsets = [
+    [0, 0],
+    [64, 0],
+    [-64, 0],
+    [0, 64],
+    [0, -64],
+    [112, 0],
+    [-112, 0],
+    [0, 112],
+    [0, -112],
+    [84, 84],
+    [-84, 84],
+    [84, -84],
+    [-84, -84],
+  ];
+
+  for (const base of bases) {
+    for (const [dx, dy] of offsets) {
+      const candidate = {
+        x: base.x + dx,
+        y: base.y + dy,
+      };
+      if (canMoveTo(candidate.x, candidate.y)) {
+        placePlayerAt(candidate);
+        snapCameraToPlayer();
+        return;
+      }
+    }
+  }
+
+  placePlayerAt(sceneSpawnPoints.default);
+  snapCameraToPlayer();
+}
+
 function loadImage(source) {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -835,7 +906,7 @@ function createPlayerVisual() {
     clamp,
     damp,
     drawSoftShadow,
-    baseSize: player.spriteWidth,
+    baseSize: Math.round(player.spriteWidth * 0.88),
     sideFrameVerticalOffsets: playerVisualFrameSources.sideFrameVerticalOffsets,
   });
 }
@@ -1197,7 +1268,7 @@ function updateInteractions(dt) {
         postStoryTutorialAction("return-lower-interior", {
           nextScene: "torre-seguimiento-4b-interior-baja",
         });
-        navigateToScene("../torre-seguimiento-4b-interior-baja/index.html");
+        navigateToScene("../torre-seguimiento-4b-interior-baja/index.html?from_control=1&preserve_chapter=1");
         input.interactQueued = false;
         return;
       }
@@ -1572,17 +1643,8 @@ function drawMechaFrame(frame, alpha) {
 function drawLeanFrameAnimation() {
   const frames = assets.botFrames;
   const framePosition = clamp(player.leanAmount, 0, 1) * (frames.length - 1);
-  const firstIndex = Math.floor(framePosition);
-  const secondIndex = Math.min(frames.length - 1, firstIndex + 1);
-  const blend = framePosition - firstIndex;
-
-  if (firstIndex === secondIndex) {
-    drawMechaFrame(frames[firstIndex], 0.97);
-    return;
-  }
-
-  drawMechaFrame(frames[firstIndex], 0.97);
-  drawMechaFrame(frames[secondIndex], 0.97 * blend);
+  const frameIndex = Math.min(frames.length - 1, Math.max(0, Math.round(framePosition)));
+  drawMechaFrame(frames[frameIndex], 1);
 }
 
 function drawThrusterGroundGlow(thruster, power) {
@@ -1941,5 +2003,6 @@ loadAssets()
     console.error("No se pudieron cargar los activos del juego:", error);
   })
   .finally(() => {
+    ensureSafeInitialSpawn();
     requestAnimationFrame(gameLoop);
   });

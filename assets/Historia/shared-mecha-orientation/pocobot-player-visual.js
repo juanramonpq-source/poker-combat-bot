@@ -1,5 +1,6 @@
 (function registerPoCoBOTPlayerVisual(global) {
   const SIDE_FRAME_VERTICAL_OFFSETS = [0, -55, -124, -134, -127];
+  const ASSET_VERSION = "20260504-solid-lateral";
   const audioState = {
     context: null,
     movementGain: null,
@@ -133,18 +134,19 @@
   }
 
   function assetSources(basePath) {
+    const versioned = (source) => `${source}?v=${ASSET_VERSION}`;
     return {
-      back: `${basePath}/mecha-back.png`,
+      back: versioned(`${basePath}/mecha-back.png`),
       side: [
-        `${basePath}/pocobot-mecha-side-left-aero-00.png`,
-        `${basePath}/pocobot-mecha-side-left-aero-01.png`,
-        `${basePath}/pocobot-mecha-side-left-aero-02.png`,
-        `${basePath}/pocobot-mecha-side-left-aero-03.png`,
-        `${basePath}/pocobot-mecha-side-left-aero-04.png`,
+        versioned(`${basePath}/pocobot-mecha-side-left-aero-00.png`),
+        versioned(`${basePath}/pocobot-mecha-side-left-aero-01.png`),
+        versioned(`${basePath}/pocobot-mecha-side-left-aero-02.png`),
+        versioned(`${basePath}/pocobot-mecha-side-left-aero-03.png`),
+        versioned(`${basePath}/pocobot-mecha-side-left-aero-04.png`),
       ],
       hover: [
-        `${basePath}/pocobot-mecha-idle-hover-00.png`,
-        `${basePath}/pocobot-mecha-idle-hover-01.png`,
+        versioned(`${basePath}/pocobot-mecha-idle-hover-00.png`),
+        versioned(`${basePath}/pocobot-mecha-idle-hover-01.png`),
       ],
       sideFrameVerticalOffsets: SIDE_FRAME_VERTICAL_OFFSETS,
     };
