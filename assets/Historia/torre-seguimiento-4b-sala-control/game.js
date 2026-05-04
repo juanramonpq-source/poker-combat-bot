@@ -125,6 +125,8 @@ const player = {
   maxSpeed: 310,
   acceleration: 980,
   drag: 5.2,
+  facing: "down",
+  bob: 0,
   angle: 0,
   targetAngle: 0,
   glow: 0,
@@ -132,6 +134,7 @@ const player = {
   thrustPower: 0,
   leanAmount: 0,
   leanSide: 0,
+  sideBlend: 0,
   flameSkewX: 0,
   flameSkewY: 0,
   particleDebt: 0,
@@ -158,6 +161,10 @@ const assets = {
   windowView: new Image(),
   unmannedMecha: new Image(),
   botFrames: [],
+  frontFrames: [],
+  sideFrames: [],
+  hoverFrames: [],
+  backFrame: null,
   ready: false,
 };
 
@@ -209,6 +216,8 @@ const leanFrameSources = [
   "./assets/mecha-clean-frames/pocobot-mecha-clean-03.png",
   "./assets/mecha-clean-frames/pocobot-mecha-clean-04.png",
 ];
+const playerVisualFrameSources = window.PoCoBOTPlayerVisual.assetSources("../shared-mecha-orientation/assets");
+let playerVisual = null;
 
 const interactables = [
   {
@@ -818,20 +827,52 @@ function snapCameraToPlayer() {
   camera.y = target.y;
 }
 
+function createPlayerVisual() {
+  playerVisual = window.PoCoBOTPlayerVisual.create({
+    ctx,
+    player,
+    assets,
+    clamp,
+    damp,
+    drawSoftShadow,
+    baseSize: player.spriteWidth,
+    sideFrameVerticalOffsets: playerVisualFrameSources.sideFrameVerticalOffsets,
+  });
+}
+
+function updatePlayerVisual(dt, hasInput, speedRatio) {
+  if (playerVisual) {
+    playerVisual.update(dt, hasInput, speedRatio);
+  }
+}
+
 async function loadAssets() {
-  const [mapImage, xavorPortraitImage, windowViewImage, unmannedMechaImage, ...botFrames] = await Promise.all([
+  const [mapImage, xavorPortraitImage, windowViewImage, unmannedMechaImage, ...visualFrames] = await Promise.all([
     loadImage("./assets/torre-4b-sala-control-map.png"),
     loadImage("../Brutos/transparent/XAVOR3-transparent.png"),
     loadImage("./assets/chapter/torre-4b-window-view.png"),
     loadImage("./assets/chapter/argos-unmanned-mecha.png"),
     ...leanFrameSources.map((source) => loadImage(source)),
+    loadImage(playerVisualFrameSources.back),
+    ...playerVisualFrameSources.side.map((source) => loadImage(source)),
+    ...playerVisualFrameSources.hover.map((source) => loadImage(source)),
   ]);
+  const botFrames = visualFrames.slice(0, leanFrameSources.length);
+  const backFrame = visualFrames[leanFrameSources.length];
+  const sideFramesStart = leanFrameSources.length + 1;
+  const sideFrames = visualFrames.slice(sideFramesStart, sideFramesStart + playerVisualFrameSources.side.length);
+  const hoverFrames = visualFrames.slice(sideFramesStart + playerVisualFrameSources.side.length);
 
   assets.map = mapImage;
   assets.xavorPortrait = xavorPortraitImage;
   assets.windowView = windowViewImage;
   assets.unmannedMecha = unmannedMechaImage;
   assets.botFrames = botFrames;
+  assets.frontFrames = botFrames;
+  assets.backFrame = backFrame;
+  assets.sideFrames = sideFrames;
+  assets.hoverFrames = hoverFrames;
+  createPlayerVisual();
   assets.ready = true;
   snapCameraToPlayer();
   startChapterMusic();
@@ -1067,22 +1108,8 @@ function update(dt) {
   player.angle = lerpAngle(player.angle, player.targetAngle, hasInput ? 5.5 : 3.8, dt);
 
   const speedRatio = clamp(glideSpeed / player.maxSpeed, 0, 1);
-  const localVelocity = worldVectorToLocal(player.vx, player.vy);
-  const sideSlip = clamp(localVelocity.x / player.maxSpeed, -1, 1);
-  const forwardSlip = clamp(localVelocity.y / player.maxSpeed, -1, 1);
-
-  const desiredLean = hasInput ? clamp(0.62 + speedRatio * 0.46, 0, 1) : speedRatio * 0.36;
-  player.leanAmount = damp(player.leanAmount, desiredLean, hasInput ? 8.5 : 4.2, dt);
-  player.leanSide = damp(player.leanSide, sideSlip, 7, dt);
-  player.flameSkewX = damp(player.flameSkewX, -sideSlip * 22, 10, dt);
-  player.flameSkewY = damp(player.flameSkewY, -forwardSlip * 12, 10, dt);
-
-  const desiredThrustPower = hasInput ? 0.62 + speedRatio * 0.48 : speedRatio * 0.28;
-  player.thrustPower = damp(player.thrustPower, desiredThrustPower, hasInput ? 12 : 4.8, dt);
-  player.thrustCycle += dt * (8 + glideSpeed * 0.035);
-  player.glow += dt * 3.2;
+  updatePlayerVisual(dt, hasInput, speedRatio);
   updateChapterActors(dt);
-  updateExhaustParticles(dt, hasInput, speedRatio);
   updateInteractions(dt);
   updateRadio(dt);
 
@@ -1604,6 +1631,11 @@ function drawPlayerGroundContact() {
 }
 
 function drawPlayer() {
+  if (playerVisual) {
+    playerVisual.draw();
+    return;
+  }
+
   const hoverBob = Math.sin(player.thrustCycle * 0.85) * (1.5 + player.thrustPower * 2.2);
   const lean = player.leanAmount;
   const bank = player.leanSide;
