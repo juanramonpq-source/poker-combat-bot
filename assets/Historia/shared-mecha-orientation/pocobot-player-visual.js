@@ -50,11 +50,11 @@
     const overtone = context.createOscillator();
     const noise = context.createBufferSource();
 
-    master.gain.value = 0.16;
+    master.gain.value = 0.28;
     movementGain.gain.value = 0;
-    toneGain.gain.value = 0.16;
-    overtoneGain.gain.value = 0.035;
-    noiseGain.gain.value = 0.08;
+    toneGain.gain.value = 0.24;
+    overtoneGain.gain.value = 0.055;
+    noiseGain.gain.value = 0.12;
 
     tone.type = "sawtooth";
     overtone.type = "triangle";
@@ -102,13 +102,13 @@
     const lateralPush = sceneClamp(Math.abs(player.vx || 0) / maxSpeed, 0, 1);
     const normalizedSpeed = sceneClamp(speedRatio, 0, 1);
     const now = audioState.context.currentTime;
-    const targetGain = moving ? 0.004 + normalizedSpeed * 0.018 : 0;
+    const targetGain = moving ? 0.012 + normalizedSpeed * 0.04 : 0;
 
     audioState.movementGain.gain.setTargetAtTime(targetGain, now, moving ? 0.14 : 0.24);
     audioState.tone.frequency.setTargetAtTime(52 + normalizedSpeed * 22 + lateralPush * 4, now, 0.08);
     audioState.overtone.frequency.setTargetAtTime(118 + normalizedSpeed * 30 + player.thrustPower * 8, now, 0.08);
     audioState.filter.frequency.setTargetAtTime(900 + normalizedSpeed * 680 + lateralPush * 180, now, 0.1);
-    audioState.noiseGain.gain.setTargetAtTime(0.045 + normalizedSpeed * 0.055, now, 0.12);
+    audioState.noiseGain.gain.setTargetAtTime(0.065 + normalizedSpeed * 0.085, now, 0.12);
   }
 
   function silenceMovementAudio() {
