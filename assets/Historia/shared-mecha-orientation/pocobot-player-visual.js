@@ -1,6 +1,6 @@
 (function registerPoCoBOTPlayerVisual(global) {
   const SIDE_FRAME_VERTICAL_OFFSETS = [0, -55, -124, -134, -127];
-  const ASSET_VERSION = "20260504-solid-lateral";
+  const ASSET_VERSION = "20260504-idle-fire";
   const audioState = {
     context: null,
     movementGain: null,
@@ -146,6 +146,10 @@
       ],
       hover: [
         versioned(`${basePath}/pocobot-mecha-idle-hover-00.png`),
+        versioned(`${basePath}/pocobot-mecha-idle-hover-02.png`),
+        versioned(`${basePath}/pocobot-mecha-idle-hover-03.png`),
+        versioned(`${basePath}/pocobot-mecha-idle-hover-04.png`),
+        versioned(`${basePath}/pocobot-mecha-idle-hover-05.png`),
         versioned(`${basePath}/pocobot-mecha-idle-hover-01.png`),
       ],
       sideFrameVerticalOffsets: SIDE_FRAME_VERTICAL_OFFSETS,
@@ -504,8 +508,11 @@
         return;
       }
 
-      const pulse = (Math.sin(player.thrustCycle * 1.15) + 1) * 0.5;
-      drawImageFrame(frames[pulse > 0.5 ? 1 : 0], size);
+      const cycle = ((player.thrustCycle * 0.16) % 1 + 1) % 1;
+      const progress = cycle < 0.5 ? cycle * 2 : (1 - cycle) * 2;
+      const frameIndex = sceneClamp(Math.round(progress * (frames.length - 1)), 0, frames.length - 1);
+
+      drawImageFrame(frames[frameIndex], size);
     }
 
     function drawSideLeanSprite(size) {
