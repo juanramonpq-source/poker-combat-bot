@@ -50,6 +50,7 @@ const defaultChapterState = {
   argosHackDefeated: false,
   missionComplete: false,
   finalRewardClaimed: false,
+  redGlowClaimed: false,
   inventoryRewards: [],
   coins: 0,
 };
@@ -140,6 +141,13 @@ const player = {
 if (storyParams.get("mission_return") === "1") {
   player.x = 520;
   player.y = 698;
+}
+
+const spawnX = Number(storyParams.get("story_player_x"));
+const spawnY = Number(storyParams.get("story_player_y"));
+if (Number.isFinite(spawnX) && Number.isFinite(spawnY)) {
+  player.x = Math.max(player.radius, Math.min(world.width - player.radius, spawnX));
+  player.y = Math.max(player.radius, Math.min(world.height - player.radius, spawnY));
 }
 
 const camera = {
@@ -289,12 +297,54 @@ const interactionState = {
   messageTimer: 0,
 };
 
+const hudHelp = {
+  expanded: true,
+  elapsed: 0,
+  collapseDelay: 10,
+  button: { x: 18, y: 18, width: 190, height: 42 },
+};
+
+const towerInventoryPanel = {
+  open: false,
+  button: { x: 0, y: 0, width: 168, height: 42 },
+};
+
+const redGlowCache = {
+  x: 1088,
+  y: 374,
+  radius: 86,
+};
+
+const randomTowerCardRanks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+const randomTowerCardSuits = ["hearts", "diamonds", "clubs", "spades"];
+const cardFileRankMap = {
+  A: "ace",
+  J: "jack",
+  Q: "queen",
+  K: "king",
+};
+
+const suitLabelMap = {
+  hearts: "corazones",
+  diamonds: "diamantes",
+  clubs: "treboles",
+  spades: "picas",
+};
+
+function getPlayerPositionPayload() {
+  return {
+    x: Math.round(player.x),
+    y: Math.round(player.y),
+  };
+}
+
 function postStoryTutorialAction(action, payload = {}) {
   const message = {
     type: "pocobot-story-tower-tutorial-action",
     action,
     savedAt: Date.now(),
     sceneMusic: musicConfig.scene,
+    playerPosition: getPlayerPositionPayload(),
     ...payload,
   };
 
@@ -315,6 +365,50 @@ function setInteractionMessage(text, duration = 2.8) {
   interactionState.messageTimer = duration;
 }
 
+function getRandomTowerCardReward() {
+  const rank = randomTowerCardRanks[Math.floor(Math.random() * randomTowerCardRanks.length)];
+  const suit = randomTowerCardSuits[Math.floor(Math.random() * randomTowerCardSuits.length)];
+  const fileRank = cardFileRankMap[rank] || rank;
+  const id = `tower-4b-glow-${rank.toLowerCase()}-${suit}`;
+  const name = `${rank} de ${suitLabelMap[suit] || suit}`;
+  return {
+    id,
+    name,
+    text: `${name} · resplandor rojo de Torre 4B`,
+    source: "Resplandor rojo de Torre 4B",
+    rank,
+    suit,
+    cardImage: `assets/cards/hayeah-full/${fileRank}_of_${suit}.svg`,
+    deckText: name,
+  };
+}
+
+function claimRedGlowCache() {
+  if (chapterState.redGlowClaimed) return;
+  const rewardCard = getRandomTowerCardReward();
+  const inventoryRewards = Array.isArray(chapterState.inventoryRewards)
+    ? [...chapterState.inventoryRewards]
+    : [];
+  if (!inventoryRewards.includes(rewardCard.id)) {
+    inventoryRewards.push(rewardCard.id);
+  }
+  patchChapterState({
+    redGlowClaimed: true,
+    inventoryRewards,
+    lastGlowReward: rewardCard,
+  });
+  towerInventoryPanel.open = true;
+  setInteractionMessage(`Resplandor rojo absorbido: ${rewardCard.name} se suma al inventario.`, 5.2);
+  queueRadio([{
+    text: `Xavor por radio: eso era memoria de baraja cristalizada. Te acaba de caer ${rewardCard.name}. Guardala; las torres no regalan nada dos veces.`,
+    unstable: true,
+  }]);
+  postStoryTutorialAction("tower-random-card-reward", {
+    reward: { card: rewardCard },
+    unlocks: ["tower-inventory"],
+  });
+}
+
 function playAudioClip(source, volume = 0.5, duration = 2.4) {
   const audio = new Audio(new URL(source, window.location.href).href);
   audio.preload = "auto";
@@ -333,6 +427,24 @@ function playAudioClip(source, volume = 0.5, duration = 2.4) {
 
 function playRadioOpenSound() {
   playAudioClip(radioOpenSoundSrc, 0.34, 0.95);
+}
+
+function normalizeRadioEntry(entry, options = {}) {
+  if (typeof entry === "string") {
+    return {
+      text: entry,
+      unstable: !!options.unstable,
+    };
+  }
+
+  if (!entry || typeof entry.text !== "string") {
+    return null;
+  }
+
+  return {
+    text: entry.text,
+    unstable: !!entry.unstable || !!options.unstable,
+  };
 }
 
 function startChapterMusic() {
@@ -363,8 +475,12 @@ function startChapterMusic() {
   }
 }
 
-function queueRadio(lines) {
-  radioState.queue.push(...lines);
+function queueRadio(lines, options = {}) {
+  const normalizedEntries = (Array.isArray(lines) ? lines : [lines])
+    .map((entry) => normalizeRadioEntry(entry, options))
+    .filter((entry) => entry && entry.text);
+
+  radioState.queue.push(...normalizedEntries);
   if (radioState.timer <= 0) {
     showNextRadio();
   }
@@ -375,15 +491,21 @@ function showNextRadio() {
   if (!next) {
     radioState.text = "";
     radioState.timer = 0;
+    radioState.unstable = false;
+    radioState.burst = 0;
     return;
   }
 
-  radioState.text = next;
-  radioState.timer = clamp(9 + next.length * 0.07, 10.4, 19.6);
+  radioState.text = next.text;
+  radioState.timer = clamp(9 + next.text.length * 0.07, 10.4, 19.6);
+  radioState.unstable = !!next.unstable;
+  radioState.burst = radioState.unstable ? 1.7 : 0;
   playRadioOpenSound();
 }
 
 function updateRadio(dt) {
+  radioState.burst = Math.max(0, radioState.burst - dt);
+
   if (radioState.timer <= 0) {
     return;
   }
@@ -491,7 +613,35 @@ const radioState = {
   text: "",
   timer: 0,
   queue: [],
+  unstable: false,
+  burst: 0,
 };
+
+const delayedUnknownRadioIntro = {
+  active:
+    !chapterState.argosHackDefeated &&
+    !chapterState.finalRewardClaimed &&
+    !chapterState.xavorIntroduced &&
+    !chapterState.xavorArrived &&
+    defeatedExteriorDroneCount() === 0,
+  timer: 30,
+  triggered: false,
+};
+
+const delayedUnknownRadioLines = [
+  "Hola... chhhsss... 1, 2, 1, 2... ¿me recibes?... No hagas como que no me recibes porque sé qué sí me estás recibiendo...",
+  "Xavor por radio: Torre 4B sigue cerrada. Date una vuelta, mira el ordenador azul y limpia la zona.",
+  "Veo tres drones de ronda. Cada uno lleva recompensa. Si parecen poca cosa... eso dicen todas.",
+];
+
+function maybeTriggerDelayedUnknownRadioIntro(dt) {
+  if (!delayedUnknownRadioIntro.active || delayedUnknownRadioIntro.triggered) return;
+  delayedUnknownRadioIntro.timer = Math.max(0, delayedUnknownRadioIntro.timer - dt);
+  if (delayedUnknownRadioIntro.timer > 0) return;
+  delayedUnknownRadioIntro.triggered = true;
+  delayedUnknownRadioIntro.active = false;
+  queueRadio(delayedUnknownRadioLines, { unstable: true });
+}
 
 const xavorPresentation = {
   active: false,
@@ -519,13 +669,13 @@ const xavorPresentation = {
       kicker: "Mision",
       title: "Restaurar transmisiones",
       subtitle: "Torre de Seguimiento 4B",
-      text: "La Caida apago casi todo: voces humanas, rutas de auxilio, avisos de frontera. Incluso Argos quedo ciego en muchas zonas y ahora intenta reconstruirse tras el conflicto de hace dos anos. Si encendemos 4B, el mundo vuelve a oirse un poco.",
+      text: "La Caida apago casi todo: voces humanas, rutas de auxilio, avisos de frontera. Incluso Argos quedo ciego en muchas zonas y ahora intenta reconstruirse tras el conflicto de hace dos anos. Para restablecer transmisiones hay que llegar al panel de control superior y tumbar la inteligencia artificial que lo domina.",
     },
     {
       kicker: "Siguiente paso",
       title: "Hackeo preparado",
       subtitle: "Ordenador azul del escenario",
-      text: "Primero limpia los tres drones. Cada uno guarda una antigua moneda y una regla de combate distinta. Luego enlazo la furboneta al ordenador azul, abres la compuerta y subes. Si Argos dice que no... eso dicen todas.",
+      text: "De momento la puerta esta cerrada. Eso dicen todas... pero yo puedo abrir una grieta desde la furboneta y desbloquear el ordenador azul que mantiene la compuerta cerrada. Tu solo ve hasta el terminal, activa el desbloqueo y sube.",
     },
   ],
 };
@@ -639,6 +789,36 @@ canvas.addEventListener("pointerdown", (event) => {
   }
 
   startChapterMusic();
+
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = viewport.width / rect.width;
+  const scaleY = viewport.height / rect.height;
+  const screenX = (event.clientX - rect.left) * scaleX;
+  const screenY = (event.clientY - rect.top) * scaleY;
+
+  if (
+    screenX >= hudHelp.button.x &&
+    screenX <= hudHelp.button.x + hudHelp.button.width &&
+    screenY >= hudHelp.button.y &&
+    screenY <= hudHelp.button.y + hudHelp.button.height
+  ) {
+    hudHelp.expanded = !hudHelp.expanded;
+    hudHelp.elapsed = 0;
+    event.preventDefault();
+    return;
+  }
+
+  if (
+    chapterState.inventoryRewards?.length &&
+    screenX >= towerInventoryPanel.button.x &&
+    screenX <= towerInventoryPanel.button.x + towerInventoryPanel.button.width &&
+    screenY >= towerInventoryPanel.button.y &&
+    screenY <= towerInventoryPanel.button.y + towerInventoryPanel.button.height
+  ) {
+    towerInventoryPanel.open = !towerInventoryPanel.open;
+    event.preventDefault();
+    return;
+  }
 
   if (xavorPresentation.active) {
     advanceXavorPresentation();
@@ -1002,6 +1182,7 @@ async function loadAssets() {
   assets.botFrames = botFrames;
   assets.ready = true;
   snapCameraToPlayer();
+  startChapterMusic();
 
   const defeatedCount = defeatedExteriorDroneCount();
   if (chapterState.argosHackDefeated && !chapterState.finalRewardClaimed) {
@@ -1012,7 +1193,7 @@ async function loadAssets() {
     queueRadio([
       "Xavor: Torre 4B vuelve a transmitir y tu inventario ya tiene ese 7 de corazones. Bonito final para un dia feo.",
     ]);
-  } else if (defeatedCount === 0) {
+  } else if (defeatedCount === 0 && !delayedUnknownRadioIntro.active) {
     queueRadio([
       "Xavor por radio: Torre 4B sigue cerrada. Date una vuelta, mira el ordenador azul y limpia la zona.",
       "Veo tres drones de ronda. Cada uno lleva recompensa. Si parecen poca cosa... eso dicen todas.",
@@ -1236,6 +1417,8 @@ function triggerExteriorDroneCombat(drone) {
   }
 
   if (storyEmbedMode || window.parent !== window) {
+    delayedUnknownRadioIntro.active = false;
+    delayedUnknownRadioIntro.triggered = true;
     drone.combatCooldown = 2.2;
     setInteractionMessage(`${drone.label}: combate tematico detectado. Entrando a modo historia...`, 3.4);
     queueRadio([
@@ -1258,6 +1441,8 @@ function triggerExteriorDroneCombat(drone) {
   }
 
   const wasFirstVictory = defeatedExteriorDroneCount() === 0;
+  delayedUnknownRadioIntro.active = false;
+  delayedUnknownRadioIntro.triggered = true;
   const defeatedIds = [...new Set([...getExteriorDroneDefeatedIds(), drone.id])];
 
   drone.combatCooldown = 1.5;
@@ -1315,6 +1500,13 @@ function updateChapterActors(dt) {
     }
   });
 
+  if (!chapterState.redGlowClaimed) {
+    const glowDistance = Math.hypot(player.x - redGlowCache.x, player.y - redGlowCache.y);
+    if (glowDistance < player.radius + redGlowCache.radius * 0.42) {
+      claimRedGlowCache();
+    }
+  }
+
   xavorVan.visible = shouldShowXavorVan();
   if (xavorVan.visible && !xavorVan.soundPlayed && xavorVan.arrival < 0.16) {
     playVanArrivalSound();
@@ -1333,6 +1525,12 @@ function update(dt) {
   if (!assets.ready) {
     return;
   }
+
+  hudHelp.elapsed += dt;
+  if (hudHelp.expanded && hudHelp.elapsed >= hudHelp.collapseDelay) {
+    hudHelp.expanded = false;
+  }
+  maybeTriggerDelayedUnknownRadioIntro(dt);
 
   if (xavorPresentation.active) {
     player.vx = damp(player.vx, 0, player.drag, dt);
@@ -1791,6 +1989,28 @@ function drawInteractionMarkers() {
 
     drawInteractionMarker(interactable);
   });
+}
+
+function drawRedGlowCache() {
+  if (chapterState.redGlowClaimed) return;
+  const pulse = 0.5 + Math.sin(player.glow * 5.6) * 0.5;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const gradient = ctx.createRadialGradient(redGlowCache.x, redGlowCache.y, 0, redGlowCache.x, redGlowCache.y, redGlowCache.radius);
+  gradient.addColorStop(0, `rgba(255, 92, 88, ${0.42 + pulse * 0.22})`);
+  gradient.addColorStop(0.45, `rgba(255, 48, 66, ${0.18 + pulse * 0.16})`);
+  gradient.addColorStop(1, "rgba(255, 48, 66, 0)");
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc(redGlowCache.x, redGlowCache.y, redGlowCache.radius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = `rgba(255, 213, 95, ${0.2 + pulse * 0.28})`;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 12]);
+  ctx.beginPath();
+  ctx.arc(redGlowCache.x, redGlowCache.y, redGlowCache.radius * 0.52, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
 }
 
 function drawPointerTarget() {
@@ -2337,8 +2557,9 @@ function drawRadioOverlay() {
 
   const width = Math.min(720, viewport.width - 36);
   const height = 124;
-  const x = 18;
-  const y = viewport.height - 214;
+  const jitter = radioState.unstable ? (Math.random() - 0.5) * (4 + radioState.burst * 8) : 0;
+  const x = 18 + jitter;
+  const y = viewport.height - 214 + (radioState.unstable ? (Math.random() - 0.5) * 3 : 0);
 
   ctx.save();
   ctx.fillStyle = "rgba(5, 11, 18, 0.9)";
@@ -2349,6 +2570,14 @@ function drawRadioOverlay() {
   ctx.fill();
   ctx.stroke();
   drawRadioInterference(x, y, width, height);
+  if (radioState.unstable) {
+    ctx.globalAlpha = 0.18 + radioState.burst * 0.18;
+    ctx.fillStyle = "#ffffff";
+    for (let line = y + 10; line < y + height - 8; line += 17) {
+      ctx.fillRect(x + 12 + Math.random() * 18, line, width - 34 - Math.random() * 80, 1);
+    }
+    ctx.globalAlpha = 1;
+  }
 
   drawRadioPortrait(x + 14, y + 14, 82, 82);
 
@@ -2369,26 +2598,88 @@ function drawRadioOverlay() {
 function drawHud() {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-  ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
-  ctx.fillRect(18, 18, 520, 92);
+  if (hudHelp.expanded) {
+    hudHelp.button = { x: 18, y: 18, width: 520, height: 92 };
+    ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
+    ctx.fillRect(18, 18, 520, 92);
 
-  ctx.strokeStyle = "rgba(146, 246, 255, 0.3)";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(18, 18, 520, 92);
+    ctx.strokeStyle = "rgba(146, 246, 255, 0.3)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(18, 18, 520, 92);
 
-  ctx.fillStyle = "#eef8ff";
-  ctx.font = "18px Trebuchet MS";
-  ctx.fillText("PoCoBOT // Torre de Seguimiento 4B", 32, 46);
+    ctx.fillStyle = "#eef8ff";
+    ctx.font = "18px Trebuchet MS";
+    ctx.fillText("PoCoBOT // Torre de Seguimiento 4B", 32, 46);
 
-  ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
-  ctx.font = "14px Trebuchet MS";
-  ctx.fillText("WASD / Flechas o manten raton/dedo para moverte", 32, 68);
+    ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
+    ctx.font = "14px Trebuchet MS";
+    ctx.fillText("WASD para moverte · E o Enter para aceptar/seleccionar", 32, 68);
+  } else {
+    hudHelp.button = { x: 18, y: 18, width: 190, height: 42 };
+    ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
+    ctx.beginPath();
+    ctx.roundRect(18, 18, 190, 42, 14);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(146, 246, 255, 0.3)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = "#eef8ff";
+    ctx.font = "700 14px Trebuchet MS";
+    ctx.fillText("Info controles +", 34, 45);
+  }
+
   const objectiveText = chapterState.finalRewardClaimed
     ? `Mision completada · Recompensa: 7 de corazones · Monedas: ${chapterState.coins}`
     : chapterState.argosHackDefeated
       ? `Vuelve a la furboneta de Xavor para cerrar la mision · Monedas: ${chapterState.coins}`
       : `Explora, derrota drones (${defeatedExteriorDroneCount()}/3) y hackea el ordenador azul · Monedas: ${chapterState.coins}`;
-  ctx.fillText(objectiveText, 32, 88);
+  if (hudHelp.expanded) {
+    ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
+    ctx.font = "14px Trebuchet MS";
+    ctx.fillText(objectiveText, 32, 88);
+  }
+
+  const inventoryRewards = Array.isArray(chapterState.inventoryRewards) ? chapterState.inventoryRewards : [];
+  if (inventoryRewards.length) {
+    towerInventoryPanel.button = {
+      x: viewport.width - 198,
+      y: viewport.height - 128,
+      width: 168,
+      height: 42,
+    };
+    ctx.fillStyle = "rgba(8, 17, 29, 0.84)";
+    ctx.beginPath();
+    ctx.roundRect(towerInventoryPanel.button.x, towerInventoryPanel.button.y, towerInventoryPanel.button.width, towerInventoryPanel.button.height, 16);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 213, 95, 0.3)";
+    ctx.stroke();
+    ctx.fillStyle = "#ffe0bc";
+    ctx.font = "700 14px Trebuchet MS";
+    ctx.fillText(`Inventario ${inventoryRewards.length} +`, towerInventoryPanel.button.x + 18, towerInventoryPanel.button.y + 27);
+
+    if (towerInventoryPanel.open) {
+      const panelW = 320;
+      const panelH = Math.min(190, 78 + inventoryRewards.length * 26);
+      const panelX = Math.max(18, viewport.width - panelW - 30);
+      const panelY = Math.max(80, towerInventoryPanel.button.y - panelH - 12);
+      ctx.fillStyle = "rgba(5, 10, 17, 0.92)";
+      ctx.beginPath();
+      ctx.roundRect(panelX, panelY, panelW, panelH, 18);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255, 213, 95, 0.28)";
+      ctx.stroke();
+      ctx.fillStyle = "#84eaff";
+      ctx.font = "700 13px Trebuchet MS";
+      ctx.fillText("INVENTARIO DE TORRE", panelX + 18, panelY + 28);
+      ctx.fillStyle = "#eef8ff";
+      ctx.font = "14px Trebuchet MS";
+      const lastReward = chapterState.lastGlowReward?.name || "Carta recuperada";
+      ctx.fillText(lastReward, panelX + 18, panelY + 58);
+      ctx.fillStyle = "rgba(238, 248, 255, 0.72)";
+      ctx.font = "12px Trebuchet MS";
+      ctx.fillText("El inventario historico tambien se actualiza.", panelX + 18, panelY + 84);
+    }
+  }
 
   if (interactionState.messageTimer > 0 || interactionState.active) {
     const message = interactionState.messageTimer > 0
@@ -2439,6 +2730,7 @@ function render() {
   ctx.translate(-camera.x, -camera.y);
 
   drawMap();
+  drawRedGlowCache();
   drawExhaustParticles();
   drawSmokeParticles();
   drawInteractionMarkers();

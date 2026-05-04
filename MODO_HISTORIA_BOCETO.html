@@ -1513,7 +1513,7 @@
     }
     .scene-dialog-scroll{
       min-height:0;
-      max-height:none;
+      max-height:var(--scene-dialog-scroll-max);
       margin-top:0;
       padding-right:8px;
       margin-right:-4px;
@@ -2043,11 +2043,14 @@
       gap:14px;
       padding:20px;
       min-height:0;
+      overflow:hidden;
     }
     .market-grid{
       display:grid;
       grid-template-columns:repeat(2, minmax(0, 1fr));
       gap:12px;
+      min-height:0;
+      align-items:start;
     }
     .market-item-card{
       display:grid;
@@ -2057,6 +2060,8 @@
       padding:14px;
       border-radius:20px;
       border:1px solid rgba(255,255,255,.08);
+      align-content:start;
+      overflow:visible;
       background:
         linear-gradient(180deg, rgba(14,26,34,.88), rgba(8,13,19,.88)),
         radial-gradient(circle at 18% 18%, rgba(143,244,255,.08), transparent 24%);
@@ -2124,12 +2129,14 @@
       color:#f5fbff;
       font-size:.98rem;
       line-height:1.24;
+      overflow-wrap:anywhere;
     }
     .market-item-card p{
       margin:0;
       color:#d4e4ef;
       font-size:.84rem;
       line-height:1.5;
+      overflow-wrap:anywhere;
     }
     .market-coin-slot{
       display:grid;
@@ -2291,13 +2298,14 @@
         padding-bottom:18px;
       }
       .market-layout{
-        height:auto;
+        height:100%;
         min-height:0;
         overflow:hidden;
       }
       .market-panel{
         min-height:0;
-        max-height:calc(100svh - 138px);
+        height:100%;
+        max-height:none;
       }
       .market-vendor-panel,
       .inventory-panel{
@@ -2311,6 +2319,9 @@
       }
       .market-grid{
         min-height:0;
+        height:100%;
+        max-height:100%;
+        grid-template-columns:1fr;
         overflow-y:auto;
         overflow-x:hidden;
         padding-right:10px;
@@ -2343,6 +2354,117 @@
         position:relative;
         z-index:2;
         padding-top:2px;
+      }
+    }
+    @media (max-height:760px) and (orientation: landscape) and (pointer:fine){
+      .story-market-stage{
+        overflow:hidden;
+      }
+      .market-scrollbar{
+        display:flex;
+        top:max(76px, env(safe-area-inset-top));
+        bottom:max(72px, env(safe-area-inset-bottom));
+      }
+      .market-shell{
+        width:min(1260px, calc(100% - 28px));
+        height:100svh;
+        min-height:0;
+        overflow:hidden;
+        grid-template-rows:auto minmax(0, 1fr) auto;
+        gap:12px;
+        padding:clamp(12px, 2vh, 20px) 0 max(12px, env(safe-area-inset-bottom));
+      }
+      .market-layout{
+        min-height:0;
+        height:100%;
+        overflow:hidden;
+        grid-template-columns:minmax(210px, .7fr) minmax(520px, 1.18fr) minmax(220px, .72fr);
+      }
+      .market-panel{
+        min-height:0;
+        height:100%;
+        max-height:none;
+      }
+      .market-vendor-panel,
+      .inventory-panel{
+        overflow-y:auto;
+        overflow-x:hidden;
+      }
+      .market-store-panel{
+        min-height:0;
+        overflow:hidden;
+      }
+      .market-grid{
+        min-height:0;
+        height:100%;
+        overflow-y:auto;
+        overflow-x:hidden;
+        grid-template-columns:1fr;
+        align-content:start;
+        padding-right:12px;
+      }
+      .market-item-card{
+        min-height:0;
+        height:auto;
+        overflow:visible;
+      }
+      .market-actions{
+        position:relative;
+        bottom:auto;
+        display:flex;
+        justify-content:flex-end;
+        padding-top:0;
+        background:none;
+      }
+    }
+    @media (pointer:fine) and (min-width:900px) and (max-height:820px),
+           (pointer:fine) and (min-width:900px) and (max-width:1380px){
+      .market-shell{
+        width:min(1280px, calc(100% - 28px));
+        height:100svh;
+        min-height:0;
+        overflow:hidden;
+        grid-template-rows:auto minmax(0, 1fr) auto;
+      }
+      .market-layout{
+        min-height:0;
+        height:100%;
+        overflow:hidden;
+        grid-template-columns:minmax(210px, .72fr) minmax(420px, 1fr) minmax(220px, .72fr);
+      }
+      .market-panel{
+        min-height:0;
+        height:100%;
+        max-height:none;
+      }
+      .market-vendor-panel,
+      .inventory-panel{
+        overflow-y:auto;
+        overflow-x:hidden;
+      }
+      .market-store-panel{
+        min-height:0;
+        overflow:hidden;
+      }
+      .market-grid{
+        min-height:0;
+        height:100%;
+        max-height:100%;
+        grid-template-columns:1fr;
+        align-content:start;
+        overflow-y:auto;
+        overflow-x:hidden;
+        padding-right:14px;
+      }
+      .market-item-card{
+        min-height:0;
+        height:auto;
+      }
+      .market-card-art{
+        min-height:112px;
+      }
+      .market-portrait{
+        max-height:320px;
       }
     }
     .story-exploration-stage{
@@ -3128,6 +3250,65 @@
       }
       .scene-actions{
         position:static;
+        padding-top:0;
+        background:none;
+      }
+      .story-market-stage{
+        overflow:hidden;
+      }
+      .market-scrollbar{
+        display:flex;
+        top:max(76px, env(safe-area-inset-top));
+        bottom:max(72px, env(safe-area-inset-bottom));
+      }
+      .market-shell{
+        width:min(1260px, calc(100% - 28px));
+        height:100svh;
+        min-height:0;
+        overflow:hidden;
+        grid-template-rows:auto minmax(0, 1fr) auto;
+        gap:12px;
+        padding:clamp(12px, 2vh, 20px) 0 max(12px, env(safe-area-inset-bottom));
+      }
+      .market-layout{
+        min-height:0;
+        height:100%;
+        overflow:hidden;
+        grid-template-columns:minmax(210px, .7fr) minmax(520px, 1.18fr) minmax(220px, .72fr);
+      }
+      .market-panel{
+        min-height:0;
+        height:100%;
+        max-height:none;
+      }
+      .market-vendor-panel,
+      .inventory-panel{
+        overflow-y:auto;
+        overflow-x:hidden;
+      }
+      .market-store-panel{
+        min-height:0;
+        overflow:hidden;
+      }
+      .market-grid{
+        min-height:0;
+        height:100%;
+        overflow-y:auto;
+        overflow-x:hidden;
+        grid-template-columns:1fr;
+        align-content:start;
+        padding-right:12px;
+      }
+      .market-item-card{
+        min-height:0;
+        height:auto;
+        overflow:visible;
+      }
+      .market-actions{
+        position:relative;
+        bottom:auto;
+        display:flex;
+        justify-content:flex-end;
         padding-top:0;
         background:none;
       }
@@ -6397,7 +6578,9 @@
     function getStorySceneScrollContainer() {
       if (!storySceneStage || !storySceneCard) return null;
       if (storySceneStage.hidden || !storySceneStage.classList.contains('active') || sceneAmbientMode) return null;
-      return storySceneCard;
+      if (storySceneScroll && getStoryScrollableMax(storySceneScroll) > 1) return storySceneScroll;
+      if (getStoryScrollableMax(storySceneCard) > 1) return storySceneCard;
+      return storySceneScroll || storySceneCard;
     }
 
     function getStoryScrollableMax(element) {
@@ -6704,7 +6887,10 @@
     function getStoryMarketScrollContainer() {
       if (!storyMarketStage || !storyMarketShell) return null;
       if (!isStoryMarketWheelReady()) return null;
-      return storyMarketShell;
+      if (storyMarketItems && getStoryScrollableMax(storyMarketItems) > 1) return storyMarketItems;
+      if (getStoryScrollableMax(storyMarketShell) > 1) return storyMarketShell;
+      if (getStoryScrollableMax(storyMarketStage) > 1) return storyMarketStage;
+      return storyMarketItems || storyMarketShell;
     }
 
     function isStoryMarketWheelReady() {
@@ -6714,6 +6900,7 @@
     function getStoryMarketWheelCandidates(event) {
       return [
         ...getStoryEventPathElements(event, storyMarketStage),
+        storyMarketItems,
         storyMarketShell,
         storyMarketStage
       ];
@@ -6731,34 +6918,38 @@
     }
 
     function scrollStoryMarketContainerToTop() {
+      if (storyMarketItems) storyMarketItems.scrollTop = 0;
       if (storyMarketShell) storyMarketShell.scrollTop = 0;
       if (storyMarketStage) storyMarketStage.scrollTop = 0;
       updateStoryMarketScrollbar();
     }
 
     function getStoryMarketScrollMax() {
-      return storyMarketShell ? getStoryScrollableMax(storyMarketShell) : 0;
+      const scroller = getStoryMarketScrollContainer();
+      return scroller ? getStoryScrollableMax(scroller) : 0;
     }
 
     function setStoryMarketScrollTop(nextTop) {
-      if (!storyMarketShell) return;
+      const scroller = getStoryMarketScrollContainer();
+      if (!scroller) return;
       const maxScroll = getStoryMarketScrollMax();
-      storyMarketShell.scrollTop = Math.max(0, Math.min(maxScroll, Number(nextTop) || 0));
+      scroller.scrollTop = Math.max(0, Math.min(maxScroll, Number(nextTop) || 0));
       updateStoryMarketScrollbar();
     }
 
     function updateStoryMarketScrollbar() {
-      if (!storyMarketScrollbar || !storyMarketScrollTrack || !storyMarketScrollThumb || !storyMarketShell) return;
+      const scroller = getStoryMarketScrollContainer();
+      if (!storyMarketScrollbar || !storyMarketScrollTrack || !storyMarketScrollThumb || !scroller) return;
       const maxScroll = getStoryMarketScrollMax();
       storyMarketScrollbar.classList.toggle('is-disabled', maxScroll <= 1);
       const trackHeight = storyMarketScrollTrack.clientHeight || 0;
-      const shellHeight = storyMarketShell.clientHeight || 1;
-      const contentHeight = storyMarketShell.scrollHeight || shellHeight;
+      const shellHeight = scroller.clientHeight || 1;
+      const contentHeight = scroller.scrollHeight || shellHeight;
       const thumbHeight = maxScroll > 1
         ? Math.max(54, Math.min(trackHeight, Math.round(trackHeight * (shellHeight / contentHeight))))
         : trackHeight;
       const travel = Math.max(0, trackHeight - thumbHeight);
-      const progress = maxScroll > 1 ? storyMarketShell.scrollTop / maxScroll : 0;
+      const progress = maxScroll > 1 ? scroller.scrollTop / maxScroll : 0;
       storyMarketScrollThumb.style.height = `${thumbHeight}px`;
       storyMarketScrollThumb.style.transform = `translateY(${Math.round(travel * progress)}px)`;
       storyMarketScrollThumb.setAttribute('aria-valuenow', String(Math.round(progress * 100)));
@@ -6774,7 +6965,7 @@
     }
 
     function normalizeStoryMarketWheelDelta(event) {
-      return normalizeStoryWheelDelta(event, storyMarketShell?.clientHeight || 320);
+      return normalizeStoryWheelDelta(event, getStoryMarketScrollContainer()?.clientHeight || storyMarketShell?.clientHeight || 320);
     }
 
     function handleStoryMarketWheel(event) {
@@ -7513,6 +7704,7 @@
       targetUrl.searchParams.set('story_audio', 'internal');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('preserve_chapter', '1');
+      targetUrl.searchParams.set('story_load_id', String(Date.now()));
       const towerState = readStoryTowerChapterState();
       if (sceneKey === 'exterior' && towerState.pendingVanArrival) {
         targetUrl.searchParams.set('story_van_arrival', '1');
@@ -7585,14 +7777,26 @@
     function openStoryTowerCombat(payload = {}) {
       const mission = payload.mission || '';
       if (!isStoryTowerCombatMission(mission)) return false;
+      const returnSceneKey = payload.returnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior';
+      const playerPosition = payload.playerPosition && Number.isFinite(Number(payload.playerPosition.x)) && Number.isFinite(Number(payload.playerPosition.y))
+        ? {
+          sceneKey: returnSceneKey,
+          x: Math.round(Number(payload.playerPosition.x)),
+          y: Math.round(Number(payload.playerPosition.y))
+        }
+        : null;
+      if (playerPosition) {
+        patchStoryTowerChapterState({ lastReturnPosition: playerPosition });
+      }
       rememberStoryWorkspace(true);
       rememberActiveStoryMission('torre');
       rememberStorySurface({
         type: 'exploration',
         nodeId: 'torre',
-        sceneKey: payload.returnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior'
+        sceneKey: returnSceneKey
       });
       syncStoryMissionBrief('torre', storyDraftNodes.torre, storyMissionScripts.torre);
+      pauseMapMusic();
       const launchCombat = () => {
         activeMissionNodeId = 'torre';
         window.location.href = buildStoryTowerCombatUrl(payload, { standalone: true });
@@ -7689,6 +7893,26 @@
       return true;
     }
 
+    function grantStoryInventoryCard(card = {}, reason = 'tower-card-reward') {
+      if (!card || typeof card.id !== 'string' || typeof card.name !== 'string') return false;
+      const inventory = ensureStoryMarketInventory();
+      if (inventory.cards.some((entry) => entry.id === card.id)) return false;
+      inventory.cards.push({
+        id: card.id,
+        name: card.name,
+        text: card.text || card.name,
+        source: card.source || 'Ruta Ceniza',
+        rank: card.rank || '',
+        suit: card.suit || '',
+        cardImage: card.cardImage || '',
+        deckText: card.deckText || card.name
+      });
+      storyProgressState.inventory = inventory;
+      saveStoryProgress(reason);
+      renderStoryMapInventoryWidget();
+      return true;
+    }
+
     function applyStoryTowerCoinReward(rewardId, reason = 'tower-4b-coin') {
       const safeRewardId = typeof rewardId === 'string' && rewardId.startsWith(STORY_TOWER_COIN_REWARD_PREFIX)
         ? rewardId
@@ -7764,7 +7988,14 @@
       if (success) applyStoryTowerCombatVictory(result);
       saveStoryProgress(`tower-combat-${result.mission}-${success ? 'win' : 'lose'}`);
       const returnScene = result.towerReturnScene || STORY_TOWER_COMBAT_RETURN_SCENES[result.mission] || 'exterior';
-      window.setTimeout(() => openStoryTowerScene(returnScene, returnScene === 'exterior' ? { mission_return: '1' } : {}), success ? 520 : 760);
+      const towerState = readStoryTowerChapterState();
+      const returnPosition = towerState.lastReturnPosition?.sceneKey === returnScene ? towerState.lastReturnPosition : null;
+      const returnParams = returnScene === 'exterior' ? { mission_return: '1' } : {};
+      if (returnPosition) {
+        returnParams.story_player_x = returnPosition.x;
+        returnParams.story_player_y = returnPosition.y;
+      }
+      window.setTimeout(() => openStoryTowerScene(returnScene, returnParams), success ? 520 : 760);
       return true;
     }
 
@@ -7804,15 +8035,15 @@
         return true;
       }
       if (action === 'enter-interior') {
-        openStoryTowerScene('interior');
+        openStoryTowerScene('interior', { from_exterior: '1' });
         return true;
       }
       if (action === 'enter-control-room') {
-        openStoryTowerScene('control');
+        openStoryTowerScene('control', { from_interior: '1' });
         return true;
       }
       if (action === 'return-lower-interior') {
-        openStoryTowerScene('interior');
+        openStoryTowerScene('interior', { from_control: '1' });
         return true;
       }
       if (action === 'return-exterior-finale') {
@@ -7821,6 +8052,10 @@
       }
       if (action === 'request-drone-combat' || action === 'request-control-mecha-combat' || action === 'request-interior-drone-combat' || action === 'request-argos-hack-combat') {
         openStoryTowerCombat(data);
+        return true;
+      }
+      if (action === 'tower-random-card-reward') {
+        grantStoryInventoryCard(data.reward?.card, 'tower-random-card-reward');
         return true;
       }
       if (action === 'optional-drone-combat' && data.result === 'victory') {
@@ -8312,13 +8547,22 @@
     if (storyMarketShell) {
       storyMarketShell.addEventListener('scroll', updateStoryMarketScrollbar, { passive: true });
     }
+    if (storyMarketItems) {
+      storyMarketItems.addEventListener('scroll', updateStoryMarketScrollbar, { passive: true });
+    }
     if (storyMarketScrollUpBtn) {
       bindStoryUiSfx(storyMarketScrollUpBtn, { clickKind: 'click', hover: false });
-      storyMarketScrollUpBtn.addEventListener('click', () => setStoryMarketScrollTop((storyMarketShell?.scrollTop || 0) - Math.max(180, (storyMarketShell?.clientHeight || 360) * 0.72)));
+      storyMarketScrollUpBtn.addEventListener('click', () => {
+        const scroller = getStoryMarketScrollContainer();
+        setStoryMarketScrollTop((scroller?.scrollTop || 0) - Math.max(180, (scroller?.clientHeight || 360) * 0.72));
+      });
     }
     if (storyMarketScrollDownBtn) {
       bindStoryUiSfx(storyMarketScrollDownBtn, { clickKind: 'click', hover: false });
-      storyMarketScrollDownBtn.addEventListener('click', () => setStoryMarketScrollTop((storyMarketShell?.scrollTop || 0) + Math.max(180, (storyMarketShell?.clientHeight || 360) * 0.72)));
+      storyMarketScrollDownBtn.addEventListener('click', () => {
+        const scroller = getStoryMarketScrollContainer();
+        setStoryMarketScrollTop((scroller?.scrollTop || 0) + Math.max(180, (scroller?.clientHeight || 360) * 0.72));
+      });
     }
     if (storyMarketScrollTrack && storyMarketScrollThumb) {
       let storyMarketThumbDrag = null;
@@ -8342,7 +8586,7 @@
         storyMarketThumbDrag = {
           pointerId: event.pointerId,
           startY: event.clientY,
-          startTop: storyMarketShell?.scrollTop || 0,
+          startTop: getStoryMarketScrollContainer()?.scrollTop || 0,
         };
         storyMarketScrollTrack.setPointerCapture?.(event.pointerId);
       }, { passive: false });
@@ -8361,11 +8605,12 @@
       storyMarketScrollThumb.addEventListener('keydown', (event) => {
         if (!['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(event.key)) return;
         event.preventDefault();
-        const page = Math.max(180, (storyMarketShell?.clientHeight || 360) * 0.72);
-        if (event.key === 'ArrowUp') setStoryMarketScrollTop((storyMarketShell?.scrollTop || 0) - 80);
-        if (event.key === 'ArrowDown') setStoryMarketScrollTop((storyMarketShell?.scrollTop || 0) + 80);
-        if (event.key === 'PageUp') setStoryMarketScrollTop((storyMarketShell?.scrollTop || 0) - page);
-        if (event.key === 'PageDown') setStoryMarketScrollTop((storyMarketShell?.scrollTop || 0) + page);
+        const scroller = getStoryMarketScrollContainer();
+        const page = Math.max(180, (scroller?.clientHeight || 360) * 0.72);
+        if (event.key === 'ArrowUp') setStoryMarketScrollTop((scroller?.scrollTop || 0) - 80);
+        if (event.key === 'ArrowDown') setStoryMarketScrollTop((scroller?.scrollTop || 0) + 80);
+        if (event.key === 'PageUp') setStoryMarketScrollTop((scroller?.scrollTop || 0) - page);
+        if (event.key === 'PageDown') setStoryMarketScrollTop((scroller?.scrollTop || 0) + page);
         if (event.key === 'Home') setStoryMarketScrollTop(0);
         if (event.key === 'End') setStoryMarketScrollTop(getStoryMarketScrollMax());
       });
@@ -8536,7 +8781,8 @@
         document.documentElement,
         document.body,
         storyMarketStage,
-        storyMarketShell
+        storyMarketShell,
+        storyMarketItems
       ]);
       storyMarketStage.addEventListener('touchstart', (event) => {
         storyMarketTouchY = getStoryMarketScrollContainer() && event.touches.length === 1 ? event.touches[0].clientY : null;

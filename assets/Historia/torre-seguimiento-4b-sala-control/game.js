@@ -139,6 +139,13 @@ const player = {
   spriteHeight: 170,
 };
 
+const spawnX = Number(storyParams.get("story_player_x"));
+const spawnY = Number(storyParams.get("story_player_y"));
+if (Number.isFinite(spawnX) && Number.isFinite(spawnY)) {
+  player.x = Math.max(player.radius, Math.min(world.width - player.radius, spawnX));
+  player.y = Math.max(player.radius, Math.min(world.height - player.radius, spawnY));
+}
+
 const camera = {
   x: 0,
   y: 0,
@@ -239,12 +246,23 @@ const interactionState = {
   messageTimer: 0,
 };
 
+const hudHelp = {
+  expanded: true,
+  elapsed: 0,
+  collapseDelay: 10,
+  button: { x: 18, y: 18, width: 190, height: 42 },
+};
+
 function postStoryTutorialAction(action, payload = {}) {
   const message = {
     type: "pocobot-story-tower-control-action",
     action,
     savedAt: Date.now(),
     sceneMusic: musicConfig.scene,
+    playerPosition: {
+      x: Math.round(player.x),
+      y: Math.round(player.y),
+    },
     ...payload,
   };
 
@@ -489,6 +507,23 @@ canvas.addEventListener("pointerdown", (event) => {
   }
 
   startChapterMusic();
+
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = viewport.width / rect.width;
+  const scaleY = viewport.height / rect.height;
+  const screenX = (event.clientX - rect.left) * scaleX;
+  const screenY = (event.clientY - rect.top) * scaleY;
+  if (
+    screenX >= hudHelp.button.x &&
+    screenX <= hudHelp.button.x + hudHelp.button.width &&
+    screenY >= hudHelp.button.y &&
+    screenY <= hudHelp.button.y + hudHelp.button.height
+  ) {
+    hudHelp.expanded = !hudHelp.expanded;
+    hudHelp.elapsed = 0;
+    event.preventDefault();
+    return;
+  }
 
   if (windowViewState.active) {
     windowViewState.active = false;
@@ -799,6 +834,7 @@ async function loadAssets() {
   assets.botFrames = botFrames;
   assets.ready = true;
   snapCameraToPlayer();
+  startChapterMusic();
 
   if (chapterState.argosHackDefeated) {
     queueRadio([
@@ -948,6 +984,11 @@ function updateChapterActors(dt) {
 function update(dt) {
   if (!assets.ready) {
     return;
+  }
+
+  hudHelp.elapsed += dt;
+  if (hudHelp.expanded && hudHelp.elapsed >= hudHelp.collapseDelay) {
+    hudHelp.expanded = false;
   }
 
   if (windowViewState.active) {
@@ -1746,21 +1787,36 @@ function drawWindowViewOverlay() {
 function drawHud() {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-  ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
-  ctx.fillRect(18, 18, 520, 92);
+  if (hudHelp.expanded) {
+    hudHelp.button = { x: 18, y: 18, width: 520, height: 92 };
+    ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
+    ctx.fillRect(18, 18, 520, 92);
 
-  ctx.strokeStyle = "rgba(146, 246, 255, 0.3)";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(18, 18, 520, 92);
+    ctx.strokeStyle = "rgba(146, 246, 255, 0.3)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(18, 18, 520, 92);
 
-  ctx.fillStyle = "#eef8ff";
-  ctx.font = "18px Trebuchet MS";
-  ctx.fillText("PoCoBOT // Sala de Control 4B", 32, 46);
+    ctx.fillStyle = "#eef8ff";
+    ctx.font = "18px Trebuchet MS";
+    ctx.fillText("PoCoBOT // Sala de Control 4B", 32, 46);
 
-  ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
-  ctx.font = "14px Trebuchet MS";
-  ctx.fillText("WASD / Flechas o manten raton/dedo para moverte", 32, 68);
-  ctx.fillText("Vence al guardian, activa el panel y resiste el hackeo", 32, 88);
+    ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
+    ctx.font = "14px Trebuchet MS";
+    ctx.fillText("WASD para moverte · E o Enter para aceptar/seleccionar", 32, 68);
+    ctx.fillText("Vence al guardian, activa el panel y resiste el hackeo", 32, 88);
+  } else {
+    hudHelp.button = { x: 18, y: 18, width: 190, height: 42 };
+    ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
+    ctx.beginPath();
+    ctx.roundRect(18, 18, 190, 42, 14);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(146, 246, 255, 0.3)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = "#eef8ff";
+    ctx.font = "700 14px Trebuchet MS";
+    ctx.fillText("Info controles +", 34, 45);
+  }
 
   if (interactionState.messageTimer > 0 || interactionState.active) {
     const message = interactionState.messageTimer > 0
