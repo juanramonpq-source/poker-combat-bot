@@ -479,26 +479,18 @@
       getActiveThrusters().forEach((thruster) => drawFlameJet(thruster, power));
     }
 
-    function drawImageFrame(frame, size, alpha, offsetY = 0) {
+    function drawImageFrame(frame, size, offsetY = 0) {
       if (!frame) return;
-      ctx.save();
-      ctx.globalAlpha = alpha;
       ctx.drawImage(frame, -size / 2, -size / 2 + offsetY, size, size);
-      ctx.restore();
     }
 
     function drawFrontLeanSprite(size, leanOverride = player.leanAmount) {
       const frames = assets.frontFrames && assets.frontFrames.length ? assets.frontFrames : assets.botFrames;
       if (!frames || !frames.length) return;
       const framePosition = sceneClamp(leanOverride, 0, 1) * (frames.length - 1);
-      const firstIndex = Math.floor(framePosition);
-      const secondIndex = Math.min(frames.length - 1, firstIndex + 1);
-      const blend = framePosition - firstIndex;
+      const frameIndex = sceneClamp(Math.round(framePosition), 0, frames.length - 1);
 
-      drawImageFrame(frames[firstIndex], size, 0.97);
-      if (blend > 0.01) {
-        drawImageFrame(frames[secondIndex], size, 0.97 * blend);
-      }
+      drawImageFrame(frames[frameIndex], size);
     }
 
     function drawHoverSprite(size) {
@@ -506,13 +498,12 @@
       if (!frames || !frames.length) return;
 
       if (frames.length === 1) {
-        drawImageFrame(frames[0], size, 0.97);
+        drawImageFrame(frames[0], size);
         return;
       }
 
       const pulse = (Math.sin(player.thrustCycle * 1.15) + 1) * 0.5;
-      drawImageFrame(frames[0], size, 0.97);
-      drawImageFrame(frames[1], size, 0.97 * pulse);
+      drawImageFrame(frames[pulse > 0.5 ? 1 : 0], size);
     }
 
     function drawSideLeanSprite(size) {
