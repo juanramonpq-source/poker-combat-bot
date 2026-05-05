@@ -6415,14 +6415,14 @@
         title: 'Taller de la Fosa Azul',
         copy: 'Monta tu PoCoBOT hasta dejarlo listo para atacar antes que Mara Óxido. Ella ensamblará en paralelo, y si llega antes, la prueba se pierde.',
         tip: 'Un mecha valido para PoCoBOT necesita al menos <strong>6 cartas</strong> repartidas entre <strong>Ataque, Defensa y Armadura</strong>, y al menos <strong>1 Piloto</strong>.',
-        url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race&story_embed=1&story_audio=carry'
+        url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race&story_embed=1&story_audio=internal'
       },
       patio: {
         chip: 'Combate con reglas especiales',
         title: 'Patio de Pruebas del Taller',
         copy: 'Entra con un chasis prestado del taller, usa combustible para abrir ataque y dispara un proyectil. Puedes resolverlo en ataques separados o con un ataque combinado si el límite de combustible se queda corto.',
         tip: 'Circunstancia especial del Patio: Mara fuerza los seguros del chasis para que puedas atacar aunque el mecha no cumpla las reglas PoCoBOT. Fuera de esta prueba, un PoCoBOT incompleto no recibe ese perdón.',
-        url: 'poker_combat_bot_ONLINE.html?story_mission=patio_duel&story_embed=1&story_audio=carry'
+        url: 'poker_combat_bot_ONLINE.html?story_mission=patio_duel&story_embed=1&story_audio=internal'
       },
       mercado_sparring: {
         storyNodeId: 'mercado',
@@ -7236,10 +7236,7 @@
       window.setTimeout(() => {
         if (!storySceneStage.classList.contains('active')) {
           storySceneStage.hidden = true;
-          if (workspacePanel.classList.contains('active') && (!storyMissionStage || !storyMissionStage.classList.contains('active')) && (!storyMarketStage || !storyMarketStage.classList.contains('active')) && (!storyExplorationStage || !storyExplorationStage.classList.contains('active'))) {
-            resetStoryMapViewport();
-            playMapMusic();
-          }
+          resumeMapMusicIfSafe();
         }
       }, 260);
     }
@@ -7637,10 +7634,7 @@
       window.setTimeout(() => {
         if (!storyMarketStage.classList.contains('active')) {
           storyMarketStage.hidden = true;
-          if (workspacePanel.classList.contains('active') && (!storyMissionStage || !storyMissionStage.classList.contains('active')) && (!storySceneStage || !storySceneStage.classList.contains('active')) && (!storyExplorationStage || !storyExplorationStage.classList.contains('active'))) {
-            resetStoryMapViewport();
-            playMapMusic();
-          }
+          resumeMapMusicIfSafe();
           if (onClosed) onClosed();
         }
       }, 260);
@@ -7711,10 +7705,7 @@
         if (!storyExplorationStage.classList.contains('active')) {
           storyExplorationStage.hidden = true;
           if (storyExplorationFrame && options.keepFrame !== true) storyExplorationFrame.src = 'about:blank';
-          if (workspacePanel.classList.contains('active') && (!storyMissionStage || !storyMissionStage.classList.contains('active')) && (!storySceneStage || !storySceneStage.classList.contains('active')) && (!storyMarketStage || !storyMarketStage.classList.contains('active'))) {
-            resetStoryMapViewport();
-            playMapMusic();
-          }
+          resumeMapMusicIfSafe();
           if (onClosed) onClosed();
         }
       }, 260);
@@ -7838,7 +7829,7 @@
       const mission = storyMissionScripts[nodeId];
       if (!mission) return '';
       const targetUrl = new URL(mission.url, window.location.href);
-      const effectiveAudioMode = options.audioMode || mission.audioMode || (options.standalone ? 'carry' : 'external');
+      const effectiveAudioMode = options.audioMode || mission.audioMode || (options.standalone ? 'internal' : 'external');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', mission.storyNodeId || nodeId);
       targetUrl.searchParams.set('story_audio', effectiveAudioMode);
@@ -7894,6 +7885,7 @@
       const mission = storyMissionScripts[nodeId];
       const localNode = storyDraftNodes[mission?.storyNodeId || nodeId];
       if (!localNode || !mission) return;
+      cutMapMusicForChapter();
       if (nodeId === 'torre') {
         openStoryTowerScene('exterior');
         return;
@@ -7910,6 +7902,7 @@
 
     function openStoryMissionStandalone(nodeId) {
       if (!storyMissionScripts[nodeId]) return;
+      cutMapMusicForChapter();
 
       const navigate = () => {
         const targetUrl = buildStoryMissionUrl(nodeId, { standalone: true, showInnerBrief: true });
@@ -8016,10 +8009,7 @@
         if (!storyMissionStage.classList.contains('active')) {
           storyMissionStage.hidden = true;
           if (storyMissionFrame) storyMissionFrame.src = 'about:blank';
-          if (workspacePanel.classList.contains('active')) {
-            resetStoryMapViewport();
-            playMapMusic();
-          }
+          resumeMapMusicIfSafe();
           if (!preserveMissionId) {
             activeMissionNodeId = null;
             rememberActiveStoryMission(null);
@@ -8102,7 +8092,7 @@
       rememberActiveStoryMission('torre');
       rememberStorySurface({ type: 'exploration', nodeId: 'torre', sceneKey });
       renderStoryNode('torre', { skipSave: true });
-      pauseMapMusic();
+      cutMapMusicForChapter();
       closeStoryScene({ clearSurface: false });
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
@@ -8166,7 +8156,7 @@
         sceneKey: returnSceneKey
       });
       syncStoryMissionBrief('torre', storyDraftNodes.torre, storyMissionScripts.torre);
-      pauseMapMusic();
+      cutMapMusicForChapter();
       const launchCombat = () => {
         activeMissionNodeId = 'torre';
         window.location.href = buildStoryTowerCombatUrl(payload, { standalone: true });
@@ -8793,8 +8783,27 @@
       manualGlowTimeout = setTimeout(() => updateGlowPosition(50, 38), 280);
     });
 
+    function hasActiveStoryStage(stage) {
+      return !!stage && !stage.hidden && stage.classList.contains('active');
+    }
+
+    function isStoryChapterAudioSurfaceActive() {
+      return !!activeMissionNodeId || (!!activeExplorationNodeId && activeExplorationNodeId !== 'mercado');
+    }
+
+    function canResumeMapMusic() {
+      if (!workspacePanel.classList.contains('active')) return false;
+      if (isStoryChapterAudioSurfaceActive()) return false;
+      if (hasActiveStoryStage(storyMissionStage)) return false;
+      if (hasActiveStoryStage(storySceneStage)) return false;
+      if (hasActiveStoryStage(storyMarketStage)) return false;
+      if (hasActiveStoryStage(storyExplorationStage) && activeExplorationNodeId !== 'mercado') return false;
+      return true;
+    }
+
     async function playMapMusic() {
       if (!storyMapMusic) return;
+      if (isStoryChapterAudioSurfaceActive()) return;
       const pendingThemeSrc = STORY_MAP_THEMES[storyProgressState.pendingThemeKey || ''] || '';
       if (pendingThemeSrc) {
         const sourceEl = storyMapMusic.querySelector('source');
@@ -8815,6 +8824,27 @@
     function pauseMapMusic() {
       if (!storyMapMusic) return;
       storyMapMusic.pause();
+    }
+
+    function stopMapMusic(reset = true) {
+      if (!storyMapMusic) return;
+      storyMapMusic.pause();
+      if (!reset) return;
+      try {
+        storyMapMusic.currentTime = 0;
+      } catch (error) {}
+    }
+
+    function cutMapMusicForChapter() {
+      stopMapMusic(true);
+      mapMusicUnlocked = false;
+    }
+
+    function resumeMapMusicIfSafe() {
+      if (!canResumeMapMusic()) return false;
+      resetStoryMapViewport();
+      playMapMusic();
+      return true;
     }
 
     function showWorkspace() {
