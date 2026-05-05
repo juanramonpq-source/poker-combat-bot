@@ -3659,6 +3659,14 @@
       .market-layout{
         grid-template-columns:1fr;
         gap:12px;
+        align-items:start;
+      }
+      .market-store-panel{
+        display:flex;
+        flex-direction:column;
+        overflow:visible;
+        align-self:start;
+        height:auto;
       }
       .market-vendor-panel,
       .market-store-panel,
@@ -3694,6 +3702,10 @@
       .market-grid{
         grid-template-columns:1fr;
         gap:10px;
+        flex:0 0 auto;
+        height:auto;
+        min-height:0;
+        overflow:visible;
       }
       .market-item-card{
         grid-template-columns:74px minmax(0, 1fr);
@@ -7196,6 +7208,7 @@
     function getStoryMarketScrollContainer() {
       if (!storyMarketStage || !storyMarketShell) return null;
       if (!isStoryMarketWheelReady()) return null;
+      if (isStoryMarketPortraitTouchViewport() && getStoryScrollableMax(storyMarketShell) > 1) return storyMarketShell;
       if (storyMarketItems && getStoryScrollableMax(storyMarketItems) > 1) return storyMarketItems;
       if (getStoryScrollableMax(storyMarketShell) > 1) return storyMarketShell;
       if (getStoryScrollableMax(storyMarketStage) > 1) return storyMarketStage;
@@ -7204,6 +7217,19 @@
 
     function isStoryMarketWheelReady() {
       return !!storyMarketStage && !storyMarketStage.hidden && storyMarketStage.classList.contains('active');
+    }
+
+    function isStoryMarketPortraitTouchViewport() {
+      try {
+        return !!window.matchMedia
+          && window.matchMedia('(orientation: portrait) and (pointer: coarse)').matches;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function shouldUseNativeStoryMarketTouchScroll() {
+      return isStoryMarketPortraitTouchViewport();
     }
 
     function getStoryMarketWheelCandidates(event) {
@@ -9119,9 +9145,14 @@
         storyMarketItems
       ]);
       storyMarketStage.addEventListener('touchstart', (event) => {
+        if (shouldUseNativeStoryMarketTouchScroll()) {
+          storyMarketTouchY = null;
+          return;
+        }
         storyMarketTouchY = getStoryMarketScrollContainer() && event.touches.length === 1 ? event.touches[0].clientY : null;
       }, { passive: true, capture: true });
       storyMarketStage.addEventListener('touchmove', (event) => {
+        if (shouldUseNativeStoryMarketTouchScroll()) return;
         if (storyMarketTouchY === null || event.touches.length !== 1) return;
         const nextY = event.touches[0].clientY;
         const deltaY = storyMarketTouchY - nextY;
