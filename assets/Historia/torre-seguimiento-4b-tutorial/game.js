@@ -91,6 +91,9 @@ if (storyEmbedMode) {
   document.body.classList.add("story-embed-mode");
 }
 
+canvas.setAttribute("tabindex", "0");
+canvas.setAttribute("draggable", "false");
+
 const viewport = {
   width: canvas.width,
   height: canvas.height,
@@ -115,6 +118,37 @@ const input = {
   pointerStartY: 0,
   pointerMoved: false,
 };
+
+function installExplorationGestureGuard() {
+  const guardOptions = { passive: false, capture: true };
+  const blockNativeCanvasGesture = (event) => {
+    if (!event.cancelable) return;
+    if (
+      event.target === canvas ||
+      event.target === document.body ||
+      event.target === document.documentElement
+    ) {
+      event.preventDefault();
+    }
+  };
+
+  ["selectstart", "dragstart", "contextmenu"].forEach((eventName) => {
+    document.addEventListener(eventName, blockNativeCanvasGesture, guardOptions);
+  });
+
+  document.addEventListener(
+    "touchmove",
+    (event) => {
+      if (!event.cancelable) return;
+      if (input.pointerActive || event.target === canvas || storyEmbedMode) {
+        event.preventDefault();
+      }
+    },
+    guardOptions,
+  );
+}
+
+installExplorationGestureGuard();
 
 const player = {
   x: 720,

@@ -3,17 +3,17 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
   <url>
-    <loc>https://poker-combat-bot.online/</loc>
-    <lastmod>2025-12-01</lastmod>
+    <loc>https://pocobot.online/</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://poker-combat-bot.online/assets/pocobot_web_icon_512.png</image:loc>
+      <image:loc>https://pocobot.online/assets/pocobot_web_icon_512.png</image:loc>
       <image:title>PoCoBOT (Poker Combat Bot) — icono oficial del juego</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://poker-combat-bot.online/assets/pocobot_title.png</image:loc>
-      <image:title>PoCoBOT — Poker Combat Bot — logo del juego</image:title>
+      <image:loc>https://pocobot.online/assets/pocobot_cover_suits_attack_og_1200x630.jpg</image:loc>
+      <image:title>PoCoBOT - duelo tactico de mechas con cartas</image:title>
     </image:image>
   </url>
 

@@ -12,6 +12,28 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+.layout,
+#game {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html,
+body {
+  width: 100%;
+  touch-action: none;
+}
+
+canvas,
+img,
+button {
+  -webkit-user-drag: none;
 }
 
 body {

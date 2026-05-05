@@ -15,6 +15,7 @@ if (storyEmbedMode) {
 }
 
 canvas.setAttribute("tabindex", "0");
+canvas.setAttribute("draggable", "false");
 
 function focusExplorationInput() {
   try {
@@ -51,6 +52,37 @@ const input = {
   pointerStartY: 0,
   pointerMoved: false,
 };
+
+function installExplorationGestureGuard() {
+  const guardOptions = { passive: false, capture: true };
+  const blockNativeCanvasGesture = (event) => {
+    if (!event.cancelable) return;
+    if (
+      event.target === canvas ||
+      event.target === document.body ||
+      event.target === document.documentElement
+    ) {
+      event.preventDefault();
+    }
+  };
+
+  ["selectstart", "dragstart", "contextmenu"].forEach((eventName) => {
+    document.addEventListener(eventName, blockNativeCanvasGesture, guardOptions);
+  });
+
+  document.addEventListener(
+    "touchmove",
+    (event) => {
+      if (!event.cancelable) return;
+      if (input.pointerActive || event.target === canvas || storyEmbedMode) {
+        event.preventDefault();
+      }
+    },
+    guardOptions,
+  );
+}
+
+installExplorationGestureGuard();
 
 const player = {
   x: 775,
@@ -224,6 +256,16 @@ const interactionState = {
   message: "",
   messageTimer: 0,
 };
+
+const veraConfirmationState = {
+  pending: false,
+  expiresAt: 0,
+};
+
+function resetVeraConfirmation() {
+  veraConfirmationState.pending = false;
+  veraConfirmationState.expiresAt = 0;
+}
 
 const hudHelp = {
   expanded: true,
@@ -1003,6 +1045,7 @@ function getInteractionDistance(interactable) {
 
 function updateInteractions(dt) {
   interactionState.messageTimer = Math.max(0, interactionState.messageTimer - dt);
+  const now = performance.now();
 
   let nearest = null;
   let nearestDistance = Infinity;
@@ -1017,17 +1060,38 @@ function updateInteractions(dt) {
 
   interactionState.active = nearest;
 
+  if (veraConfirmationState.pending && (nearest?.id !== "vera" || now > veraConfirmationState.expiresAt)) {
+    resetVeraConfirmation();
+  }
+
   if (input.interactQueued) {
     if (nearest) {
-      setInteractionMessage(nearest.message, 3.4);
       if (nearest.id === "vera") {
+        if (!veraConfirmationState.pending) {
+          veraConfirmationState.pending = true;
+          veraConfirmationState.expiresAt = now + 4800;
+          setInteractionMessage(
+            "Vera Hex esta cerca. Pulsa o toca otra vez para hablar con ella y entrar a su mostrador.",
+            4.4,
+          );
+          input.interactQueued = false;
+          return;
+        }
+
+        resetVeraConfirmation();
+        setInteractionMessage("Vera Hex abre su mostrador entre piezas y antiguas monedas.", 1.6);
         postStoryTutorialAction("talk-vera");
       } else if (nearest.id === "sparring") {
+        resetVeraConfirmation();
+        setInteractionMessage(nearest.message, 3.4);
         postStoryTutorialAction("sparring");
       } else if (nearest.id === "map_exit") {
+        resetVeraConfirmation();
+        setInteractionMessage(nearest.message, 3.4);
         postStoryTutorialAction("return-map");
       }
     } else {
+      resetVeraConfirmation();
       setInteractionMessage("Acercate a Vera Hex, Viajero o la salida para interactuar.", 2.4);
     }
 

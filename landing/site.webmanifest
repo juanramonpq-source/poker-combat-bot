@@ -1,7 +1,7 @@
 {
   "name": "PoCoBOT",
   "short_name": "PoCoBOT",
-  "description": "Combate retro de mechas con estrategia de poker.",
+  "description": "Duelo táctico de mechas construido con una baraja francesa.",
   "icons": [
     {
       "src": "assets/pocobot_web_icon_128.png",
