@@ -1,0 +1,30 @@
+{
+  "name": "poker-combat-bot-online",
+  "version": "1.0.0",
+  "description": "Juego de combate entre mechas - Multiplayer Online con Socket.IO",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "game",
+    "multiplayer",
+    "socket.io",
+    "poker",
+    "combat",
+    "mecha"
+  ],
+  "author": "Juan Ramón Pérez Quintanar",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

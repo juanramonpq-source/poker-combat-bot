@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PoCoBOT - Boceto Historia</title>
+  <meta name="robots" content="noindex,nofollow">
+  <style>
+    :root{
+      --bg:#06090f;
+      --bg-soft:#0d1621;
+      --panel:#111a24;
+      --panel-2:#1a2839;
+      --line:rgba(136,238,255,.16);
+      --line-strong:rgba(255,185,109,.26);
+      --cyan:#8ff4ff;
+      --cyan-2:#4ac7e3;
+      --amber:#ffba72;
+      --white:#edf7ff;
+      --muted:#aabfd0;
+      --shadow:0 30px 70px rgba(0,0,0,.36);
+      --radius-xl:34px;
+      --radius-lg:24px;
+      --radius-md:18px;
+      --glow-x:50%;
+      --glow-y:38%;
+      --enter-shift:0px;
+      --enter-scale:1;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--white);
+      font-family:"Trebuchet MS","Avenir Next",Verdana,sans-serif;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(255,185,109,.12), transparent 18%),
+        radial-gradient(circle at 80% 16%, rgba(74,199,227,.12), transparent 24%),
+        linear-gradient(180deg, #19120f 0%, #0b131c 30%, #06090f 100%);
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(rgba(143,244,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(143,244,255,.025) 1px, transparent 1px);
+      background-size:34px 34px;
+      opacity:.28;
+      pointer-events:none;
+      mix-blend-mode:screen;
+    }
+    body::after{
+      content:"";
+      position:fixed;
+      right:-9vw;
+      bottom:-10vh;
+      width:min(48vw, 760px);
+      height:min(90vh, 980px);
+      background:url("assets/image_19.png") no-repeat center/contain;
+      opacity:.08;
+      filter:sepia(.46) hue-rotate(-12deg) saturate(.82) brightness(.84);
+      pointer-events:none;
+      z-index:0;
+    }
+    a{color:inherit}
+    img{display:block;max-width:100%}
+    button{font:inherit}
+
+    .page-shell{
+      position:relative;
+      z-index:1;
+      width:min(1500px, calc(100% - 28px));
+      margin:0 auto;
+      padding:20px 0 36px;
+    }
+
+    .topbar,
+    .title-stage,
+    .workspace,
+    .workspace-card,
+    .workspace-side,
+    .workspace-note{
+      position:relative;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(13,20,30,.94), rgba(7,11,17,.98));
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.03);
+      overflow:hidden;
+    }
+    .topbar::after,
+    .title-stage::after,
+    .workspace::after,
+    .workspace-card::after,
+    .workspace-side::after,
+    .workspace-note::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(135deg, rgba(255,185,109,.06), transparent 24%),
+        linear-gradient(315deg, rgba(143,244,255,.05), transparent 20%);
+      pointer-events:none;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      padding:16px 18px;
+      border-radius:28px;
+      margin-bottom:18px;
+      background:rgba(11,16,24,.8);
+      backdrop-filter:blur(12px);
+    }
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+    }
+    .brand img{
+      width:56px;
+      height:56px;
+      border-radius:16px;
+      box-shadow:0 0 0 2px rgba(255,185,109,.12), 0 12px 24px rgba(0,0,0,.28);
+    }
+    .brand strong{
+      display:block;
+      color:var(--amber);
+      font-size:.84rem;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .brand h1{
+      margin:4px 0 0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:clamp(1.5rem, 3vw, 2.2rem);
+      line-height:.95;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .brand p{
+      margin:8px 0 0;
+      color:var(--muted);
+      max-width:56ch;
+      line-height:1.55;
+      font-size:.9rem;
+    }
+    .top-actions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      gap:8px;
+    }
+    .ghost-link,
+    .enter-btn,
+    .mini-chip{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:42px;
+      padding:10px 15px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(34,25,20,.95), rgba(12,18,27,.98));
+      color:var(--white);
+      text-decoration:none;
+      font-size:.77rem;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      box-shadow:0 10px 18px rgba(0,0,0,.18);
+      transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
+      cursor:pointer;
+    }
+    .ghost-link:hover,
+    .enter-btn:hover,
+    .mini-chip:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,185,109,.28);
+      box-shadow:0 12px 20px rgba(255,185,109,.12);
+    }
+
+    .title-stage{
+      min-height:calc(100vh - 120px);
+      display:grid;
+      place-items:center;
+      border-radius:var(--radius-xl);
+      padding:28px;
+      margin-bottom:18px;
+      background:
+        radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(143,244,255,.22), transparent 18%),
+        radial-gradient(circle at 22% 24%, rgba(255,185,109,.18), transparent 16%),
+        radial-gradient(circle at 78% 22%, rgba(74,199,227,.16), transparent 18%),
+        linear-gradient(180deg, rgba(37,25,18,.96), rgba(9,14,22,.98));
+      transition:opacity .45s ease, transform .45s ease, min-height .45s ease, padding .45s ease, margin .45s ease;
+    }
+    .title-stage.hidden{
+      opacity:0;
+      transform:translateY(-28px);
+      min-height:0;
+      padding:0;
+      margin:0;
+      pointer-events:none;
+      border-width:0;
+    }
+    .title-stage.hidden .title-shell{display:none}
+
+    .title-shell{
+      position:relative;
+      width:min(1200px, 100%);
+      display:grid;
+      gap:18px;
+      justify-items:center;
+    }
+    .title-art-wrap{
+      position:relative;
+      width:min(1180px, 100%);
+      border-radius:30px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+      background:#060a10;
+      box-shadow:0 30px 60px rgba(0,0,0,.34);
+      isolation:isolate;
+    }
+    .title-art-wrap::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(143,244,255,.28), transparent 15%),
+        radial-gradient(circle at calc(var(--glow-x) + 18%) calc(var(--glow-y) + 8%), rgba(255,185,109,.18), transparent 12%),
+        radial-gradient(circle at 50% 14%, rgba(255,255,255,.18), transparent 10%);
+      filter:blur(18px);
+      mix-blend-mode:screen;
+      opacity:.92;
+      pointer-events:none;
+      z-index:1;
+    }
+    .title-art-wrap::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.09), transparent 20%),
+        linear-gradient(0deg, rgba(4,7,11,.7), transparent 26%),
+        linear-gradient(90deg, transparent 0 16%, rgba(143,244,255,.06) 24%, transparent 32%, rgba(255,185,109,.05) 54%, transparent 68%, rgba(143,244,255,.06) 84%, transparent 100%);
+      pointer-events:none;
+      z-index:2;
+    }
+    .title-image{
+      width:100%;
+      height:auto;
+      min-height:480px;
+      object-fit:cover;
+      object-position:center;
+      filter:saturate(1.05) contrast(1.03);
+      transform:scale(var(--enter-scale)) translateY(var(--enter-shift));
+      transition:transform .35s ease;
+    }
+    .title-overlay{
+      position:absolute;
+      inset:0;
+      z-index:3;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      align-items:center;
+      gap:12px;
+      padding:28px 22px 30px;
+    }
+    .title-copy{
+      width:min(720px, 100%);
+      text-align:center;
+      color:#ebf8ff;
+      text-shadow:0 8px 24px rgba(0,0,0,.6);
+    }
+    .title-copy strong{
+      display:block;
+      color:#ffe0bd;
+      font-size:.8rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+    .title-copy p{
+      margin:10px auto 0;
+      max-width:46ch;
+      color:#e4eef5;
+      line-height:1.6;
+      font-size:.95rem;
+    }
+    .enter-btn{
+      position:relative;
+      min-height:56px;
+      padding:14px 24px;
+      border-color:rgba(143,244,255,.28);
+      background:linear-gradient(180deg, rgba(24,54,67,.95), rgba(13,20,28,.98));
+      box-shadow:0 0 0 1px rgba(143,244,255,.12), 0 18px 34px rgba(74,199,227,.18);
+      overflow:hidden;
+    }
+    .enter-btn::before{
+      content:"";
+      position:absolute;
+      inset:auto -30% -110% auto;
+      width:68%;
+      aspect-ratio:1;
+      background:radial-gradient(circle, rgba(143,244,255,.4), transparent 70%);
+      opacity:.78;
+      pointer-events:none;
+      animation:buttonPulse 2.3s ease-in-out infinite;
+    }
+    .enter-btn::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(110deg, transparent 0 36%, rgba(255,255,255,.24) 48%, transparent 60% 100%);
+      transform:translateX(-120%);
+      animation:buttonSweep 3.6s linear infinite;
+      pointer-events:none;
+    }
+
+    .workspace{
+      border-radius:var(--radius-xl);
+      padding:20px;
+      display:none;
+      gap:16px;
+      background:linear-gradient(180deg, rgba(10,15,23,.96), rgba(6,10,15,.99));
+    }
+    .workspace.active{display:grid}
+    .workspace-header{
+      display:grid;
+      gap:14px;
+    }
+    .workspace-title{
+      display:grid;
+      gap:12px;
+      justify-items:center;
+      text-align:center;
+    }
+    .workspace-title img{
+      width:min(980px, 100%);
+      filter:drop-shadow(0 20px 30px rgba(0,0,0,.32));
+    }
+    .workspace-title p{
+      margin:0;
+      max-width:66ch;
+      color:var(--muted);
+      line-height:1.6;
+    }
+    .workspace-actions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .workspace-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.18fr) minmax(320px,.82fr);
+      gap:16px;
+      align-items:start;
+    }
+    .workspace-card,
+    .workspace-side,
+    .workspace-note{
+      border-radius:26px;
+    }
+    .workspace-card,
+    .workspace-side,
+    .workspace-note{
+      padding:18px;
+    }
+    .workspace-card h2,
+    .workspace-side h2,
+    .workspace-note h2{
+      margin:0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:1.08rem;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+    }
+    .workspace-card p,
+    .workspace-side p,
+    .workspace-note p{
+      margin:8px 0 0;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:.9rem;
+    }
+    .map-frame{
+      margin-top:14px;
+      overflow:hidden;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.06);
+      background:#05080d;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .map-frame iframe{
+      width:100%;
+      height:78vh;
+      min-height:760px;
+      border:0;
+      display:block;
+      background:#05080d;
+    }
+
+    .workspace-side{
+      display:grid;
+      gap:14px;
+      background:linear-gradient(180deg, rgba(29,21,16,.95), rgba(9,14,21,.98));
+    }
+    .side-block{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.03);
+    }
+    .side-block strong{
+      display:block;
+      color:var(--amber);
+      font-size:.78rem;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+    .side-block span{
+      display:block;
+      margin-top:7px;
+      color:var(--muted);
+      font-size:.86rem;
+      line-height:1.5;
+    }
+    .workspace-note{
+      background:rgba(255,185,109,.08);
+      border-color:rgba(255,185,109,.18);
+      color:#ffe7ca;
+    }
+    .workspace-note p{color:#ffe7ca}
+
+    @keyframes buttonPulse{
+      0%,100%{transform:scale(.8);opacity:.38}
+      50%{transform:scale(1.16);opacity:.86}
+    }
+    @keyframes buttonSweep{
+      0%{transform:translateX(-120%)}
+      100%{transform:translateX(120%)}
+    }
+
+    @media (max-width:1180px){
+      .workspace-grid{grid-template-columns:1fr}
+      .map-frame iframe{height:68vh;min-height:620px}
+    }
+    @media (max-width:760px){
+      .page-shell{width:min(100% - 16px, 100%);padding:12px 0 24px}
+      .topbar,
+      .title-stage,
+      .workspace,
+      .workspace-card,
+      .workspace-side,
+      .workspace-note{
+        border-radius:22px;
+      }
+      .topbar,
+      .title-stage,
+      .workspace,
+      .workspace-card,
+      .workspace-side,
+      .workspace-note{
+        padding:16px;
+      }
+      .brand{flex-direction:column}
+      .brand img{width:48px;height:48px}
+      .top-actions{width:100%;justify-content:flex-start}
+      .title-art-wrap{border-radius:22px}
+      .title-image{min-height:340px}
+      .map-frame iframe{height:58vh;min-height:420px}
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <section class="topbar">
+      <div class="brand">
+        <img src="apple-touch-icon.png" alt="PoCoBOT">
+        <div>
+          <strong>Boceto oculto del modo historia</strong>
+          <h1>Acceso de trabajo a la Ruta Ceniza</h1>
+          <p>Esta página ya es la puerta real del modo historia en construcción. Primero entra por la pantalla de título, y detrás queda el espacio donde iremos levantando la campaña definitiva sobre el mapa interactivo.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a class="ghost-link" href="MODO_HISTORIA_POCObot.html">Volver a Historia</a>
+        <a class="ghost-link" href="pocobot_mapa_interactivo.html" target="_blank" rel="noopener">Mapa solo</a>
+      </div>
+    </section>
+
+    <section class="title-stage" id="titleStage">
+      <div class="title-shell">
+        <div class="title-art-wrap" id="titleArtWrap">
+          <img class="title-image" src="assets/Historia/Brutos/Titulo1.PNG" alt="Titulo de Camino de PoCoBOT" loading="eager">
+          <div class="title-overlay">
+            <div class="title-copy">
+              <strong>Modo Historia · Boceto vivo</strong>
+              <p>El viaje comienza aquí. Entra al corredor de ruinas, metal y protocolos antiguos para empezar a construir la campaña real de PoCoBOT.</p>
+            </div>
+            <button class="enter-btn" id="enterStoryBtn" type="button">Entrar en Boceto</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace" id="workspacePanel">
+      <div class="workspace-header">
+        <div class="workspace-title">
+          <img src="assets/Historia/Brutos/TituloARIIBA.png" alt="Camino de PoCoBOT" loading="lazy">
+          <p>Debajo del emblema queda el mapa interactivo, que ya pasa a ser el verdadero suelo del modo historia. Todo lo que diseñemos a partir de ahora crecerá sobre esta ruta.</p>
+        </div>
+        <div class="workspace-actions">
+          <button class="mini-chip" type="button" id="replayIntroBtn">Ver portada otra vez</button>
+          <a class="ghost-link" href="MODO_HISTORIA_POCObot.html?tab=boceto#panel-boceto">Volver al panel Boceto</a>
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <article class="workspace-card">
+          <h2>Mapa interactivo del Boceto</h2>
+          <p>Esta es la base sobre la que vamos a escribir escenas, conectar capítulos y sentir el viaje completo de la Ruta Ceniza.</p>
+          <div class="map-frame">
+            <iframe title="Mapa interactivo del boceto de historia" src="pocobot_mapa_interactivo.html"></iframe>
+          </div>
+        </article>
+
+        <aside class="workspace-side">
+          <div>
+            <h2>Punto de arranque</h2>
+            <p>Ya no estamos en un simple panel de estudio. Este espacio es la puerta buena del modo historia: título, entrada y mapa operativo.</p>
+          </div>
+          <div class="side-block">
+            <strong>Base visual</strong>
+            <span><code>Titulo1.png</code> funciona como portada ceremonial de entrada, y <code>TituloARIIBA.png</code> ya encabeza la zona de trabajo real.</span>
+          </div>
+          <div class="side-block">
+            <strong>Base narrativa</strong>
+            <span><code>assets/Historia</code> sigue siendo la raíz oficial para retratos, localizaciones, audio, lore y futuros datos de campaña.</span>
+          </div>
+          <div class="side-block">
+            <strong>Próximo paso natural</strong>
+            <span>Construir el <code>Capítulo 1 · Hangar de la Fosa Azul</code> como la primera escena real, ya dentro de esta ruta.</span>
+          </div>
+          <div class="workspace-note">
+            <h2>Importante</h2>
+            <p>Esta página sigue siendo oculta y de desarrollo. La moveremos al circuito principal solo cuando el bloque esté sólido de verdad.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <audio id="storyMapMusic" preload="auto" loop>
+    <source src="assets/Historia/EngranesdeTitanio(Exploración).mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const titleStage = document.getElementById('titleStage');
+    const titleArtWrap = document.getElementById('titleArtWrap');
+    const enterStoryBtn = document.getElementById('enterStoryBtn');
+    const workspacePanel = document.getElementById('workspacePanel');
+    const replayIntroBtn = document.getElementById('replayIntroBtn');
+    const storyMapMusic = document.getElementById('storyMapMusic');
+
+    let glowTick = 0;
+    let manualGlowTimeout = null;
+    let mapMusicUnlocked = false;
+
+    if (storyMapMusic) {
+      storyMapMusic.volume = 0.34;
+    }
+
+    function updateGlowPosition(x, y) {
+      document.documentElement.style.setProperty('--glow-x', `${x}%`);
+      document.documentElement.style.setProperty('--glow-y', `${y}%`);
+    }
+
+    function animateAmbientGlow() {
+      glowTick += 0.012;
+      const x = 50 + Math.sin(glowTick * 1.35) * 16 + Math.cos(glowTick * 0.55) * 6;
+      const y = 34 + Math.cos(glowTick * 1.05) * 10 + Math.sin(glowTick * 0.72) * 4;
+      updateGlowPosition(x, y);
+      requestAnimationFrame(animateAmbientGlow);
+    }
+
+    titleArtWrap.addEventListener('mousemove', (event) => {
+      const rect = titleArtWrap.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+      updateGlowPosition(x, y);
+      clearTimeout(manualGlowTimeout);
+      manualGlowTimeout = setTimeout(() => {
+        updateGlowPosition(50, 38);
+      }, 1200);
+    });
+
+    titleArtWrap.addEventListener('mouseleave', () => {
+      clearTimeout(manualGlowTimeout);
+      manualGlowTimeout = setTimeout(() => updateGlowPosition(50, 38), 280);
+    });
+
+    async function playMapMusic() {
+      if (!storyMapMusic) return;
+      try {
+        await storyMapMusic.play();
+        mapMusicUnlocked = true;
+      } catch (error) {
+        mapMusicUnlocked = false;
+      }
+    }
+
+    function pauseMapMusic() {
+      if (!storyMapMusic) return;
+      storyMapMusic.pause();
+    }
+
+    function showWorkspace() {
+      titleStage.classList.add('hidden');
+      workspacePanel.classList.add('active');
+      document.documentElement.style.setProperty('--enter-shift', '-3px');
+      document.documentElement.style.setProperty('--enter-scale', '1.012');
+      playMapMusic();
+      setTimeout(() => {
+        workspacePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+
+    function showIntro() {
+      workspacePanel.classList.remove('active');
+      titleStage.classList.remove('hidden');
+      document.documentElement.style.setProperty('--enter-shift', '0px');
+      document.documentElement.style.setProperty('--enter-scale', '1');
+      pauseMapMusic();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    enterStoryBtn.addEventListener('click', showWorkspace);
+    replayIntroBtn.addEventListener('click', showIntro);
+
+    workspacePanel.addEventListener('pointerdown', () => {
+      if (!workspacePanel.classList.contains('active') || mapMusicUnlocked) return;
+      playMapMusic();
+    }, { passive: true });
+
+    animateAmbientGlow();
+  </script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Visual - Editor de Posiciones PoCoBOT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0b0f12 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #70dcff;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(112, 220, 255, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #9baab3;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .section {
+            background: rgba(8, 12, 17, 0.6);
+            border-left: 4px solid #70dcff;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            backdrop-filter: blur(8px);
+        }
+
+        .section h2 {
+            color: #70dcff;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .step {
+            background: rgba(112, 220, 255, 0.05);
+            border: 1px solid rgba(112, 220, 255, 0.2);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #70dcff;
+            color: #0b0f12;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .step p {
+            margin-bottom: 8px;
+        }
+
+        code {
+            background: rgba(0,0,0,0.5);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #61da9b;
+            font-family: 'Courier New', monospace;
+        }
+
+        .button-like {
+            display: inline-block;
+            background: rgba(112, 220, 255, 0.2);
+            border: 1px solid #70dcff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            color: #70dcff;
+            margin: 2px;
+        }
+
+        .shortcut {
+            display: inline-block;
+            background: rgba(255, 170, 0, 0.2);
+            border: 1px solid #ffaa00;
+            padding: 4px 10px;
+            border-radius: 3px;
+            color: #ffaa00;
+            font-weight: bold;
+            margin: 0 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .warning {
+            background: rgba(255, 140, 105, 0.1);
+            border-left: 4px solid #ff8c69;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #ffccbb;
+        }
+
+        .success {
+            background: rgba(97, 218, 155, 0.1);
+            border-left: 4px solid #61da9b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #b3e6d0;
+        }
+
+        .tip {
+            background: rgba(112, 220, 255, 0.1);
+            border-left: 4px solid #70dcff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #70dcff;
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: #70dcff;
+            border-radius: 50%;
+            border: 3px solid #0b0f12;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .table th, .table td {
+            border: 1px solid rgba(112, 220, 255, 0.2);
+            padding: 12px;
+            text-align: left;
+        }
+
+        .table th {
+            background: rgba(112, 220, 255, 0.1);
+            color: #70dcff;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(112, 220, 255, 0.2);
+            color: #9baab3;
+        }
+
+        .grid-icon {
+            display: inline-block;
+            color: #70dcff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚙️ EDITOR VISUAL DE POSICIONES</h1>
+        <p class="subtitle">Guía visual para PoCoBOT - Ruta Ceniza</p>
+
+        <!-- INSTALACIÓN -->
+        <div class="section">
+            <h2>🚀 Instalación (Primera vez)</h2>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <p><strong>Instalar Live Server en VS Code</strong></p>
+                <p>
+                    Ve a Extensions (<code>Ctrl+Shift+X</code>) →
+                    Busca "Live Server" →
+                    Instala de Ritwick Dey
+                </p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <p><strong>Verificar archivos en la carpeta</strong></p>
+                <p>Asegúrate que tienes:</p>
+                <ul style="margin-left: 30px; margin-top: 8px;">
+                    <li>✓ pocobot_mapa_interactivo.html</li>
+                    <li>✓ EDITOR_VISUAL.js</li>
+                </ul>
+                <p style="margin-top: 8px; color: #9baab3;">Ambos deben estar en la carpeta: <code>Poker Combat-bot</code></p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <p><strong>Abrir con Live Server</strong></p>
+                <p>
+                    Haz clic derecho en <code>pocobot_mapa_interactivo.html</code> →
+                    "Open with Live Server"
+                </p>
+                <p style="margin-top: 8px; color: #70dcff;">El navegador se abre automáticamente en http://localhost:5500/</p>
+            </div>
+        </div>
+
+        <!-- USAR EDITOR -->
+        <div class="section">
+            <h2>🎮 Usar el Editor Visual</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <p><strong>Presiona</strong> <span class="shortcut">E</span> para activar el editor</p>
+                    <p style="color: #9baab3; margin-top: 5px;">Verás un panel en la esquina inferior derecha</p>
+                </div>
+
+                <div class="timeline-item">
+                    <p><strong>Arrastra los nodos</strong> con el ratón</p>
+                    <p style="color: #9baab3; margin-top: 5px;">Las posiciones se actualizan en tiempo real</p>
+                </div>
+
+                <div class="timeline-item">
+                    <p><strong>Observa las coordenadas</strong> en el panel</p>
+                    <p style="color: #9baab3; margin-top: 5px;">Muestra X% e Y% de cada nodo</p>
+                </div>
+
+                <div class="timeline-item">
+                    <p><strong>Haz clic</strong> <span class="button-like">📋 COPIAR TODO</span></p>
+                    <p style="color: #9baab3; margin-top: 5px;">El código se copia al portapapeles automáticamente</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GUARDAR CAMBIOS -->
+        <div class="section">
+            <h2>💾 Guardar Cambios Permanentes</h2>
+
+            <p style="margin-bottom: 15px;">Para que los cambios sean permanentes:</p>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <p><strong>Abre el archivo HTML</strong> en VS Code</p>
+                <p style="color: #9baab3;">Archivo: <code>pocobot_mapa_interactivo.html</code></p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <p><strong>Busca la línea</strong> <code>const nodes = [</code></p>
+                <p style="margin-top: 8px;">Usa <code>Ctrl+F</code> para buscar rápidamente</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <p><strong>Reemplaza TODO el array</strong></p>
+                <p style="margin-top: 8px;">Selecciona desde <code>const nodes = [</code> hasta <code>];</code></p>
+                <p style="color: #9baab3; margin-top: 8px;">Pega lo que copiaste del editor</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <p><strong>Guarda el archivo</strong></p>
+                <p style="margin-top: 8px;"><code>Ctrl+S</code> (Windows/Linux) o <code>Cmd+S</code> (Mac)</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">5</span>
+                <p><strong>El navegador se recarga automáticamente</strong></p>
+                <p style="color: #70dcff; margin-top: 8px;">✓ Los cambios están guardados</p>
+            </div>
+        </div>
+
+        <!-- ATAJOS -->
+        <div class="section">
+            <h2>⌨️ Atajos de Teclado</h2>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tecla</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="shortcut">E</span></td>
+                        <td>Activar/Desactivar Modo Editor</td>
+                    </tr>
+                    <tr>
+                        <td><span class="shortcut">G</span></td>
+                        <td>Mostrar/Ocultar Grid (en modo editor)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="shortcut">R</span></td>
+                        <td>Resetear posiciones (en modo editor)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="tip">
+                <strong>💡 Tip:</strong> El Grid es útil para alinear nodos en posiciones regulares (múltiplos de 10%)
+            </div>
+        </div>
+
+        <!-- FLUJO RÁPIDO -->
+        <div class="section">
+            <h2>⚡ Flujo Rápido (4 pasos)</h2>
+
+            <ol style="margin-left: 30px;">
+                <li style="margin-bottom: 15px;">
+                    <strong>Abrir:</strong>
+                    <code>pocobot_mapa_interactivo.html</code> con Live Server
+                </li>
+                <li style="margin-bottom: 15px;">
+                    <strong>Editar:</strong>
+                    Presiona <span class="shortcut">E</span> + arrastra nodos
+                </li>
+                <li style="margin-bottom: 15px;">
+                    <strong>Copiar:</strong>
+                    Haz clic en <span class="button-like">📋 COPIAR TODO</span>
+                </li>
+                <li style="margin-bottom: 15px;">
+                    <strong>Guardar:</strong>
+                    Reemplaza el array en el HTML y presiona Ctrl+S
+                </li>
+            </ol>
+
+            <div class="success">
+                ✓ Los cambios se guardan permanentemente cuando guardas el archivo HTML
+            </div>
+        </div>
+
+        <!-- SOLUCIÓN DE PROBLEMAS -->
+        <div class="section">
+            <h2>🐛 Solución de Problemas</h2>
+
+            <div class="warning">
+                <strong>❌ No veo el panel del editor</strong><br>
+                → Presiona <span class="shortcut">E</span> nuevamente<br>
+                → Abre la consola (F12) y busca errores
+            </div>
+
+            <div class="warning">
+                <strong>❌ Los nodos no se mueven</strong><br>
+                → Verifica estar en Modo Editor (panel visible)<br>
+                → Intenta hacer clic primero en un nodo
+            </div>
+
+            <div class="warning">
+                <strong>❌ El código no se copiar</strong><br>
+                → Abre la consola (F12 → Consola)<br>
+                → El código también aparecerá impreso allí
+            </div>
+
+            <div class="warning">
+                <strong>❌ Los cambios no se guardan</strong><br>
+                → Asegúrate de haber presionado Ctrl+S<br>
+                → Recarga la página con F5
+            </div>
+        </div>
+
+        <!-- INFORMACIÓN ADICIONAL -->
+        <div class="section">
+            <h2>📚 Información Adicional</h2>
+
+            <p style="margin-bottom: 15px;"><strong>¿Cómo funcionan las coordenadas?</strong></p>
+            <ul style="margin-left: 30px; margin-bottom: 20px;">
+                <li><strong>X:</strong> Posición horizontal (0% = izquierda, 100% = derecha)</li>
+                <li><strong>Y:</strong> Posición vertical (0% = arriba, 100% = abajo)</li>
+            </ul>
+
+            <p style="margin-bottom: 15px;"><strong>¿Puedo ver el Grid?</strong></p>
+            <p style="margin-left: 30px; margin-bottom: 20px;">Sí, presiona <span class="shortcut">G</span> en modo editor para ver una malla de 10% que te ayuda a alinear.</p>
+
+            <p style="margin-bottom: 15px;"><strong>¿Se pierden los cambios si recargo?</strong></p>
+            <p style="margin-left: 30px;">No, siempre que hayas guardado el archivo HTML. Live Server se encarga de recargar automáticamente.</p>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>🚀 Creado para <strong>PoCoBOT - Ruta Ceniza</strong></p>
+            <p style="color: #6a7279; margin-top: 10px; font-size: 0.9em;">
+                Archivos: pocobot_mapa_interactivo.html | EDITOR_VISUAL.js
+            </p>
+        </div>
+    </div>
+</body>
+</html>

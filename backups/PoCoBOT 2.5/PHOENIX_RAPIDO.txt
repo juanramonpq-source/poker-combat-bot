@@ -1,0 +1,228 @@
+════════════════════════════════════════════════════════════════════════════════
+              🔥 EDITAR POSICIONES EN PHOENIX CODE (RÁPIDO)
+════════════════════════════════════════════════════════════════════════════════
+
+⏱️  TIEMPO ESTIMADO: 3 MINUTOS (sin setup)
+
+════════════════════════════════════════════════════════════════════════════════
+ OPCIÓN 1: USAR PREVIEW INTEGRADO (Recomendado)
+════════════════════════════════════════════════════════════════════════════════
+
+VENTAJA: Todo en una pantalla, muy rápido
+DESVENTAJA: Panel preview es pequeño
+
+PASO 1: ABRIR PHOENIX CODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Abre Phoenix Code
+2. Abre carpeta: Poker Combat-bot
+3. En el panel izquierdo, busca: pocobot_mapa_interactivo.html
+
+PASO 2: ABRIR PREVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Haz clic DERECHO en pocobot_mapa_interactivo.html
+2. Selecciona: "Preview" (opción directa)
+3. ✓ Panel preview se abre a la derecha
+
+DISTRIBUCIÓN DE PANTALLA:
+┌─────────────────────────────────────────────────────────────┐
+│                   PHOENIX CODE                              │
+├──────────────────────────────┬──────────────────────────────┤
+│                              │                              │
+│   ARCHIVOS / EDITOR          │   PREVIEW DEL MAPA           │
+│                              │                              │
+│  [Ctrl+S para guardar]       │  [E = Modo editor]           │
+│  [Ctrl+F para buscar]        │  [Arrastra nodos]            │
+│  [Ctrl+H para reemplazar]    │  [Copia código]              │
+│                              │                              │
+└──────────────────────────────┴──────────────────────────────┘
+
+PASO 3: ACTIVAR MODO EDITOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Haz clic en el panel de PREVIEW (a la derecha)
+2. Presiona: E (letra E en el teclado)
+3. ✓ Panel del editor aparece en la esquina inferior derecha
+
+PASO 4: EDITAR POSICIONES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. ARRASTRA cualquier nodo circular en el preview
+2. Verás:
+   - El nodo se mueve
+   - El panel mostrará X% e Y% en tiempo real
+   - El código se actualiza automáticamente
+
+PASO 5: COPIAR CÓDIGO ACTUALIZADO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. En el panel, haz clic: "📋 COPIAR TODO"
+2. ✓ El código se copia automáticamente al portapapeles
+
+PASO 6: GUARDAR CAMBIOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Haz clic en la PESTAÑA DEL EDITOR (lado izquierdo)
+   (o presiona Ctrl+1)
+
+2. Busca la línea: const nodes = [
+   → Usa Ctrl+F
+
+3. Reemplaza TODO el array con lo que copiaste:
+   → Usa Ctrl+H (Buscar y Reemplazar)
+   → Busca:  const nodes = \[.*?\];
+   → Reemplaza con: const nodes = [...]  (lo que copiaste)
+
+4. Guarda el archivo:
+   → Ctrl+S
+
+5. Recarga el preview:
+   → Haz clic en preview
+   → Presiona F5 o Cmd+R
+
+PASO 7: VERIFICAR CAMBIOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. El preview se recarga
+2. Los nodos están en las nuevas posiciones
+3. ✓ ¡Cambios guardados!
+
+════════════════════════════════════════════════════════════════════════════════
+ OPCIÓN 2: SERVIDOR LOCAL (Si el preview no funciona)
+════════════════════════════════════════════════════════════════════════════════
+
+PASO 1: ABRIR TERMINAL EN PHOENIX CODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. En Phoenix Code, presiona: Ctrl+` (tilde, backtick)
+2. Se abrirá terminal integrado en la parte inferior
+
+PASO 2: INICIAR SERVIDOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Copia y pega esto en la terminal:
+
+    python3 -m http.server 8000
+
+(Si no funciona, intenta: python -m SimpleHTTPServer 8000)
+
+Verás:
+    Serving HTTP on 0.0.0.0 port 8000 ...
+
+PASO 3: ABRIR EN NAVEGADOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Abre tu navegador (Chrome, Safari, Firefox, etc.)
+2. Ve a: http://localhost:8000
+3. Haz clic en: pocobot_mapa_interactivo.html
+
+PASO 4: EDITAR (igual que opción 1)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Presiona: E
+2. Arrastra nodos
+3. Copia código
+4. Pégalo en Phoenix Code
+5. Guarda (Ctrl+S)
+6. Recarga navegador (F5)
+
+════════════════════════════════════════════════════════════════════════════════
+ ATAJOS DE TECLADO (En el mapa)
+════════════════════════════════════════════════════════════════════════════════
+
+E     → Activar/Desactivar modo editor
+G     → Mostrar/Ocultar grid (en modo editor)
+R     → Resetear posiciones (en modo editor)
+
+════════════════════════════════════════════════════════════════════════════════
+ ATAJOS DE TECLADO (En Phoenix Code)
+════════════════════════════════════════════════════════════════════════════════
+
+Ctrl+S           → Guardar archivo
+Ctrl+F           → Buscar en archivo
+Ctrl+H           → Buscar y reemplazar
+Ctrl+` (tilde)   → Abrir/cerrar terminal
+Ctrl+1           → Panel editor
+Ctrl+2           → Panel preview (si existe)
+F5               → Recarga navegador/preview
+
+════════════════════════════════════════════════════════════════════════════════
+ FLUJO RESUMIDO
+════════════════════════════════════════════════════════════════════════════════
+
+1. Abre Phoenix Code + Carpeta Poker Combat-bot
+   ↓
+2. Click derecho HTML → Preview
+   ↓
+3. Presiona E en preview
+   ↓
+4. Arrastra nodos (cambios en tiempo real)
+   ↓
+5. Haz clic "📋 COPIAR TODO"
+   ↓
+6. Ve a editor, busca "const nodes = ["
+   ↓
+7. Reemplaza array, guarda (Ctrl+S)
+   ↓
+8. Recarga preview (F5)
+   ↓
+9. ✓ ¡Listo! Cambios guardados
+
+════════════════════════════════════════════════════════════════════════════════
+ VENTAJAS DE PHOENIX CODE
+════════════════════════════════════════════════════════════════════════════════
+
+✅ Preview integrado (sin extensiones)
+✅ Todo en una ventana
+✅ Cambio rápido entre editor y preview (1 click)
+✅ Terminal integrada
+✅ Interfaz moderna y clara
+✅ Más rápido que VS Code para esto
+✅ Ideal para desarrollo web
+
+════════════════════════════════════════════════════════════════════════════════
+ TROUBLESHOOTING
+════════════════════════════════════════════════════════════════════════════════
+
+❌ "No veo botón Preview"
+   → Verifica versión de Phoenix Code
+   → Intenta click derecho en el archivo
+   → Si no aparece, usa OPCIÓN 2 (servidor local)
+
+❌ "Los nodos no se mueven"
+   → Asegúrate de estar en modo editor (presiona E)
+   → Verifica que panel preview está enfocado (click en él primero)
+
+❌ "El código no se copia"
+   → Abre consola (F12) y mira si hay errores
+   → Intenta copiar manualmente desde el panel
+
+❌ "La página se ve lenta"
+   → Cierra el grid (presiona G)
+   → Recarga con F5
+   → Cierra otros tabs
+
+════════════════════════════════════════════════════════════════════════════════
+ DIFERENCIAS CON VS CODE
+════════════════════════════════════════════════════════════════════════════════
+
+VS CODE:                          PHOENIX CODE:
+- Necesita Live Server ext        - Preview integrado
+- Dos ventanas separadas          - Todo en una ventana
+- Más extensiones disponibles     - Menos ext pero más rápido
+- Comunidad muy grande            - Comunidad en crecimiento
+- Más configuración               - Setup más simple
+
+VELOCIDAD: Phoenix Code gana (20-30% más rápido)
+
+════════════════════════════════════════════════════════════════════════════════
+ RESUMEN: ¿POR QUÉ PHOENIX CODE PARA ESTO?
+════════════════════════════════════════════════════════════════════════════════
+
+1. NO necesitas extensiones
+2. TODO está integrado
+3. Preview + Editor lado a lado
+4. Cambios en tiempo real
+5. Muy intuitivo para editar HTML
+6. Perfecto para desarrollo web visual
+
+════════════════════════════════════════════════════════════════════════════════
+
+¿LISTO? COMIENZA AHORA:
+
+1. Phoenix Code → Abrir carpeta Poker Combat-bot
+2. Click derecho HTML → Preview
+3. Presiona E
+4. ¡Edita!
+
+════════════════════════════════════════════════════════════════════════════════

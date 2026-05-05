@@ -1,0 +1,157 @@
+════════════════════════════════════════════════════════════════════════════════
+                 🎮 INICIO RÁPIDO - EDITOR DE POSICIONES
+════════════════════════════════════════════════════════════════════════════════
+
+⏱️  TIEMPO ESTIMADO: 2 MINUTOS
+
+════════════════════════════════════════════════════════════════════════════════
+ PASO 1: ABRIR EN VISUAL STUDIO CODE
+════════════════════════════════════════════════════════════════════════════════
+
+1. Abre Visual Studio Code
+2. Arrastra la carpeta "Poker Combat-bot" al VS Code
+   (o: Archivo → Abrir carpeta → selecciona Poker Combat-bot)
+
+════════════════════════════════════════════════════════════════════════════════
+ PASO 2: INSTALAR LIVE SERVER (Primera vez solamente)
+════════════════════════════════════════════════════════════════════════════════
+
+1. En VS Code, ve a Extensions (Ctrl+Shift+X / Cmd+Shift+X)
+2. Busca: "Live Server"
+3. Haz clic en el primero (de Ritwick Dey)
+4. Haz clic en "Install"
+5. Espera a que termine
+
+════════════════════════════════════════════════════════════════════════════════
+ PASO 3: ABRIR LIVE SERVER
+════════════════════════════════════════════════════════════════════════════════
+
+OPCIÓN A (La más fácil):
+1. En VS Code, haz clic derecho en "pocobot_mapa_interactivo.html"
+2. Selecciona: "Open with Live Server"
+3. ¡Listo! El navegador se abre automáticamente
+
+OPCIÓN B (Si no aparece la opción):
+1. Abre "pocobot_mapa_interactivo.html" en VS Code
+2. En la esquina inferior derecha, verás un botón "Go Live"
+3. Haz clic en él
+4. El navegador se abre automáticamente
+
+════════════════════════════════════════════════════════════════════════════════
+ PASO 4: USAR EL EDITOR VISUAL
+════════════════════════════════════════════════════════════════════════════════
+
+Cuando se abra el navegador:
+
+1. PRESIONA: E (letra E en el teclado)
+   ↓ Aparecerá un panel en la esquina inferior derecha
+
+2. ARRASTRA: Cualquier nodo circular con el ratón
+   ↓ El panel mostrará X% e Y% en tiempo real
+
+3. VER CÓDIGO: En el panel, verás el código actualizado
+   ↓ Cambia automáticamente mientras arrastras
+
+4. COPIAR: Haz clic en "📋 COPIAR TODO"
+   ↓ El código se copia al portapapeles
+
+════════════════════════════════════════════════════════════════════════════════
+ PASO 5: GUARDAR CAMBIOS
+════════════════════════════════════════════════════════════════════════════════
+
+1. ABRE: pocobot_mapa_interactivo.html en el editor de texto (VS Code)
+
+2. BUSCA: La línea que empieza con "const nodes = ["
+   (usa Ctrl+F / Cmd+F para buscar "const nodes")
+
+3. REEMPLAZA: TODO el array nodes con lo que copiaste
+   - Desde: const nodes = [
+   - Hasta: ];
+
+4. GUARDA: Ctrl+S / Cmd+S
+
+5. RECARGA: El navegador se recargará automáticamente
+
+════════════════════════════════════════════════════════════════════════════════
+ ATAJOS DE TECLADO (Dentro del Editor)
+════════════════════════════════════════════════════════════════════════════════
+
+E  →  Activar/Desactivar Modo Editor
+G  →  Mostrar/Ocultar Grid de ayuda
+R  →  Resetear posiciones (pide confirmación)
+
+════════════════════════════════════════════════════════════════════════════════
+ TIPS IMPORTANTES
+════════════════════════════════════════════════════════════════════════════════
+
+✅ Live Server recarga automáticamente cuando guardas cambios
+✅ El panel del editor muestra coordenadas en PORCENTAJES (0-100%)
+✅ Puedes arrastrar mientras ves cambios en tiempo real
+✅ Copia el código ANTES de guardar el archivo
+
+⚠️  RECUERDA:
+   - El editor solo modifica la pantalla, no el archivo
+   - Debes COPIAR y REEMPLAZAR manualmente el código
+   - Después GUARDAR (Ctrl+S) y RECARGAR (F5)
+
+════════════════════════════════════════════════════════════════════════════════
+ FLUJO RESUMIDO
+════════════════════════════════════════════════════════════════════════════════
+
+1. Abre HTML con Live Server
+   ↓
+2. Presiona E para activar editor
+   ↓
+3. Arrastra nodos para reposicionarlos
+   ↓
+4. Haz clic "📋 COPIAR TODO" (código se copia)
+   ↓
+5. Ve a VS Code y busca "const nodes = ["
+   ↓
+6. Reemplaza el array con lo copiado
+   ↓
+7. Guarda (Ctrl+S)
+   ↓
+8. Navegador se recarga automáticamente
+   ↓
+9. ¡Listo! Los cambios están guardados
+
+════════════════════════════════════════════════════════════════════════════════
+ ¿PROBLEMAS?
+════════════════════════════════════════════════════════════════════════════════
+
+❌ No veo el panel del editor
+   → Presiona E nuevamente
+   → Abre la consola (F12) para ver si hay errores
+
+❌ Los nodos no se mueven
+   → Verifica estar en Modo Editor (panel visible)
+   → Intenta hacer clic en un nodo primero
+
+❌ El código no se guarda
+   → Asegúrate de haber presionado Ctrl+S
+   → Recarga con F5
+
+❌ La página se ve lenta
+   → Cierra el Grid (presiona G)
+   → Recarga la página
+
+════════════════════════════════════════════════════════════════════════════════
+ ARCHIVOS NECESARIOS
+════════════════════════════════════════════════════════════════════════════════
+
+✓ pocobot_mapa_interactivo.html  (archivo principal)
+✓ EDITOR_VISUAL.js               (editor visual - debe estar en la misma carpeta)
+✓ INTEGRAR_EDITOR.md             (guía de integración)
+✓ GUIA_EDITAR_POSICIONES.md      (guía completa)
+
+════════════════════════════════════════════════════════════════════════════════
+
+¿LISTO? ¡COMIENZA!
+
+1. Abre VS Code
+2. Abre "pocobot_mapa_interactivo.html" con Live Server
+3. Presiona E
+4. ¡Edita!
+
+════════════════════════════════════════════════════════════════════════════════

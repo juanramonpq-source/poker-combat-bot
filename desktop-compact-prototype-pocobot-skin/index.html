@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PoCoBOT · Prototipo Desktop Skin Clasica</title>
+  <meta
+    name="description"
+    content="Variante independiente del prototipo desktop de PoCoBOT con estructura compacta y aspecto alineado al juego actual.">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="desktop-gate">
+    <strong>Vista de escritorio.</strong>
+    Esta variante esta pensada para monitor horizontal y no intenta resolver movil.
+  </div>
+
+  <div class="console-shell">
+    <div class="shell-bolt bolt-tl" aria-hidden="true"></div>
+    <div class="shell-bolt bolt-tr" aria-hidden="true"></div>
+    <div class="shell-bolt bolt-bl" aria-hidden="true"></div>
+    <div class="shell-bolt bolt-br" aria-hidden="true"></div>
+
+    <main class="prototype-shell">
+      <aside class="left-rail">
+        <section class="panel profile-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Cabina</p>
+            <h2>Nucleo del mecha</h2>
+          </div>
+          <div class="crew-tabs" aria-label="Tripulacion">
+            <button class="crew-tab is-active" type="button">Nucleo</button>
+            <button class="crew-tab" type="button">Piloto</button>
+            <button class="crew-tab" type="button">Copiloto</button>
+            <button class="crew-tab" type="button">As</button>
+          </div>
+          <div class="core-slot">
+            <span class="slot-label">Socket principal</span>
+            <strong>Hydra MK-II</strong>
+            <p>Cabina enlazada y lista para montaje tactico.</p>
+          </div>
+        </section>
+
+        <section class="panel modules-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Montaje</p>
+            <h2>Modulos visibles</h2>
+          </div>
+
+          <article class="module-card">
+            <header>
+              <span>Ataque</span>
+              <strong>0/2</strong>
+            </header>
+            <div class="slot-pair">
+              <div class="slot slot-empty">Slot libre</div>
+              <div class="slot slot-empty">Slot libre</div>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <header>
+              <span>Defensa</span>
+              <strong>1/2</strong>
+            </header>
+            <div class="slot-pair">
+              <div class="slot slot-live">Escudo cinetico</div>
+              <div class="slot slot-empty">Slot libre</div>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <header>
+              <span>Armadura</span>
+              <strong>1/2</strong>
+            </header>
+            <div class="slot-pair">
+              <div class="slot slot-live">Placas frontales</div>
+              <div class="slot slot-empty">Slot libre</div>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel fuel-panel">
+          <div class="fuel-header">
+            <div>
+              <p class="eyebrow">Recurso</p>
+              <h2>Fuel</h2>
+            </div>
+            <strong class="fuel-multiplier">Valor x2 para diamantes</strong>
+          </div>
+          <div class="fuel-core">
+            <span>Fuel seleccionado</span>
+            <strong data-fuel-core>02</strong>
+            <p>El panel convierte diamantes en limite de ataque.</p>
+          </div>
+        </section>
+      </aside>
+
+      <section class="command-deck">
+        <header class="deck-header">
+          <div>
+            <p class="eyebrow">Prototipo independiente</p>
+            <h1>Compacto con piel PoCoBOT</h1>
+          </div>
+          <div class="header-chips">
+            <button class="chip is-active" data-turn="1" type="button">Jugador 1</button>
+            <button class="chip" data-turn="2" type="button">Jugador 2</button>
+            <button class="chip chip-phase" data-phase-chip type="button">Montaje</button>
+            <button class="chip" data-toggle="tutorial" type="button">Tutorial OFF</button>
+          </div>
+        </header>
+
+        <section class="arena panel">
+          <div class="arena-grid" aria-hidden="true"></div>
+          <div class="attack-beam" data-attack-beam aria-hidden="true">
+            <span class="attack-beam-line"></span>
+            <span class="attack-beam-core"></span>
+            <span class="attack-beam-impact"></span>
+          </div>
+
+          <article class="pilot-glance pilot-glance-left">
+            <span class="mini-title">Jugador 1</span>
+            <div class="glance-radar" data-radar="1" aria-hidden="true">
+              <span class="radar-ring ring-1"></span>
+              <span class="radar-ring ring-2"></span>
+              <span class="radar-core"></span>
+            </div>
+            <p class="glance-inline">D 1 · A 1</p>
+          </article>
+
+          <article class="pilot-glance pilot-glance-right">
+            <span class="mini-title">Jugador 2</span>
+            <div class="glance-radar" data-radar="2" aria-hidden="true">
+              <span class="radar-ring ring-1"></span>
+              <span class="radar-ring ring-2"></span>
+              <span class="radar-core"></span>
+            </div>
+            <p class="glance-inline">D 0 · A 0</p>
+          </article>
+
+          <div class="mecha-stage mecha-stage-left" data-mecha="1">
+            <span class="player-label">Jugador 1</span>
+            <div class="target-ring" aria-hidden="true"></div>
+            <div class="impact-fx" aria-hidden="true">
+              <span class="impact-ring"></span>
+              <span class="impact-ring impact-ring-2"></span>
+              <span class="impact-spark impact-spark-a"></span>
+              <span class="impact-spark impact-spark-b"></span>
+              <span class="impact-spark impact-spark-c"></span>
+            </div>
+            <img
+              src="../assets/image_16.png"
+              alt="Mecha azul del jugador 1"
+              class="mecha-image">
+            <div class="stage-footer">
+              <span>Montaje 74%</span>
+              <div class="stage-meter">
+                <span data-stage-bar="1"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="arena-core">
+            <div class="arena-badge">Todo visible en escritorio</div>
+            <img
+              src="../assets/pocobot_title_blue.png"
+              alt="Poker Combat Bot"
+              class="logo-image">
+            <p>Redistribucion PC con centro comprimido y lectura tactica rapida.</p>
+          </div>
+
+          <div class="mecha-stage mecha-stage-right" data-mecha="2">
+            <span class="player-label">Jugador 2</span>
+            <div class="target-ring" aria-hidden="true"></div>
+            <div class="impact-fx" aria-hidden="true">
+              <span class="impact-ring"></span>
+              <span class="impact-ring impact-ring-2"></span>
+              <span class="impact-spark impact-spark-a"></span>
+              <span class="impact-spark impact-spark-b"></span>
+              <span class="impact-spark impact-spark-c"></span>
+            </div>
+            <img
+              src="../assets/image_17.png"
+              alt="Mecha rojo del jugador 2"
+              class="mecha-image">
+            <div class="stage-footer">
+              <span>Montaje 49%</span>
+              <div class="stage-meter">
+                <span data-stage-bar="2"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="status-strip" aria-label="Estado de combate">
+          <article class="status-card">
+            <span>Attack limit</span>
+            <strong data-attack-limit>0</strong>
+          </article>
+          <article class="status-card status-card-wide">
+            <span>Status</span>
+            <strong data-status-text>Montaje en curso</strong>
+          </article>
+          <article class="status-card">
+            <span>Fuel → ♠</span>
+            <strong data-fuel-formula>0 x 2 = 0</strong>
+          </article>
+          <article class="status-card">
+            <span>Projectile</span>
+            <strong data-projectile-text>No</strong>
+          </article>
+          <article class="status-card">
+            <span>Seleccion</span>
+            <strong data-selection-count>0 cartas</strong>
+          </article>
+        </section>
+
+        <section class="panel hand-panel">
+          <div class="hand-header">
+            <div>
+              <p class="eyebrow">Zona baja</p>
+              <h2>Mano activa</h2>
+            </div>
+            <div class="hand-metrics">
+              <div class="metric-pill">
+                <span>Deck</span>
+                <strong>39</strong>
+              </div>
+              <div class="metric-pill">
+                <span>Discard</span>
+                <strong>2</strong>
+              </div>
+              <div class="metric-pill metric-pill-wide">
+                <span>Capacidad</span>
+                <strong>5 cartas · max 18</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="hand-tray">
+            <div class="card-row">
+              <button class="play-card" type="button" data-card="Q de diamantes">
+                <img src="../assets/cards/hayeah-full/queen_of_diamonds.svg" alt="Reina de diamantes">
+                <span>Fuel</span>
+              </button>
+              <button class="play-card" type="button" data-card="10 de treboles">
+                <img src="../assets/cards/hayeah-full/10_of_clubs.svg" alt="Diez de treboles">
+                <span>Ataque</span>
+              </button>
+              <button class="play-card" type="button" data-card="10 de diamantes">
+                <img src="../assets/cards/hayeah-full/10_of_diamonds.svg" alt="Diez de diamantes">
+                <span>Fuel</span>
+              </button>
+              <button class="play-card" type="button" data-card="6 de corazones">
+                <img src="../assets/cards/hayeah-full/6_of_hearts.svg" alt="Seis de corazones">
+                <span>Defensa</span>
+              </button>
+              <button class="play-card" type="button" data-card="J de treboles">
+                <img src="../assets/cards/hayeah-full/jack_of_clubs.svg" alt="Jota de treboles">
+                <span>Ataque</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="right-rail">
+        <section class="panel utility-panel">
+          <button class="action-button action-button-warm" data-utility="save" type="button">Salvar partida</button>
+          <button class="action-button action-button-cyan" data-utility="load" type="button">Cargar partida</button>
+          <button class="action-button" data-utility="back" type="button">Volver</button>
+          <button class="action-button action-button-warm" data-utility="classic" type="button">Panel clasico</button>
+        </section>
+
+        <section class="panel rival-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Lectura rival</p>
+            <h2>Panel rival</h2>
+          </div>
+          <button class="peek-button peek-button-warm" data-action="peek" type="button">Ver panel rival</button>
+
+          <article class="rival-card">
+            <header class="rival-card-header">
+              <span class="rival-kicker">Objetivo actual</span>
+              <strong data-rival-name>Jugador 2</strong>
+            </header>
+
+            <div class="rival-summary">
+              <div class="rival-summary-item">
+                <span>Montaje</span>
+                <strong data-rival-mount>49%</strong>
+                <div class="summary-meter"><span data-rival-bar="mount"></span></div>
+              </div>
+              <div class="rival-summary-item">
+                <span>Proyectil</span>
+                <strong data-rival-projectile>No</strong>
+                <div class="summary-meter"><span data-rival-bar="projectile"></span></div>
+              </div>
+            </div>
+
+            <div class="rival-zone-grid">
+              <div class="rival-zone">
+                <div class="rival-zone-head">
+                  <span>Ataque</span>
+                  <strong data-rival-attack-count>0/2</strong>
+                </div>
+                <div class="rival-zone-cards" data-rival-zone="attack"></div>
+              </div>
+              <div class="rival-zone">
+                <div class="rival-zone-head">
+                  <span>Defensa</span>
+                  <strong data-rival-defense>0</strong>
+                </div>
+                <div class="rival-zone-cards" data-rival-zone="defense"></div>
+              </div>
+              <div class="rival-zone">
+                <div class="rival-zone-head">
+                  <span>Armadura</span>
+                  <strong data-rival-armor>0</strong>
+                </div>
+                <div class="rival-zone-cards" data-rival-zone="armor"></div>
+              </div>
+              <div class="rival-zone">
+                <div class="rival-zone-head">
+                  <span>Combustible</span>
+                  <strong data-rival-fuel>02</strong>
+                </div>
+                <div class="rival-zone-cards" data-rival-zone="fuel"></div>
+              </div>
+            </div>
+
+            <div class="rival-readout" data-rival-readout>
+              <span>Resumen</span>
+              <strong>Parcial</strong>
+              <p>Se muestra el estado operativo del rival, pero la mano sigue oculta.</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel action-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Consola</p>
+            <h2>Acciones del turno</h2>
+          </div>
+
+          <div class="action-grid">
+            <button class="action-button action-button-warm is-active" data-phase="montaje" type="button">Modificar</button>
+            <button class="action-button action-button-warm" data-phase="robo" type="button">Robar con ♦</button>
+            <button class="action-button action-button-warm" data-phase="ataque" type="button">Abrir ataque</button>
+            <button class="action-button action-button-warm" data-phase="proyectil" type="button">Modo proyectil</button>
+            <button class="action-button action-button-danger" data-phase="confirmacion" type="button">Confirmar ataque</button>
+            <button class="action-button" data-phase="fin" type="button">Pasar turno</button>
+            <button class="action-button" type="button">Confirmar defensa</button>
+            <button class="action-button" type="button">No defender</button>
+          </div>
+
+          <div class="tutorial-box">
+            <span class="tutorial-kicker">Tutorial integrado</span>
+            <strong data-tutorial-title>Montaje en curso</strong>
+            <p data-tutorial-text>
+              Coloca cartas en los paneles visibles. En pantalla grande esta vista muestra toda la lectura tactica sin depender del scroll.
+            </p>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

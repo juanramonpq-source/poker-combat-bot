@@ -10,7 +10,19 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="manifest" href="site.webmanifest" />
   <meta name="theme-color" content="#17307a" />
-<title>Poker Combat-Bot · Sistema Retro de Combate Mecha con Baraja de Poker</title>
+  <meta name="description" content="PoCoBOT: combate retro de mechas con estrategia de poker, cartas y duelos tacticos en navegador." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="PoCoBOT" />
+  <meta property="og:description" content="Combate retro de mechas con estrategia de poker." />
+  <meta property="og:image" content="assets/pocobot_web_thumbnail.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="PoCoBOT - logo del juego" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="PoCoBOT" />
+  <meta name="twitter:description" content="Combate retro de mechas con estrategia de poker." />
+  <meta name="twitter:image" content="assets/pocobot_web_thumbnail.png" />
+<title>PoCoBOT · Sistema Retro de Combate Mecha con Baraja de Poker</title>
 <style>
 :root{
   --bg:#05080d;
@@ -10360,6 +10372,9 @@ function applyStoryMissionPlayerSetup(){
   state.storyMission = STORY_MISSION_BOOT || null;
   state.storyMissionAnnounced = false;
   state.storyMissionProgress = {};
+  state.players?.forEach(player => {
+    if(player) player.combatSprite = null;
+  });
   if(state.storyMission === 'hangar_race' || state.storyMission === 'patio_duel'){
     if(state.players[0]) state.players[0].name = 'Piloto';
     if(state.players[1]) state.players[1].name = 'Mara Oxido';
@@ -10368,7 +10383,11 @@ function applyStoryMissionPlayerSetup(){
     if(state.players[1]) state.players[1].name = 'Viajero';
   }else if(isStoryTowerCombatMission(state.storyMission)){
     if(state.players[0]) state.players[0].name = 'Piloto';
-    if(state.players[1]) state.players[1].name = getStoryTowerCombatProfile(state.storyMission)?.enemyName || 'Argos';
+    if(state.players[1]){
+      const profile = getStoryTowerCombatProfile(state.storyMission);
+      state.players[1].name = profile?.enemyName || 'Argos';
+      state.players[1].combatSprite = profile?.combatSprite || null;
+    }
   }
 }
 
@@ -10380,6 +10399,7 @@ const STORY_TOWER_COMBAT_PROFILES = {
   tower_drone_hearts: {
     enemyName: 'Dron de corazones',
     title: 'Dron de plaza',
+    combatSprite: 'assets/Historia/tower-drone-hearts.png',
     suit: 'hearts',
     suitLabel: 'corazones',
     rank: '7',
@@ -10390,6 +10410,7 @@ const STORY_TOWER_COMBAT_PROFILES = {
   tower_drone_spades: {
     enemyName: 'Dron de picas',
     title: 'Dron de rele',
+    combatSprite: 'assets/Historia/tower-drone-spades.png',
     suit: 'spades',
     suitLabel: 'picas',
     rank: '7',
@@ -10400,6 +10421,7 @@ const STORY_TOWER_COMBAT_PROFILES = {
   tower_drone_clubs: {
     enemyName: 'Dron de treboles',
     title: 'Dron de antena',
+    combatSprite: 'assets/Historia/tower-drone-clubs.png',
     suit: 'clubs',
     suitLabel: 'treboles',
     rank: '7',
@@ -10410,6 +10432,7 @@ const STORY_TOWER_COMBAT_PROFILES = {
   tower_interior_drone: {
     enemyName: 'Dron interior',
     title: 'Dron interior',
+    combatSprite: 'assets/Historia/tower-drone-base.png',
     suit: 'diamonds',
     suitLabel: 'diamantes',
     rank: '6',
@@ -10419,12 +10442,14 @@ const STORY_TOWER_COMBAT_PROFILES = {
   tower_control_guard: {
     enemyName: 'Guardia automatico',
     title: 'Mecha sin cabina',
+    combatSprite: 'assets/Historia/tower-control-guard-mecha.png',
     enemyId: 'argos-unmanned-control-guard',
     intro: 'Combate del modo historia: un mecha de Argos sin humano bloquea el panel. No negocia: ejecuta.'
   },
   tower_argos_hack: {
     enemyName: 'Panel de Argos',
     title: 'Hackeo final 4B',
+    combatSprite: 'assets/Historia/panel-control-malvado-animacion-completa.webp',
     enemyId: 'argos-control-panel',
     intro: 'Hackeo de Argos: combustible bloqueado. Consigue el As de picas, usa armadura como energia o remata con proyectiles sueltos antes de que los treboles del panel se apilen.'
   }
@@ -10596,6 +10621,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   if(mission === 'tower_argos_hack') setupStoryTowerArgosHackEnemy(enemy);
   else if(mission === 'tower_control_guard') setupStoryTowerControlGuardEnemy(enemy, enemyDeck);
   else setupStoryTowerDroneEnemy(enemy, enemyDeck, profile);
+  enemy.combatSprite = profile.combatSprite || null;
 
   const extraCards = STORY_EXTRA_DECK_CARDS.map((def, index) => makeStoryMarketCard(def, index, 0));
   state.deck = playerDeck.concat(extraCards);
@@ -11930,6 +11956,7 @@ function initPlayers(){
     : ['Jugador 1', 'Jugador 2'];
   return [0,1].map(i => ({
     name: playerNames[i],
+    combatSprite: null,
     hand:[],
     core:{ pilot:null, copilot:null, booster:null },
     attack:[],
@@ -12569,6 +12596,7 @@ function buildSavePayload(){
     rm: encodeCardList(state.removed),
     p: (state.players || []).map(player => ({
       n: player.name || '',
+      cs: player.combatSprite || null,
       h: encodeCardList(player.hand),
       cp: encodeCardToken(player.core?.pilot),
       cc: encodeCardToken(player.core?.copilot),
@@ -12788,6 +12816,7 @@ async function restoreGameFromCode(code, options = {}){
     name: Array.isArray(forcePlayerNames) && forcePlayerNames[idx]
       ? forcePlayerNames[idx]
       : player.n || (idx === 0 ? 'Jugador 1' : 'Jugador 2'),
+    combatSprite: player.cs || null,
     hand: mapTokensToCards(decodeCardList(player.h), registry),
     core: {
       pilot: player.cp ? registry.get(player.cp) || null : null,
@@ -15171,7 +15200,10 @@ function renderDesktopCompactHud(){
     const mechaPercent = document.getElementById(`compactMechaPercent-${idx}`);
     if(mechaPercent) mechaPercent.textContent = `${getDialBuildPercent(pilot)}%`;
     const mechaImg = document.getElementById(`compactMechaImg-${idx}`);
-    if(mechaImg) mechaImg.src = getMechaPhaseImage(pilot);
+    if(mechaImg){
+      const newSrc = getMechaPhaseImage(pilot);
+      if(mechaImg.getAttribute('src') !== newSrc) mechaImg.src = newSrc;
+    }
     const mechaStatus = document.getElementById(`compactMechaStatus-${idx}`);
     if(mechaStatus) mechaStatus.textContent = getDesktopCompactMechaStatus(pilot);
     const moduleValues = document.getElementById(`compactMechaModuleValues-${idx}`);
@@ -17281,7 +17313,40 @@ const MECHA_IMAGES = {
   base_booster: "assets/image_29.png"
 };
 
-function getMechaPhaseImage(player){if(!player||!player.core)return MECHA_IMAGES.base;const h=!!player.core.pilot,c=!!player.core.copilot,b=!!player.core.booster,a=player.attack&&player.attack.length>0,d=player.defense&&player.defense.length>0,m=player.armor&&player.armor.length>0,f=player.fuel&&player.fuel.length>0,s=[b,a,d,m,f].filter(Boolean).length,full=s>=4||(b&&s>=2);if(full&&c)return MECHA_IMAGES.completo;if(full&&h)return MECHA_IMAGES.piloto_completo;if(full)return MECHA_IMAGES.base_booster;if(c&&b)return MECHA_IMAGES.booster;if(c&&f)return MECHA_IMAGES.combustible;if(c&&m)return MECHA_IMAGES.armadura;if(c&&d)return MECHA_IMAGES.defensa;if(c&&a)return MECHA_IMAGES.ataque;if(c)return MECHA_IMAGES.copiloto;if(h&&b)return MECHA_IMAGES.piloto_booster;if(h&&f)return MECHA_IMAGES.piloto_combustible;if(h&&m)return MECHA_IMAGES.piloto_armadura;if(h&&d)return MECHA_IMAGES.piloto_defensa;if(h&&a)return MECHA_IMAGES.piloto_ataque;if(h)return MECHA_IMAGES.piloto;if(b)return MECHA_IMAGES.base_booster;if(f)return MECHA_IMAGES.base_combustible;if(m)return MECHA_IMAGES.base_armadura;if(d)return MECHA_IMAGES.base_defensa;if(a)return MECHA_IMAGES.base_ataque;return MECHA_IMAGES.base;}
+function getMechaPhaseImage(player){
+  if(player?.combatSprite) return player.combatSprite;
+  if(!player || !player.core) return MECHA_IMAGES.base;
+  const h = !!player.core.pilot;
+  const c = !!player.core.copilot;
+  const b = !!player.core.booster;
+  const a = player.attack && player.attack.length > 0;
+  const d = player.defense && player.defense.length > 0;
+  const m = player.armor && player.armor.length > 0;
+  const f = player.fuel && player.fuel.length > 0;
+  const s = [b, a, d, m, f].filter(Boolean).length;
+  const full = s >= 4 || (b && s >= 2);
+  if(full && c) return MECHA_IMAGES.completo;
+  if(full && h) return MECHA_IMAGES.piloto_completo;
+  if(full) return MECHA_IMAGES.base_booster;
+  if(c && b) return MECHA_IMAGES.booster;
+  if(c && f) return MECHA_IMAGES.combustible;
+  if(c && m) return MECHA_IMAGES.armadura;
+  if(c && d) return MECHA_IMAGES.defensa;
+  if(c && a) return MECHA_IMAGES.ataque;
+  if(c) return MECHA_IMAGES.copiloto;
+  if(h && b) return MECHA_IMAGES.piloto_booster;
+  if(h && f) return MECHA_IMAGES.piloto_combustible;
+  if(h && m) return MECHA_IMAGES.piloto_armadura;
+  if(h && d) return MECHA_IMAGES.piloto_defensa;
+  if(h && a) return MECHA_IMAGES.piloto_ataque;
+  if(h) return MECHA_IMAGES.piloto;
+  if(b) return MECHA_IMAGES.base_booster;
+  if(f) return MECHA_IMAGES.base_combustible;
+  if(m) return MECHA_IMAGES.base_armadura;
+  if(d) return MECHA_IMAGES.base_defensa;
+  if(a) return MECHA_IMAGES.base_ataque;
+  return MECHA_IMAGES.base;
+}
 function maybeQueueProjectilePrompt(){if(!state.projectileUnlocked||state.pendingDefense||state.winner)return;const player=state.players[state.currentPlayer];if(!player)return;if(player.attack&&player.attack.some(isPlayableProjectileCard)&&state.projectilePromptPlayer!==state.currentPlayer)state.projectilePromptPlayer=state.currentPlayer;}
 
 function renderRadarMecha(){
@@ -17304,7 +17369,7 @@ function renderRadarMecha(){
     const img = document.getElementById(`mechaImg-${idx}`);
     if(img){
       const newSrc = getMechaPhaseImage(player);
-      if(img.src !== newSrc) img.src = newSrc;
+      if(img.getAttribute('src') !== newSrc) img.src = newSrc;
     }
 
     // Update blueprint styling
@@ -17382,6 +17447,7 @@ function renderRadarMecha(){
 function aiClonePlayerState(player){
   return {
     name: player.name,
+    combatSprite: player.combatSprite || null,
     hand: [...player.hand],
     core: { ...player.core },
     attack: [...player.attack],
