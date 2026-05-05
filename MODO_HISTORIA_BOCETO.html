@@ -3633,9 +3633,38 @@
         gap:12px;
         padding:
           max(12px, env(safe-area-inset-top))
-          max(12px, env(safe-area-inset-right))
+          calc(max(12px, env(safe-area-inset-right)) + 34px)
           calc(max(18px, env(safe-area-inset-bottom)) + 6px)
           max(12px, env(safe-area-inset-left));
+      }
+      .market-scrollbar{
+        display:flex !important;
+        z-index:14;
+        top:max(96px, env(safe-area-inset-top));
+        right:max(8px, env(safe-area-inset-right));
+        bottom:max(86px, env(safe-area-inset-bottom));
+        width:26px;
+        gap:7px;
+      }
+      .story-market-stage.active .market-scrollbar{
+        opacity:1;
+        pointer-events:auto;
+      }
+      .market-scroll-btn{
+        width:26px;
+        height:26px;
+        font-size:.66rem;
+        background:rgba(6,12,19,.92);
+      }
+      .market-scroll-track{
+        width:12px;
+        min-height:96px;
+        background:linear-gradient(180deg, rgba(5,10,17,.88), rgba(25,37,48,.82));
+      }
+      .market-scroll-thumb{
+        left:1px;
+        right:1px;
+        min-height:48px;
       }
       .market-header{
         position:sticky;
@@ -4514,6 +4543,7 @@
     const STORY_ACTIVE_SURFACE_SESSION_KEY = 'pocobot_story_active_surface_v1';
     const STORY_PROGRESS_SAVE_KEY = 'pocobot_story_progress_v1';
     const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v1';
+    const STORY_MAP_STANDALONE_PROGRESS_KEY = 'pocobot-map-progress-v1';
     const STORY_DEVTOOLS_PAGE = 'MODO_HISTORIA_DEVTOOLS.html';
     const STORY_UI_SFX = {
       hover: { src: 'assets/sfx/ui_click.wav', volume: 0.12 },
@@ -4885,10 +4915,16 @@
       try {
         localStorage.removeItem(STORY_PROGRESS_SAVE_KEY);
         localStorage.removeItem(STORY_PENDING_MISSION_RESULT_KEY);
+        localStorage.removeItem(STORY_TOWER_CHAPTER_STATE_KEY);
+        localStorage.removeItem(STORY_MAP_STANDALONE_PROGRESS_KEY);
       } catch (error) {}
       rememberStoryWorkspace(false);
       rememberActiveStoryMission(null);
       rememberStorySurface(null);
+      if (storyTransitionVeil) {
+        storyTransitionVeil.classList.remove('active', 'mission-spiral');
+      }
+      storyTransitionBusy = false;
       storyProgressState.completedCount = 0;
       storyProgressState.completedNodes = {};
       storyProgressState.maraIntroSeen = false;
@@ -6469,8 +6505,8 @@
 
     function getStoryNodeStatus(node) {
       if (!node) return 'locked';
-      if (hasCompletedStoryNode(node.id)) return 'completed';
       if (node.id === 'hangar' || node.id === 'patio') {
+        if (hasCompletedStoryNode(node.id)) return 'completed';
         if (!haveCompletedWorkshopTrials()) {
           if (!hasCompletedStoryNode('hangar') && !hasCompletedStoryNode('patio')) {
             return node.id === 'hangar' ? 'current' : 'available';
@@ -6481,7 +6517,6 @@
       if (!haveCompletedWorkshopTrials() && node.order > 2) return 'locked';
       if (node.order <= storyProgressState.completedCount) return 'completed';
       if (node.order === storyProgressState.completedCount + 1) return 'current';
-      if (node.order === storyProgressState.completedCount + 2) return 'available';
       return 'locked';
     }
 
@@ -6648,6 +6683,10 @@
     function enterStoryNode(nodeId) {
       const node = storyDraftNodes[nodeId];
       if (!node) return;
+      if (!isStoryNodeAvailable(node)) {
+        renderStoryNode(getFallbackStoryNodeFromProgress());
+        return;
+      }
       renderStoryNode(nodeId);
       if (shouldOpenStoryMarketExplorationDirectly(nodeId)) {
         openStoryMarketExploration();
@@ -7632,6 +7671,10 @@
       }
       rememberStoryWorkspace(true);
       rememberActiveStoryMission(null);
+      if (storyTransitionVeil) {
+        storyTransitionVeil.classList.remove('active', 'mission-spiral');
+      }
+      storyTransitionBusy = false;
       closeStoryScene();
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
@@ -7642,12 +7685,12 @@
       playMapMusic();
       const targetUrl = buildStoryMarketExplorationUrl();
       storyExplorationStage.hidden = false;
+      storyExplorationStage.classList.add('active');
       storyExplorationFrame.src = 'about:blank';
-      requestAnimationFrame(() => {
+      window.setTimeout(() => {
         storyExplorationFrame.src = targetUrl;
-        storyExplorationStage.classList.add('active');
         window.setTimeout(focusStoryExplorationFrame, 40);
-      });
+      }, 40);
     }
 
     function closeStoryMarketExploration(options = {}) {
@@ -8040,11 +8083,6 @@
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('preserve_chapter', '1');
       targetUrl.searchParams.set('story_load_id', String(Date.now()));
-      const towerState = readStoryTowerChapterState();
-      if (sceneKey === 'exterior' && towerState.pendingVanArrival) {
-        targetUrl.searchParams.set('story_van_arrival', '1');
-        patchStoryTowerChapterState({ pendingVanArrival: false });
-      }
       Object.entries(extraParams || {}).forEach(([key, value]) => {
         if (value === null || value === undefined || value === '') targetUrl.searchParams.delete(key);
         else targetUrl.searchParams.set(key, String(value));

@@ -946,8 +946,8 @@
     }
 
     function getNodeState(node) {
-      if (state.completedNodes.includes(node.id)) return "completed";
       if (node.id === "hangar" || node.id === "patio") {
+        if (state.completedNodes.includes(node.id)) return "completed";
         if (!haveCompletedWorkshopTrials()) {
           if (!state.completedNodes.includes("hangar") && !state.completedNodes.includes("patio")) {
             return node.id === "hangar" ? "current" : "available";
@@ -958,7 +958,6 @@
       if (!haveCompletedWorkshopTrials() && node.order > 2) return "locked";
       if (node.order <= state.completedCount) return "completed";
       if (node.order === state.completedCount + 1) return "current";
-      if (node.order === state.completedCount + 2) return "available";
       return "locked";
     }
 

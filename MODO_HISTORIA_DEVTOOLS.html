@@ -417,6 +417,11 @@
     const STORY_PAGE = 'MODO_HISTORIA_BOCETO.html';
     const STORY_PROGRESS_SAVE_KEY = 'pocobot_story_progress_v1';
     const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v1';
+    const STORY_MAP_STANDALONE_PROGRESS_KEY = 'pocobot-map-progress-v1';
+    const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
+    const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
+    const STORY_ACTIVE_SURFACE_SESSION_KEY = 'pocobot_story_active_surface_v1';
+    const STORY_TOWER_CHAPTER_STATE_KEY = 'pocobot-tower-4b-chapter-v1';
     const STORY_DEBUG_MUSIC_KEY = 'pocobot_story_debug_music';
 
     const nodes = [
@@ -632,8 +637,13 @@
     document.getElementById('resetBtn').addEventListener('click', () => {
       localStorage.removeItem(STORY_PROGRESS_SAVE_KEY);
       localStorage.removeItem(STORY_PENDING_MISSION_RESULT_KEY);
+      localStorage.removeItem(STORY_TOWER_CHAPTER_STATE_KEY);
+      localStorage.removeItem(STORY_MAP_STANDALONE_PROGRESS_KEY);
+      sessionStorage.removeItem(STORY_WORKSPACE_SESSION_KEY);
+      sessionStorage.removeItem(STORY_ACTIVE_MISSION_SESSION_KEY);
+      sessionStorage.removeItem(STORY_ACTIVE_SURFACE_SESSION_KEY);
       render();
-      setStatus('Progreso reseteado.');
+      setStatus('Progreso reseteado, incluida la Torre 4B y la sesion activa.');
     });
 
     document.getElementById('copyJsonBtn').addEventListener('click', async () => {

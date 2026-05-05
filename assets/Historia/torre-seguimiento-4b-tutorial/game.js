@@ -43,6 +43,7 @@ const defaultChapterState = {
   exteriorDroneDefeated: false,
   exteriorDroneDefeatedIds: [],
   xavorArrived: false,
+  pendingVanArrival: false,
   xavorIntroduced: false,
   towerDoorOpen: false,
   exteriorDroneEncountered: false,
@@ -685,16 +686,19 @@ const exteriorDrones = [
 }));
 
 const xavorVan = {
-  x: 282,
-  y: 724,
   startX: -148,
   startY: 844,
   targetX: 282,
   targetY: 724,
-  visible: chapterState.xavorArrived,
-  arrival: chapterState.xavorArrived && !forceVanArrival ? 1 : 0,
-  skid: forceVanArrival ? 1 : 0,
-  soundPlayed: chapterState.xavorArrived && !forceVanArrival,
+  x: chapterState.pendingVanArrival || forceVanArrival ? -148 : 282,
+  y: chapterState.pendingVanArrival || forceVanArrival ? 844 : 724,
+  visible: chapterState.xavorArrived && !chapterState.pendingVanArrival,
+  arrival: chapterState.xavorArrived && !chapterState.pendingVanArrival && !forceVanArrival ? 1 : 0,
+  skid: forceVanArrival || chapterState.pendingVanArrival ? 1 : 0,
+  soundPlayed: chapterState.xavorArrived && !chapterState.pendingVanArrival && !forceVanArrival,
+  pendingArrival: !!chapterState.pendingVanArrival,
+  arrivalDelay: chapterState.pendingVanArrival ? 6 : 0,
+  arrivalRadioQueued: false,
 };
 
 const radioState = {
@@ -1271,6 +1275,15 @@ function loadImage(source) {
 }
 
 function getCameraTarget() {
+  if (xavorVan.visible && xavorVan.arrival < 0.98 && !chapterState.xavorIntroduced) {
+    const focusX = xavorVan.x * 0.72 + player.x * 0.28;
+    const focusY = xavorVan.y * 0.64 + player.y * 0.36;
+    return {
+      x: clamp(focusX - viewport.width / 2, 0, world.width - viewport.width),
+      y: clamp(focusY - viewport.height / 2, 0, world.height - viewport.height),
+    };
+  }
+
   const leadX = clamp(player.vx * 0.28, -92, 92);
   const leadY = clamp(player.vy * 0.22, -70, 70);
 
@@ -1357,7 +1370,7 @@ async function loadAssets() {
     queueRadio([
       "Xavor: Torre 4B vuelve a transmitir y tu inventario ya tiene ese 7 de corazones. Bonito final para un día feo. Adivina: Eso dicen todas...",
     ]);
-  } else if (chapterState.xavorArrived && !chapterState.xavorIntroduced) {
+  } else if (chapterState.xavorArrived && !chapterState.xavorIntroduced && !chapterState.pendingVanArrival) {
     queueRadio([
       "Xavor por radio: furboneta en posición. Acércate y te cuento por qué esa torre importa.",
     ]);
@@ -1495,7 +1508,23 @@ function defeatedExteriorDroneCount() {
 }
 
 function shouldShowXavorVan() {
-  return chapterState.xavorArrived && defeatedExteriorDroneCount() > 0;
+  return (xavorVan.visible || (chapterState.xavorArrived && !chapterState.pendingVanArrival)) && defeatedExteriorDroneCount() > 0;
+}
+
+function startPendingXavorVanArrival() {
+  xavorVan.pendingArrival = false;
+  xavorVan.visible = true;
+  xavorVan.arrival = 0;
+  xavorVan.x = xavorVan.startX;
+  xavorVan.y = xavorVan.startY;
+  xavorVan.skid = 1;
+  xavorVan.soundPlayed = false;
+  xavorVan.smokeDebt = 0;
+  patchChapterState({ pendingVanArrival: false, xavorArrived: true });
+  setInteractionMessage("La furboneta de Xavor entra en escena entre chispas.", 4.8);
+  queueRadio([
+    "Xavor por radio: furboneta en posición. Acércate y te cuento por qué esa torre importa.",
+  ]);
 }
 
 function beginXavorPresentation() {
@@ -1612,19 +1641,18 @@ function triggerExteriorDroneCombat(drone) {
     exteriorDroneDefeatedIds: defeatedIds,
     exteriorDroneDefeated: true,
     xavorArrived: wasFirstVictory ? true : chapterState.xavorArrived,
+    pendingVanArrival: wasFirstVictory ? true : chapterState.pendingVanArrival,
     coins: chapterState.coins + 1,
   });
 
   if (wasFirstVictory) {
-    xavorVan.visible = true;
+    xavorVan.pendingArrival = true;
+    xavorVan.arrivalDelay = 6;
+    xavorVan.visible = false;
     xavorVan.arrival = 0;
     xavorVan.skid = 1;
-    playVanArrivalSound();
-    setInteractionMessage("Primer dron vencido. La furboneta de Xavor entra derrapando entre chispas.", 5.2);
-    queueRadio([
-      "Xavor: bonita limpieza. Llego con discreción absoluta: motor, neón, derrape y cero vergüenza.",
-      "Acércate a la furboneta. Te explico lo de las cartas, la torre y por qué Argós se va a enfadar.",
-    ]);
+    xavorVan.soundPlayed = false;
+    setInteractionMessage("Primer dron vencido. Señal de Xavor acercándose...", 5.2);
   } else {
     setInteractionMessage(`${drone.label} vencido. Recompensa: 1 moneda PoCoBOT.`, 4.2);
     queueRadio([
@@ -1668,7 +1696,15 @@ function updateChapterActors(dt) {
     }
   }
 
-  xavorVan.visible = shouldShowXavorVan();
+  if (xavorVan.pendingArrival) {
+    xavorVan.arrivalDelay = Math.max(0, xavorVan.arrivalDelay - dt);
+    xavorVan.visible = false;
+    if (xavorVan.arrivalDelay <= 0) {
+      startPendingXavorVanArrival();
+    }
+  } else {
+    xavorVan.visible = shouldShowXavorVan();
+  }
   if (xavorVan.visible && !xavorVan.soundPlayed && xavorVan.arrival < 0.16) {
     playVanArrivalSound();
   }

@@ -11514,7 +11514,13 @@ function isStoryMissionExternalAudio(){
 }
 
 function isStoryMissionCarriedAudio(){
-  return STORY_EMBED_MODE && STORY_AUDIO_MODE === 'carry' && !!STORY_CARRIED_BGM_SRC;
+  return STORY_EMBED_MODE && STORY_AUDIO_MODE === 'carry' && !!STORY_CARRIED_BGM_SRC && !shouldStartStoryCombatMusicImmediately();
+}
+
+function shouldStartStoryCombatMusicImmediately(){
+  const mission = state.storyMission || STORY_MISSION_BOOT || '';
+  if(!STORY_EMBED_MODE || !mission) return false;
+  return !['hangar_build', 'hangar_race'].includes(mission);
 }
 
 function ensureSfxBank(){
@@ -11757,6 +11763,11 @@ function switchToBattleMusic(){
   }
   ensureMusicElements();
   if(state.firstAttackTriggered) return;
+  if(state.musicPhase === 'battle'){
+    state.firstAttackTriggered = true;
+    playMusicTrack(state.bgm2, false);
+    return;
+  }
   if((state.storyMission || STORY_MISSION_BOOT) === 'tower_argos_hack'){
     state.firstAttackTriggered = true;
     state.musicPhase = 'intro';
@@ -11770,6 +11781,21 @@ function switchToBattleMusic(){
   pauseMusic(state.bgmMenu, true);
   pauseMusic(state.bgm1, true);
   playMusicTrack(state.bgm2, true);
+}
+
+function startStoryCombatMusicImmediately(forceRestart=true){
+  if(!shouldStartStoryCombatMusicImmediately()) return false;
+  if(isStoryMissionExternalAudio()){
+    stopAllMusic(false);
+    state.musicPhase = 'none';
+    return false;
+  }
+  ensureMusicElements();
+  pauseMusic(state.bgmMenu, true);
+  pauseMusic(state.bgm1, true);
+  state.musicPhase = 'battle';
+  playMusicTrack(state.bgm2, forceRestart);
+  return true;
 }
 function syncMusicToState(){
   if(isStoryMissionCarriedAudio()){
@@ -12885,7 +12911,7 @@ async function restoreGameFromCode(code, options = {}){
   state.projectilePromptPlayer = null;
   state.postAttackTopFocus = false;
   state.onlineFxCue = null;
-  state.musicPhase = state.winner ? 'none' : (state.firstAttackTriggered ? 'battle' : 'intro');
+  state.musicPhase = state.winner ? 'none' : (state.firstAttackTriggered || shouldStartStoryCombatMusicImmediately() ? 'battle' : 'intro');
 
   state.players = (payload.p || []).map((player, idx) => ({
     name: Array.isArray(forcePlayerNames) && forcePlayerNames[idx]
@@ -13100,7 +13126,9 @@ function newGame(){
   if(storyDecksActive) log(`📜 Deck propio de historia activo: ${state.storyPlayerDecks?.[0]?.length || 0} cartas restantes tras el reparto.`);
   addToast('Nueva partida iniciada', 'ok');
   render();
-  startIntroMusic(true);
+  if(!startStoryCombatMusicImmediately(true)){
+    startIntroMusic(true);
+  }
   maybeQueueAttackReadyPrompt(state.currentPlayer);
   window.setTimeout(() => {
     scrollToPlayerPanel(state.currentPlayer, 'smooth');
