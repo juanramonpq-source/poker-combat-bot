@@ -11452,7 +11452,6 @@ function ensureAudio(){
 const AUDIO_BGM_1_URI = "assets/audio_01.mp3";
 const AUDIO_BGM_2_URI = "assets/audio_02.mp3";
 const AUDIO_BGM_MENU_URI = "assets/GravitSilence.mp3";
-const STORY_TOWER_FINAL_BGM_URI = "assets/Historia/Silencio de Acero-2.mp3";
 const STORY_AUDIO_PRIORITY_KEY = "pocobot_story_audio_priority";
 const STORY_BOOT_PARAMS = new URLSearchParams(window.location.search);
 const STORY_MISSION_BOOT = STORY_BOOT_PARAMS.get('story_mission') || '';
@@ -11514,13 +11513,7 @@ function isStoryMissionExternalAudio(){
 }
 
 function isStoryMissionCarriedAudio(){
-  return STORY_EMBED_MODE && STORY_AUDIO_MODE === 'carry' && !!STORY_CARRIED_BGM_SRC && !shouldStartStoryCombatMusicImmediately();
-}
-
-function shouldStartStoryCombatMusicImmediately(){
-  const mission = state.storyMission || STORY_MISSION_BOOT || '';
-  if(!STORY_EMBED_MODE || !mission) return false;
-  return !['hangar_build', 'hangar_race'].includes(mission);
+  return STORY_EMBED_MODE && STORY_AUDIO_MODE === 'carry' && !!STORY_CARRIED_BGM_SRC;
 }
 
 function ensureSfxBank(){
@@ -11552,8 +11545,8 @@ function playImpactExplosion(heavy=false){
 }
 
 function ensureMusicElements(){
-  const introMusicUri = STORY_MISSION_BOOT === 'tower_argos_hack' ? STORY_TOWER_FINAL_BGM_URI : AUDIO_BGM_1_URI;
-  const battleMusicUri = STORY_MISSION_BOOT === 'tower_argos_hack' ? STORY_TOWER_FINAL_BGM_URI : AUDIO_BGM_2_URI;
+  const introMusicUri = AUDIO_BGM_1_URI;
+  const battleMusicUri = AUDIO_BGM_2_URI;
   if(!state.bgmMenu){
     state.bgmMenu = new Audio(AUDIO_BGM_MENU_URI);
     state.bgmMenu.loop = true;
@@ -11564,13 +11557,13 @@ function ensureMusicElements(){
     state.bgm1 = new Audio(introMusicUri);
     state.bgm1.loop = true;
     state.bgm1.preload = 'auto';
-    state.bgm1.volume = STORY_MISSION_BOOT === 'tower_argos_hack' ? 0.38 : 0.30;
+    state.bgm1.volume = 0.30;
   }
   if(!state.bgm2){
     state.bgm2 = new Audio(battleMusicUri);
     state.bgm2.loop = true;
     state.bgm2.preload = 'auto';
-    state.bgm2.volume = STORY_MISSION_BOOT === 'tower_argos_hack' ? 0.38 : 0.30;
+    state.bgm2.volume = 0.30;
   }
 }
 function ensureStoryCarriedMusic(){
@@ -11768,14 +11761,6 @@ function switchToBattleMusic(){
     playMusicTrack(state.bgm2, false);
     return;
   }
-  if((state.storyMission || STORY_MISSION_BOOT) === 'tower_argos_hack'){
-    state.firstAttackTriggered = true;
-    state.musicPhase = 'intro';
-    pauseMusic(state.bgmMenu, true);
-    pauseMusic(state.bgm2, true);
-    playMusicTrack(state.bgm1, false);
-    return;
-  }
   state.firstAttackTriggered = true;
   state.musicPhase = 'battle';
   pauseMusic(state.bgmMenu, true);
@@ -11783,20 +11768,6 @@ function switchToBattleMusic(){
   playMusicTrack(state.bgm2, true);
 }
 
-function startStoryCombatMusicImmediately(forceRestart=true){
-  if(!shouldStartStoryCombatMusicImmediately()) return false;
-  if(isStoryMissionExternalAudio()){
-    stopAllMusic(false);
-    state.musicPhase = 'none';
-    return false;
-  }
-  ensureMusicElements();
-  pauseMusic(state.bgmMenu, true);
-  pauseMusic(state.bgm1, true);
-  state.musicPhase = 'battle';
-  playMusicTrack(state.bgm2, forceRestart);
-  return true;
-}
 function syncMusicToState(){
   if(isStoryMissionCarriedAudio()){
     pauseMusic(state.bgmMenu, false);
@@ -12911,7 +12882,7 @@ async function restoreGameFromCode(code, options = {}){
   state.projectilePromptPlayer = null;
   state.postAttackTopFocus = false;
   state.onlineFxCue = null;
-  state.musicPhase = state.winner ? 'none' : (state.firstAttackTriggered || shouldStartStoryCombatMusicImmediately() ? 'battle' : 'intro');
+  state.musicPhase = state.winner ? 'none' : (state.firstAttackTriggered ? 'battle' : 'intro');
 
   state.players = (payload.p || []).map((player, idx) => ({
     name: Array.isArray(forcePlayerNames) && forcePlayerNames[idx]
@@ -13126,9 +13097,7 @@ function newGame(){
   if(storyDecksActive) log(`📜 Deck propio de historia activo: ${state.storyPlayerDecks?.[0]?.length || 0} cartas restantes tras el reparto.`);
   addToast('Nueva partida iniciada', 'ok');
   render();
-  if(!startStoryCombatMusicImmediately(true)){
-    startIntroMusic(true);
-  }
+  startIntroMusic(true);
   maybeQueueAttackReadyPrompt(state.currentPlayer);
   window.setTimeout(() => {
     scrollToPlayerPanel(state.currentPlayer, 'smooth');

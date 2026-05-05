@@ -37,6 +37,7 @@ const chapterMusic = {
 };
 
 const radioOpenSoundSrc = "../sfx/walkie_roger_beep_cc0.mp3";
+const radioMessageDurationScale = 0.5;
 
 const defaultChapterState = {
   chapterFlowVersion,
@@ -560,6 +561,10 @@ function queueRadio(lines, options = {}) {
   }
 }
 
+function getRadioMessageDuration(text) {
+  return clamp(10 + text.length * 0.085, 11.8, 23) * radioMessageDurationScale;
+}
+
 function showNextRadio() {
   const next = radioState.queue.shift();
   if (!next) {
@@ -579,7 +584,7 @@ function showNextRadio() {
       ? 34
       : 52;
   radioState.visibleChars = 0;
-  radioState.timer = clamp(10 + next.text.length * 0.085, 11.8, 23);
+  radioState.timer = getRadioMessageDuration(next.text);
   radioState.burst = radioState.unstable ? 1.7 : 0;
   playRadioOpenSound();
 }
