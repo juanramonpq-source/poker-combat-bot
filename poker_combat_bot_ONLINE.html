@@ -1251,11 +1251,29 @@ body.victory .winner-banner.show{
   mix-blend-mode:screen;
 }
 .radar-core{position:absolute; inset:44%; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px rgba(35,216,255,.45)}
+.story-radar-sprite{
+  position:absolute;
+  inset:12% 10% 24%;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  z-index:2;
+  filter:drop-shadow(0 0 10px rgba(35,216,255,.28)) drop-shadow(0 12px 18px rgba(0,0,0,.48));
+}
+.story-radar-sprite img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  opacity:.95;
+}
+.nav-disc.has-story-combat-sprite .story-radar-sprite{display:flex}
+.nav-disc.has-story-combat-sprite .radar-core{opacity:.44}
 .radar-fire,
 .radar-projectile,
 .radar-shock,
 .radar-impact-burst{
-  position:absolute; inset:0; pointer-events:none; opacity:0;
+  position:absolute; inset:0; pointer-events:none; opacity:0; z-index:3;
 }
 .radar-fire::before{
   content:""; position:absolute; left:18%; right:18%; top:50%; height:6px; transform:translateY(-50%) scaleX(.35);
@@ -9192,12 +9210,13 @@ body.desktop-compact-mode > footer{
           <div class="nav-content">
             <div class="nav-unit">
               <div class="nav-unit-label">Jugador 1</div>
-              <div class="nav-disc" id="navRadar-0">
-                <div class="radar-grid"></div>
-                <div class="radar-sweep"></div>
-                <div class="radar-fire"></div>
-                <div class="radar-projectile"></div>
-                <div class="radar-shock"></div>
+                <div class="nav-disc" id="navRadar-0">
+                  <div class="radar-grid"></div>
+                  <div class="radar-sweep"></div>
+                  <div class="story-radar-sprite" id="storyRadarSprite-0" hidden><img alt="" draggable="false"></div>
+                  <div class="radar-fire"></div>
+                  <div class="radar-projectile"></div>
+                  <div class="radar-shock"></div>
                 <div class="radar-impact-burst"></div>
                 <div class="radar-core"></div>
               </div>
@@ -9222,12 +9241,13 @@ body.desktop-compact-mode > footer{
             </div>
             <div class="nav-unit">
               <div class="nav-unit-label">Jugador 2</div>
-              <div class="nav-disc" id="navRadar-1">
-                <div class="radar-grid"></div>
-                <div class="radar-sweep"></div>
-                <div class="radar-fire"></div>
-                <div class="radar-projectile"></div>
-                <div class="radar-shock"></div>
+                <div class="nav-disc" id="navRadar-1">
+                  <div class="radar-grid"></div>
+                  <div class="radar-sweep"></div>
+                  <div class="story-radar-sprite" id="storyRadarSprite-1" hidden><img alt="" draggable="false"></div>
+                  <div class="radar-fire"></div>
+                  <div class="radar-projectile"></div>
+                  <div class="radar-shock"></div>
                 <div class="radar-impact-burst"></div>
                 <div class="radar-core"></div>
               </div>
@@ -17370,6 +17390,24 @@ function renderRadarMecha(){
     if(img){
       const newSrc = getMechaPhaseImage(player);
       if(img.getAttribute('src') !== newSrc) img.src = newSrc;
+    }
+
+    const radar = document.getElementById(`navRadar-${idx}`);
+    const radarSprite = document.getElementById(`storyRadarSprite-${idx}`);
+    const radarSpriteImg = radarSprite?.querySelector('img');
+    if(radar && radarSprite && radarSpriteImg){
+      const spriteSrc = player.combatSprite || '';
+      if(spriteSrc){
+        if(radarSpriteImg.getAttribute('src') !== spriteSrc) radarSpriteImg.src = spriteSrc;
+        radarSpriteImg.alt = player.name ? `${player.name} en radar` : 'Objetivo en radar';
+        radarSprite.hidden = false;
+        radar.classList.add('has-story-combat-sprite');
+      }else{
+        radarSprite.hidden = true;
+        radarSpriteImg.removeAttribute('src');
+        radarSpriteImg.alt = '';
+        radar.classList.remove('has-story-combat-sprite');
+      }
     }
 
     // Update blueprint styling

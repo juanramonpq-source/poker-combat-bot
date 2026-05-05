@@ -471,6 +471,7 @@ function normalizeRadioEntry(entry, options = {}) {
     return {
       text: entry,
       unstable: !!options.unstable,
+      typeSpeed: options.typeSpeed,
     };
   }
 
@@ -481,6 +482,7 @@ function normalizeRadioEntry(entry, options = {}) {
   return {
     text: entry.text,
     unstable: !!entry.unstable || !!options.unstable,
+    typeSpeed: entry.typeSpeed || options.typeSpeed,
   };
 }
 
@@ -530,12 +532,19 @@ function showNextRadio() {
     radioState.timer = 0;
     radioState.unstable = false;
     radioState.burst = 0;
+    radioState.visibleChars = 0;
     return;
   }
 
   radioState.text = next.text;
-  radioState.timer = clamp(9 + next.text.length * 0.07, 10.4, 19.6);
   radioState.unstable = !!next.unstable;
+  radioState.typeSpeed = Number.isFinite(next.typeSpeed)
+    ? next.typeSpeed
+    : radioState.unstable
+      ? 34
+      : 52;
+  radioState.visibleChars = 0;
+  radioState.timer = clamp(10 + next.text.length * 0.085, 11.8, 23);
   radioState.burst = radioState.unstable ? 1.7 : 0;
   playRadioOpenSound();
 }
@@ -545,6 +554,15 @@ function updateRadio(dt) {
 
   if (radioState.timer <= 0) {
     return;
+  }
+
+  const displayTextLength = getRadioFullDisplayText().length;
+  if (displayTextLength > 0 && radioState.visibleChars < displayTextLength) {
+    const glitchPulse = radioState.unstable && Math.sin(performance.now() * 0.034) > 0.72 ? 18 : 0;
+    radioState.visibleChars = Math.min(
+      displayTextLength,
+      radioState.visibleChars + (radioState.typeSpeed + glitchPulse) * dt,
+    );
   }
 
   radioState.timer = Math.max(0, radioState.timer - dt);
@@ -652,6 +670,8 @@ const radioState = {
   queue: [],
   unstable: false,
   burst: 0,
+  visibleChars: 0,
+  typeSpeed: 52,
 };
 
 const delayedUnknownRadioIntro = {
@@ -1308,12 +1328,7 @@ async function loadAssets() {
     queueRadio([
       "Xavor: Torre 4B vuelve a transmitir y tu inventario ya tiene ese 7 de corazones. Bonito final para un dia feo.",
     ]);
-  } else if (defeatedCount === 0 && !delayedUnknownRadioIntro.active) {
-    queueRadio([
-      "Xavor por radio: Torre 4B sigue cerrada. Date una vuelta, mira el ordenador azul y limpia la zona.",
-      "Veo tres drones de ronda. Cada uno lleva recompensa. Si parecen poca cosa... eso dicen todas.",
-    ]);
-  } else if (!chapterState.xavorIntroduced) {
+  } else if (chapterState.xavorArrived && !chapterState.xavorIntroduced) {
     queueRadio([
       "Xavor por radio: furboneta en posicion. Acercate y te cuento por que esa torre importa.",
     ]);
@@ -2519,9 +2534,19 @@ function getRadioSpeakerLabel() {
   return isXavorKnownOnRadio() ? "XAVOR GLITCH" : "X4V-0R // 4B-CRYPT";
 }
 
-function getRadioDisplayText() {
+function getRadioFullDisplayText() {
   if (isXavorKnownOnRadio()) return radioState.text;
-  return radioState.text.replace(/^Xavor(?:\s+Glitch)?:\s*/i, "Voz cifrada: ");
+  return radioState.text.replace(/^Xavor(?:\s+Glitch)?(?:\s+por\s+radio)?:\s*/i, "Voz cifrada: ");
+}
+
+function isRadioTyping() {
+  return radioState.timer > 0 && radioState.visibleChars < getRadioFullDisplayText().length;
+}
+
+function getRadioDisplayText() {
+  const fullText = getRadioFullDisplayText();
+  const visibleLength = Math.min(fullText.length, Math.floor(radioState.visibleChars));
+  return fullText.slice(0, visibleLength);
 }
 
 function drawRadioPortrait(x, y, width, height) {
@@ -2686,7 +2711,8 @@ function drawRadioOverlay() {
 
   ctx.fillStyle = "#eef8ff";
   ctx.font = "15px Trebuchet MS";
-  drawWrappedText(getRadioDisplayText(), x + 112, y + 56, width - 132, 20, 3);
+  const typingCursor = isRadioTyping() && Math.floor(performance.now() / 180) % 2 === 0 ? " |" : "";
+  drawWrappedText(`${getRadioDisplayText()}${typingCursor}`, x + 112, y + 56, width - 132, 20, 3);
 
   ctx.fillStyle = "rgba(255, 213, 95, 0.9)";
   ctx.font = "12px Trebuchet MS";
