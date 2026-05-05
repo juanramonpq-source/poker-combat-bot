@@ -989,13 +989,13 @@ async function loadAssets() {
     ]);
   } else if (chapterState.controlMechaDefeated) {
     queueRadio([
-      "Xavor: el guardian ha caido. Ahora si: el panel de Argos intentara hackearte sin combustible.",
-      "Busca el As de picas y no confundas blindaje con cobardia. Hoy la armadura tambien arde.",
+      "Xavor: el guardián ha caído. Ahora sí: ve a por el panel de Argós y sé fuerte: intentará hackearte...",
+      "Busca el As de picas y no confundas blindaje con cobardía. ¡Hoy la armadura también arde! Eso dicen todas...",
     ]);
   } else {
     queueRadio([
-      "Xavor: sala de control a la vista. Ese mecha no lleva humano dentro, asi que no negocia, solo bloquea.",
-      "Cuando caiga, el panel de Argos intentara hackearte. Sin combustible. Si suena injusto... eso dicen todas.",
+      "Xavor: sala de control a la vista. Ese mecha no lleva humano dentro, así que: ¡No hay prisioneros!",
+      "Cuando caiga, el panel de Argós intentará hackearte bloqueándote el combustible. Si suena injusto... a veces la vida es injusta...",
     ]);
   }
 }
@@ -1007,9 +1007,9 @@ function triggerControlMechaCombat() {
 
   if (storyEmbedMode || window.parent !== window) {
     controlMecha.combatCooldown = 2.2;
-    setInteractionMessage("Mecha automatico detectado. Combate del modo historia en preparacion...", 3.4);
+    setInteractionMessage("Mecha automático detectado. Combate del modo historia en preparación...", 3.4);
     queueRadio([
-      "Xavor: ese guardian no lleva cabina viva. Es fuerza sin criterio. Derribalo y el panel principal quedara a tiro.",
+      "Xavor: ese guardián no lleva cabina viva. Es fuerza sin criterio. Derríbalo y el panel principal quedará a tiro.",
     ]);
     postStoryTutorialAction("request-control-mecha-combat", {
       mission: "tower_control_guard",
@@ -1032,10 +1032,10 @@ function triggerControlMechaCombat() {
     coins: chapterState.coins + 1,
   });
 
-  setInteractionMessage("Mecha automatico neutralizado. Recompensa: 1 moneda PoCoBOT.", 4.2);
+  setInteractionMessage("Mecha automático neutralizado. Recompensa: 1 moneda PoCoBOT.", 4.2);
   queueRadio([
-    "Xavor: confirmo moneda. Y confirmo tambien que eso no era un PoCoBOT: ni cabina viva, ni criterio humano.",
-    "Ahora si: ve al panel principal. Argos va a intentar cerrarte la cabeza desde dentro.",
+    "Xavor: confirmo moneda. Y confirmo también que eso no era un PoCoBOT: ni cabina viva, ni criterio humano.",
+    "Ahora sí: ve al panel principal. Argós va a intentar cerrarte la cabeza desde dentro.",
   ]);
   postStoryTutorialAction("mandatory-mecha-combat", {
     enemyId: "argos-unmanned-control-guard",
@@ -1057,10 +1057,10 @@ function triggerArgosHackCombat() {
   }
 
   if (storyEmbedMode || window.parent !== window) {
-    setInteractionMessage("Argos inicia hackeo de combustible: deposito bloqueado, armadura y proyectiles activos.", 5.2);
+    setInteractionMessage("Argós inicia hackeo de combustible: depósito bloqueado, armadura y proyectiles activos.", 5.2);
     queueRadio([
-      "Xavor: te ha cerrado el combustible. No te asustes. Busca el As de picas, conviertelo en protocolo de emergencia y usa armadura como energia o proyectiles sueltos.",
-      "Xavor: el panel apenas conserva 2 y 5 de corazones, pero sus treboles se van a apilar poco a poco. Ganale antes de que se crea inmortal.",
+      "Xavor: te ha hackeado el combustible... ahora no puedes usarlo. Pero no te asustes: Busca el As de picas, conviértelo en protocolo de emergencia y usa armadura como energía o proyectiles sueltos.",
+      "Xavor: el panel apenas conserva 2 y 5 de corazones, pero sus tréboles se van a apilar poco a poco. Gánale antes de que se crea inmortal.",
     ]);
     postStoryTutorialAction("request-argos-hack-combat", {
       mission: "tower_argos_hack",
@@ -1085,11 +1085,11 @@ function triggerArgosHackCombat() {
   }
 
   patchChapterState({ argosHackDefeated: true });
-  setInteractionMessage("Hackeo de Argos vencido. Las transmisiones humanas vuelven tras La Caida.", 4.8);
+  setInteractionMessage("Hackeo de Argós vencido. Las transmisiones humanas vuelven tras La Caída.", 4.8);
   queueRadio([
-    "Xavor: lo has hecho. Las transmisiones estan volviendo. El mundo humano acaba de recuperar una voz.",
-    "Xavor: mira por la ventana como se han restaurado las transmisiones! Es un milagro! Eso decian todas...",
-    "Argos tenia 2 y 5 de corazones, todos los treboles como proteccion y cero piedad. Pero tu tenias criterio.",
+    "Xavor: lo has hecho. Las transmisiones están volviendo. El mundo humano acaba de recuperar una voz.",
+    "Xavor: ¡mira por la ventana cómo se han restaurado las transmisiones! ¡Es un milagro! Eso decían todas...",
+    "Argós tenía 2 y 5 de corazones, todos los tréboles como protección y cero piedad. Pero tú tenías criterio.",
   ]);
   postStoryTutorialAction("argos-hack-combat", {
     enemyId: "argos-control-panel",
@@ -1311,7 +1311,7 @@ function updateInteractions(dt) {
         if (!controlMecha.defeated) {
           setInteractionMessage("El mecha sin humano tapa el acceso al panel. No hay forma limpia de evitarlo.", 3.8);
           queueRadio([
-            "Xavor: ese guardian esta programado para moverse en paralelo y cortarte el paso. Toca combate.",
+            "Xavor: ese guardián está programado para moverse en paralelo y cortarte el paso. Toca combate.",
           ]);
           input.interactQueued = false;
           return;
@@ -1324,9 +1324,9 @@ function updateInteractions(dt) {
 
       if (nearest.id === "observation-window") {
         if (!chapterState.argosHackDefeated) {
-          setInteractionMessage("El ventanal no muestra nada util todavia. Primero vence al ordenador base de datos de Argos.", 4.2);
+          setInteractionMessage("El ventanal no muestra nada útil todavía. Primero vence al ordenador base de datos de Argós.", 4.2);
           queueRadio([
-            "Xavor: primero derrota al ordenador base de datos. Cuando las transmisiones despierten, entonces mira por la ventana.",
+            "Xavor: primero derrota al ordenador base de datos. Cuando las transmisiones despierten, entonces mira por la ventana y contempla el paisaje. A veces hay que darse un caprichito...",
           ]);
           input.interactQueued = false;
           return;
@@ -1345,7 +1345,7 @@ function updateInteractions(dt) {
       setInteractionMessage(nearest.message, 3.4);
       postStoryTutorialAction(nearest.id);
     } else {
-      setInteractionMessage("Acercate al panel principal, al ventanal o a la escalera para interactuar.", 2.4);
+      setInteractionMessage("Acércate al panel principal, al ventanal o a la escalera para interactuar.", 2.4);
     }
 
     input.interactQueued = false;
@@ -1931,7 +1931,7 @@ function drawHud() {
     ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
     ctx.font = "14px Trebuchet MS";
     ctx.fillText("WASD para moverte · E o Enter para aceptar/seleccionar", 32, 68);
-    ctx.fillText("Vence al guardian, activa el panel y resiste el hackeo", 32, 88);
+    ctx.fillText("Vence al guardián, activa el panel y resiste el hackeo", 32, 88);
   } else {
     hudHelp.button = { x: 18, y: 18, width: 190, height: 42 };
     ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
@@ -1981,7 +1981,7 @@ function drawLoading() {
 
   ctx.fillStyle = "rgba(238, 248, 255, 0.72)";
   ctx.font = "16px Trebuchet MS";
-  ctx.fillText("Arrancando pantallas, paneles y sistemas de Argos", 268, 295);
+  ctx.fillText("Arrancando pantallas, paneles y sistemas de Argós", 268, 295);
 }
 
 function render() {

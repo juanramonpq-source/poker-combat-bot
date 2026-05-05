@@ -944,8 +944,8 @@ async function loadAssets() {
     ]);
   } else {
     queueRadio([
-      "Xavor: planta baja de Torre 4B. Si oyes zumbidos, no es nostalgia: hay un dron flotando por ahi.",
-      "El combate es opcional. Puedes esquivarlo y subir. Aunque si te da una moneda... eso dicen todas.",
+      "Xavor: planta baja de Torre 4B. Si oyes zumbidos, no es nostalgia: hay un dron flotando por ahí.",
+      "El combate es opcional. Puedes esquivarlo y subir. Aunque si te da una moneda... yo me aprovecharía...",
     ]);
   }
 }
@@ -957,9 +957,9 @@ function triggerInteriorDroneCombat() {
 
   if (storyEmbedMode || window.parent !== window) {
     interiorDrone.combatCooldown = 2.2;
-    setInteractionMessage("Dron interior detectado. Combate del modo historia en preparacion...", 3.4);
+    setInteractionMessage("Dron interior detectado. Combate del modo historia en preparación...", 3.4);
     queueRadio([
-      "Xavor: ese dron no bloquea la ruta, pero si lo derribas te llevas otra antigua moneda. Hay dias en los que hasta la chatarra paga.",
+      "Xavor: ese dron no bloquea la ruta, pero si lo derribas te llevas otra antigua moneda. Hay días en los que hasta la chatarra paga.",
     ]);
     postStoryTutorialAction("request-interior-drone-combat", {
       mission: "tower_interior_drone",
@@ -985,7 +985,7 @@ function triggerInteriorDroneCombat() {
   setInteractionMessage("Dron interior vencido. Recompensa: 1 moneda PoCoBOT.", 4.2);
   queueRadio([
     "Xavor: moneda conseguida. No era obligatorio, pero quedaba feo dejarlo zumbando.",
-    "Sigue hacia las escaleras. Arriba empieza la parte donde Argos ya no finge ser amable.",
+    "Sigue hacia las escaleras. Arriba empieza la parte donde Argós ya no finge ser amable.",
   ]);
   postStoryTutorialAction("optional-drone-combat", {
     enemyId: "tower-4b-floating-drone",
@@ -1200,7 +1200,7 @@ function updateInteractions(dt) {
       setInteractionMessage(nearest.message, 3.4);
       postStoryTutorialAction(nearest.id);
     } else {
-      setInteractionMessage("Acercate a la puerta, la consola o las escaleras para interactuar.", 2.4);
+      setInteractionMessage("Acércate a la puerta, la consola o las escaleras para interactuar.", 2.4);
     }
 
     input.interactQueued = false;
