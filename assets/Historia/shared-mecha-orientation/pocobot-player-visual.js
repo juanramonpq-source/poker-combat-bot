@@ -1,6 +1,6 @@
 (function registerPoCoBOTPlayerVisual(global) {
   const SIDE_FRAME_VERTICAL_OFFSETS = [0, -55, -124, -134, -127];
-  const ASSET_VERSION = "20260504-idle-fire";
+  const ASSET_VERSION = "20260506-solid-sprite-fold";
   const audioState = {
     context: null,
     movementGain: null,
@@ -525,43 +525,21 @@
       ctx.drawImage(frames[frameIndex], -size / 2, -size / 2 + offsetY, size, size);
     }
 
-    function drawBackRetractedSprite(size) {
-      const image = assets.backFrame;
-      if (!image) {
-        drawFrontLeanSprite(size, 0.24);
+    function drawBackSprite(size) {
+      const frames = assets.backFrames && assets.backFrames.length ? assets.backFrames : null;
+      if (frames) {
+        const framePosition = sceneClamp(player.leanAmount, 0, 1) * (frames.length - 1);
+        const frameIndex = sceneClamp(Math.round(framePosition), 0, frames.length - 1);
+        drawImageFrame(frames[frameIndex], size);
         return;
       }
 
-      const upperRatio = 0.58;
-      const sourceUpperHeight = image.height * upperRatio;
-      const lowerSourceHeight = image.height - sourceUpperHeight;
-      const retract = player.leanAmount * 15 * scale;
-      const lowerScaleX = 1 - player.leanAmount * 0.08;
-      const lowerScaleY = 0.99 - player.leanAmount * 0.06;
+      if (assets.backFrame) {
+        drawImageFrame(assets.backFrame, size);
+        return;
+      }
 
-      ctx.drawImage(
-        image,
-        0,
-        0,
-        image.width,
-        sourceUpperHeight,
-        -size / 2,
-        -size / 2,
-        size,
-        size * upperRatio,
-      );
-
-      ctx.drawImage(
-        image,
-        0,
-        sourceUpperHeight,
-        image.width,
-        lowerSourceHeight,
-        -(size * lowerScaleX) / 2,
-        -size / 2 + size * upperRatio - retract,
-        size * lowerScaleX,
-        size * (1 - upperRatio) * lowerScaleY,
-      );
+      drawFrontLeanSprite(size, 0.24);
     }
 
     function draw() {
@@ -602,7 +580,7 @@
       if (idleHover) {
         drawHoverSprite(hoverSize);
       } else if (goingUp) {
-        drawBackRetractedSprite(backSize);
+        drawBackSprite(backSize);
       } else if (goingSide) {
         drawSideLeanSprite(sideSize);
       } else {
