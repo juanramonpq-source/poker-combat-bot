@@ -553,14 +553,26 @@ a {
   width: min(var(--max), calc(100% - 2rem));
   margin: 0.9rem auto 0;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
-  color: var(--quiet);
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
 .visit-rail[hidden] {
   display: none;
+}
+
+.visit-rail span {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(56, 216, 255, 0.18);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.7rem;
+  background: rgba(7, 13, 24, 0.58);
+  box-shadow: 0 0 24px rgba(56, 216, 255, 0.08);
 }
 
 .section {
@@ -2183,9 +2195,9 @@ a {
 
   const rail = document.getElementById("visit-rail");
   const total = document.getElementById("total-visits");
-  const hour = document.getElementById("hour-visits");
+  const activeHour = document.getElementById("hour-visits");
 
-  if (rail && total && hour) {
+  if (rail && total && activeHour) {
     fetch("counter.php", { method: "GET", cache: "no-store" })
       .then((response) => {
         if (!response.ok) throw new Error("counter unavailable");
@@ -2193,11 +2205,12 @@ a {
       })
       .then((data) => {
         const hasTotal = typeof data.total !== "undefined";
-        const hasHour = typeof data.last_hour !== "undefined";
-        if (!hasTotal && !hasHour) return;
+        const activeUsers = data.active_users_last_hour ?? data.last_hour;
+        const hasActiveUsers = typeof activeUsers !== "undefined";
+        if (!hasTotal && !hasActiveUsers) return;
 
         if (hasTotal) total.textContent = Number(data.total).toLocaleString("es-ES") + " visitas totales";
-        if (hasHour) hour.textContent = Number(data.last_hour).toLocaleString("es-ES") + " en la última hora";
+        if (hasActiveUsers) activeHour.textContent = Number(activeUsers).toLocaleString("es-ES") + " usuarios conectados en la última hora";
         rail.hidden = false;
       })
       .catch(() => {});
