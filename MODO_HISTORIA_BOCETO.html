@@ -6591,7 +6591,7 @@
       presentationFigure: XAVOR_PRESENTATION_FIGURE,
       presentationFigureLow: XAVOR_PRESENTATION_FIGURE,
       presentationFigureClass: 'figure-xavor',
-      presentationFigureShiftVh: 0,
+      presentationFigureShiftVh: -8,
       presentationFigureMobileShiftVh: 0,
       presentationFigureScale: 0.9,
       presentationFigureMobileScale: 0.74,
@@ -6602,7 +6602,7 @@
           figure: XAVOR_POSE_FOUR,
           figureClass: 'figure-xavor',
           figureRaised: true,
-          figureShiftVh: -18,
+          figureShiftVh: -28,
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
@@ -6632,7 +6632,7 @@
           figure: XAVOR_POSE_TWO,
           figureClass: 'figure-xavor',
           figureRaised: true,
-          figureShiftVh: -18,
+          figureShiftVh: -28,
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
@@ -6658,7 +6658,7 @@
           figure: XAVOR_POSE_THREE,
           figureClass: 'figure-xavor',
           figureRaised: true,
-          figureShiftVh: -18,
+          figureShiftVh: -28,
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
@@ -6670,7 +6670,7 @@
           figure: XAVOR_POSE_ONE,
           figureClass: 'figure-xavor',
           figureRaised: true,
-          figureShiftVh: -18,
+          figureShiftVh: -28,
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
@@ -6682,7 +6682,7 @@
           figure: XAVOR_POSE_TWO,
           figureClass: 'figure-xavor',
           figureRaised: true,
-          figureShiftVh: -18,
+          figureShiftVh: -28,
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
@@ -7390,6 +7390,7 @@
       storySceneStage.classList.toggle('hangar-scene', activeSceneNodeId === 'hangar');
       storySceneStage.classList.toggle('patio-scene', activeSceneNodeId === 'patio');
       storySceneStage.classList.toggle('mercado-scene', activeSceneNodeId === 'mercado');
+      storySceneStage.classList.toggle('torre-scene', activeSceneNodeId === 'torre');
       storySceneStage.style.setProperty('--scene-figure-shift', `${figureShift}vh`);
       storySceneStage.style.setProperty('--scene-figure-mobile-shift', `${figureMobileShift}vh`);
       storySceneStage.style.setProperty('--scene-figure-scale', String(figureScale));

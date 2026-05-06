@@ -1,6 +1,7 @@
 (function registerPoCoBOTPlayerVisual(global) {
   const SIDE_FRAME_VERTICAL_OFFSETS = [0, -55, -124, -134, -127];
-  const ASSET_VERSION = "20260506-solid-sprite-fold";
+  const SIDE_SOLID_FRAME_COUNT = 2;
+  const ASSET_VERSION = "20260506-no-ghost-legs";
   const audioState = {
     context: null,
     movementGain: null,
@@ -140,9 +141,6 @@
       side: [
         versioned(`${basePath}/pocobot-mecha-side-left-aero-00.png`),
         versioned(`${basePath}/pocobot-mecha-side-left-aero-01.png`),
-        versioned(`${basePath}/pocobot-mecha-side-left-aero-02.png`),
-        versioned(`${basePath}/pocobot-mecha-side-left-aero-03.png`),
-        versioned(`${basePath}/pocobot-mecha-side-left-aero-04.png`),
       ],
       hover: [
         versioned(`${basePath}/pocobot-mecha-idle-hover-00.png`),
@@ -518,8 +516,9 @@
     function drawSideLeanSprite(size) {
       const frames = assets.sideFrames && assets.sideFrames.length ? assets.sideFrames : assets.botFrames;
       if (!frames || !frames.length) return;
-      const framePosition = sceneClamp(player.sideBlend, 0, 1) * (frames.length - 1);
-      const frameIndex = sceneClamp(Math.round(framePosition), 0, frames.length - 1);
+      const solidFrameLimit = Math.min(frames.length, SIDE_SOLID_FRAME_COUNT);
+      const framePosition = sceneClamp(player.sideBlend, 0, 1) * (solidFrameLimit - 1);
+      const frameIndex = sceneClamp(Math.round(framePosition), 0, solidFrameLimit - 1);
       const offsetY = (sideFrameVerticalOffsets[frameIndex] || 0) * (size / 768);
 
       ctx.drawImage(frames[frameIndex], -size / 2, -size / 2 + offsetY, size, size);
