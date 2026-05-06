@@ -498,9 +498,40 @@ body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-ki
 body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-title{
   font-size:.92rem;
 }
+@media (pointer:coarse){
+  body.story-embed-mode .story-mission-brief-bar{
+    left:max(8px, env(safe-area-inset-left));
+    right:auto;
+    width:min(58vw, 620px);
+    max-width:calc(100vw - 156px - env(safe-area-inset-right));
+  }
+  body.story-embed-mode .story-mission-brief-bar.collapsed{
+    left:max(8px, env(safe-area-inset-left));
+    right:auto;
+    width:min(56vw, 520px);
+    max-width:calc(100vw - 156px - env(safe-area-inset-right));
+    gap:6px;
+    padding:7px 8px 7px 10px;
+    border-radius:14px;
+  }
+  body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-title{
+    font-size:.78rem;
+  }
+  body.story-embed-mode .story-mission-brief-bar.collapsed .story-mission-brief-kicker{
+    font-size:.56rem;
+  }
+  body.story-embed-mode .story-mission-brief-bar.collapsed .story-embed-nav-btn{
+    min-width:92px;
+    min-height:34px;
+    padding:0 10px;
+    font-size:.64rem;
+    letter-spacing:.08em;
+  }
+}
 @media (pointer:coarse) and (orientation:landscape){
   body.story-embed-mode .story-mission-brief-bar.collapsed{
-    width:min(46vw, 520px);
+    width:min(38vw, 420px);
+    max-width:calc(100vw - 180px - env(safe-area-inset-right));
   }
 }
 body.story-embed-mode .zone.story-scroll-focus{
@@ -14700,13 +14731,14 @@ function canUseMobilePanoramaHud(){
     const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
     const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
     const portraitReady = !!window.matchMedia && window.matchMedia('(max-width: 820px) and (orientation: portrait) and (pointer: coarse)').matches;
+    const landscapeReady = !!window.matchMedia && window.matchMedia('(max-height: 820px) and (orientation: landscape) and (pointer: coarse)').matches;
     const storyForcedMobile = shouldUseStoryMobileCompactMode();
     return !!state.gameStarted
       && introHidden
       && lobbyHidden
       && hasCoarsePointer
       && compactMobileViewport
-      && (storyForcedMobile || portraitReady || mobilePanoramaRequested);
+      && (storyForcedMobile || portraitReady || landscapeReady || mobilePanoramaRequested);
   }catch(_err){
     return false;
   }
