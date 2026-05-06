@@ -8746,7 +8746,9 @@
 
     function isStoryMissionMobileViewport() {
       try {
-        return !!window.matchMedia && window.matchMedia('(pointer: coarse) and (max-width: 820px)').matches;
+        const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        const compactViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
+        return hasCoarsePointer && compactViewport;
       } catch (error) {
         return false;
       }
@@ -8932,7 +8934,7 @@
       targetUrl.searchParams.set('story_audio', 'internal');
       targetUrl.searchParams.set('story_brief', 'on');
       targetUrl.searchParams.set('story_tower_return_scene', payload.returnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior');
-      targetUrl.searchParams.set('v', '20260506-tower-combat-autostart');
+      targetUrl.searchParams.set('v', '20260506-argos-mobile-horizontal');
       if (options.standalone) {
         targetUrl.searchParams.set('story_standalone', '1');
         targetUrl.searchParams.set('story_return', window.location.href);

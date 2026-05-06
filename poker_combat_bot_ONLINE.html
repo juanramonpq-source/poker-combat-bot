@@ -7621,6 +7621,7 @@ body.desktop-compact-mode > footer{
 #compactProjectileBtn,
 #compactProjectileOnlyBtn,
 #compactConfirmAttackBtn,
+#compactMobileConfirmAttackBtn,
 #compactConfirmDefenseBtn{
   font-size:0.69rem !important;
   line-height:0.98 !important;
@@ -7631,11 +7632,13 @@ body.desktop-compact-mode > footer{
 #compactProjectileBtn,
 #compactProjectileOnlyBtn,
 #compactConfirmAttackBtn,
+#compactMobileConfirmAttackBtn,
 #compactConfirmDefenseBtn{
   padding-inline:10px !important;
 }
 
 #compactConfirmAttackBtn,
+#compactMobileConfirmAttackBtn,
 #compactConfirmDefenseBtn{
   font-size:0.67rem !important;
   line-height:0.96 !important;
@@ -7658,7 +7661,8 @@ body.desktop-compact-mode > footer{
   display:none !important;
 }
 
-.compact-action-grid button.danger{
+.compact-action-grid button.danger,
+.compact-mobile-action-grid button.danger{
   border-color:rgba(255,150,150,.92) !important;
   background:linear-gradient(180deg, rgba(255,229,229,.98), rgba(255,120,120,.98) 48%, rgba(209,24,24,.98)) !important;
   color:#fff4f1 !important;
@@ -10368,13 +10372,28 @@ function primeOfflineMode(gameMode, difficulty=null){
   releaseOrientationLockBestEffort();
 }
 
+function shouldStartTowerCombatInMobileHorizontal(mission){
+  return STORY_EMBED_MODE
+    && mission === 'tower_argos_hack'
+    && isStoryMobileViewport();
+}
+
+function prepareStoryTowerCombatHudMode(mission){
+  if(!shouldStartTowerCombatInMobileHorizontal(mission)) return;
+  setStoryHudMode('horizontal');
+  desktopHudMode = 'compact';
+  mobilePanoramaRequested = true;
+  requestLandscapeOrientationBestEffort();
+}
+
 function startStoryTowerCombatMission(mission, profile){
   primeOfflineMode('single', mission === 'tower_argos_hack' ? 'normal' : 'easy');
   newGame();
   clearSinglePlayerAiTimer();
   setupStoryTowerCombatScenario(mission);
-  render();
   hideIntroScreen();
+  prepareStoryTowerCombatHudMode(mission);
+  render();
   startStoryCombatMusicAtStart(false);
   scheduleStoryEmbedNavigationSetup();
   addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');

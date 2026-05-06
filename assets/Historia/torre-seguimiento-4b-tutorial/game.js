@@ -389,6 +389,7 @@ const redGlowCache = {
   y: 374,
   radius: 86,
 };
+const redGlowPickupRadius = redGlowCache.radius * 0.9;
 
 const randomTowerCardRanks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 const randomTowerCardSuits = ["hearts", "diamonds", "clubs", "spades"];
@@ -482,6 +483,12 @@ function claimRedGlowCache() {
     reward: { card: rewardCard },
     unlocks: ["tower-inventory"],
   });
+}
+
+function isPlayerInRedGlowPickupRange() {
+  if (chapterState.redGlowClaimed) return false;
+  const glowDistance = Math.hypot(player.x - redGlowCache.x, player.y - redGlowCache.y);
+  return glowDistance < player.radius + redGlowPickupRadius;
 }
 
 function playAudioClip(source, volume = 0.5, duration = 2.4) {
@@ -1717,11 +1724,8 @@ function updateChapterActors(dt) {
     }
   });
 
-  if (!chapterState.redGlowClaimed) {
-    const glowDistance = Math.hypot(player.x - redGlowCache.x, player.y - redGlowCache.y);
-    if (glowDistance < player.radius + redGlowCache.radius * 0.42) {
-      claimRedGlowCache();
-    }
+  if (isPlayerInRedGlowPickupRange()) {
+    claimRedGlowCache();
   }
 
   if (xavorVan.pendingArrival) {
@@ -2222,6 +2226,10 @@ function drawRedGlowCache() {
   ctx.arc(redGlowCache.x, redGlowCache.y, redGlowCache.radius * 0.52, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
+
+  if (isPlayerInRedGlowPickupRange()) {
+    drawWorldLabel(redGlowCache.x, redGlowCache.y - redGlowCache.radius * 0.66, "Memoria roja", "Recoger");
+  }
 }
 
 function drawPointerTarget() {
