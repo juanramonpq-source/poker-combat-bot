@@ -7194,7 +7194,10 @@
       if (towerState.xavorIntroduced) {
         return 'Hackea el ordenador azul, abre la puerta de la Torre 4B y sube por el interior hasta la sala de control.';
       }
-      if (towerState.xavorArrived || towerState.pendingVanArrival) {
+      if (towerState.pendingVanArrival) {
+        return 'Xavor está llegando con la furboneta. Espera unos segundos en la explanada para ver la llegada.';
+      }
+      if (towerState.xavorArrived) {
         return 'Xavor ya ha llegado con la furboneta. Acércate a él para que te explique las cartas, la torre y el hackeo.';
       }
       return 'Nuevo capítulo abierto: Torre de Seguimiento 4B. Limpia los drones exteriores; tras el primer combate llegará Xavor con la furboneta.';
@@ -9129,13 +9132,14 @@
           : [];
         const wasAlreadyDefeated = defeatedIds.includes(droneId);
         if (!wasAlreadyDefeated) defeatedIds.push(droneId);
-        const isFirstExteriorVictory = !wasAlreadyDefeated && defeatedIds.length === 1;
+        const isFirstExteriorVictory = !wasAlreadyDefeated && defeatedIds.length === 1 && !towerState.xavorArrived;
         patchStoryTowerChapterState({
           exteriorDroneEncountered: true,
           exteriorDroneDefeated: defeatedIds.length > 0,
           exteriorDroneDefeatedIds: defeatedIds,
-          xavorArrived: true,
-          pendingVanArrival: isFirstExteriorVictory,
+          xavorArrived: isFirstExteriorVictory ? false : !!towerState.xavorArrived,
+          pendingVanArrival: isFirstExteriorVictory ? true : !!towerState.pendingVanArrival,
+          vanArrivalDelaySeconds: isFirstExteriorVictory ? 5 : Number(towerState.vanArrivalDelaySeconds) || 0,
           coins: (Number(towerState.coins) || 0) + (wasAlreadyDefeated ? 0 : 1)
         });
         if (!wasAlreadyDefeated) {

@@ -38,6 +38,7 @@ const chapterMusic = {
 
 const radioOpenSoundSrc = "../sfx/walkie_roger_beep_cc0.mp3";
 const radioMessageDurationScale = 0.5;
+const xavorVanReturnArrivalDelay = 5;
 
 const defaultChapterState = {
   chapterFlowVersion,
@@ -45,6 +46,7 @@ const defaultChapterState = {
   exteriorDroneDefeatedIds: [],
   xavorArrived: false,
   pendingVanArrival: false,
+  vanArrivalDelaySeconds: 0,
   xavorIntroduced: false,
   towerDoorOpen: false,
   exteriorDroneEncountered: false,
@@ -702,7 +704,9 @@ const xavorVan = {
   skid: forceVanArrival || chapterState.pendingVanArrival ? 1 : 0,
   soundPlayed: chapterState.xavorArrived && !chapterState.pendingVanArrival && !forceVanArrival,
   pendingArrival: !!chapterState.pendingVanArrival,
-  arrivalDelay: chapterState.pendingVanArrival ? 6 : 0,
+  arrivalDelay: chapterState.pendingVanArrival
+    ? Math.max(0, Number(chapterState.vanArrivalDelaySeconds) || xavorVanReturnArrivalDelay)
+    : 0,
   arrivalRadioQueued: false,
 };
 
@@ -1541,7 +1545,7 @@ function startPendingXavorVanArrival() {
   xavorVan.skid = 1;
   xavorVan.soundPlayed = false;
   xavorVan.smokeDebt = 0;
-  patchChapterState({ pendingVanArrival: false, xavorArrived: true });
+  patchChapterState({ pendingVanArrival: false, xavorArrived: true, vanArrivalDelaySeconds: 0 });
   setInteractionMessage("La furboneta de Xavor entra en escena entre chispas.", 4.8);
   queueRadio([
     "Xavor por radio: furboneta en posición. Acércate y te cuento por qué esa torre importa.",
@@ -1661,14 +1665,17 @@ function triggerExteriorDroneCombat(drone) {
     exteriorDroneEncountered: true,
     exteriorDroneDefeatedIds: defeatedIds,
     exteriorDroneDefeated: true,
-    xavorArrived: wasFirstVictory ? true : chapterState.xavorArrived,
+    xavorArrived: wasFirstVictory ? false : chapterState.xavorArrived,
     pendingVanArrival: wasFirstVictory ? true : chapterState.pendingVanArrival,
+    vanArrivalDelaySeconds: wasFirstVictory
+      ? xavorVanReturnArrivalDelay
+      : Number(chapterState.vanArrivalDelaySeconds) || 0,
     coins: chapterState.coins + 1,
   });
 
   if (wasFirstVictory) {
     xavorVan.pendingArrival = true;
-    xavorVan.arrivalDelay = 6;
+    xavorVan.arrivalDelay = xavorVanReturnArrivalDelay;
     xavorVan.visible = false;
     xavorVan.arrival = 0;
     xavorVan.skid = 1;
