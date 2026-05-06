@@ -37,6 +37,7 @@ const chapterMusic = {
 
 const radioOpenSoundSrc = "../sfx/walkie_roger_beep_cc0.mp3";
 const radioMessageDurationScale = 0.5;
+const floorEntryRadioDelaySeconds = 3;
 
 const defaultChapterState = {
   chapterFlowVersion,
@@ -396,6 +397,11 @@ function queueRadio(lines) {
   if (radioState.timer <= 0) {
     showNextRadio();
   }
+}
+
+function queueFloorEntryRadio(lines, delaySeconds = floorEntryRadioDelaySeconds) {
+  const safeDelay = Math.max(floorEntryRadioDelaySeconds, Number(delaySeconds) || floorEntryRadioDelaySeconds);
+  window.setTimeout(() => queueRadio(lines), safeDelay * 1000);
 }
 
 function getRadioMessageDuration(text) {
@@ -944,11 +950,11 @@ async function loadAssets() {
   startChapterMusic();
 
   if (chapterState.argosHackDefeated && !chapterState.finalRewardClaimed) {
-    queueRadio([
+    queueFloorEntryRadio([
       "Xavor: planta baja despejada. Sal por la puerta exterior y vuelve a la furboneta para cerrar esto.",
     ]);
   } else {
-    queueRadio([
+    queueFloorEntryRadio([
       "Xavor: planta baja de Torre 4B. Si oyes zumbidos, no es nostalgia: hay un dron flotando por ahí.",
       "El combate es opcional. Puedes esquivarlo y subir. Aunque si te da una moneda... yo me aprovecharía...",
     ]);

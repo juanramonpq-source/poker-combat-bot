@@ -44,6 +44,7 @@ const chapterMusic = {
 
 const radioOpenSoundSrc = "../sfx/walkie_roger_beep_cc0.mp3";
 const radioMessageDurationScale = 0.5;
+const floorEntryRadioDelaySeconds = 3;
 
 const defaultChapterState = {
   chapterFlowVersion,
@@ -407,6 +408,11 @@ function queueRadio(lines) {
   if (radioState.timer <= 0) {
     showNextRadio();
   }
+}
+
+function queueFloorEntryRadio(lines, delaySeconds = floorEntryRadioDelaySeconds) {
+  const safeDelay = Math.max(floorEntryRadioDelaySeconds, Number(delaySeconds) || floorEntryRadioDelaySeconds);
+  window.setTimeout(() => queueRadio(lines), safeDelay * 1000);
 }
 
 function getRadioMessageDuration(text) {
@@ -988,17 +994,17 @@ async function loadAssets() {
   startChapterMusic();
 
   if (chapterState.argosHackDefeated) {
-    queueRadio([
+    queueFloorEntryRadio([
       "Xavor: transmisiones restauradas. La torre vuelve a respirar por encima de la chatarra.",
       "Baja y vuelve a la furboneta. Te debo una recompensa y, por una vez, no voy a hacerte pagar por escucharme.",
     ]);
   } else if (chapterState.controlMechaDefeated) {
-    queueRadio([
+    queueFloorEntryRadio([
       "Xavor: el guardián ha caído. Ahora sí: ve a por el panel de Argós y sé fuerte: intentará hackearte...",
       "Busca el As de picas y no confundas blindaje con cobardía. ¡Hoy la armadura también arde! Eso dicen todas...",
     ]);
   } else {
-    queueRadio([
+    queueFloorEntryRadio([
       "Xavor: sala de control a la vista. Ese mecha no lleva humano dentro, así que: ¡No hay prisioneros!",
       "Cuando caiga, el panel de Argós intentará hackearte bloqueándote el combustible. Si suena injusto... a veces la vida es injusta...",
     ]);
