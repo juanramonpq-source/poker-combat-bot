@@ -173,9 +173,9 @@ const player = {
 };
 
 const sceneSpawnPoints = {
-  default: { x: 762, y: 792 },
-  fromExterior: { x: 762, y: 792 },
-  fromControl: { x: 1168, y: 304 },
+  default: { x: 762, y: 838 },
+  fromExterior: { x: 762, y: 838 },
+  fromControl: { x: 1136, y: 382 },
 };
 
 function placePlayerAt(point) {
@@ -276,7 +276,7 @@ const interactables = [
     id: "entry-door",
     x: 760,
     y: 850,
-    radius: 168,
+    radius: 148,
     label: "Puerta exterior",
     hint: "Examinar",
     message: "La compuerta exterior sigue abierta. El ruido de la tormenta queda atras.",
@@ -292,9 +292,9 @@ const interactables = [
   },
   {
     id: "stairs-up",
-    x: 1184,
-    y: 206,
-    radius: 88,
+    x: 1124,
+    y: 322,
+    radius: 132,
     label: "Escaleras superiores",
     hint: "Subir",
     message: "Escaleras superiores: acceso preparado hacia la sala de control.",

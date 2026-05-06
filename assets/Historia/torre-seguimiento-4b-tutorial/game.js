@@ -181,7 +181,7 @@ const player = {
 const sceneSpawnPoints = {
   default: { x: 720, y: 662 },
   missionReturn: { x: 520, y: 698 },
-  fromInterior: { x: 748, y: 454 },
+  fromInterior: { x: 806, y: 530 },
 };
 
 function placePlayerAt(point) {
@@ -202,13 +202,13 @@ function applyInitialStorySpawn() {
     }
   }
 
-  if (storyParams.get("mission_return") === "1") {
-    placePlayerAt(sceneSpawnPoints.missionReturn);
+  if (storyParams.get("from_interior") === "1") {
+    placePlayerAt(sceneSpawnPoints.fromInterior);
     return;
   }
 
-  if (storyParams.get("from_interior") === "1") {
-    placePlayerAt(sceneSpawnPoints.fromInterior);
+  if (storyParams.get("mission_return") === "1") {
+    placePlayerAt(sceneSpawnPoints.missionReturn);
     return;
   }
 
@@ -337,9 +337,9 @@ const interactables = [
   },
   {
     id: "tower-door",
-    x: 766,
-    y: 366,
-    radius: 178,
+    x: 798,
+    y: 394,
+    radius: 156,
     label: "Puerta 4B",
     hint: "Entrar",
     message: "La compuerta abierta respira vapor frio hacia el interior de la torre.",

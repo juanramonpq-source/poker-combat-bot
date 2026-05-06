@@ -180,8 +180,8 @@ const player = {
 };
 
 const sceneSpawnPoints = {
-  default: { x: 404, y: 564 },
-  fromInterior: { x: 392, y: 582 },
+  default: { x: 360, y: 580 },
+  fromInterior: { x: 360, y: 580 },
 };
 
 function placePlayerAt(point) {
@@ -285,9 +285,9 @@ let playerVisual = null;
 const interactables = [
   {
     id: "stairs-down",
-    x: 318,
-    y: 498,
-    radius: 184,
+    x: 334,
+    y: 540,
+    radius: 150,
     label: "Escalera inferior",
     hint: "Bajar",
     message: "Escalera inferior: regreso preparado hacia la planta baja de la torre.",
