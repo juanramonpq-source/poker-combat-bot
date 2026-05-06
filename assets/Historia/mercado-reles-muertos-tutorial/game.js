@@ -257,14 +257,63 @@ const interactionState = {
   messageTimer: 0,
 };
 
-const veraConfirmationState = {
-  pending: false,
+const touchInteractionConfirmationState = {
+  targetId: "",
   expiresAt: 0,
 };
 
-function resetVeraConfirmation() {
-  veraConfirmationState.pending = false;
-  veraConfirmationState.expiresAt = 0;
+function resetTouchInteractionConfirmation(targetId = "") {
+  if (targetId && touchInteractionConfirmationState.targetId !== targetId) {
+    return;
+  }
+
+  touchInteractionConfirmationState.targetId = "";
+  touchInteractionConfirmationState.expiresAt = 0;
+}
+
+function isTouchMobileInteractionMode() {
+  const hasCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  const hasTouch = hasCoarsePointer || navigator.maxTouchPoints > 0;
+  const shortViewportSide = Math.min(window.innerWidth || 0, window.innerHeight || 0);
+
+  return hasTouch && shortViewportSide <= 820;
+}
+
+function getTouchInteractionConfirmationMessage(interactable) {
+  if (interactable.id === "vera") {
+    return "Vera Hex esta cerca. Toca otra vez para hablar con ella y entrar a su mostrador.";
+  }
+
+  if (interactable.id === "sparring") {
+    if (storySparringLocked) {
+      return "Viajero esta cerca. Toca otra vez para hablar con el.";
+    }
+
+    return "Viajero esta cerca. Toca otra vez para iniciar el sparring.";
+  }
+
+  return "";
+}
+
+function confirmTouchInteraction(interactable, now) {
+  if (!["vera", "sparring"].includes(interactable.id) || !isTouchMobileInteractionMode()) {
+    resetTouchInteractionConfirmation(interactable.id);
+    return true;
+  }
+
+  const isPending =
+    touchInteractionConfirmationState.targetId === interactable.id &&
+    now <= touchInteractionConfirmationState.expiresAt;
+
+  if (isPending) {
+    resetTouchInteractionConfirmation(interactable.id);
+    return true;
+  }
+
+  touchInteractionConfirmationState.targetId = interactable.id;
+  touchInteractionConfirmationState.expiresAt = now + 4800;
+  setInteractionMessage(getTouchInteractionConfirmationMessage(interactable), 4.4);
+  return false;
 }
 
 const hudHelp = {
@@ -1128,38 +1177,38 @@ function updateInteractions(dt) {
 
   interactionState.active = nearest;
 
-  if (veraConfirmationState.pending && (nearest?.id !== "vera" || now > veraConfirmationState.expiresAt)) {
-    resetVeraConfirmation();
+  if (
+    touchInteractionConfirmationState.targetId &&
+    (nearest?.id !== touchInteractionConfirmationState.targetId || now > touchInteractionConfirmationState.expiresAt)
+  ) {
+    resetTouchInteractionConfirmation();
   }
 
   if (input.interactQueued) {
     if (nearest) {
       if (nearest.id === "vera") {
-        if (!veraConfirmationState.pending) {
-          veraConfirmationState.pending = true;
-          veraConfirmationState.expiresAt = now + 4800;
-          setInteractionMessage(
-            "Vera Hex esta cerca. Pulsa o toca otra vez para hablar con ella y entrar a su mostrador.",
-            4.4,
-          );
+        if (!confirmTouchInteraction(nearest, now)) {
           input.interactQueued = false;
           return;
         }
 
-        resetVeraConfirmation();
         setInteractionMessage("Vera Hex abre su mostrador entre piezas y antiguas monedas.", 1.6);
         postStoryTutorialAction("talk-vera");
       } else if (nearest.id === "sparring") {
-        resetVeraConfirmation();
+        if (!confirmTouchInteraction(nearest, now)) {
+          input.interactQueued = false;
+          return;
+        }
+
         setInteractionMessage(nearest.message, 3.4);
         postStoryTutorialAction("sparring");
       } else if (nearest.id === "map_exit") {
-        resetVeraConfirmation();
+        resetTouchInteractionConfirmation();
         setInteractionMessage(nearest.message, 3.4);
         postStoryTutorialAction("return-map");
       }
     } else {
-      resetVeraConfirmation();
+      resetTouchInteractionConfirmation();
       setInteractionMessage("Acercate a Vera Hex, Viajero o la salida para interactuar.", 2.4);
     }
 

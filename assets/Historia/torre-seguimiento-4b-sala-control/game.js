@@ -320,6 +320,49 @@ const interactionState = {
   messageTimer: 0,
 };
 
+const touchInteractionConfirmationState = {
+  targetId: "",
+  expiresAt: 0,
+};
+
+function resetTouchInteractionConfirmation(targetId = "") {
+  if (targetId && touchInteractionConfirmationState.targetId !== targetId) {
+    return;
+  }
+
+  touchInteractionConfirmationState.targetId = "";
+  touchInteractionConfirmationState.expiresAt = 0;
+}
+
+function isTouchMobileInteractionMode() {
+  const hasCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  const hasTouch = hasCoarsePointer || navigator.maxTouchPoints > 0;
+  const shortViewportSide = Math.min(window.innerWidth || 0, window.innerHeight || 0);
+
+  return hasTouch && shortViewportSide <= 820;
+}
+
+function confirmTouchInteraction(targetId, message, now) {
+  if (!isTouchMobileInteractionMode()) {
+    resetTouchInteractionConfirmation(targetId);
+    return true;
+  }
+
+  const isPending =
+    touchInteractionConfirmationState.targetId === targetId &&
+    now <= touchInteractionConfirmationState.expiresAt;
+
+  if (isPending) {
+    resetTouchInteractionConfirmation(targetId);
+    return true;
+  }
+
+  touchInteractionConfirmationState.targetId = targetId;
+  touchInteractionConfirmationState.expiresAt = now + 4800;
+  setInteractionMessage(message, 4.4);
+  return false;
+}
+
 const hudHelp = {
   expanded: true,
   elapsed: 0,
@@ -1351,6 +1394,7 @@ function getInteractionDistance(interactable) {
 
 function updateInteractions(dt) {
   interactionState.messageTimer = Math.max(0, interactionState.messageTimer - dt);
+  const now = performance.now();
 
   let nearest = null;
   let nearestDistance = Infinity;
@@ -1365,9 +1409,17 @@ function updateInteractions(dt) {
 
   interactionState.active = nearest;
 
+  if (
+    touchInteractionConfirmationState.targetId &&
+    (nearest?.id !== touchInteractionConfirmationState.targetId || now > touchInteractionConfirmationState.expiresAt)
+  ) {
+    resetTouchInteractionConfirmation();
+  }
+
   if (input.interactQueued) {
     if (nearest) {
       if (nearest.id === "stairs-down") {
+        resetTouchInteractionConfirmation();
         setInteractionMessage("Bajando a la planta inferior de Torre 4B...", 2.4);
         postStoryTutorialAction("return-lower-interior", {
           nextScene: "torre-seguimiento-4b-interior-baja",
@@ -1380,10 +1432,20 @@ function updateInteractions(dt) {
 
       if (nearest.id === "main-control") {
         if (!controlMecha.defeated) {
+          resetTouchInteractionConfirmation();
           setInteractionMessage("El mecha sin humano tapa el acceso al panel. No hay forma limpia de evitarlo.", 3.8);
           queueRadio([
             "Xavor: ese guardián está programado para moverse en paralelo y cortarte el paso. Toca combate.",
           ]);
+          input.interactQueued = false;
+          return;
+        }
+
+        if (!confirmTouchInteraction(
+          "main-control",
+          "Panel de control malvado detectado. Toca otra vez para iniciar el hackeo de Argós.",
+          now,
+        )) {
           input.interactQueued = false;
           return;
         }
@@ -1394,6 +1456,7 @@ function updateInteractions(dt) {
       }
 
       if (nearest.id === "observation-window") {
+        resetTouchInteractionConfirmation();
         if (!chapterState.argosHackDefeated) {
           setInteractionMessage("El ventanal no muestra nada útil todavía. Primero vence al ordenador base de datos de Argós.", 4.2);
           queueRadio([
