@@ -6985,6 +6985,107 @@
       return getStoryNodeStatus(node) !== 'locked';
     }
 
+    function getStoryNodeByOrder(order) {
+      return Object.values(storyDraftNodes).find((node) => node.order === order) || null;
+    }
+
+    function getNextOpenStoryNode() {
+      const orderedNodes = Object.values(storyDraftNodes).sort((a, b) => a.order - b.order);
+      return orderedNodes.find((node) => getStoryNodeStatus(node) !== 'locked' && !hasCompletedStoryNode(node.id))
+        || orderedNodes.find((node) => getStoryNodeStatus(node) === 'current')
+        || storyDraftNodes[getFallbackStoryNodeFromProgress()]
+        || orderedNodes[0];
+    }
+
+    function getStoryMapLockedGuidance(node) {
+      const nextNode = getNextOpenStoryNode();
+      if (!nextNode || nextNode.id === node?.id) {
+        return 'Aún no puedes entrar aquí. Completa el destino activo de la Ruta Ceniza para abrir el siguiente tramo.';
+      }
+      return `${node.title} aún está cerrado. Primero completa ${nextNode.title}; al superarlo, la Ruta Ceniza abrirá el siguiente destino.`;
+    }
+
+    function getStoryTowerMapGuidance() {
+      const towerState = readStoryTowerChapterState();
+      if (towerState.missionComplete || hasCompletedStoryNode('torre')) {
+        return 'Torre 4B completada: las transmisiones vuelven a respirar. Continúa hacia el Campamento de las Placas Rojas.';
+      }
+      if (towerState.argosHackDefeated || towerState.finalRewardClaimed) {
+        return 'Vuelve al exterior de la Torre 4B y reclama la recompensa de Xavor para cerrar el capítulo.';
+      }
+      if (towerState.controlMechaDefeated) {
+        return 'Ve al panel principal de Argós en la sala de control. El hackeo final bloqueará el combustible: busca el As de picas.';
+      }
+      if (towerState.interiorDroneDefeated) {
+        return 'Sube a la sala de control. Derriba al guardián y purga el panel de Argós para restaurar las transmisiones.';
+      }
+      if (towerState.xavorIntroduced) {
+        return 'Hackea el ordenador azul, abre la puerta de la Torre 4B y sube por el interior hasta la sala de control.';
+      }
+      if (towerState.xavorArrived || towerState.pendingVanArrival) {
+        return 'Xavor ya ha llegado con la furboneta. Acércate a él para que te explique las cartas, la torre y el hackeo.';
+      }
+      return 'Nuevo capítulo abierto: Torre de Seguimiento 4B. Limpia los drones exteriores; tras el primer combate llegará Xavor con la furboneta.';
+    }
+
+    function getStoryMapGuidance(nodeId = currentStoryNodeId) {
+      const node = storyDraftNodes[nodeId] || storyDraftNodes[getFallbackStoryNodeFromProgress()] || storyDraftNodes.hangar;
+      const status = getStoryNodeStatus(node);
+      if (status === 'locked') return getStoryMapLockedGuidance(node);
+
+      if (!haveCompletedWorkshopTrials()) {
+        if (!hasCompletedStoryNode('hangar') && !hasCompletedStoryNode('patio')) {
+          return 'Empieza por las dos pruebas del taller: Hangar de la Fosa Azul y Patio de Pruebas. Puedes entrar a cualquiera de los dos destinos azules.';
+        }
+        if (hasCompletedStoryNode('hangar')) {
+          return 'Hangar completado. Entra en el Patio de Pruebas del Taller y gana el combate tutorializado para abrir el Mercado.';
+        }
+        return 'Patio completado. Entra en el Hangar de la Fosa Azul y supera la prueba de ensamblaje para abrir el Mercado.';
+      }
+
+      if (node.id === 'mercado' && !hasCompletedStoryNode('mercado')) {
+        if (!storyProgressState.marketVisited) {
+          return 'Nuevo capítulo abierto: Mercado de Relés Muertos. Habla con Vera, aprende a usar el mostrador y prepara tu inventario propio.';
+        }
+        if (!hasStoryMarketPurchase()) {
+          return 'Vuelve al mostrador de Vera: entrega antiguas monedas con + o - bajo cada moneda y compra una carta o artefacto para seguir.';
+        }
+        return 'Compra cerrada. Sal del mercado explorable o vuelve al mapa para abrir la Torre de Seguimiento 4B.';
+      }
+
+      if (node.id === 'torre') return getStoryTowerMapGuidance();
+
+      if (hasCompletedStoryNode(node.id)) {
+        const nextNode = getStoryNodeByOrder(node.order + 1);
+        return nextNode
+          ? `${node.title} completado. El siguiente destino abierto es ${nextNode.title}: selecciónalo para continuar la Ruta Ceniza.`
+          : 'Ruta Ceniza completada. Revisa el Protocolo Ceniza y activa el cierre de campaña cuando quieras.';
+      }
+
+      const nodeGuidance = {
+        campamento: 'Nuevo capítulo abierto: Campamento de las Placas Rojas. Busca a Corvo Vanta y escucha a los veteranos antes de que la ruta se endurezca.',
+        foso: 'Nuevo capítulo abierto: Foso de Viento Negro. Prepárate para leer el peligro y mitigar ataques usando diamantes en mano.',
+        subestacion: 'Nuevo capítulo abierto: Subestación de Ceniza. Reconfigura piloto y copiloto sin romper los límites del PoCoBOT.',
+        puente: 'Nuevo capítulo abierto: Puente de los Relámpagos Quietos. Vence a Corvo con lectura de amenaza y presión sostenida.',
+        cupula: 'Nuevo capítulo abierto: Cúpula Hendida de Argós. Atraviesa el umbral, prepara el duelo final y descubre qué protege el viejo orden.',
+        protocolo: 'Ruta final abierta: Protocolo Ceniza. Activa el cierre y desbloquea SUPER DIFÍCIL para el modo de 1 jugador.'
+      };
+      return nodeGuidance[node.id] || node.mission || 'Selecciona el destino activo de la Ruta Ceniza y completa su objetivo para abrir el siguiente capítulo.';
+    }
+
+    function updateStoryMapHudForNode(nodeId = currentStoryNodeId) {
+      const node = storyDraftNodes[nodeId] || storyDraftNodes.hangar;
+      const status = getStoryNodeStatus(node);
+      const statusLabel = {
+        completed: 'Completado',
+        current: 'Objetivo actual',
+        available: 'Disponible',
+        locked: 'Bloqueado'
+      }[status] || 'Ruta Ceniza';
+      if (storyMapHudToggle) storyMapHudToggle.textContent = `${statusLabel}: ${node.title}`;
+      if (storyMapHudText) storyMapHudText.textContent = getStoryMapGuidance(node.id);
+    }
+
     function queueStoryMapTheme(themeKey) {
       storyProgressState.pendingThemeKey = themeKey || null;
       if (storyMapShell) {
@@ -7006,7 +7107,8 @@
         type: 'pocobot-story-map-progress',
         completedCount: storyProgressState.completedCount,
         completedNodes: getCompletedStoryNodeIds(),
-        selectedId: currentStoryNodeId
+        selectedId: currentStoryNodeId,
+        guidance: getStoryMapGuidance(currentStoryNodeId)
       }, '*');
     }
 
@@ -7046,6 +7148,7 @@
       renderStoryCast(localNode.cast);
       renderMobileRoute();
       renderStoryMapInventoryWidget();
+      updateStoryMapHudForNode(localNode.id);
       if (shouldSyncMap) syncStoryMapState();
       if (workspacePanel.classList.contains('active') && options.skipSave !== true) {
         saveStoryProgress('selected-node');
@@ -7069,6 +7172,7 @@
       }
       renderMobileRoute();
       renderStoryMapInventoryWidget();
+      updateStoryMapHudForNode(currentStoryNodeId);
       syncStoryMapState();
       saveStoryProgress('set-completed-count');
     }
@@ -7083,6 +7187,7 @@
       }
       renderMobileRoute();
       renderStoryMapInventoryWidget();
+      updateStoryMapHudForNode(currentStoryNodeId);
       syncStoryMapState();
       saveStoryProgress(`completed-${nodeId}`);
     }
@@ -9052,7 +9157,8 @@
       if (!storyMapFrame || !storyMapFrame.contentWindow) return;
       storyMapFrame.contentWindow.postMessage({
         type: 'pocobot-story-map-select',
-        id: nodeId
+        id: nodeId,
+        guidance: getStoryMapGuidance(nodeId)
       }, '*');
     }
 

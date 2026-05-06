@@ -774,6 +774,7 @@
       completedCount: 0,
       completedNodes: [],
       selectedId: nodes[0].id,
+      guidanceById: {},
     };
     const nodeById = new Map(nodes.map(node => [node.id, node]));
     const nodeButtons = new Map();
@@ -785,6 +786,48 @@
     const mapUiSfxBank = {};
     let lastMapHoverSfxAt = 0;
     let nodeLayoutRaf = 0;
+
+    function isNodeCompleted(nodeId) {
+      return state.completedNodes.includes(nodeId);
+    }
+
+    function getFirstPlayableNode() {
+      return nodes.find(node => getNodeState(node) !== "locked" && !isNodeCompleted(node.id))
+        || nodes.find(node => getNodeState(node) === "current")
+        || nodes[0];
+    }
+
+    function getPanelGuidance(node, status) {
+      const firstPlayable = getFirstPlayableNode();
+      if (status === "locked") {
+        return `${node.name} sigue cerrado. Primero completa ${firstPlayable.name} para abrir el siguiente tramo de la Ruta Ceniza.`;
+      }
+      if (!isNodeCompleted("hangar") || !isNodeCompleted("patio")) {
+        if (!isNodeCompleted("hangar") && !isNodeCompleted("patio")) {
+          return "Empieza por las dos pruebas del taller: Hangar de la Fosa Azul y Patio de Pruebas. Puedes entrar a cualquiera de los dos destinos activos.";
+        }
+        return isNodeCompleted("hangar")
+          ? "Hangar completado. Entra en el Patio de Pruebas del Taller y gana el combate tutorializado para abrir el Mercado."
+          : "Patio completado. Entra en el Hangar de la Fosa Azul y supera la prueba de ensamblaje para abrir el Mercado.";
+      }
+      if (status === "completed") {
+        const nextNode = nodes.find(candidate => candidate.order === node.order + 1);
+        return nextNode
+          ? `${node.name} completado. El siguiente destino abierto es ${nextNode.name}: selecciónalo para continuar.`
+          : "Ruta Ceniza completada. Revisa el Protocolo Ceniza y activa el cierre de campaña.";
+      }
+      const guidanceById = {
+        mercado: "Nuevo capítulo abierto: entra al Mercado de Relés Muertos, habla con Vera y compra una carta o artefacto para activar tu inventario.",
+        torre: "Nuevo capítulo abierto: Torre de Seguimiento 4B. Limpia los drones exteriores, espera a Xavor y restaura las transmisiones.",
+        campamento: "Nuevo capítulo abierto: Campamento de las Placas Rojas. Busca a Corvo Vanta y escucha a los veteranos.",
+        foso: "Nuevo capítulo abierto: Foso de Viento Negro. Prepárate para leer el peligro y mitigar ataques con diamantes.",
+        subestacion: "Nuevo capítulo abierto: Subestación de Ceniza. Reconfigura piloto y copiloto sin romper los límites del PoCoBOT.",
+        puente: "Nuevo capítulo abierto: Puente de los Relámpagos Quietos. Vence a Corvo con lectura de amenaza y presión sostenida.",
+        cupula: "Nuevo capítulo abierto: Cúpula Hendida de Argós. Atraviesa el umbral y prepara el duelo final.",
+        protocolo: "Ruta final abierta: Protocolo Ceniza. Activa el cierre y desbloquea SUPER DIFÍCIL."
+      };
+      return guidanceById[node.id] || node.mission || `Parada ${node.order} de ${nodes.length} · Ruta Ceniza`;
+    }
 
     function primeMapUiSfx() {
       Object.entries(MAP_UI_SFX).forEach(([key, config]) => {
@@ -1093,7 +1136,7 @@
       statusPill.textContent = readableState(status);
 
       nodeTitle.textContent = node.name;
-      nodeOrderHint.textContent = `Parada ${node.order} de ${nodes.length} · Ruta Ceniza`;
+      nodeOrderHint.textContent = state.guidanceById[node.id] || getPanelGuidance(node, status);
       nodeType.textContent = node.type;
       nodeSubtype.textContent = node.subtype;
       nodeDescription.textContent = node.description;
@@ -1143,6 +1186,9 @@
       if (data.type === "pocobot-story-map-select" && typeof data.id === "string") {
         if (!nodes.some(node => node.id === data.id)) return;
         state.selectedId = data.id;
+        if (typeof data.guidance === "string" && data.guidance.trim()) {
+          state.guidanceById[data.id] = data.guidance.trim();
+        }
         render("state-change");
         return;
       }
@@ -1158,6 +1204,9 @@
         syncCompletedCountFromNodes();
         if (typeof data.selectedId === "string" && nodes.some(node => node.id === data.selectedId)) {
           state.selectedId = data.selectedId;
+          if (typeof data.guidance === "string" && data.guidance.trim()) {
+            state.guidanceById[data.selectedId] = data.guidance.trim();
+          }
         }
         render("state-change");
       }
