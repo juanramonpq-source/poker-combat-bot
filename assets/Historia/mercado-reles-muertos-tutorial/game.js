@@ -820,10 +820,41 @@ function canMoveTo(nextX, nextY) {
 function loadImage(source) {
   return new Promise((resolve, reject) => {
     const image = new Image();
+    image.decoding = "async";
     image.onload = () => resolve(image);
     image.onerror = reject;
     image.src = source;
   });
+}
+
+function loadOptionalImage(source, assign) {
+  loadImage(source)
+    .then(assign)
+    .catch(() => {});
+}
+
+function loadPlayerVisualFramesInBackground() {
+  Promise.all([
+    ...leanFrameSources.slice(1).map((source) => loadImage(source)),
+    loadImage(playerVisualFrameSources.back),
+    ...playerVisualFrameSources.side.map((source) => loadImage(source)),
+    ...playerVisualFrameSources.hover.map((source) => loadImage(source)),
+  ])
+    .then((visualFrames) => {
+      const frontRestCount = Math.max(0, leanFrameSources.length - 1);
+      const botFrames = [assets.botFrames[0], ...visualFrames.slice(0, frontRestCount)].filter(Boolean);
+      const backFrame = visualFrames[frontRestCount];
+      const sideFramesStart = frontRestCount + 1;
+      const sideFrames = visualFrames.slice(sideFramesStart, sideFramesStart + playerVisualFrameSources.side.length);
+      const hoverFrames = visualFrames.slice(sideFramesStart + playerVisualFrameSources.side.length);
+
+      assets.botFrames = botFrames;
+      assets.frontFrames = botFrames;
+      assets.backFrame = backFrame;
+      assets.sideFrames = sideFrames;
+      assets.hoverFrames = hoverFrames;
+    })
+    .catch(() => {});
 }
 
 function getCameraTarget() {
@@ -871,29 +902,21 @@ function updatePlayerVisual(dt, hasInput, speedRatio) {
 }
 
 async function loadAssets() {
-  const [mapImage, veraImage, sparringBot, ...visualFrames] = await Promise.all([
+  const [mapImage, firstBotFrame] = await Promise.all([
     loadImage("./assets/mercado-reles-rendered-map.png"),
-    loadImage("./assets/vera-hex-rendered.png"),
-    loadImage("./assets/pocobot-sparring-topdown.png"),
-    ...leanFrameSources.map((source) => loadImage(source)),
-    loadImage(playerVisualFrameSources.back),
-    ...playerVisualFrameSources.side.map((source) => loadImage(source)),
-    ...playerVisualFrameSources.hover.map((source) => loadImage(source)),
+    loadImage(leanFrameSources[0]),
   ]);
-  const botFrames = visualFrames.slice(0, leanFrameSources.length);
-  const backFrame = visualFrames[leanFrameSources.length];
-  const sideFramesStart = leanFrameSources.length + 1;
-  const sideFrames = visualFrames.slice(sideFramesStart, sideFramesStart + playerVisualFrameSources.side.length);
-  const hoverFrames = visualFrames.slice(sideFramesStart + playerVisualFrameSources.side.length);
 
   assets.map = mapImage;
-  assets.vera = veraImage;
-  assets.sparringBot = sparringBot;
-  assets.botFrames = botFrames;
-  assets.frontFrames = botFrames;
-  assets.backFrame = backFrame;
-  assets.sideFrames = sideFrames;
-  assets.hoverFrames = hoverFrames;
+  assets.botFrames = [firstBotFrame];
+  assets.frontFrames = assets.botFrames;
+  loadOptionalImage("./assets/vera-hex-rendered.png", (image) => {
+    assets.vera = image;
+  });
+  loadOptionalImage("./assets/pocobot-sparring-topdown.png", (image) => {
+    assets.sparringBot = image;
+  });
+  loadPlayerVisualFramesInBackground();
   createPlayerVisual();
   assets.ready = true;
   snapCameraToPlayer();
@@ -1247,6 +1270,10 @@ function drawPointerTarget() {
 }
 
 function drawVeraHex() {
+  if (!assets.vera) {
+    return;
+  }
+
   const width = 76;
   const height = 176;
 
@@ -1261,6 +1288,10 @@ function drawVeraHex() {
 }
 
 function drawTrainingBot() {
+  if (!assets.sparringBot) {
+    return;
+  }
+
   const bot = interactables[1];
   const bob = Math.sin(player.glow * 1.8) * 2;
 

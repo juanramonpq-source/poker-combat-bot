@@ -1273,10 +1273,41 @@ function ensureSafeInitialSpawn() {
 function loadImage(source) {
   return new Promise((resolve, reject) => {
     const image = new Image();
+    image.decoding = "async";
     image.onload = () => resolve(image);
     image.onerror = reject;
     image.src = source;
   });
+}
+
+function loadOptionalImage(source, assign) {
+  loadImage(source)
+    .then(assign)
+    .catch(() => {});
+}
+
+function loadPlayerVisualFramesInBackground() {
+  Promise.all([
+    ...leanFrameSources.slice(1).map((source) => loadImage(source)),
+    loadImage(playerVisualFrameSources.back),
+    ...playerVisualFrameSources.side.map((source) => loadImage(source)),
+    ...playerVisualFrameSources.hover.map((source) => loadImage(source)),
+  ])
+    .then((visualFrames) => {
+      const frontRestCount = Math.max(0, leanFrameSources.length - 1);
+      const botFrames = [assets.botFrames[0], ...visualFrames.slice(0, frontRestCount)].filter(Boolean);
+      const backFrame = visualFrames[frontRestCount];
+      const sideFramesStart = frontRestCount + 1;
+      const sideFrames = visualFrames.slice(sideFramesStart, sideFramesStart + playerVisualFrameSources.side.length);
+      const hoverFrames = visualFrames.slice(sideFramesStart + playerVisualFrameSources.side.length);
+
+      assets.botFrames = botFrames;
+      assets.frontFrames = botFrames;
+      assets.backFrame = backFrame;
+      assets.sideFrames = sideFrames;
+      assets.hoverFrames = hoverFrames;
+    })
+    .catch(() => {});
 }
 
 function getCameraTarget() {
@@ -1324,43 +1355,30 @@ function updatePlayerVisual(dt, hasInput, speedRatio) {
 }
 
 async function loadAssets() {
-  const [
-    mapImage,
-    mapDoorOpenImage,
-    xavorBackdropImage,
-    xavorPortraitImage,
-    xavorVanImage,
-    exteriorDroneImage,
-    ...visualFrames
-  ] = await Promise.all([
+  const [mapImage, firstBotFrame] = await Promise.all([
     loadImage("./assets/torre-seguimiento-4b-rendered-map.png"),
-    loadImage("./assets/torre-seguimiento-4b-door-open-map.png"),
-    loadImage("../low/torre_4b_compacta.webp"),
-    loadImage("../Brutos/transparent/XAVORpresentacion-transparent.png"),
-    loadImage("./assets/chapter/xavor-van.png"),
-    loadImage("./assets/chapter/argos-patrol-drone.png"),
-    ...leanFrameSources.map((source) => loadImage(source)),
-    loadImage(playerVisualFrameSources.back),
-    ...playerVisualFrameSources.side.map((source) => loadImage(source)),
-    ...playerVisualFrameSources.hover.map((source) => loadImage(source)),
+    loadImage(leanFrameSources[0]),
   ]);
-  const botFrames = visualFrames.slice(0, leanFrameSources.length);
-  const backFrame = visualFrames[leanFrameSources.length];
-  const sideFramesStart = leanFrameSources.length + 1;
-  const sideFrames = visualFrames.slice(sideFramesStart, sideFramesStart + playerVisualFrameSources.side.length);
-  const hoverFrames = visualFrames.slice(sideFramesStart + playerVisualFrameSources.side.length);
 
   assets.map = mapImage;
-  assets.mapDoorOpen = mapDoorOpenImage;
-  assets.xavorBackdrop = xavorBackdropImage;
-  assets.xavorPortrait = xavorPortraitImage;
-  assets.xavorVan = xavorVanImage;
-  assets.exteriorDrone = exteriorDroneImage;
-  assets.botFrames = botFrames;
-  assets.frontFrames = botFrames;
-  assets.backFrame = backFrame;
-  assets.sideFrames = sideFrames;
-  assets.hoverFrames = hoverFrames;
+  assets.botFrames = [firstBotFrame];
+  assets.frontFrames = assets.botFrames;
+  loadOptionalImage("./assets/torre-seguimiento-4b-door-open-map.png", (image) => {
+    assets.mapDoorOpen = image;
+  });
+  loadOptionalImage("../low/torre_4b_compacta.webp", (image) => {
+    assets.xavorBackdrop = image;
+  });
+  loadOptionalImage("../Brutos/transparent/XAVORpresentacion-transparent.png", (image) => {
+    assets.xavorPortrait = image;
+  });
+  loadOptionalImage("./assets/chapter/xavor-van.png", (image) => {
+    assets.xavorVan = image;
+  });
+  loadOptionalImage("./assets/chapter/argos-patrol-drone.png", (image) => {
+    assets.exteriorDrone = image;
+  });
+  loadPlayerVisualFramesInBackground();
   createPlayerVisual();
   assets.ready = true;
   snapCameraToPlayer();
@@ -1830,7 +1848,7 @@ function update(dt) {
 function drawMap() {
   ctx.drawImage(assets.map, 0, 0, world.width, world.height);
 
-  if (towerState.doorBlend > 0.01) {
+  if (towerState.doorBlend > 0.01 && assets.mapDoorOpen) {
     ctx.save();
     ctx.globalAlpha = towerState.doorBlend;
     ctx.drawImage(assets.mapDoorOpen, 0, 0, world.width, world.height);
@@ -2254,6 +2272,10 @@ function drawPointerTarget() {
 }
 
 function drawWorldSprite(image, x, y, width, height, options = {}) {
+  if (!image) {
+    return;
+  }
+
   const bob = options.bob || 0;
   const alpha = options.alpha ?? 1;
   const rotation = options.rotation || 0;
@@ -2583,6 +2605,12 @@ function drawWrappedText(text, x, y, maxWidth, lineHeight, maxLines = 4) {
 }
 
 function drawImageCover(image, x, y, width, height) {
+  if (!image) {
+    ctx.fillStyle = "rgba(3, 8, 14, 0.88)";
+    ctx.fillRect(x, y, width, height);
+    return;
+  }
+
   const scale = Math.max(width / image.width, height / image.height);
   const drawWidth = image.width * scale;
   const drawHeight = image.height * scale;
@@ -2590,6 +2618,10 @@ function drawImageCover(image, x, y, width, height) {
 }
 
 function drawImageContain(image, x, y, width, height) {
+  if (!image) {
+    return;
+  }
+
   const scale = Math.min(width / image.width, height / image.height);
   const drawWidth = image.width * scale;
   const drawHeight = image.height * scale;
