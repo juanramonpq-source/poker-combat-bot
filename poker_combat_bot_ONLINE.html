@@ -10335,10 +10335,19 @@ function primeOfflineMode(gameMode, difficulty=null){
   releaseOrientationLockBestEffort();
 }
 
+let storyMissionAutoStartDone = false;
 function autoStartStoryMissionIfRequested(){
-  if(!STORY_MISSION_BOOT) return;
+  if(!STORY_MISSION_BOOT) return false;
+  if(state.gameStarted && state.storyMission === STORY_MISSION_BOOT && !state.winner){
+    hideIntroScreen();
+    scheduleStoryEmbedNavigationSetup();
+    return true;
+  }
+  if(storyMissionAutoStartDone) return false;
+  storyMissionAutoStartDone = true;
   storyMissionBriefCollapsed = true;
 
+  let started = true;
   switch(STORY_MISSION_BOOT){
     case 'hangar_build':
       primeOfflineMode('local');
@@ -10420,8 +10429,14 @@ function autoStartStoryMissionIfRequested(){
       break;
     }
     default:
+      started = false;
       break;
   }
+  if(!started){
+    storyMissionAutoStartDone = false;
+    return false;
+  }
+  return true;
 }
 
 function ensureStoryMissionEmbedStillRunning(){
@@ -10440,6 +10455,14 @@ function ensureStoryMissionEmbedStillRunning(){
   if(lobby && !lobby.classList.contains('ol-hidden')){
     lobby.classList.add('ol-hidden');
   }
+  scheduleStoryEmbedNavigationSetup();
+}
+
+function bootstrapStoryMissionEarly(){
+  if(!STORY_EMBED_MODE || !STORY_MISSION_BOOT) return;
+  setupStoryAudioAutostartButton();
+  autoStartStoryMissionIfRequested();
+  ensureStoryMissionEmbedStillRunning();
   scheduleStoryEmbedNavigationSetup();
 }
 
@@ -20878,6 +20901,11 @@ window.addEventListener('resize', () => {
   }
 });
 window.addEventListener('message', handleStoryEmbedMessage);
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', bootstrapStoryMissionEarly, { once:true });
+}else{
+  bootstrapStoryMissionEarly();
+}
 window.addEventListener('load', () => {
   preloadDetailedCardAssets();
   syncIntroInstallTip();
