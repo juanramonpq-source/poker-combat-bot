@@ -7904,7 +7904,9 @@
     }
 
     function shouldUseNativeStoryMarketTouchScroll() {
-      return isStoryMarketPortraitTouchViewport();
+      // Usamos el mismo puente tactil que en horizontal: iOS/Android no siempre
+      // entregan el scroll nativo dentro del stage fijo de la tienda en vertical.
+      return false;
     }
 
     function getStoryMarketWheelCandidates(event) {
