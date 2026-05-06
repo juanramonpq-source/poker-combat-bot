@@ -4,13 +4,13 @@
   "description": "Modo historia de PoCoBOT: Ruta Ceniza.",
   "icons": [
     {
-      "src": "camino_pocobot_icon_192.png",
+      "src": "camino_pocobot_icon_192.png?v=20260506-pocobot-icon",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "camino_pocobot_icon_512.png",
+      "src": "camino_pocobot_icon_512.png?v=20260506-pocobot-icon",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
