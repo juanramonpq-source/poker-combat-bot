@@ -722,9 +722,7 @@ const delayedUnknownRadioIntro = {
     !chapterState.argosHackDefeated &&
     !chapterState.finalRewardClaimed &&
     !chapterState.xavorIntroduced &&
-    !chapterState.xavorArrived &&
-    !chapterState.exteriorDroneEncountered &&
-    defeatedExteriorDroneCount() === 0,
+    !chapterState.xavorArrived,
   timer: 20,
   triggered: false,
 };
