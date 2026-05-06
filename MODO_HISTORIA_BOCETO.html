@@ -9045,6 +9045,9 @@
       if (!isStoryTowerCombatMission(result?.mission)) return false;
       const success = !!result.success;
       storyProgressState.lastMissionResult = success ? 'success' : 'failure';
+      if (result.loadingLotteryReward) {
+        grantStoryInventoryCard(result.loadingLotteryReward, 'tower-loading-lottery-card');
+      }
       if (success) applyStoryTowerCombatVictory(result);
       saveStoryProgress(`tower-combat-${result.mission}-${success ? 'win' : 'lose'}`);
       const returnScene = result.towerReturnScene || STORY_TOWER_COMBAT_RETURN_SCENES[result.mission] || 'exterior';

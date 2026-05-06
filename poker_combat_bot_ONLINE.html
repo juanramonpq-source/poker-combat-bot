@@ -9,6 +9,8 @@
   <link rel="icon" type="image/png" sizes="16x16" href="assets/pocobot_web_icon_16.png?v=20260506-pocobot-icon" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_app_icon_180.png?v=20260506-pocobot-icon" />
   <link rel="manifest" href="site.webmanifest?v=20260506-pocobot-icon" />
+  <link rel="prefetch" href="assets/audio_01.mp3" />
+  <link rel="prefetch" href="assets/audio_02.mp3" />
   <meta name="msapplication-TileImage" content="assets/pocobot_app_icon_512.png?v=20260506-pocobot-icon" />
   <meta name="theme-color" content="#17307a" />
   <meta name="description" content="PoCoBOT: combate retro de mechas con estrategia de poker, cartas y duelos tacticos en navegador." />
@@ -196,6 +198,182 @@ body.story-combat-booting .story-combat-loading-overlay,
   background:linear-gradient(90deg, rgba(35,216,255,.35), rgba(35,216,255,.95), rgba(255,178,46,.9));
   animation:storyCombatLoad 1.15s ease-in-out infinite;
 }
+.story-combat-luck-panel{
+  display:grid;
+  gap:12px;
+  margin-top:22px;
+}
+.story-combat-audio-primer{
+  display:grid;
+  grid-template-columns:92px minmax(0, 1fr);
+  gap:14px;
+  align-items:center;
+  width:100%;
+  min-height:84px;
+  margin-top:22px;
+  padding:10px 14px 10px 10px;
+  border:1px solid rgba(143,245,255,.28);
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(10,26,36,.92), rgba(5,12,18,.96));
+  color:#f3fbff;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:inset 0 0 18px rgba(35,216,255,.06);
+}
+.story-combat-audio-primer:hover,
+.story-combat-audio-primer:focus-visible{
+  border-color:rgba(255,213,95,.56);
+  outline:none;
+}
+.story-combat-audio-primer.is-armed{
+  border-color:rgba(66,255,222,.54);
+}
+.story-combat-mini-arena{
+  position:relative;
+  height:62px;
+  border-radius:14px;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg, rgba(143,245,255,.1) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, rgba(143,245,255,.08), rgba(255,178,46,.08));
+  background-size:16px 100%, auto;
+}
+.story-combat-mini-mecha{
+  position:absolute;
+  left:14px;
+  bottom:14px;
+  width:30px;
+  height:32px;
+  border-radius:10px 10px 7px 7px;
+  background:linear-gradient(180deg, #9af6ff, #1a7f9b);
+  box-shadow:0 0 18px rgba(35,216,255,.42);
+  animation:storyCombatMiniHover 1.25s ease-in-out infinite;
+}
+.story-combat-mini-mecha::before{
+  content:"";
+  position:absolute;
+  left:8px;
+  top:-8px;
+  width:14px;
+  height:12px;
+  border-radius:50% 50% 42% 42%;
+  background:#eafcff;
+}
+.story-combat-mini-mecha::after{
+  content:"";
+  position:absolute;
+  right:-17px;
+  top:12px;
+  width:24px;
+  height:7px;
+  border-radius:999px;
+  background:linear-gradient(90deg, #ffd55f, #ff6a34);
+}
+.story-combat-mini-shot{
+  position:absolute;
+  left:52px;
+  top:28px;
+  width:18px;
+  height:5px;
+  border-radius:999px;
+  background:#ffd55f;
+  box-shadow:0 0 14px rgba(255,213,95,.75);
+  animation:storyCombatMiniShot .82s linear infinite;
+}
+.story-combat-mini-target{
+  position:absolute;
+  right:15px;
+  top:19px;
+  width:23px;
+  height:23px;
+  border:2px solid rgba(255,106,52,.85);
+  border-radius:50%;
+  box-shadow:0 0 18px rgba(255,106,52,.35);
+}
+.story-combat-audio-copy{
+  display:grid;
+  gap:2px;
+}
+.story-combat-audio-label{
+  color:#ffdca8;
+  font-size:.72rem;
+  font-weight:1000;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.story-combat-audio-hint{
+  color:#b8d3dc;
+  font-size:.9rem;
+  line-height:1.32;
+}
+.story-combat-lottery-result{
+  display:none;
+  gap:12px;
+  padding:14px;
+  border:1px solid rgba(255,213,95,.3);
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(31,24,13,.92), rgba(8,13,19,.96));
+}
+.story-combat-lottery-result.is-visible{
+  display:grid;
+}
+.story-combat-lottery-result.win{
+  grid-template-columns:74px minmax(0, 1fr);
+  align-items:center;
+}
+.story-combat-lottery-card{
+  width:62px;
+  height:88px;
+  border-radius:8px;
+  object-fit:contain;
+  background:#f7f7f7;
+  box-shadow:0 12px 22px rgba(0,0,0,.34), 0 0 18px rgba(255,213,95,.22);
+}
+.story-combat-lottery-copy{
+  display:grid;
+  gap:4px;
+}
+.story-combat-lottery-title{
+  color:#fff2c8;
+  font-size:1rem;
+  font-weight:1000;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.story-combat-lottery-text{
+  color:#d8ebf0;
+  font-size:.92rem;
+  line-height:1.35;
+}
+.story-combat-lottery-enter{
+  justify-self:start;
+  min-height:40px;
+  padding:0 18px;
+  border:1px solid rgba(143,245,255,.32);
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(19,42,54,.96), rgba(7,15,22,.96));
+  color:#f4fbff;
+  font-size:.76rem;
+  font-weight:1000;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.story-combat-lottery-enter:hover,
+.story-combat-lottery-enter:focus-visible{
+  border-color:rgba(255,213,95,.56);
+  outline:none;
+}
+@keyframes storyCombatMiniHover{
+  0%, 100%{ transform:translateY(0); }
+  50%{ transform:translateY(-5px); }
+}
+@keyframes storyCombatMiniShot{
+  0%{ transform:translateX(0); opacity:0; }
+  12%{ opacity:1; }
+  82%{ opacity:1; }
+  100%{ transform:translateX(92px); opacity:0; }
+}
 @keyframes storyCombatLoad{
   0%{ transform:translateX(-95%); }
   100%{ transform:translateX(220%); }
@@ -206,7 +384,9 @@ body.story-combat-booting .story-combat-loading-overlay,
 }
 @media (prefers-reduced-motion: reduce){
   .story-combat-loading-card::after,
-  .story-combat-loading-bar span{
+  .story-combat-loading-bar span,
+  .story-combat-mini-mecha,
+  .story-combat-mini-shot{
     animation:none;
   }
 }
@@ -8955,6 +9135,20 @@ body.desktop-compact-mode > footer{
     <strong class="story-combat-loading-title" id="storyCombatLoadingTitle">Torre 4B</strong>
     <p class="story-combat-loading-text" id="storyCombatLoadingText">Preparando enemigo, baraja y música...</p>
     <div class="story-combat-loading-bar" aria-hidden="true"><span></span></div>
+    <div class="story-combat-luck-panel" id="storyCombatLuckPanel">
+      <button class="story-combat-audio-primer" id="storyCombatAudioPrimer" type="button">
+        <span class="story-combat-mini-arena" aria-hidden="true">
+          <span class="story-combat-mini-mecha"></span>
+          <span class="story-combat-mini-shot"></span>
+          <span class="story-combat-mini-target"></span>
+        </span>
+        <span class="story-combat-audio-copy">
+          <span class="story-combat-audio-label" id="storyCombatAudioPrimerLabel">¿Quieres probar suerte?</span>
+          <span class="story-combat-audio-hint" id="storyCombatAudioPrimerHint">Mientras carga el combate, intercepta una señal: 1 entre 10 puede traer una carta.</span>
+        </span>
+      </button>
+      <div class="story-combat-lottery-result" id="storyCombatLotteryResult" aria-live="polite"></div>
+    </div>
   </div>
 </div>
 
@@ -10536,6 +10730,7 @@ function autoStartStoryMissionIfRequested(){
       showStoryCombatLoading(profile?.title || 'Torre 4B', 'Preparando enemigo, baraja y música...');
       primeOfflineMode('single', STORY_MISSION_BOOT === 'tower_argos_hack' ? 'normal' : 'easy');
       newGame();
+      primeStoryCombatLoadingAudio({ forceRestart:false });
       clearSinglePlayerAiTimer();
       setupStoryTowerCombatScenario(STORY_MISSION_BOOT);
       render();
@@ -10617,13 +10812,217 @@ function isStoryTowerCombatMission(mission = state.storyMission || STORY_MISSION
 }
 
 let storyCombatLoadingHideTimer = null;
+let storyCombatAudioPrimerBound = false;
+let storyCombatLotteryAwaitingAck = false;
+let storyCombatLotteryReadyToReveal = false;
 function isStoryCombatLoadingMission(mission = state.storyMission || STORY_MISSION_BOOT){
   return STORY_EMBED_MODE && isStoryTowerCombatMission(mission);
+}
+
+function getStoryCombatLotteryIdentity(){
+  const mission = state.storyMission || STORY_MISSION_BOOT || 'tower';
+  const enemyId = STORY_TOWER_ENEMY_ID || STORY_TOWER_DRONE_ID || STORY_TOWER_REWARD_ID || STORY_TOWER_RETURN_SCENE || 'default';
+  return `${mission}:${enemyId}`;
+}
+
+function readStoryCombatLotteryAttempts(){
+  try{
+    const parsed = JSON.parse(localStorage.getItem(STORY_LOADING_LOTTERY_KEY) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  }catch(_err){
+    return {};
+  }
+}
+
+function writeStoryCombatLotteryAttempts(attempts){
+  try{
+    localStorage.setItem(STORY_LOADING_LOTTERY_KEY, JSON.stringify(attempts || {}));
+  }catch(_err){}
+}
+
+function getStoryCombatLotteryAttempt(){
+  return readStoryCombatLotteryAttempts()[getStoryCombatLotteryIdentity()] || null;
+}
+
+function setStoryCombatLotteryAttempt(attempt){
+  const attempts = readStoryCombatLotteryAttempts();
+  attempts[getStoryCombatLotteryIdentity()] = {
+    attemptedAt: Date.now(),
+    ...attempt
+  };
+  writeStoryCombatLotteryAttempts(attempts);
+}
+
+function getStoryLoadingLotteryCardImage(rank, suit){
+  const rankCode = String(rank || '').toLowerCase();
+  const suitCode = {
+    spades: 'spades',
+    hearts: 'hearts',
+    clubs: 'clubs',
+    diamonds: 'diamonds'
+  }[suit] || 'spades';
+  return `assets/cards/hayeah-full/${rankCode}_of_${suitCode}.svg`;
+}
+
+function getStoryLoadingLotteryCardName(rank, suit){
+  const suitName = {
+    spades: 'picas',
+    hearts: 'corazones',
+    clubs: 'tréboles',
+    diamonds: 'diamantes'
+  }[suit] || 'picas';
+  return `${rank} de ${suitName}`;
+}
+
+function createStoryLoadingLotteryCard(){
+  const ranks = ['2', '3', '4', '5', '6'];
+  const suits = ['spades', 'hearts', 'clubs', 'diamonds'];
+  const rank = ranks[Math.floor(Math.random() * ranks.length)];
+  const suit = suits[Math.floor(Math.random() * suits.length)];
+  const name = getStoryLoadingLotteryCardName(rank, suit);
+  return {
+    id: `tower-load-lottery-${getStoryCombatLotteryIdentity().replace(/[^a-z0-9_-]+/gi, '-')}`,
+    name,
+    text: `${name} · señal interceptada`,
+    source: 'Señal interceptada de Xavor',
+    rank,
+    suit,
+    cardImage: getStoryLoadingLotteryCardImage(rank, suit),
+    deckText: name
+  };
+}
+
+function getStoryLoadingLotteryReward(){
+  const card = state.storyMissionProgress?.loadingLotteryReward;
+  return card && typeof card.id === 'string' ? card : null;
+}
+
+function setStoryCombatAudioPrimerState(stateName = 'idle'){
+  const button = document.getElementById('storyCombatAudioPrimer');
+  const label = document.getElementById('storyCombatAudioPrimerLabel');
+  const hint = document.getElementById('storyCombatAudioPrimerHint');
+  if(!button) return;
+  button.classList.toggle('is-armed', stateName === 'ready');
+  if(label) label.textContent = stateName === 'ready' ? 'Señal activa' : '¿Quieres probar suerte?';
+  if(hint){
+    hint.textContent = stateName === 'ready'
+      ? 'Audio sincronizado. La tirada se resolverá en un instante.'
+      : 'Mientras carga el combate, intercepta una señal: 1 entre 10 puede traer una carta.';
+  }
+}
+
+function primeStoryCombatLoadingAudio(options = {}){
+  if(!isStoryCombatLoadingMission()) return false;
+  if(!state.soundOn || isStoryMissionExternalAudio()) return false;
+  if(isStoryMissionCarriedAudio()){
+    playStoryCarriedMusic(false);
+    return true;
+  }
+  ensureAudio();
+  ensureMusicElements();
+  state.musicPhase = 'intro';
+  pauseMusic(state.bgmMenu, true);
+  pauseMusic(state.bgm2, true);
+  try{
+    if(options.forceRestart) state.bgm1.currentTime = 0;
+    const playPromise = state.bgm1.play();
+    if(playPromise && typeof playPromise.then === 'function'){
+      playPromise
+        .then(() => setStoryCombatAudioPrimerState('ready'))
+        .catch(() => setStoryCombatAudioPrimerState('idle'));
+    }else{
+      setStoryCombatAudioPrimerState('ready');
+    }
+    return true;
+  }catch(_err){
+    setStoryCombatAudioPrimerState('idle');
+    return false;
+  }
+}
+
+function bindStoryCombatAudioPrimer(){
+  if(storyCombatAudioPrimerBound) return;
+  const button = document.getElementById('storyCombatAudioPrimer');
+  if(!button) return;
+  storyCombatAudioPrimerBound = true;
+  button.addEventListener('click', () => {
+    resolveStoryCombatLoadingLottery();
+    primeStoryCombatLoadingAudio({ forceRestart:false, userGesture:true });
+    playUiSound('attack');
+  });
+}
+
+function renderStoryCombatLotteryResult(result){
+  const box = document.getElementById('storyCombatLotteryResult');
+  const primer = document.getElementById('storyCombatAudioPrimer');
+  if(!box) return;
+  primer?.setAttribute('disabled', 'true');
+  primer?.classList.add('is-armed');
+  storyCombatLotteryAwaitingAck = true;
+  if(result?.won && result.card){
+    box.className = 'story-combat-lottery-result is-visible win';
+    box.innerHTML = `
+      <img class="story-combat-lottery-card" src="${result.card.cardImage}" alt="${result.card.name}">
+      <span class="story-combat-lottery-copy">
+        <span class="story-combat-lottery-title">¡Has ganado!</span>
+        <span class="story-combat-lottery-text">Señal recuperada: ${result.card.name}. La carta irá a tu inventario al volver al mapa.</span>
+        <button class="story-combat-lottery-enter" id="storyCombatLotteryEnterBtn" type="button">Entrar en combate</button>
+      </span>
+    `;
+  }else{
+    box.className = 'story-combat-lottery-result is-visible';
+    box.innerHTML = `
+      <span class="story-combat-lottery-copy">
+        <span class="story-combat-lottery-title">Nada útil esta vez</span>
+        <span class="story-combat-lottery-text">Prueba en la pantalla de carga del próximo combate.</span>
+        <button class="story-combat-lottery-enter" id="storyCombatLotteryEnterBtn" type="button">Entrar en combate</button>
+      </span>
+    `;
+  }
+  const enterBtn = document.getElementById('storyCombatLotteryEnterBtn');
+  enterBtn?.addEventListener('click', () => {
+    storyCombatLotteryAwaitingAck = false;
+    playUiSound('select');
+    if(storyCombatLotteryReadyToReveal) hideStoryCombatLoading(0);
+  });
+}
+
+function resolveStoryCombatLoadingLottery(){
+  if(!isStoryCombatLoadingMission()) return;
+  if(storyCombatLotteryAwaitingAck) return;
+  const previous = getStoryCombatLotteryAttempt();
+  if(previous){
+    if(previous.won && previous.card && state.storyMissionProgress) {
+      state.storyMissionProgress.loadingLotteryReward = previous.card;
+    }
+    renderStoryCombatLotteryResult(previous);
+    return;
+  }
+  const won = Math.floor(Math.random() * 10) === 0;
+  const card = won ? createStoryLoadingLotteryCard() : null;
+  const result = won ? { won:true, card } : { won:false };
+  if(won && state.storyMissionProgress) state.storyMissionProgress.loadingLotteryReward = card;
+  setStoryCombatLotteryAttempt(result);
+  renderStoryCombatLotteryResult(result);
 }
 
 function showStoryCombatLoading(title = 'Torre 4B', text = 'Preparando enemigo, baraja y música...'){
   if(!isStoryCombatLoadingMission()) return;
   window.clearTimeout(storyCombatLoadingHideTimer);
+  bindStoryCombatAudioPrimer();
+  setStoryCombatAudioPrimerState('idle');
+  storyCombatLotteryAwaitingAck = false;
+  storyCombatLotteryReadyToReveal = false;
+  const result = document.getElementById('storyCombatLotteryResult');
+  const primer = document.getElementById('storyCombatAudioPrimer');
+  if(result){
+    result.className = 'story-combat-lottery-result';
+    result.innerHTML = '';
+  }
+  if(primer){
+    primer.removeAttribute('disabled');
+    primer.classList.remove('is-armed');
+  }
   document.documentElement.classList.add('story-combat-booting');
   document.body?.classList.add('story-combat-booting');
   const overlay = document.getElementById('storyCombatLoadingOverlay');
@@ -10640,6 +11039,8 @@ function showStoryCombatLoading(title = 'Torre 4B', text = 'Preparando enemigo, 
 function hideStoryCombatLoading(delay = 180){
   window.clearTimeout(storyCombatLoadingHideTimer);
   storyCombatLoadingHideTimer = window.setTimeout(() => {
+    storyCombatLotteryReadyToReveal = true;
+    if(storyCombatLotteryAwaitingAck) return;
     const overlay = document.getElementById('storyCombatLoadingOverlay');
     if(overlay){
       overlay.classList.remove('is-active');
@@ -11090,6 +11491,7 @@ function maybeFinalizeStoryMissionAfterWinner(){
       towerDroneId: state.storyMissionProgress?.towerDroneId || STORY_TOWER_DRONE_ID || '',
       towerRewardId: state.storyMissionProgress?.towerRewardId || STORY_TOWER_REWARD_ID || '',
       towerSuit: state.storyMissionProgress?.towerSuit || STORY_TOWER_SUIT || '',
+      loadingLotteryReward: getStoryLoadingLotteryReward(),
       reward: playerWon ? { coins: state.storyMission === 'tower_argos_hack' ? 0 : 1 } : null
     });
     return;
@@ -11660,6 +12062,7 @@ const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v
 const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
 const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
 const STORY_ACTIVE_SURFACE_SESSION_KEY = 'pocobot_story_active_surface_v1';
+const STORY_LOADING_LOTTERY_KEY = 'pocobot_story_loading_lottery_v1';
 let storyHudMode = STORY_BOOT_PARAMS.get('story_ui') || (STORY_BOOT_PARAMS.get('story_compact') === '1' ? 'compact' : 'scroll');
 if(!['scroll', 'compact', 'horizontal'].includes(storyHudMode)) storyHudMode = 'scroll';
 let storyOrientationToastTimer = null;
