@@ -4325,7 +4325,13 @@
         width:100vw;
         max-width:100vw;
         height:100dvh;
+        max-height:100dvh;
         gap:10px;
+        overflow-y:auto;
+        overflow-x:hidden;
+        overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y;
         padding:
           max(10px, env(safe-area-inset-top))
           max(10px, env(safe-area-inset-right))
@@ -4361,12 +4367,11 @@
           "inventory"
           "store";
         gap:10px;
-        height:100%;
+        height:auto;
         width:100%;
         max-width:100%;
         min-height:0;
-        overflow-y:auto;
-        overflow-x:hidden;
+        overflow:visible;
         padding:0 2px 2px 0;
         overscroll-behavior:contain;
         -webkit-overflow-scrolling:touch;
@@ -4942,6 +4947,7 @@
     const storySceneMapBtn = document.getElementById('storySceneMapBtn');
     const storyMarketStage = document.getElementById('storyMarketStage');
     const storyMarketShell = document.getElementById('storyMarketShell');
+    const storyMarketLayout = storyMarketShell ? storyMarketShell.querySelector('.market-layout') : null;
     const storyMarketBackdrop = document.getElementById('storyMarketBackdrop');
     const storyMarketItems = document.getElementById('storyMarketItems');
     const storyMarketFeedback = document.getElementById('storyMarketFeedback');
@@ -7524,6 +7530,7 @@
         || element === storySceneScroll
         || element === storySceneStage
         || element === storyMarketShell
+        || element === storyMarketLayout
         || element === storyMarketStage
         || element === storyMobileRoute;
       if (coreStorySurface) return true;
@@ -7814,11 +7821,15 @@
     function getStoryMarketScrollContainer() {
       if (!storyMarketStage || !storyMarketShell) return null;
       if (!isStoryMarketWheelReady()) return null;
-      if (isStoryMarketPortraitTouchViewport() && getStoryScrollableMax(storyMarketShell) > 1) return storyMarketShell;
+      if (isStoryMarketPortraitTouchViewport()) {
+        if (getStoryScrollableMax(storyMarketShell) > 1) return storyMarketShell;
+        if (storyMarketLayout && getStoryScrollableMax(storyMarketLayout) > 1) return storyMarketLayout;
+      }
       if (storyMarketItems && getStoryScrollableMax(storyMarketItems) > 1) return storyMarketItems;
+      if (storyMarketLayout && getStoryScrollableMax(storyMarketLayout) > 1) return storyMarketLayout;
       if (getStoryScrollableMax(storyMarketShell) > 1) return storyMarketShell;
       if (getStoryScrollableMax(storyMarketStage) > 1) return storyMarketStage;
-      return storyMarketItems || storyMarketShell;
+      return storyMarketItems || storyMarketLayout || storyMarketShell;
     }
 
     function isStoryMarketWheelReady() {
@@ -7842,6 +7853,7 @@
       return [
         ...getStoryEventPathElements(event, storyMarketStage),
         storyMarketItems,
+        storyMarketLayout,
         storyMarketShell,
         storyMarketStage
       ];
@@ -7860,6 +7872,7 @@
 
     function scrollStoryMarketContainerToTop() {
       if (storyMarketItems) storyMarketItems.scrollTop = 0;
+      if (storyMarketLayout) storyMarketLayout.scrollTop = 0;
       if (storyMarketShell) storyMarketShell.scrollTop = 0;
       if (storyMarketStage) storyMarketStage.scrollTop = 0;
       updateStoryMarketScrollbar();
@@ -9560,6 +9573,9 @@
     }
     if (storyMarketItems) {
       storyMarketItems.addEventListener('scroll', updateStoryMarketScrollbar, { passive: true });
+    }
+    if (storyMarketLayout) {
+      storyMarketLayout.addEventListener('scroll', updateStoryMarketScrollbar, { passive: true });
     }
     if (storyMarketScrollUpBtn) {
       bindStoryUiSfx(storyMarketScrollUpBtn, { clickKind: 'click', hover: false });
