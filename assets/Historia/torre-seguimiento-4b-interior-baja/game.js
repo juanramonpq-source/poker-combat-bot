@@ -1775,24 +1775,147 @@ function drawHud() {
   drawRadioOverlay();
 }
 
+function drawFittedLoadingText(text, x, y, maxWidth, size, weight = "700", color = "#eef8ff", align = "left") {
+  let fontSize = size;
+  ctx.textAlign = align;
+  ctx.textBaseline = "alphabetic";
+  do {
+    ctx.font = `${weight} ${fontSize}px Trebuchet MS`;
+    if (ctx.measureText(text).width <= maxWidth || fontSize <= 12) break;
+    fontSize -= 1;
+  } while (fontSize > 12);
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+}
+
+function drawChapterLoadingScreen(config) {
+  const width = viewport.width;
+  const height = viewport.height;
+  const time = (typeof performance !== "undefined" ? performance.now() : Date.now()) / 1000;
+  ctx.clearRect(0, 0, width, height);
+
+  const baseGradient = ctx.createLinearGradient(0, 0, width, height);
+  baseGradient.addColorStop(0, config.shadow || "#16110f");
+  baseGradient.addColorStop(0.48, "#08111d");
+  baseGradient.addColorStop(1, config.deep || "#102a31");
+  ctx.fillStyle = baseGradient;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.save();
+  ctx.globalAlpha = 0.28;
+  ctx.strokeStyle = config.grid || "rgba(132, 234, 255, 0.16)";
+  ctx.lineWidth = 1;
+  for (let x = -height; x < width + height; x += 64) {
+    ctx.beginPath();
+    ctx.moveTo(x, height);
+    ctx.lineTo(x + height, 0);
+    ctx.stroke();
+  }
+  for (let y = 24; y < height; y += 48) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  const scanY = (time * 56) % Math.max(height, 1);
+  const scanGradient = ctx.createLinearGradient(0, scanY - 42, 0, scanY + 42);
+  scanGradient.addColorStop(0, "rgba(132, 234, 255, 0)");
+  scanGradient.addColorStop(0.5, config.scan || "rgba(132, 234, 255, 0.18)");
+  scanGradient.addColorStop(1, "rgba(132, 234, 255, 0)");
+  ctx.fillStyle = scanGradient;
+  ctx.fillRect(0, scanY - 42, width, 84);
+
+  const panelW = Math.min(Math.max(width * 0.58, 520), width - 44);
+  const panelH = Math.min(230, height - 56);
+  const panelX = (width - panelW) / 2;
+  const panelY = (height - panelH) / 2;
+  const compact = panelW < 500;
+
+  ctx.save();
+  ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
+  ctx.shadowBlur = 28;
+  ctx.fillStyle = "rgba(5, 12, 20, 0.78)";
+  ctx.beginPath();
+  ctx.roundRect(panelX, panelY, panelW, panelH, 22);
+  ctx.fill();
+  ctx.restore();
+
+  const accentGradient = ctx.createLinearGradient(panelX, panelY, panelX + panelW, panelY);
+  accentGradient.addColorStop(0, config.accent || "#ffd55f");
+  accentGradient.addColorStop(0.55, "#84eaff");
+  accentGradient.addColorStop(1, "rgba(132, 234, 255, 0.15)");
+  ctx.strokeStyle = accentGradient;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(panelX, panelY, panelW, panelH, 22);
+  ctx.stroke();
+
+  ctx.fillStyle = accentGradient;
+  ctx.fillRect(panelX + 22, panelY + 22, Math.max(56, panelW * 0.18), 3);
+  ctx.fillRect(panelX + 22, panelY + panelH - 25, Math.max(92, panelW * 0.26), 3);
+
+  const radarX = compact ? panelX + panelW - 54 : panelX + 82;
+  const radarY = compact ? panelY + 54 : panelY + 92;
+  const radarRadius = compact ? 34 : 48;
+  ctx.strokeStyle = "rgba(132, 234, 255, 0.28)";
+  ctx.lineWidth = 2;
+  for (let ring = 1; ring <= 3; ring += 1) {
+    ctx.beginPath();
+    ctx.arc(radarX, radarY, (radarRadius / 3) * ring, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.save();
+  ctx.translate(radarX, radarY);
+  ctx.rotate(time * 1.8);
+  const sweep = ctx.createLinearGradient(0, 0, radarRadius, 0);
+  sweep.addColorStop(0, config.accent || "#ffd55f");
+  sweep.addColorStop(1, "rgba(132, 234, 255, 0)");
+  ctx.strokeStyle = sweep;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(radarRadius, 0);
+  ctx.stroke();
+  ctx.restore();
+
+  const textX = compact ? panelX + 24 : panelX + 154;
+  const textMax = compact ? panelW - 48 : panelW - 188;
+  drawFittedLoadingText(config.kicker, textX, panelY + 48, textMax, 13, "700", config.accent || "#ffd55f");
+  drawFittedLoadingText(config.title, textX, panelY + 88, textMax, compact ? 24 : 30, "800", "#eef8ff");
+  drawFittedLoadingText(config.subtitle, textX, panelY + 121, textMax, 16, "600", "rgba(238, 248, 255, 0.74)");
+
+  const barX = textX;
+  const barY = panelY + panelH - 70;
+  const barW = textMax;
+  const progress = 0.18 + ((Math.sin(time * 2.2) + 1) / 2) * 0.72;
+  ctx.fillStyle = "rgba(238, 248, 255, 0.08)";
+  ctx.beginPath();
+  ctx.roundRect(barX, barY, barW, 12, 6);
+  ctx.fill();
+  const fillGradient = ctx.createLinearGradient(barX, barY, barX + barW, barY);
+  fillGradient.addColorStop(0, config.accent || "#ffd55f");
+  fillGradient.addColorStop(1, "#84eaff");
+  ctx.fillStyle = fillGradient;
+  ctx.beginPath();
+  ctx.roundRect(barX, barY, barW * progress, 12, 6);
+  ctx.fill();
+
+  const statusText = config.status || "Sincronizando sistemas de Ruta Ceniza";
+  drawFittedLoadingText(statusText, barX, barY + 39, barW, 12, "700", "rgba(132, 234, 255, 0.82)");
+  ctx.textAlign = "left";
+}
+
 function drawLoading() {
-  ctx.clearRect(0, 0, viewport.width, viewport.height);
-  ctx.fillStyle = "#08111d";
-  ctx.fillRect(0, 0, viewport.width, viewport.height);
-
-  const gradient = ctx.createLinearGradient(0, 0, viewport.width, viewport.height);
-  gradient.addColorStop(0, "rgba(255, 181, 113, 0.18)");
-  gradient.addColorStop(1, "rgba(146, 246, 255, 0.18)");
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, viewport.width, viewport.height);
-
-  ctx.fillStyle = "#eef8ff";
-  ctx.font = "28px Trebuchet MS";
-  ctx.fillText("Cargando interior bajo de la Torre 4B...", 224, 265);
-
-  ctx.fillStyle = "rgba(238, 248, 255, 0.72)";
-  ctx.font = "16px Trebuchet MS";
-  ctx.fillText("Encendiendo escaleras, relés y consolas de bloqueo", 254, 295);
+  drawChapterLoadingScreen({
+    kicker: "Interior de torre",
+    title: "Interior Bajo 4B",
+    subtitle: "Encendiendo escaleras, relés y consolas de bloqueo",
+    status: "Buscando rutas seguras hacia la sala de control",
+    accent: "#9ff3ff",
+    shadow: "#12161b",
+    deep: "#132833"
+  });
 }
 
 function render() {
