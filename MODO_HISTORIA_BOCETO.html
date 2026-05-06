@@ -4256,6 +4256,12 @@
       padding:0;
       background:none;
     }
+    .story-market-stage .market-header-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      min-width:0;
+    }
     .story-market-stage .market-chip{
       width:auto;
       min-width:0;
@@ -4273,6 +4279,21 @@
       padding:0 14px;
       border-radius:16px;
       white-space:nowrap;
+    }
+    @media (max-width:560px){
+      .story-market-stage .market-header{
+        grid-template-columns:1fr;
+      }
+      .story-market-stage .market-header-actions{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+      }
+      .story-market-stage .market-header .scene-btn{
+        width:100%;
+        min-width:0;
+        padding:0 10px;
+        font-size:.58rem;
+      }
     }
     #storyMarketMapBtn{
       display:none;
@@ -4900,7 +4921,10 @@
             <div class="market-shell" id="storyMarketShell">
               <header class="market-header">
                 <span class="market-chip">Mercado de Relés Muertos</span>
-                <button class="scene-btn secondary" id="storyMarketCloseBtn" type="button">Volver al mapa</button>
+                <div class="market-header-actions">
+                  <button class="scene-btn" id="storyMarketExploreBtn" type="button">Volver al mercado</button>
+                  <button class="scene-btn secondary" id="storyMarketCloseBtn" type="button">Volver al mapa</button>
+                </div>
               </header>
 
               <div class="market-layout">
@@ -5078,6 +5102,7 @@
     const storyInventoryCards = document.getElementById('storyInventoryCards');
     const storyInventoryArtifacts = document.getElementById('storyInventoryArtifacts');
     const storyMarketCloseBtn = document.getElementById('storyMarketCloseBtn');
+    const storyMarketExploreBtn = document.getElementById('storyMarketExploreBtn');
     const storyMarketMapBtn = document.getElementById('storyMarketMapBtn');
     const storyMarketCompleteBtn = document.getElementById('storyMarketCompleteBtn');
     const storyMarketSectionToggles = [...document.querySelectorAll('[data-market-toggle]')];
@@ -8406,6 +8431,13 @@
       }, 260);
     }
 
+    function returnStoryMarketToExploration() {
+      closeStoryMarket({
+        applyExitTheme: false,
+        onClosed: () => openStoryMarketExploration()
+      });
+    }
+
     function showStoryExplorationLoader(title, detail = 'Cargando escenario explorable...', kicker = 'Preparando capítulo') {
       if (storyExplorationLoaderKicker) storyExplorationLoaderKicker.textContent = kicker;
       if (storyExplorationLoaderTitle) storyExplorationLoaderTitle.textContent = title || 'Ruta Ceniza';
@@ -9742,6 +9774,7 @@
     bindStoryUiSfx(storySceneMapBtn);
     bindStoryUiSfx(storySceneNextBtn, { clickKind: 'click' });
     bindStoryUiSfx(storyMarketCloseBtn);
+    bindStoryUiSfx(storyMarketExploreBtn, { clickKind: 'confirm' });
     bindStoryUiSfx(storyMarketMapBtn);
     bindStoryUiSfx(storyMarketCompleteBtn, { clickKind: 'confirm' });
     if (storyExplorationMapBtn) bindStoryUiSfx(storyExplorationMapBtn, { clickKind: 'confirm' });
@@ -9769,6 +9802,7 @@
     storySceneAmbientNextBtn.addEventListener('click', activateSceneDialogue);
     storySceneMapBtn.addEventListener('click', stepBackStorySceneLine);
     storyMarketCloseBtn.addEventListener('click', closeStoryMarket);
+    storyMarketExploreBtn.addEventListener('click', returnStoryMarketToExploration);
     storyMarketMapBtn.addEventListener('click', closeStoryMarket);
     storyMarketCompleteBtn.addEventListener('click', completeStoryMarketChapter);
     storyMarketSectionToggles.forEach((toggle) => {
