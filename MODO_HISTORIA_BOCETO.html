@@ -1990,6 +1990,37 @@
       box-shadow:0 28px 54px rgba(0,0,0,.34);
       backdrop-filter:blur(18px);
     }
+    .market-section-toggle{
+      display:none;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      width:100%;
+      min-height:38px;
+      padding:0 12px;
+      border:1px solid rgba(143,244,255,.16);
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(18,32,42,.94), rgba(7,13,19,.94));
+      color:#eef9ff;
+      font-size:.68rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      cursor:pointer;
+    }
+    .market-section-toggle::after{
+      content:"▾";
+      color:#ffd55f;
+      font-size:.86rem;
+      line-height:1;
+      transition:transform .18s ease;
+    }
+    .market-panel.market-panel-collapsed > :not(.market-section-toggle){
+      display:none !important;
+    }
+    .market-panel.market-panel-collapsed .market-section-toggle::after{
+      transform:rotate(-90deg);
+    }
     .market-vendor-panel{
       display:grid;
       gap:16px;
@@ -4322,19 +4353,30 @@
     }
     @media (max-width:760px) and (orientation:portrait){
       .story-market-stage .market-shell{
+        display:block;
         width:100vw;
         max-width:100vw;
         height:100dvh;
-        gap:10px;
+        max-height:none;
+        overflow-y:auto;
+        overflow-x:hidden;
+        overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y;
         padding:
           max(10px, env(safe-area-inset-top))
           max(10px, env(safe-area-inset-right))
-          max(10px, env(safe-area-inset-bottom))
+          0
           max(10px, env(safe-area-inset-left));
       }
       .story-market-stage .market-header{
+        position:relative;
+        top:auto;
         grid-template-columns:1fr;
         gap:8px;
+        margin-bottom:10px;
+        padding-bottom:0;
+        background:none;
       }
       .story-market-stage .market-chip{
         min-height:34px;
@@ -4361,13 +4403,12 @@
           "inventory"
           "store";
         gap:10px;
-        height:100%;
+        height:auto;
         width:100%;
         max-width:100%;
         min-height:0;
-        overflow-y:auto;
-        overflow-x:hidden;
-        padding:0 2px 2px 0;
+        overflow:visible;
+        padding:0;
         overscroll-behavior:contain;
         -webkit-overflow-scrolling:touch;
         touch-action:pan-y;
@@ -4385,6 +4426,15 @@
       }
       .story-market-stage .market-store-panel{
         gap:10px;
+      }
+      .story-market-stage .market-section-toggle{
+        display:flex;
+        position:relative;
+        top:auto;
+        z-index:2;
+      }
+      .story-market-stage .market-panel:not(.market-panel-collapsed) .market-section-toggle{
+        margin-bottom:2px;
       }
       .story-market-stage .market-store-panel .market-intro,
       .story-market-stage .inventory-note{
@@ -4469,8 +4519,16 @@
         border-radius:12px;
       }
       .story-market-stage .market-actions{
+        position:relative;
+        bottom:auto;
         display:grid;
         grid-template-columns:1fr;
+        margin-top:10px;
+        padding:
+          10px
+          0
+          max(12px, env(safe-area-inset-bottom));
+        background:none;
       }
       .story-market-stage .market-actions .scene-btn{
         width:100%;
@@ -4787,7 +4845,8 @@
               </header>
 
               <div class="market-layout">
-                <article class="market-panel market-vendor-panel">
+                <article class="market-panel market-vendor-panel" data-market-section="vendor">
+                  <button class="market-section-toggle" type="button" data-market-toggle="vendor" aria-expanded="true">Vera y trato</button>
                   <img class="market-portrait" src="assets/Historia/low/Vera2.webp" alt="Vera Hex" loading="lazy">
                   <div class="market-copy">
                     <span class="market-kicker">Vera Hex · Chatarrera intermediaria</span>
@@ -4797,7 +4856,8 @@
                   <div class="market-feedback" id="storyMarketFeedback">Arrastra la decisión con cuidado: entrega antiguas monedas con + o - bajo cada moneda y compra una carta para activar tu inventario.</div>
                 </article>
 
-                <article class="market-panel market-store-panel">
+                <article class="market-panel market-store-panel" data-market-section="store">
+                  <button class="market-section-toggle" type="button" data-market-toggle="store" aria-expanded="true">Mostrar tienda</button>
                   <div class="market-copy">
                     <span class="market-kicker">Mostrador de Vera</span>
                     <h2>Tienda de cartas</h2>
@@ -4806,7 +4866,8 @@
                   <div class="market-grid" id="storyMarketItems"></div>
                 </article>
 
-                <aside class="market-panel inventory-panel">
+                <aside class="market-panel inventory-panel" data-market-section="inventory">
+                  <button class="market-section-toggle" type="button" data-market-toggle="inventory" aria-expanded="true">Inventario</button>
                   <span class="market-kicker">Protagonista</span>
                   <h2>Inventario</h2>
                   <div class="inventory-credits" id="storyInventoryCredits"></div>
@@ -4942,6 +5003,7 @@
     const storySceneMapBtn = document.getElementById('storySceneMapBtn');
     const storyMarketStage = document.getElementById('storyMarketStage');
     const storyMarketShell = document.getElementById('storyMarketShell');
+    const storyMarketLayout = storyMarketShell ? storyMarketShell.querySelector('.market-layout') : null;
     const storyMarketBackdrop = document.getElementById('storyMarketBackdrop');
     const storyMarketItems = document.getElementById('storyMarketItems');
     const storyMarketFeedback = document.getElementById('storyMarketFeedback');
@@ -4951,6 +5013,7 @@
     const storyMarketCloseBtn = document.getElementById('storyMarketCloseBtn');
     const storyMarketMapBtn = document.getElementById('storyMarketMapBtn');
     const storyMarketCompleteBtn = document.getElementById('storyMarketCompleteBtn');
+    const storyMarketSectionToggles = [...document.querySelectorAll('[data-market-toggle]')];
     const storyMarketScrollbar = document.getElementById('storyMarketScrollbar');
     const storyMarketScrollTrack = document.getElementById('storyMarketScrollTrack');
     const storyMarketScrollThumb = document.getElementById('storyMarketScrollThumb');
@@ -5114,6 +5177,7 @@
     let sceneAmbientStep = 0;
     let storyTransitionBusy = false;
     let storyMarketAllocatedCoins = {};
+    let storyMarketMobileSectionsPrimed = false;
     const sceneChoiceSelections = {};
     const storyUiSfxBank = {};
     const storyProgressState = {
@@ -7524,6 +7588,7 @@
         || element === storySceneScroll
         || element === storySceneStage
         || element === storyMarketShell
+        || element === storyMarketLayout
         || element === storyMarketStage
         || element === storyMobileRoute;
       if (coreStorySurface) return true;
@@ -7814,11 +7879,15 @@
     function getStoryMarketScrollContainer() {
       if (!storyMarketStage || !storyMarketShell) return null;
       if (!isStoryMarketWheelReady()) return null;
-      if (isStoryMarketPortraitTouchViewport() && getStoryScrollableMax(storyMarketShell) > 1) return storyMarketShell;
+      if (isStoryMarketPortraitTouchViewport()) {
+        if (getStoryScrollableMax(storyMarketShell) > 1) return storyMarketShell;
+        if (storyMarketLayout && getStoryScrollableMax(storyMarketLayout) > 1) return storyMarketLayout;
+      }
       if (storyMarketItems && getStoryScrollableMax(storyMarketItems) > 1) return storyMarketItems;
+      if (storyMarketLayout && getStoryScrollableMax(storyMarketLayout) > 1) return storyMarketLayout;
       if (getStoryScrollableMax(storyMarketShell) > 1) return storyMarketShell;
       if (getStoryScrollableMax(storyMarketStage) > 1) return storyMarketStage;
-      return storyMarketItems || storyMarketShell;
+      return storyMarketItems || storyMarketLayout || storyMarketShell;
     }
 
     function isStoryMarketWheelReady() {
@@ -7828,7 +7897,7 @@
     function isStoryMarketPortraitTouchViewport() {
       try {
         return !!window.matchMedia
-          && window.matchMedia('(orientation: portrait) and (pointer: coarse)').matches;
+          && window.matchMedia('(max-width: 760px) and (orientation: portrait)').matches;
       } catch (error) {
         return false;
       }
@@ -7842,6 +7911,7 @@
       return [
         ...getStoryEventPathElements(event, storyMarketStage),
         storyMarketItems,
+        storyMarketLayout,
         storyMarketShell,
         storyMarketStage
       ];
@@ -7860,6 +7930,7 @@
 
     function scrollStoryMarketContainerToTop() {
       if (storyMarketItems) storyMarketItems.scrollTop = 0;
+      if (storyMarketLayout) storyMarketLayout.scrollTop = 0;
       if (storyMarketShell) storyMarketShell.scrollTop = 0;
       if (storyMarketStage) storyMarketStage.scrollTop = 0;
       updateStoryMarketScrollbar();
@@ -8168,10 +8239,41 @@
       renderStoryMarket();
     }
 
+    function setStoryMarketSectionCollapsed(sectionName, collapsed) {
+      const section = storyMarketStage?.querySelector(`[data-market-section="${sectionName}"]`);
+      const toggle = storyMarketStage?.querySelector(`[data-market-toggle="${sectionName}"]`);
+      if (!section) return;
+      section.classList.toggle('market-panel-collapsed', !!collapsed);
+      if (toggle) toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      requestAnimationFrame(updateStoryMarketScrollbar);
+    }
+
+    function syncStoryMarketMobileSections() {
+      if (!storyMarketStage) return;
+      if (isStoryMarketPortraitTouchViewport()) {
+        if (!storyMarketMobileSectionsPrimed) {
+          setStoryMarketSectionCollapsed('vendor', true);
+          setStoryMarketSectionCollapsed('inventory', true);
+          setStoryMarketSectionCollapsed('store', false);
+          storyMarketMobileSectionsPrimed = true;
+        }
+      } else {
+        storyMarketMobileSectionsPrimed = false;
+        ['vendor', 'inventory', 'store'].forEach((sectionName) => setStoryMarketSectionCollapsed(sectionName, false));
+      }
+    }
+
+    function toggleStoryMarketSection(sectionName) {
+      const section = storyMarketStage?.querySelector(`[data-market-section="${sectionName}"]`);
+      if (!section) return;
+      setStoryMarketSectionCollapsed(sectionName, !section.classList.contains('market-panel-collapsed'));
+    }
+
     function openStoryMarket() {
       ensureStoryMarketInventory();
       markStoryMarketVisited('market-open');
       storyMarketAllocatedCoins = {};
+      storyMarketMobileSectionsPrimed = false;
       currentStoryNodeId = 'mercado';
       rememberStoryWorkspace(true);
       rememberActiveStoryMission(null);
@@ -8179,12 +8281,14 @@
       closeStoryScene();
       rememberStorySurface({ type: 'market', nodeId: 'mercado' });
       playMapMusic();
+      syncStoryMarketMobileSections();
       renderStoryMarket();
       if (!storyMarketStage) return;
       storyMarketStage.hidden = false;
       scrollStoryMarketContainerToTop();
       requestAnimationFrame(() => {
         storyMarketStage.classList.add('active');
+        syncStoryMarketMobileSections();
         updateStoryMarketScrollbar();
       });
     }
@@ -8212,6 +8316,7 @@
 
     function buildStoryMarketExplorationUrl() {
       const targetUrl = new URL(MERCADO_TUTORIAL_URL, window.location.href);
+      targetUrl.searchParams.set('v', '20260506-market-load-fix');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('story_node', 'mercado');
@@ -8685,6 +8790,7 @@
       targetUrl.searchParams.set('story_audio', 'internal');
       targetUrl.searchParams.set('story_brief', 'on');
       targetUrl.searchParams.set('story_tower_return_scene', payload.returnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior');
+      targetUrl.searchParams.set('v', '20260506-tower-combat-load');
       if (options.standalone) {
         targetUrl.searchParams.set('story_standalone', '1');
         targetUrl.searchParams.set('story_return', window.location.href);
@@ -9555,11 +9661,20 @@
     storyMarketCloseBtn.addEventListener('click', closeStoryMarket);
     storyMarketMapBtn.addEventListener('click', closeStoryMarket);
     storyMarketCompleteBtn.addEventListener('click', completeStoryMarketChapter);
+    storyMarketSectionToggles.forEach((toggle) => {
+      toggle.addEventListener('click', () => toggleStoryMarketSection(toggle.dataset.marketToggle));
+    });
+    window.addEventListener('resize', () => {
+      if (storyMarketStage && !storyMarketStage.hidden) syncStoryMarketMobileSections();
+    }, { passive: true });
     if (storyMarketShell) {
       storyMarketShell.addEventListener('scroll', updateStoryMarketScrollbar, { passive: true });
     }
     if (storyMarketItems) {
       storyMarketItems.addEventListener('scroll', updateStoryMarketScrollbar, { passive: true });
+    }
+    if (storyMarketLayout) {
+      storyMarketLayout.addEventListener('scroll', updateStoryMarketScrollbar, { passive: true });
     }
     if (storyMarketScrollUpBtn) {
       bindStoryUiSfx(storyMarketScrollUpBtn, { clickKind: 'click', hover: false });
@@ -9793,6 +9908,7 @@
         document.body,
         storyMarketStage,
         storyMarketShell,
+        storyMarketLayout,
         storyMarketItems
       ]);
       storyMarketStage.addEventListener('touchstart', (event) => {

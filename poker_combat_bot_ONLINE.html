@@ -103,6 +103,113 @@ body.story-embed-mode .cockpit-grid{
 body.story-embed-mode #introScreen{
   display:none !important;
 }
+body.story-embed-mode.story-combat-booting{
+  overflow:hidden;
+  background:#020407;
+}
+.story-combat-loading-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  place-items:center;
+  padding:clamp(18px, 5vw, 56px);
+  color:#f4fbff;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(35,216,255,.2), transparent 28%),
+    radial-gradient(circle at 74% 74%, rgba(255,178,46,.16), transparent 30%),
+    linear-gradient(135deg, rgba(3,7,12,.98), rgba(8,16,24,.98) 48%, rgba(3,9,14,.99));
+}
+body.story-combat-booting .story-combat-loading-overlay,
+.story-combat-loading-overlay.is-active{
+  display:grid;
+}
+.story-combat-loading-overlay::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.32;
+  background:
+    repeating-linear-gradient(90deg, rgba(35,216,255,.12) 0 1px, transparent 1px 78px),
+    repeating-linear-gradient(0deg, rgba(255,178,46,.1) 0 1px, transparent 1px 72px);
+  mask-image:linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+}
+.story-combat-loading-card{
+  position:relative;
+  width:min(560px, 100%);
+  border:1px solid rgba(35,216,255,.36);
+  border-radius:22px;
+  padding:28px clamp(22px, 5vw, 38px);
+  background:linear-gradient(180deg, rgba(7,13,21,.96), rgba(5,9,15,.9));
+  box-shadow:
+    0 24px 70px rgba(0,0,0,.5),
+    inset 0 0 32px rgba(35,216,255,.06);
+  overflow:hidden;
+}
+.story-combat-loading-card::after{
+  content:"";
+  position:absolute;
+  inset:auto -20% 0 -20%;
+  height:3px;
+  background:linear-gradient(90deg, transparent, rgba(35,216,255,.9), rgba(255,178,46,.86), transparent);
+  animation:storyCombatScan 1.7s ease-in-out infinite;
+}
+.story-combat-loading-kicker{
+  display:block;
+  margin-bottom:12px;
+  color:#8ff5ff;
+  font-size:.78rem;
+  font-weight:900;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.story-combat-loading-title{
+  display:block;
+  margin:0 0 10px;
+  font-size:clamp(2rem, 8vw, 4rem);
+  line-height:.95;
+  font-weight:1000;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+}
+.story-combat-loading-text{
+  margin:0;
+  color:#c7dce6;
+  font-size:clamp(1rem, 2.8vw, 1.18rem);
+  line-height:1.45;
+}
+.story-combat-loading-bar{
+  position:relative;
+  height:9px;
+  margin-top:24px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
+}
+.story-combat-loading-bar span{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:46%;
+  border-radius:inherit;
+  background:linear-gradient(90deg, rgba(35,216,255,.35), rgba(35,216,255,.95), rgba(255,178,46,.9));
+  animation:storyCombatLoad 1.15s ease-in-out infinite;
+}
+@keyframes storyCombatLoad{
+  0%{ transform:translateX(-95%); }
+  100%{ transform:translateX(220%); }
+}
+@keyframes storyCombatScan{
+  0%, 100%{ transform:translateX(-18%); opacity:.4; }
+  50%{ transform:translateX(18%); opacity:.95; }
+}
+@media (prefers-reduced-motion: reduce){
+  .story-combat-loading-card::after,
+  .story-combat-loading-bar span{
+    animation:none;
+  }
+}
 body.story-embed-mode .story-embed-nav{
   position:fixed;
   right:12px;
@@ -8834,9 +8941,22 @@ body.desktop-compact-mode > footer{
     if(params.get('story_embed') === '1' || params.get('story_standalone') === '1'){
       document.documentElement.classList.add('story-embed-mode');
       document.body.classList.add('story-embed-mode');
+      if((params.get('story_mission') || '').startsWith('tower_')){
+        document.documentElement.classList.add('story-combat-booting');
+        document.body.classList.add('story-combat-booting');
+      }
     }
   })();
 </script>
+
+<div class="story-combat-loading-overlay" id="storyCombatLoadingOverlay" aria-live="polite" aria-hidden="true">
+  <div class="story-combat-loading-card">
+    <span class="story-combat-loading-kicker">Sincronizando combate</span>
+    <strong class="story-combat-loading-title" id="storyCombatLoadingTitle">Torre 4B</strong>
+    <p class="story-combat-loading-text" id="storyCombatLoadingText">Preparando enemigo, baraja y música...</p>
+    <div class="story-combat-loading-bar" aria-hidden="true"><span></span></div>
+  </div>
+</div>
 
 <!-- Online Status Bar -->
 <div id="olStatusBar" class="ol-hidden">
@@ -10341,6 +10461,7 @@ function autoStartStoryMissionIfRequested(){
   if(state.gameStarted && state.storyMission === STORY_MISSION_BOOT && !state.winner){
     hideIntroScreen();
     scheduleStoryEmbedNavigationSetup();
+    hideStoryCombatLoadingAfterFirstFrame(120);
     return true;
   }
   if(storyMissionAutoStartDone) return false;
@@ -10412,6 +10533,7 @@ function autoStartStoryMissionIfRequested(){
     case 'tower_argos_hack': {
       const profile = getStoryTowerCombatProfile(STORY_MISSION_BOOT);
       storyMissionBriefCollapsed = false;
+      showStoryCombatLoading(profile?.title || 'Torre 4B', 'Preparando enemigo, baraja y música...');
       primeOfflineMode('single', STORY_MISSION_BOOT === 'tower_argos_hack' ? 'normal' : 'easy');
       newGame();
       clearSinglePlayerAiTimer();
@@ -10419,6 +10541,7 @@ function autoStartStoryMissionIfRequested(){
       render();
       hideIntroScreen();
       scheduleStoryEmbedNavigationSetup();
+      hideStoryCombatLoadingAfterFirstFrame();
       addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');
       log(`📜 Mision historia Torre 4B: ${profile?.intro || 'combate especial'}`);
       window.setTimeout(() => {
@@ -10491,6 +10614,46 @@ function applyStoryMissionPlayerSetup(){
 
 function isStoryTowerCombatMission(mission = state.storyMission || STORY_MISSION_BOOT){
   return typeof mission === 'string' && mission.startsWith('tower_');
+}
+
+let storyCombatLoadingHideTimer = null;
+function isStoryCombatLoadingMission(mission = state.storyMission || STORY_MISSION_BOOT){
+  return STORY_EMBED_MODE && isStoryTowerCombatMission(mission);
+}
+
+function showStoryCombatLoading(title = 'Torre 4B', text = 'Preparando enemigo, baraja y música...'){
+  if(!isStoryCombatLoadingMission()) return;
+  window.clearTimeout(storyCombatLoadingHideTimer);
+  document.documentElement.classList.add('story-combat-booting');
+  document.body?.classList.add('story-combat-booting');
+  const overlay = document.getElementById('storyCombatLoadingOverlay');
+  const titleEl = document.getElementById('storyCombatLoadingTitle');
+  const textEl = document.getElementById('storyCombatLoadingText');
+  if(titleEl) titleEl.textContent = title || 'Torre 4B';
+  if(textEl) textEl.textContent = text || 'Preparando enemigo, baraja y música...';
+  if(overlay){
+    overlay.classList.add('is-active');
+    overlay.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function hideStoryCombatLoading(delay = 180){
+  window.clearTimeout(storyCombatLoadingHideTimer);
+  storyCombatLoadingHideTimer = window.setTimeout(() => {
+    const overlay = document.getElementById('storyCombatLoadingOverlay');
+    if(overlay){
+      overlay.classList.remove('is-active');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+    document.documentElement.classList.remove('story-combat-booting');
+    document.body?.classList.remove('story-combat-booting');
+  }, Math.max(0, delay));
+}
+
+function hideStoryCombatLoadingAfterFirstFrame(delay = 220){
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => hideStoryCombatLoading(delay));
+  });
 }
 
 const STORY_TOWER_COMBAT_PROFILES = {

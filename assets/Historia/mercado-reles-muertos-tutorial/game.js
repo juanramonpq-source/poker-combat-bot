@@ -822,8 +822,47 @@ function loadImage(source) {
     const image = new Image();
     image.decoding = "async";
     image.onload = () => resolve(image);
-    image.onerror = reject;
+    image.onerror = () => reject(new Error(`No se pudo cargar ${source}`));
     image.src = source;
+  });
+}
+
+function createFallbackCanvas(width, height, draw) {
+  const fallback = document.createElement("canvas");
+  fallback.width = width;
+  fallback.height = height;
+  const fallbackCtx = fallback.getContext("2d");
+  draw(fallbackCtx, width, height);
+  return fallback;
+}
+
+function createFallbackMarketMap() {
+  return createFallbackCanvas(world.width, world.height, (fallbackCtx, width, height) => {
+    const gradient = fallbackCtx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#1a1d1e");
+    gradient.addColorStop(0.48, "#26343a");
+    gradient.addColorStop(1, "#0b1117");
+    fallbackCtx.fillStyle = gradient;
+    fallbackCtx.fillRect(0, 0, width, height);
+    fallbackCtx.fillStyle = "rgba(244, 212, 154, 0.18)";
+    for (let x = 80; x < width; x += 180) {
+      fallbackCtx.fillRect(x, 120, 72, height - 240);
+    }
+  });
+}
+
+function createFallbackBotFrame() {
+  return createFallbackCanvas(256, 256, (fallbackCtx, width, height) => {
+    fallbackCtx.translate(width / 2, height / 2);
+    fallbackCtx.fillStyle = "rgba(7, 15, 22, 0.92)";
+    fallbackCtx.strokeStyle = "rgba(143, 244, 255, 0.82)";
+    fallbackCtx.lineWidth = 8;
+    fallbackCtx.beginPath();
+    fallbackCtx.roundRect(-58, -70, 116, 140, 28);
+    fallbackCtx.fill();
+    fallbackCtx.stroke();
+    fallbackCtx.fillStyle = "rgba(255, 213, 95, 0.92)";
+    fallbackCtx.fillRect(-34, -22, 68, 20);
   });
 }
 
@@ -903,8 +942,14 @@ function updatePlayerVisual(dt, hasInput, speedRatio) {
 
 async function loadAssets() {
   const [mapImage, firstBotFrame] = await Promise.all([
-    loadImage("./assets/mercado-reles-rendered-map.png"),
-    loadImage(leanFrameSources[0]),
+    loadImage("./assets/mercado-reles-rendered-map.png").catch((error) => {
+      console.warn(error);
+      return createFallbackMarketMap();
+    }),
+    loadImage(leanFrameSources[0]).catch((error) => {
+      console.warn(error);
+      return createFallbackBotFrame();
+    }),
   ]);
 
   assets.map = mapImage;
@@ -1743,11 +1788,11 @@ function gameLoop(currentTime) {
 }
 
 drawLoading();
+requestAnimationFrame(gameLoop);
 loadAssets()
   .catch((error) => {
     console.error("No se pudieron cargar los activos del juego:", error);
   })
   .finally(() => {
     startMarketCrowdAmbience();
-    requestAnimationFrame(gameLoop);
   });
