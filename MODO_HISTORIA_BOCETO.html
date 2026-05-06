@@ -2574,6 +2574,65 @@
       opacity:1;
       pointer-events:auto;
     }
+    .exploration-loader{
+      position:fixed;
+      inset:0;
+      z-index:3;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:
+        radial-gradient(circle at 50% 24%, rgba(143,244,255,.14), transparent 24%),
+        linear-gradient(180deg, rgba(5,8,13,.96), rgba(5,8,13,.98));
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .22s ease;
+    }
+    .story-exploration-stage.loading .exploration-loader{
+      opacity:1;
+    }
+    .exploration-loader-card{
+      width:min(420px, 100%);
+      display:grid;
+      gap:12px;
+      padding:22px;
+      border-radius:24px;
+      border:1px solid rgba(143,244,255,.25);
+      background:rgba(8,13,19,.88);
+      box-shadow:0 22px 54px rgba(0,0,0,.42), inset 0 0 28px rgba(143,244,255,.07);
+      text-align:center;
+    }
+    .exploration-loader-card span{
+      color:#8ff4ff;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    .exploration-loader-card strong{
+      color:#f5f8ff;
+      font-size:clamp(1.8rem, 8vw, 2.55rem);
+      line-height:1;
+    }
+    .exploration-loader-bar{
+      height:10px;
+      overflow:hidden;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+    }
+    .exploration-loader-bar::after{
+      content:"";
+      display:block;
+      width:42%;
+      height:100%;
+      border-radius:inherit;
+      background:linear-gradient(90deg, rgba(143,244,255,.95), rgba(255,214,156,.95));
+      animation:storyMapLoaderSweep 1.12s ease-in-out infinite;
+    }
+    .exploration-loader-card small{
+      color:rgba(238,248,255,.68);
+      line-height:1.4;
+    }
     .exploration-frame{
       display:block;
       width:100%;
@@ -4903,6 +4962,14 @@
               allow="fullscreen"
               allowfullscreen
               loading="eager"></iframe>
+            <div class="exploration-loader" id="storyExplorationLoader" role="status" aria-live="polite">
+              <div class="exploration-loader-card">
+                <span id="storyExplorationLoaderKicker">Preparando capítulo</span>
+                <strong id="storyExplorationLoaderTitle">Ruta Ceniza</strong>
+                <div class="exploration-loader-bar" aria-hidden="true"></div>
+                <small id="storyExplorationLoaderDetail">Cargando escenario explorable...</small>
+              </div>
+            </div>
             <button class="exploration-map-btn" id="storyExplorationMapBtn" type="button">Volver al mapa</button>
           </section>
           <section class="story-mission-stage" id="storyMissionStage" hidden>
@@ -5022,6 +5089,9 @@
     const storyExplorationStage = document.getElementById('storyExplorationStage');
     const storyExplorationFrame = document.getElementById('storyExplorationFrame');
     const storyExplorationMapBtn = document.getElementById('storyExplorationMapBtn');
+    const storyExplorationLoaderKicker = document.getElementById('storyExplorationLoaderKicker');
+    const storyExplorationLoaderTitle = document.getElementById('storyExplorationLoaderTitle');
+    const storyExplorationLoaderDetail = document.getElementById('storyExplorationLoaderDetail');
     const storyMissionStage = document.getElementById('storyMissionStage');
     const storyMissionBackdrop = document.getElementById('storyMissionBackdrop');
     const storyMissionChip = document.getElementById('storyMissionChip');
@@ -8336,9 +8406,16 @@
       }, 260);
     }
 
+    function showStoryExplorationLoader(title, detail = 'Cargando escenario explorable...', kicker = 'Preparando capítulo') {
+      if (storyExplorationLoaderKicker) storyExplorationLoaderKicker.textContent = kicker;
+      if (storyExplorationLoaderTitle) storyExplorationLoaderTitle.textContent = title || 'Ruta Ceniza';
+      if (storyExplorationLoaderDetail) storyExplorationLoaderDetail.textContent = detail;
+      storyExplorationStage?.classList.add('loading');
+    }
+
     function buildStoryMarketExplorationUrl() {
       const targetUrl = new URL(MERCADO_TUTORIAL_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260506-market-load-fix');
+      targetUrl.searchParams.set('v', '20260506-market-direct-fix');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('story_node', 'mercado');
@@ -8374,12 +8451,10 @@
       playMapMusic();
       const targetUrl = buildStoryMarketExplorationUrl();
       storyExplorationStage.hidden = false;
+      showStoryExplorationLoader('Mercado de Relés', 'Cargando puestos, chatarra y puntos de interacción...');
+      storyExplorationFrame.src = targetUrl;
       storyExplorationStage.classList.add('active');
-      storyExplorationFrame.src = 'about:blank';
-      window.setTimeout(() => {
-        storyExplorationFrame.src = targetUrl;
-        window.setTimeout(focusStoryExplorationFrame, 40);
-      }, 40);
+      window.setTimeout(focusStoryExplorationFrame, 40);
     }
 
     function closeStoryMarketExploration(options = {}) {
@@ -8396,6 +8471,7 @@
       activeExplorationNodeId = null;
       activeExplorationSceneKey = null;
       storyExplorationStage.classList.remove('active');
+      storyExplorationStage.classList.remove('loading');
       if (options.immediate) {
         storyExplorationStage.hidden = true;
         if (storyExplorationFrame && options.keepFrame !== true) storyExplorationFrame.src = 'about:blank';
@@ -8806,6 +8882,7 @@
       }
 
       storyExplorationStage.hidden = false;
+      showStoryExplorationLoader('Torre de Seguimiento 4B', 'Cargando exterior, drones y transmisiones...');
       storyExplorationFrame.src = targetUrl;
       storyExplorationStage.classList.add('active');
       window.setTimeout(focusStoryExplorationFrame, 40);
@@ -9982,6 +10059,7 @@
     window.addEventListener('keydown', (event) => forwardStoryExplorationKey(event, 'down'), { capture: true });
     window.addEventListener('keyup', (event) => forwardStoryExplorationKey(event, 'up'), { capture: true });
     storyExplorationFrame?.addEventListener('load', () => {
+      storyExplorationStage?.classList.remove('loading');
       window.setTimeout(focusStoryExplorationFrame, 40);
     });
 

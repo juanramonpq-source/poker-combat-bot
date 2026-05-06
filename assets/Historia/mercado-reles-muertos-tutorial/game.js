@@ -942,9 +942,9 @@ function updatePlayerVisual(dt, hasInput, speedRatio) {
 
 async function loadAssets() {
   const [mapImage, firstBotFrame] = await Promise.all([
-    loadImage("./assets/mercado-reles-rendered-map.png").catch((error) => {
+    loadImage("./assets/mercado-reles-rendered-map-optimized.jpg").catch((error) => {
       console.warn(error);
-      return createFallbackMarketMap();
+      return loadImage("./assets/mercado-reles-rendered-map.png").catch(() => createFallbackMarketMap());
     }),
     loadImage(leanFrameSources[0]).catch((error) => {
       console.warn(error);
@@ -961,10 +961,10 @@ async function loadAssets() {
   loadOptionalImage("./assets/pocobot-sparring-topdown.png", (image) => {
     assets.sparringBot = image;
   });
-  loadPlayerVisualFramesInBackground();
   createPlayerVisual();
   assets.ready = true;
   snapCameraToPlayer();
+  window.setTimeout(loadPlayerVisualFramesInBackground, 450);
 }
 
 function update(dt) {
@@ -1789,10 +1789,14 @@ function gameLoop(currentTime) {
 
 drawLoading();
 requestAnimationFrame(gameLoop);
-loadAssets()
-  .catch((error) => {
-    console.error("No se pudieron cargar los activos del juego:", error);
-  })
-  .finally(() => {
-    startMarketCrowdAmbience();
-  });
+requestAnimationFrame(() => {
+  window.setTimeout(() => {
+    loadAssets()
+      .catch((error) => {
+        console.error("No se pudieron cargar los activos del juego:", error);
+      })
+      .finally(() => {
+        startMarketCrowdAmbience();
+      });
+  }, 0);
+});
