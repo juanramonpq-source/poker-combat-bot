@@ -11113,7 +11113,7 @@ const STORY_TOWER_COMBAT_PROFILES = {
     title: 'Hackeo final 4B',
     combatSprite: 'assets/Historia/panel-control-malvado-animacion-completa.webp',
     enemyId: 'argos-control-panel',
-    intro: 'Hackeo de Argos: combustible bloqueado. Consigue el As de picas, usa armadura como energia o remata con proyectiles sueltos antes de que los treboles del panel se apilen.'
+    intro: 'Hackeo de Argos: combustible bloqueado. Consigue el As de diamantes, usa armadura como energia o remata con proyectiles sueltos antes de que los treboles del panel se apilen.'
   }
 };
 
@@ -11319,7 +11319,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   state.log = [
     `📜 ${profile.intro}`,
     mission === 'tower_argos_hack'
-      ? '⚠️ Hackeo de Argos: el combustible normal no cuenta. Instala el A♠ y quema armadura como energia, o usa proyectiles sueltos.'
+      ? '⚠️ Hackeo de Argos: el combustible normal no cuenta. Instala el A♦ y quema armadura como energia, o usa proyectiles sueltos.'
       : profile.limitedSuit
         ? '🎯 Combate de Torre 4B: el dron ya esta montado. Tu PoCoBOT empieza sin montar; ensambla, abre ataque y vuelve con una antigua moneda.'
         : '🎯 Combate de Torre 4B: vence y vuelve a la exploracion con una antigua moneda.'
@@ -12818,12 +12818,12 @@ const STORY_MISSION_BRIEFS = {
   tower_control_guard: {
     kicker: 'Combate del modo historia',
     title: 'Torre 4B · Mecha sin cabina',
-    text: 'Un guardia automático bloquea el panel superior. La música de combate usa la rotación habitual del modo offline.'
+    text: 'Un guardia automático bloquea el panel superior.'
   },
   tower_argos_hack: {
     kicker: 'Hackeo final del modo historia',
     title: 'Torre 4B · Panel de Argós',
-    text: 'Argós bloquea el combustible normal. Consigue el A♠ y usa armadura como energía, o remata con proyectiles sueltos. Su salud real son solo 2♥ y 5♥.'
+    text: 'Argós bloquea el combustible normal. Consigue el A♦ y usa armadura como energía, o remata con proyectiles sueltos. Su salud real son solo 2♥ y 5♥.'
   }
 };
 
@@ -16858,7 +16858,7 @@ function confirmAttack(projectileOnly=false){
     mainValue = 0;
   }else{
     if(sel.fuelCards.length===0) return notifySelection(state.storyMission === 'tower_argos_hack' && state.currentPlayer === 0
-      ? 'Argos bloquea el combustible normal. Instala el A♠ y selecciona armadura como energia, o usa proyectiles sueltos.'
+      ? 'Argos bloquea el combustible normal. Instala el A♦ y selecciona armadura como energia, o usa proyectiles sueltos.'
       : (sel.armorAsFuelEnabled
         ? 'Selecciona combustible del panel o cartas de armadura para habilitar el ataque.'
         : 'Selecciona combustible del panel para habilitar el ataque.'));

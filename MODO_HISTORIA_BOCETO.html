@@ -9246,7 +9246,16 @@
         return true;
       }
       if (action === 'return-lower-interior') {
-        openStoryTowerScene('interior', { from_control: '1' });
+        const returnSpawn = data?.returnSpawn || {};
+        const spawnX = Number(returnSpawn.x);
+        const spawnY = Number(returnSpawn.y);
+        const returnParams = { from_control: '1' };
+        if (Number.isFinite(spawnX) && Number.isFinite(spawnY)) {
+          returnParams.story_restore_position = '1';
+          returnParams.story_player_x = spawnX;
+          returnParams.story_player_y = spawnY;
+        }
+        openStoryTowerScene('interior', returnParams);
         return true;
       }
       if (action === 'return-exterior-finale') {

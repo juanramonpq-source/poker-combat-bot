@@ -184,6 +184,8 @@ const sceneSpawnPoints = {
   fromInterior: { x: 360, y: 580 },
 };
 
+const lowerInteriorReturnSpawn = { x: 1136, y: 382 };
+
 function placePlayerAt(point) {
   if (!point) return;
   player.x = Math.max(player.radius, Math.min(world.width - player.radius, Number(point.x) || sceneSpawnPoints.default.x));
@@ -347,6 +349,39 @@ function postStoryTutorialAction(action, payload = {}) {
 
   if (action === "return-map" && storyReturnUrl && window.parent === window) {
     window.location.href = storyReturnUrl;
+  }
+}
+
+function postStoryReturnMapAction() {
+  const payload = {
+    sceneMusic: musicConfig.scene,
+    playerPosition: {
+      x: Math.round(player.x),
+      y: Math.round(player.y),
+    },
+  };
+  postStoryTutorialAction("return-map", payload);
+
+  [
+    "pocobot-story-tower-tutorial-action",
+    "pocobot-story-tower-interior-action",
+  ].forEach((type) => {
+    const message = {
+      type,
+      action: "return-map",
+      savedAt: Date.now(),
+      ...payload,
+    };
+    [window.parent !== window ? window.parent : null, window.opener].forEach((targetWindow) => {
+      if (!targetWindow) return;
+      try {
+        targetWindow.postMessage(message, "*");
+      } catch (error) {}
+    });
+  });
+
+  if (window.parent === window && !window.opener && !storyReturnUrl) {
+    window.location.href = "../../../MODO_HISTORIA_BOCETO.html";
   }
 }
 
@@ -568,7 +603,7 @@ window.addEventListener("message", (event) => {
 storyMapButton?.addEventListener("click", () => {
   startChapterMusic();
   setInteractionMessage("Volviendo al mapa de la Ruta Ceniza...", 1.4);
-  postStoryTutorialAction("return-map");
+  postStoryReturnMapAction();
 });
 
 function updatePointerTarget(event) {
@@ -1025,7 +1060,7 @@ async function loadAssets() {
   } else if (chapterState.controlMechaDefeated) {
     queueFloorEntryRadio([
       "Xavor: el guardián ha caído. Ahora sí: ve a por el panel de Argós y sé fuerte: intentará hackearte...",
-      "Busca el As de picas y no confundas blindaje con cobardía. ¡Hoy la armadura también arde! Eso dicen todas...",
+      "Busca el As de diamantes y no confundas blindaje con cobardía. ¡Hoy la armadura también arde! Eso dicen todas...",
     ]);
   } else {
     queueFloorEntryRadio([
@@ -1094,7 +1129,7 @@ function triggerArgosHackCombat() {
   if (storyEmbedMode || window.parent !== window) {
     setInteractionMessage("Argós inicia hackeo de combustible: depósito bloqueado, armadura y proyectiles activos.", 5.2);
     queueRadio([
-      "Xavor: te ha hackeado el combustible... ahora no puedes usarlo. Pero no te asustes: Busca el As de picas, conviértelo en protocolo de emergencia y usa armadura como energía o proyectiles sueltos.",
+      "Xavor: te ha hackeado el combustible... ahora no puedes usarlo. Pero no te asustes: Busca el As de diamantes, conviértelo en protocolo de emergencia y usa armadura como energía o proyectiles sueltos.",
       "Xavor: el panel apenas conserva 2 y 5 de corazones, pero sus tréboles se van a apilar poco a poco. Gánale antes de que se crea inmortal.",
     ]);
     postStoryTutorialAction("request-argos-hack-combat", {
@@ -1108,7 +1143,7 @@ function triggerArgosHackCombat() {
       },
       rules: {
         playerFuelLocked: true,
-        requiredPlayerPlan: "Obtener el as de picas y usar armadura como combustible, o rematar con proyectiles sueltos.",
+        requiredPlayerPlan: "Obtener el as de diamantes y usar armadura como combustible, o rematar con proyectiles sueltos.",
         enemyDeck: {
           hearts: ["2", "5"],
           clubs: ["2", "3", "4", "5", "6", "7", "8", "9", "10"],
@@ -1137,7 +1172,7 @@ function triggerArgosHackCombat() {
     },
     rules: {
       playerFuelLocked: true,
-      requiredPlayerPlan: "Obtener el as de picas y usar armadura como combustible.",
+      requiredPlayerPlan: "Obtener el as de diamantes y usar armadura como combustible.",
       enemyDeck: {
         hearts: ["2", "5"],
         clubs: ["2", "3", "4", "5", "6", "7", "8", "9", "10"],
@@ -1336,8 +1371,9 @@ function updateInteractions(dt) {
         setInteractionMessage("Bajando a la planta inferior de Torre 4B...", 2.4);
         postStoryTutorialAction("return-lower-interior", {
           nextScene: "torre-seguimiento-4b-interior-baja",
+          returnSpawn: lowerInteriorReturnSpawn,
         });
-        navigateToScene("../torre-seguimiento-4b-interior-baja/index.html?from_control=1&preserve_chapter=1");
+        navigateToScene(`../torre-seguimiento-4b-interior-baja/index.html?from_control=1&preserve_chapter=1&story_restore_position=1&story_player_x=${lowerInteriorReturnSpawn.x}&story_player_y=${lowerInteriorReturnSpawn.y}`);
         input.interactQueued = false;
         return;
       }

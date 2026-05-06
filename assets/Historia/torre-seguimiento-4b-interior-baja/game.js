@@ -178,6 +178,8 @@ const sceneSpawnPoints = {
   fromControl: { x: 1136, y: 382 },
 };
 
+let initialSpawnPointKey = "default";
+
 function placePlayerAt(point) {
   if (!point) return;
   player.x = Math.max(player.radius, Math.min(world.width - player.radius, Number(point.x) || sceneSpawnPoints.default.x));
@@ -191,21 +193,25 @@ function applyInitialStorySpawn() {
     const spawnX = Number(storyParams.get("story_player_x"));
     const spawnY = Number(storyParams.get("story_player_y"));
     if (Number.isFinite(spawnX) && Number.isFinite(spawnY)) {
+      initialSpawnPointKey = "restore";
       placePlayerAt({ x: spawnX, y: spawnY });
       return;
     }
   }
 
   if (storyParams.get("from_control") === "1") {
+    initialSpawnPointKey = "fromControl";
     placePlayerAt(sceneSpawnPoints.fromControl);
     return;
   }
 
   if (storyParams.get("from_exterior") === "1") {
+    initialSpawnPointKey = "fromExterior";
     placePlayerAt(sceneSpawnPoints.fromExterior);
     return;
   }
 
+  initialSpawnPointKey = "default";
   placePlayerAt(sceneSpawnPoints.default);
 }
 
@@ -837,11 +843,17 @@ function ensureSafeInitialSpawn() {
     return;
   }
 
+  const preferredBase = initialSpawnPointKey === "restore"
+    ? { x: player.x, y: player.y }
+    : sceneSpawnPoints[initialSpawnPointKey] || sceneSpawnPoints.default;
   const bases = [
-    sceneSpawnPoints.default,
-    sceneSpawnPoints.fromExterior,
+    preferredBase,
     sceneSpawnPoints.fromControl,
-  ];
+    sceneSpawnPoints.fromExterior,
+    sceneSpawnPoints.default,
+  ].filter((point, index, points) =>
+    point && points.findIndex((candidate) => candidate.x === point.x && candidate.y === point.y) === index
+  );
   const offsets = [
     [0, 0],
     [64, 0],
