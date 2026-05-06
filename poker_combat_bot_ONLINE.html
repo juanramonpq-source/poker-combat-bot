@@ -9143,8 +9143,8 @@ body.desktop-compact-mode > footer{
           <span class="story-combat-mini-target"></span>
         </span>
         <span class="story-combat-audio-copy">
-          <span class="story-combat-audio-label" id="storyCombatAudioPrimerLabel">¿Quieres probar suerte?</span>
-          <span class="story-combat-audio-hint" id="storyCombatAudioPrimerHint">Mientras carga el combate, intercepta una señal: 1 entre 10 puede traer una carta.</span>
+          <span class="story-combat-audio-label" id="storyCombatAudioPrimerLabel">Activar música y probar suerte</span>
+          <span class="story-combat-audio-hint" id="storyCombatAudioPrimerHint">Pulsa para sincronizar el audio e interceptar una señal: 1 entre 10 puede traer una carta.</span>
         </span>
       </button>
       <div class="story-combat-lottery-result" id="storyCombatLotteryResult" aria-live="polite"></div>
@@ -10727,10 +10727,9 @@ function autoStartStoryMissionIfRequested(){
     case 'tower_argos_hack': {
       const profile = getStoryTowerCombatProfile(STORY_MISSION_BOOT);
       storyMissionBriefCollapsed = false;
-      showStoryCombatLoading(profile?.title || 'Torre 4B', 'Preparando enemigo, baraja y música...');
+      showStoryCombatLoading(profile?.title || 'Torre 4B', 'Pulsa para activar la música, probar suerte y entrar al combate.', { requireManualStart:true });
       primeOfflineMode('single', STORY_MISSION_BOOT === 'tower_argos_hack' ? 'normal' : 'easy');
       newGame();
-      primeStoryCombatLoadingAudio({ forceRestart:false });
       clearSinglePlayerAiTimer();
       setupStoryTowerCombatScenario(STORY_MISSION_BOOT);
       render();
@@ -10815,6 +10814,8 @@ let storyCombatLoadingHideTimer = null;
 let storyCombatAudioPrimerBound = false;
 let storyCombatLotteryAwaitingAck = false;
 let storyCombatLotteryReadyToReveal = false;
+let storyCombatLoadingRequiresManualStart = false;
+let storyCombatLoadingManualDismissed = false;
 function isStoryCombatLoadingMission(mission = state.storyMission || STORY_MISSION_BOOT){
   return STORY_EMBED_MODE && isStoryTowerCombatMission(mission);
 }
@@ -10903,11 +10904,11 @@ function setStoryCombatAudioPrimerState(stateName = 'idle'){
   const hint = document.getElementById('storyCombatAudioPrimerHint');
   if(!button) return;
   button.classList.toggle('is-armed', stateName === 'ready');
-  if(label) label.textContent = stateName === 'ready' ? 'Señal activa' : '¿Quieres probar suerte?';
+  if(label) label.textContent = stateName === 'ready' ? 'Música activa · señal interceptada' : 'Activar música y probar suerte';
   if(hint){
     hint.textContent = stateName === 'ready'
-      ? 'Audio sincronizado. La tirada se resolverá en un instante.'
-      : 'Mientras carga el combate, intercepta una señal: 1 entre 10 puede traer una carta.';
+      ? 'Audio sincronizado. Revisa la señal y entra cuando estés listo.'
+      : 'Pulsa para sincronizar el audio e interceptar una señal: 1 entre 10 puede traer una carta.';
   }
 }
 
@@ -10946,8 +10947,8 @@ function bindStoryCombatAudioPrimer(){
   if(!button) return;
   storyCombatAudioPrimerBound = true;
   button.addEventListener('click', () => {
-    resolveStoryCombatLoadingLottery();
     primeStoryCombatLoadingAudio({ forceRestart:false, userGesture:true });
+    resolveStoryCombatLoadingLottery();
     playUiSound('attack');
   });
 }
@@ -10982,8 +10983,10 @@ function renderStoryCombatLotteryResult(result){
   const enterBtn = document.getElementById('storyCombatLotteryEnterBtn');
   enterBtn?.addEventListener('click', () => {
     storyCombatLotteryAwaitingAck = false;
+    storyCombatLoadingManualDismissed = true;
     playUiSound('select');
-    if(storyCombatLotteryReadyToReveal) hideStoryCombatLoading(0);
+    storyCombatLotteryReadyToReveal = true;
+    hideStoryCombatLoading(0);
   });
 }
 
@@ -11006,13 +11009,15 @@ function resolveStoryCombatLoadingLottery(){
   renderStoryCombatLotteryResult(result);
 }
 
-function showStoryCombatLoading(title = 'Torre 4B', text = 'Preparando enemigo, baraja y música...'){
+function showStoryCombatLoading(title = 'Torre 4B', text = 'Preparando enemigo, baraja y música...', options = {}){
   if(!isStoryCombatLoadingMission()) return;
   window.clearTimeout(storyCombatLoadingHideTimer);
   bindStoryCombatAudioPrimer();
   setStoryCombatAudioPrimerState('idle');
   storyCombatLotteryAwaitingAck = false;
   storyCombatLotteryReadyToReveal = false;
+  storyCombatLoadingRequiresManualStart = options.requireManualStart !== false;
+  storyCombatLoadingManualDismissed = false;
   const result = document.getElementById('storyCombatLotteryResult');
   const primer = document.getElementById('storyCombatAudioPrimer');
   if(result){
@@ -11040,6 +11045,7 @@ function hideStoryCombatLoading(delay = 180){
   window.clearTimeout(storyCombatLoadingHideTimer);
   storyCombatLoadingHideTimer = window.setTimeout(() => {
     storyCombatLotteryReadyToReveal = true;
+    if(storyCombatLoadingRequiresManualStart && !storyCombatLoadingManualDismissed) return;
     if(storyCombatLotteryAwaitingAck) return;
     const overlay = document.getElementById('storyCombatLoadingOverlay');
     if(overlay){
@@ -12040,6 +12046,7 @@ function ensureAudio(){
 const AUDIO_BGM_1_URI = "assets/audio_01.mp3";
 const AUDIO_BGM_2_URI = "assets/audio_02.mp3";
 const AUDIO_BGM_MENU_URI = "assets/GravitSilence.mp3";
+const STORY_ARGOS_HACK_BGM_URI = "assets/Historia/SistemaCorrupto.mp3";
 const STORY_AUDIO_PRIORITY_KEY = "pocobot_story_audio_priority";
 const STORY_BOOT_PARAMS = new URLSearchParams(window.location.search);
 const STORY_MISSION_BOOT = STORY_BOOT_PARAMS.get('story_mission') || '';
@@ -12105,6 +12112,38 @@ function isStoryMissionCarriedAudio(){
   return STORY_EMBED_MODE && STORY_AUDIO_MODE === 'carry' && !!STORY_CARRIED_BGM_SRC;
 }
 
+function isStoryArgosHackCombatMusicLocked(){
+  return STORY_MISSION_BOOT === 'tower_argos_hack'
+    && !isStoryMissionExternalAudio()
+    && !isStoryMissionCarriedAudio();
+}
+
+function resolveAudioUri(uri){
+  try{
+    return new URL(uri, window.location.href).href;
+  }catch(_err){
+    return uri;
+  }
+}
+
+function ensureManagedMusicElement(key, uri, volume){
+  const targetSrc = resolveAudioUri(uri);
+  const current = state[key];
+  if(current && current.src !== targetSrc){
+    pauseMusic(current, true);
+    state[key] = null;
+  }
+  if(!state[key]){
+    state[key] = new Audio(uri);
+    state[key].loop = true;
+    state[key].preload = 'auto';
+    state[key].volume = volume;
+    state[key]._baseVolume = volume;
+    state[key]._managedSrc = targetSrc;
+  }
+  return state[key];
+}
+
 function ensureSfxBank(){
   if(!state.sfxBank) state.sfxBank = {};
   Object.entries(AUDIO_SFX_URIS).forEach(([key, uri]) => {
@@ -12134,26 +12173,17 @@ function playImpactExplosion(heavy=false){
 }
 
 function ensureMusicElements(){
-  const introMusicUri = AUDIO_BGM_1_URI;
-  const battleMusicUri = AUDIO_BGM_2_URI;
+  const introMusicUri = isStoryArgosHackCombatMusicLocked() ? STORY_ARGOS_HACK_BGM_URI : AUDIO_BGM_1_URI;
+  const battleMusicUri = isStoryArgosHackCombatMusicLocked() ? STORY_ARGOS_HACK_BGM_URI : AUDIO_BGM_2_URI;
   if(!state.bgmMenu){
     state.bgmMenu = new Audio(AUDIO_BGM_MENU_URI);
     state.bgmMenu.loop = true;
     state.bgmMenu.preload = 'auto';
     state.bgmMenu.volume = 0.28;
+    state.bgmMenu._baseVolume = 0.28;
   }
-  if(!state.bgm1){
-    state.bgm1 = new Audio(introMusicUri);
-    state.bgm1.loop = true;
-    state.bgm1.preload = 'auto';
-    state.bgm1.volume = 0.30;
-  }
-  if(!state.bgm2){
-    state.bgm2 = new Audio(battleMusicUri);
-    state.bgm2.loop = true;
-    state.bgm2.preload = 'auto';
-    state.bgm2.volume = 0.30;
-  }
+  ensureManagedMusicElement('bgm1', introMusicUri, isStoryArgosHackCombatMusicLocked() ? 0.38 : 0.30);
+  ensureManagedMusicElement('bgm2', battleMusicUri, isStoryArgosHackCombatMusicLocked() ? 0.38 : 0.30);
 }
 function ensureStoryCarriedMusic(){
   if(!isStoryMissionCarriedAudio()) return null;
@@ -12344,6 +12374,14 @@ function switchToBattleMusic(){
     return;
   }
   ensureMusicElements();
+  if(isStoryArgosHackCombatMusicLocked()){
+    state.firstAttackTriggered = true;
+    state.musicPhase = 'intro';
+    pauseMusic(state.bgmMenu, true);
+    pauseMusic(state.bgm2, false);
+    playMusicTrack(state.bgm1, false);
+    return;
+  }
   if(state.firstAttackTriggered) return;
   if(state.musicPhase === 'battle'){
     state.firstAttackTriggered = true;
@@ -12375,6 +12413,17 @@ function syncMusicToState(){
     pauseMusic(state.bgmMenu, false);
     pauseMusic(state.bgm1, false);
     pauseMusic(state.bgm2, false);
+    return;
+  }
+  if(isStoryArgosHackCombatMusicLocked()){
+    pauseMusic(state.bgmMenu, false);
+    pauseMusic(state.bgm2, false);
+    if(!state.gameStarted || state.winner){
+      pauseMusic(state.bgm1, false);
+      return;
+    }
+    state.musicPhase = 'intro';
+    playMusicTrack(state.bgm1, false);
     return;
   }
   const intro = document.getElementById('introScreen');

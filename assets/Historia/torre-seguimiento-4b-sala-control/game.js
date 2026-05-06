@@ -21,9 +21,9 @@ const musicConfig = {
     loop: true,
   },
   argosHackCombat: {
-    id: "silencio-acero-2-panel-hack",
-    label: "Silencio de Acero-2",
-    src: "../Silencio de Acero-2.mp3",
+    id: "sistema-corrupto-panel-hack",
+    label: "Sistema Corrupto",
+    src: "../SistemaCorrupto.mp3",
     volume: 0.38,
     loop: true,
   },
