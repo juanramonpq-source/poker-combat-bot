@@ -808,7 +808,11 @@
       border:1px solid rgba(255,255,255,.06);
       background:rgba(255,255,255,.03);
     }
+    .world-shot picture{
+      display:block;
+    }
     .world-shot img{
+      display:block;
       width:100%;
       aspect-ratio:16 / 10;
       object-fit:cover;
@@ -1153,42 +1157,60 @@
               <p>Estas piezas visuales salen de la carpeta <code>Brutos</code> y nos sirven para que el boceto deje de ser abstracto: ya se ve el tono real de refugio, frontera, amenaza y final de viaje.</p>
               <div class="world-grid">
                 <article class="world-shot">
-                  <img src="assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG" alt="Hangar de la Fosa Azul" loading="lazy">
+                  <picture>
+                    <source media="(max-width: 760px) and (orientation: portrait)" srcset="assets/Historia/low/chapter-mobile/hangar-fosa-azul-720.jpg">
+                    <img src="assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG" alt="Hangar de la Fosa Azul" loading="lazy" decoding="async">
+                  </picture>
                   <div class="world-copy">
                     <strong>Hangar de la Fosa Azul</strong>
                     <span>Punto de arranque: refugio tecnico, nucleo azul y sensacion de oficio superviviente.</span>
                   </div>
                 </article>
                 <article class="world-shot">
-                  <img src="assets/Historia/Brutos/3MERCADO_RELES_MUERTOS.PNG" alt="Mercado de Relés Muertos" loading="lazy">
+                  <picture>
+                    <source media="(max-width: 760px) and (orientation: portrait)" srcset="assets/Historia/low/chapter-mobile/mercado-reles-muertos-720.jpg">
+                    <img src="assets/Historia/Brutos/3MERCADO_RELES_MUERTOS.PNG" alt="Mercado de Relés Muertos" loading="lazy" decoding="async">
+                  </picture>
                   <div class="world-copy">
                     <strong>Mercado de Relés Muertos</strong>
                     <span>Chatarra, comercio y mundo vivo. Aqui el jugador siente por primera vez la escala del entorno.</span>
                   </div>
                 </article>
                 <article class="world-shot">
-                  <img src="assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG" alt="Torre de Seguimiento 4B" loading="lazy">
+                  <picture>
+                    <source media="(max-width: 760px) and (orientation: portrait)" srcset="assets/Historia/low/chapter-mobile/torre-seguimiento-4b-720.jpg">
+                    <img src="assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG" alt="Torre de Seguimiento 4B" loading="lazy" decoding="async">
+                  </picture>
                   <div class="world-copy">
                     <strong>Torre de Seguimiento 4B</strong>
                     <span>Infraestructura vieja de Argos. Buen nodo para subir misterio y conectar jugabilidad con observacion.</span>
                   </div>
                 </article>
                 <article class="world-shot">
-                  <img src="assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG" alt="Campamento de las Placas Rojas" loading="lazy">
+                  <picture>
+                    <source media="(max-width: 760px) and (orientation: portrait)" srcset="assets/Historia/low/chapter-mobile/campamento-placas-rojas-720.jpg">
+                    <img src="assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG" alt="Campamento de las Placas Rojas" loading="lazy" decoding="async">
+                  </picture>
                   <div class="world-copy">
                     <strong>Campamento de las Placas Rojas</strong>
                     <span>Humanidad, memoria y veterania. Ideal para dar respiracion emocional sin perder tension.</span>
                   </div>
                 </article>
                 <article class="world-shot">
-                  <img src="assets/Historia/Brutos/6FOSO DE VIENTO NEGRO.PNG" alt="Foso de Viento Negro" loading="lazy">
+                  <picture>
+                    <source media="(max-width: 760px) and (orientation: portrait)" srcset="assets/Historia/low/chapter-mobile/foso-viento-negro-720.jpg">
+                    <img src="assets/Historia/Brutos/6FOSO DE VIENTO NEGRO.PNG" alt="Foso de Viento Negro" loading="lazy" decoding="async">
+                  </picture>
                   <div class="world-copy">
                     <strong>Foso de Viento Negro</strong>
                     <span>Entorno hostil perfecto para defensa activa, emboscada y peligro fisico del terreno.</span>
                   </div>
                 </article>
                 <article class="world-shot">
-                  <img src="assets/Historia/Brutos/9EXTERIOR_CUPULA_HENDIDA_DE_ARGOS.PNG" alt="Exterior de la Cupula Hendida de Argos" loading="lazy">
+                  <picture>
+                    <source media="(max-width: 760px) and (orientation: portrait)" srcset="assets/Historia/low/chapter-mobile/exterior-cupula-argos-720.jpg">
+                    <img src="assets/Historia/Brutos/9EXTERIOR_CUPULA_HENDIDA_DE_ARGOS.PNG" alt="Exterior de la Cupula Hendida de Argos" loading="lazy" decoding="async">
+                  </picture>
                   <div class="world-copy">
                     <strong>Exterior de la Cupula Hendida de Argos</strong>
                     <span>El ascenso ya tiene final visual. Aqui se siente que la ruta llega a algo sagrado, roto y peligroso.</span>
@@ -1205,7 +1227,10 @@
             </div>
             <article class="chapter-active">
               <div class="chapter-scene">
-                <img id="chapterSceneImage" src="assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG" alt="Escenario del capitulo activo" loading="lazy">
+                <picture>
+                  <source id="chapterSceneMobileSource" media="(max-width: 760px) and (orientation: portrait)" srcset="assets/Historia/low/chapter-mobile/hangar-fosa-azul-720.jpg">
+                  <img id="chapterSceneImage" src="assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG" alt="Escenario del capitulo activo" loading="eager" decoding="async" fetchpriority="high">
+                </picture>
                 <span class="chapter-scene-chip" id="chapterSceneChip">Construccion</span>
               </div>
               <div class="chapter-body">
@@ -1311,6 +1336,7 @@
     const chapterRows = [...document.querySelectorAll('.chapter-row[data-node-id]')];
 
     const chapterSceneImage = document.getElementById('chapterSceneImage');
+    const chapterSceneMobileSource = document.getElementById('chapterSceneMobileSource');
     const chapterSceneChip = document.getElementById('chapterSceneChip');
     const chapterOrderLabel = document.getElementById('chapterOrderLabel');
     const chapterTypeLabel = document.getElementById('chapterTypeLabel');
@@ -1322,6 +1348,7 @@
     const chapterSceneNote = document.getElementById('chapterSceneNote');
     const chapterCast = document.getElementById('chapterCast');
     const chapterDialogue = document.getElementById('chapterDialogue');
+    const chapterMobileImageMedia = window.matchMedia('(max-width: 760px) and (orientation: portrait)');
 
     function pauseDocumentMedia(doc, reset=true){
       if(!doc) return;
@@ -1366,6 +1393,7 @@
         type: 'Briefing',
         sceneChip: 'Construccion',
         image: 'assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/hangar-fosa-azul-720.jpg',
         lead: 'Briefing de arranque. Aqui definimos que es un mecha, la necesidad de montaje y el tono del refugio tecnico.',
         mission: 'Construir un bot valido para un NPC.',
         learn: 'Piloto, modulos y condicion de mecha montado.',
@@ -1381,6 +1409,7 @@
         type: 'Combate',
         sceneChip: 'Tutorial',
         image: 'assets/Historia/Brutos/2PATIO DE PRUEBAS DEL TALLER.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/patio-pruebas-taller-720.jpg',
         lead: 'Primer combate funcional. Sirve para que el jugador vea que el bot responde y que construir bien importa.',
         mission: 'Ganar el combate tutorializado.',
         learn: 'Ataque con combustible y orden del turno.',
@@ -1396,6 +1425,7 @@
         type: 'Encuentro',
         sceneChip: 'Encargo',
         image: 'assets/Historia/Brutos/3MERCADO_RELES_MUERTOS.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/mercado-reles-muertos-720.jpg',
         lead: 'Se abre el mundo. Encargo, chatarra, informacion y sensacion de economia de supervivencia.',
         mission: 'Montar defensa y armadura minimas en turnos limitados.',
         learn: 'Decisiones de montaje bajo restriccion.',
@@ -1411,6 +1441,7 @@
         type: 'Prueba tactica',
         sceneChip: 'Proyectil',
         image: 'assets/Historia/Brutos/4TORRE DE SEGUIMIENTO 4B.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/torre-seguimiento-4b-720.jpg',
         lead: 'Primer nodo claramente vinculado a Argos. Buen lugar para la mision de proyectil y para subir misterio.',
         mission: 'Lanzar al menos un proyectil para completar el nodo.',
         learn: 'Activacion de proyectiles y timing ofensivo.',
@@ -1426,6 +1457,7 @@
         type: 'Dialogo',
         sceneChip: 'Veteranos',
         image: 'assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/campamento-placas-rojas-720.jpg',
         lead: 'Pausa de personaje. Memoria de la guerra, tono humano y aparicion de criterio moral.',
         mission: 'Evento narrativo corto con recompensa de contexto.',
         learn: 'Tono del mundo y rivalidad futura.',
@@ -1441,6 +1473,7 @@
         type: 'Combate',
         sceneChip: 'Defensa activa',
         image: 'assets/Historia/Brutos/6FOSO DE VIENTO NEGRO.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/foso-viento-negro-720.jpg',
         lead: 'Terreno hostil ideal para defensa activa, emboscada y lectura de peligro real.',
         mission: 'Mitigar un ataque usando diamantes en mano.',
         learn: 'Defensa activa y gestion tactica del dano.',
@@ -1456,6 +1489,7 @@
         type: 'Reconfiguracion',
         sceneChip: 'Tripulacion',
         image: 'assets/Historia/Brutos/7SUBESTACIÓN DE CENIZA.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/subestacion-ceniza-720.jpg',
         lead: 'Reconfiguracion del bot y coste tactico. Buen nodo para jugar con tripulacion y cambio de limites.',
         mission: 'Completar una reconfiguracion valida sin romper limites.',
         learn: 'Piloto, copiloto y descarte por exceso.',
@@ -1471,6 +1505,7 @@
         type: 'Combate',
         sceneChip: 'Duelo',
         image: 'assets/Historia/Brutos/8PUENTE DE LOS RELÁMPAGOS QUIETOS.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/puente-relampagos-quietos-720.jpg',
         lead: 'Duelo de criterio. Ya no es aprender: aqui el jugador debe demostrar que domina la tension tactica.',
         mission: 'Vencer a un rival tactico de media dificultad.',
         learn: 'Lectura de amenaza y presion sostenida.',
@@ -1486,6 +1521,7 @@
         type: 'Aproximacion final',
         sceneChip: 'Revelacion',
         image: 'assets/Historia/Brutos/9EXTERIOR_CUPULA_HENDIDA_DE_ARGOS.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/exterior-cupula-argos-720.jpg',
         lead: 'Entrada al territorio del mito real. Revelacion, escala y umbral narrativo antes del cierre.',
         mission: 'Atravesar el umbral de Argos y preparar el duelo final.',
         learn: 'Escala del conflicto y cierre de la ruta.',
@@ -1501,6 +1537,7 @@
         type: 'Cierre',
         sceneChip: 'Desbloqueo',
         image: 'assets/Historia/Brutos/9BINTERIOR DE LA CÚPULA HENDIDA DE ARGÓS.PNG',
+        mobileImage: 'assets/Historia/low/chapter-mobile/interior-cupula-argos-720.jpg',
         lead: 'Resolucion y desbloqueo. El final del viaje debe sentirse como examen y herencia del mundo anterior.',
         mission: 'Activar SUPER DIFICIL en 1 jugador.',
         learn: 'Cierre sobrio, merecido y con sensacion de rango.',
@@ -1545,13 +1582,25 @@
       });
     }
 
+    function resolveChapterImage(node){
+      if(chapterMobileImageMedia.matches && node.mobileImage) return node.mobileImage;
+      return node.image;
+    }
+
+    function updateChapterSceneImage(node){
+      if(chapterSceneMobileSource && node.mobileImage){
+        chapterSceneMobileSource.srcset = node.mobileImage;
+      }
+      chapterSceneImage.src = resolveChapterImage(node);
+      chapterSceneImage.alt = node.title;
+    }
+
     function renderStoryDraftNode(nodeId, incomingNode){
       const localNode = storyDraftNodes[nodeId] || storyDraftNodes.hangar;
       const mapNode = incomingNode || {};
       currentStoryNodeId = localNode.id;
 
-      chapterSceneImage.src = localNode.image;
-      chapterSceneImage.alt = localNode.title;
+      updateChapterSceneImage(localNode);
       chapterSceneChip.textContent = localNode.sceneChip || mapNode.subtype || 'Boceto';
       chapterOrderLabel.textContent = `Capitulo ${localNode.order || mapNode.order || '?'}`;
       chapterTypeLabel.textContent = mapNode.type || localNode.type;
@@ -1592,6 +1641,15 @@
       storyBocetoMapFrame.addEventListener('load', ()=>{
         postNodeSelectionToMap(currentStoryNodeId);
       });
+    }
+
+    const refreshChapterImageForViewport = ()=>{
+      updateChapterSceneImage(storyDraftNodes[currentStoryNodeId] || storyDraftNodes.hangar);
+    };
+    if (typeof chapterMobileImageMedia.addEventListener === 'function') {
+      chapterMobileImageMedia.addEventListener('change', refreshChapterImageForViewport);
+    } else if (typeof chapterMobileImageMedia.addListener === 'function') {
+      chapterMobileImageMedia.addListener(refreshChapterImageForViewport);
     }
 
     const requestedTab = new URLSearchParams(window.location.search).get('tab');

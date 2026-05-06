@@ -5692,6 +5692,7 @@
           desktop: 'assets/Historia/low/hangar_fosa_azul_compacto_1600.webp',
           mobile: 'assets/Historia/low/hangar_fosa_azul_ultraligero_1080.webp'
         },
+        mobileImage: 'assets/Historia/low/chapter-mobile/hangar-fosa-azul-720.jpg',
         image: 'assets/Historia/Brutos/1HANGAR DE LA FOSA AZUL.PNG',
         lead: 'Pozo técnico de recuperación y reacondicionamiento. La Ruta Ceniza empieza desde abajo, entre hierro, paciencia y piezas que todavía recuerdan cómo sobrevivir.',
         mission: 'Construir un bot válido para un NPC.',
@@ -5710,6 +5711,7 @@
           desktop: 'assets/Historia/low/patio_pruebas_ligero_1080.webp',
           mobile: 'assets/Historia/low/patio_pruebas_compacto_1600.webp'
         },
+        mobileImage: 'assets/Historia/low/chapter-mobile/patio-pruebas-taller-720.jpg',
         image: 'assets/Historia/Brutos/2PATIO DE PRUEBAS DEL TALLER.PNG',
         lead: 'Plataforma de validación del taller. Aquí el metal empieza a responder y el piloto descubre que combatir también exige calma, secuencia y criterio.',
         mission: 'Ganar el combate tutorializado.',
@@ -5724,6 +5726,7 @@
         title: 'Mercado de Relés Muertos',
         type: 'Encuentro',
         sceneChip: 'Mercado',
+        mobileImage: 'assets/Historia/low/chapter-mobile/mercado-reles-muertos-720.jpg',
         image: MERCADO_RELES_IMAGE,
         lead: 'Cementerio técnico convertido en red comercial. En manos de Vera Hex, los restos de Argós son piezas, secretos y memoria intercambiable.',
         mission: 'Comprar una carta o artefacto para cerrar trato con Vera Hex.',
@@ -5739,6 +5742,7 @@
         type: 'Exploración táctica',
         sceneChip: 'Transmisiones',
         lowImage: 'assets/Historia/low/torre_4b_compacta.webp',
+        mobileImage: 'assets/Historia/low/chapter-mobile/torre-seguimiento-4b-720.jpg',
         image: 'assets/Historia/low/torre_4b_compacta.webp',
         lead: 'Uno de los antiguos ojos de Argós. La torre no solo vigilaba: enlazaba relés, rutas y voces humanas que La Caída dejó apagadas.',
         mission: 'Explorar la Torre 4B con Xavor Glitch, despejar drones, restaurar transmisiones y purgar el panel de control de Argós.',
@@ -5753,6 +5757,7 @@
         title: 'Campamento de las Placas Rojas',
         type: 'Diálogo',
         sceneChip: 'Veteranos',
+        mobileImage: 'assets/Historia/low/chapter-mobile/campamento-placas-rojas-720.jpg',
         image: 'assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG',
         lead: 'Refugio de veteranos donde la guerra se recuerda sin épica. Aquí la memoria pesa tanto como la munición y la esperanza nunca sale gratis.',
         mission: 'Evento narrativo corto con recompensa de contexto.',
@@ -5767,6 +5772,7 @@
         title: 'Foso de Viento Negro',
         type: 'Combate',
         sceneChip: 'Defensa activa',
+        mobileImage: 'assets/Historia/low/chapter-mobile/foso-viento-negro-720.jpg',
         image: 'assets/Historia/Brutos/6FOSO DE VIENTO NEGRO.PNG',
         lead: 'Una herida abierta en el terreno. El Foso enseña que el combate no siempre llega de frente: a veces es el propio mundo quien ataca primero.',
         mission: 'Mitigar un ataque usando diamantes en mano.',
@@ -5781,6 +5787,7 @@
         title: 'Subestación de Ceniza',
         type: 'Reconfiguración',
         sceneChip: 'Tripulación',
+        mobileImage: 'assets/Historia/low/chapter-mobile/subestacion-ceniza-720.jpg',
         image: 'assets/Historia/Brutos/7SUBESTACIÓN DE CENIZA.PNG',
         lead: 'Infraestructura energética en agonía. La Subestación recuerda que el mundo anterior no ha muerto del todo: sigue respirando mal bajo la ceniza.',
         mission: 'Completar una reconfiguración válida sin romper límites.',
@@ -5795,6 +5802,7 @@
         title: 'Puente de los Relámpagos Quietos',
         type: 'Combate',
         sceneChip: 'Duelo',
+        mobileImage: 'assets/Historia/low/chapter-mobile/puente-relampagos-quietos-720.jpg',
         image: 'assets/Historia/Brutos/8PUENTE DE LOS RELÁMPAGOS QUIETOS.PNG',
         lead: 'Umbral de tensión contenida entre la supervivencia y el juicio. Cruzarlo significa aceptar que la Ruta Ceniza ya no enseña: examina.',
         mission: 'Vencer a un rival táctico de media dificultad.',
@@ -5809,6 +5817,7 @@
         title: 'Cúpula Hendida de Argós',
         type: 'Aproximación final',
         sceneChip: 'Revelación',
+        mobileImage: 'assets/Historia/low/chapter-mobile/exterior-cupula-argos-720.jpg',
         image: 'assets/Historia/Brutos/9EXTERIOR_CUPULA_HENDIDA_DE_ARGOS.PNG',
         lead: 'Frontera entre leyenda y verdad. La ciudad fortificada de Argós aparece como herida, reliquia y amenaza de un orden que aún quiere justificarse.',
         mission: 'Atravesar el umbral de Argós y preparar el duelo final.',
@@ -5823,6 +5832,7 @@
         title: 'Protocolo Ceniza',
         type: 'Cierre',
         sceneChip: 'Desbloqueo',
+        mobileImage: 'assets/Historia/low/chapter-mobile/interior-cupula-argos-720.jpg',
         image: 'assets/Historia/Brutos/9BINTERIOR DE LA CÚPULA HENDIDA DE ARGÓS.PNG',
         lead: 'Última instrucción del viejo orden. En el corazón roto de la perfección se decide qué parte del pasado merece sobrevivir y quién puede tocarla.',
         mission: 'Activar SUPER DIFÍCIL en 1 jugador.',
@@ -7140,6 +7150,11 @@
       return nodeGuidance[node.id] || node.mission || 'Selecciona el destino activo de la Ruta Ceniza y completa su objetivo para abrir el siguiente capítulo.';
     }
 
+    function getMobileRouteImage(node) {
+      if (!node) return '';
+      return node.mobileImage || resolveStoryAssetSource(node.lowImage) || node.image || '';
+    }
+
     function updateStoryMapHudForNode(nodeId = currentStoryNodeId) {
       const node = storyDraftNodes[nodeId] || storyDraftNodes.hangar;
       const status = getStoryNodeStatus(node);
@@ -7267,6 +7282,7 @@
       nodes.forEach((node) => {
         const status = getStoryNodeStatus(node);
         const available = status !== 'locked';
+        const routeImage = getMobileRouteImage(node);
         const summaryText = available ? node.lead : 'Información bloqueada. La Ruta Ceniza aún no ha revelado este enclave.';
         const metaMarkup = available
           ? `<span>${node.type}</span><span>${node.sceneChip}</span>`
@@ -7282,7 +7298,7 @@
         }[status];
         card.innerHTML = `
           <div class="mobile-route-art">
-            <img src="${node.image}" alt="${node.title}" loading="lazy">
+            <img src="${routeImage}" alt="${node.title}" loading="lazy" decoding="async">
           </div>
           <div class="mobile-route-body">
             <div class="mobile-route-topline">
@@ -8281,6 +8297,10 @@
       rememberActiveStoryMission(null);
       queueStoryMapTheme('market');
       closeStoryScene();
+      closeStoryMarketExploration({
+        applyExitTheme: false,
+        immediate: true
+      });
       rememberStorySurface({ type: 'market', nodeId: 'mercado' });
       playMapMusic();
       syncStoryMarketMobileSections();
@@ -8322,6 +8342,7 @@
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('story_node', 'mercado');
+      targetUrl.searchParams.set('story_load_id', String(Date.now()));
       const extraDeckCards = encodeStoryDeckCardsParam();
       if (extraDeckCards) targetUrl.searchParams.set('story_deck_cards', extraDeckCards);
       if (hasStoryViajeroRewardHistory()) {
@@ -8375,6 +8396,13 @@
       activeExplorationNodeId = null;
       activeExplorationSceneKey = null;
       storyExplorationStage.classList.remove('active');
+      if (options.immediate) {
+        storyExplorationStage.hidden = true;
+        if (storyExplorationFrame && options.keepFrame !== true) storyExplorationFrame.src = 'about:blank';
+        resumeMapMusicIfSafe();
+        if (onClosed) onClosed();
+        return;
+      }
       window.setTimeout(() => {
         if (!storyExplorationStage.classList.contains('active')) {
           storyExplorationStage.hidden = true;
