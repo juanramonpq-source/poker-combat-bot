@@ -38,6 +38,7 @@ const chapterMusic = {
 
 const radioOpenSoundSrc = "../sfx/walkie_roger_beep_cc0.mp3";
 const radioMessageDurationScale = 0.5;
+const unknownRadioIntroDelay = 15;
 const xavorVanReturnArrivalDelay = 5;
 
 const defaultChapterState = {
@@ -50,6 +51,7 @@ const defaultChapterState = {
   xavorIntroduced: false,
   towerDoorOpen: false,
   exteriorDroneEncountered: false,
+  unknownRadioIntroPlayed: false,
   interiorDroneDefeated: false,
   controlMechaDefeated: false,
   argosHackDefeated: false,
@@ -728,14 +730,22 @@ const radioState = {
   typeSpeed: 52,
 };
 
-const delayedUnknownRadioIntro = {
-  active:
+function shouldScheduleInitialUnknownRadioIntro() {
+  return !chapterState.unknownRadioIntroPlayed &&
     !chapterState.argosHackDefeated &&
     !chapterState.finalRewardClaimed &&
     !chapterState.xavorIntroduced &&
-    !chapterState.xavorArrived,
-  timer: 20,
-  triggered: false,
+    !chapterState.xavorArrived &&
+    !chapterState.pendingVanArrival &&
+    !chapterState.exteriorDroneEncountered &&
+    getExteriorDroneDefeatedIds().length === 0 &&
+    storyParams.get("mission_return") !== "1";
+}
+
+const delayedUnknownRadioIntro = {
+  active: shouldScheduleInitialUnknownRadioIntro(),
+  timer: unknownRadioIntroDelay,
+  triggered: !!chapterState.unknownRadioIntroPlayed,
 };
 
 const delayedUnknownRadioLines = [
@@ -751,6 +761,7 @@ function maybeTriggerDelayedUnknownRadioIntro(dt) {
   if (delayedUnknownRadioIntro.timer > 0) return;
   delayedUnknownRadioIntro.triggered = true;
   delayedUnknownRadioIntro.active = false;
+  patchChapterState({ unknownRadioIntroPlayed: true });
   queueRadio(delayedUnknownRadioLines, { unstable: true });
 }
 
@@ -1639,7 +1650,7 @@ function triggerExteriorDroneCombat(drone) {
   if (storyEmbedMode || window.parent !== window) {
     delayedUnknownRadioIntro.active = false;
     delayedUnknownRadioIntro.triggered = true;
-    patchChapterState({ exteriorDroneEncountered: true });
+    patchChapterState({ exteriorDroneEncountered: true, unknownRadioIntroPlayed: true });
     drone.combatCooldown = 2.2;
     setInteractionMessage(`${drone.label}: combate temático detectado. Entrando a modo historia...`, 3.4);
     queueRadio([
@@ -1670,6 +1681,7 @@ function triggerExteriorDroneCombat(drone) {
   drone.defeated = true;
   patchChapterState({
     exteriorDroneEncountered: true,
+    unknownRadioIntroPlayed: true,
     exteriorDroneDefeatedIds: defeatedIds,
     exteriorDroneDefeated: true,
     xavorArrived: wasFirstVictory ? false : chapterState.xavorArrived,

@@ -6859,7 +6859,19 @@
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
-          text: 'Si estás aquí es porque crees en algo más que en la Ruta Ceniza clásica... Te propongo una misión sencilla de decir y bastante menos sencilla de sobrevivir: restablecer las transmisiones de la Torre 4B. Esto era un antiguo enclave de telecomunicaciones de toda la red que desplegaba Argós en el pasado, pero aún funciona si la restauramos. Las demás torres se perdieron, es una pena... Tras La Caída todo quedó apagado, o directamente reducido a cenizas. Había buen material en esas torres. La de fiestas que me habré corrido en la Torre 3A, madre mía, aquello era épico... eso sí era la "excelencia" jajaja. En fin: hay que aprovechar ahora que Argós intenta reconstruirse pero todavía no lo ha logrado. Curioso, ¿verdad? Las consecuencias de su propio ataque preventivo... eso fue La Caída. Escucha: si abrimos esta torre, el mundo humano recuperará gran parte de su voz. Y si Argós nos oye... bueno... me gustaría gritarle un par de cosas al oído: ¿Me escuchas, bonito? Eso dicen todas...'
+          text: 'Si estás aquí es porque crees en algo más que en la Ruta Ceniza clásica... Te propongo una misión sencilla de decir y bastante menos sencilla de sobrevivir: restablecer las transmisiones de la Torre 4B. Esto era un antiguo enclave de telecomunicaciones de toda la red que desplegaba Argós en el pasado, pero aún funciona si la restauramos. Las demás torres se perdieron, es una pena... Tras La Caída todo quedó apagado, o directamente reducido a cenizas.'
+        },
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: XAVOR_POSE_TWO,
+          figureClass: 'figure-xavor',
+          figureRaised: true,
+          figureShiftVh: -28,
+          figureMobileShiftVh: -10,
+          figureScale: 0.9,
+          figureMobileScale: 0.72,
+          text: 'En fin: hay que aprovechar ahora que Argós intenta reconstruirse pero todavía no lo ha logrado. Escucha bien: al volver a la torre, acércate al panel de control azul y actívalo para abrir la puerta. Después sube hasta el panel superior, purga a Argós y devuelve las transmisiones a la humanidad. Si Argós nos oye... bueno... me gustaría gritarle un par de cosas al oído: ¿Me escuchas, bonito? Eso dicen todas...'
         }
       ]
     };
@@ -8934,7 +8946,7 @@
       targetUrl.searchParams.set('story_audio', 'internal');
       targetUrl.searchParams.set('story_brief', 'on');
       targetUrl.searchParams.set('story_tower_return_scene', payload.returnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior');
-      targetUrl.searchParams.set('v', '20260506-argos-hack-skin');
+      targetUrl.searchParams.set('v', '20260507-argos-hack-gate-scroll');
       if (options.standalone) {
         targetUrl.searchParams.set('story_standalone', '1');
         targetUrl.searchParams.set('story_return', window.location.href);
@@ -9137,6 +9149,7 @@
         const isFirstExteriorVictory = !wasAlreadyDefeated && defeatedIds.length === 1 && !towerState.xavorArrived;
         patchStoryTowerChapterState({
           exteriorDroneEncountered: true,
+          unknownRadioIntroPlayed: true,
           exteriorDroneDefeated: defeatedIds.length > 0,
           exteriorDroneDefeatedIds: defeatedIds,
           xavorArrived: isFirstExteriorVictory ? false : !!towerState.xavorArrived,

@@ -8899,6 +8899,165 @@ html:has(body.story-argos-hack-ui){
   background:#513039;
 }
 
+html:has(body.story-argos-hack-gated),
+body.story-argos-hack-gated{
+  overflow:hidden !important;
+}
+
+.story-argos-hack-gate{
+  position:fixed;
+  inset:0;
+  z-index:10080;
+  display:grid;
+  place-items:center;
+  padding:clamp(18px, 5vw, 46px);
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255,118,132,.28), transparent 34%),
+    radial-gradient(circle at 50% 50%, rgba(93,255,143,.13), transparent 46%),
+    repeating-linear-gradient(180deg, rgba(93,255,143,.08) 0 1px, transparent 1px 7px),
+    rgba(32,14,18,.74);
+  backdrop-filter:blur(8px) saturate(1.25);
+  animation:argosGateBackdropBoot .7s ease both;
+}
+
+.story-argos-hack-gate[hidden]{
+  display:none !important;
+}
+
+.story-argos-hack-gate-card{
+  position:relative;
+  width:min(760px, 94vw);
+  display:grid;
+  justify-items:center;
+  gap:14px;
+  padding:clamp(24px, 5.5vw, 48px);
+  border-radius:24px;
+  border:2px solid rgba(100,255,145,.74);
+  background:
+    linear-gradient(180deg, rgba(92,42,50,.98), rgba(42,24,29,.98)),
+    repeating-linear-gradient(90deg, rgba(100,255,145,.08) 0 1px, transparent 1px 10px);
+  color:#f6fff7;
+  box-shadow:
+    0 0 0 1px rgba(255,76,94,.28),
+    0 30px 70px rgba(0,0,0,.56),
+    0 0 56px rgba(255,76,94,.22),
+    inset 0 0 36px rgba(100,255,145,.10);
+  text-align:center;
+  overflow:hidden;
+  animation:argosGateCardBoot .9s cubic-bezier(.2,.85,.2,1) both;
+}
+
+.story-argos-hack-gate-card::before{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg, transparent 0 38%, rgba(255,148,160,.20) 45%, rgba(114,255,153,.18) 50%, transparent 58%),
+    repeating-linear-gradient(180deg, rgba(100,255,145,.08) 0 1px, transparent 1px 6px);
+  animation:argosGateScan 1.35s ease-out both;
+}
+
+.story-argos-hack-skull{
+  position:relative;
+  z-index:1;
+  display:grid;
+  place-items:center;
+  width:clamp(88px, 17vw, 132px);
+  aspect-ratio:1;
+  border-radius:50%;
+  border:2px solid rgba(255,105,119,.74);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,241,244,.98), rgba(255,166,176,.90) 48%, rgba(104,20,32,.78) 75%),
+    #4d1e28;
+  color:#2a0d13;
+  font-size:clamp(3.6rem, 12vw, 6.4rem);
+  line-height:1;
+  text-shadow:0 2px 0 rgba(255,255,255,.18);
+  box-shadow:
+    0 0 26px rgba(255,76,94,.34),
+    0 0 34px rgba(100,255,145,.18),
+    inset 0 0 18px rgba(255,255,255,.18);
+  animation:argosGateSkullGlitch 2.3s steps(1, end) infinite .8s;
+}
+
+.story-argos-hack-gate-kicker,
+.story-argos-hack-gate-card h2,
+.story-argos-hack-gate-card p,
+.story-argos-hack-gate-btn{
+  position:relative;
+  z-index:1;
+}
+
+.story-argos-hack-gate-kicker{
+  color:#7dff9f;
+  font-size:.78rem;
+  font-weight:950;
+  letter-spacing:.20em;
+  text-transform:uppercase;
+}
+
+.story-argos-hack-gate-card h2{
+  margin:0;
+  color:#fff8f9;
+  font-family:"Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  font-size:clamp(2.4rem, 9vw, 5.2rem);
+  line-height:.94;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  text-shadow:
+    0 0 18px rgba(255,76,94,.38),
+    0 0 28px rgba(100,255,145,.22);
+}
+
+.story-argos-hack-gate-card p{
+  margin:0;
+  color:#ffd7dc;
+  font-size:clamp(1.1rem, 4.8vw, 2rem);
+  font-weight:950;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.story-argos-hack-gate-btn{
+  min-height:56px;
+  max-width:100%;
+  margin-top:10px;
+  padding:0 22px !important;
+  border-radius:999px !important;
+  border:2px solid rgba(117,255,157,.88) !important;
+  background:linear-gradient(180deg, #a5ffad, #2fdd67 54%, #126f33) !important;
+  color:#07180d !important;
+  font-size:clamp(.82rem, 3.2vw, 1.05rem) !important;
+  font-weight:950 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    0 10px 24px rgba(0,0,0,.28),
+    0 0 26px rgba(98,255,145,.24) !important;
+}
+
+.story-argos-hack-gate-btn:focus-visible{
+  outline:3px solid rgba(255,245,248,.92);
+  outline-offset:4px;
+}
+
+@media (max-width: 560px){
+  .story-argos-hack-gate{
+    padding:14px;
+  }
+  .story-argos-hack-gate-card{
+    gap:10px;
+    border-radius:18px;
+  }
+  .story-argos-hack-gate-btn{
+    white-space:normal !important;
+    line-height:1.12 !important;
+    padding:10px 18px !important;
+  }
+}
+
 body.story-argos-hack-ui::before{
   background:
     linear-gradient(180deg, transparent 0 28%, rgba(255,161,174,.16) 43%, rgba(100,255,142,.12) 50%, transparent 63%),
@@ -8956,6 +9115,10 @@ body.story-argos-hack-ui .app{
   animation:argosInterfaceCapture 1.55s cubic-bezier(.2,.85,.2,1) both;
 }
 
+body.story-argos-hack-ui.story-argos-hack-booting .app{
+  animation:argosInterfaceCapture 1.6s cubic-bezier(.2,.85,.2,1) both;
+}
+
 body.story-argos-hack-ui .cockpit-grid,
 body.story-argos-hack-ui .desktop-compact-shell{
   animation:
@@ -8967,11 +9130,14 @@ body.story-argos-hack-ui .frame,
 body.story-argos-hack-ui .desktop-compact-shell,
 body.story-argos-hack-ui .compact-topbar,
 body.story-argos-hack-ui .compact-player-panel,
+body.story-argos-hack-ui .compact-arena-panel,
+body.story-argos-hack-ui .compact-rival-panel,
 body.story-argos-hack-ui .compact-actions-panel,
 body.story-argos-hack-ui .compact-hand-panel,
 body.story-argos-hack-ui .compact-zone-card,
 body.story-argos-hack-ui .compact-mecha-stage,
 body.story-argos-hack-ui .compact-readout,
+body.story-argos-hack-ui .compact-mobile-actions-panel,
 body.story-argos-hack-ui .story-mission-brief-bar{
   border-color:rgba(75,255,128,.58) !important;
   background:
@@ -8982,6 +9148,21 @@ body.story-argos-hack-ui .story-mission-brief-bar{
     0 0 24px rgba(65,255,129,.13),
     inset 0 0 22px rgba(255,49,69,.08) !important;
   animation:argosFrameCapture 1.35s steps(5, end) both;
+}
+
+body.story-argos-hack-ui.story-argos-hack-booting .frame,
+body.story-argos-hack-ui.story-argos-hack-booting .desktop-compact-shell,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-topbar,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-player-panel,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-arena-panel,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-rival-panel,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-actions-panel,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-hand-panel,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-zone-card,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-mecha-stage,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-readout,
+body.story-argos-hack-ui.story-argos-hack-booting .compact-mobile-actions-panel{
+  animation:argosFrameCapture 1.55s steps(5, end) both;
 }
 
 body.story-argos-hack-ui .frame::before,
@@ -8998,6 +9179,21 @@ body.story-argos-hack-ui .story-mission-brief-kicker{
   color:#83ffad !important;
   border-color:rgba(131,255,173,.34) !important;
   text-shadow:0 0 10px rgba(85,255,136,.28);
+}
+
+body.story-argos-hack-ui .compact-zone-card,
+body.story-argos-hack-ui .compact-zone-head,
+body.story-argos-hack-ui .compact-empty,
+body.story-argos-hack-ui .compact-mobile-hand-row{
+  color:#edfff1 !important;
+}
+
+body.story-argos-hack-ui .compact-zone-head strong,
+body.story-argos-hack-ui .compact-hand-chip strong,
+body.story-argos-hack-ui .compact-mobile-hand-row strong,
+body.story-argos-hack-ui .compact-module-value strong{
+  color:#ffb0ba !important;
+  text-shadow:0 0 10px rgba(255,69,88,.28);
 }
 
 body.story-argos-hack-ui .story-mission-brief-kicker::after{
@@ -9030,6 +9226,82 @@ body.story-argos-hack-ui .fuel-rule-banner{
   border-color:rgba(255,70,86,.62) !important;
   background:linear-gradient(90deg, rgba(106,12,24,.86), rgba(9,56,24,.70)) !important;
   color:#ffe9eb !important;
+}
+
+body.story-argos-hack-ui .compact-chip,
+body.story-argos-hack-ui .compact-hand-chip,
+body.story-argos-hack-ui .compact-mobile-hand-summary,
+body.story-argos-hack-ui .compact-mobile-hand-row,
+body.story-argos-hack-ui .compact-module-value,
+body.story-argos-hack-ui .compact-mecha-module-values .vitality-readout{
+  border-color:rgba(93,255,143,.48) !important;
+  background:
+    repeating-linear-gradient(90deg, rgba(92,255,146,.05) 0 1px, transparent 1px 8px),
+    linear-gradient(180deg, rgba(80,35,43,.92), rgba(34,24,27,.90)) !important;
+  color:#edfff1 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,218,224,.12),
+    0 0 0 1px rgba(255,49,69,.12),
+    0 0 12px rgba(76,255,134,.10) !important;
+}
+
+body.story-argos-hack-ui .compact-chip-accent,
+body.story-argos-hack-ui .compact-chip:not(.compact-chip-danger):has(strong){
+  border-color:rgba(118,255,159,.70) !important;
+  background:linear-gradient(180deg, #a4ffae, #2fdc66 54%, #116d32) !important;
+  color:#06160b !important;
+}
+
+body.story-argos-hack-ui .compact-chip-danger{
+  border-color:rgba(255,93,106,.82) !important;
+  background:linear-gradient(180deg, #ff9ba4, #db2b43 56%, #6e101d) !important;
+  color:#fff7f8 !important;
+}
+
+body.story-argos-hack-ui .compact-arena-core,
+body.story-argos-hack-ui .compact-hand-tray{
+  border-color:rgba(83,255,133,.60) !important;
+  background:
+    radial-gradient(circle at 20% 24%, rgba(255,130,145,.18), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(89,255,141,.12), transparent 30%),
+    repeating-linear-gradient(180deg, rgba(89,255,141,.055) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, rgba(72,36,43,.92), rgba(36,25,29,.94)) !important;
+  box-shadow:
+    inset 0 0 26px rgba(83,255,133,.12),
+    0 0 0 1px rgba(255,49,69,.16) !important;
+}
+
+body.story-argos-hack-ui .app.mobile-panorama-mode .compact-mobile-actions-panel{
+  border-color:rgba(83,255,133,.66) !important;
+  background:
+    radial-gradient(circle at 74% 0%, rgba(93,255,143,.15), transparent 30%),
+    radial-gradient(circle at 16% 18%, rgba(255,112,128,.20), transparent 34%),
+    repeating-linear-gradient(180deg, rgba(93,255,143,.055) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, rgba(62,34,40,.97), rgba(35,24,28,.97)) !important;
+  color:#edfff1 !important;
+  box-shadow:
+    inset 0 0 20px rgba(83,255,133,.10),
+    0 0 0 1px rgba(255,49,69,.15),
+    0 0 20px rgba(83,255,133,.10) !important;
+}
+
+body.story-argos-hack-ui .compact-empty{
+  border-color:rgba(255,91,103,.45) !important;
+  background:rgba(50,26,31,.52) !important;
+}
+
+body.story-argos-hack-ui .compact-mecha-ring-fill{
+  border-color:rgba(255,88,101,.64) !important;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,90,105,.20), transparent 40%),
+    rgba(12,28,15,.72) !important;
+}
+
+body.story-argos-hack-ui .compact-arena-brand #compactBrandImage{
+  filter:
+    drop-shadow(0 0 12px rgba(86,255,131,.24))
+    drop-shadow(0 0 16px rgba(255,49,69,.18))
+    saturate(.92);
 }
 
 body.story-argos-hack-ui button{
@@ -9119,6 +9391,42 @@ body.story-argos-hack-ui .compact-zone-card.compact-dropzone-active{
     0 0 18px rgba(255,49,69,.26) !important;
 }
 
+body.story-argos-hack-ui.story-argos-hack-booting::before{
+  background:
+    linear-gradient(180deg, transparent 0 16%, rgba(255,122,139,.28) 34%, rgba(109,255,150,.24) 43%, rgba(255,122,139,.18) 52%, transparent 70%),
+    repeating-linear-gradient(180deg, rgba(109,255,150,.10) 0 1px, transparent 1px 5px),
+    radial-gradient(circle at 50% 22%, rgba(255,130,145,.16), transparent 30%),
+    linear-gradient(135deg, rgba(255,174,184,.14), rgba(86,255,131,.10) 48%, rgba(0,0,0,0));
+  opacity:.86;
+  animation:argosHackSweep 1.65s ease-out 1, argosBootPulse 2.4s steps(1, end) 1;
+}
+
+body.story-argos-hack-ui.story-argos-hack-booting .compact-arena-core::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:8;
+  pointer-events:none;
+  border-radius:inherit;
+  background:
+    linear-gradient(180deg, transparent 0 28%, rgba(255,94,110,.30) 42%, rgba(105,255,148,.24) 48%, transparent 64%),
+    repeating-linear-gradient(90deg, rgba(105,255,148,.12) 0 2px, transparent 2px 10px);
+  mix-blend-mode:screen;
+  animation:argosPanelScanBoot 1.65s ease-out both;
+}
+
+body.story-argos-hack-ui.story-argos-hack-booting #mechaImg-1,
+body.story-argos-hack-ui.story-argos-hack-booting #compactMechaRing-1 img,
+body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1 .story-radar-sprite img{
+  animation:argosPanelCorruptBoot 1.75s steps(7, end) both !important;
+}
+
+body.story-argos-hack-ui.story-argos-hack-booting #compactMechaRing-1,
+body.story-argos-hack-ui.story-argos-hack-booting #mechaDial-1 .dial-ring-wrap,
+body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
+  animation:argosPanelRingBoot 1.75s steps(6, end) both !important;
+}
+
 @keyframes argosHackSweep{
   0%{ transform:translateY(-100%); opacity:.08; }
   16%{ transform:translateY(-42%); opacity:.74; }
@@ -9129,12 +9437,74 @@ body.story-argos-hack-ui .compact-zone-card.compact-dropzone-active{
   100%{ transform:translateY(0); opacity:.72; }
 }
 
+@keyframes argosGateBackdropBoot{
+  0%{ opacity:0; filter:brightness(1.8) saturate(.6); }
+  24%{ opacity:1; filter:brightness(1.12) saturate(1.5); }
+  48%{ filter:brightness(.82) saturate(.9); }
+  100%{ opacity:1; filter:brightness(1) saturate(1); }
+}
+
+@keyframes argosGateCardBoot{
+  0%{ opacity:0; transform:translateY(24px) scale(.92) skewX(-3deg); filter:blur(8px) saturate(.6); }
+  24%{ opacity:1; transform:translateY(-6px) scale(1.03) skewX(2deg); filter:blur(0) saturate(1.8); }
+  42%{ transform:translateY(4px) scale(.98) skewX(-1deg); filter:saturate(.8); }
+  68%{ transform:translateY(-2px) scale(1.01); }
+  100%{ opacity:1; transform:translateY(0) scale(1); filter:none; }
+}
+
+@keyframes argosGateScan{
+  0%{ transform:translateY(-72%); opacity:0; }
+  18%{ opacity:.88; }
+  62%{ opacity:.66; }
+  100%{ transform:translateY(72%); opacity:0; }
+}
+
+@keyframes argosGateSkullGlitch{
+  0%, 83%, 89%, 100%{ transform:translate(0,0) scale(1); filter:none; }
+  84%{ transform:translate(3px,-2px) scale(1.04); filter:saturate(1.7) hue-rotate(18deg); }
+  85%{ transform:translate(-4px,2px) scale(.98); filter:contrast(1.35) hue-rotate(-18deg); }
+  86%{ transform:translate(2px,1px) scale(1.02); filter:none; }
+}
+
+@keyframes argosBootPulse{
+  0%, 18%, 34%, 52%, 72%, 100%{ filter:none; }
+  19%{ filter:contrast(1.4) saturate(1.5) brightness(1.16); }
+  35%{ filter:hue-rotate(18deg) saturate(1.65) brightness(1.10); }
+  53%{ filter:hue-rotate(-14deg) contrast(1.25); }
+}
+
 @keyframes argosHackChipBoot{
   0%{ opacity:0; transform:translateX(-18px) scale(.94); filter:blur(6px); }
   38%{ opacity:1; transform:translateX(6px) scale(1.04); filter:blur(0); }
   54%{ opacity:.38; transform:translateX(-3px) scale(.98); }
   72%{ opacity:1; transform:translateX(2px) scale(1.01); }
   100%{ opacity:1; transform:translateX(0) scale(1); }
+}
+
+@keyframes argosPanelScanBoot{
+  0%{ transform:translateY(-112%); opacity:0; }
+  12%{ opacity:.92; }
+  48%{ transform:translateY(8%); opacity:.78; }
+  76%{ opacity:.52; }
+  100%{ transform:translateY(112%); opacity:0; }
+}
+
+@keyframes argosPanelCorruptBoot{
+  0%{ opacity:.22; transform:translate(-8px, 4px) scale(.86) skewX(-5deg); filter:grayscale(1) brightness(.55) hue-rotate(-40deg); }
+  14%{ opacity:.95; transform:translate(7px, -3px) scale(1.08) skewX(6deg); filter:saturate(2.2) hue-rotate(92deg) contrast(1.25); }
+  26%{ opacity:.48; transform:translate(-5px, 2px) scale(.98) skewX(-8deg); filter:saturate(.7) hue-rotate(-24deg) brightness(1.12); }
+  42%{ opacity:1; transform:translate(4px, -1px) scale(1.04) skewX(4deg); filter:saturate(1.8) hue-rotate(12deg) drop-shadow(0 0 16px rgba(255,70,86,.5)); }
+  62%{ opacity:.74; transform:translate(-2px, 1px) scale(1.01); filter:saturate(1.2) contrast(1.2); }
+  78%{ opacity:1; transform:translate(2px, 0) scale(1.03); filter:saturate(1.55) drop-shadow(0 0 16px rgba(93,255,143,.36)); }
+  100%{ opacity:1; transform:translateY(-6px) scale(1); filter:drop-shadow(0 0 16px rgba(255,67,87,.32)) saturate(1.08); }
+}
+
+@keyframes argosPanelRingBoot{
+  0%{ filter:saturate(.4) brightness(.72); transform:scale(.94); }
+  18%{ filter:saturate(1.8) brightness(1.18); transform:scale(1.05) rotate(-1deg); }
+  32%{ filter:saturate(.8) brightness(.9); transform:scale(.98) rotate(1deg); }
+  52%{ filter:saturate(1.55) brightness(1.08); transform:scale(1.03); }
+  100%{ filter:none; transform:scale(1); }
 }
 
 @keyframes argosBodyCapture{
@@ -9220,6 +9590,15 @@ body.story-argos-hack-ui .compact-zone-card.compact-dropzone-active{
 <div class="story-orientation-toast" id="storyOrientationToast" role="status" aria-live="polite">
   <span class="story-orientation-toast-icon" aria-hidden="true">🔒↻</span>
   <span>Activa el bloqueo de pantalla</span>
+</div>
+<div class="story-argos-hack-gate" id="storyArgosHackGate" hidden role="dialog" aria-modal="true" aria-labelledby="storyArgosHackGateTitle" aria-describedby="storyArgosHackGateText">
+  <div class="story-argos-hack-gate-card">
+    <div class="story-argos-hack-skull" aria-hidden="true">☠</div>
+    <div class="story-argos-hack-gate-kicker">Intrusión de Argós</div>
+    <h2 id="storyArgosHackGateTitle">¡Has sido hackeado!</h2>
+    <p id="storyArgosHackGateText">No puedes usar combustible</p>
+    <button class="story-argos-hack-gate-btn" id="storyArgosHackGateBtn" type="button">Tengo un As de Diamantes bajo la manga</button>
+  </div>
 </div>
 <button id="storyAudioAutostartBtn" type="button" hidden aria-hidden="true" tabindex="-1"></button>
 
@@ -10383,6 +10762,9 @@ let compactPointerDragState = null;
 let compactSuppressCardClickUntil = 0;
 let compactSuppressCardClickId = null;
 let mobilePanoramaVitalityStage = null;
+let storyArgosHackUiBootTimer = null;
+let storyArgosHackGateActive = false;
+let storyArgosHackGateProfile = null;
 
 function buildOnlineFxCue(type, playerIdx, extra={}){
   return {
@@ -10697,9 +11079,7 @@ function primeOfflineMode(gameMode, difficulty=null){
 }
 
 function shouldStartTowerCombatInMobileHorizontal(mission){
-  return STORY_EMBED_MODE
-    && mission === 'tower_argos_hack'
-    && isStoryMobileViewport();
+  return false;
 }
 
 function prepareStoryTowerCombatHudMode(mission){
@@ -10710,14 +11090,31 @@ function prepareStoryTowerCombatHudMode(mission){
   requestLandscapeOrientationBestEffort();
 }
 
+function prepareStoryArgosHackScrollMode(){
+  setStoryHudMode('scroll');
+  desktopHudMode = 'expanded';
+  mobilePanoramaRequested = false;
+  releaseOrientationLockBestEffort();
+}
+
 function startStoryTowerCombatMission(mission, profile){
   primeOfflineMode('single', mission === 'tower_argos_hack' ? 'normal' : 'easy');
   newGame();
   clearSinglePlayerAiTimer();
   setupStoryTowerCombatScenario(mission);
   hideIntroScreen();
-  prepareStoryTowerCombatHudMode(mission);
+  if(isStoryArgosHackCombat(mission)){
+    prepareStoryArgosHackScrollMode();
+  }else{
+    prepareStoryTowerCombatHudMode(mission);
+  }
   render();
+  if(isStoryArgosHackCombat(mission)){
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => showStoryArgosHackGate(profile));
+    });
+    return;
+  }
   startStoryCombatMusicAtStart(false);
   scheduleStoryEmbedNavigationSetup();
   addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');
@@ -10876,6 +11273,75 @@ function isStoryTowerCombatMission(mission = state.storyMission || STORY_MISSION
 
 function isStoryArgosHackCombat(mission = state.storyMission || STORY_MISSION_BOOT){
   return mission === 'tower_argos_hack';
+}
+
+function clearStoryArgosHackInterfaceBoot(){
+  if(storyArgosHackUiBootTimer){
+    window.clearTimeout(storyArgosHackUiBootTimer);
+    storyArgosHackUiBootTimer = null;
+  }
+  document.body?.classList.remove('story-argos-hack-booting');
+  document.querySelector('.app')?.classList.remove('story-argos-hack-booting');
+}
+
+function clearStoryArgosHackGate(){
+  storyArgosHackGateActive = false;
+  storyArgosHackGateProfile = null;
+  document.body?.classList.remove('story-argos-hack-gated');
+  const gate = document.getElementById('storyArgosHackGate');
+  if(gate){
+    gate.hidden = true;
+    gate.classList.remove('show');
+  }
+}
+
+function triggerStoryArgosHackInterfaceBoot(){
+  if(!isStoryArgosHackCombat(state.storyMission || STORY_MISSION_BOOT)) return;
+  const body = document.body;
+  const app = document.querySelector('.app');
+  if(!body || !app) return;
+  clearStoryArgosHackInterfaceBoot();
+  body.classList.add('story-argos-hack-ui');
+  app.classList.add('story-argos-hack-ui');
+  void body.offsetWidth;
+  void app.offsetWidth;
+  body.classList.add('story-argos-hack-booting');
+  app.classList.add('story-argos-hack-booting');
+  storyArgosHackUiBootTimer = window.setTimeout(clearStoryArgosHackInterfaceBoot, 2600);
+}
+
+function showStoryArgosHackGate(profile=null){
+  if(!isStoryArgosHackCombat(state.storyMission || STORY_MISSION_BOOT)) return;
+  storyArgosHackGateActive = true;
+  storyArgosHackGateProfile = profile || getStoryTowerCombatProfile(state.storyMission || STORY_MISSION_BOOT);
+  prepareStoryArgosHackScrollMode();
+  window.scrollTo({ top:0, left:0, behavior:'auto' });
+  triggerStoryArgosHackInterfaceBoot();
+  const gate = document.getElementById('storyArgosHackGate');
+  if(gate){
+    gate.hidden = false;
+    gate.classList.add('show');
+  }
+  document.body?.classList.add('story-argos-hack-gated');
+  updateButtons();
+  window.setTimeout(() => document.getElementById('storyArgosHackGateBtn')?.focus({ preventScroll:true }), 80);
+}
+
+function resolveStoryArgosHackGate(){
+  if(!storyArgosHackGateActive) return;
+  const profile = storyArgosHackGateProfile || getStoryTowerCombatProfile(state.storyMission || STORY_MISSION_BOOT);
+  clearStoryArgosHackGate();
+  triggerStoryArgosHackInterfaceBoot();
+  startStoryCombatMusicAtStart(true);
+  scheduleStoryEmbedNavigationSetup();
+  addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');
+  log(`📜 Mision historia Torre 4B: ${profile?.intro || 'combate especial'}`);
+  window.setTimeout(() => {
+    scrollToPlayerPanel(0, 'smooth');
+    notifySelection(profile?.intro || 'Objetivo: vence y vuelve a la Torre 4B.');
+    scheduleStoryEmbedNavigationSetup();
+  }, 260);
+  render();
 }
 
 function isStoryCombatLoadingMission(mission = state.storyMission || STORY_MISSION_BOOT){
@@ -13986,12 +14452,13 @@ function getInteractivePlayerIndex(){
   return focusIdx;
 }
 function canUseInteractiveTurnAction(){
-  if(state.winner || state.pendingDefense || state.transitionLock) return false;
+  if(storyArgosHackGateActive || state.winner || state.pendingDefense || state.transitionLock) return false;
   const interactiveIdx = getInteractivePlayerIndex();
   if(interactiveIdx < 0) return false;
   return interactiveIdx === state.currentPlayer;
 }
 function canUseInteractiveDefenseAction(){
+  if(storyArgosHackGateActive) return false;
   if(!state.pendingDefense || state.winner) return false;
   const interactiveIdx = getInteractivePlayerIndex();
   if(interactiveIdx < 0) return false;
@@ -18580,6 +19047,10 @@ function render(){
   const argosHackUiActive = isStoryArgosHackCombat(state.storyMission || STORY_MISSION_BOOT);
   document.body.classList.toggle('story-argos-hack-ui', argosHackUiActive);
   document.querySelector('.app')?.classList.toggle('story-argos-hack-ui', argosHackUiActive);
+  if(!argosHackUiActive){
+    clearStoryArgosHackInterfaceBoot();
+    clearStoryArgosHackGate();
+  }
   document.body.classList.toggle('victory', !!state.winner);
   document.body.classList.toggle('tutorial-guided-active', tutorialIsGuided());
   document.body.classList.toggle('tutorial-guided-busy', tutorialSystem.enabled && tutorialSystem.busy);
@@ -18745,7 +19216,7 @@ function updateButtons(){
   if(!state.players || state.players.length === 0) return;
   const hasWinner = !!state.winner;
   const inDefense = !!state.pendingDefense;
-  const locked = !!state.transitionLock;
+  const locked = !!state.transitionLock || storyArgosHackGateActive;
   const cpuOwnsCurrentContext = isSinglePlayerMode() && getInteractivePlayerIndex() < 0;
   const saveSupport = getSaveSupportState();
   const player = state.players[state.currentPlayer] || { hand:[], attack:[] };
@@ -19088,6 +19559,7 @@ document.getElementById('skipDefenseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
   skipDefense();
 });
+document.getElementById('storyArgosHackGateBtn')?.addEventListener('click', resolveStoryArgosHackGate);
 document.getElementById('desktopCompactToggleTopBtn').addEventListener('click', () => {
   triggerDesktopHudModeTransition('compact');
 });
