@@ -5371,6 +5371,13 @@
       syncLoadStoryButton();
     }
 
+    function clearStoryTransitionState() {
+      if (storyTransitionVeil) {
+        storyTransitionVeil.classList.remove('active', 'mission-spiral');
+      }
+      storyTransitionBusy = false;
+    }
+
     function resetStoryProgressForNewGame() {
       try {
         localStorage.removeItem(STORY_PROGRESS_SAVE_KEY);
@@ -5381,10 +5388,7 @@
       rememberStoryWorkspace(false);
       rememberActiveStoryMission(null);
       rememberStorySurface(null);
-      if (storyTransitionVeil) {
-        storyTransitionVeil.classList.remove('active', 'mission-spiral');
-      }
-      storyTransitionBusy = false;
+      clearStoryTransitionState();
       storyProgressState.completedCount = 0;
       storyProgressState.completedNodes = {};
       storyProgressState.maraIntroSeen = false;
@@ -8231,10 +8235,7 @@
       }
       rememberStoryWorkspace(true);
       rememberActiveStoryMission(null);
-      if (storyTransitionVeil) {
-        storyTransitionVeil.classList.remove('active', 'mission-spiral');
-      }
-      storyTransitionBusy = false;
+      clearStoryTransitionState();
       closeStoryScene();
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
@@ -9134,6 +9135,21 @@
       return true;
     }
 
+    function handleStoryPageShow(event) {
+      const restoredFromCache = !!event.persisted;
+      let hasPendingMissionResult = false;
+      try {
+        hasPendingMissionResult = !!localStorage.getItem(STORY_PENDING_MISSION_RESULT_KEY);
+      } catch (error) {}
+
+      if (!restoredFromCache && !hasPendingMissionResult) return;
+      clearStoryTransitionState();
+      if (consumePendingStoryMissionResult()) return;
+      if (restoredFromCache) {
+        restoreStorySessionIfNeeded();
+      }
+    }
+
     function resetStoryMapViewport() {
       if (storyMapShell) storyMapShell.scrollTo({ top: 0, left: 0, behavior: 'auto' });
       try {
@@ -9895,6 +9911,7 @@
     window.addEventListener('pagehide', () => {
       if (workspacePanel.classList.contains('active')) saveStoryProgress('pagehide');
     });
+    window.addEventListener('pageshow', handleStoryPageShow);
     animateAmbientGlow();
     window.setTimeout(() => {
       if (!workspacePanel.classList.contains('active')) triggerTitleMusicAutostart();
