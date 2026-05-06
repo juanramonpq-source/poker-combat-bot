@@ -10649,6 +10649,25 @@ function primeOfflineMode(gameMode, difficulty=null){
   releaseOrientationLockBestEffort();
 }
 
+function startStoryTowerCombatMissionFromLoading(mission, profile){
+  primeOfflineMode('single', mission === 'tower_argos_hack' ? 'normal' : 'easy');
+  newGame();
+  clearSinglePlayerAiTimer();
+  setupStoryTowerCombatScenario(mission);
+  render();
+  hideIntroScreen();
+  startIntroMusic(false);
+  scheduleStoryEmbedNavigationSetup();
+  hideStoryCombatLoadingAfterFirstFrame();
+  addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');
+  log(`📜 Mision historia Torre 4B: ${profile?.intro || 'combate especial'}`);
+  window.setTimeout(() => {
+    scrollToPlayerPanel(0, 'smooth');
+    notifySelection(profile?.intro || 'Objetivo: vence y vuelve a la Torre 4B.');
+    scheduleStoryEmbedNavigationSetup();
+  }, 260);
+}
+
 let storyMissionAutoStartDone = false;
 function autoStartStoryMissionIfRequested(){
   if(!STORY_MISSION_BOOT) return false;
@@ -10727,22 +10746,10 @@ function autoStartStoryMissionIfRequested(){
     case 'tower_argos_hack': {
       const profile = getStoryTowerCombatProfile(STORY_MISSION_BOOT);
       storyMissionBriefCollapsed = false;
-      showStoryCombatLoading(profile?.title || 'Torre 4B', 'Pulsa para activar la música, probar suerte y entrar al combate.', { requireManualStart:true });
-      primeOfflineMode('single', STORY_MISSION_BOOT === 'tower_argos_hack' ? 'normal' : 'easy');
-      newGame();
-      clearSinglePlayerAiTimer();
-      setupStoryTowerCombatScenario(STORY_MISSION_BOOT);
-      render();
-      hideIntroScreen();
-      scheduleStoryEmbedNavigationSetup();
-      hideStoryCombatLoadingAfterFirstFrame();
-      addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');
-      log(`📜 Mision historia Torre 4B: ${profile?.intro || 'combate especial'}`);
-      window.setTimeout(() => {
-        scrollToPlayerPanel(0, 'smooth');
-        notifySelection(profile?.intro || 'Objetivo: vence y vuelve a la Torre 4B.');
-        scheduleStoryEmbedNavigationSetup();
-      }, 260);
+      showStoryCombatLoading(profile?.title || 'Torre 4B', 'Pulsa para activar la música, probar suerte y entrar al combate.', {
+        requireManualStart:true,
+        onManualStart: () => startStoryTowerCombatMissionFromLoading(STORY_MISSION_BOOT, profile)
+      });
       break;
     }
     default:
@@ -10816,6 +10823,8 @@ let storyCombatLotteryAwaitingAck = false;
 let storyCombatLotteryReadyToReveal = false;
 let storyCombatLoadingRequiresManualStart = false;
 let storyCombatLoadingManualDismissed = false;
+let storyCombatLoadingStartHandler = null;
+let storyCombatLoadingStartTriggered = false;
 function isStoryCombatLoadingMission(mission = state.storyMission || STORY_MISSION_BOOT){
   return STORY_EMBED_MODE && isStoryTowerCombatMission(mission);
 }
@@ -10953,6 +10962,15 @@ function bindStoryCombatAudioPrimer(){
   });
 }
 
+function runStoryCombatLoadingStartHandler(){
+  if(!storyCombatLoadingStartHandler || storyCombatLoadingStartTriggered) return false;
+  storyCombatLoadingStartTriggered = true;
+  const handler = storyCombatLoadingStartHandler;
+  storyCombatLoadingStartHandler = null;
+  handler();
+  return true;
+}
+
 function renderStoryCombatLotteryResult(result){
   const box = document.getElementById('storyCombatLotteryResult');
   const primer = document.getElementById('storyCombatAudioPrimer');
@@ -10986,7 +11004,7 @@ function renderStoryCombatLotteryResult(result){
     storyCombatLoadingManualDismissed = true;
     playUiSound('select');
     storyCombatLotteryReadyToReveal = true;
-    hideStoryCombatLoading(0);
+    if(!runStoryCombatLoadingStartHandler()) hideStoryCombatLoading(0);
   });
 }
 
@@ -11018,6 +11036,8 @@ function showStoryCombatLoading(title = 'Torre 4B', text = 'Preparando enemigo, 
   storyCombatLotteryReadyToReveal = false;
   storyCombatLoadingRequiresManualStart = options.requireManualStart !== false;
   storyCombatLoadingManualDismissed = false;
+  storyCombatLoadingStartHandler = typeof options.onManualStart === 'function' ? options.onManualStart : null;
+  storyCombatLoadingStartTriggered = false;
   const result = document.getElementById('storyCombatLotteryResult');
   const primer = document.getElementById('storyCombatAudioPrimer');
   if(result){
@@ -11315,12 +11335,14 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   state.winner = null;
   state.storyMission = mission;
   state.storyMissionAnnounced = false;
+  const loadingLotteryAttempt = getStoryCombatLotteryAttempt();
   state.storyMissionProgress = {
     towerFuelLocked: mission === 'tower_argos_hack',
     towerReturnScene: STORY_TOWER_RETURN_SCENE || '',
     towerDroneId: STORY_TOWER_DRONE_ID || '',
     towerRewardId: STORY_TOWER_REWARD_ID || '',
-    towerSuit: STORY_TOWER_SUIT || profile.suit || ''
+    towerSuit: STORY_TOWER_SUIT || profile.suit || '',
+    loadingLotteryReward: loadingLotteryAttempt?.won && loadingLotteryAttempt.card ? loadingLotteryAttempt.card : null
   };
   state.log = [
     `📜 ${profile.intro}`,
