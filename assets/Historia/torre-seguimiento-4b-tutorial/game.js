@@ -366,9 +366,9 @@ const interactables = [
     x: 282,
     y: 724,
     radius: 152,
-    label: "Furboneta de Xavor",
+    label: "Furgoneta de Xavor",
     hint: "Hablar",
-    message: "La furboneta chisporrotea como si supiera reirse antes de arrancar.",
+    message: "La furgoneta chisporrotea como si supiera reirse antes de arrancar.",
   },
 ];
 
@@ -777,7 +777,7 @@ const xavorPresentation = {
       kicker: "Presentación",
       title: "Xavor Glitch",
       subtitle: "Técnico de frontera · Restaurador de sistemas muertos",
-      text: "La furboneta se detiene como si hubiera esquivado a la muerte por costumbre... Xavor Glitch baja entre cables, monitores abiertos y una sonrisa demasiado tranquila para alguien que sabe leer una ruina encendida. (Me gusta documentar todo lo que hago, no me juzgues).",
+      text: "La furgoneta se detiene como si hubiera esquivado a la muerte por costumbre... Xavor Glitch baja entre cables, monitores abiertos y una sonrisa demasiado tranquila para alguien que sabe leer una ruina encendida. (Me gusta documentar todo lo que hago, no me juzgues).",
     },
     {
       kicker: "Lore PoCoBOT",
@@ -795,7 +795,7 @@ const xavorPresentation = {
       kicker: "Siguiente paso",
       title: "Hackeo preparado",
       subtitle: "Ordenador azul del escenario",
-      text: "De momento la puerta está cerrada. Eso dicen todas... pero yo puedo abrir una grieta desde la furboneta y desbloquear el ordenador azul que mantiene la compuerta cerrada. Tú solo ve hasta el terminal, activa el desbloqueo y sube.",
+      text: "De momento la puerta está cerrada. Eso dicen todas... pero yo puedo abrir una grieta desde la furgoneta y desbloquear el ordenador azul que mantiene la compuerta cerrada. Tú solo ve hasta el terminal, activa el desbloqueo y sube.",
     },
   ],
 };
@@ -1411,7 +1411,7 @@ async function loadAssets() {
   const defeatedCount = defeatedExteriorDroneCount();
   if (chapterState.argosHackDefeated && !chapterState.finalRewardClaimed) {
     queueRadio([
-      "Xavor: ¡ahí estás! Vuelve a la furboneta. Tengo una recompensa y un discurso muy corto, que ya es raro en mí.",
+      "Xavor: ¡ahí estás! Vuelve a la furgoneta. Tengo una recompensa y un discurso muy corto, que ya es raro en mí.",
     ]);
   } else if (chapterState.finalRewardClaimed) {
     queueRadio([
@@ -1419,7 +1419,7 @@ async function loadAssets() {
     ]);
   } else if (chapterState.xavorArrived && !chapterState.xavorIntroduced && !chapterState.pendingVanArrival) {
     queueRadio([
-      "Xavor por radio: furboneta en posición. Acércate y te cuento por qué esa torre importa.",
+      "Xavor por radio: furgoneta en posición. Acércate y te cuento por qué esa torre importa.",
     ]);
   }
 }
@@ -1568,9 +1568,9 @@ function startPendingXavorVanArrival() {
   xavorVan.soundPlayed = false;
   xavorVan.smokeDebt = 0;
   patchChapterState({ pendingVanArrival: false, xavorArrived: true, vanArrivalDelaySeconds: 0 });
-  setInteractionMessage("La furboneta de Xavor entra en escena entre chispas.", 4.8);
+  setInteractionMessage("La furgoneta de Xavor entra en escena entre chispas.", 4.8);
   queueRadio([
-    "Xavor por radio: furboneta en posición. Acércate y te cuento por qué esa torre importa.",
+    "Xavor por radio: furgoneta en posición. Acércate y te cuento por qué esa torre importa.",
   ]);
 }
 
@@ -1587,7 +1587,7 @@ function beginXavorPresentation() {
 function completeXavorPresentation() {
   xavorPresentation.active = false;
   patchChapterState({ xavorIntroduced: true });
-  setInteractionMessage("Xavor ha enlazado la furboneta al ordenador azul. Ya puedes hackear la puerta.", 4.6);
+  setInteractionMessage("Xavor ha enlazado la furgoneta al ordenador azul. Ya puedes hackear la puerta.", 4.6);
   queueRadio([
     "Xavor: ordenador preparado. Ve al terminal azul y pulsa E. ¡Aprovecha, que lo tenemos tontorrón!",
   ]);
@@ -1602,9 +1602,9 @@ function completeMissionWithXavor() {
     finaleConversationPending: true,
   });
 
-  setInteractionMessage("Xavor abre la furboneta. Toca cerrar la misión cara a cara.", 4.4);
+  setInteractionMessage("Xavor abre la furgoneta. Toca cerrar la misión cara a cara.", 4.4);
   queueRadio([
-    "Xavor: ¡ahí estás! Vuelve a la furboneta. Tengo una recompensa y un discurso muy corto, que ya es raro en mí.",
+    "Xavor: ¡ahí estás! Vuelve a la furgoneta. Tengo una recompensa y un discurso muy corto, que ya es raro en mí.",
   ]);
   postStoryTutorialAction("xavor-finale-request", {
     missionComplete: true,
@@ -2012,11 +2012,11 @@ function updateInteractions(dt) {
       if (nearest.id === "blue-computer") {
         if (!chapterState.xavorIntroduced) {
           message = chapterState.xavorArrived
-            ? "El ordenador azul está bloqueado. Xavor aún no ha enlazado su furboneta al terminal."
+            ? "El ordenador azul está bloqueado. Xavor aún no ha enlazado su furgoneta al terminal."
             : "El ordenador azul está ahí, pero no responde. Primero explora la zona y despeja los drones.";
           queueRadio([
             chapterState.xavorArrived
-              ? "Xavor por radio: acércate a la furboneta primero. El hackeo no se improvisa... bueno, casi nunca."
+              ? "Xavor por radio: acércate a la furgoneta primero. El hackeo no se improvisa... bueno, casi nunca."
               : "Xavor por radio: todavía no, campeón. Primero limpia la zona de drones y luego hablamos de hackeos.",
           ]);
         } else {
@@ -2034,7 +2034,7 @@ function updateInteractions(dt) {
             return;
           }
 
-          message = "Xavor: recompensa entregada, transmisiones vivas y furboneta sin explotar. Final elegante. Eso dicen todas...";
+          message = "Xavor: recompensa entregada, transmisiones vivas y furgoneta sin explotar. Final elegante. Eso dicen todas...";
           setInteractionMessage(message, 3.8);
           input.interactQueued = false;
           return;
@@ -2066,7 +2066,7 @@ function updateInteractions(dt) {
       setInteractionMessage(message, 3.4);
       postStoryTutorialAction(nearest.id, { doorOpen: towerState.doorOpen });
     } else {
-      setInteractionMessage("Acércate al ordenador azul, a la furboneta, a la puerta o a la pasarela.", 2.4);
+      setInteractionMessage("Acércate al ordenador azul, a la furgoneta, a la puerta o a la pasarela.", 2.4);
     }
 
     input.interactQueued = false;
@@ -2868,7 +2868,7 @@ function drawHud() {
   const objectiveText = chapterState.finalRewardClaimed
     ? `Misión completada · Radio de Xavor recibida · Monedas: ${chapterState.coins}`
     : chapterState.argosHackDefeated
-      ? `Vuelve a la furboneta de Xavor para cerrar la mision · Monedas: ${chapterState.coins}`
+      ? `Vuelve a la furgoneta de Xavor para cerrar la mision · Monedas: ${chapterState.coins}`
       : `${skipEnemyCombatsMode ? "TEST: toca enemigos para omitir combate · " : ""}Explora, derrota drones (${defeatedExteriorDroneCount()}/3) y hackea el ordenador azul · Monedas: ${chapterState.coins}`;
   if (hudHelp.expanded) {
     ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
@@ -3072,7 +3072,7 @@ function drawLoading() {
     kicker: "Exploración táctica",
     title: "Torre de Seguimiento 4B",
     subtitle: "Activando radar, emisor y pasarelas de Argós",
-    status: "Enlazando furboneta, drones y ordenador azul",
+    status: "Enlazando furgoneta, drones y ordenador azul",
     accent: "#ffd55f",
     shadow: "#1c1712",
     deep: "#0f2b34"

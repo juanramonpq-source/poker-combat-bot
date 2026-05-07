@@ -1101,7 +1101,7 @@ async function loadAssets() {
   if (chapterState.argosHackDefeated) {
     queueFloorEntryRadio([
       "Xavor: transmisiones restauradas. La torre vuelve a respirar por encima de la chatarra.",
-      "Baja y vuelve a la furboneta. Te debo una recompensa y, por una vez, no voy a hacerte pagar por escucharme.",
+      "Baja y vuelve a la furgoneta. Te debo una recompensa y, por una vez, no voy a hacerte pagar por escucharme.",
     ]);
   } else if (chapterState.controlMechaDefeated) {
     queueFloorEntryRadio([

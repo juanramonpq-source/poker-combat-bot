@@ -1215,7 +1215,7 @@ async function loadAssets() {
 
   if (chapterState.argosHackDefeated && !chapterState.finalRewardClaimed) {
     queueFloorEntryRadio([
-      "Xavor: planta baja despejada. Sal por la puerta exterior y vuelve a la furboneta para cerrar esto.",
+      "Xavor: planta baja despejada. Sal por la puerta exterior y vuelve a la furgoneta para cerrar esto.",
     ]);
   } else {
     queueFloorEntryRadio([

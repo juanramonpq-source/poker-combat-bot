@@ -9,8 +9,8 @@ Prototipo jugable autocontenido para integrar en PoCoBOT como zona de exploracio
 - `style.css`: presentacion responsive y aviso de orientacion horizontal en movil.
 - `assets/torre-seguimiento-4b-rendered-map.png`: escenario raster isometrico de la torre 4B.
 - `assets/mecha-clean-frames/`: frames del PoCoBOT pilotado para inclinacion/deslizamiento.
-- `assets/sfx/motor_looping_cc0.mp3`: motor de apoyo para la llegada de la furboneta.
-- `assets/sfx/drag_racing_sfx_cc0.mp3`: motor/frenada para la entrada con derrape de la furboneta.
+- `assets/sfx/motor_looping_cc0.mp3`: motor de apoyo para la llegada de la furgoneta.
+- `assets/sfx/drag_racing_sfx_cc0.mp3`: motor/frenada para la entrada con derrape de la furgoneta.
 
 ## Sistemas incluidos
 

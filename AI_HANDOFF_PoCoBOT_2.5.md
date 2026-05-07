@@ -210,7 +210,7 @@ Personaje principal: Xavor Glitch.
 Estado esperado:
 
 - Nodo 4 de la Ruta Ceniza.
-- Xavor llega con furboneta.
+- Xavor llega con furgoneta.
 - Exploración con PoCoBOT.
 - Drones/vigilancia remanente.
 - Ordenador azul y hackeo.
