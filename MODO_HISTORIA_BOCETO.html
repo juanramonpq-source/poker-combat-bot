@@ -5389,6 +5389,7 @@
     let storySceneTouchY = null;
     let storyMobileRouteTouchY = null;
     let storyMarketTouchY = null;
+    let storyExplorationLoaderShownAt = 0;
     const handledStoryWheelEvents = new WeakSet();
 
     function setStorySessionFlag(key, value) {
@@ -8792,10 +8793,20 @@
     }
 
     function showStoryExplorationLoader(title, detail = 'Cargando escenario explorable...', kicker = 'Preparando capítulo') {
+      storyExplorationLoaderShownAt = Date.now();
       if (storyExplorationLoaderKicker) storyExplorationLoaderKicker.textContent = kicker;
       if (storyExplorationLoaderTitle) storyExplorationLoaderTitle.textContent = title || 'Ruta Ceniza';
       if (storyExplorationLoaderDetail) storyExplorationLoaderDetail.textContent = detail;
       storyExplorationStage?.classList.add('loading');
+    }
+
+    function hideStoryExplorationLoader() {
+      if (!storyExplorationStage) return;
+      const elapsed = Date.now() - storyExplorationLoaderShownAt;
+      const remaining = Math.max(0, 560 - elapsed);
+      window.setTimeout(() => {
+        storyExplorationStage?.classList.remove('loading');
+      }, remaining);
     }
 
     function buildStoryMarketExplorationUrl() {
@@ -9241,6 +9252,28 @@
       return STORY_TOWER_SCENE_PATHS[sceneKey] || STORY_TOWER_ENTRY_URL;
     }
 
+    function getStoryTowerLoaderCopy(sceneKey = 'exterior') {
+      const copyByScene = {
+        exterior: {
+          title: 'Torre de Seguimiento 4B',
+          detail: 'Cargando exterior, drones y transmisiones...'
+        },
+        tutorial: {
+          title: 'Torre de Seguimiento 4B',
+          detail: 'Cargando exterior, drones y transmisiones...'
+        },
+        interior: {
+          title: 'Interior de la Torre 4B',
+          detail: 'Encendiendo pasillos, relés y señales de Xavor...'
+        },
+        control: {
+          title: 'Sala de Control 4B',
+          detail: 'Sincronizando consola, hackeo y defensa de Argós...'
+        }
+      };
+      return copyByScene[sceneKey] || copyByScene.exterior;
+    }
+
     function buildStoryTowerSceneUrl(sceneKey = 'exterior', extraParams = {}) {
       const targetUrl = new URL(getStoryTowerScenePath(sceneKey), window.location.href);
       targetUrl.searchParams.set('story_embed', '1');
@@ -9280,7 +9313,8 @@
       }
 
       storyExplorationStage.hidden = false;
-      showStoryExplorationLoader('Torre de Seguimiento 4B', 'Cargando exterior, drones y transmisiones...');
+      const loaderCopy = getStoryTowerLoaderCopy(sceneKey);
+      showStoryExplorationLoader(loaderCopy.title, loaderCopy.detail);
       storyExplorationFrame.src = targetUrl;
       storyExplorationStage.classList.add('active');
       window.setTimeout(focusStoryExplorationFrame, 40);
@@ -10635,7 +10669,7 @@
     window.addEventListener('keydown', (event) => forwardStoryExplorationKey(event, 'down'), { capture: true });
     window.addEventListener('keyup', (event) => forwardStoryExplorationKey(event, 'up'), { capture: true });
     storyExplorationFrame?.addEventListener('load', () => {
-      storyExplorationStage?.classList.remove('loading');
+      hideStoryExplorationLoader();
       window.setTimeout(focusStoryExplorationFrame, 40);
     });
 
