@@ -6870,7 +6870,7 @@
     };
     storySceneScripts.torre_xavor_intro = {
       title: 'Torre de Seguimiento 4B',
-      subtitle: 'La furboneta llega entre polvo, motor viejo y una señal que se niega a morir.',
+      subtitle: 'La furgoneta llega entre polvo, motor viejo y una señal que se niega a morir.',
       contextChip: 'Presentación · Xavor Glitch',
       objective: 'Conoce a Xavor Glitch, comprende el origen técnico de la misión y activa el ordenador azul para abrir la Torre 4B.',
       completeActionLabel: 'Volver a la Torre 4B',
@@ -6901,8 +6901,8 @@
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
-          text: 'No te asustes por la entrada. Mi furboneta solo derrapa así cuando intenta causar buena impresión... o cuando los frenos vuelven a tener opiniones propias. Xavor Glitch, técnico de frontera, restaurador de sistemas muertos y especialista en escuchar cosas que Argós juraría haber enterrado. Eso dicen todas...',
-          choicePrompt: 'Antes de entrar en la furboneta...',
+          text: 'No te asustes por la entrada. Mi furgoneta solo derrapa así cuando intenta causar buena impresión... o cuando los frenos vuelven a tener opiniones propias. Xavor Glitch, técnico de frontera, restaurador de sistemas muertos y especialista en escuchar cosas que Argós juraría haber enterrado. Eso dicen todas...',
+          choicePrompt: 'Antes de entrar en la furgoneta...',
           choices: [
             {
               id: 'red',
@@ -6999,7 +6999,7 @@
     };
     storySceneScripts.torre_xavor_finale = {
       title: 'Torre de Seguimiento 4B',
-      subtitle: 'La furboneta vuelve a abrir sus monitores cuando la torre recupera la voz.',
+      subtitle: 'La furgoneta vuelve a abrir sus monitores cuando la torre recupera la voz.',
       contextChip: 'Cierre · Xavor Glitch',
       objective: 'Recibe la recompensa final de Xavor Glitch y prepara el siguiente tramo de la Ruta Ceniza.',
       completeActionLabel: 'Cerrar capítulo',
@@ -7022,7 +7022,7 @@
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
-          text: 'Mira eso... Torre 4B vuelve a transmitir. El mundo humano acaba de recuperar una voz, y tú acabas de recordarle a Argós que no todo lo que entierra se queda enterrado.'
+          text: 'Mira eso... La Torre 4B vuelve a transmitir. No te imaginas lo importante que resulta este hecho para el resurgir de la humanidad. Argós acaba de darse cuenta de que no todo lo que entierra se queda enterrado para siempre.'
         },
         {
           speaker: 'Xavor Glitch',
@@ -7034,7 +7034,7 @@
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
-          text: 'Sigue con la Ruta Ceniza y ve hacia el Campamento de las Placas Rojas. Si las transmisiones aguantan, allí podrán escuchar algo más que interferencias y malas noticias.'
+          text: 'Veo que estás decidido a seguir con la Ruta Ceniza. Ve hacia el Campamento de las Placas Rojas. Si las transmisiones aguantan, allí podrán escuchar algo más que interferencias y malas noticias. Te agradecería que contactaras conmigo una vez allí para confirmar nuestro éxito.'
         },
         {
           speaker: 'Xavor Glitch',
@@ -7046,7 +7046,7 @@
           figureMobileShiftVh: -8,
           figureScale: 1,
           figureMobileScale: 0.88,
-          text: 'Y llévate esto: una radio ajustada a mi canal. No promete milagros, pero sí una voz al otro lado cuando la chatarra empiece a responder demasiado tarde.'
+          text: 'Toma, llévate esto: una radio ajustada a mi canal. No promete milagros, pero sí una voz al otro lado cuando te pongas triste, algún chiste seguro que se me ocurre...'
         },
         {
           speaker: 'Xavor Glitch',
@@ -7058,8 +7058,8 @@
           figureMobileShiftVh: -10,
           figureScale: 0.9,
           figureMobileScale: 0.72,
-          text: 'Último detalle antes de que salgas: elige una recompensa. Una carta aleatoria para tu inventario o una antigua moneda. Prometo no juzgarte demasiado... eso dicen todas.',
-          choicePrompt: 'Xavor deja dos recompensas sobre la mesa de la furboneta.',
+          text: 'Último detalle antes de que salgas: elige una recompensa. Una carta aleatoria para tu inventario (aunque te advierto que no tengo cartas muy altas...) o una antigua moneda con este símbolo tan molón. Elijas lo que elijas prometo no juzgarte demasiado... ya sabes...eso dicen todas.',
+          choicePrompt: 'Xavor deja dos recompensas sobre la mesa de la furgoneta.',
           choices: [
             {
               id: 'card',
@@ -7520,12 +7520,12 @@
         return 'Hackea el ordenador azul, abre la puerta de la Torre 4B y sube por el interior hasta la sala de control.';
       }
       if (towerState.pendingVanArrival) {
-        return 'Xavor está llegando con la furboneta. Espera unos segundos en la explanada para ver la llegada.';
+        return 'Xavor está llegando con la furgoneta. Espera unos segundos en la explanada para ver la llegada.';
       }
       if (towerState.xavorArrived) {
-        return 'Xavor ya ha llegado con la furboneta. Acércate a él para que te explique las cartas, la torre y el hackeo.';
+        return 'Xavor ya ha llegado con la furgoneta. Acércate a él para que te explique las cartas, la torre y el hackeo.';
       }
-      return 'Nuevo capítulo abierto: Torre de Seguimiento 4B. Limpia los drones exteriores; tras el primer combate llegará Xavor con la furboneta.';
+      return 'Nuevo capítulo abierto: Torre de Seguimiento 4B. Limpia los drones exteriores; tras el primer combate llegará Xavor con la furgoneta.';
     }
 
     function getStoryMapGuidance(nodeId = currentStoryNodeId) {
