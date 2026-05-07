@@ -1,6 +1,6 @@
 {
   "name": "poker-combat-bot-online",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Juego de combate entre mechas - Multiplayer Online con Socket.IO",
   "main": "server.js",
   "scripts": {
