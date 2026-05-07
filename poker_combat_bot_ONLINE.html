@@ -873,6 +873,28 @@ body.victory .winner-banner.show{
   font-weight:800;
   line-height:1.3;
 }
+.compact-defense-warning-actions{
+  display:none;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+.compact-defense-warning-actions button{
+  min-width:0;
+  min-height:38px;
+  padding:8px 10px !important;
+  border-radius:12px !important;
+  font-size:.68rem !important;
+  line-height:1.05 !important;
+  letter-spacing:.02em !important;
+  text-transform:uppercase !important;
+  transform:none !important;
+}
+.compact-defense-warning-actions button:hover,
+.compact-defense-warning-actions button:active,
+.compact-defense-warning-actions button:focus-visible{
+  transform:none !important;
+}
 .tactical-screen.attack-left,
 .tactical-screen.attack-right{
   box-shadow:0 0 26px rgba(35,216,255,.12), inset 0 0 32px rgba(255,178,46,.05);
@@ -8789,6 +8811,7 @@ body.desktop-compact-mode > footer{
   }
   .app.mobile-panorama-mode .compact-defense-warning.show{
     transform:translateX(-50%) translateY(0) scale(1);
+    pointer-events:auto;
   }
   .app.mobile-panorama-mode .compact-defense-warning-kicker{
     margin-bottom:3px;
@@ -8808,6 +8831,19 @@ body.desktop-compact-mode > footer{
     line-height:1.18;
     color:#ffe4da;
     text-wrap:pretty;
+  }
+  .app.mobile-panorama-mode .compact-defense-warning-actions{
+    display:grid;
+    gap:6px;
+    margin-top:8px;
+  }
+  .app.mobile-panorama-mode .compact-defense-warning-actions button{
+    min-height:31px;
+    padding:5px 7px !important;
+    border-radius:10px !important;
+    font-size:.54rem !important;
+    line-height:.98 !important;
+    letter-spacing:.01em !important;
   }
   .app.mobile-panorama-mode .desktop-hud-transition{
     position:absolute;
@@ -10265,8 +10301,12 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
 
           <div class="compact-defense-warning" id="compactDefenseWarning" aria-live="polite">
             <div class="compact-defense-warning-kicker">Defensa activa</div>
-            <div class="compact-defense-warning-title">¡¡Warning de ataque!!</div>
+            <div class="compact-defense-warning-title" id="compactDefenseWarningTitle">¡¡Warning de ataque!!</div>
             <div class="compact-defense-warning-body" id="compactDefenseWarningBody">Puedes usar 1♦ de tu mano para defenderte.</div>
+            <div class="compact-defense-warning-actions" id="compactDefenseWarningActions">
+              <button class="cyan" data-compact-defense-action="primary" id="compactDefenseWarningPrimaryBtn" type="button">Elegir 1♦</button>
+              <button class="warn" data-compact-defense-action="skip" id="compactDefenseWarningSkipBtn" type="button">No defender</button>
+            </div>
           </div>
 
           <div class="compact-arena-brand">
@@ -16333,15 +16373,41 @@ function renderDesktopCompactHud(){
     compactWinnerBanner.classList.toggle('show', !!state.winner);
   }
   const compactDefenseWarning = document.getElementById('compactDefenseWarning');
+  const compactDefenseWarningTitle = document.getElementById('compactDefenseWarningTitle');
   const compactDefenseWarningBody = document.getElementById('compactDefenseWarningBody');
+  const compactDefenseWarningActions = document.getElementById('compactDefenseWarningActions');
+  const compactDefenseWarningPrimary = document.getElementById('compactDefenseWarningPrimaryBtn');
+  const compactDefenseWarningSkip = document.getElementById('compactDefenseWarningSkipBtn');
   const compactDefenseVisible = !!state.pendingDefense && !state.winner && canUseInteractiveDefenseAction();
+  const compactDefenseSelected = compactDefenseVisible && state.selected.length === 1 && isNumericDiamondCard(state.selected[0])
+    ? state.selected[0]
+    : null;
+  const compactDefenseDefender = compactDefenseVisible ? state.players[state.pendingDefense.defenderIndex] : null;
   if(compactDefenseWarning){
     compactDefenseWarning.classList.toggle('show', compactDefenseVisible);
+    compactDefenseWarning.setAttribute('aria-hidden', compactDefenseVisible ? 'false' : 'true');
+  }
+  if(compactDefenseWarningTitle){
+    compactDefenseWarningTitle.textContent = compactDefenseSelected ? 'Defensa preparada' : 'Warning de ataque';
   }
   if(compactDefenseWarningBody){
     compactDefenseWarningBody.textContent = compactDefenseVisible
-      ? 'Baja a la mano y usa 1♦ numérico para activar tu defensa.'
+      ? (compactDefenseSelected
+        ? `${compactDefenseDefender?.name || 'El defensor'} eligió ${cardText(compactDefenseSelected)}. Confirma defensa o pulsa No defender.`
+        : `${compactDefenseDefender?.name || 'El defensor'} puede mitigar el golpe con 1♦ numérico de la mano.`)
       : 'Puedes usar 1♦ de tu mano para defenderte.';
+  }
+  if(compactDefenseWarningActions){
+    compactDefenseWarningActions.hidden = !compactDefenseVisible;
+  }
+  if(compactDefenseWarningPrimary){
+    compactDefenseWarningPrimary.textContent = compactDefenseSelected ? 'Confirmar defensa' : 'Elegir 1♦';
+    compactDefenseWarningPrimary.disabled = !compactDefenseVisible;
+    compactDefenseWarningPrimary.classList.toggle('button-live', compactDefenseVisible);
+  }
+  if(compactDefenseWarningSkip){
+    compactDefenseWarningSkip.disabled = !compactDefenseVisible;
+    compactDefenseWarningSkip.classList.toggle('button-live', compactDefenseVisible);
   }
 
   ['0', '1'].forEach(rawIdx => {
@@ -19726,6 +19792,20 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
   }
   if(btn.dataset.mobileDrawerClose !== undefined){
     setCompactMobileDrawer('');
+    return;
+  }
+  if(btn.dataset.compactDefenseAction){
+    if(!canUseInteractiveDefenseAction()) return;
+    pulseButton(btn);
+    if(btn.dataset.compactDefenseAction === 'skip'){
+      skipDefense();
+      return;
+    }
+    if(state.selected.length===1 && isNumericDiamondCard(state.selected[0])){
+      confirmDefense();
+    }else{
+      beginInteractiveDefenseSelection();
+    }
     return;
   }
   if(btn.dataset.viewMode){
