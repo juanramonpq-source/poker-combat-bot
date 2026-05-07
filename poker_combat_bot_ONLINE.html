@@ -11580,6 +11580,21 @@ function buildStoryTowerEnemyDeck(profile, owner = 1){
   return shuffle(deck);
 }
 
+function buildStoryTowerArgosHackEnemyDeck(owner = 1){
+  const installedCards = new Set([
+    'Q:clubs',
+    'J:diamonds',
+    '2:hearts',
+    '5:hearts',
+    '2:clubs',
+    '3:clubs'
+  ]);
+  return shuffle(createDeck({ owner, prefix:`tw${owner}-argos-c` }).filter((card) => (
+    card.suit !== 'hearts'
+    && !installedCards.has(`${card.rank}:${card.suit}`)
+  )));
+}
+
 function setupStoryTowerPlayerBase(player, playerDeck, options = {}){
   player.name = 'Piloto';
   player.core.pilot = null;
@@ -11720,7 +11735,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   const playerDeck = createDeck({ owner:0, prefix:'tw0-c' });
   const argosHackStyle = isStoryArgosHackCombat(mission);
   let enemyDeck = mission === 'tower_argos_hack'
-    ? ['4','5','6','7','8','9','10'].map(rank => ({ id:`tower-argos-club-${rank}`, rank, suit:'clubs', value:rankValue(rank), storyDeckOwner:1 }))
+    ? buildStoryTowerArgosHackEnemyDeck(1)
     : buildStoryTowerEnemyDeck(profile, 1);
   const players = initPlayers();
   const pilot = players[0];
