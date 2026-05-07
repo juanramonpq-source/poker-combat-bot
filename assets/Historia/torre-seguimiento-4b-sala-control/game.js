@@ -271,6 +271,7 @@ const collisionZones = [
     ],
   },
 ];
+window.PoCoBOTStoryCollisionEditor?.applySceneZones("tower-control", collisionZones);
 
 const thrusters = [
   { x: -68, y: -35, width: 15, phase: 0.1 },

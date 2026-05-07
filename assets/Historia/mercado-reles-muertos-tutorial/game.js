@@ -205,6 +205,7 @@ const collisionZones = [
     ],
   },
 ];
+window.PoCoBOTStoryCollisionEditor?.applySceneZones("market", collisionZones);
 
 const thrusters = [
   { x: -92, y: -47, width: 24, phase: 0.1 },

@@ -287,6 +287,7 @@ const collisionZones = [
     ],
   },
 ];
+window.PoCoBOTStoryCollisionEditor?.applySceneZones("tower-interior", collisionZones);
 
 const stairLockBarrierZones = [
   { type: "rect", x: 1010, y: 214, width: 244, height: 146 },

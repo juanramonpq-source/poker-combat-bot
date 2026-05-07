@@ -228,6 +228,88 @@
       width:100%;
       filter:saturate(.9);
     }
+    .collision-panel{
+      grid-column:1 / -1;
+    }
+    .collision-layout{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) 300px;
+      gap:14px;
+      align-items:start;
+    }
+    .collision-stage{
+      position:relative;
+      border:1px solid rgba(143,244,255,.18);
+      border-radius:18px;
+      overflow:hidden;
+      background:#070b10;
+      box-shadow:inset 0 0 28px rgba(0,0,0,.42);
+    }
+    .collision-canvas{
+      display:block;
+      width:100%;
+      aspect-ratio:3 / 2;
+      cursor:crosshair;
+      touch-action:none;
+      background:#05080d;
+    }
+    .collision-tools{
+      display:grid;
+      gap:12px;
+      min-width:0;
+    }
+    .collision-tool-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:8px;
+    }
+    .collision-tool-grid button,
+    .collision-tools button{
+      width:100%;
+      min-width:0;
+      padding-inline:10px;
+      font-size:.68rem;
+      letter-spacing:.06em;
+    }
+    .collision-tool-grid button.active{
+      border-color:rgba(255,123,97,.74);
+      color:#fff4ef;
+      background:linear-gradient(180deg, rgba(94,28,22,.96), rgba(36,12,12,.98));
+    }
+    .collision-meta{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+    .collision-field{
+      display:grid;
+      gap:5px;
+      min-width:0;
+      color:var(--muted);
+      font-size:.66rem;
+      font-weight:900;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+    .collision-field input{
+      width:100%;
+      min-height:36px;
+      border:1px solid rgba(143,244,255,.16);
+      border-radius:11px;
+      padding:0 9px;
+      color:#eaffff;
+      background:rgba(3,7,12,.82);
+      font:800 .82rem/1.2 "SFMono-Regular", Consolas, monospace;
+      outline:none;
+    }
+    .collision-field input:disabled{
+      opacity:.45;
+    }
+    .collision-json{
+      min-height:92px;
+      max-height:150px;
+      font-size:.72rem;
+    }
     .status{
       min-height:32px;
       padding:9px 12px;
@@ -278,6 +360,7 @@
         touch-action:auto;
       }
       .music-row{grid-template-columns:1fr}
+      .collision-layout{grid-template-columns:1fr}
       button, select{width:100%}
       .actions{display:grid}
       .panel{
@@ -444,9 +527,53 @@
           </div>
         </div>
       </article>
+
+      <article class="panel collision-panel">
+        <div class="panel-head">
+          <h2>Editor de colisiones</h2>
+          <span class="kicker" id="collisionCountChip">0 zonas</span>
+        </div>
+        <div class="panel-body">
+          <div class="collision-layout">
+            <div class="collision-stage">
+              <canvas
+                id="collisionCanvas"
+                class="collision-canvas"
+                width="1536"
+                height="1024"
+                aria-label="Editor visual de colisiones del modo exploracion"
+              ></canvas>
+            </div>
+            <div class="collision-tools">
+              <select id="collisionSceneSelect" aria-label="Escenario editable"></select>
+              <div class="collision-tool-grid" role="group" aria-label="Herramientas de colision">
+                <button class="active" data-collision-mode="draw" type="button">Dibujar</button>
+                <button data-collision-mode="erase" type="button">Borrar</button>
+                <button data-collision-mode="move" type="button">Mover</button>
+              </div>
+              <div class="collision-meta">
+                <label class="collision-field">X<input id="collisionZoneX" type="number" step="1"></label>
+                <label class="collision-field">Y<input id="collisionZoneY" type="number" step="1"></label>
+                <label class="collision-field">Ancho<input id="collisionZoneW" type="number" step="1"></label>
+                <label class="collision-field">Alto / radio<input id="collisionZoneH" type="number" step="1"></label>
+              </div>
+              <textarea id="collisionJson" class="collision-json" spellcheck="false" aria-label="JSON de colisiones"></textarea>
+              <div class="actions">
+                <button class="primary" id="saveCollisionsBtn" type="button">Actualizar colisiones</button>
+                <button id="undoCollisionBtn" type="button">Deshacer</button>
+                <button class="warn" id="openCollisionSceneBtn" type="button">Probar escenario</button>
+                <button class="danger" id="resetCollisionSceneBtn" type="button">Restaurar base</button>
+                <button id="copyCollisionJsonBtn" type="button">Copiar JSON</button>
+              </div>
+              <div class="status" id="collisionStatusBox">Dibuja rectangulos rojos sobre el mapa, borra zonas y pulsa actualizar colisiones.</div>
+            </div>
+          </div>
+        </div>
+      </article>
     </section>
   </main>
 
+  <script src="assets/Historia/story-collision-editor.js?v=20260507-collision-editor"></script>
   <script>
     const STORY_PAGE = 'MODO_HISTORIA_BOCETO.html';
     const STORY_PROGRESS_SAVE_KEY = 'pocobot_story_progress_v1';
@@ -516,6 +643,106 @@
       { label:'Ambiente - Mercado muchedumbre', src:'assets/Historia/mercado-reles-muertos-tutorial/assets/market-crowd-ambience-unstuntedsfx.mp3' }
     ];
 
+    const collisionSceneDefaults = [
+      {
+        id:'market',
+        label:'Mercado de Reles Muertos',
+        map:'assets/Historia/mercado-reles-muertos-tutorial/assets/mercado-reles-rendered-map-optimized.jpg',
+        fallbackMap:'assets/Historia/mercado-reles-muertos-tutorial/assets/mercado-reles-rendered-map.png',
+        openUrl:() => buildPostTowerMarketExplorationUrl(),
+        zones:[
+          { type:'rect', x:0, y:0, width:1536, height:146 },
+          { type:'rect', x:0, y:146, width:216, height:500 },
+          { type:'rect', x:1318, y:128, width:218, height:896 },
+          { type:'rect', x:0, y:878, width:1536, height:146 },
+          { type:'poly', points:[{ x:268, y:158 }, { x:600, y:170 }, { x:626, y:304 }, { x:278, y:318 }] },
+          { type:'poly', points:[{ x:282, y:372 }, { x:542, y:326 }, { x:556, y:404 }, { x:308, y:458 }] },
+          { type:'poly', points:[{ x:94, y:480 }, { x:332, y:444 }, { x:382, y:580 }, { x:220, y:674 }, { x:34, y:616 }] },
+          { type:'poly', points:[{ x:284, y:746 }, { x:600, y:750 }, { x:704, y:896 }, { x:232, y:904 }] },
+          { type:'poly', points:[{ x:984, y:188 }, { x:1238, y:186 }, { x:1262, y:382 }, { x:996, y:404 }, { x:918, y:304 }] },
+          { type:'poly', points:[{ x:1208, y:470 }, { x:1536, y:430 }, { x:1536, y:680 }, { x:1172, y:704 }] },
+          { type:'poly', points:[{ x:970, y:760 }, { x:1252, y:692 }, { x:1290, y:892 }, { x:892, y:922 }] }
+        ]
+      },
+      {
+        id:'tower-exterior',
+        label:'Torre 4B exterior',
+        map:'assets/Historia/torre-seguimiento-4b-tutorial/assets/torre-seguimiento-4b-rendered-map.png',
+        openUrl:() => buildTowerSceneUrl('exterior'),
+        zones:[
+          { type:'poly', points:[{ x:492, y:252 }, { x:662, y:254 }, { x:640, y:354 }, { x:536, y:366 }, { x:458, y:318 }] },
+          { type:'poly', points:[{ x:890, y:258 }, { x:988, y:258 }, { x:1030, y:336 }, { x:878, y:398 }, { x:844, y:336 }] },
+          { type:'rect', x:708, y:288, width:116, height:64, opensWithDoor:true },
+          { type:'circle', x:120, y:638, radius:44 },
+          { type:'rect', x:178, y:694, width:72, height:48 },
+          { type:'rect', x:566, y:800, width:54, height:44 },
+          { type:'rect', x:704, y:838, width:154, height:36 },
+          { type:'rect', x:1194, y:430, width:62, height:66 },
+          { type:'poly', points:[{ x:1056, y:430 }, { x:1110, y:440 }, { x:1130, y:482 }, { x:1082, y:506 }, { x:1038, y:480 }] }
+        ]
+      },
+      {
+        id:'tower-interior',
+        label:'Torre 4B interior bajo',
+        map:'assets/Historia/torre-seguimiento-4b-interior-baja/assets/torre-4b-interior-baja-map.png',
+        openUrl:() => {
+          const url = new URL('assets/Historia/torre-seguimiento-4b-interior-baja/index.html', window.location.href);
+          url.searchParams.set('story_embed', '1');
+          url.searchParams.set('story_standalone', '1');
+          url.searchParams.set('story_node', 'torre');
+          url.searchParams.set('story_audio', 'internal');
+          url.searchParams.set('story_return', new URL(STORY_PAGE, window.location.href).href);
+          url.searchParams.set('preserve_chapter', '1');
+          url.searchParams.set('debug', '1');
+          url.searchParams.set('from_exterior', '1');
+          url.searchParams.set('story_load_id', String(Date.now()));
+          if(isSkipEnemyCombatsEnabled()) url.searchParams.set('story_skip_combats', '1');
+          return url.href;
+        },
+        zones:[
+          { type:'rect', x:0, y:0, width:1536, height:112 },
+          { type:'rect', x:0, y:922, width:1536, height:102 },
+          { type:'rect', x:0, y:0, width:128, height:1024 },
+          { type:'rect', x:1394, y:0, width:142, height:1024 },
+          { type:'rect', x:154, y:244, width:172, height:292 },
+          { type:'rect', x:330, y:96, width:142, height:210 },
+          { type:'rect', x:518, y:112, width:300, height:156 },
+          { type:'rect', x:900, y:118, width:96, height:128 },
+          { type:'rect', x:1256, y:226, width:84, height:238 },
+          { type:'circle', x:1276, y:602, radius:132 },
+          { type:'rect', x:1044, y:612, width:132, height:138 },
+          { type:'rect', x:360, y:742, width:198, height:178 },
+          { type:'rect', x:820, y:760, width:218, height:156 },
+          { type:'rect', x:1046, y:814, width:148, height:108 },
+          { type:'circle', x:238, y:640, radius:92 },
+          { type:'poly', points:[{ x:1262, y:96 }, { x:1322, y:76 }, { x:1322, y:178 }, { x:1268, y:198 }] }
+        ]
+      },
+      {
+        id:'tower-control',
+        label:'Torre 4B sala control',
+        map:'assets/Historia/torre-seguimiento-4b-sala-control/assets/torre-4b-sala-control-map.png',
+        openUrl:() => buildTowerSceneUrl('control'),
+        zones:[
+          { type:'rect', x:0, y:0, width:1536, height:88 },
+          { type:'rect', x:0, y:926, width:1536, height:98 },
+          { type:'rect', x:0, y:0, width:116, height:1024 },
+          { type:'rect', x:1418, y:0, width:118, height:1024 },
+          { type:'rect', x:160, y:156, width:142, height:264 },
+          { type:'rect', x:304, y:384, width:188, height:128 },
+          { type:'rect', x:524, y:116, width:112, height:218 },
+          { type:'rect', x:1048, y:142, width:124, height:208 },
+          { type:'rect', x:1218, y:360, width:180, height:166 },
+          { type:'rect', x:1128, y:648, width:166, height:180 },
+          { type:'rect', x:686, y:756, width:334, height:164 },
+          { type:'rect', x:132, y:740, width:172, height:156 },
+          { type:'circle', x:1090, y:612, radius:92 },
+          { type:'poly', points:[{ x:610, y:170 }, { x:1042, y:170 }, { x:1096, y:330 }, { x:948, y:410 }, { x:682, y:404 }, { x:562, y:306 }] },
+          { type:'poly', points:[{ x:1258, y:96 }, { x:1536, y:96 }, { x:1536, y:320 }, { x:1264, y:304 }] }
+        ]
+      }
+    ];
+
     const nodeList = document.getElementById('nodeList');
     const saveJson = document.getElementById('saveJson');
     const progressChip = document.getElementById('progressChip');
@@ -524,9 +751,445 @@
     const musicPlayer = document.getElementById('musicPlayer');
     const skipCombatsChip = document.getElementById('skipCombatsChip');
     const toggleSkipCombatsBtn = document.getElementById('toggleSkipCombatsBtn');
+    const collisionCanvas = document.getElementById('collisionCanvas');
+    const collisionCtx = collisionCanvas.getContext('2d');
+    const collisionSceneSelect = document.getElementById('collisionSceneSelect');
+    const collisionCountChip = document.getElementById('collisionCountChip');
+    const collisionStatusBox = document.getElementById('collisionStatusBox');
+    const collisionJson = document.getElementById('collisionJson');
+    const collisionZoneInputs = {
+      x:document.getElementById('collisionZoneX'),
+      y:document.getElementById('collisionZoneY'),
+      w:document.getElementById('collisionZoneW'),
+      h:document.getElementById('collisionZoneH')
+    };
 
     function setStatus(text){
       statusBox.textContent = text;
+    }
+
+    const collisionEditor = {
+      scene:null,
+      zones:[],
+      image:null,
+      mode:'draw',
+      selectedIndex:-1,
+      history:[],
+      drag:null,
+      draft:null
+    };
+
+    function cloneCollisionZones(zones){
+      return JSON.parse(JSON.stringify(zones || []));
+    }
+
+    function getDefaultCollisionZones(scene){
+      return cloneCollisionZones(scene?.zones || []);
+    }
+
+    function normalizeCollisionZones(zones){
+      return window.PoCoBOTStoryCollisionEditor?.normalizeZones
+        ? window.PoCoBOTStoryCollisionEditor.normalizeZones(zones)
+        : cloneCollisionZones(zones || []);
+    }
+
+    function getStoredCollisionZones(scene){
+      if(window.PoCoBOTStoryCollisionEditor?.getSceneZones){
+        return window.PoCoBOTStoryCollisionEditor.getSceneZones(scene.id, scene.zones);
+      }
+      return getDefaultCollisionZones(scene);
+    }
+
+    function pushCollisionHistory(){
+      collisionEditor.history.push(cloneCollisionZones(collisionEditor.zones));
+      if(collisionEditor.history.length > 40) collisionEditor.history.shift();
+    }
+
+    function setCollisionStatus(text){
+      collisionStatusBox.textContent = text;
+    }
+
+    function getCollisionPointer(event){
+      const rect = collisionCanvas.getBoundingClientRect();
+      return {
+        x: Math.max(0, Math.min(1536, (event.clientX - rect.left) * (collisionCanvas.width / rect.width))),
+        y: Math.max(0, Math.min(1024, (event.clientY - rect.top) * (collisionCanvas.height / rect.height)))
+      };
+    }
+
+    function getZoneBounds(zone){
+      if(zone.type === 'circle'){
+        return { x:zone.x - zone.radius, y:zone.y - zone.radius, width:zone.radius * 2, height:zone.radius * 2 };
+      }
+      if(zone.type === 'poly'){
+        const xs = zone.points.map(point => point.x);
+        const ys = zone.points.map(point => point.y);
+        const minX = Math.min(...xs);
+        const minY = Math.min(...ys);
+        return { x:minX, y:minY, width:Math.max(...xs) - minX, height:Math.max(...ys) - minY };
+      }
+      return { x:zone.x, y:zone.y, width:zone.width, height:zone.height };
+    }
+
+    function pointInCollisionZone(point, zone){
+      if(zone.type === 'circle'){
+        const dx = point.x - zone.x;
+        const dy = point.y - zone.y;
+        return dx * dx + dy * dy <= zone.radius * zone.radius;
+      }
+      if(zone.type === 'poly'){
+        let inside = false;
+        for(let i = 0, j = zone.points.length - 1; i < zone.points.length; j = i++){
+          const pi = zone.points[i];
+          const pj = zone.points[j];
+          const intersects = ((pi.y > point.y) !== (pj.y > point.y))
+            && point.x < ((pj.x - pi.x) * (point.y - pi.y)) / (pj.y - pi.y || 1) + pi.x;
+          if(intersects) inside = !inside;
+        }
+        return inside;
+      }
+      return point.x >= zone.x && point.x <= zone.x + zone.width
+        && point.y >= zone.y && point.y <= zone.y + zone.height;
+    }
+
+    function findCollisionZoneIndex(point){
+      for(let index = collisionEditor.zones.length - 1; index >= 0; index -= 1){
+        if(pointInCollisionZone(point, collisionEditor.zones[index])) return index;
+      }
+      return -1;
+    }
+
+    function translateCollisionZone(zone, dx, dy){
+      if(zone.type === 'circle'){
+        zone.x += dx;
+        zone.y += dy;
+        return;
+      }
+      if(zone.type === 'poly'){
+        zone.points.forEach((point) => {
+          point.x += dx;
+          point.y += dy;
+        });
+        return;
+      }
+      zone.x += dx;
+      zone.y += dy;
+    }
+
+    function drawCollisionZone(zone, index){
+      collisionCtx.beginPath();
+      if(zone.type === 'circle'){
+        collisionCtx.arc(zone.x, zone.y, zone.radius, 0, Math.PI * 2);
+      }else if(zone.type === 'poly'){
+        collisionCtx.moveTo(zone.points[0].x, zone.points[0].y);
+        zone.points.slice(1).forEach(point => collisionCtx.lineTo(point.x, point.y));
+        collisionCtx.closePath();
+      }else{
+        collisionCtx.rect(zone.x, zone.y, zone.width, zone.height);
+      }
+      collisionCtx.fillStyle = index === collisionEditor.selectedIndex
+        ? 'rgba(255, 216, 100, 0.24)'
+        : 'rgba(255, 55, 55, 0.26)';
+      collisionCtx.strokeStyle = index === collisionEditor.selectedIndex
+        ? 'rgba(255, 230, 130, 0.96)'
+        : 'rgba(255, 55, 55, 0.82)';
+      collisionCtx.lineWidth = index === collisionEditor.selectedIndex ? 4 : 2;
+      collisionCtx.fill();
+      collisionCtx.stroke();
+    }
+
+    function drawCollisionEditor(){
+      collisionCtx.clearRect(0, 0, collisionCanvas.width, collisionCanvas.height);
+      collisionCtx.fillStyle = '#05080d';
+      collisionCtx.fillRect(0, 0, collisionCanvas.width, collisionCanvas.height);
+      if(collisionEditor.image){
+        collisionCtx.drawImage(collisionEditor.image, 0, 0, collisionCanvas.width, collisionCanvas.height);
+      }
+      collisionCtx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+      collisionCtx.fillRect(0, 0, collisionCanvas.width, collisionCanvas.height);
+      collisionEditor.zones.forEach(drawCollisionZone);
+
+      if(collisionEditor.draft){
+        const draft = collisionEditor.draft;
+        collisionCtx.save();
+        collisionCtx.setLineDash([12, 8]);
+        collisionCtx.fillStyle = 'rgba(255, 75, 75, 0.18)';
+        collisionCtx.strokeStyle = 'rgba(255, 245, 245, 0.92)';
+        collisionCtx.lineWidth = 3;
+        collisionCtx.fillRect(draft.x, draft.y, draft.width, draft.height);
+        collisionCtx.strokeRect(draft.x, draft.y, draft.width, draft.height);
+        collisionCtx.restore();
+      }
+    }
+
+    function syncCollisionMeta(){
+      collisionCountChip.textContent = `${collisionEditor.zones.length} zonas`;
+      collisionJson.value = JSON.stringify(collisionEditor.zones, null, 2);
+      const zone = collisionEditor.zones[collisionEditor.selectedIndex];
+      const fields = Object.values(collisionZoneInputs);
+      fields.forEach(input => { input.disabled = !zone; input.value = ''; });
+      if(!zone) return;
+
+      if(zone.type === 'circle'){
+        collisionZoneInputs.x.value = Math.round(zone.x);
+        collisionZoneInputs.y.value = Math.round(zone.y);
+        collisionZoneInputs.w.value = Math.round(zone.radius);
+        collisionZoneInputs.h.value = Math.round(zone.radius);
+        return;
+      }
+
+      const bounds = getZoneBounds(zone);
+      collisionZoneInputs.x.value = Math.round(bounds.x);
+      collisionZoneInputs.y.value = Math.round(bounds.y);
+      collisionZoneInputs.w.value = Math.round(bounds.width);
+      collisionZoneInputs.h.value = Math.round(bounds.height);
+      if(zone.type === 'poly'){
+        collisionZoneInputs.w.disabled = true;
+        collisionZoneInputs.h.disabled = true;
+      }
+    }
+
+    function refreshCollisionEditor(){
+      syncCollisionMeta();
+      drawCollisionEditor();
+    }
+
+    function loadCollisionMap(scene){
+      const image = new Image();
+      image.decoding = 'async';
+      image.onload = () => {
+        collisionEditor.image = image;
+        drawCollisionEditor();
+      };
+      image.onerror = () => {
+        if(scene.fallbackMap && image.src.indexOf(scene.fallbackMap) === -1){
+          image.src = scene.fallbackMap;
+          return;
+        }
+        collisionEditor.image = null;
+        drawCollisionEditor();
+        setCollisionStatus('No se pudo cargar el mapa, pero puedes editar sobre el lienzo.');
+      };
+      image.src = scene.map;
+    }
+
+    function selectCollisionScene(sceneId){
+      const scene = collisionSceneDefaults.find(item => item.id === sceneId) || collisionSceneDefaults[0];
+      collisionEditor.scene = scene;
+      collisionEditor.zones = getStoredCollisionZones(scene);
+      collisionEditor.selectedIndex = -1;
+      collisionEditor.history = [];
+      collisionEditor.drag = null;
+      collisionEditor.draft = null;
+      collisionSceneSelect.value = scene.id;
+      loadCollisionMap(scene);
+      refreshCollisionEditor();
+      setCollisionStatus(`Escenario cargado: ${scene.label}.`);
+    }
+
+    function setCollisionMode(mode){
+      collisionEditor.mode = mode;
+      document.querySelectorAll('[data-collision-mode]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.collisionMode === mode);
+      });
+      collisionCanvas.style.cursor = mode === 'erase' ? 'not-allowed' : mode === 'move' ? 'grab' : 'crosshair';
+    }
+
+    function normalizeDraftRect(start, end){
+      return {
+        type:'rect',
+        x:Math.round(Math.min(start.x, end.x)),
+        y:Math.round(Math.min(start.y, end.y)),
+        width:Math.round(Math.abs(end.x - start.x)),
+        height:Math.round(Math.abs(end.y - start.y))
+      };
+    }
+
+    function saveCollisionOverrides(){
+      try{
+        const parsed = JSON.parse(collisionJson.value);
+        if(Array.isArray(parsed)) collisionEditor.zones = parsed;
+      }catch(error){
+        setCollisionStatus('JSON de colisiones invalido. Corrigelo o vuelve a seleccionar el escenario.');
+        return;
+      }
+      const normalized = normalizeCollisionZones(collisionEditor.zones);
+      collisionEditor.zones = normalized;
+      window.PoCoBOTStoryCollisionEditor?.saveSceneZones(collisionEditor.scene.id, normalized);
+      collisionEditor.selectedIndex = Math.min(collisionEditor.selectedIndex, normalized.length - 1);
+      refreshCollisionEditor();
+      setCollisionStatus('Colisiones actualizadas. Al abrir este escenario, el movimiento usara estas zonas rojas.');
+    }
+
+    function updateSelectedCollisionFromInputs(){
+      const zone = collisionEditor.zones[collisionEditor.selectedIndex];
+      if(!zone) return;
+      const nextX = Number(collisionZoneInputs.x.value);
+      const nextY = Number(collisionZoneInputs.y.value);
+      const nextW = Number(collisionZoneInputs.w.value);
+      const nextH = Number(collisionZoneInputs.h.value);
+      if(!Number.isFinite(nextX) || !Number.isFinite(nextY)) return;
+      pushCollisionHistory();
+
+      if(zone.type === 'circle'){
+        zone.x = nextX;
+        zone.y = nextY;
+        zone.radius = Math.max(1, Number.isFinite(nextW) ? nextW : nextH);
+      }else if(zone.type === 'poly'){
+        const bounds = getZoneBounds(zone);
+        translateCollisionZone(zone, nextX - bounds.x, nextY - bounds.y);
+      }else{
+        zone.x = nextX;
+        zone.y = nextY;
+        if(Number.isFinite(nextW)) zone.width = Math.max(1, nextW);
+        if(Number.isFinite(nextH)) zone.height = Math.max(1, nextH);
+      }
+      refreshCollisionEditor();
+    }
+
+    function initCollisionEditor(){
+      collisionSceneDefaults.forEach((scene) => {
+        const option = document.createElement('option');
+        option.value = scene.id;
+        option.textContent = scene.label;
+        collisionSceneSelect.appendChild(option);
+      });
+
+      collisionSceneSelect.addEventListener('change', () => selectCollisionScene(collisionSceneSelect.value));
+      document.querySelectorAll('[data-collision-mode]').forEach((button) => {
+        button.addEventListener('click', () => setCollisionMode(button.dataset.collisionMode));
+      });
+
+      collisionCanvas.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        const point = getCollisionPointer(event);
+        collisionCanvas.setPointerCapture(event.pointerId);
+
+        if(collisionEditor.mode === 'erase'){
+          const index = findCollisionZoneIndex(point);
+          if(index >= 0){
+            pushCollisionHistory();
+            collisionEditor.zones.splice(index, 1);
+            collisionEditor.selectedIndex = -1;
+            refreshCollisionEditor();
+            setCollisionStatus('Zona roja borrada. Pulsa actualizar colisiones para hacerla valida.');
+          }
+          return;
+        }
+
+        if(collisionEditor.mode === 'move'){
+          const index = findCollisionZoneIndex(point);
+          collisionEditor.selectedIndex = index;
+          if(index >= 0){
+            pushCollisionHistory();
+            collisionEditor.drag = { index, last:point };
+            collisionCanvas.style.cursor = 'grabbing';
+          }
+          refreshCollisionEditor();
+          return;
+        }
+
+        collisionEditor.selectedIndex = -1;
+        collisionEditor.draft = { start:point, x:point.x, y:point.y, width:0, height:0 };
+        refreshCollisionEditor();
+      });
+
+      collisionCanvas.addEventListener('pointermove', (event) => {
+        const point = getCollisionPointer(event);
+        if(collisionEditor.mode === 'erase' && event.buttons){
+          const index = findCollisionZoneIndex(point);
+          if(index >= 0){
+            pushCollisionHistory();
+            collisionEditor.zones.splice(index, 1);
+            collisionEditor.selectedIndex = -1;
+            refreshCollisionEditor();
+          }
+          return;
+        }
+        if(collisionEditor.drag){
+          const dx = point.x - collisionEditor.drag.last.x;
+          const dy = point.y - collisionEditor.drag.last.y;
+          translateCollisionZone(collisionEditor.zones[collisionEditor.drag.index], dx, dy);
+          collisionEditor.drag.last = point;
+          refreshCollisionEditor();
+          return;
+        }
+        if(collisionEditor.draft){
+          collisionEditor.draft = {
+            ...normalizeDraftRect(collisionEditor.draft.start, point),
+            start:collisionEditor.draft.start
+          };
+          refreshCollisionEditor();
+        }
+      });
+
+      collisionCanvas.addEventListener('pointerup', (event) => {
+        if(collisionEditor.drag){
+          collisionEditor.drag = null;
+          collisionCanvas.style.cursor = 'grab';
+          setCollisionStatus('Zona movida. Pulsa actualizar colisiones para guardar el cambio.');
+          refreshCollisionEditor();
+          return;
+        }
+        if(collisionEditor.draft){
+          const draft = normalizeDraftRect(collisionEditor.draft.start, getCollisionPointer(event));
+          collisionEditor.draft = null;
+          if(draft.width >= 6 && draft.height >= 6){
+            pushCollisionHistory();
+            collisionEditor.zones.push(draft);
+            collisionEditor.selectedIndex = collisionEditor.zones.length - 1;
+            setCollisionStatus('Nueva zona roja dibujada. Pulsa actualizar colisiones para guardarla.');
+          }
+          refreshCollisionEditor();
+        }
+      });
+
+      collisionCanvas.addEventListener('pointercancel', () => {
+        collisionEditor.drag = null;
+        collisionEditor.draft = null;
+        refreshCollisionEditor();
+      });
+
+      Object.values(collisionZoneInputs).forEach((input) => {
+        input.addEventListener('change', updateSelectedCollisionFromInputs);
+      });
+
+      document.getElementById('saveCollisionsBtn').addEventListener('click', saveCollisionOverrides);
+      document.getElementById('undoCollisionBtn').addEventListener('click', () => {
+        const previous = collisionEditor.history.pop();
+        if(!previous){
+          setCollisionStatus('No hay cambios para deshacer.');
+          return;
+        }
+        collisionEditor.zones = previous;
+        collisionEditor.selectedIndex = -1;
+        refreshCollisionEditor();
+        setCollisionStatus('Cambio deshecho. Pulsa actualizar colisiones si quieres conservar este estado.');
+      });
+      document.getElementById('resetCollisionSceneBtn').addEventListener('click', () => {
+        pushCollisionHistory();
+        window.PoCoBOTStoryCollisionEditor?.clearSceneZones(collisionEditor.scene.id);
+        collisionEditor.zones = getDefaultCollisionZones(collisionEditor.scene);
+        collisionEditor.selectedIndex = -1;
+        refreshCollisionEditor();
+        setCollisionStatus('Escenario restaurado a sus colisiones base.');
+      });
+      document.getElementById('copyCollisionJsonBtn').addEventListener('click', async () => {
+        try{
+          await navigator.clipboard.writeText(collisionJson.value);
+          setCollisionStatus('JSON de colisiones copiado.');
+        }catch(error){
+          collisionJson.select();
+          setCollisionStatus('No se pudo copiar automaticamente; el JSON queda seleccionado.');
+        }
+      });
+      document.getElementById('openCollisionSceneBtn').addEventListener('click', () => {
+        saveCollisionOverrides();
+        window.location.href = collisionEditor.scene.openUrl();
+      });
+
+      setCollisionMode('draw');
+      selectCollisionScene(collisionSceneDefaults[0].id);
     }
 
     function readSave(){
@@ -1049,6 +1712,7 @@
 
     musicSelect.addEventListener('change', syncMusicSource);
     syncMusicSource();
+    initCollisionEditor();
     syncSkipCombatsUi();
     render();
   </script>
