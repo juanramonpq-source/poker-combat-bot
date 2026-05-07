@@ -802,8 +802,20 @@
         || nodes[0];
     }
 
+    function getCurrentObjectiveNode() {
+      return nodes.find(node => {
+        const status = getNodeState(node);
+        return status !== "locked" && !isNodeCompleted(node.id);
+      }) || null;
+    }
+
+    function getObjectiveGuidance(node, prefix = "Objetivo actual") {
+      return `${prefix}: ${node.name}. ${getPanelGuidance(node, getNodeState(node))}`;
+    }
+
     function getPanelGuidance(node, status) {
-      const firstPlayable = getFirstPlayableNode();
+      const currentObjective = getCurrentObjectiveNode();
+      const firstPlayable = currentObjective || getFirstPlayableNode();
       if (status === "locked") {
         return `${node.name} sigue cerrado. Primero completa ${firstPlayable.name} para abrir el siguiente tramo de la Ruta Ceniza.`;
       }
@@ -816,9 +828,8 @@
           : "Patio completado. Entra en el Hangar de la Fosa Azul y supera la prueba de ensamblaje para abrir el Mercado.";
       }
       if (status === "completed") {
-        const nextNode = nodes.find(candidate => candidate.order === node.order + 1);
-        return nextNode
-          ? `${node.name} completado. El siguiente destino abierto es ${nextNode.name}: selecciónalo para continuar.`
+        return currentObjective
+          ? `${node.name} completado. ${getObjectiveGuidance(currentObjective, "Siguiente destino abierto")}`
           : "Ruta Ceniza completada. Revisa el Protocolo Ceniza y activa el cierre de campaña.";
       }
       const guidanceById = {
