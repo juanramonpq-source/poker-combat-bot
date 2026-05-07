@@ -1203,12 +1203,21 @@
       font-size:.78rem;
       line-height:1.25;
     }
+    .story-map-inventory-card.coin-slot{
+      grid-template-columns:34px minmax(0, 1fr) auto;
+      border-color:rgba(255,213,95,.2);
+      background:linear-gradient(180deg, rgba(58,42,24,.42), rgba(255,255,255,.04));
+    }
     .story-map-inventory-card img{
       width:34px;
       height:48px;
       object-fit:contain;
       border-radius:5px;
       filter:drop-shadow(0 6px 8px rgba(0,0,0,.28));
+    }
+    .story-map-inventory-card.coin-slot img{
+      height:34px;
+      border-radius:999px;
     }
     .story-map-inventory-card span{
       display:block;
@@ -1222,11 +1231,75 @@
       letter-spacing:.04em;
       text-transform:uppercase;
     }
+    .story-map-coin-count{
+      display:grid;
+      place-items:center;
+      min-width:34px;
+      height:34px;
+      padding:0 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,213,95,.3);
+      background:rgba(255,213,95,.12);
+      color:#ffe0bc;
+      font-size:.82rem;
+      font-weight:900;
+    }
     .story-map-inventory-drawer p{
       margin:10px 0 0;
       color:#b9c9d5;
       font-size:.75rem;
       line-height:1.42;
+    }
+    .story-coin-toast{
+      position:fixed;
+      left:50%;
+      top:max(18px, env(safe-area-inset-top));
+      z-index:18;
+      display:grid;
+      grid-template-columns:42px minmax(0, auto);
+      gap:10px;
+      align-items:center;
+      min-width:min(320px, calc(100vw - 32px));
+      max-width:calc(100vw - 32px);
+      padding:10px 16px 10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,213,95,.42);
+      color:#ffe0bc;
+      background:linear-gradient(135deg, rgba(42,28,18,.96), rgba(9,14,20,.92));
+      box-shadow:0 22px 46px rgba(0,0,0,.42), 0 0 34px rgba(255,213,95,.12) inset;
+      backdrop-filter:blur(14px);
+      pointer-events:none;
+      opacity:0;
+      visibility:hidden;
+      transform:translate(-50%, -16px) scale(.96);
+      transition:opacity .22s ease, visibility .22s ease, transform .22s ease;
+    }
+    .story-coin-toast.show{
+      opacity:1;
+      visibility:visible;
+      transform:translate(-50%, 0) scale(1);
+    }
+    .story-coin-toast img{
+      width:42px;
+      height:42px;
+      object-fit:contain;
+      border-radius:999px;
+      filter:drop-shadow(0 6px 10px rgba(0,0,0,.32));
+    }
+    .story-coin-toast strong{
+      display:block;
+      color:#fff0d0;
+      font-size:.92rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .story-coin-toast span{
+      display:block;
+      margin-top:2px;
+      color:rgba(238,248,255,.72);
+      font-size:.74rem;
+      font-weight:800;
     }
     .story-scene-stage{
       position:fixed;
@@ -4874,13 +4947,20 @@
             </button>
             <div class="story-map-inventory-drawer" id="storyMapInventoryDrawer" hidden>
               <div class="story-map-inventory-head">
-                <span>Cartas extra</span>
+                <span>Inventario</span>
                 <button id="storyMapInventoryClose" type="button" aria-label="Cerrar inventario">×</button>
               </div>
               <div class="story-map-inventory-list" id="storyMapInventoryList"></div>
-              <p>Estas cartas viajarán en tu deck propio cuando la Ruta Ceniza deje atrás el taller.</p>
+              <p>Cartas, objetos y monedas viajarán contigo por la Ruta Ceniza.</p>
             </div>
           </aside>
+          <div class="story-coin-toast" id="storyCoinToast" aria-live="polite" hidden>
+            <img src="assets/Historia/low/dual_nube_web_ligera.webp" alt="">
+            <span>
+              <strong>Moneda Ganada</strong>
+              <span>Antigua moneda añadida al inventario</span>
+            </span>
+          </div>
 
           <section class="story-scene-stage" id="storySceneStage" hidden>
             <div class="scene-backdrop" id="storySceneBackdrop"></div>
@@ -5085,6 +5165,7 @@
     const storyMapInventoryDrawer = document.getElementById('storyMapInventoryDrawer');
     const storyMapInventoryClose = document.getElementById('storyMapInventoryClose');
     const storyMapInventoryList = document.getElementById('storyMapInventoryList');
+    const storyCoinToast = document.getElementById('storyCoinToast');
     const storySceneStage = document.getElementById('storySceneStage');
     const storySceneCard = document.getElementById('storySceneCard');
     const storySceneBackdrop = document.getElementById('storySceneBackdrop');
@@ -5347,6 +5428,7 @@
     let mapMusicUnlocked = false;
     let storySceneMusic = null;
     let storySceneMusicSrc = '';
+    let storyCoinToastTimer = null;
     let titleMusicUnlocked = false;
     let titleMusicFadeFrame = null;
     let titleDualCameoTimer = null;
@@ -5606,18 +5688,20 @@
 
     function recordStoryViajeroVictory() {
       const completedCountAtVictory = Math.max(STORY_VIAJERO_BASE_UNLOCK_COUNT, Math.floor(Number(storyProgressState.completedCount) || 0));
-      grantStoryAncientCoinReward(getStoryViajeroRewardIdForCompletedCount(completedCountAtVictory), 'market-sparring-reward');
+      const gainedCoin = grantStoryAncientCoinReward(getStoryViajeroRewardIdForCompletedCount(completedCountAtVictory), 'market-sparring-reward');
       storyProgressState.viajeroLastVictoryCompletedCount = completedCountAtVictory;
       saveStoryProgress('viajero-victory-lock');
       renderStoryMapInventoryWidget();
+      if (gainedCoin) showStoryCoinToast();
     }
 
     function recordStoryPostTowerViajeroVictory() {
-      grantStoryAncientCoinReward(`${STORY_VIAJERO_POST_TOWER_REWARD_PREFIX}coin_1`, 'market-viajero-4b-coin-1');
-      grantStoryAncientCoinReward(`${STORY_VIAJERO_POST_TOWER_REWARD_PREFIX}coin_2`, 'market-viajero-4b-coin-2');
+      const gainedFirstCoin = grantStoryAncientCoinReward(`${STORY_VIAJERO_POST_TOWER_REWARD_PREFIX}coin_1`, 'market-viajero-4b-coin-1');
+      const gainedSecondCoin = grantStoryAncientCoinReward(`${STORY_VIAJERO_POST_TOWER_REWARD_PREFIX}coin_2`, 'market-viajero-4b-coin-2');
       storyProgressState.marketPostTowerCleared = true;
       saveStoryProgress('market-viajero-4b-victory');
       renderStoryMapInventoryWidget();
+      if (gainedFirstCoin || gainedSecondCoin) showStoryCoinToast();
     }
 
     function buildStoryProgressSave(reason = 'auto') {
@@ -7700,7 +7784,7 @@
       if (!storyDraftNodes[nodeId]) return;
       storyProgressState.completedNodes[nodeId] = true;
       syncCompletedCountFromNodes();
-      syncStoryAncientCoinRewardsFromCompletedNodes();
+      const gainedCoin = syncStoryAncientCoinRewardsFromCompletedNodes();
       if (options.selectedId && storyDraftNodes[options.selectedId]) {
         currentStoryNodeId = options.selectedId;
       }
@@ -7709,6 +7793,7 @@
       updateStoryMapHudForNode(currentStoryNodeId);
       syncStoryMapState();
       saveStoryProgress(`completed-${nodeId}`);
+      if (gainedCoin && options.showCoinToast !== false) showStoryCoinToast();
     }
 
     function renderMobileRoute() {
@@ -8496,12 +8581,31 @@
       return inventory.cards.filter((item) => item.rank && item.suit);
     }
 
+    function shouldShowStoryMapCoinSlot(inventory) {
+      return !!storyProgressState.marketUnlocked
+        || Number(inventory?.credits) > 0
+        || (Array.isArray(inventory?.coinRewards) && inventory.coinRewards.length > 0);
+    }
+
     function getStoryMapInventoryItems() {
       const inventory = normalizeStoryInventory(storyProgressState.inventory, { withCredits: !!storyProgressState.marketUnlocked });
-      return [
+      const items = [
         ...inventory.cards.filter((item) => item.rank && item.suit),
         ...inventory.artifacts
       ];
+      if (shouldShowStoryMapCoinSlot(inventory)) {
+        items.unshift({
+          id: 'story-map-coin-slot',
+          type: 'coin-slot',
+          name: 'Antigua moneda',
+          text: 'Antigua moneda',
+          source: 'Ruta Ceniza',
+          cardImage: STORY_ANCIENT_COIN_IMAGE,
+          deckText: inventory.credits > 0 ? `${inventory.credits} disponibles` : 'Hueco reservado',
+          coinCount: Math.max(0, Number(inventory.credits) || 0)
+        });
+      }
+      return items;
     }
 
     function closeStoryMapInventoryDrawer() {
@@ -8530,6 +8634,19 @@
       setStoryMapHudExpanded(!(storyMapHud && storyMapHud.classList.contains('expanded')));
     }
 
+    function showStoryCoinToast(duration = 3400) {
+      if (!storyCoinToast) return;
+      window.clearTimeout(storyCoinToastTimer);
+      storyCoinToast.hidden = false;
+      requestAnimationFrame(() => storyCoinToast.classList.add('show'));
+      storyCoinToastTimer = window.setTimeout(() => {
+        storyCoinToast.classList.remove('show');
+        window.setTimeout(() => {
+          if (!storyCoinToast.classList.contains('show')) storyCoinToast.hidden = true;
+        }, 260);
+      }, Math.max(1400, Number(duration) || 3400));
+    }
+
     function renderStoryMapInventoryWidget() {
       if (!storyMapInventory || !storyMapInventoryList || !storyMapInventoryCount) return;
       const items = getStoryMapInventoryItems();
@@ -8553,10 +8670,11 @@
       storyMapInventoryList.innerHTML = '';
       items.forEach((item) => {
         const entry = document.createElement('article');
-        entry.className = 'story-map-inventory-card';
+        entry.className = `story-map-inventory-card${item.type === 'coin-slot' ? ' coin-slot' : ''}`;
         entry.innerHTML = `
           <img src="${item.cardImage || STORY_ANCIENT_COIN_IMAGE}" alt="${item.text || item.name}" loading="lazy">
           <span>${item.text || item.name}<small>${item.deckText || 'Carta de mercado'}</small></span>
+          ${item.type === 'coin-slot' ? `<strong class="story-map-coin-count">${item.coinCount}</strong>` : ''}
         `;
         storyMapInventoryList.appendChild(entry);
       });
@@ -9570,12 +9688,14 @@
       };
     }
 
-    function applyStoryTowerCoinReward(rewardId, reason = 'tower-4b-coin') {
+    function applyStoryTowerCoinReward(rewardId, reason = 'tower-4b-coin', options = {}) {
       const safeRewardId = typeof rewardId === 'string' && rewardId.startsWith(STORY_TOWER_COIN_REWARD_PREFIX)
         ? rewardId
         : `${STORY_TOWER_COIN_REWARD_PREFIX}${Date.now()}`;
       ensureStoryMarketInventory();
-      return grantStoryAncientCoinReward(safeRewardId, reason);
+      const gained = grantStoryAncientCoinReward(safeRewardId, reason);
+      if (gained && options.showToast !== false) showStoryCoinToast();
+      return gained;
     }
 
     function applyStoryTowerCombatVictory(result = {}) {
@@ -9670,7 +9790,7 @@
       if (!towerState.finalRewardClaimed) {
         if (options.choice === 'coin') {
           const rewardId = `${STORY_TOWER_COIN_REWARD_PREFIX}final_choice_coin`;
-          applyStoryTowerCoinReward(rewardId, 'tower-final-choice-coin');
+          applyStoryTowerCoinReward(rewardId, 'tower-final-choice-coin', { showToast: false });
           inventoryRewards.add(rewardId);
         } else {
           const rewardCard = options.card || normalizeStoryTowerLegacyRewardCard(options) || createStoryTowerFinalRandomCard();
