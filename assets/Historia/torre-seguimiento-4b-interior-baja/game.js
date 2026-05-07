@@ -328,11 +328,11 @@ const interactables = [
   },
   {
     id: "stairs-up",
-    x: 1134,
+    x: 1042,
     y: 236,
-    radius: 88,
+    radius: 96,
     label: "Escaleras superiores",
-    hint: "Subir",
+    hint: "Tocar para subir",
     message: "Escaleras superiores: acceso preparado hacia la sala de control.",
   },
 ];
@@ -1471,6 +1471,12 @@ function updateInteractions(dt) {
   });
 
   interactionState.active = nearest;
+
+  if (nearest?.id === "stairs-up" && isInteriorStairUnlocked()) {
+    enterControlRoomFromStairs();
+    input.interactQueued = false;
+    return;
+  }
 
   if (input.interactQueued) {
     if (nearest) {
