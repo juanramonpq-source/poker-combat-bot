@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PoCoBOT · Interior Bajo Torre 4B</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./style.css?v=20260507-card-lock" />
   </head>
   <body>
     <aside
@@ -50,9 +50,35 @@
         height="720"
         aria-label="Interior bajo de la Torre de Seguimiento 4B"
       ></canvas>
+
+      <section
+        id="card-lock-overlay"
+        class="card-lock-overlay"
+        aria-labelledby="card-lock-title"
+        aria-modal="true"
+        role="dialog"
+        hidden
+      >
+        <div class="card-lock-panel">
+          <p class="card-lock-kicker">Ordenador de escalera</p>
+          <h2 id="card-lock-title">Sincroniza los cuatro protocolos</h2>
+          <p class="card-lock-copy">
+            Coloca una carta de cada palo en su ranura correcta para abrir la
+            subida hacia la sala de control.
+          </p>
+          <div class="card-lock-grid">
+            <div class="card-lock-cards" id="card-lock-cards" aria-label="Cartas disponibles"></div>
+            <div class="card-lock-slots" id="card-lock-slots" aria-label="Ranuras de protocolo"></div>
+          </div>
+          <p class="card-lock-feedback" id="card-lock-feedback" aria-live="polite"></p>
+          <button id="card-lock-close" class="card-lock-close" type="button" hidden>
+            Continuar
+          </button>
+        </div>
+      </section>
     </main>
 
     <script src="../shared-mecha-orientation/pocobot-player-visual.js?v=20260506-no-ghost-legs"></script>
-    <script src="./game.js?v=20260506-from-control-spawn"></script>
+    <script src="./game.js?v=20260507-stair-card-lock"></script>
   </body>
 </html>

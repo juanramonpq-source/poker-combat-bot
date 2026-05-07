@@ -9,6 +9,8 @@ const storyParams = new URLSearchParams(window.location.search);
 const storyEmbedMode = storyParams.get("story_embed") === "1";
 const storyReturnUrl = storyParams.get("story_return") || "";
 const storySparringLocked = storyParams.get("story_sparring_locked") === "1";
+const storyPostTowerMarket = storyParams.get("story_post_tower_market") === "1";
+const storyPostTowerViajeroCleared = storyParams.get("story_post_tower_viajero_cleared") === "1";
 
 if (storyEmbedMode) {
   document.body.classList.add("story-embed-mode");
@@ -235,10 +237,14 @@ const interactables = [
     y: 338,
     radius: 148,
     label: "Viajero",
-    hint: storySparringLocked ? "Completa otro nivel" : "Probar mazo ampliado",
-    message: storySparringLocked
-      ? "Viajero espera otra marca de la Ruta Ceniza."
-      : "Viajero: iniciando sparring con tu mazo ampliado.",
+    hint: storyPostTowerMarket && !storyPostTowerViajeroCleared
+      ? "Reto 4B: 2 monedas"
+      : storySparringLocked ? "Completa otro nivel" : "Probar mazo ampliado",
+    message: storyPostTowerMarket && !storyPostTowerViajeroCleared
+      ? "Viajero activa el bloqueo de diamantes. Premio: 2 monedas."
+      : storySparringLocked
+        ? "Viajero espera otra marca de la Ruta Ceniza."
+        : "Viajero: iniciando sparring con tu mazo ampliado.",
   },
   {
     id: "map_exit",
@@ -285,6 +291,10 @@ function getTouchInteractionConfirmationMessage(interactable) {
   }
 
   if (interactable.id === "sparring") {
+    if (storyPostTowerMarket && !storyPostTowerViajeroCleared) {
+      return "Viajero esta cerca. Toca otra vez para iniciar el reto de la Torre 4B por 2 monedas.";
+    }
+
     if (storySparringLocked) {
       return "Viajero esta cerca. Toca otra vez para hablar con el.";
     }
@@ -325,6 +335,8 @@ const hudHelp = {
 };
 
 const MARKET_CROWD_VOLUME = 0.192;
+const MARKET_THEME_SRC = "../MercadodeChatarra.mp3";
+const PARENT_MARKET_MUSIC_VOLUME = 0.34;
 let marketCrowdShouldPlay = true;
 let marketCrowdFadeFrame = null;
 
@@ -348,7 +360,7 @@ function fadeMarketCrowdAmbience(targetVolume, duration = 700, onComplete = null
 
   const startAt = performance.now();
   const step = (now) => {
-    const progress = Math.min(1, (now - startAt) / duration);
+    const progress = Math.max(0, Math.min(1, (now - startAt) / duration));
     const eased = 1 - Math.pow(1 - progress, 3);
     marketCrowdAmbience.volume = startVolume + (safeTarget - startVolume) * eased;
     if (progress < 1) {
@@ -401,6 +413,37 @@ function resumeMarketCrowdAmbienceAfterGesture() {
   startMarketCrowdAmbience();
 }
 
+function primeParentMarketMusic() {
+  if (!storyEmbedMode || window.parent === window) return;
+
+  try {
+    const parentMusic = window.parent.document?.getElementById("storyMapMusic");
+    if (!parentMusic) return;
+
+    const targetSource = new URL(MARKET_THEME_SRC, window.location.href).href;
+    const sourceElement = parentMusic.querySelector("source");
+    const currentSource = parentMusic.currentSrc
+      || (sourceElement?.getAttribute("src")
+        ? new URL(sourceElement.getAttribute("src"), window.parent.location.href).href
+        : parentMusic.src);
+
+    if (sourceElement && currentSource !== targetSource) {
+      sourceElement.setAttribute("src", targetSource);
+      parentMusic.load();
+    } else if (!sourceElement && parentMusic.src !== targetSource) {
+      parentMusic.src = targetSource;
+      parentMusic.load();
+    }
+
+    parentMusic.loop = true;
+    parentMusic.volume = PARENT_MARKET_MUSIC_VOLUME;
+    const playPromise = parentMusic.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {});
+    }
+  } catch (error) {}
+}
+
 ["pointerdown", "keydown", "touchstart"].forEach((eventName) => {
   window.addEventListener(eventName, resumeMarketCrowdAmbienceAfterGesture, {
     passive: true,
@@ -417,6 +460,10 @@ document.addEventListener("visibilitychange", () => {
 });
 
 function postStoryTutorialAction(action, payload = {}) {
+  if (action === "talk-vera") {
+    primeParentMarketMusic();
+  }
+
   stopMarketCrowdAmbience(true);
 
   const message = {

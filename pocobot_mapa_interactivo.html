@@ -773,6 +773,7 @@
     const state = {
       completedCount: 0,
       completedNodes: [],
+      reopenedNodes: [],
       selectedId: nodes[0].id,
       guidanceById: {},
     };
@@ -789,6 +790,10 @@
 
     function isNodeCompleted(nodeId) {
       return state.completedNodes.includes(nodeId);
+    }
+
+    function isNodeReopened(nodeId) {
+      return state.reopenedNodes.includes(nodeId);
     }
 
     function getFirstPlayableNode() {
@@ -914,6 +919,7 @@
           status: getNodeState(node),
           completedCount: state.completedCount,
           completedNodes: [...state.completedNodes],
+          reopenedNodes: [...state.reopenedNodes],
           totalNodes: nodes.length,
         }
       }, "*");
@@ -999,6 +1005,7 @@
         }
       }
       if (!haveCompletedWorkshopTrials() && node.order > 2) return "locked";
+      if (isNodeCompleted(node.id) && isNodeReopened(node.id)) return "available";
       if (node.order <= state.completedCount) return "completed";
       if (node.order === state.completedCount + 1) return "current";
       return "locked";
@@ -1201,6 +1208,9 @@
         } else {
           applyCompletedCountToNodes();
         }
+        state.reopenedNodes = Array.isArray(data.reopenedNodes)
+          ? normalizeCompletedNodes(data.reopenedNodes)
+          : [];
         syncCompletedCountFromNodes();
         if (typeof data.selectedId === "string" && nodes.some(node => node.id === data.selectedId)) {
           state.selectedId = data.selectedId;

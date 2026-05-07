@@ -11098,7 +11098,7 @@ function prepareStoryArgosHackScrollMode(){
 }
 
 function startStoryTowerCombatMission(mission, profile){
-  primeOfflineMode('single', mission === 'tower_argos_hack' ? 'normal' : 'easy');
+  primeOfflineMode('single', isStoryArgosHackCombat(mission) ? 'normal' : 'easy');
   newGame();
   clearSinglePlayerAiTimer();
   setupStoryTowerCombatScenario(mission);
@@ -11195,6 +11195,12 @@ function autoStartStoryMissionIfRequested(){
         scheduleStoryEmbedNavigationSetup();
       }, 260);
       break;
+    case 'mercado_viajero_4b': {
+      const profile = getStoryTowerCombatProfile(STORY_MISSION_BOOT);
+      storyMissionBriefCollapsed = false;
+      startStoryTowerCombatMission(STORY_MISSION_BOOT, profile);
+      break;
+    }
     case 'tower_drone_hearts':
     case 'tower_drone_spades':
     case 'tower_drone_clubs':
@@ -11257,6 +11263,13 @@ function applyStoryMissionPlayerSetup(){
   }else if(state.storyMission === 'mercado_sparring'){
     if(state.players[0]) state.players[0].name = 'Piloto';
     if(state.players[1]) state.players[1].name = 'Viajero';
+  }else if(state.storyMission === 'mercado_viajero_4b'){
+    if(state.players[0]) state.players[0].name = 'Piloto';
+    if(state.players[1]){
+      const profile = getStoryTowerCombatProfile(state.storyMission);
+      state.players[1].name = 'Viajero';
+      state.players[1].combatSprite = profile?.combatSprite || null;
+    }
   }else if(isStoryTowerCombatMission(state.storyMission)){
     if(state.players[0]) state.players[0].name = 'Piloto';
     if(state.players[1]){
@@ -11272,7 +11285,7 @@ function isStoryTowerCombatMission(mission = state.storyMission || STORY_MISSION
 }
 
 function isStoryArgosHackCombat(mission = state.storyMission || STORY_MISSION_BOOT){
-  return mission === 'tower_argos_hack';
+  return mission === 'tower_argos_hack' || mission === 'mercado_viajero_4b';
 }
 
 function clearStoryArgosHackInterfaceBoot(){
@@ -11345,7 +11358,7 @@ function resolveStoryArgosHackGate(){
 }
 
 function isStoryCombatLoadingMission(mission = state.storyMission || STORY_MISSION_BOOT){
-  return STORY_EMBED_MODE && isStoryTowerCombatMission(mission);
+  return STORY_EMBED_MODE && (isStoryTowerCombatMission(mission) || mission === 'mercado_viajero_4b');
 }
 
 function getStoryLoadingLotteryReward(){
@@ -11409,11 +11422,86 @@ const STORY_TOWER_COMBAT_PROFILES = {
     combatSprite: 'assets/Historia/panel-control-malvado-animacion-completa.webp',
     enemyId: 'argos-control-panel',
     intro: 'Hackeo de Argos: combustible bloqueado. Consigue el As de diamantes, usa armadura como energia o remata con proyectiles sueltos antes de que los treboles del panel se apilen.'
+  },
+  mercado_viajero_4b: {
+    enemyName: 'Viajero',
+    title: 'Viajero reactivado',
+    combatSprite: 'assets/Historia/tower-control-guard-mecha.png',
+    enemyId: 'mercado-viajero-4b',
+    intro: 'Viajero reproduce la estructura del hackeo del panel corrupto: interfaz especial, musica de Sistema Corrupto y combustible normal bloqueado. Esta vez pilota un mecha normal y conserva un deck completo de 52 cartas.'
   }
 };
 
 function getStoryTowerCombatProfile(mission = state.storyMission || STORY_MISSION_BOOT){
   return STORY_TOWER_COMBAT_PROFILES[mission] || null;
+}
+
+const DEV_STORY_CHARACTER_PRESETS = [
+  {
+    key: 'normal-j2',
+    label: 'J2 normal',
+    name: 'Jugador 2',
+    sprite: '',
+    description: 'Vuelve al segundo jugador base del sandbox.'
+  },
+  {
+    key: 'mara-oxido',
+    label: 'Mara Oxido',
+    name: 'Mara Oxido',
+    sprite: 'assets/Historia/low/mara_oxido_compacto_1080.webp',
+    description: 'Rival del Hangar y del Patio de Pruebas.'
+  },
+  {
+    key: 'vera-hex',
+    label: 'Vera Hex',
+    name: 'Vera Hex',
+    sprite: 'assets/Historia/low/Vera1.webp',
+    description: 'Comerciante del Mercado de Reles Muertos.'
+  },
+  {
+    key: 'cleo',
+    label: 'Cleo',
+    name: 'Cleo',
+    sprite: 'assets/Historia/low/Cleo.jpg',
+    description: 'Memoria viva del legado de DUAL.'
+  },
+  {
+    key: 'general-mr-wind',
+    label: 'Mr. Wind',
+    name: 'General Mr. Wind',
+    sprite: 'assets/Historia/low/General_Mr_Wind_pose_1_neutral.webp',
+    description: 'Autoridad militar de la Ruta Ceniza.'
+  },
+  {
+    key: 'xavor-glitch',
+    label: 'Xavor Glitch',
+    name: 'Xavor Glitch',
+    sprite: 'assets/Historia/xavor-glitch-radio.svg',
+    description: 'Interferencia de radio y sabotaje.'
+  },
+  {
+    key: 'dual',
+    label: 'DUAL',
+    name: 'DUAL',
+    sprite: 'assets/Historia/low/dual_nube_web_ligera.webp',
+    description: 'Eco tecnico de la red original.'
+  }
+];
+
+function devGetStoryCharacterCatalog(){
+  const usedKeys = new Set(DEV_STORY_CHARACTER_PRESETS.map(item => item.key));
+  const combatProfiles = Object.entries(STORY_TOWER_COMBAT_PROFILES)
+    .filter(([, profile]) => profile?.combatSprite)
+    .map(([mission, profile]) => ({
+      key: `mission-${mission}`,
+      mission,
+      label: profile.enemyName || profile.title || mission,
+      name: profile.enemyName || profile.title || 'Rival historia',
+      sprite: profile.combatSprite,
+      description: profile.title || 'Perfil de combate del modo historia.'
+    }))
+    .filter(item => !usedKeys.has(item.key));
+  return DEV_STORY_CHARACTER_PRESETS.concat(combatProfiles);
 }
 
 function setStoryCardOwner(card, owner){
@@ -11560,10 +11648,36 @@ function setupStoryTowerArgosHackEnemy(enemy){
   enemy.hand = [];
 }
 
+function setupStoryMarketViajeroHackEnemy(enemy){
+  enemy.name = 'Viajero';
+  enemy.core.pilot = makeStoryTowerStaticCard('market-viajero-pilot', 'Q', 'spades', 1);
+  enemy.core.copilot = makeStoryTowerStaticCard('market-viajero-copilot', 'J', 'diamonds', 1);
+  enemy.core.booster = makeStoryTowerStaticCard('market-viajero-booster', 'A', 'hearts', 1);
+  enemy.attack = [
+    makeStoryTowerStaticCard('market-viajero-spade-8', '8', 'spades', 1),
+    makeStoryTowerStaticCard('market-viajero-spade-5', '5', 'spades', 1)
+  ];
+  enemy.defense = [
+    makeStoryTowerStaticCard('market-viajero-heart-4', '4', 'hearts', 1),
+    makeStoryTowerStaticCard('market-viajero-heart-6', '6', 'hearts', 1)
+  ];
+  enemy.armor = [
+    makeStoryTowerStaticCard('market-viajero-club-4', '4', 'clubs', 1),
+    makeStoryTowerStaticCard('market-viajero-club-7', '7', 'clubs', 1)
+  ];
+  enemy.fuel = [
+    makeStoryTowerStaticCard('market-viajero-diamond-6', '6', 'diamonds', 1)
+  ];
+  enemy.hand = [
+    makeStoryTowerStaticCard('market-viajero-hand-diamond', '9', 'diamonds', 1)
+  ];
+}
+
 function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   const profile = getStoryTowerCombatProfile(mission);
   if(!profile) return false;
   const playerDeck = createDeck({ owner:0, prefix:'tw0-c' });
+  const argosHackStyle = isStoryArgosHackCombat(mission);
   let enemyDeck = mission === 'tower_argos_hack'
     ? ['4','5','6','7','8','9','10'].map(rank => ({ id:`tower-argos-club-${rank}`, rank, suit:'clubs', value:rankValue(rank), storyDeckOwner:1 }))
     : buildStoryTowerEnemyDeck(profile, 1);
@@ -11572,10 +11686,11 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   const enemy = players[1];
   setupStoryTowerPlayerBase(pilot, playerDeck, {
     prefix: mission,
-    lockFuel: mission === 'tower_argos_hack',
-    withSpadeBooster: mission === 'tower_argos_hack'
+    lockFuel: argosHackStyle,
+    withSpadeBooster: argosHackStyle
   });
   if(mission === 'tower_argos_hack') setupStoryTowerArgosHackEnemy(enemy);
+  else if(mission === 'mercado_viajero_4b') setupStoryMarketViajeroHackEnemy(enemy);
   else if(mission === 'tower_control_guard') setupStoryTowerControlGuardEnemy(enemy, enemyDeck);
   else setupStoryTowerDroneEnemy(enemy, enemyDeck, profile);
   enemy.combatSprite = profile.combatSprite || null;
@@ -11605,7 +11720,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   state.storyMission = mission;
   state.storyMissionAnnounced = false;
   state.storyMissionProgress = {
-    towerFuelLocked: mission === 'tower_argos_hack',
+    towerFuelLocked: argosHackStyle,
     towerReturnScene: STORY_TOWER_RETURN_SCENE || '',
     towerDroneId: STORY_TOWER_DRONE_ID || '',
     towerRewardId: STORY_TOWER_REWARD_ID || '',
@@ -11613,7 +11728,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   };
   state.log = [
     `📜 ${profile.intro}`,
-    mission === 'tower_argos_hack'
+    argosHackStyle
       ? '⚠️ Hackeo de Argos: el combustible normal no cuenta. Instala el A♦ y quema armadura como energia, o usa proyectiles sueltos.'
       : profile.limitedSuit
         ? '🎯 Combate de Torre 4B: el dron ya esta montado. Tu PoCoBOT empieza sin montar; ensambla, abre ataque y vuelve con una antigua moneda.'
@@ -11804,6 +11919,23 @@ function maybeFinalizeStoryMissionAfterWinner(){
       mission: state.storyMission,
       success: playerWon,
       winner: state.winner
+    });
+    return;
+  }
+
+  if(state.storyMission === 'mercado_viajero_4b'){
+    const playerWon = state.winner === state.players[0].name;
+    state.phase = 'Mision';
+    state.storyMissionAnnounced = true;
+    log(playerWon
+      ? '🏁 Mision completada: has vencido a Viajero con el bloqueo de diamantes activo. Recompensa: 2 monedas.'
+      : '⚠️ Viajero resiste el reto post Torre 4B.');
+    addToast(playerWon ? 'Viajero superado: +2 monedas' : 'Viajero gana: puedes repetirlo', playerWon ? 'ok' : 'warn');
+    broadcastStoryMissionOutcome({
+      mission: state.storyMission,
+      success: playerWon,
+      winner: state.winner,
+      reward: playerWon ? { coins: 2 } : null
     });
     return;
   }
@@ -12401,7 +12533,7 @@ function isStoryMissionCarriedAudio(){
 }
 
 function isStoryArgosHackCombatMusicLocked(){
-  return STORY_MISSION_BOOT === 'tower_argos_hack'
+  return isStoryArgosHackCombat(STORY_MISSION_BOOT)
     && !isStoryMissionExternalAudio()
     && !isStoryMissionCarriedAudio();
 }
@@ -13185,6 +13317,11 @@ const STORY_MISSION_BRIEFS = {
     kicker: 'Hackeo final del modo historia',
     title: 'Torre 4B · Panel de Argós',
     text: 'Argós bloquea el combustible normal. Consigue el A♦ y usa armadura como energía, o remata con proyectiles sueltos. Su salud real son solo 2♥ y 5♥.'
+  },
+  mercado_viajero_4b: {
+    kicker: 'Reto post Torre 4B',
+    title: 'Mercado · Viajero reactivado',
+    text: 'Viajero reproduce el hackeo del panel corrupto: combustible normal bloqueado, interfaz especial y música de Sistema Corrupto. El rival usa un mecha normal y deck completo de 52 cartas. Victoria: 2 monedas.'
   }
 };
 
@@ -14140,11 +14277,11 @@ function hasDiamondBoosterArmorFuel(player){
   if(!player || !player.core || !player.core.booster) return false;
   if(player.core.booster.rank !== 'A') return false;
   if(player.core.booster.suit === 'diamonds') return true;
-  return state.storyMission === 'tower_argos_hack' && player.core.booster.suit === 'spades';
+  return isStoryArgosHackCombat(state.storyMission) && player.core.booster.suit === 'spades';
 }
 function getArmorFuelBoosterLabel(player){
   if(!hasDiamondBoosterArmorFuel(player)) return '';
-  return state.storyMission === 'tower_argos_hack' && player?.core?.booster?.suit === 'spades' ? 'As♠' : 'As♦';
+  return isStoryArgosHackCombat(state.storyMission) && player?.core?.booster?.suit === 'spades' ? 'As♠' : 'As♦';
 }
 function getBuildStatus(player){
   if(!player || !player.core) return { mounted: false, combatReady: false };
@@ -17108,7 +17245,7 @@ function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
 
 function getAttackSelection(){
   const attacker = state.players[state.currentPlayer];
-  const fuelLockedByStory = state.storyMission === 'tower_argos_hack' && state.currentPlayer === 0;
+  const fuelLockedByStory = isStoryArgosHackCombat(state.storyMission) && state.currentPlayer === 0;
   const armorAsFuelEnabled = hasDiamondBoosterArmorFuel(attacker);
   const fuel = fuelLockedByStory ? [] : state.selected.filter(s => s.zone==='fuel');
   const armorFuel = armorAsFuelEnabled ? state.selected.filter(s => s.zone==='armor') : [];
@@ -17220,7 +17357,7 @@ function confirmAttack(projectileOnly=false){
     projectileValue = projectile.value;
     mainValue = 0;
   }else{
-    if(sel.fuelCards.length===0) return notifySelection(state.storyMission === 'tower_argos_hack' && state.currentPlayer === 0
+    if(sel.fuelCards.length===0) return notifySelection(isStoryArgosHackCombat(state.storyMission) && state.currentPlayer === 0
       ? 'Argos bloquea el combustible normal. Instala el A♦ y selecciona armadura como energia, o usa proyectiles sueltos.'
       : (sel.armorAsFuelEnabled
         ? 'Selecciona combustible del panel o cartas de armadura para habilitar el ataque.'
@@ -22451,6 +22588,13 @@ function devResetEnvironment(){
   state.discard = [];
   state.removed = [];
   state.tutorialRiggedDraws = [];
+  state.storyMission = null;
+  state.storyMissionAnnounced = false;
+  state.storyMissionProgress = {};
+  state.storyDeckMode = false;
+  state.storyPlayerDecks = null;
+  clearStoryArgosHackInterfaceBoot();
+  clearStoryArgosHackGate();
   devCardCounter = 0;
 }
 
@@ -22490,6 +22634,10 @@ function devGetTutorialPresetCatalog(){
 
 function devGetOnlinePresetCatalog(){
   return DEV_ONLINE_PRESETS.slice();
+}
+
+function devGetStoryCharacterPreset(key){
+  return devGetStoryCharacterCatalog().find(item => item.key === key) || null;
 }
 
 function devGetSnapshot(){
@@ -22553,6 +22701,42 @@ function devSetViewerPreset(key, playerIdx=0){
   if(!state.players || state.players.length<2) devBootArena();
   const players = state.players.map((player, idx) => idx===playerIdx ? devBuildPlayerForPreset(key, player.name) : player);
   devSyncPlayers(players, playerIdx, 'Turno');
+  return devGetSnapshot();
+}
+
+function devSetStoryCharacter(key, playerIdx=1){
+  if(!state.players || state.players.length<2) devBootArena();
+  const preset = devGetStoryCharacterPreset(key);
+  if(!preset) throw new Error(`Personaje de historia no disponible: ${key}`);
+  const targetIdx = playerIdx === 0 ? 0 : 1;
+  const player = state.players[targetIdx];
+  player.name = preset.name || preset.label || `Jugador ${targetIdx + 1}`;
+  player.combatSprite = preset.sprite || null;
+  setBestFlexTargets(player);
+  syncMilestones(targetIdx);
+  render();
+  addToast(`Player ${targetIdx + 1}: ${preset.label}`, 'ok');
+  return devGetSnapshot();
+}
+
+function devLoadStoryCombatMission(mission='tower_argos_hack'){
+  const profile = getStoryTowerCombatProfile(mission);
+  if(!profile) throw new Error(`Mision de combate no disponible: ${mission}`);
+  devResetEnvironment();
+  primeOfflineMode('single', isStoryArgosHackCombat(mission) ? 'normal' : 'easy');
+  setupStoryTowerCombatScenario(mission);
+  hideIntroScreen();
+  if(isStoryArgosHackCombat(mission)){
+    prepareStoryArgosHackScrollMode();
+    triggerStoryArgosHackInterfaceBoot();
+    startStoryCombatMusicAtStart(true);
+  }else{
+    prepareStoryTowerCombatHudMode(mission);
+    startStoryCombatMusicAtStart(false);
+  }
+  render();
+  addToast(`Sistema cargado: ${profile.title || profile.enemyName}`, isStoryArgosHackCombat(mission) ? 'warn' : 'ok');
+  log(`🧪 Dev sandbox: combate historia cargado · ${profile.title || mission}`);
   return devGetSnapshot();
 }
 
@@ -22637,8 +22821,11 @@ window.__pocobotDev = {
   getRulePresets: devGetRulePresetCatalog,
   getTutorialPresets: devGetTutorialPresetCatalog,
   getOnlinePresets: devGetOnlinePresetCatalog,
+  getStoryCharacters: devGetStoryCharacterCatalog,
   getSoundKinds(){ return DEV_SOUND_KINDS.slice(); },
   setViewerPreset: devSetViewerPreset,
+  setStoryCharacter: devSetStoryCharacter,
+  loadStoryCombatMission: devLoadStoryCombatMission,
   loadRulePreset: devApplyRulePreset,
   loadTutorialPreset: devLoadTutorialPreset,
   loadOnlinePreset: devLoadOnlinePreset,

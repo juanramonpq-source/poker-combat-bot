@@ -10,7 +10,7 @@ Prototipo jugable autocontenido para integrar en PoCoBOT como tutorial de movimi
 - `assets/mercado-reles-rendered-map.png`: escenario raster renderizado del mercado.
 - `assets/vera-hex-rendered.png`: personaje de Vera Hex como punto de tienda/interaccion.
 - `assets/pocobot-sparring-topdown.png`: PoCoBOT de entrenamiento.
-- `assets/market-crowd-ambience-unstuntedsfx.mp3`: muchedumbre real de mercado para la exploracion.
+- `assets/market-crowd-ambience-unstuntedsfx.mp3`: ambiente urbano/cyber con murmullo de calle para la exploracion.
 - `assets/mecha-clean-frames/`: frames del PoCoBOT pilotado para inclinacion/deslizamiento.
 
 ## Sistemas incluidos
@@ -23,6 +23,7 @@ Prototipo jugable autocontenido para integrar en PoCoBOT como tutorial de movimi
 - Colisiones contra puestos, escenario y personajes, dejando la plaza transitable.
 - Aviso de orientacion horizontal cuando el movil esta en vertical.
 - Ambiente de muchedumbre solo durante la exploracion jugable. Al hablar con Vera, abrir tienda, combatir o volver al mapa se apaga.
+- Al hablar con Vera desde el modo historia embebido, el gesto activa `../MercadodeChatarra.mp3` en el contenedor padre antes de apagar la muchedumbre, para que la conversacion suene solo con la cancion del mercado.
 - Punto de interaccion de Vera Hex conectado por `postMessage` con el modo historia.
 - Punto de interaccion del PoCoBOT de entrenamiento conectado por `postMessage` con el combate tutorial.
 
@@ -47,7 +48,7 @@ El prototipo no depende de librerias externas.
 ## Audio externo
 
 - `assets/market-crowd-ambience-unstuntedsfx.mp3`
-- Fuente: UnstuntedSFX, "Market Ambience Sound Effect"
-- URL: https://unstuntedsfx.net/sounds/market-ambience/
-- Licencia consultada: https://unstuntedsfx.net/license
-- Resumen de licencia indicado por la fuente: royalty-free, uso comercial permitido, sin atribucion obligatoria. No redistribuir como SFX independiente.
+- Fuente: OpenGameArt, "Scifi City - Ambient Loop" de TinyWorlds (`busy_cyberworld.mp3`).
+- URL: https://opengameart.org/content/scifi-city-ambient-loop
+- Licencia consultada: CC0.
+- Resumen: dominio publico/CC0; uso, modificacion y redistribucion permitidos sin atribucion obligatoria.

@@ -214,6 +214,204 @@ body.story-embed-mode .floating-map-button {
   display: none;
 }
 
+.card-lock-overlay[hidden] {
+  display: none;
+}
+
+.card-lock-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  display: grid;
+  place-items: center;
+  padding: max(18px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  background:
+    radial-gradient(circle at 50% 22%, rgba(132, 234, 255, 0.18), transparent 26%),
+    linear-gradient(180deg, rgba(4, 7, 12, 0.72), rgba(5, 8, 13, 0.94));
+  backdrop-filter: blur(12px);
+  touch-action: pan-y;
+}
+
+.card-lock-panel {
+  width: min(1040px, calc(100vw - 28px));
+  max-height: calc(100vh - 28px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: clamp(18px, 3vw, 32px);
+  border: 1px solid rgba(159, 243, 255, 0.32);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(10, 18, 28, 0.96), rgba(5, 9, 15, 0.98));
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(255, 213, 95, 0.08) inset;
+  touch-action: pan-y;
+}
+
+.card-lock-kicker {
+  margin: 0 0 8px;
+  color: var(--cyan);
+  font-size: clamp(0.78rem, 1.6vw, 0.95rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.card-lock-panel h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 5vw, 3rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.card-lock-copy {
+  max-width: 760px;
+  margin: 10px 0 22px;
+  color: rgba(238, 248, 255, 0.78);
+  font-size: clamp(1rem, 2vw, 1.14rem);
+  line-height: 1.42;
+}
+
+.card-lock-grid {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.86fr) minmax(320px, 1.14fr);
+  gap: clamp(14px, 2.5vw, 24px);
+  align-items: stretch;
+}
+
+.card-lock-cards,
+.card-lock-slots {
+  display: grid;
+  gap: 12px;
+}
+
+.card-lock-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.card-lock-slots {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.card-lock-card,
+.card-lock-slot,
+.card-lock-close {
+  font: inherit;
+}
+
+.card-lock-card {
+  min-height: 204px;
+  padding: 12px;
+  border: 1px solid rgba(159, 243, 255, 0.2);
+  border-radius: 8px;
+  color: var(--text);
+  background: rgba(12, 22, 33, 0.82);
+  cursor: grab;
+}
+
+.card-lock-card.selected {
+  border-color: rgba(255, 213, 95, 0.92);
+  box-shadow: 0 0 28px rgba(255, 213, 95, 0.16);
+}
+
+.card-lock-card.assigned {
+  opacity: 0.46;
+}
+
+.card-lock-card img {
+  display: block;
+  width: min(92px, 28vw);
+  max-width: 100%;
+  aspect-ratio: 5 / 7;
+  margin: 0 auto 10px;
+}
+
+.card-lock-card span {
+  display: block;
+  color: #ffe0bc;
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.card-lock-slot {
+  min-height: 160px;
+  padding: 14px;
+  border: 1px dashed rgba(255, 213, 95, 0.46);
+  border-radius: 8px;
+  color: var(--text);
+  background: rgba(6, 12, 20, 0.76);
+  text-align: left;
+  cursor: pointer;
+}
+
+.card-lock-slot.filled {
+  border-style: solid;
+  border-color: rgba(159, 243, 255, 0.56);
+  background: rgba(13, 31, 42, 0.9);
+}
+
+.card-lock-slot-label {
+  display: block;
+  color: var(--cyan);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.card-lock-slot small {
+  display: block;
+  margin-top: 2px;
+  color: rgba(238, 248, 255, 0.66);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.card-lock-slot strong {
+  display: block;
+  margin-top: 26px;
+  color: rgba(255, 224, 188, 0.74);
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  text-align: center;
+}
+
+.card-lock-slot img {
+  display: block;
+  width: min(74px, 22vw);
+  aspect-ratio: 5 / 7;
+  margin: 12px auto 0;
+}
+
+.card-lock-feedback {
+  min-height: 28px;
+  margin: 18px 0 0;
+  color: rgba(238, 248, 255, 0.78);
+  font-weight: 800;
+}
+
+.card-lock-feedback.solved {
+  color: #9ff3ff;
+  font-size: clamp(1.2rem, 3vw, 1.7rem);
+  text-transform: uppercase;
+}
+
+.card-lock-close {
+  display: inline-flex;
+  justify-content: center;
+  min-width: 190px;
+  min-height: 48px;
+  margin-top: 14px;
+  padding: 12px 20px;
+  border: 1px solid rgba(159, 243, 255, 0.4);
+  border-radius: 999px;
+  color: #07111a;
+  background: linear-gradient(135deg, #9ff3ff, #ffd55f);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 680px) {
   .layout {
     padding-top: 84px;
@@ -221,5 +419,36 @@ body.story-embed-mode .floating-map-button {
 
   body.story-embed-mode .layout {
     padding-top: 0;
+  }
+
+  .card-lock-grid,
+  .card-lock-slots {
+    grid-template-columns: 1fr;
+  }
+
+  .card-lock-cards {
+    grid-template-columns: repeat(4, minmax(64px, 1fr));
+  }
+
+  .card-lock-card {
+    min-height: 132px;
+    padding: 8px;
+  }
+
+  .card-lock-card img {
+    width: min(62px, 18vw);
+  }
+
+  .card-lock-card span {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+
+  .card-lock-slot {
+    min-height: 112px;
+  }
+
+  .card-lock-slot img {
+    width: 54px;
   }
 }

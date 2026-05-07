@@ -11,6 +11,9 @@ const debugMode = storyParams.get("debug") === "1";
 const storyAudioMode = storyParams.get("story_audio") || "";
 const forceVanArrival = storyParams.get("story_van_arrival") === "1";
 const chapterStateKey = "pocobot-tower-4b-chapter-v1";
+const storySkipEnemyCombatsKey = "pocobot_story_skip_enemy_combats_v1";
+const skipEnemyCombatsMode = storyParams.get("story_skip_combats") === "1"
+  || localStorage.getItem(storySkipEnemyCombatsKey) === "1";
 const chapterFlowVersion = 3;
 
 const musicConfig = {
@@ -56,6 +59,7 @@ const defaultChapterState = {
   controlMechaDefeated: false,
   argosHackDefeated: false,
   missionComplete: false,
+  finaleConversationPending: false,
   finalRewardClaimed: false,
   redGlowClaimed: false,
   inventoryRewards: [],
@@ -1411,7 +1415,7 @@ async function loadAssets() {
     ]);
   } else if (chapterState.finalRewardClaimed) {
     queueRadio([
-      "Xavor: Torre 4B vuelve a transmitir y tu inventario ya tiene ese 7 de corazones. Bonito final para un día feo. Adivina: Eso dicen todas...",
+      "Xavor: Torre 4B vuelve a transmitir, tu radio ya está sincronizada y Argós tiene un mal día. Bonito final para un sitio feo. Adivina: Eso dicen todas...",
     ]);
   } else if (chapterState.xavorArrived && !chapterState.xavorIntroduced && !chapterState.pendingVanArrival) {
     queueRadio([
@@ -1594,38 +1598,17 @@ function completeXavorPresentation() {
 }
 
 function completeMissionWithXavor() {
-  const rewardCard = {
-    id: "tower-4b-7-hearts",
-    value: "7",
-    suit: "hearts",
-    label: "7 de corazones",
-    source: "Torre de Seguimiento 4B",
-  };
-  const inventoryRewards = Array.isArray(chapterState.inventoryRewards)
-    ? [...chapterState.inventoryRewards]
-    : [];
-
-  if (!inventoryRewards.includes(rewardCard.id)) {
-    inventoryRewards.push(rewardCard.id);
-  }
-
   patchChapterState({
-    missionComplete: true,
-    finalRewardClaimed: true,
-    inventoryRewards,
+    finaleConversationPending: true,
   });
 
-  setInteractionMessage("Misión completada. Xavor entrega una carta 7 de corazones para tu inventario.", 5.2);
+  setInteractionMessage("Xavor abre la furboneta. Toca cerrar la misión cara a cara.", 4.4);
   queueRadio([
-    "Xavor: transmisiones restauradas, Argós humillado y mi furboneta sigue entera. Te has ganado esto.",
-    "Xavor: carta 7 de corazones para tu inventario. No preguntes por qué la tenía en la guantera... hay cosas que no puedo contarte.",
+    "Xavor: ¡ahí estás! Vuelve a la furboneta. Tengo una recompensa y un discurso muy corto, que ya es raro en mí.",
   ]);
-  postStoryTutorialAction("tower-4b-mission-complete", {
-    reward: {
-      card: rewardCard,
-      inventoryId: rewardCard.id,
-    },
+  postStoryTutorialAction("xavor-finale-request", {
     missionComplete: true,
+    unlocks: ["xavor-radio"],
   });
 }
 
@@ -1647,7 +1630,7 @@ function triggerExteriorDroneCombat(drone) {
     return;
   }
 
-  if (storyEmbedMode || window.parent !== window) {
+  if (!skipEnemyCombatsMode && (storyEmbedMode || window.parent !== window)) {
     delayedUnknownRadioIntro.active = false;
     delayedUnknownRadioIntro.triggered = true;
     patchChapterState({ exteriorDroneEncountered: true, unknownRadioIntroPlayed: true });
@@ -1708,7 +1691,9 @@ function triggerExteriorDroneCombat(drone) {
   }
 
   postStoryTutorialAction("exterior-drone-combat", {
+    droneId: drone.id,
     enemyId: drone.enemyId,
+    mission: drone.mission,
     result: "victory",
     reward: { coins: 1 },
     totalCoins: chapterState.coins,
@@ -2881,10 +2866,10 @@ function drawHud() {
   }
 
   const objectiveText = chapterState.finalRewardClaimed
-    ? `Misión completada · Recompensa: 7 de corazones · Monedas: ${chapterState.coins}`
+    ? `Misión completada · Radio de Xavor recibida · Monedas: ${chapterState.coins}`
     : chapterState.argosHackDefeated
       ? `Vuelve a la furboneta de Xavor para cerrar la mision · Monedas: ${chapterState.coins}`
-      : `Explora, derrota drones (${defeatedExteriorDroneCount()}/3) y hackea el ordenador azul · Monedas: ${chapterState.coins}`;
+      : `${skipEnemyCombatsMode ? "TEST: toca enemigos para omitir combate · " : ""}Explora, derrota drones (${defeatedExteriorDroneCount()}/3) y hackea el ordenador azul · Monedas: ${chapterState.coins}`;
   if (hudHelp.expanded) {
     ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
     ctx.font = "14px Trebuchet MS";

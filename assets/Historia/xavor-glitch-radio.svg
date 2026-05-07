@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-labelledby="title desc">
+  <title id="title">Radio de Xavor Glitch</title>
+  <desc id="desc">Radio portátil de frontera con pantalla azul, antena y luces de transmisión.</desc>
+  <defs>
+    <linearGradient id="body" x1="186" x2="725" y1="228" y2="744" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1b2d38"/>
+      <stop offset=".48" stop-color="#0d1720"/>
+      <stop offset="1" stop-color="#05080d"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="212" x2="720" y1="255" y2="730" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9ff3ff"/>
+      <stop offset=".45" stop-color="#d7ab65"/>
+      <stop offset="1" stop-color="#293842"/>
+    </linearGradient>
+    <radialGradient id="screenGlow" cx="50%" cy="48%" r="54%">
+      <stop offset="0" stop-color="#b9fbff" stop-opacity=".95"/>
+      <stop offset=".44" stop-color="#54d8f0" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#0b4352" stop-opacity=".16"/>
+    </radialGradient>
+    <filter id="glow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.42 0 0 0 0 0.95 0 0 0 0 1 0 0 0 .58 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="900" height="900" fill="none"/>
+  <g opacity=".44" filter="url(#glow)">
+    <circle cx="456" cy="498" r="304" fill="#123a44"/>
+    <path fill="none" stroke="#8ff6ff" stroke-linecap="round" stroke-width="18" d="M249 220c78-63 166-95 264-85M643 161c52 26 92 64 120 116M178 614c28 86 86 146 174 182"/>
+  </g>
+  <g transform="rotate(-6 450 450)">
+    <path fill="none" stroke="#d7ab65" stroke-linecap="round" stroke-width="28" d="M575 250 700 58"/>
+    <circle cx="710" cy="43" r="27" fill="#101821" stroke="#9ff3ff" stroke-width="10"/>
+    <rect x="202" y="222" width="496" height="520" rx="74" fill="#070b11" opacity=".56"/>
+    <rect x="172" y="192" width="496" height="520" rx="74" fill="url(#body)" stroke="url(#edge)" stroke-width="12"/>
+    <rect x="222" y="248" width="398" height="121" rx="34" fill="#061017" stroke="#244b58" stroke-width="7"/>
+    <rect x="248" y="273" width="217" height="73" rx="20" fill="url(#screenGlow)" filter="url(#glow)"/>
+    <path fill="none" stroke="#082934" stroke-linecap="round" stroke-width="7" d="M272 313h36l22-22 28 46 24-30h55"/>
+    <text x="486" y="322" fill="#f4d6a6" font-family="Trebuchet MS, Segoe UI, sans-serif" font-size="34" font-weight="900" letter-spacing="5">XG</text>
+    <g fill="#101821" stroke="#29434d" stroke-width="7">
+      <rect x="232" y="421" width="182" height="219" rx="32"/>
+      <circle cx="518" cy="492" r="74"/>
+      <circle cx="570" cy="621" r="43"/>
+    </g>
+    <g stroke="#9ff3ff" stroke-linecap="round" stroke-width="8" opacity=".82">
+      <path d="M265 463h116M265 504h116M265 545h116M265 586h116"/>
+      <path d="M486 492h64M518 460v64"/>
+    </g>
+    <circle cx="570" cy="621" r="20" fill="#d7ab65"/>
+    <path fill="none" stroke="#d7ab65" stroke-linecap="round" stroke-width="14" d="M267 688c52 30 109 45 171 45 60 0 119-15 176-45"/>
+  </g>
+</svg>

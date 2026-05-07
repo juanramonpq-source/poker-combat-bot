@@ -310,7 +310,9 @@
     .control-btn.primary{background:linear-gradient(180deg, #ffd560, #ff9f42);color:var(--ink);border-color:rgba(255,213,95,.45)}
     .control-btn.secondary,.utility-btn.secondary{background:linear-gradient(180deg, #effcff, #aeeeff 52%, #60d8ff);color:#123263;border-color:rgba(143,244,255,.4)}
     .control-btn.danger,.utility-btn.danger{background:linear-gradient(180deg, #ffb067, #ff7c54);color:#34120c;border-color:rgba(255,149,66,.5)}
+    .control-btn.hacked{background:linear-gradient(180deg, #91ffe8, #ff4468 62%, #250711);color:#18060a;border-color:rgba(255,68,104,.62);box-shadow:0 0 22px rgba(255,68,104,.18),0 10px 18px rgba(0,0,0,.14)}
     .mecha-btn.active,
+    .preset-btn.active,
     .viewport-btn.active{background:linear-gradient(180deg, rgba(255,213,95,.22), rgba(38,58,104,.92));border-color:rgba(255,213,95,.38);color:#fff8da}
     .preset-btn{
       text-align:left;
@@ -476,6 +478,7 @@
               <button class="control-btn" type="button" data-action="modify-preview">Modificar mecha</button>
               <button class="control-btn" type="button" data-action="projectile-ready">Prompt proyectil</button>
               <button class="control-btn secondary" type="button" data-action="reboot-arena">Reiniciar sandbox</button>
+              <button class="control-btn hacked" type="button" data-action="story-hacked-system">Sistema Hackeado</button>
               <button class="control-btn secondary" type="button" data-action="toast-pack">Mensajes UI</button>
               <button class="control-btn danger" type="button" data-action="clear-last">Limpiar feedback</button>
             </div>
@@ -511,6 +514,12 @@
             <h3>Online simulado</h3>
             <p>Estados de lobby y partida online sin abrir dos clientes reales. Perfecto para revisar UI y manos ocultas.</p>
             <div class="preset-grid" id="onlinePresetGrid"></div>
+          </article>
+
+          <article class="control-group">
+            <h3>Player 2 historia</h3>
+            <p>Cambia el personaje visible del segundo player por cualquiera de los perfiles de historia disponibles sin salir del debug normal.</p>
+            <div class="preset-grid" id="storyCharacterGrid"></div>
           </article>
         </div>
 
@@ -598,8 +607,11 @@
       'getRulePresets',
       'getTutorialPresets',
       'getOnlinePresets',
+      'getStoryCharacters',
       'getSoundKinds',
       'setViewerPreset',
+      'setStoryCharacter',
+      'loadStoryCombatMission',
       'loadRulePreset',
       'loadTutorialPreset',
       'loadOnlinePreset',
@@ -802,11 +814,13 @@
       const rulePresets = await labState.api.getRulePresets();
       const tutorialPresets = await labState.api.getTutorialPresets();
       const onlinePresets = await labState.api.getOnlinePresets();
+      const storyCharacters = await labState.api.getStoryCharacters();
       const sounds = await labState.api.getSoundKinds();
       buildMechaButtons(presets);
       buildPresetButtons('rulePresetGrid', rulePresets, 'rule');
       buildPresetButtons('tutorialPresetGrid', tutorialPresets, 'tutorial');
       buildPresetButtons('onlinePresetGrid', onlinePresets, 'online');
+      buildStoryCharacterButtons(storyCharacters);
       buildSoundButtons(sounds);
       const snapshot = await labState.api.boot();
       labState.currentPresetKey = presets[0]?.key || null;
@@ -848,6 +862,17 @@
       `).join('');
     }
 
+    function buildStoryCharacterButtons(characters){
+      const grid = byId('storyCharacterGrid');
+      if(!grid) return;
+      grid.innerHTML = (characters || []).map(item => `
+        <button class="preset-btn" type="button" data-story-character-key="${item.key}" data-story-character-label="${item.label}">
+          <strong>${item.label}</strong>
+          <span>${item.description || 'Perfil de historia para Player 2'}</span>
+        </button>
+      `).join('');
+    }
+
     async function loadScenePreset(group, key, label){
       let snapshot = null;
       if(group === 'rule') snapshot = await callApi(api => api.loadRulePreset(key));
@@ -872,6 +897,17 @@
       byId('viewerPill').textContent = label;
       syncSnapshot(snapshot);
       noteEvent(`Preset visual · ${label}`);
+    }
+
+    async function setStoryCharacter(key, label){
+      labState.viewerPlayerIdx = 1;
+      labState.currentPresetKey = null;
+      labState.currentPresetLabel = label;
+      const snapshot = await callApi(api => api.setStoryCharacter(key, 1));
+      byId('viewerPill').textContent = `Player 2 · ${label}`;
+      document.querySelectorAll('[data-story-character-key]').forEach(btn => btn.classList.toggle('active', btn.dataset.storyCharacterKey === key));
+      syncSnapshot(snapshot);
+      noteEvent(`Player 2 historia · ${label}`);
     }
 
     async function setViewportMode(mode){
@@ -957,6 +993,18 @@
           noteEvent('Sandbox reiniciado');
           break;
         }
+        case 'story-hacked-system': {
+          labState.viewerPlayerIdx = 1;
+          labState.attackerIdx = 0;
+          labState.currentPresetKey = null;
+          labState.currentPresetLabel = 'Sistema Hackeado';
+          const snapshot = await callApi(api => api.loadStoryCombatMission('tower_argos_hack'));
+          byId('viewerPill').textContent = 'Sistema Hackeado';
+          syncSnapshot(snapshot);
+          noteSound('Sistema Corrupto');
+          noteEvent('Combate contra IA malvada cargado');
+          break;
+        }
         case 'toast-pack': {
           await callApi(api => { api.toast('Sistema listo para pruebas rápidas', 'ok'); api.toast('Esto sirve para revisar timing y legibilidad', 'warn'); api.toast('También puede representar estados de peligro', 'danger'); return true; });
           noteEvent('Pack de toasts lanzado');
@@ -1032,6 +1080,17 @@
             await setViewerPreset(mechaBtn.dataset.mechaKey, mechaBtn.dataset.mechaLabel);
           }catch(err){
             console.error(err);
+          }
+          return;
+        }
+
+        const storyCharacterBtn = event.target.closest('[data-story-character-key]');
+        if(storyCharacterBtn){
+          try{
+            await setStoryCharacter(storyCharacterBtn.dataset.storyCharacterKey, storyCharacterBtn.dataset.storyCharacterLabel);
+          }catch(err){
+            console.error(err);
+            setLoading(err.message || 'No se pudo cambiar el personaje del Player 2.', { title:'Error del laboratorio', error:true });
           }
           return;
         }

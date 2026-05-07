@@ -4,12 +4,20 @@ const orientationOverlay = document.getElementById("orientation-overlay");
 const orientationLockButton = document.getElementById("orientation-lock-button");
 const orientationLockStatus = document.getElementById("orientation-lock-status");
 const storyMapButton = document.getElementById("story-map-button");
+const cardLockOverlay = document.getElementById("card-lock-overlay");
+const cardLockCardsContainer = document.getElementById("card-lock-cards");
+const cardLockSlotsContainer = document.getElementById("card-lock-slots");
+const cardLockFeedback = document.getElementById("card-lock-feedback");
+const cardLockCloseButton = document.getElementById("card-lock-close");
 const storyParams = new URLSearchParams(window.location.search);
 const storyEmbedMode = storyParams.get("story_embed") === "1";
 const storyReturnUrl = storyParams.get("story_return") || "";
 const debugMode = storyParams.get("debug") === "1";
 const storyAudioMode = storyParams.get("story_audio") || "";
 const chapterStateKey = "pocobot-tower-4b-chapter-v1";
+const storySkipEnemyCombatsKey = "pocobot_story_skip_enemy_combats_v1";
+const skipEnemyCombatsMode = storyParams.get("story_skip_combats") === "1"
+  || localStorage.getItem(storySkipEnemyCombatsKey) === "1";
 const chapterFlowVersion = 3;
 
 const musicConfig = {
@@ -48,6 +56,7 @@ const defaultChapterState = {
   towerDoorOpen: false,
   exteriorDroneEncountered: false,
   interiorDroneDefeated: false,
+  interiorStairUnlocked: false,
   controlMechaDefeated: false,
   argosHackDefeated: false,
   missionComplete: false,
@@ -82,6 +91,22 @@ function patchChapterState(patch) {
   Object.assign(chapterState, patch);
   saveChapterState();
 }
+
+const cardLockRanks = ["2", "3", "4", "5", "6", "7", "8", "9", "10"];
+const cardLockSlots = [
+  { id: "fuel", label: "Combustible", suit: "diamonds", suitLabel: "diamantes", symbol: "♦" },
+  { id: "projectiles", label: "Proyectiles", suit: "spades", suitLabel: "picas", symbol: "♠" },
+  { id: "defense", label: "Defensa", suit: "hearts", suitLabel: "corazones", symbol: "♥" },
+  { id: "armor", label: "Armadura", suit: "clubs", suitLabel: "tréboles", symbol: "♣" },
+];
+
+const cardLockState = {
+  active: false,
+  completed: !!chapterState.interiorStairUnlocked,
+  cards: [],
+  assignments: {},
+  selectedCardId: null,
+};
 
 if (storyEmbedMode) {
   document.body.classList.add("story-embed-mode");
@@ -136,6 +161,7 @@ function installExplorationGestureGuard() {
     "touchmove",
     (event) => {
       if (!event.cancelable) return;
+      if (event.target?.closest?.(".card-lock-overlay")) return;
       if (input.pointerActive || event.target === canvas || storyEmbedMode) {
         event.preventDefault();
       }
@@ -262,6 +288,10 @@ const collisionZones = [
   },
 ];
 
+const stairLockBarrierZones = [
+  { type: "rect", x: 1010, y: 214, width: 244, height: 146 },
+];
+
 const thrusters = [
   { x: -68, y: -35, width: 15, phase: 0.1 },
   { x: 68, y: -35, width: 15, phase: 1.7 },
@@ -291,16 +321,16 @@ const interactables = [
     id: "lock-console",
     x: 1036,
     y: 382,
-    radius: 84,
-    label: "Consola de bloqueo",
+    radius: 118,
+    label: "Ordenador de escalera",
     hint: "Sincronizar",
-    message: "Consola de bloqueo: la escalera superior reconoce la firma del PoCoBOT.",
+    message: "Ordenador de escalera: coloca los cuatro protocolos para desbloquear la subida.",
   },
   {
     id: "stairs-up",
-    x: 1124,
-    y: 322,
-    radius: 132,
+    x: 1134,
+    y: 236,
+    radius: 88,
     label: "Escaleras superiores",
     hint: "Subir",
     message: "Escaleras superiores: acceso preparado hacia la sala de control.",
@@ -312,6 +342,8 @@ const interactionState = {
   message: "",
   messageTimer: 0,
 };
+
+let sceneTransitioning = false;
 
 const hudHelp = {
   expanded: true,
@@ -452,6 +484,193 @@ const actorCollisionRadii = {
   "stairs-up": 0,
 };
 
+function isInteriorStairUnlocked() {
+  return !!chapterState.interiorStairUnlocked;
+}
+
+function getRandomCardLockRank() {
+  return cardLockRanks[Math.floor(Math.random() * cardLockRanks.length)] || "2";
+}
+
+function shuffleCardLockCards(cards) {
+  const shuffled = [...cards];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
+function createCardLockCards() {
+  return shuffleCardLockCards(cardLockSlots.map((slot) => {
+    const rank = getRandomCardLockRank();
+    return {
+      id: `lock-${slot.suit}-${rank}`,
+      rank,
+      suit: slot.suit,
+      suitLabel: slot.suitLabel,
+      symbol: slot.symbol,
+      image: `../../cards/hayeah-full/${rank}_of_${slot.suit}.svg`,
+    };
+  }));
+}
+
+function getAssignedSlotForCard(cardId) {
+  return Object.entries(cardLockState.assignments).find(([, assignedCardId]) => assignedCardId === cardId)?.[0] || "";
+}
+
+function setCardLockFeedback(text, solved = false) {
+  if (!cardLockFeedback) return;
+  cardLockFeedback.textContent = text || "";
+  cardLockFeedback.classList.toggle("solved", !!solved);
+}
+
+function closeCardLockPuzzle() {
+  if (!cardLockOverlay || !cardLockState.completed) return;
+  cardLockState.active = false;
+  cardLockOverlay.hidden = true;
+  document.body.classList.remove("card-lock-active");
+  canvas.focus({ preventScroll: true });
+}
+
+function completeCardLockPuzzle() {
+  if (cardLockState.completed && isInteriorStairUnlocked()) return;
+  cardLockState.completed = true;
+  patchChapterState({ interiorStairUnlocked: true });
+  setInteractionMessage("Puerta desbloqueada. La escalera superior vuelve a estar operativa.", 4.2);
+  queueRadio([
+    "Xavor: puerta desbloqueada. Sube con cuidado; arriba Argós ya no finge ser amable.",
+  ]);
+  postStoryTutorialAction("interior-stair-unlocked", {
+    unlocks: ["control-room"],
+  });
+}
+
+function assignCardToCardLockSlot(cardId, slotId) {
+  const card = cardLockState.cards.find((entry) => entry.id === cardId);
+  const slot = cardLockSlots.find((entry) => entry.id === slotId);
+  if (!card || !slot) return;
+  if (card.suit !== slot.suit) {
+    setCardLockFeedback(`${card.rank} de ${card.suitLabel} no pertenece a ${slot.label}.`);
+    return;
+  }
+
+  Object.keys(cardLockState.assignments).forEach((currentSlotId) => {
+    if (cardLockState.assignments[currentSlotId] === cardId || currentSlotId === slotId) {
+      delete cardLockState.assignments[currentSlotId];
+    }
+  });
+  cardLockState.assignments[slotId] = cardId;
+  cardLockState.selectedCardId = null;
+
+  const solved = cardLockSlots.every((entry) => {
+    const assignedCard = cardLockState.cards.find((cardEntry) => cardEntry.id === cardLockState.assignments[entry.id]);
+    return assignedCard?.suit === entry.suit;
+  });
+
+  if (solved) {
+    completeCardLockPuzzle();
+    setCardLockFeedback("Puerta desbloqueada", true);
+  } else {
+    setCardLockFeedback("Protocolo correcto. Faltan ranuras por sincronizar.");
+  }
+  renderCardLockPuzzle();
+}
+
+function renderCardLockPuzzle() {
+  if (!cardLockCardsContainer || !cardLockSlotsContainer) return;
+  cardLockCardsContainer.innerHTML = "";
+  cardLockSlotsContainer.innerHTML = "";
+
+  const assignedCardIds = new Set(Object.values(cardLockState.assignments));
+  cardLockState.cards.forEach((card) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "card-lock-card";
+    button.draggable = true;
+    button.dataset.cardId = card.id;
+    button.classList.toggle("selected", cardLockState.selectedCardId === card.id);
+    button.classList.toggle("assigned", assignedCardIds.has(card.id));
+    button.innerHTML = `
+      <img src="${card.image}" alt="${card.rank} de ${card.suitLabel}">
+      <span>${card.rank} ${card.symbol}</span>
+    `;
+    button.addEventListener("click", () => {
+      if (assignedCardIds.has(card.id)) {
+        const assignedSlot = getAssignedSlotForCard(card.id);
+        if (assignedSlot) delete cardLockState.assignments[assignedSlot];
+      }
+      cardLockState.selectedCardId = cardLockState.selectedCardId === card.id ? null : card.id;
+      setCardLockFeedback("Elige la ranura del protocolo correspondiente.");
+      renderCardLockPuzzle();
+    });
+    button.addEventListener("dragstart", (event) => {
+      cardLockState.selectedCardId = card.id;
+      event.dataTransfer?.setData("text/plain", card.id);
+    });
+    cardLockCardsContainer.appendChild(button);
+  });
+
+  cardLockSlots.forEach((slot) => {
+    const assignedCard = cardLockState.cards.find((card) => card.id === cardLockState.assignments[slot.id]);
+    const slotButton = document.createElement("button");
+    slotButton.type = "button";
+    slotButton.className = "card-lock-slot";
+    slotButton.dataset.slotId = slot.id;
+    slotButton.classList.toggle("filled", !!assignedCard);
+    slotButton.innerHTML = `
+      <span class="card-lock-slot-label">${slot.label}</span>
+      <small>${slot.suitLabel}</small>
+      ${assignedCard ? `<img src="${assignedCard.image}" alt="${assignedCard.rank} de ${assignedCard.suitLabel}">` : `<strong>${slot.symbol}</strong>`}
+    `;
+    slotButton.addEventListener("click", () => {
+      if (cardLockState.completed) return;
+      if (cardLockState.selectedCardId) assignCardToCardLockSlot(cardLockState.selectedCardId, slot.id);
+      else if (assignedCard) {
+        delete cardLockState.assignments[slot.id];
+        renderCardLockPuzzle();
+      }
+    });
+    slotButton.addEventListener("dragover", (event) => {
+      event.preventDefault();
+    });
+    slotButton.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const cardId = event.dataTransfer?.getData("text/plain") || cardLockState.selectedCardId;
+      assignCardToCardLockSlot(cardId, slot.id);
+    });
+    cardLockSlotsContainer.appendChild(slotButton);
+  });
+
+  if (cardLockCloseButton) {
+    cardLockCloseButton.hidden = !cardLockState.completed;
+  }
+}
+
+function openCardLockPuzzle() {
+  if (isInteriorStairUnlocked()) {
+    setInteractionMessage("Puerta desbloqueada. La escalera superior ya está libre.", 3.2);
+    return;
+  }
+  if (!cardLockOverlay) {
+    setInteractionMessage("El ordenador no responde. Inténtalo de nuevo junto a la consola.", 3.2);
+    return;
+  }
+  if (!cardLockState.cards.length || !cardLockState.completed) {
+    cardLockState.cards = createCardLockCards();
+    cardLockState.assignments = {};
+  }
+  cardLockState.completed = false;
+  cardLockState.active = true;
+  cardLockState.selectedCardId = null;
+  cardLockOverlay.hidden = false;
+  document.body.classList.add("card-lock-active");
+  setCardLockFeedback(cardLockState.completed ? "Puerta desbloqueada" : "Selecciona una carta y colócala en su protocolo.");
+  renderCardLockPuzzle();
+}
+
+cardLockCloseButton?.addEventListener("click", closeCardLockPuzzle);
+
 const interiorDrone = {
   x: 648,
   y: 520,
@@ -502,6 +721,13 @@ function setMovementKey(key, isPressed) {
 }
 
 function handleStoryExplorationKeyDown(key, options = {}) {
+  if (cardLockState.active) {
+    if (key === "Escape" && cardLockState.completed) {
+      closeCardLockPuzzle();
+    }
+    return true;
+  }
+
   startChapterMusic();
 
   if (isStoryInteractKey(key)) {
@@ -833,8 +1059,11 @@ function canMoveTo(nextX, nextY) {
   const hitsScenery = collisionZones.some((zone) =>
     collisionZoneHit(nextX, nextY, player.radius, zone),
   );
+  const hitsStairLock = !isInteriorStairUnlocked() && stairLockBarrierZones.some((zone) =>
+    collisionZoneHit(nextX, nextY, player.radius, zone),
+  );
 
-  return !hitsScenery && !actorCollisionHit(nextX, nextY, player.radius);
+  return !hitsScenery && !hitsStairLock && !actorCollisionHit(nextX, nextY, player.radius);
 }
 
 function ensureSafeInitialSpawn() {
@@ -1001,7 +1230,7 @@ function triggerInteriorDroneCombat() {
     return;
   }
 
-  if (storyEmbedMode || window.parent !== window) {
+  if (!skipEnemyCombatsMode && (storyEmbedMode || window.parent !== window)) {
     interiorDrone.combatCooldown = 2.2;
     setInteractionMessage("Dron interior detectado. Combate del modo historia en preparación...", 3.4);
     queueRadio([
@@ -1063,6 +1292,18 @@ function updateChapterActors(dt) {
 
 function update(dt) {
   if (!assets.ready) {
+    return;
+  }
+
+  if (cardLockState.active) {
+    input.pointerActive = false;
+    player.vx = damp(player.vx, 0, player.drag, dt);
+    player.vy = damp(player.vy, 0, player.drag, dt);
+    updatePlayerVisual(dt, false, 0);
+    updateRadio(dt);
+    const target = getCameraTarget();
+    camera.x += (target.x - camera.x) * camera.smoothness;
+    camera.y += (target.y - camera.y) * camera.smoothness;
     return;
   }
 
@@ -1205,6 +1446,16 @@ function getInteractionDistance(interactable) {
   return Math.hypot(player.x - interactable.x, player.y - interactable.y);
 }
 
+function enterControlRoomFromStairs() {
+  if (sceneTransitioning) return;
+  sceneTransitioning = true;
+  setInteractionMessage("Subiendo a la sala de control 4B...", 2.4);
+  postStoryTutorialAction("enter-control-room", {
+    nextScene: "torre-seguimiento-4b-sala-control",
+  });
+  navigateToScene("../torre-seguimiento-4b-sala-control/index.html?from_interior=1&preserve_chapter=1");
+}
+
 function updateInteractions(dt) {
   interactionState.messageTimer = Math.max(0, interactionState.messageTimer - dt);
 
@@ -1233,12 +1484,22 @@ function updateInteractions(dt) {
         return;
       }
 
+      if (nearest.id === "lock-console") {
+        openCardLockPuzzle();
+        input.interactQueued = false;
+        return;
+      }
+
       if (nearest.id === "stairs-up") {
-        setInteractionMessage("Subiendo a la sala de control 4B...", 2.4);
-        postStoryTutorialAction("enter-control-room", {
-          nextScene: "torre-seguimiento-4b-sala-control",
-        });
-        navigateToScene("../torre-seguimiento-4b-sala-control/index.html?from_interior=1&preserve_chapter=1");
+        if (!isInteriorStairUnlocked()) {
+          setInteractionMessage("La escalera está bloqueada por el ordenador. Sincroniza primero los cuatro protocolos.", 3.4);
+          queueRadio([
+            "Xavor: ordenador de escalera primero. Diamantes a combustible, picas a proyectiles, corazones a defensa y tréboles a armadura.",
+          ]);
+          input.interactQueued = false;
+          return;
+        }
+        enterControlRoomFromStairs();
         input.interactQueued = false;
         return;
       }
@@ -1465,6 +1726,17 @@ function drawCollisionDebug() {
     ctx.fill();
     ctx.stroke();
   });
+
+  if (!isInteriorStairUnlocked()) {
+    ctx.strokeStyle = "rgba(255, 213, 95, 0.88)";
+    ctx.fillStyle = "rgba(255, 213, 95, 0.18)";
+    stairLockBarrierZones.forEach((zone) => {
+      ctx.beginPath();
+      ctx.rect(zone.x, zone.y, zone.width, zone.height);
+      ctx.fill();
+      ctx.stroke();
+    });
+  }
 
   ctx.restore();
 }
@@ -1793,7 +2065,10 @@ function drawHud() {
     ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
     ctx.font = "14px Trebuchet MS";
     ctx.fillText("WASD para moverte · E o Enter para aceptar/seleccionar", 32, 68);
-    ctx.fillText("Esquiva o vence el dron opcional, luego sube a control", 32, 88);
+    const stairHelp = isInteriorStairUnlocked()
+      ? "Escalera desbloqueada: sube hasta la sala de control"
+      : "Sincroniza el ordenador de escalera para desbloquear la subida";
+    ctx.fillText(`${skipEnemyCombatsMode ? "TEST: tocar dron omite combate · " : ""}${stairHelp}`, 32, 88);
   } else {
     hudHelp.button = { x: 18, y: 18, width: 190, height: 42 };
     ctx.fillStyle = "rgba(8, 17, 29, 0.82)";

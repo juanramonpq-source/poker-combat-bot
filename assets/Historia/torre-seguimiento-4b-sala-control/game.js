@@ -10,6 +10,9 @@ const storyReturnUrl = storyParams.get("story_return") || "";
 const debugMode = storyParams.get("debug") === "1";
 const storyAudioMode = storyParams.get("story_audio") || "";
 const chapterStateKey = "pocobot-tower-4b-chapter-v1";
+const storySkipEnemyCombatsKey = "pocobot_story_skip_enemy_combats_v1";
+const skipEnemyCombatsMode = storyParams.get("story_skip_combats") === "1"
+  || localStorage.getItem(storySkipEnemyCombatsKey) === "1";
 const chapterFlowVersion = 3;
 
 const musicConfig = {
@@ -181,7 +184,7 @@ const player = {
 
 const sceneSpawnPoints = {
   default: { x: 360, y: 580 },
-  fromInterior: { x: 360, y: 580 },
+  fromInterior: { x: 356, y: 332 },
 };
 
 const lowerInteriorReturnSpawn = { x: 1136, y: 382 };
@@ -1118,7 +1121,7 @@ function triggerControlMechaCombat() {
     return;
   }
 
-  if (storyEmbedMode || window.parent !== window) {
+  if (!skipEnemyCombatsMode && (storyEmbedMode || window.parent !== window)) {
     controlMecha.combatCooldown = 2.2;
     setInteractionMessage("Mecha automático detectado. Combate del modo historia en preparación...", 3.4);
     queueRadio([
@@ -1169,7 +1172,7 @@ function triggerArgosHackCombat() {
     return;
   }
 
-  if (storyEmbedMode || window.parent !== window) {
+  if (!skipEnemyCombatsMode && (storyEmbedMode || window.parent !== window)) {
     setInteractionMessage("Argós inicia hackeo de combustible: depósito bloqueado, armadura y proyectiles activos.", 5.2);
     queueRadio([
       "Xavor: te ha hackeado el combustible... ahora no puedes usarlo. Pero no te asustes: Busca el As de diamantes, conviértelo en protocolo de emergencia y usa armadura como energía o proyectiles sueltos.",
@@ -2075,7 +2078,7 @@ function drawHud() {
     ctx.fillStyle = "rgba(238, 248, 255, 0.82)";
     ctx.font = "14px Trebuchet MS";
     ctx.fillText("WASD para moverte · E o Enter para aceptar/seleccionar", 32, 68);
-    ctx.fillText("Vence al guardián, activa el panel y resiste el hackeo", 32, 88);
+    ctx.fillText(`${skipEnemyCombatsMode ? "TEST: tocar enemigos omite combate · " : ""}Vence al guardián, activa el panel y resiste el hackeo`, 32, 88);
   } else {
     hudHelp.button = { x: 18, y: 18, width: 190, height: 42 };
     ctx.fillStyle = "rgba(8, 17, 29, 0.82)";

@@ -1416,6 +1416,14 @@
     .scene-focus-figure.figure-xavor{
       object-position:center top;
     }
+    .scene-focus-figure.figure-radio{
+      width:min(30vw, 420px);
+      max-height:min(56svh, 520px);
+      object-position:center center;
+      filter:
+        drop-shadow(0 28px 34px rgba(0,0,0,.42))
+        drop-shadow(0 0 30px rgba(132,234,255,.2));
+    }
     .story-scene-stage.dialogue-live .scene-focus-figure{
       opacity:1;
       transform:translateY(var(--scene-figure-shift)) scale(var(--scene-figure-scale));
@@ -1429,6 +1437,10 @@
     .story-scene-stage.torre-scene .scene-focus-figure{
       width:min(48vw, 700px);
       max-height:min(86svh, 920px);
+    }
+    .story-scene-stage.torre-scene .scene-focus-figure.figure-radio{
+      width:min(30vw, 420px);
+      max-height:min(56svh, 520px);
     }
     .story-scene-stage.hangar-scene .scene-focus-wrap,
     .story-scene-stage.patio-scene .scene-focus-wrap,
@@ -5175,11 +5187,15 @@
     const STORY_VIAJERO_LEGACY_REWARD_ID = 'mercado_sparring';
     const STORY_VIAJERO_REWARD_PREFIX = 'mercado_sparring_';
     const STORY_VIAJERO_BASE_UNLOCK_COUNT = 3;
+    const STORY_VIAJERO_POST_TOWER_MISSION_ID = 'mercado_viajero_4b';
+    const STORY_VIAJERO_POST_TOWER_REWARD_PREFIX = 'mercado_viajero_4b_';
     const STORY_TOWER_COIN_REWARD_PREFIX = 'torre_4b_';
     const STORY_TOWER_CHAPTER_STATE_KEY = 'pocobot-tower-4b-chapter-v1';
     const STORY_TOWER_ENTRY_URL = 'assets/Historia/torre-seguimiento-4b-tutorial/index.html';
     const STORY_TOWER_INTERIOR_URL = 'assets/Historia/torre-seguimiento-4b-interior-baja/index.html';
     const STORY_TOWER_CONTROL_URL = 'assets/Historia/torre-seguimiento-4b-sala-control/index.html';
+    const STORY_XAVOR_THEME = 'assets/Historia/XavorGlitch.mp3';
+    const STORY_XAVOR_RADIO_IMAGE = 'assets/Historia/xavor-glitch-radio.svg';
     const STORY_TOWER_REWARD_CARD = {
       id: 'tower-4b-7-hearts',
       name: '7 de corazones',
@@ -5189,6 +5205,22 @@
       suit: 'hearts',
       cardImage: 'assets/cards/hayeah-full/7_of_hearts.svg',
       deckText: '7 de corazones'
+    };
+    const STORY_TOWER_FINAL_RADIO = {
+      id: 'tower-4b-xavor-radio',
+      name: 'Radio de Xavor Glitch',
+      text: 'Radio de Xavor · enlace de frontera',
+      source: 'Torre de Seguimiento 4B',
+      cardImage: STORY_XAVOR_RADIO_IMAGE,
+      deckText: 'Canal Xavor'
+    };
+    const STORY_TOWER_FINAL_CARD_RANKS = ['2', '3', '4', '5', '6'];
+    const STORY_TOWER_FINAL_CARD_SUITS = ['diamonds', 'spades', 'hearts', 'clubs'];
+    const STORY_CARD_SUIT_LABELS = {
+      diamonds: 'diamantes',
+      spades: 'picas',
+      hearts: 'corazones',
+      clubs: 'tréboles'
     };
     const STORY_LEGACY_MARKET_STARTING_CREDITS = 9;
     const STORY_MARKET_STARTING_CREDITS = 0;
@@ -5244,12 +5276,70 @@
         summary: 'Un ocho de diamantes que Vera llama combustible paciente: no arde rápido, pero cuando arde convence.',
         inventoryText: '8♦ · extra de combustible',
         deckText: 'Extra de combustible'
+      },
+      {
+        id: 'post4b_10_spades',
+        type: 'card',
+        label: 'Carta nueva',
+        name: '10 de picas',
+        cost: 4,
+        rank: '10',
+        suit: 'spades',
+        cardImage: 'assets/cards/hayeah-full/10_of_spades.svg',
+        summary: 'Una pica pesada para abrir huecos cuando el combate deja de aceptar medias tintas.',
+        inventoryText: '10♠ · ataque de Vera',
+        deckText: '10 de picas',
+        unlockAfterTower: true
+      },
+      {
+        id: 'post4b_8_diamonds',
+        type: 'card',
+        label: 'Carta nueva',
+        name: '8 de diamantes',
+        cost: 3,
+        rank: '8',
+        suit: 'diamonds',
+        cardImage: 'assets/cards/hayeah-full/8_of_diamonds.svg',
+        summary: 'Combustible fiable de la segunda vitrina: Vera lo reserva para pilotos que ya han oído una torre despertar.',
+        inventoryText: '8♦ · combustible post-4B',
+        deckText: '8 de diamantes',
+        unlockAfterTower: true
+      },
+      {
+        id: 'post4b_ace_hearts',
+        type: 'card',
+        label: 'Carta nueva',
+        name: 'As de corazones',
+        cost: 3,
+        rank: 'A',
+        suit: 'hearts',
+        cardImage: 'assets/cards/hayeah-full/ace_of_hearts.svg',
+        summary: 'Un As de corazones intacto, demasiado limpio para este mercado y por eso mismo sospechosamente útil.',
+        inventoryText: 'A♥ · defensa rara',
+        deckText: 'As de corazones',
+        unlockAfterTower: true
+      },
+      {
+        id: 'post4b_9_clubs',
+        type: 'card',
+        label: 'Carta nueva',
+        name: '9 de tréboles',
+        cost: 4,
+        rank: '9',
+        suit: 'clubs',
+        cardImage: 'assets/cards/hayeah-full/9_of_clubs.svg',
+        summary: 'Armadura de tréboles con cicatrices de transmisión: aguanta como si tuviera algo que demostrar.',
+        inventoryText: '9♣ · armadura de mercado',
+        deckText: '9 de tréboles',
+        unlockAfterTower: true
       }
     ];
 
     let glowTick = 0;
     let manualGlowTimeout = null;
     let mapMusicUnlocked = false;
+    let storySceneMusic = null;
+    let storySceneMusicSrc = '';
     let titleMusicUnlocked = false;
     let titleMusicFadeFrame = null;
     let titleDualCameoTimer = null;
@@ -5283,6 +5373,7 @@
       lastMissionResult: null,
       marketUnlocked: false,
       marketVisited: false,
+      marketPostTowerCleared: false,
       viajeroLastVictoryCompletedCount: null,
       inventory: null,
       marketPurchases: {}
@@ -5395,7 +5486,8 @@
     function isStoryAncientCoinRewardId(rewardId) {
       return STORY_ANCIENT_COIN_REWARD_NODES.includes(rewardId)
         || isStoryViajeroRewardId(rewardId)
-        || (typeof rewardId === 'string' && rewardId.startsWith(STORY_TOWER_COIN_REWARD_PREFIX));
+        || (typeof rewardId === 'string' && rewardId.startsWith(STORY_TOWER_COIN_REWARD_PREFIX))
+        || (typeof rewardId === 'string' && rewardId.startsWith(STORY_VIAJERO_POST_TOWER_REWARD_PREFIX));
     }
 
     function getStoryViajeroRewardCountFromId(rewardId) {
@@ -5447,6 +5539,24 @@
       return normalized;
     }
 
+    function isStoryTowerChapterCompleted() {
+      const towerState = readStoryTowerChapterState();
+      return hasCompletedStoryNode('torre') || !!towerState.missionComplete || !!towerState.finalRewardClaimed;
+    }
+
+    function isStoryMarketPostTowerOpen() {
+      return isStoryTowerChapterCompleted() && !storyProgressState.marketPostTowerCleared;
+    }
+
+    function getAvailableStoryMarketCatalog() {
+      const postTowerUnlocked = isStoryTowerChapterCompleted();
+      return STORY_MARKET_CATALOG.filter((item) => !item.unlockAfterTower || postTowerUnlocked);
+    }
+
+    function getReopenedStoryNodeIds() {
+      return isStoryMarketPostTowerOpen() ? ['mercado'] : [];
+    }
+
     function getStoryMarketSpentFromPurchases(purchases = {}) {
       return STORY_MARKET_CATALOG.reduce((total, item) => total + (purchases[item.id] ? item.cost : 0), 0);
     }
@@ -5494,6 +5604,14 @@
       renderStoryMapInventoryWidget();
     }
 
+    function recordStoryPostTowerViajeroVictory() {
+      grantStoryAncientCoinReward(`${STORY_VIAJERO_POST_TOWER_REWARD_PREFIX}coin_1`, 'market-viajero-4b-coin-1');
+      grantStoryAncientCoinReward(`${STORY_VIAJERO_POST_TOWER_REWARD_PREFIX}coin_2`, 'market-viajero-4b-coin-2');
+      storyProgressState.marketPostTowerCleared = true;
+      saveStoryProgress('market-viajero-4b-victory');
+      renderStoryMapInventoryWidget();
+    }
+
     function buildStoryProgressSave(reason = 'auto') {
       return {
         version: 1,
@@ -5508,6 +5626,7 @@
         lastMissionResult: storyProgressState.lastMissionResult || null,
         marketUnlocked: !!storyProgressState.marketUnlocked,
         marketVisited: !!storyProgressState.marketVisited,
+        marketPostTowerCleared: !!storyProgressState.marketPostTowerCleared,
         viajeroLastVictoryCompletedCount: Number.isFinite(storyProgressState.viajeroLastVictoryCompletedCount)
           ? storyProgressState.viajeroLastVictoryCompletedCount
           : null,
@@ -5555,6 +5674,7 @@
       storyProgressState.lastMissionResult = null;
       storyProgressState.marketUnlocked = false;
       storyProgressState.marketVisited = false;
+      storyProgressState.marketPostTowerCleared = false;
       storyProgressState.viajeroLastVictoryCompletedCount = null;
       storyProgressState.inventory = null;
       storyProgressState.marketPurchases = {};
@@ -5583,6 +5703,7 @@
       storyProgressState.inventory = normalizeStoryInventory(save.inventory, { withCredits: !!save.marketUnlocked });
       storyProgressState.marketPurchases = normalizeStoryMarketPurchases(save.marketPurchases);
       storyProgressState.marketVisited = !!(save.marketVisited || save.marketUnlocked || nextCompletedNodes.mercado || Object.keys(storyProgressState.marketPurchases).length);
+      storyProgressState.marketPostTowerCleared = !!save.marketPostTowerCleared;
       const savedViajeroCount = Number(save.viajeroLastVictoryCompletedCount);
       storyProgressState.viajeroLastVictoryCompletedCount = Number.isFinite(savedViajeroCount)
         ? Math.max(STORY_VIAJERO_BASE_UNLOCK_COUNT, Math.floor(savedViajeroCount))
@@ -6754,6 +6875,7 @@
       objective: 'Conoce a Xavor Glitch, comprende el origen técnico de la misión y activa el ordenador azul para abrir la Torre 4B.',
       completeActionLabel: 'Volver a la Torre 4B',
       completeAction: 'tower-exploration',
+      musicSrc: STORY_XAVOR_THEME,
       portraits: {
         right: { src: XAVOR_POSE_FOUR, alt: 'Xavor Glitch' }
       },
@@ -6872,6 +6994,84 @@
           figureScale: 0.9,
           figureMobileScale: 0.72,
           text: 'En fin: hay que aprovechar ahora que Argós intenta reconstruirse pero todavía no lo ha logrado. Escucha bien: al volver a la torre, acércate al panel de control azul y actívalo para abrir la puerta. Después sube hasta el panel superior, purga a Argós y devuelve las transmisiones a la humanidad. Si Argós nos oye... bueno... me gustaría gritarle un par de cosas al oído: ¿Me escuchas, bonito? Eso dicen todas...'
+        }
+      ]
+    };
+    storySceneScripts.torre_xavor_finale = {
+      title: 'Torre de Seguimiento 4B',
+      subtitle: 'La furboneta vuelve a abrir sus monitores cuando la torre recupera la voz.',
+      contextChip: 'Cierre · Xavor Glitch',
+      objective: 'Recibe la recompensa final de Xavor Glitch y prepara el siguiente tramo de la Ruta Ceniza.',
+      completeActionLabel: 'Cerrar capítulo',
+      completeAction: 'tower-finale',
+      musicSrc: STORY_XAVOR_THEME,
+      portraits: {
+        right: { src: XAVOR_POSE_FOUR, alt: 'Xavor Glitch' }
+      },
+      figure: XAVOR_POSE_FOUR,
+      figureClass: 'figure-xavor',
+      startAmbient: false,
+      lines: [
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: XAVOR_POSE_FOUR,
+          figureClass: 'figure-xavor',
+          figureRaised: true,
+          figureShiftVh: -28,
+          figureMobileShiftVh: -10,
+          figureScale: 0.9,
+          figureMobileScale: 0.72,
+          text: 'Mira eso... Torre 4B vuelve a transmitir. El mundo humano acaba de recuperar una voz, y tú acabas de recordarle a Argós que no todo lo que entierra se queda enterrado.'
+        },
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: XAVOR_POSE_TWO,
+          figureClass: 'figure-xavor',
+          figureRaised: true,
+          figureShiftVh: -28,
+          figureMobileShiftVh: -10,
+          figureScale: 0.9,
+          figureMobileScale: 0.72,
+          text: 'Sigue con la Ruta Ceniza y ve hacia el Campamento de las Placas Rojas. Si las transmisiones aguantan, allí podrán escuchar algo más que interferencias y malas noticias.'
+        },
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: STORY_XAVOR_RADIO_IMAGE,
+          figureClass: 'figure-radio',
+          figureRaised: true,
+          figureShiftVh: -12,
+          figureMobileShiftVh: -8,
+          figureScale: 1,
+          figureMobileScale: 0.88,
+          text: 'Y llévate esto: una radio ajustada a mi canal. No promete milagros, pero sí una voz al otro lado cuando la chatarra empiece a responder demasiado tarde.'
+        },
+        {
+          speaker: 'Xavor Glitch',
+          side: 'right',
+          figure: XAVOR_POSE_ONE,
+          figureClass: 'figure-xavor',
+          figureRaised: true,
+          figureShiftVh: -28,
+          figureMobileShiftVh: -10,
+          figureScale: 0.9,
+          figureMobileScale: 0.72,
+          text: 'Último detalle antes de que salgas: elige una recompensa. Una carta aleatoria para tu inventario o una antigua moneda. Prometo no juzgarte demasiado... eso dicen todas.',
+          choicePrompt: 'Xavor deja dos recompensas sobre la mesa de la furboneta.',
+          choices: [
+            {
+              id: 'card',
+              label: 'Carta aleatoria',
+              response: 'Tú eliges una carta aleatoria.'
+            },
+            {
+              id: 'coin',
+              label: 'Antigua moneda',
+              response: 'Tú eliges una antigua moneda.'
+            }
+          ]
         }
       ]
     };
@@ -7014,6 +7214,106 @@
         }
       ]
     };
+    storySceneScripts.mercado_viajero_4b_intro = {
+      title: 'Mercado de Relés Muertos',
+      subtitle: 'Tras la Torre 4B, Viajero enciende una rutina que no estaba en su chasis la primera vez.',
+      contextChip: 'Viajero · Post Torre 4B',
+      objective: 'Combate contra Viajero con el bloqueo de diamantes del hackeo final. Si ganas, Vera entrega 2 antiguas monedas.',
+      completeActionLabel: 'Iniciar combate',
+      completeAction: 'mission',
+      completeMissionId: STORY_VIAJERO_POST_TOWER_MISSION_ID,
+      portraits: {
+        right: { src: VERA_POSE_THREE, alt: 'Vera Hex' }
+      },
+      lines: [
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_POSE_THREE,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -20,
+          figureMobileShiftVh: -12,
+          figureScale: 0.86,
+          figureMobileScale: 0.72,
+          text: 'La Torre 4B ha despertado más cosas de las que admite Xavor. Viajero acaba de recuperar una rutina vieja: bloqueo de diamantes, interfaz de hackeo y cero ganas de ponértelo fácil.'
+        },
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_POSE_FOUR,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -20,
+          figureMobileShiftVh: -12,
+          figureScale: 0.86,
+          figureMobileScale: 0.72,
+          text: 'No es el panel corrupto de Argós, tranquilo: es un mecha normal. Pero esta vez Viajero trae deck completo de 52 cartas. Si lo vences, te pago 2 monedas antiguas. Claro y contado.'
+        }
+      ]
+    };
+    storySceneScripts.mercado_viajero_4b_win = {
+      title: 'Mercado de Relés Muertos',
+      subtitle: 'Viajero se apaga con dignidad mecánica y Vera cumple el trato.',
+      contextChip: 'Viajero · Victoria',
+      objective: 'Has ganado 2 antiguas monedas. Vuelve al mercado para ver la nueva vitrina de Vera o sal al mapa.',
+      completeActionLabel: 'Volver al mercado',
+      completeAction: 'exploration',
+      portraits: {
+        right: { src: VERA_POSE_FOUR, alt: 'Vera Hex' }
+      },
+      lines: [
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_POSE_FOUR,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -20,
+          figureMobileShiftVh: -12,
+          figureScale: 0.86,
+          figureMobileScale: 0.72,
+          text: 'Victoria limpia contra Viajero. Dos monedas antiguas para tu inventario, como prometí. No una, no "ya veremos": dos.'
+        },
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_POSE_TWO,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -20,
+          figureMobileShiftVh: -12,
+          figureScale: 0.86,
+          figureMobileScale: 0.72,
+          text: 'Y mira la vitrina azul del mercado: he sacado cartas nuevas para pilotos que ya sobrevivieron al ruido de una torre.'
+        }
+      ]
+    };
+    storySceneScripts.mercado_viajero_4b_lose = {
+      title: 'Mercado de Relés Muertos',
+      subtitle: 'Viajero conserva la postura, como si el bloqueo de diamantes apenas le hubiera costado arrancar.',
+      contextChip: 'Viajero · Derrota',
+      objective: 'Puedes volver al mercado y retar de nuevo a Viajero. Las 2 monedas siguen esperando.',
+      completeActionLabel: 'Volver al mercado',
+      completeAction: 'exploration',
+      portraits: {
+        right: { src: VERA_POSE_ONE, alt: 'Vera Hex' }
+      },
+      lines: [
+        {
+          speaker: 'Vera Hex',
+          side: 'right',
+          figure: VERA_POSE_ONE,
+          figureClass: 'figure-vera',
+          figureRaised: true,
+          figureShiftVh: -20,
+          figureMobileShiftVh: -12,
+          figureScale: 0.86,
+          figureMobileScale: 0.72,
+          text: 'Ese bloqueo no perdona. Viajero trae deck completo y paciencia de máquina vieja. Respira, recompón el panel y vuelve a intentarlo.'
+        }
+      ]
+    };
 
     storySceneScripts.hangar = hangarZoneScene;
 
@@ -7078,6 +7378,16 @@
         audioMode: 'internal',
         showInnerBriefInFrame: true,
         url: 'poker_combat_bot_ONLINE.html?story_mission=mercado_sparring&story_embed=1&story_audio=internal'
+      },
+      mercado_viajero_4b: {
+        storyNodeId: 'mercado',
+        chip: 'Viajero reactivado',
+        title: 'Viajero · Bloqueo de diamantes',
+        copy: 'Tras superar la Torre 4B, Viajero reproduce la estructura del hackeo del panel corrupto: interfaz especial, música del combate y combustible normal bloqueado.',
+        tip: 'El jugador mantiene el bloqueo de diamantes. Viajero usa un deck completo de 52 cartas y una apariencia de mecha normal. Victoria: 2 antiguas monedas al inventario.',
+        audioMode: 'internal',
+        showInnerBriefInFrame: true,
+        url: 'poker_combat_bot_ONLINE.html?story_mission=mercado_viajero_4b&story_embed=1&story_audio=internal'
       },
       torre: {
         chip: 'Exploración táctica',
@@ -7160,6 +7470,9 @@
         }
       }
       if (!haveCompletedWorkshopTrials() && node.order > 2) return 'locked';
+      if (node.id === 'mercado' && isStoryMarketPostTowerOpen()) {
+        return 'available';
+      }
       if (node.order <= storyProgressState.completedCount) return 'completed';
       if (node.order === storyProgressState.completedCount + 1) return 'current';
       return 'locked';
@@ -7239,6 +7552,11 @@
         }
         return 'Compra cerrada. Sal del mercado explorable o vuelve al mapa para abrir la Torre de Seguimiento 4B.';
       }
+      if (node.id === 'mercado' && isStoryTowerChapterCompleted()) {
+        return storyProgressState.marketPostTowerCleared
+          ? 'Mercado actualizado tras la Torre 4B: Vera mantiene nuevos artículos en la vitrina y Viajero ya entregó sus 2 monedas.'
+          : 'Mercado reabierto tras superar la Torre 4B: Vera tiene artículos nuevos y Viajero acepta un combate con bloqueo de diamantes por 2 monedas.';
+      }
 
       if (node.id === 'torre') return getStoryTowerMapGuidance();
 
@@ -7299,6 +7617,7 @@
         type: 'pocobot-story-map-progress',
         completedCount: storyProgressState.completedCount,
         completedNodes: getCompletedStoryNodeIds(),
+        reopenedNodes: getReopenedStoryNodeIds(),
         selectedId: currentStoryNodeId,
         guidance: getStoryMapGuidance(currentStoryNodeId)
       }, '*');
@@ -7971,6 +8290,7 @@
         }
         rememberCurrentStorySceneSurface();
         storySceneStage.hidden = false;
+        startStorySceneMusic(scene.musicSrc || '');
         requestAnimationFrame(() => storySceneStage.classList.add('active'));
       });
     }
@@ -7988,10 +8308,12 @@
       storySceneStage.classList.remove('hangar-scene');
       storySceneStage.classList.remove('patio-scene');
       storySceneStage.classList.remove('mercado-scene');
+      storySceneStage.classList.remove('torre-scene');
       storySceneStage.style.setProperty('--scene-figure-shift', '0vh');
       storySceneStage.style.setProperty('--scene-figure-mobile-shift', '0vh');
       storySceneStage.style.setProperty('--scene-figure-scale', '1');
       storySceneStage.style.setProperty('--scene-figure-mobile-scale', '1');
+      stopStorySceneMusic(true);
       if (clearSurface) rememberStorySurface(null);
       storySceneStage.classList.remove('active');
       window.setTimeout(() => {
@@ -8132,7 +8454,7 @@
     }
 
     function getStoryMarketItem(itemId) {
-      return STORY_MARKET_CATALOG.find((item) => item.id === itemId) || null;
+      return getAvailableStoryMarketCatalog().find((item) => item.id === itemId) || null;
     }
 
     function hasStoryMarketPurchase() {
@@ -8166,6 +8488,14 @@
       return inventory.cards.filter((item) => item.rank && item.suit);
     }
 
+    function getStoryMapInventoryItems() {
+      const inventory = normalizeStoryInventory(storyProgressState.inventory, { withCredits: !!storyProgressState.marketUnlocked });
+      return [
+        ...inventory.cards.filter((item) => item.rank && item.suit),
+        ...inventory.artifacts
+      ];
+    }
+
     function closeStoryMapInventoryDrawer() {
       if (storyMapInventoryDrawer) storyMapInventoryDrawer.hidden = true;
       if (storyMapInventoryToggle) storyMapInventoryToggle.setAttribute('aria-expanded', 'false');
@@ -8181,7 +8511,7 @@
         closeStoryMapInventoryDrawer();
         return;
       }
-      if (storyMapInventory && !storyMapInventory.hidden && getStoryPurchasedCards().length > 0) {
+      if (storyMapInventory && !storyMapInventory.hidden && getStoryMapInventoryItems().length > 0) {
         storyMapInventory.classList.add('panel-open');
         if (storyMapInventoryDrawer) storyMapInventoryDrawer.hidden = false;
         if (storyMapInventoryToggle) storyMapInventoryToggle.setAttribute('aria-expanded', 'true');
@@ -8194,13 +8524,13 @@
 
     function renderStoryMapInventoryWidget() {
       if (!storyMapInventory || !storyMapInventoryList || !storyMapInventoryCount) return;
-      const cards = getStoryPurchasedCards();
-      const shouldShow = cards.length > 0;
+      const items = getStoryMapInventoryItems();
+      const shouldShow = items.length > 0;
       storyMapInventory.hidden = !shouldShow;
       if (storyMapHud) storyMapHud.classList.toggle('has-inventory', shouldShow);
       if (storyMapHudToggle) {
         if (shouldShow) {
-          storyMapHudToggle.dataset.inventoryCount = String(cards.length);
+          storyMapHudToggle.dataset.inventoryCount = String(items.length);
           storyMapHudToggle.title = 'Abrir informacion e inventario';
         } else {
           delete storyMapHudToggle.dataset.inventoryCount;
@@ -8211,9 +8541,9 @@
         closeStoryMapInventoryDrawer();
         return;
       }
-      storyMapInventoryCount.textContent = String(cards.length);
+      storyMapInventoryCount.textContent = String(items.length);
       storyMapInventoryList.innerHTML = '';
-      cards.forEach((item) => {
+      items.forEach((item) => {
         const entry = document.createElement('article');
         entry.className = 'story-map-inventory-card';
         entry.innerHTML = `
@@ -8259,7 +8589,8 @@
     function renderStoryMarket() {
       const inventory = ensureStoryMarketInventory();
       const purchases = storyProgressState.marketPurchases || {};
-      storyMarketAllocatedCoins = Object.fromEntries(Object.entries(storyMarketAllocatedCoins).filter(([id]) => STORY_MARKET_CATALOG.some((item) => item.id === id)));
+      const availableCatalog = getAvailableStoryMarketCatalog();
+      storyMarketAllocatedCoins = Object.fromEntries(Object.entries(storyMarketAllocatedCoins).filter(([id]) => availableCatalog.some((item) => item.id === id)));
       if (storyMarketBackdrop) {
         storyMarketBackdrop.style.setProperty('--market-bg', `url("${MERCADO_RELES_IMAGE}")`);
       }
@@ -8277,7 +8608,7 @@
       renderInventoryList(storyInventoryArtifacts, inventory.artifacts);
       if (storyMarketItems) {
         storyMarketItems.innerHTML = '';
-        STORY_MARKET_CATALOG.forEach((item) => {
+        availableCatalog.forEach((item) => {
           const purchased = !!purchases[item.id];
           const affordable = inventory.credits >= item.cost;
           const allocated = Math.max(0, Math.min(item.cost, Number(storyMarketAllocatedCoins[item.id]) || 0));
@@ -8472,6 +8803,12 @@
       if (hasStoryViajeroRewardHistory()) {
         targetUrl.searchParams.set('story_sparring_rewarded', '1');
       }
+      if (isStoryTowerChapterCompleted()) {
+        targetUrl.searchParams.set('story_post_tower_market', '1');
+      }
+      if (storyProgressState.marketPostTowerCleared) {
+        targetUrl.searchParams.set('story_post_tower_viajero_cleared', '1');
+      }
       if (!canChallengeStoryViajero()) {
         targetUrl.searchParams.set('story_sparring_locked', '1');
       }
@@ -8554,6 +8891,10 @@
         return;
       }
       if (action === 'sparring') {
+        if (isStoryMarketPostTowerOpen()) {
+          openStoryMarketExplorationScene('mercado_viajero_4b_intro');
+          return;
+        }
         if (!canChallengeStoryViajero()) {
           openStoryMarketExplorationScene('mercado_sparring_locked');
           return;
@@ -8564,7 +8905,7 @@
 
     function handleStoryMissionCancel(data) {
       const mission = data?.mission || activeMissionNodeId || '';
-      if (mission === 'mercado_sparring') {
+      if (mission === 'mercado_sparring' || mission === STORY_VIAJERO_POST_TOWER_MISSION_ID) {
         closeStoryMission({
           onClosed: () => openStoryMarketExploration()
         });
@@ -8614,6 +8955,7 @@
         renderSceneLine(true);
       }
       storySceneStage.hidden = false;
+      startStorySceneMusic(scene.musicSrc || '');
       requestAnimationFrame(() => storySceneStage.classList.add('active'));
       return true;
     }
@@ -8621,7 +8963,7 @@
     function restoreStorySurfaceSession(surface) {
       if (!surface || typeof surface.type !== 'string') return false;
       if (surface.type === 'scene') return restoreStorySceneSurface(surface);
-      if (surface.type === 'market' && !hasCompletedStoryNode('mercado')) {
+      if (surface.type === 'market') {
         openStoryMarket();
         return true;
       }
@@ -9128,6 +9470,65 @@
       return true;
     }
 
+    function grantStoryInventoryArtifact(artifact = {}, reason = 'story-artifact-reward') {
+      if (!artifact || typeof artifact.id !== 'string' || typeof artifact.name !== 'string') return false;
+      const inventory = ensureStoryMarketInventory();
+      if (inventory.artifacts.some((entry) => entry.id === artifact.id)) return false;
+      inventory.artifacts.push({
+        id: artifact.id,
+        name: artifact.name,
+        text: artifact.text || artifact.name,
+        source: artifact.source || 'Ruta Ceniza',
+        rank: artifact.rank || '',
+        suit: artifact.suit || '',
+        cardImage: artifact.cardImage || '',
+        deckText: artifact.deckText || artifact.name
+      });
+      storyProgressState.inventory = inventory;
+      saveStoryProgress(reason);
+      renderStoryMapInventoryWidget();
+      return true;
+    }
+
+    function buildStoryCardImagePath(rank, suit) {
+      return `assets/cards/hayeah-full/${rank}_of_${suit}.svg`;
+    }
+
+    function createStoryTowerFinalRandomCard() {
+      const rank = STORY_TOWER_FINAL_CARD_RANKS[Math.floor(Math.random() * STORY_TOWER_FINAL_CARD_RANKS.length)] || '2';
+      const suit = STORY_TOWER_FINAL_CARD_SUITS[Math.floor(Math.random() * STORY_TOWER_FINAL_CARD_SUITS.length)] || 'diamonds';
+      const suitLabel = STORY_CARD_SUIT_LABELS[suit] || suit;
+      return {
+        id: `tower-4b-final-${rank}-${suit}`,
+        name: `${rank} de ${suitLabel}`,
+        text: `${rank} de ${suitLabel} · regalo de Xavor`,
+        source: 'Xavor Glitch',
+        rank,
+        suit,
+        cardImage: buildStoryCardImagePath(rank, suit),
+        deckText: `${rank} de ${suitLabel}`
+      };
+    }
+
+    function normalizeStoryTowerLegacyRewardCard(card = {}) {
+      if (!card || typeof card !== 'object') return null;
+      if (typeof card.id !== 'string') return null;
+      const rank = card.rank || card.value || STORY_TOWER_REWARD_CARD.rank;
+      const suit = card.suit || STORY_TOWER_REWARD_CARD.suit;
+      const suitLabel = STORY_CARD_SUIT_LABELS[suit] || 'corazones';
+      const name = card.name || card.label || `${rank} de ${suitLabel}`;
+      return {
+        id: card.id,
+        name,
+        text: card.text || `${name} · transmisiones restauradas`,
+        source: card.source || 'Torre de Seguimiento 4B',
+        rank,
+        suit,
+        cardImage: card.cardImage || buildStoryCardImagePath(rank, suit),
+        deckText: card.deckText || name
+      };
+    }
+
     function applyStoryTowerCoinReward(rewardId, reason = 'tower-4b-coin') {
       const safeRewardId = typeof rewardId === 'string' && rewardId.startsWith(STORY_TOWER_COIN_REWARD_PREFIX)
         ? rewardId
@@ -9221,26 +9622,59 @@
       return true;
     }
 
-    function completeStoryTowerChapter(card) {
-      grantStoryTowerRewardCard(card);
+    function completeStoryTowerChapter(rewardOptions = {}) {
+      const towerState = readStoryTowerChapterState();
+      const options = rewardOptions && typeof rewardOptions === 'object' ? rewardOptions : {};
+      const inventoryRewards = new Set(Array.isArray(towerState.inventoryRewards) ? towerState.inventoryRewards : []);
+      if (!towerState.finalRewardClaimed) {
+        if (options.choice === 'coin') {
+          const rewardId = `${STORY_TOWER_COIN_REWARD_PREFIX}final_choice_coin`;
+          applyStoryTowerCoinReward(rewardId, 'tower-final-choice-coin');
+          inventoryRewards.add(rewardId);
+        } else {
+          const rewardCard = options.card || normalizeStoryTowerLegacyRewardCard(options) || createStoryTowerFinalRandomCard();
+          if (grantStoryInventoryCard(rewardCard, 'tower-final-choice-card')) {
+            inventoryRewards.add(rewardCard.id);
+          } else if (rewardCard?.id) {
+            inventoryRewards.add(rewardCard.id);
+          }
+        }
+        if (grantStoryInventoryArtifact(STORY_TOWER_FINAL_RADIO, 'tower-final-radio')) {
+          inventoryRewards.add(STORY_TOWER_FINAL_RADIO.id);
+        } else {
+          inventoryRewards.add(STORY_TOWER_FINAL_RADIO.id);
+        }
+      }
       patchStoryTowerChapterState({
         missionComplete: true,
         finalRewardClaimed: true,
-        inventoryRewards: [STORY_TOWER_REWARD_CARD.id]
+        inventoryRewards: Array.from(inventoryRewards)
       });
+      storyProgressState.marketPostTowerCleared = false;
       queueStoryMapTheme('chapter_clear');
-      markStoryNodeCompleted('torre', { selectedId: 'campamento' });
+      markStoryNodeCompleted('torre', { selectedId: 'mercado' });
       storyProgressState.lastMissionResult = 'success';
-      const renderNextNode = () => renderStoryNode('campamento');
+      const renderNextNode = () => renderStoryNode('mercado');
       const closeExplorationSurface = () => closeStoryMarketExploration({
         applyExitTheme: false,
         onClosed: renderNextNode
       });
-      if (storyMissionStage && storyMissionStage.classList.contains('active')) {
+      if (storySceneStage && storySceneStage.classList.contains('active')) {
+        closeStoryScene();
+        window.setTimeout(closeExplorationSurface, 280);
+      } else if (storyMissionStage && storyMissionStage.classList.contains('active')) {
         closeStoryMission({ onClosed: closeExplorationSurface });
       } else {
         closeExplorationSurface();
       }
+    }
+
+    function completeStoryTowerFinale() {
+      const sceneKey = getActiveSceneScriptKey();
+      const scene = storySceneScripts[sceneKey];
+      const rewardLineIndex = Math.max(0, (scene?.lines?.length || 1) - 1);
+      const selectedChoice = getSceneChoiceSelection(rewardLineIndex, sceneKey) || 'card';
+      completeStoryTowerChapter({ choice: selectedChoice });
     }
 
     function handleStoryTowerAction(data) {
@@ -9253,6 +9687,13 @@
         closeStoryMarketExploration({
           applyExitTheme: false,
           onClosed: () => openStoryScene('torre', 'torre_xavor_intro')
+        });
+        return true;
+      }
+      if (action === 'xavor-finale-request') {
+        closeStoryMarketExploration({
+          applyExitTheme: false,
+          onClosed: () => openStoryScene('torre', 'torre_xavor_finale')
         });
         return true;
       }
@@ -9295,6 +9736,26 @@
           towerRewardId: `${STORY_TOWER_COIN_REWARD_PREFIX}interior_drone`
         });
         applyStoryTowerCoinReward(`${STORY_TOWER_COIN_REWARD_PREFIX}interior_drone`, 'tower-interior-coin');
+        return true;
+      }
+      if (action === 'exterior-drone-combat' && data.result === 'victory') {
+        applyStoryTowerCombatVictory({
+          mission: data.mission || 'tower_drone_hearts',
+          droneId: data.droneId,
+          towerDroneId: data.droneId,
+          towerRewardId: data.rewardId || `${STORY_TOWER_COIN_REWARD_PREFIX}${data.droneId || 'exterior_drone'}`
+        });
+        return true;
+      }
+      if (action === 'mandatory-mecha-combat' && data.result === 'victory') {
+        applyStoryTowerCombatVictory({
+          mission: 'tower_control_guard',
+          towerRewardId: data.rewardId || `${STORY_TOWER_COIN_REWARD_PREFIX}control_guard`
+        });
+        return true;
+      }
+      if (action === 'argos-hack-combat' && data.result === 'victory') {
+        applyStoryTowerCombatVictory({ mission: 'tower_argos_hack' });
         return true;
       }
       if (action === 'tower-4b-mission-complete') {
@@ -9341,6 +9802,20 @@
         onFailure() {
           queueStoryMapTheme('market');
           renderStoryNode('torre');
+        }
+      },
+      mercado_viajero_4b: {
+        fallbackNodeId: 'mercado',
+        successScene: 'mercado_viajero_4b_win',
+        failureScene: 'mercado_viajero_4b_lose',
+        onSuccess() {
+          queueStoryMapTheme('market');
+          recordStoryPostTowerViajeroVictory();
+          renderStoryNode('mercado');
+        },
+        onFailure() {
+          queueStoryMapTheme('market');
+          renderStoryNode('mercado');
         }
       }
     };
@@ -9658,6 +10133,36 @@
       if (hasActiveStoryStage(storyMarketStage)) return false;
       if (hasActiveStoryStage(storyExplorationStage) && activeExplorationNodeId !== 'mercado') return false;
       return true;
+    }
+
+    function stopStorySceneMusic(reset = true) {
+      if (!storySceneMusic) return;
+      storySceneMusic.pause();
+      if (reset) {
+        try {
+          storySceneMusic.currentTime = 0;
+        } catch (error) {}
+      }
+    }
+
+    async function startStorySceneMusic(src) {
+      const safeSrc = typeof src === 'string' ? src.trim() : '';
+      if (!safeSrc) {
+        stopStorySceneMusic(true);
+        return;
+      }
+      if (!storySceneMusic || storySceneMusicSrc !== safeSrc) {
+        stopStorySceneMusic(true);
+        storySceneMusic = new Audio(safeSrc);
+        storySceneMusic.loop = true;
+        storySceneMusic.preload = 'auto';
+        storySceneMusic.playsInline = true;
+        storySceneMusicSrc = safeSrc;
+      }
+      storySceneMusic.volume = 0.38;
+      try {
+        await storySceneMusic.play();
+      } catch (error) {}
     }
 
     async function playMapMusic() {
@@ -10003,6 +10508,8 @@
           openStoryMarketExploration();
         } else if (completeAction === 'tower-exploration') {
           completeStoryTowerXavorIntroduction();
+        } else if (completeAction === 'tower-finale') {
+          completeStoryTowerFinale();
         } else {
           closeStoryScene();
         }
