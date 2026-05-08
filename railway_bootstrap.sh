@@ -19,7 +19,7 @@ git sparse-checkout set --no-cone \
   '/*.ico' \
   '/*.png' \
   '/*.svg' \
-  '/site.webmanifest' \
+  '/*.webmanifest' \
   '/railway_bootstrap.sh' \
   '/assets/*.png' \
   '/assets/*.svg' \
