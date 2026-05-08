@@ -10,29 +10,41 @@ This repo must deploy to one Railway project only.
 - Environment ID: `63dcc12b-1ea8-4d91-b2b7-591171a20c07`
 - Service: `poker-combat-bot`
 - Service ID: `a751d925-2352-44fa-8661-7fd902d3649b`
+- GitHub repo: `juanramonpq-source/poker-combat-bot`
+- GitHub branch: `main`
+- Deployment trigger: `9a088756-03f2-4cb4-8827-0a2650b55082`
 - Railway domain: `https://pocobot.up.railway.app/`
 - Custom domain: `https://pocobot.online/`
+- Custom domain traffic target: `3u23ystj.up.railway.app`
 
-## Safe Deploy Command
+## Safe Deploy Flow
 
-Use this flow for production changes:
+Use this flow for production changes that must reach Railway:
 
 ```sh
 git checkout main
 git pull --ff-only origin main
+# make the change, then commit it
 git push origin main
-npm run deploy:railway
+npm run railway:guard
 ```
 
-`npm run deploy:railway` first runs `npm run railway:guard`. The guard fails if the local Railway link points to the wrong project, if `main` has not been pushed, if duplicate active Railway projects exist, or if backup archives would be included in deploys.
+Railway autodeploy is enabled for `main`, so a normal pushed commit is the deployment trigger. Run `npm run railway:guard` after pushing to verify that local `HEAD` matches `origin/main`, that the Railway link points to the official project, that there is exactly one active Railway project, that GitHub autodeploy is enabled, that the custom domain is healthy, and that backup archives are excluded from deploys.
+
+Use `npm run railway:redeploy` only when a pushed commit did not trigger Railway or when you intentionally need a manual redeploy of the current GitHub source.
 
 ## Current Railway Mode
 
-Railway is currently using the public base image `node:18-alpine`.
+Railway is currently connected to GitHub:
 
-The service start command downloads and executes `railway_bootstrap.sh` from `main`. That script clones this repo with sparse checkout, installs production dependencies, and runs `npm start`.
+- Source repo: `juanramonpq-source/poker-combat-bot`
+- Branch: `main`
+- Autodeploy: enabled
+- Deployment trigger: exactly one trigger for `production` / `poker-combat-bot`
 
-This bypasses Railway build slots. It is a recovery workaround, not the ideal long-term deployment model.
+The running app may still be served by the last successful emergency deployment that used the public base image `node:18-alpine`. The service itself now points back to GitHub, so the next successful GitHub/Railway deploy will replace that runtime.
+
+The service start command still downloads and executes `railway_bootstrap.sh` from `main`. That script clones this repo with sparse checkout, installs production dependencies, and runs `npm start`. This keeps the recovery path compatible while we finish stabilizing the normal Railway build queue.
 
 ## Do Not Do This
 
@@ -48,7 +60,8 @@ This bypasses Railway build slots. It is a recovery workaround, not the ideal lo
 2. Run `npx -y @railway/cli deployment list --service poker-combat-bot --environment production --limit 10 --json`.
 3. Check logs with `npx -y @railway/cli logs --service poker-combat-bot --environment production --latest --lines 200 --json`.
 4. Check app health with `curl -L https://pocobot.up.railway.app/`.
-5. If the app is alive on the Railway domain but not `pocobot.online`, treat it as domain/DNS/TLS, not an app deploy problem.
+5. If the newest deploy failed with "number of concurrent builds", do not create a new project. Wait for the build queue to clear, or use the emergency image/bootstrap path deliberately.
+6. If the app is alive on the Railway domain but not `pocobot.online`, treat it as domain/DNS/TLS, not an app deploy problem. Railway currently expects the apex domain traffic record to point at `3u23ystj.up.railway.app`.
 
 ## Heavy Files Policy
 
@@ -63,7 +76,7 @@ These are blocked in `.railwayignore`, `.dockerignore`, and `.gitignore`.
 
 ## Returning to Normal Railway Builds
 
-Only return from image-based runtime bootstrap to normal GitHub/Railway builds after:
+Only return from the bootstrap start command to plain `npm start` after:
 
 1. The Railway build queue is healthy.
 2. `npm run railway:guard` passes.

@@ -10,7 +10,10 @@ const EXPECTED = {
   environmentId: '63dcc12b-1ea8-4d91-b2b7-591171a20c07',
   environmentName: 'production',
   serviceId: 'a751d925-2352-44fa-8661-7fd902d3649b',
-  serviceName: 'poker-combat-bot'
+  serviceName: 'poker-combat-bot',
+  repo: 'juanramonpq-source/poker-combat-bot',
+  deploymentTriggerId: '9a088756-03f2-4cb4-8827-0a2650b55082',
+  customDomain: 'pocobot.online'
 };
 
 const root = path.resolve(__dirname, '..');
@@ -39,6 +42,53 @@ function readJson(command, args) {
   } catch (error) {
     throw new Error(`Could not parse JSON from: ${command} ${args.join(' ')}\n${output}`);
   }
+}
+
+function readRailwayAccessToken() {
+  const configPath = path.join(process.env.HOME || '', '.railway', 'config.json');
+  if (!existsSync(configPath)) {
+    throw new Error('Railway CLI config was not found. Run `railway login` before checking autodeploy.');
+  }
+
+  const config = JSON.parse(readFileSync(configPath, 'utf8'));
+  const token = config.user?.accessToken || config.user?.token;
+  if (!token) {
+    throw new Error('Railway CLI config does not contain an access token. Run `railway login` before checking autodeploy.');
+  }
+
+  return token;
+}
+
+function railwayGraphql(query, variables) {
+  const token = readRailwayAccessToken();
+  let output;
+  try {
+    output = execFileSync('curl', [
+      '-fsS',
+      'https://backboard.railway.com/graphql/v2',
+      '-H',
+      'Content-Type: application/json',
+      '-H',
+      `Authorization: Bearer ${token}`,
+      '--data-binary',
+      JSON.stringify({ query, variables })
+    ], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe']
+    }).trim();
+  } catch (error) {
+    const stderr = error.stderr ? String(error.stderr).trim() : '';
+    const stdout = error.stdout ? String(error.stdout).trim() : '';
+    throw new Error(['Railway GraphQL request failed.', stderr, stdout].filter(Boolean).join('\n'));
+  }
+
+  const payload = JSON.parse(output);
+  if (payload.errors?.length) {
+    throw new Error(`Railway GraphQL returned errors:\n${JSON.stringify(payload.errors, null, 2)}`);
+  }
+
+  return payload.data;
 }
 
 function assert(condition, message) {
@@ -121,6 +171,130 @@ if (service) {
 
 const serviceStatus = readJson('npx', ['-y', '@railway/cli', 'service', 'status', '--service', EXPECTED.serviceName, '--environment', EXPECTED.environmentName, '--json']);
 assert(serviceStatus.id === EXPECTED.serviceId, `Railway service status returned ${serviceStatus.id}; expected ${EXPECTED.serviceId}.`);
+warn(serviceStatus.status === 'SUCCESS', `Latest Railway deployment is "${serviceStatus.status}". The active deployment may still be healthy, but inspect the failed/latest deploy before forcing another.`);
+
+if (serviceInstance) {
+  assert(serviceInstance.source?.repo === EXPECTED.repo, `Production service instance source repo is "${serviceInstance.source?.repo || ''}"; expected "${EXPECTED.repo}".`);
+  assert(!serviceInstance.source?.image, `Production service instance still points to image "${serviceInstance.source?.image || ''}". Autodeploy needs the GitHub repo source.`);
+  const activeDeployment = (serviceInstance.activeDeployments || []).find((deployment) => !deployment.deploymentStopped) || serviceInstance.activeDeployments?.[0];
+  assert(activeDeployment?.status === 'SUCCESS', `Railway active deployment status is "${activeDeployment?.status || 'missing'}"; expected "SUCCESS".`);
+  const startCommand = serviceInstance.startCommand || '';
+  warn(startCommand === 'npm start' || startCommand.includes('railway_bootstrap.sh'), `Unexpected Railway start command: "${startCommand}".`);
+}
+
+const autoDeployStatus = railwayGraphql(
+  `query($projectId:String!,$environmentId:String!,$serviceId:String!){
+    serviceInstanceAutoDeployStatus(projectId:$projectId, environmentId:$environmentId, serviceId:$serviceId){
+      enabled
+      canEnable
+      reason
+    }
+  }`,
+  {
+    projectId: EXPECTED.projectId,
+    environmentId: EXPECTED.environmentId,
+    serviceId: EXPECTED.serviceId
+  }
+).serviceInstanceAutoDeployStatus;
+
+assert(autoDeployStatus.enabled === true, `Railway autodeploy is disabled. Reason: ${autoDeployStatus.reason || 'unknown'}.`);
+assert(autoDeployStatus.canEnable === true, `Railway autodeploy cannot be enabled. Reason: ${autoDeployStatus.reason || 'unknown'}.`);
+
+const deploymentTriggers = railwayGraphql(
+  `query($projectId:String!,$environmentId:String!,$serviceId:String!){
+    deploymentTriggers(projectId:$projectId, environmentId:$environmentId, serviceId:$serviceId, first:20){
+      edges {
+        node {
+          id
+          provider
+          repository
+          branch
+          checkSuites
+          projectId
+          environmentId
+          serviceId
+        }
+      }
+    }
+  }`,
+  {
+    projectId: EXPECTED.projectId,
+    environmentId: EXPECTED.environmentId,
+    serviceId: EXPECTED.serviceId
+  }
+).deploymentTriggers.edges.map((edge) => edge.node);
+
+assert(deploymentTriggers.length === 1, `Expected exactly one Railway deployment trigger; found ${deploymentTriggers.length}.`);
+if (deploymentTriggers.length === 1) {
+  const trigger = deploymentTriggers[0];
+  assert(trigger.id === EXPECTED.deploymentTriggerId, `Railway deployment trigger is "${trigger.id}"; expected "${EXPECTED.deploymentTriggerId}".`);
+  assert(trigger.provider === 'github', `Railway deployment trigger provider is "${trigger.provider}"; expected "github".`);
+  assert(trigger.repository === EXPECTED.repo, `Railway deployment trigger repo is "${trigger.repository}"; expected "${EXPECTED.repo}".`);
+  assert(trigger.branch === 'main', `Railway deployment trigger branch is "${trigger.branch}"; expected "main".`);
+  assert(trigger.projectId === EXPECTED.projectId, `Railway deployment trigger project is "${trigger.projectId}"; expected "${EXPECTED.projectId}".`);
+  assert(trigger.environmentId === EXPECTED.environmentId, `Railway deployment trigger environment is "${trigger.environmentId}"; expected "${EXPECTED.environmentId}".`);
+  assert(trigger.serviceId === EXPECTED.serviceId, `Railway deployment trigger service is "${trigger.serviceId}"; expected "${EXPECTED.serviceId}".`);
+}
+
+const domainData = railwayGraphql(
+  `query($projectId:String!){
+    project(id:$projectId){
+      environments {
+        edges {
+          node {
+            id
+            serviceInstances {
+              edges {
+                node {
+                  serviceId
+                  domains {
+                    customDomains {
+                      domain
+                      syncStatus
+                      status {
+                        verified
+                        certificateStatus
+                        certificateStatusDetailed
+                        dnsRecords {
+                          recordType
+                          fqdn
+                          requiredValue
+                          currentValue
+                          status
+                          purpose
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }`,
+  { projectId: EXPECTED.projectId }
+);
+
+const productionEnvironment = domainData.project.environments.edges.map((edge) => edge.node).find((environment) => environment.id === EXPECTED.environmentId);
+const domainServiceInstance = productionEnvironment?.serviceInstances.edges.map((edge) => edge.node).find((instance) => instance.serviceId === EXPECTED.serviceId);
+const customDomain = domainServiceInstance?.domains.customDomains.find((domain) => domain.domain === EXPECTED.customDomain);
+warn(Boolean(customDomain), `Custom domain "${EXPECTED.customDomain}" is not registered on the Railway service.`);
+if (customDomain) {
+  warn(customDomain.syncStatus === 'ACTIVE', `Custom domain "${EXPECTED.customDomain}" sync status is "${customDomain.syncStatus}".`);
+  warn(customDomain.status?.verified === true, `Custom domain "${EXPECTED.customDomain}" is not verified.`);
+  warn(
+    customDomain.status?.certificateStatus === 'CERTIFICATE_STATUS_TYPE_VALID',
+    `Custom domain "${EXPECTED.customDomain}" certificate status is "${customDomain.status?.certificateStatus || 'unknown'}".`
+  );
+
+  const staleDnsRecords = (customDomain.status?.dnsRecords || []).filter((record) => record.status !== 'DNS_RECORD_STATUS_VALID');
+  warn(
+    staleDnsRecords.length === 0,
+    `Custom domain "${EXPECTED.customDomain}" DNS requires update:\n${staleDnsRecords.map((record) => `  - ${record.fqdn} ${record.recordType.replace('DNS_RECORD_TYPE_', '')} should point to ${record.requiredValue}; current value: ${record.currentValue || '(empty)'}`).join('\n')}`
+  );
+}
 
 let projects = [];
 try {
