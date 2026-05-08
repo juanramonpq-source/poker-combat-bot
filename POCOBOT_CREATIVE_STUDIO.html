@@ -50,6 +50,7 @@
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 16px;margin-bottom:18px;position:sticky;top:10px;z-index:20;backdrop-filter:blur(16px)}
     .brand{display:flex;align-items:center;gap:12px;min-width:280px}
     .brand img{width:48px;height:48px;border-radius:14px;box-shadow:0 0 22px rgba(85,220,255,.22)}
+    #creativeStudioIcon{cursor:default;user-select:none}
     .brand strong{display:block;color:var(--gold);font-weight:900;letter-spacing:.03em}
     .brand span{display:block;color:var(--muted);font-size:.86rem}
     .top-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
@@ -107,14 +108,12 @@
   <div class="studio-shell">
     <header class="topbar">
       <div class="brand">
-        <img src="assets/pocobot_creative_studio_icon_192.png" alt="Creative PoCoBOT icono">
+        <img id="creativeStudioIcon" src="assets/pocobot_creative_studio_icon_192.png" alt="Creative PoCoBOT icono">
         <div><strong>PoCoBOT Creative Studio</strong><span>Editor visual de capítulos, escenas y prototipos exportables</span></div>
       </div>
       <div class="top-actions">
         <span class="chip" id="saveState">Borrador local activo</span>
         <button class="primary" type="button" id="copyJsonTop">Copiar JSON</button>
-        <a href="MODO_DESARROLLADOR_POCObot.html">Volver al laboratorio</a>
-        <a href="MANUAL_ANALOGICO_POCObot.html">Manual secreto</a>
       </div>
     </header>
 
@@ -411,6 +410,21 @@
     function updateOutputs(){ const json = packageJson(); document.getElementById('livePreview').textContent = json.slice(0, 1800) + (json.length > 1800 ? '\n…' : ''); document.getElementById('jsonOutput').value = json; document.getElementById('htmlOutput').value = makeBriefingHtml(); }
     async function copyText(text){ await navigator.clipboard.writeText(text); document.getElementById('saveState').textContent = 'Copiado al portapapeles'; }
     function downloadFile(name, type, content){ const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = name; link.click(); URL.revokeObjectURL(url); }
+    function bindHiddenLabAccess(){
+      const icon = document.getElementById('creativeStudioIcon');
+      if(!icon) return;
+      let taps = 0;
+      let timer = null;
+      icon.addEventListener('click', () => {
+        taps += 1;
+        window.clearTimeout(timer);
+        if(taps >= 5){
+          window.location.href = 'MODO_DESARROLLADOR_POCObot.html';
+          return;
+        }
+        timer = window.setTimeout(() => { taps = 0; }, 1800);
+      });
+    }
 
     function drawExploration(){
       const canvas = document.getElementById('explorationCanvas'); const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = '#091526'; ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -463,7 +477,7 @@
     document.getElementById('downloadIsoPng').addEventListener('click', () => { const canvas = document.getElementById('isoCanvas'); canvas.toBlob(blob => { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'pocobot-isometric-draft.png'; link.click(); URL.revokeObjectURL(url); }); });
     document.getElementById('saveIsoScene').addEventListener('click', () => { const scene = { id: safeId('iso_scene'), type: 'isometric_draft', cols: document.getElementById('isoCols').value, rows: document.getElementById('isoRows').value, tileW: document.getElementById('isoTileW').value, tileH: document.getElementById('isoTileH').value, height: document.getElementById('isoHeight').value, mode: document.getElementById('isoMode').value, note: 'Maqueta generada desde imagen/dibujo/foto para usar como briefing visual.' }; state.isometricScenes.push(scene); persist(); updateOutputs(); });
 
-    loadStored(); renderLists(); updateOutputs(); drawExploration(); generateIso();
+    bindHiddenLabAccess(); loadStored(); renderLists(); updateOutputs(); drawExploration(); generateIso();
   </script>
 </body>
 </html>
