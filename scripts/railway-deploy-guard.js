@@ -197,8 +197,14 @@ const autoDeployStatus = railwayGraphql(
   }
 ).serviceInstanceAutoDeployStatus;
 
-assert(autoDeployStatus.enabled === true, `Railway autodeploy is disabled. Reason: ${autoDeployStatus.reason || 'unknown'}.`);
-assert(autoDeployStatus.canEnable === true, `Railway autodeploy cannot be enabled. Reason: ${autoDeployStatus.reason || 'unknown'}.`);
+if (process.env.POCOBOT_REQUIRE_RAILWAY_AUTODEPLOY === '1') {
+  assert(autoDeployStatus.enabled === true, `Railway autodeploy is disabled. Reason: ${autoDeployStatus.reason || 'unknown'}.`);
+} else if (autoDeployStatus.enabled === true) {
+  warn(false, 'Railway autodeploy is enabled. During the bootstrap recovery period this may create failed builds when the workspace build queue is saturated.');
+} else {
+  warn(false, 'Railway autodeploy is disabled intentionally. Use `npm run railway:autodeploy:on` when returning to normal Railway builds.');
+}
+warn(autoDeployStatus.canEnable === true, `Railway autodeploy cannot currently be enabled. Reason: ${autoDeployStatus.reason || 'unknown'}.`);
 
 const deploymentTriggers = railwayGraphql(
   `query($projectId:String!,$environmentId:String!,$serviceId:String!){

@@ -37,6 +37,19 @@ Railway autodeploy is enabled for `main`, so a normal pushed commit from the cle
 
 Run `npm run railway:guard` after pushing to verify that local `HEAD` matches `origin/main`, that the Railway link points to the official project, that there is exactly one active Railway project, that GitHub autodeploy is enabled, that the custom domain is healthy, and that backup archives are excluded from deploys.
 
+While Railway is rejecting builds with the concurrent-build limit, keep normal GitHub autodeploy disabled:
+
+```sh
+npm run railway:autodeploy:off
+```
+
+During this bootstrap recovery period, `npm run clean:push` still publishes live changes by pushing `main` and then refreshing the bootstrap deployment. Re-enable normal Railway builds only after the queue is healthy:
+
+```sh
+npm run railway:autodeploy:on
+POCOBOT_REQUIRE_RAILWAY_AUTODEPLOY=1 npm run railway:guard
+```
+
 Use `npm run railway:redeploy` only when a pushed commit did not trigger Railway or when you intentionally need a manual redeploy of the current GitHub source.
 
 ## Current Railway Mode
