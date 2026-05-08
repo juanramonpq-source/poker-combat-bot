@@ -197,7 +197,9 @@ const autoDeployStatus = railwayGraphql(
   }
 ).serviceInstanceAutoDeployStatus;
 
-if (process.env.POCOBOT_REQUIRE_RAILWAY_AUTODEPLOY === '1') {
+const requireRailwayAutodeploy = process.env.POCOBOT_REQUIRE_RAILWAY_AUTODEPLOY === '1';
+
+if (requireRailwayAutodeploy) {
   assert(autoDeployStatus.enabled === true, `Railway autodeploy is disabled. Reason: ${autoDeployStatus.reason || 'unknown'}.`);
 } else if (autoDeployStatus.enabled === true) {
   warn(false, 'Railway autodeploy is enabled. During the bootstrap recovery period this may create failed builds when the workspace build queue is saturated.');
@@ -230,7 +232,12 @@ const deploymentTriggers = railwayGraphql(
   }
 ).deploymentTriggers.edges.map((edge) => edge.node);
 
-assert(deploymentTriggers.length === 1, `Expected exactly one Railway deployment trigger; found ${deploymentTriggers.length}.`);
+if (autoDeployStatus.enabled || requireRailwayAutodeploy) {
+  assert(deploymentTriggers.length === 1, `Expected exactly one Railway deployment trigger; found ${deploymentTriggers.length}.`);
+} else {
+  warn(deploymentTriggers.length === 0, `Railway autodeploy is disabled, but ${deploymentTriggers.length} deployment trigger(s) still exist.`);
+}
+
 if (deploymentTriggers.length === 1) {
   const trigger = deploymentTriggers[0];
   assert(trigger.id === EXPECTED.deploymentTriggerId, `Railway deployment trigger is "${trigger.id}"; expected "${EXPECTED.deploymentTriggerId}".`);
