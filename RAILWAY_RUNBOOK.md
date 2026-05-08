@@ -19,17 +19,21 @@ This repo must deploy to one Railway project only.
 
 ## Safe Deploy Flow
 
+This working folder is intentionally allowed to be messy. Production pushes should come from the generated clean release folder, not from this dirty tree.
+
 Use this flow for production changes that must reach Railway:
 
 ```sh
 git checkout main
 git pull --ff-only origin main
-# make the change, then commit it
-git push origin main
+# make the change in the working folder
+npm run clean:push
 npm run railway:guard
 ```
 
-Railway autodeploy is enabled for `main`, so a normal pushed commit is the deployment trigger. Run `npm run railway:guard` after pushing to verify that local `HEAD` matches `origin/main`, that the Railway link points to the official project, that there is exactly one active Railway project, that GitHub autodeploy is enabled, that the custom domain is healthy, and that backup archives are excluded from deploys.
+`npm run clean:push` syncs a whitelist of runtime files into `../codex/PoCoBOT Limpio`, commits from that clean repository, pushes `origin main`, and then runs the Railway guard. Use `npm run clean:sync` to regenerate the clean folder without pushing.
+
+Railway autodeploy is enabled for `main`, so a normal pushed commit from the clean release repo is the deployment trigger. Run `npm run railway:guard` after pushing to verify that local `HEAD` matches `origin/main`, that the Railway link points to the official project, that there is exactly one active Railway project, that GitHub autodeploy is enabled, that the custom domain is healthy, and that backup archives are excluded from deploys.
 
 Use `npm run railway:redeploy` only when a pushed commit did not trigger Railway or when you intentionally need a manual redeploy of the current GitHub source.
 
@@ -53,6 +57,7 @@ The service start command still downloads and executes `railway_bootstrap.sh` fr
 - Do not run `railway init` in this repo.
 - Do not run `railway up` from the full repo root while the repo contains heavy local assets or backups.
 - Do not create a new service or environment to fix a queue. First inspect the existing project.
+- Do not push this working folder directly when the user wants a production release. Use `npm run clean:push`.
 
 ## If Railway Gets Stuck Again
 

@@ -1,3 +1,0 @@
-<FilesMatch "^(counter_data\.json|counter\.lock)$">
-  Require all denied
-</FilesMatch>
