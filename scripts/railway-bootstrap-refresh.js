@@ -115,6 +115,7 @@ function sleep(ms) {
 async function waitForHealthyDeployment(previousDeploymentId) {
   const deadline = Date.now() + 180000;
   let lastStatus = '';
+  let lastHealthMessage = '';
 
   while (Date.now() < deadline) {
     const service = serviceStatus();
@@ -132,8 +133,16 @@ async function waitForHealthyDeployment(previousDeploymentId) {
     }
 
     if (service.status === 'SUCCESS' && service.deploymentStopped === false && service.replicas?.running >= 1 && service.deploymentId !== previousDeploymentId) {
-      run('curl', ['-fsSIL', '--max-time', '20', EXPECTED.healthUrl]);
-      return service;
+      try {
+        run('curl', ['-fsSIL', '--max-time', '20', EXPECTED.healthUrl]);
+        return service;
+      } catch (error) {
+        const message = 'Railway reports the deployment as running; waiting for HTTP health to become ready...';
+        if (message !== lastHealthMessage) {
+          console.log(message);
+          lastHealthMessage = message;
+        }
+      }
     }
 
     await sleep(5000);
