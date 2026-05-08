@@ -57,6 +57,7 @@
     }
     .lab-topbar,
     .hero-panel,
+    .lab-menu,
     .panel-card,
     .side-card{
       border:1px solid rgba(143,244,255,.16);
@@ -190,6 +191,118 @@
     }
     .hero-preview-card img{width:min(380px, 100%);filter:drop-shadow(0 16px 26px rgba(0,0,0,.32))}
     .hero-preview-card p{margin:0;text-align:center;font-size:.84rem;color:var(--muted);line-height:1.45}
+    .lab-menu{
+      margin-bottom:18px;
+      padding:18px;
+      border-radius:30px;
+      background:
+        linear-gradient(180deg, rgba(15,28,52,.96), rgba(8,17,32,.98)),
+        var(--grid);
+      background-size:auto, 24px 24px, 24px 24px;
+    }
+    .menu-header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:14px;
+    }
+    .menu-header h2{
+      margin:0;
+      font-family:"Arial Black","Impact",sans-serif;
+      font-size:clamp(1.35rem,2.5vw,2.1rem);
+      letter-spacing:.07em;
+      text-transform:uppercase;
+    }
+    .menu-header p{
+      margin:8px 0 0;
+      color:var(--muted);
+      line-height:1.45;
+      max-width:72ch;
+    }
+    .menu-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+    }
+    .menu-card{
+      min-height:118px;
+      display:grid;
+      align-content:start;
+      gap:7px;
+      padding:13px;
+      border-radius:20px;
+      border:1px solid rgba(143,244,255,.15);
+      background:rgba(7,15,29,.52);
+      text-decoration:none;
+      box-shadow:inset 0 0 18px rgba(61,216,255,.04);
+      transition:transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
+    }
+    .menu-card:hover{
+      transform:translateY(-2px);
+      border-color:rgba(143,244,255,.42);
+      background:rgba(15,32,60,.78);
+      box-shadow:0 16px 26px rgba(61,216,255,.12), inset 0 0 20px rgba(61,216,255,.07);
+    }
+    .menu-card span{
+      color:var(--gold);
+      font-size:.7rem;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    .menu-card strong{
+      color:var(--white);
+      font-size:.94rem;
+      line-height:1.08;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+    }
+    .menu-card small{
+      color:var(--muted);
+      font-size:.78rem;
+      line-height:1.32;
+    }
+    .menu-card.is-primary{
+      border-color:rgba(255,213,95,.32);
+      background:linear-gradient(180deg, rgba(255,213,95,.14), rgba(7,15,29,.62));
+    }
+    .lab-jumpbar{
+      position:sticky;
+      top:10px;
+      z-index:24;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      overflow-x:auto;
+      margin:-2px 0 18px;
+      padding:10px;
+      border:1px solid rgba(143,244,255,.14);
+      border-radius:22px;
+      background:rgba(6,13,24,.84);
+      box-shadow:0 18px 32px rgba(0,0,0,.22);
+      backdrop-filter:blur(14px);
+      scrollbar-width:thin;
+    }
+    .lab-jumpbar a{
+      flex:0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:36px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid rgba(143,244,255,.16);
+      background:rgba(143,244,255,.07);
+      color:var(--white);
+      text-decoration:none;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .lab-jumpbar a:hover{border-color:rgba(255,213,95,.42);background:rgba(255,213,95,.12)}
+    .debug-section{scroll-margin-top:86px}
     .lab-grid{display:grid;grid-template-columns:minmax(0, 1.38fr) minmax(340px, .82fr);gap:18px;align-items:start}
     .panel-card,.side-card{padding:18px;border-radius:28px}
     .panel-header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px}
@@ -345,12 +458,16 @@
     @media (max-width:1240px){
       .hero-panel,.lab-grid{grid-template-columns:1fr}
       .hero-points{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .menu-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
       .control-groups-expanded,.preset-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
     @media (max-width:860px){
       .lab-shell{width:min(100% - 16px, 100%)}
       .lab-topbar{flex-direction:column}
       .hero-panel{padding:20px;border-radius:28px}
+      .menu-header{display:block}
+      .menu-grid{grid-template-columns:1fr}
+      .lab-jumpbar{top:6px}
       .viewport-quick-panel{align-items:stretch;flex-direction:column}
       .viewport-quick-actions{justify-content:flex-start}
       .hero-points,.control-groups,.control-groups-expanded,.status-row,.sound-grid,.mecha-grid,.preset-grid{grid-template-columns:1fr}
@@ -407,8 +524,46 @@
       </div>
     </section>
 
+    <section class="lab-menu" id="debug-menu" aria-labelledby="debugMenuTitle">
+      <div class="menu-header">
+        <div>
+          <h2 id="debugMenuTitle">Menú DEBUG ordenado</h2>
+          <p>Entra por bloques: primero la cabina real, después combate, estados de partida, Player 2 historia, visor, sonido y utilidades. Cada acceso baja al panel exacto sin tener que buscar entre todos los botones.</p>
+        </div>
+        <span class="mini-label">Mapa del laboratorio</span>
+      </div>
+      <div class="menu-grid">
+        <a class="menu-card is-primary" href="#debug-cabina"><span>01 · Núcleo</span><strong>Cabina real</strong><small>Juego embebido, estado actual y selector de pantalla.</small></a>
+        <a class="menu-card" href="#debug-vfx"><span>02 · Combate</span><strong>VFX reales</strong><small>Ataques, proyectiles, impactos, defensa y victoria.</small></a>
+        <a class="menu-card" href="#debug-atajos"><span>03 · Flujo</span><strong>Atajos rápidos</strong><small>Cambiar atacante, modificar, reiniciar y estados especiales.</small></a>
+        <a class="menu-card" href="#debug-vistas"><span>04 · Layout</span><strong>Pantallas de vista</strong><small>Normal, compacto, horizontal y móvil horizontal.</small></a>
+        <a class="menu-card" href="#debug-reglas"><span>05 · Estados</span><strong>Reglas</strong><small>Situaciones legales reproducibles del combate.</small></a>
+        <a class="menu-card" href="#debug-tutorial"><span>06 · Guía</span><strong>Tutorial</strong><small>Saltos a pasos concretos del tutorial guiado.</small></a>
+        <a class="menu-card" href="#debug-online"><span>07 · Red</span><strong>Online simulado</strong><small>Lobby y partida online sin dos clientes abiertos.</small></a>
+        <a class="menu-card" href="#debug-historia"><span>08 · Historia</span><strong>Player 2 historia</strong><small>Cambio directo a personajes registrados de modo historia.</small></a>
+        <a class="menu-card" href="#debug-visor"><span>09 · Visual</span><strong>Visor del mecha</strong><small>Presets gráficos aplicados al runtime real.</small></a>
+        <a class="menu-card" href="#debug-sonido"><span>10 · Audio</span><strong>Banco de sonido</strong><small>SFX, música de intro, combate y activación de audio.</small></a>
+        <a class="menu-card" href="#debug-utilidades"><span>11 · UI</span><strong>Utilidades rápidas</strong><small>Toasts, pulso de pantalla y chispas por jugador.</small></a>
+      </div>
+    </section>
+
+    <nav class="lab-jumpbar" aria-label="Acceso rápido a secciones DEBUG">
+      <a href="#debug-menu">Menú</a>
+      <a href="#debug-cabina">Cabina</a>
+      <a href="#debug-vfx">VFX</a>
+      <a href="#debug-atajos">Atajos</a>
+      <a href="#debug-vistas">Vistas</a>
+      <a href="#debug-reglas">Reglas</a>
+      <a href="#debug-tutorial">Tutorial</a>
+      <a href="#debug-online">Online</a>
+      <a href="#debug-historia">Historia</a>
+      <a href="#debug-visor">Visor</a>
+      <a href="#debug-sonido">Sonido</a>
+      <a href="#debug-utilidades">Utilidades</a>
+    </nav>
+
     <div class="lab-grid">
-      <section class="panel-card">
+      <section class="panel-card debug-section" id="debug-cabina">
         <div class="panel-header">
           <div>
             <h2>Cabina de pruebas vinculada al juego</h2>
@@ -458,7 +613,7 @@
         </div>
 
         <div class="control-groups">
-          <article class="control-group">
+          <article class="control-group debug-section" id="debug-vfx">
             <h3>VFX de combate</h3>
             <p>Estas acciones disparan el flujo real de ataque, impacto y victoria dentro del juego incrustado. Los ataques completos ya incluyen el golpe sobre el defensor, la explosión del radar y la bajada visual de defensa/armadura. El botón de defensa activa abre directamente la escena real con mensaje, sonido y foco superior.</p>
             <div class="control-grid">
@@ -471,7 +626,7 @@
             </div>
           </article>
 
-          <article class="control-group">
+          <article class="control-group debug-section" id="debug-atajos">
             <h3>Presets y atajos</h3>
             <p>Escenas rápidas que ahorran tiempo y atacan zonas del juego que suele costar alcanzar a mano.</p>
             <div class="control-grid">
@@ -485,7 +640,7 @@
             </div>
           </article>
 
-          <article class="control-group">
+          <article class="control-group debug-section" id="debug-vistas">
             <h3>Pantallas de vista</h3>
             <p>El mismo selector también está justo encima de la cabina. Úsalo para cambiar el layout y después dispara el ataque de prueba.</p>
             <div class="control-grid">
@@ -499,25 +654,25 @@
         </div>
 
         <div class="control-groups control-groups-expanded" style="margin-top:12px;">
-          <article class="control-group">
+          <article class="control-group debug-section" id="debug-reglas">
             <h3>Presets de reglas</h3>
             <p>Escenas legales y reproducibles para revisar estados críticos del combate sin montarlos a mano.</p>
             <div class="preset-grid" id="rulePresetGrid"></div>
           </article>
 
-          <article class="control-group">
+          <article class="control-group debug-section" id="debug-tutorial">
             <h3>Presets de tutorial</h3>
             <p>Saltos directos a pasos concretos del tutorial guiado para revisar texto, foco visual y restricciones.</p>
             <div class="preset-grid" id="tutorialPresetGrid"></div>
           </article>
 
-          <article class="control-group">
+          <article class="control-group debug-section" id="debug-online">
             <h3>Online simulado</h3>
             <p>Estados de lobby y partida online sin abrir dos clientes reales. Perfecto para revisar UI y manos ocultas.</p>
             <div class="preset-grid" id="onlinePresetGrid"></div>
           </article>
 
-          <article class="control-group">
+          <article class="control-group debug-section" id="debug-historia">
             <h3>Player 2 historia</h3>
             <p>Cambia el personaje visible del segundo player por cualquiera de los perfiles de historia disponibles sin salir del debug normal.</p>
             <div class="preset-grid" id="storyCharacterGrid"></div>
@@ -527,7 +682,7 @@
       </section>
 
       <aside class="side-column">
-        <section class="side-card">
+        <section class="side-card debug-section" id="debug-visor">
           <div class="panel-header">
             <div>
               <h2>Visor del mecha</h2>
@@ -546,7 +701,7 @@
           <div class="mecha-grid" id="mechaButtonGrid"></div>
         </section>
 
-        <section class="side-card" style="margin-top:18px;">
+        <section class="side-card debug-section" id="debug-sonido" style="margin-top:18px;">
           <div class="panel-header">
             <div>
               <h2>Banco de sonido</h2>
@@ -563,7 +718,7 @@
           </div>
         </section>
 
-        <section class="side-card" style="margin-top:18px;">
+        <section class="side-card debug-section" id="debug-utilidades" style="margin-top:18px;">
           <div class="panel-header">
             <div>
               <h2>Utilidades rápidas</h2>

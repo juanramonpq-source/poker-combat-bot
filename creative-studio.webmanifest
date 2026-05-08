@@ -1,0 +1,36 @@
+{
+  "name": "PoCoBOT Creative Studio",
+  "short_name": "Creative PoCoBOT",
+  "description": "Editor visual de capítulos, escenas y prototipos exportables para PoCoBOT.",
+  "icons": [
+    {
+      "src": "./assets/pocobot_creative_studio_icon_128.png?v=20260508-creative-pocobot",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/pocobot_creative_studio_icon_192.png?v=20260508-creative-pocobot",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/pocobot_creative_studio_icon_512.png?v=20260508-creative-pocobot",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/pocobot_creative_studio_icon_1024.png?v=20260508-creative-pocobot",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#07111f",
+  "background_color": "#050914",
+  "display": "standalone",
+  "start_url": "./POCOBOT_CREATIVE_STUDIO.html",
+  "scope": "./"
+}
