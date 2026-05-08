@@ -27,19 +27,26 @@ function readRailwayAccessToken() {
 
 function railwayGraphql(query, variables) {
   const token = readRailwayAccessToken();
-  const output = execFileSync('curl', [
-    '-fsS',
-    'https://backboard.railway.com/graphql/v2',
-    '-H',
-    'Content-Type: application/json',
-    '-H',
-    `Authorization: Bearer ${token}`,
-    '--data-binary',
-    JSON.stringify({ query, variables })
-  ], {
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe']
-  }).trim();
+  let output;
+  try {
+    output = execFileSync('curl', [
+      '-fsS',
+      'https://backboard.railway.com/graphql/v2',
+      '-H',
+      'Content-Type: application/json',
+      '-H',
+      `Authorization: Bearer ${token}`,
+      '--data-binary',
+      JSON.stringify({ query, variables })
+    ], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe']
+    }).trim();
+  } catch (error) {
+    const stderr = error.stderr ? String(error.stderr).replace(token, '<redacted>').trim() : '';
+    const stdout = error.stdout ? String(error.stdout).trim() : '';
+    throw new Error(['Railway GraphQL request failed.', stderr, stdout].filter(Boolean).join('\n'));
+  }
 
   const payload = JSON.parse(output);
   if (payload.errors?.length) {
@@ -64,7 +71,9 @@ function getStatus() {
 function setStatus(enabled) {
   railwayGraphql(
     `mutation($input:ServiceInstanceAutoDeployUpdateInput!){
-      serviceInstanceAutoDeployUpdate(input:$input)
+      serviceInstanceAutoDeployUpdate(input:$input) {
+        enabled
+      }
     }`,
     { input: { ...EXPECTED, enabled } }
   );
