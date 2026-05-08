@@ -1,0 +1,7 @@
+node_modules/
+.git/
+.DS_Store
+assets/.DS_Store
+assets.zip
+backups/
+*.zip
