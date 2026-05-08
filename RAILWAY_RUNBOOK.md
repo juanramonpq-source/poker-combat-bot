@@ -33,7 +33,9 @@ npm run railway:guard
 
 `npm run clean:push` syncs a whitelist of runtime files into `../codex/PoCoBOT Limpio`, commits from that clean repository, pushes `origin main`, and then runs the Railway guard. Use `npm run clean:sync` to regenerate the clean folder without pushing.
 
-Railway autodeploy is enabled for `main`, so a normal pushed commit from the clean release repo is the deployment trigger. Run `npm run railway:guard` after pushing to verify that local `HEAD` matches `origin/main`, that the Railway link points to the official project, that there is exactly one active Railway project, that GitHub autodeploy is enabled, that the custom domain is healthy, and that backup archives are excluded from deploys.
+Railway autodeploy is enabled for `main`, so a normal pushed commit from the clean release repo is the deployment trigger. `npm run clean:push` also runs `npm run railway:bootstrap-refresh`, which creates a fresh deployment from the last healthy bootstrap image deployment. That refresh does not use Railway builds or `railway up`; it restarts the known-good bootstrap runtime so it pulls the latest `main` from GitHub even when Railway is rejecting new builds because the workspace has hit its concurrent-build limit.
+
+Run `npm run railway:guard` after pushing to verify that local `HEAD` matches `origin/main`, that the Railway link points to the official project, that there is exactly one active Railway project, that GitHub autodeploy is enabled, that the custom domain is healthy, and that backup archives are excluded from deploys.
 
 Use `npm run railway:redeploy` only when a pushed commit did not trigger Railway or when you intentionally need a manual redeploy of the current GitHub source.
 
@@ -56,6 +58,7 @@ The service start command still downloads and executes `railway_bootstrap.sh` fr
 - Do not import `juanramonpq-source/poker-combat-bot` again from the Railway dashboard.
 - Do not run `railway init` in this repo.
 - Do not run `railway up` from the full repo root while the repo contains heavy local assets or backups.
+- Do not run `railway up` as a recovery shortcut. This repo is too large for direct CLI upload and can create accidental temporary Railway projects.
 - Do not create a new service or environment to fix a queue. First inspect the existing project.
 - Do not push this working folder directly when the user wants a production release. Use `npm run clean:push`.
 
@@ -65,7 +68,7 @@ The service start command still downloads and executes `railway_bootstrap.sh` fr
 2. Run `npx -y @railway/cli deployment list --service poker-combat-bot --environment production --limit 10 --json`.
 3. Check logs with `npx -y @railway/cli logs --service poker-combat-bot --environment production --latest --lines 200 --json`.
 4. Check app health with `curl -L https://pocobot.up.railway.app/`.
-5. If the newest deploy failed with "number of concurrent builds", do not create a new project. Wait for the build queue to clear, or use the emergency image/bootstrap path deliberately.
+5. If the newest deploy failed with "number of concurrent builds", do not create a new project and do not run `railway up`. Run `npm run railway:bootstrap-refresh` from the clean release folder to restart the known-good bootstrap deployment.
 6. If the app is alive on the Railway domain but not `pocobot.online`, treat it as domain/DNS/TLS, not an app deploy problem. Railway currently expects the apex domain traffic record to point at `3u23ystj.up.railway.app`.
 
 ## Heavy Files Policy

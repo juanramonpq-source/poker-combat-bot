@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "clean:sync": "node scripts/sync-clean-release.js",
     "clean:push": "node scripts/push-clean-release.js",
+    "railway:bootstrap-refresh": "node scripts/railway-bootstrap-refresh.js",
     "railway:guard": "node scripts/railway-deploy-guard.js",
     "railway:redeploy": "npm run railway:guard && npx -y @railway/cli service redeploy --service poker-combat-bot --from-source --yes",
     "deploy:railway": "npm run railway:redeploy"
