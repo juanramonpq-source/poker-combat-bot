@@ -29,17 +29,7 @@ git sparse-checkout set --no-cone \
   '/assets/cards/**' \
   '/assets/sfx/**' \
   '/assets/videos/Ataque1.mp4' \
-  '/assets/Historia/SistemaCorrupto.mp3' \
-  '/assets/Historia/panel-control-malvado-animacion-completa.webp' \
-  '/assets/Historia/tower-control-guard-mecha.png' \
-  '/assets/Historia/tower-drone-base.png' \
-  '/assets/Historia/tower-drone-clubs.png' \
-  '/assets/Historia/tower-drone-hearts.png' \
-  '/assets/Historia/tower-drone-spades.png' \
-  '/assets/Historia/xavor-glitch-radio.svg' \
-  '/assets/Historia/Brutos/cartel_pocobot_transparente.png' \
-  '/assets/Historia/low/**' \
-  '/assets/Historia/sfx/**'
+  '/assets/Historia/**'
 git checkout
 
 npm ci --omit=dev
