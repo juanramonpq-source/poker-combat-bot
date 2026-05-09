@@ -96,10 +96,16 @@
     .item-card{border:1px solid rgba(143,244,255,.14);border-radius:18px;background:rgba(255,255,255,.035);padding:13px;display:grid;gap:10px}
     .item-title{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.item-title strong{color:var(--white)}.item-title small{color:var(--muted);font-family:monospace}
     .help-rail{position:sticky;top:92px;display:grid;gap:14px}.help-card{padding:18px}.help-card ul{margin:8px 0 0;padding-left:18px;color:var(--muted);line-height:1.52}.help-card li{margin-bottom:8px}.help-card code{color:var(--gold)}
-    .canvas-wrap{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:start}.canvas-frame{position:relative;border:1px solid rgba(143,244,255,.2);background:#040913;border-radius:20px;overflow:auto;min-height:420px}.canvas-frame canvas{display:block;max-width:100%;height:auto;margin:auto}.tools-panel{display:grid;gap:12px}.inline{display:flex;gap:8px;align-items:end}.inline > *{flex:1}
-    .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.export-box{min-height:360px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.78rem;white-space:pre;overflow:auto}
-    .iso-stage{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px}.iso-canvas{background:#06101c;border:1px solid rgba(143,244,255,.2);border-radius:20px;overflow:auto;min-height:520px}.iso-canvas canvas{display:block;margin:16px auto;max-width:100%;height:auto}
-    .studio-footer{padding:18px;margin-top:18px;text-align:center}.hidden{display:none!important}
+	    .canvas-wrap{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:start}.canvas-frame{position:relative;border:1px solid rgba(143,244,255,.2);background:#040913;border-radius:20px;overflow:auto;min-height:420px}.canvas-frame canvas{display:block;max-width:100%;height:auto;margin:auto}.tools-panel{display:grid;gap:12px}.inline{display:flex;gap:8px;align-items:end}.inline > *{flex:1}
+	    .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.export-box{min-height:360px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.78rem;white-space:pre;overflow:auto}
+	    .iso-stage{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px}.iso-canvas{background:#06101c;border:1px solid rgba(143,244,255,.2);border-radius:20px;overflow:auto;min-height:520px}.iso-canvas canvas{display:block;margin:16px auto;max-width:100%;height:auto}
+	    .reference-panel{border:1px solid rgba(143,244,255,.14);background:rgba(255,255,255,.035);border-radius:18px;padding:13px;margin:14px 0;display:grid;gap:10px}
+	    .reference-panel strong{color:var(--gold)}
+	    .status-line{color:var(--green);font-size:.86rem;min-height:1.4em}
+	    .expert-only{display:none!important}
+	    body.expert-mode .expert-only{display:grid!important}
+	    body.expert-mode .expert-flex{display:flex!important}
+	    .studio-footer{padding:18px;margin-top:18px;text-align:center}.hidden{display:none!important}
     @media (max-width:1120px){.hero,.workspace,.canvas-wrap,.iso-stage,.export-grid{grid-template-columns:1fr}.help-rail{position:static}.tabs{top:86px}.hero-grid,.form-grid,.form-grid.three{grid-template-columns:1fr}}
     @media (max-width:760px){.studio-shell{width:min(100% - 16px,100%);padding-top:10px}.topbar{position:static;align-items:flex-start;flex-direction:column}.tabs{position:static}.hero{padding:20px}h1{font-size:2.35rem}.top-actions{justify-content:flex-start}}
   </style>
@@ -111,11 +117,12 @@
         <img id="creativeStudioIcon" src="assets/pocobot_creative_studio_icon_192.png" alt="Creative PoCoBOT icono">
         <div><strong>PoCoBOT Creative Studio</strong><span>Editor visual de capítulos, escenas y prototipos exportables</span></div>
       </div>
-      <div class="top-actions">
-        <span class="chip" id="saveState">Borrador local activo</span>
-        <button class="primary" type="button" id="copyJsonTop">Copiar JSON</button>
-        <a href="pocobot_lore_biblia.html" target="_blank" rel="noopener">Biblia PoCoBOT</a>
-      </div>
+	      <div class="top-actions">
+	        <span class="chip" id="saveState">Borrador local activo</span>
+	        <button class="primary" type="button" id="copyJsonTop">Copiar JSON</button>
+	        <button class="tool-button" type="button" id="expertToggle" aria-pressed="false">Modo experto</button>
+	        <a href="pocobot_lore_biblia.html" target="_blank" rel="noopener">Biblia PoCoBOT</a>
+	      </div>
     </header>
 
     <section class="hero">
@@ -170,13 +177,14 @@
             <div class="form-grid" data-form="mapPoints">
               <label>ID del punto<input data-field="id" placeholder="mercado_reles_muertos"></label>
               <label>Nombre visible<input data-field="name" placeholder="Mercado de relés muertos"></label>
-              <label>Tipo<select data-field="type"><option>exploracion</option><option>conversacion</option><option>tienda</option><option>combate</option><option>evento_personalizado</option></select></label>
-              <label>Estado inicial<select data-field="initialState"><option>disponible</option><option>bloqueado</option><option>oculto</option><option>completado</option></select></label>
-              <label>Capítulos<input data-field="chapters" placeholder="capitulo_1, capitulo_2"></label>
-              <label>Escena enlazada<input data-field="target" placeholder="expl_mercado_01"></label>
-              <label class="full">Condiciones de desbloqueo<textarea data-field="unlockConditions" placeholder="Ej: completar conversacion_mara_intro o tener llave_torre"></textarea></label>
-              <label class="full">Recompensas del punto<textarea data-field="rewards" placeholder="Ej: monedas: 15; desbloquea: tienda_vera"></textarea></label>
-            </div>
+	              <label>Tipo<select data-field="type"><option>exploracion</option><option>conversacion</option><option>tienda</option><option>combate</option><option>evento_personalizado</option></select></label>
+	              <label>Estado inicial<select data-field="initialState"><option>disponible</option><option>bloqueado</option><option>oculto</option><option>completado</option></select></label>
+	              <label>Capítulos<input data-field="chapters" placeholder="capitulo_1, capitulo_2"></label>
+	              <label>Escena enlazada<input data-field="target" placeholder="expl_mercado_01"></label>
+	              <label>Usar escena existente<select id="mapTargetPicker"><option value="">Elegir escena creada...</option></select></label>
+	              <label class="full expert-only">Condiciones de desbloqueo<textarea data-field="unlockConditions" placeholder="Ej: completar conversacion_mara_intro o tener llave_torre"></textarea></label>
+	              <label class="full expert-only">Recompensas del punto<textarea data-field="rewards" placeholder="Ej: monedas: 15; desbloquea: tienda_vera"></textarea></label>
+	            </div>
             <div class="button-row"><button class="tool-button" type="button" data-save="mapPoints">Guardar punto</button><button class="tool-button danger" type="button" data-clear-form="mapPoints">Limpiar</button></div>
             <div class="list" id="list-mapPoints"></div>
           </div>
@@ -188,24 +196,40 @@
             <div class="canvas-wrap">
               <div>
                 <div class="form-grid">
-                  <label>ID del mapa<input data-field="id" data-exploration placeholder="expl_mercado_01"></label>
-                  <label>Nombre<input data-field="name" data-exploration placeholder="Mercado explorable"></label>
-                  <label>Imagen de fondo<input type="file" id="explorationImage" accept="image/*"></label>
-                  <label>Personaje controlable<input data-field="playerSprite" data-exploration placeholder="assets/.../pocobot.png"></label>
-                  <label>Inicio X<input type="number" data-field="startX" data-exploration value="160"></label>
-                  <label>Inicio Y<input type="number" data-field="startY" data-exploration value="220"></label>
-                </div>
-                <div class="canvas-frame"><canvas id="explorationCanvas" width="960" height="540"></canvas></div>
-              </div>
-              <div class="tools-panel">
-                <h3>Herramientas del lienzo</h3>
-                <button class="tool-button active" type="button" data-draw-mode="collision">Dibujar colisión</button>
-                <button class="tool-button" type="button" data-draw-mode="interaction">Añadir interacción</button>
-                <button class="tool-button danger" type="button" id="undoExploration">Deshacer último</button>
-                <label>Tipo de interacción<select id="interactionType"><option>ir_a_mapa</option><option>conversacion</option><option>combate</option><option>tienda</option><option>recompensa</option><option>codigo_personalizado</option></select></label>
-                <label>Destino / instrucción<textarea id="interactionTarget" placeholder="ID de escena, tienda, combate o pseudocódigo"></textarea></label>
-                <p class="hint">Colisión: arrastra para crear rectángulos rojos. Interacción: haz clic para crear puntos dorados.</p>
-              </div>
+	                  <label>ID del mapa<input data-field="id" data-exploration placeholder="expl_mercado_01"></label>
+	                  <label>Nombre<input data-field="name" data-exploration placeholder="Mercado explorable"></label>
+	                  <label>Imagen de fondo<input type="file" id="explorationImage" accept="image/*"></label>
+	                  <label>Personaje controlable<input data-field="playerSprite" data-exploration placeholder="assets/.../pocobot.png"></label>
+	                  <label>Inicio X<input type="number" data-field="startX" data-exploration value="160"></label>
+	                  <label>Inicio Y<input type="number" data-field="startY" data-exploration value="220"></label>
+	                </div>
+	                <div class="reference-panel">
+	                  <strong>Reutilizar iteraciones</strong>
+	                  <div class="inline">
+	                    <label>Mapa guardado<select id="savedExplorationSelect"><option value="">Elegir exploración...</option></select></label>
+	                    <button class="tool-button" type="button" id="loadExploration">Cargar</button>
+	                  </div>
+	                  <p class="hint">Una exploración guardada o una escena isométrica convertida se puede cargar aquí para seguir editando colisiones e interacciones.</p>
+	                </div>
+	                <div class="canvas-frame"><canvas id="explorationCanvas" width="960" height="540"></canvas></div>
+	                <div class="list" id="list-explorations"></div>
+	              </div>
+	              <div class="tools-panel">
+	                <h3>Herramientas del lienzo</h3>
+	                <button class="tool-button active" type="button" data-draw-mode="collision-rect">Colisión rectángulo</button>
+	                <button class="tool-button" type="button" data-draw-mode="collision-circle">Colisión círculo</button>
+	                <button class="tool-button" type="button" data-draw-mode="collision-poly">Colisión polígono</button>
+	                <button class="tool-button" type="button" id="finishPolygon">Cerrar polígono</button>
+	                <button class="tool-button" type="button" data-draw-mode="interaction">Añadir interacción</button>
+	                <button class="tool-button danger" type="button" data-draw-mode="erase">Borrar elemento</button>
+	                <button class="tool-button danger" type="button" id="undoExploration">Deshacer último</button>
+	                <button class="tool-button danger expert-only" type="button" id="clearExplorationDraft">Vaciar lienzo</button>
+	                <label>Tipo de interacción<select id="interactionType"><option>ir_a_mapa</option><option>conversacion</option><option>combate</option><option>tienda</option><option>recompensa</option><option>codigo_personalizado</option></select></label>
+	                <label>Destino creado<select id="interactionTargetPicker"><option value="">Elegir destino...</option></select></label>
+	                <label>Destino / instrucción<textarea id="interactionTarget" placeholder="ID de escena, tienda, combate o pseudocódigo"></textarea></label>
+	                <p class="hint">Rectángulo/círculo: arrastra. Polígono: haz clic en vértices y cierra. Borrar: clic sobre una colisión o punto dorado.</p>
+	                <div class="status-line" id="explorationStatus"></div>
+	              </div>
             </div>
           </div>
         </section>
@@ -214,20 +238,26 @@
           <div class="panel">
             <div class="panel-head"><div><h2>Modo conversación</h2><p>Estructura compatible con presentación, poses y rondas de preguntas como Mara, Vera y Xavor.</p></div><button class="primary" type="button" data-add="conversations">Añadir conversación</button></div>
             <div class="form-grid" data-form="conversations">
-              <label>ID de escena<input data-field="id" placeholder="conv_mara_intro"></label>
-              <label>Personaje<input data-field="character" placeholder="Mara"></label>
-              <label>Fondo inmutable<input data-field="background" placeholder="assets/fondos/...png"></label>
-              <label>Imagen presentación<input data-field="presentationImage" placeholder="assets/personajes/mara_presentacion.png"></label>
-              <label>Pose 1<input data-field="pose1" placeholder="neutral"></label>
-              <label>Pose 2<input data-field="pose2" placeholder="sonrisa"></label>
-              <label>Pose 3<input data-field="pose3" placeholder="duda"></label>
-              <label>Pose 4<input data-field="pose4" placeholder="alerta"></label>
-              <label class="full">Texto introductorio<textarea data-field="introText" placeholder="Texto de entrada narrativo"></textarea></label>
-              <label class="full">Preguntas y respuestas ronda 1<textarea data-field="round1" placeholder="P: ¿...? | R1: ... -> consecuencia | R2: ... -> consecuencia"></textarea></label>
-              <label>Activar segunda ronda<select data-field="secondRoundEnabled"><option value="no">No</option><option value="si">Sí</option></select></label>
-              <label>Selector / TIC<input data-field="secondRoundSelector" placeholder="tic_confianza_mara"></label>
-              <label class="full">Preguntas y respuestas ronda 2<textarea data-field="round2" placeholder="Solo se activa si el selector/TIC se cumple"></textarea></label>
-            </div>
+	              <label>ID de escena<input data-field="id" placeholder="conv_mara_intro"></label>
+	              <label>Personaje<input data-field="character" placeholder="Mara"></label>
+	              <label>Fondo inmutable<input data-field="background" placeholder="assets/fondos/...png"></label>
+	              <label>Subir fondo<input type="file" id="conversationBackgroundFile" accept="image/*"></label>
+	              <label>Carpeta de assets<input data-field="backgroundAssetFolder" id="conversationBackgroundFolder" value="assets/Historia/CARPETAX" placeholder="assets/Historia/CARPETAX"></label>
+	              <label>Imagen presentación<input data-field="presentationImage" placeholder="assets/personajes/mara_presentacion.png"></label>
+	              <label>Pose 1<input data-field="pose1" placeholder="neutral"></label>
+	              <label>Pose 2<input data-field="pose2" placeholder="sonrisa"></label>
+	              <label class="expert-only">Pose 3<input data-field="pose3" placeholder="duda"></label>
+	              <label class="expert-only">Pose 4<input data-field="pose4" placeholder="alerta"></label>
+	              <label class="full">Texto introductorio<textarea data-field="introText" placeholder="Texto de entrada narrativo"></textarea></label>
+	              <label class="full">Preguntas y respuestas ronda 1<textarea data-field="round1" placeholder="P: ¿...? | R1: ... -> consecuencia | R2: ... -> consecuencia"></textarea></label>
+	              <label class="expert-only">Activar segunda ronda<select data-field="secondRoundEnabled"><option value="no">No</option><option value="si">Sí</option></select></label>
+	              <label class="expert-only">Selector / TIC<input data-field="secondRoundSelector" placeholder="tic_confianza_mara"></label>
+	              <label class="full expert-only">Preguntas y respuestas ronda 2<textarea data-field="round2" placeholder="Solo se activa si el selector/TIC se cumple"></textarea></label>
+	            </div>
+	            <div class="reference-panel">
+	              <strong>Enlazar desde otra sección</strong>
+	              <p class="hint">Al guardar, esta conversación aparecerá automáticamente en Puntos del mapa, Interacciones de exploración y Capítulos.</p>
+	            </div>
             <div class="button-row"><button class="tool-button" type="button" data-save="conversations">Guardar conversación</button><button class="tool-button danger" type="button" data-clear-form="conversations">Limpiar</button></div>
             <div class="list" id="list-conversations"></div>
           </div>
@@ -239,10 +269,10 @@
             <div class="form-grid" data-form="inventoryItems">
               <label>ID<input data-field="id" placeholder="llave_torre_4b"></label>
               <label>Nombre<input data-field="name" placeholder="Llave oxidada de la torre"></label>
-              <label>Tipo<select data-field="type"><option>monedas</option><option>carta</option><option>imagen_objeto</option><option>objeto_narrativo</option><option>desbloqueo</option><option>variable</option></select></label>
-              <label>Valor / cantidad<input data-field="value" placeholder="25"></label>
-              <label>Imagen<input data-field="image" placeholder="assets/objetos/llave.png"></label>
-              <label>Rareza<select data-field="rarity"><option>comun</option><option>raro</option><option>epico</option><option>legendario</option><option>historia</option></select></label>
+	              <label>Tipo<select data-field="type"><option>monedas</option><option>carta</option><option>imagen_objeto</option><option>objeto_narrativo</option><option>desbloqueo</option><option>variable</option></select></label>
+	              <label>Valor / cantidad<input data-field="value" placeholder="25"></label>
+	              <label>Imagen<input data-field="image" placeholder="assets/objetos/llave.png"></label>
+	              <label class="expert-only">Rareza<select data-field="rarity"><option>comun</option><option>raro</option><option>epico</option><option>legendario</option><option>historia</option></select></label>
               <label class="full">Descripción<textarea data-field="description" placeholder="Qué es y para qué sirve"></textarea></label>
             </div>
             <div class="button-row"><button class="tool-button" type="button" data-save="inventoryItems">Guardar objeto</button><button class="tool-button danger" type="button" data-clear-form="inventoryItems">Limpiar</button></div>
@@ -256,10 +286,11 @@
             <div class="form-grid" data-form="shops">
               <label>ID de tienda<input data-field="id" placeholder="tienda_vera"></label>
               <label>Nombre<input data-field="name" placeholder="Tienda de Vera"></label>
-              <label>Vendedor<input data-field="vendor" placeholder="Vera"></label>
-              <label>Fondo / imagen<input data-field="background" placeholder="assets/tiendas/vera.png"></label>
-              <label class="full">Artículos<textarea data-field="items" placeholder="1) id: carta_corazones_7 | tipo: carta | precio: 20 | descripción:...&#10;2) id: reliquia_x | tipo: imagen_objeto | precio: 60 | imagen:..."></textarea></label>
-              <label class="full">Condiciones de aparición<textarea data-field="conditions" placeholder="Ej: aparece desde capítulo 2 o tras completar conv_vera_confianza"></textarea></label>
+	              <label>Vendedor<input data-field="vendor" placeholder="Vera"></label>
+	              <label>Fondo / imagen<input data-field="background" placeholder="assets/tiendas/vera.png"></label>
+	              <label class="full">Artículos<textarea data-field="items" placeholder="1) id: carta_corazones_7 | tipo: carta | precio: 20 | descripción:...&#10;2) id: reliquia_x | tipo: imagen_objeto | precio: 60 | imagen:..."></textarea></label>
+	              <label class="expert-only">Añadir objeto existente<select id="shopItemPicker"><option value="">Elegir objeto...</option></select></label>
+	              <label class="full expert-only">Condiciones de aparición<textarea data-field="conditions" placeholder="Ej: aparece desde capítulo 2 o tras completar conv_vera_confianza"></textarea></label>
             </div>
             <div class="button-row"><button class="tool-button" type="button" data-save="shops">Guardar tienda</button><button class="tool-button danger" type="button" data-clear-form="shops">Limpiar</button></div>
             <div class="list" id="list-shops"></div>
@@ -274,11 +305,11 @@
               <label>Nombre enemigo<input data-field="enemyName" placeholder="Xavor"></label>
               <label>Tipo visual<select data-field="visualType"><option>mecha_evolutivo_normal</option><option>imagen_fija</option><option>sprite_combate</option><option>perfil_personalizado</option></select></label>
               <label>Imagen / perfil<input data-field="visualSource" placeholder="assets/... o STORY_TOWER_COMBAT_PROFILES.xavor"></label>
-              <label>Panel inicial enemigo<input data-field="initialPanel" placeholder="ataque: 5; defensa: 3; combustible: 2"></label>
-              <label>Regla de privación de palo<select data-field="forbiddenSuit"><option value="">Ninguna</option><option>corazones</option><option>diamantes</option><option>treboles</option><option>picas</option></select></label>
-              <label class="full">Reglas especiales<textarea data-field="specialRules" placeholder="Ej: durante 3 turnos no se pueden usar picas; al fallar defensa pierde 1 moneda"></textarea></label>
-              <label class="full">Comentarios de diseño<textarea data-field="designerComments" placeholder="Notas para IA/programador/tester"></textarea></label>
-              <label class="full">Recompensas / derrota<textarea data-field="outcomes" placeholder="Victoria: ... | Derrota: ..."></textarea></label>
+	              <label>Panel inicial enemigo<input data-field="initialPanel" placeholder="ataque: 5; defensa: 3; combustible: 2"></label>
+	              <label>Regla de privación de palo<select data-field="forbiddenSuit"><option value="">Ninguna</option><option>corazones</option><option>diamantes</option><option>treboles</option><option>picas</option></select></label>
+	              <label class="full expert-only">Reglas especiales<textarea data-field="specialRules" placeholder="Ej: durante 3 turnos no se pueden usar picas; al fallar defensa pierde 1 moneda"></textarea></label>
+	              <label class="full expert-only">Comentarios de diseño<textarea data-field="designerComments" placeholder="Notas para IA/programador/tester"></textarea></label>
+	              <label class="full expert-only">Recompensas / derrota<textarea data-field="outcomes" placeholder="Victoria: ... | Derrota: ..."></textarea></label>
             </div>
             <div class="button-row"><button class="tool-button" type="button" data-save="combats">Guardar combate</button><button class="tool-button danger" type="button" data-clear-form="combats">Limpiar</button></div>
             <div class="list" id="list-combats"></div>
@@ -293,10 +324,13 @@
               <label>Título<input data-field="title" placeholder="La señal bajo el mercado"></label>
               <label>Orden<input type="number" data-field="order" placeholder="1"></label>
               <label>Estado inicial<select data-field="initialState"><option>bloqueado</option><option>disponible</option><option>completado</option></select></label>
-              <label class="full">Secuencia<textarea data-field="sequence" placeholder="1) mapa: mercado_reles_muertos&#10;2) conversacion: conv_mara_intro&#10;3) exploracion: expl_mercado_01&#10;4) combate: combate_xavor_01"></textarea></label>
-              <label class="full">Condiciones de avance<textarea data-field="advanceConditions" placeholder="Qué debe ocurrir para pasar al siguiente capítulo"></textarea></label>
-              <label class="full">Recompensa final<textarea data-field="finalReward" placeholder="Monedas, objetos, desbloqueos, variables de historia"></textarea></label>
-            </div>
+	              <label class="full">Secuencia<textarea data-field="sequence" placeholder="1) mapa: mercado_reles_muertos&#10;2) conversacion: conv_mara_intro&#10;3) exploracion: expl_mercado_01&#10;4) combate: combate_xavor_01"></textarea></label>
+	              <label class="expert-only">Tipo de paso<select id="chapterStepType"><option value="mapa">mapa</option><option value="exploracion">exploracion</option><option value="conversacion">conversacion</option><option value="tienda">tienda</option><option value="combate">combate</option><option value="isometrico">isometrico</option><option value="recompensa">recompensa</option></select></label>
+	              <label class="expert-only">Elemento existente<select id="chapterStepTarget"><option value="">Elegir elemento...</option></select></label>
+	              <label class="full expert-only">Condiciones de avance<textarea data-field="advanceConditions" placeholder="Qué debe ocurrir para pasar al siguiente capítulo"></textarea></label>
+	              <label class="full expert-only">Recompensa final<textarea data-field="finalReward" placeholder="Monedas, objetos, desbloqueos, variables de historia"></textarea></label>
+	            </div>
+	            <div class="button-row expert-flex expert-only"><button class="tool-button" type="button" id="appendChapterStep">Añadir paso seleccionado</button></div>
             <div class="button-row"><button class="tool-button" type="button" data-save="chapters">Guardar capítulo</button><button class="tool-button danger" type="button" data-clear-form="chapters">Limpiar</button></div>
             <div class="list" id="list-chapters"></div>
           </div>
@@ -309,15 +343,16 @@
               <div class="iso-canvas"><canvas id="isoCanvas" width="1100" height="720"></canvas></div>
               <div class="tools-panel">
                 <label>Imagen base<input type="file" id="isoImage" accept="image/*"></label>
-                <div class="inline"><label>Columnas<input type="number" id="isoCols" value="14" min="4" max="42"></label><label>Filas<input type="number" id="isoRows" value="14" min="4" max="42"></label></div>
-                <div class="inline"><label>Ancho tesela<input type="number" id="isoTileW" value="64" min="24" max="140"></label><label>Alto tesela<input type="number" id="isoTileH" value="32" min="12" max="80"></label></div>
+	                <div class="inline"><label>Columnas<input type="number" id="isoCols" value="14" min="4" max="42"></label><label>Filas<input type="number" id="isoRows" value="14" min="4" max="42"></label></div>
+	                <div class="inline expert-flex expert-only"><label>Ancho tesela<input type="number" id="isoTileW" value="64" min="24" max="140"></label><label>Alto tesela<input type="number" id="isoTileH" value="32" min="12" max="80"></label></div>
                 <label>Extrusión / relieve<input type="range" id="isoHeight" min="0" max="42" value="16"></label>
                 <label>Interpretación<select id="isoMode"><option value="color">Color dominante</option><option value="height">Relieve por luminosidad</option><option value="mixed">Color + relieve</option></select></label>
                 <button class="primary" type="button" id="generateIso">Generar isométrico</button>
-                <button class="tool-button" type="button" id="saveIsoScene">Guardar como escena de exploración</button>
-                <button class="tool-button" type="button" id="downloadIsoPng">Descargar PNG</button>
-                <p class="hint">No es IA generativa externa: es un prototipador local. Convierte una imagen en una base isométrica para explicar composición, zonas y colores. Después un artista puede redibujarla o una IA puede usar el JSON como briefing.</p>
-              </div>
+	                <button class="tool-button" type="button" id="saveIsoScene">Guardar como escena de exploración</button>
+	                <button class="tool-button" type="button" id="downloadIsoPng">Descargar PNG</button>
+	                <p class="hint">Al guardar, se crea una escena isométrica y también una exploración cargable desde la sección Exploración.</p>
+	                <div class="status-line" id="isoStatus"></div>
+	              </div>
             </div>
           </div>
         </section>
@@ -357,63 +392,96 @@
     <footer class="studio-footer">PoCoBOT Creative Studio · prototipador interno para convertir ideas creativas en datos listos para integración.</footer>
   </div>
 
-  <script>
-    const STORAGE_KEY = 'pocobotCreativeStudioProject';
-    const state = {
-      meta: { tool: 'PoCoBOT Creative Studio', version: '1.0.0', jsonFirst: true, htmlOptional: true },
-      mapPoints: [], explorations: [], conversations: [], inventoryItems: [], shops: [], combats: [], chapters: [], isometricScenes: []
-    };
-    const help = {
-      guide: ['Esta guía enseña el orden recomendado.', 'No hace falta saber programar: escribe ideas claras, IDs y consecuencias.', 'Exporta JSON cuando quieras pedir a la IA o al equipo técnico que lo convierta en contenido real.'],
-      map: ['Un punto de mapa es una puerta de entrada a una escena.', 'El campo “escena enlazada” debe apuntar al ID de una exploración, conversación, tienda, combate o evento.', 'Las condiciones pueden escribirse en lenguaje natural.'],
-      exploration: ['Carga una imagen base y dibuja rectángulos de colisión.', 'Los puntos dorados son interacciones: puertas, NPCs, cofres, combates o código personalizado.', 'Guarda el mapa para que sus colisiones e interacciones entren en el JSON.'],
-      conversation: ['Incluye fondo fijo, presentación y cuatro poses.', 'Estructura el diálogo en texto introductorio, preguntas y respuestas.', 'La segunda ronda usa un selector/TIC para activarse solo si se cumple una condición.'],
-      inventory: ['Crea recompensas reutilizables: monedas, cartas, objetos, imágenes o desbloqueos.', 'Después puedes mencionarlas en escenas, tiendas, combates y capítulos.', 'Describe siempre para qué sirve cada objeto.'],
-      shops: ['Puedes recrear la tienda de Vera o crear una nueva.', 'Cada línea de artículos puede incluir ID, tipo, precio, imagen y descripción.', 'Las tiendas se pueden enlazar desde puntos de interacción o mapa.'],
-      combats: ['Define enemigo, visual, panel inicial y reglas especiales.', 'La privación de palo sirve para reglas como “no usar picas”.', 'Usa comentarios para explicar intención, dificultad y emoción del combate.'],
-      chapters: ['El capítulo ordena el contenido en pasos.', 'Cada paso debe apuntar a IDs creados en otras pestañas.', 'La secuencia puede estar escrita en lenguaje natural o lista numerada.'],
-      isometric: ['Carga una imagen, dibujo o foto para crear una maqueta isométrica.', 'El generador muestrea colores y puede levantar teselas según luminosidad.', 'Guarda la escena para incluirla como briefing visual en el JSON.'],
-      export: ['Copia o descarga JSON como formato principal.', 'El HTML opcional crea un briefing autocontenido.', 'Importa un JSON previo para continuar editando.']
-    };
-    const schemas = {
-      mapPoints: ['id','name','type','initialState','chapters','target','unlockConditions','rewards'],
-      conversations: ['id','character','background','presentationImage','pose1','pose2','pose3','pose4','introText','round1','secondRoundEnabled','secondRoundSelector','round2'],
-      inventoryItems: ['id','name','type','value','image','rarity','description'],
-      shops: ['id','name','vendor','background','items','conditions'],
-      combats: ['id','enemyName','visualType','visualSource','initialPanel','forbiddenSuit','specialRules','designerComments','outcomes'],
-      chapters: ['id','title','order','initialState','sequence','advanceConditions','finalReward']
-    };
-    let explorationImageData = '';
-    let isoImage = null;
-    let drawMode = 'collision';
-    let draftCollision = null;
-    const explorationDraft = { collisions: [], interactions: [] };
+	  <script>
+	    const STORAGE_KEY = 'pocobotCreativeStudioProject';
+	    const EXPERT_KEY = 'pocobotCreativeStudioExpertMode';
+	    const state = {
+	      meta: { tool: 'PoCoBOT Creative Studio', version: '1.1.0', jsonFirst: true, htmlOptional: true, linkedSections: true },
+	      mapPoints: [], explorations: [], conversations: [], inventoryItems: [], shops: [], combats: [], chapters: [], isometricScenes: []
+	    };
+	    const help = {
+	      guide: ['Esta guía enseña el orden recomendado.', 'No hace falta saber programar: escribe ideas claras, IDs y consecuencias.', 'Activa Modo experto solo cuando quieras condiciones, reglas avanzadas o ajustes finos.'],
+	      map: ['Un punto de mapa es una puerta de entrada a una escena.', 'Usa “Usar escena existente” para enlazar algo creado en otra pestaña sin copiar IDs a mano.', 'Las condiciones y recompensas viven en Modo experto para no molestar durante el boceto rápido.'],
+	      exploration: ['Carga una imagen base, una escena guardada o una iteración isométrica.', 'Puedes crear colisiones rectangulares, circulares o poligonales, y borrar elementos con clic.', 'Las interacciones pueden apuntar a conversaciones, tiendas, combates, recompensas o mapas ya creados.'],
+	      conversation: ['Puedes escribir una ruta de fondo o subir una imagen para generar la ruta assets/Historia/CARPETAX/nombre.png.', 'Al guardar, la conversación queda disponible para mapa, exploración y capítulos.', 'Poses extra y segunda ronda se muestran en Modo experto.'],
+	      inventory: ['Crea recompensas reutilizables: monedas, cartas, objetos, imágenes o desbloqueos.', 'Después puedes seleccionarlas desde tiendas, interacciones y capítulos.', 'Describe siempre para qué sirve cada objeto.'],
+	      shops: ['Puedes recrear la tienda de Vera o crear una nueva.', 'En Modo experto puedes añadir objetos existentes al listado de artículos.', 'Las tiendas se pueden enlazar desde puntos de interacción o mapa.'],
+	      combats: ['Define enemigo, visual, panel inicial y regla principal.', 'Las reglas especiales y comentarios avanzados quedan en Modo experto.', 'Los combates se pueden seleccionar desde mapa, exploración y capítulos.'],
+	      chapters: ['El capítulo ordena el contenido en pasos.', 'En Modo experto puedes insertar pasos seleccionando elementos creados en otras pestañas.', 'La secuencia puede estar escrita en lenguaje natural o lista numerada.'],
+	      isometric: ['Carga una imagen, dibujo o foto para crear una maqueta isométrica.', 'El generador muestrea colores y puede levantar teselas según luminosidad.', 'Guardar como escena crea también una exploración cargable en la pestaña Exploración.'],
+	      export: ['Copia o descarga JSON como formato principal.', 'El HTML opcional crea un briefing autocontenido.', 'Importa un JSON previo para continuar editando.']
+	    };
+	    const schemas = {
+	      mapPoints: ['id','name','type','initialState','chapters','target','unlockConditions','rewards'],
+	      conversations: ['id','character','background','backgroundAssetFolder','presentationImage','pose1','pose2','pose3','pose4','introText','round1','secondRoundEnabled','secondRoundSelector','round2'],
+	      inventoryItems: ['id','name','type','value','image','rarity','description'],
+	      shops: ['id','name','vendor','background','items','conditions'],
+	      combats: ['id','enemyName','visualType','visualSource','initialPanel','forbiddenSuit','specialRules','designerComments','outcomes'],
+	      chapters: ['id','title','order','initialState','sequence','advanceConditions','finalReward']
+	    };
+	    let explorationImageData = '';
+	    let isoImage = null;
+	    let drawMode = 'collision-rect';
+	    let draftCollision = null;
+	    let draftPolygon = [];
+	    const explorationDraft = { collisions: [], interactions: [] };
 
-    function cloneProject(){ return JSON.parse(JSON.stringify(state)); }
-    function safeId(prefix){ return `${prefix}_${Date.now().toString(36)}`; }
-    function formValue(formName, field){ const node = document.querySelector(`[data-form="${formName}"] [data-field="${field}"]`); return node ? node.value.trim() : ''; }
-    function clearForm(formName){ document.querySelectorAll(`[data-form="${formName}"] [data-field]`).forEach(node => node.value = node.tagName === 'SELECT' ? node.options[0].value : ''); }
-    function upsertItem(collection, fields){
-      const item = {}; fields.forEach(field => item[field] = formValue(collection, field));
-      if(!item.id) item.id = safeId(collection);
-      const index = state[collection].findIndex(entry => entry.id === item.id);
-      if(index >= 0) state[collection][index] = item; else state[collection].push(item);
-      clearForm(collection); persist(); renderLists(); updateOutputs();
-    }
-    function deleteItem(collection, id){ state[collection] = state[collection].filter(item => item.id !== id); persist(); renderLists(); updateOutputs(); }
-    function editItem(collection, id){ const item = state[collection].find(entry => entry.id === id); if(!item) return; Object.entries(item).forEach(([field,value]) => { const node = document.querySelector(`[data-form="${collection}"] [data-field="${field}"]`); if(node) node.value = value; }); }
-    function renderLists(){ Object.keys(schemas).forEach(collection => { const list = document.getElementById(`list-${collection}`); if(!list) return; list.innerHTML = state[collection].map(item => `<article class="item-card"><div class="item-title"><div><strong>${escapeHtml(item.name || item.title || item.enemyName || item.character || item.id)}</strong><small>${escapeHtml(item.id)}</small></div><div class="button-row"><button class="tool-button" type="button" data-edit-item="${collection}|${item.id}">Editar</button><button class="tool-button danger" type="button" data-delete-item="${collection}|${item.id}">Eliminar</button></div></div><p>${escapeHtml(item.type || item.visualType || item.initialState || '')}</p></article>`).join(''); }); }
-    function escapeHtml(text){ return String(text || '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
-    function persist(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('saveState').textContent = 'Guardado local'; }
-    function loadStored(){ const raw = localStorage.getItem(STORAGE_KEY); if(!raw) return; try { const parsed = JSON.parse(raw); Object.keys(state).forEach(key => { if(parsed[key]) state[key] = parsed[key]; }); } catch(error) { console.warn('No se pudo importar el borrador local', error); } }
-    function packageJson(){ return JSON.stringify(cloneProject(), null, 2); }
-    function makeBriefingHtml(){ const json = packageJson(); return `<!DOCTYPE html>\n<html lang="es"><head><meta charset="UTF-8"><title>Briefing PoCoBOT</title><style>body{font-family:system-ui;background:#07111f;color:#f7fbff;padding:24px}pre{white-space:pre-wrap;background:#050b14;border:1px solid #55dcff55;border-radius:18px;padding:18px}</style></head><body><h1>Briefing PoCoBOT Creative Studio</h1><p>Paquete exportado para revisión creativa o integración técnica.</p><pre>${escapeHtml(json)}</pre></body></html>`; }
-    function updateOutputs(){ const json = packageJson(); document.getElementById('livePreview').textContent = json.slice(0, 1800) + (json.length > 1800 ? '\n…' : ''); document.getElementById('jsonOutput').value = json; document.getElementById('htmlOutput').value = makeBriefingHtml(); }
-    async function copyText(text){ await navigator.clipboard.writeText(text); document.getElementById('saveState').textContent = 'Copiado al portapapeles'; }
-    function downloadFile(name, type, content){ const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = name; link.click(); URL.revokeObjectURL(url); }
-    function bindHiddenLabAccess(){
-      const icon = document.getElementById('creativeStudioIcon');
-      if(!icon) return;
+	    function cloneProject(){ return JSON.parse(JSON.stringify(state)); }
+	    function safeId(prefix){ return `${prefix}_${Date.now().toString(36)}`; }
+	    function formValue(formName, field){ const node = document.querySelector(`[data-form="${formName}"] [data-field="${field}"]`); return node ? node.value.trim() : ''; }
+	    function clearForm(formName){ document.querySelectorAll(`[data-form="${formName}"] [data-field]`).forEach(node => node.value = node.tagName === 'SELECT' ? node.options[0].value : ''); }
+	    function upsertItem(collection, fields){
+	      const item = {}; fields.forEach(field => item[field] = formValue(collection, field));
+	      if(!item.id) item.id = safeId(collection);
+	      const index = state[collection].findIndex(entry => entry.id === item.id);
+	      if(index >= 0) state[collection][index] = item; else state[collection].push(item);
+	      clearForm(collection); persist(); renderLists(); updateOutputs();
+	    }
+	    function deleteItem(collection, id){ state[collection] = state[collection].filter(item => item.id !== id); persist(); renderLists(); updateOutputs(); }
+	    function editItem(collection, id){ const item = state[collection].find(entry => entry.id === id); if(!item) return; Object.entries(item).forEach(([field,value]) => { const node = document.querySelector(`[data-form="${collection}"] [data-field="${field}"]`); if(node) node.value = value; }); }
+	    function renderLists(){
+	      Object.keys(schemas).forEach(collection => {
+	        const list = document.getElementById(`list-${collection}`);
+	        if(!list) return;
+	        list.innerHTML = state[collection].map(item => `<article class="item-card"><div class="item-title"><div><strong>${escapeHtml(item.name || item.title || item.enemyName || item.character || item.id)}</strong><small>${escapeHtml(item.id)}</small></div><div class="button-row"><button class="tool-button" type="button" data-edit-item="${collection}|${item.id}">Editar</button><button class="tool-button danger" type="button" data-delete-item="${collection}|${item.id}">Eliminar</button></div></div><p>${escapeHtml(item.type || item.visualType || item.initialState || item.target || '')}</p></article>`).join('');
+	      });
+	      renderExplorationsList();
+	      populateReferenceControls();
+	    }
+	    function renderExplorationsList(){
+	      const list = document.getElementById('list-explorations');
+	      if(!list) return;
+	      list.innerHTML = state.explorations.map(item => `<article class="item-card"><div class="item-title"><div><strong>${escapeHtml(item.name || item.id)}</strong><small>${escapeHtml(item.id)}</small></div><div class="button-row"><button class="tool-button" type="button" data-load-exploration="${item.id}">Cargar</button><button class="tool-button danger" type="button" data-delete-item="explorations|${item.id}">Eliminar</button></div></div><p>${escapeHtml(`${(item.collisions || []).length} colisiones · ${(item.interactions || []).length} interacciones`)}</p></article>`).join('');
+	    }
+	    function escapeHtml(text){ return String(text || '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
+	    function persist(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('saveState').textContent = 'Guardado local'; }
+	    function loadStored(){
+	      const raw = localStorage.getItem(STORAGE_KEY);
+	      if(!raw) return;
+	      try {
+	        const parsed = JSON.parse(raw);
+	        Object.keys(state).forEach(key => {
+	          if(Array.isArray(state[key]) && Array.isArray(parsed[key])) state[key] = parsed[key];
+	          else if(key === 'meta' && parsed[key]) state[key] = { ...state[key], ...parsed[key], version: state.meta.version, linkedSections: true };
+	        });
+	      } catch(error) { console.warn('No se pudo importar el borrador local', error); }
+	    }
+	    function packageJson(){ return JSON.stringify(cloneProject(), null, 2); }
+	    function makeBriefingHtml(){ const json = packageJson(); return `<!DOCTYPE html>\n<html lang="es"><head><meta charset="UTF-8"><title>Briefing PoCoBOT</title><style>body{font-family:system-ui;background:#07111f;color:#f7fbff;padding:24px}pre{white-space:pre-wrap;background:#050b14;border:1px solid #55dcff55;border-radius:18px;padding:18px}</style></head><body><h1>Briefing PoCoBOT Creative Studio</h1><p>Paquete exportado para revisión creativa o integración técnica.</p><pre>${escapeHtml(json)}</pre></body></html>`; }
+	    function updateOutputs(){ const json = packageJson(); document.getElementById('livePreview').textContent = json.slice(0, 1800) + (json.length > 1800 ? '\n…' : ''); document.getElementById('jsonOutput').value = json; document.getElementById('htmlOutput').value = makeBriefingHtml(); }
+	    async function copyText(text){ await navigator.clipboard.writeText(text); document.getElementById('saveState').textContent = 'Copiado al portapapeles'; }
+	    function downloadFile(name, type, content){ const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = name; link.click(); URL.revokeObjectURL(url); }
+	    function setStatus(id, text){ const node = document.getElementById(id); if(node) node.textContent = text || ''; }
+	    function setExpertMode(enabled){
+	      document.body.classList.toggle('expert-mode', enabled);
+	      localStorage.setItem(EXPERT_KEY, enabled ? '1' : '0');
+	      const toggle = document.getElementById('expertToggle');
+	      toggle.setAttribute('aria-pressed', String(enabled));
+	      toggle.textContent = enabled ? 'Modo experto activo' : 'Modo experto';
+	    }
+	    function bindHiddenLabAccess(){
+	      const icon = document.getElementById('creativeStudioIcon');
+	      if(!icon) return;
       let taps = 0;
       let timer = null;
       icon.addEventListener('click', () => {
@@ -423,18 +491,140 @@
           window.location.href = 'MODO_DESARROLLADOR_POCObot.html';
           return;
         }
-        timer = window.setTimeout(() => { taps = 0; }, 1800);
-      });
-    }
+	        timer = window.setTimeout(() => { taps = 0; }, 1800);
+	      });
+	    }
+	    function referenceOptions(kind = 'all'){
+	      const wrap = (collection, type, labeler) => state[collection].map(item => ({ id: item.id, type, label: labeler(item) }));
+	      const groups = {
+	        mapa: wrap('mapPoints', 'mapa', item => item.name || item.id),
+	        exploracion: wrap('explorations', 'exploracion', item => item.name || item.id),
+	        conversacion: wrap('conversations', 'conversacion', item => `${item.character || 'Conversacion'} · ${item.id}`),
+	        tienda: wrap('shops', 'tienda', item => item.name || item.id),
+	        combate: wrap('combats', 'combate', item => item.enemyName || item.id),
+	        isometrico: wrap('isometricScenes', 'isometrico', item => item.name || item.id),
+	        recompensa: wrap('inventoryItems', 'recompensa', item => item.name || item.id)
+	      };
+	      if(kind === 'all') return Object.values(groups).flat();
+	      return groups[kind] || [];
+	    }
+	    function fillSelect(select, options, placeholder){
+	      if(!select) return;
+	      const previous = select.value;
+	      select.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + options.map(option => `<option value="${escapeHtml(option.id)}" data-type="${escapeHtml(option.type)}">${escapeHtml(option.type)} · ${escapeHtml(option.label)}</option>`).join('');
+	      if(options.some(option => option.id === previous)) select.value = previous;
+	    }
+	    function populateReferenceControls(){
+	      fillSelect(document.getElementById('mapTargetPicker'), referenceOptions('all'), 'Elegir escena creada...');
+	      fillSelect(document.getElementById('savedExplorationSelect'), referenceOptions('exploracion'), 'Elegir exploracion...');
+	      fillInteractionTargetPicker();
+	      fillChapterStepTarget();
+	      fillSelect(document.getElementById('shopItemPicker'), referenceOptions('recompensa'), 'Elegir objeto...');
+	    }
+	    function fillInteractionTargetPicker(){
+	      const map = { ir_a_mapa: 'mapa', conversacion: 'conversacion', combate: 'combate', tienda: 'tienda', recompensa: 'recompensa' };
+	      const type = document.getElementById('interactionType').value;
+	      fillSelect(document.getElementById('interactionTargetPicker'), referenceOptions(map[type] || 'all'), 'Elegir destino...');
+	    }
+	    function fillChapterStepTarget(){
+	      const type = document.getElementById('chapterStepType')?.value || 'mapa';
+	      fillSelect(document.getElementById('chapterStepTarget'), referenceOptions(type), 'Elegir elemento...');
+	    }
+	    function appendLine(textarea, line){
+	      if(!textarea || !line) return;
+	      const prefix = textarea.value.trim() ? '\n' : '';
+	      textarea.value += `${prefix}${line}`;
+	    }
 
-    function drawExploration(){
-      const canvas = document.getElementById('explorationCanvas'); const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = '#091526'; ctx.fillRect(0,0,canvas.width,canvas.height);
-      const finish = () => { ctx.strokeStyle = 'rgba(143,244,255,.18)'; for(let x=0;x<canvas.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();} for(let y=0;y<canvas.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();} explorationDraft.collisions.concat(draftCollision ? [draftCollision] : []).forEach(rect => { ctx.fillStyle = 'rgba(255,123,134,.24)'; ctx.strokeStyle = '#ff7b86'; ctx.lineWidth = 2; ctx.fillRect(rect.x,rect.y,rect.w,rect.h); ctx.strokeRect(rect.x,rect.y,rect.w,rect.h); }); explorationDraft.interactions.forEach((point,index) => { ctx.fillStyle = '#ffd55f'; ctx.strokeStyle = '#241705'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(point.x, point.y, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#241705'; ctx.font = 'bold 11px system-ui'; ctx.fillText(String(index + 1), point.x - 3, point.y + 4); }); const startX = Number(document.querySelector('[data-exploration][data-field="startX"]').value || 160); const startY = Number(document.querySelector('[data-exploration][data-field="startY"]').value || 220); ctx.fillStyle = '#55dcff'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(startX,startY,13,0,Math.PI*2); ctx.fill(); ctx.stroke(); };
-      if(explorationImageData){ const img = new Image(); img.onload = () => { ctx.drawImage(img,0,0,canvas.width,canvas.height); finish(); }; img.src = explorationImageData; } else finish();
-    }
-    function saveExploration(){ const data = {}; document.querySelectorAll('[data-exploration]').forEach(node => data[node.dataset.field] = node.value.trim()); if(!data.id) data.id = safeId('expl'); data.backgroundImage = explorationImageData ? 'imagen_embebida_en_borrador' : ''; data.collisions = explorationDraft.collisions; data.interactions = explorationDraft.interactions; const index = state.explorations.findIndex(item => item.id === data.id); if(index >= 0) state.explorations[index] = data; else state.explorations.push(data); persist(); updateOutputs(); }
+	    function drawExploration(){
+	      const canvas = document.getElementById('explorationCanvas'); const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = '#091526'; ctx.fillRect(0,0,canvas.width,canvas.height);
+	      const finish = () => {
+	        ctx.strokeStyle = 'rgba(143,244,255,.18)';
+	        for(let x=0;x<canvas.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
+	        for(let y=0;y<canvas.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+	        explorationDraft.collisions.concat(draftCollision ? [draftCollision] : []).forEach((collision,index) => drawCollision(ctx, collision, index + 1));
+	        drawDraftPolygon(ctx);
+	        explorationDraft.interactions.forEach((point,index) => {
+	          ctx.fillStyle = '#ffd55f'; ctx.strokeStyle = '#241705'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(point.x, point.y, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#241705'; ctx.font = 'bold 11px system-ui'; ctx.fillText(String(index + 1), point.x - 3, point.y + 4);
+	        });
+	        const startX = Number(document.querySelector('[data-exploration][data-field="startX"]').value || 160); const startY = Number(document.querySelector('[data-exploration][data-field="startY"]').value || 220); ctx.fillStyle = '#55dcff'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(startX,startY,13,0,Math.PI*2); ctx.fill(); ctx.stroke();
+	      };
+	      if(explorationImageData){ const img = new Image(); img.onload = () => { ctx.drawImage(img,0,0,canvas.width,canvas.height); finish(); }; img.src = explorationImageData; } else finish();
+	    }
+	    function drawCollision(ctx, collision, index){
+	      const shape = collision.shape || 'rect';
+	      ctx.fillStyle = 'rgba(255,123,134,.24)'; ctx.strokeStyle = '#ff7b86'; ctx.lineWidth = 2;
+	      if(shape === 'circle'){
+	        ctx.beginPath(); ctx.arc(collision.x, collision.y, Math.max(1, collision.r || 1), 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+	      } else if(shape === 'polygon'){
+	        drawPath(ctx, collision.points || [], true); ctx.fill(); ctx.stroke();
+	      } else {
+	        const x = Math.min(collision.x, collision.x + (collision.w || 0)); const y = Math.min(collision.y, collision.y + (collision.h || 0)); const w = Math.abs(collision.w || 0); const h = Math.abs(collision.h || 0); ctx.fillRect(x,y,w,h); ctx.strokeRect(x,y,w,h);
+	      }
+	      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px system-ui'; ctx.fillText(String(index), (collision.x || collision.points?.[0]?.x || 8) + 5, (collision.y || collision.points?.[0]?.y || 8) - 6);
+	    }
+	    function drawPath(ctx, points, close){
+	      if(!points.length) return;
+	      ctx.beginPath(); points.forEach((point,index) => index ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y)); if(close) ctx.closePath();
+	    }
+	    function drawDraftPolygon(ctx){
+	      if(!draftPolygon.length) return;
+	      ctx.strokeStyle = '#ff7b86'; ctx.fillStyle = '#ff7b86'; ctx.lineWidth = 2; drawPath(ctx, draftPolygon, false); ctx.stroke();
+	      draftPolygon.forEach(point => { ctx.beginPath(); ctx.arc(point.x, point.y, 5, 0, Math.PI * 2); ctx.fill(); });
+	    }
+	    function saveExploration(){
+	      const data = {}; document.querySelectorAll('[data-exploration]').forEach(node => data[node.dataset.field] = node.value.trim());
+	      if(!data.id) data.id = safeId('expl');
+	      const existing = state.explorations.find(item => item.id === data.id);
+	      data.backgroundImage = explorationImageData ? 'imagen_cargada_localmente_no_exportada' : existing?.backgroundImage || '';
+	      data.collisions = clone(explorationDraft.collisions);
+	      data.interactions = clone(explorationDraft.interactions);
+	      const index = state.explorations.findIndex(item => item.id === data.id);
+	      if(index >= 0) state.explorations[index] = data; else state.explorations.push(data);
+	      setStatus('explorationStatus', `Guardado ${data.id}`);
+	      persist(); renderLists(); updateOutputs();
+	    }
+	    function clone(value){ return JSON.parse(JSON.stringify(value)); }
+	    function loadExploration(id){
+	      const item = state.explorations.find(entry => entry.id === id);
+	      if(!item) return;
+	      document.querySelectorAll('[data-exploration]').forEach(node => { if(item[node.dataset.field] !== undefined) node.value = item[node.dataset.field]; });
+	      explorationDraft.collisions = clone(item.collisions || []);
+	      explorationDraft.interactions = clone(item.interactions || []);
+	      draftCollision = null; draftPolygon = []; explorationImageData = '';
+	      setStatus('explorationStatus', `Cargado ${item.id}`);
+	      drawExploration();
+	    }
+	    function canvasPoint(event){
+	      const canvas = document.getElementById('explorationCanvas');
+	      const rect = canvas.getBoundingClientRect();
+	      return { x: Math.round((event.clientX - rect.left) * canvas.width / rect.width), y: Math.round((event.clientY - rect.top) * canvas.height / rect.height) };
+	    }
+	    function hitCollision(collision, point){
+	      const shape = collision.shape || 'rect';
+	      if(shape === 'circle') return Math.hypot(point.x - collision.x, point.y - collision.y) <= (collision.r || 0);
+	      if(shape === 'polygon') return pointInPolygon(point, collision.points || []);
+	      const x = Math.min(collision.x, collision.x + (collision.w || 0)); const y = Math.min(collision.y, collision.y + (collision.h || 0)); const w = Math.abs(collision.w || 0); const h = Math.abs(collision.h || 0);
+	      return point.x >= x && point.x <= x + w && point.y >= y && point.y <= y + h;
+	    }
+	    function pointInPolygon(point, points){
+	      let inside = false;
+	      for(let i = 0, j = points.length - 1; i < points.length; j = i++){
+	        const xi = points[i].x, yi = points[i].y, xj = points[j].x, yj = points[j].y;
+	        const intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / ((yj - yi) || 1) + xi);
+	        if(intersect) inside = !inside;
+	      }
+	      return inside;
+	    }
+	    function eraseAt(point){
+	      const interactionIndex = [...explorationDraft.interactions].reverse().findIndex(item => Math.hypot(point.x - item.x, point.y - item.y) <= 16);
+	      if(interactionIndex >= 0){ explorationDraft.interactions.splice(explorationDraft.interactions.length - 1 - interactionIndex, 1); setStatus('explorationStatus', 'Interaccion borrada'); drawExploration(); return; }
+	      const collisionIndex = [...explorationDraft.collisions].reverse().findIndex(item => hitCollision(item, point));
+	      if(collisionIndex >= 0){ explorationDraft.collisions.splice(explorationDraft.collisions.length - 1 - collisionIndex, 1); setStatus('explorationStatus', 'Colision borrada'); drawExploration(); return; }
+	      setStatus('explorationStatus', 'No habia nada bajo el cursor');
+	    }
 
-    function generateIso(){
+	    function generateIso(){
       const canvas = document.getElementById('isoCanvas'); const ctx = canvas.getContext('2d'); const cols = Number(document.getElementById('isoCols').value); const rows = Number(document.getElementById('isoRows').value); const tileW = Number(document.getElementById('isoTileW').value); const tileH = Number(document.getElementById('isoTileH').value); const height = Number(document.getElementById('isoHeight').value); const mode = document.getElementById('isoMode').value; canvas.width = Math.max(900, (cols + rows) * tileW / 2 + 180); canvas.height = Math.max(620, (cols + rows) * tileH / 2 + height + 160); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = '#06101c'; ctx.fillRect(0,0,canvas.width,canvas.height);
       let sampler = null; if(isoImage){ const sampleCanvas = document.createElement('canvas'); sampleCanvas.width = cols; sampleCanvas.height = rows; const sampleCtx = sampleCanvas.getContext('2d'); sampleCtx.drawImage(isoImage, 0, 0, cols, rows); sampler = sampleCtx.getImageData(0,0,cols,rows).data; }
       const originX = canvas.width / 2; const originY = 70;
@@ -447,38 +637,108 @@
     function drawIsoTile(ctx, x, y, w, h, z, color){
       const top = [[x,y],[x+w/2,y+h/2],[x,y+h],[x-w/2,y+h/2]];
       ctx.beginPath(); top.forEach((p,i)=> i ? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1])); ctx.closePath(); ctx.fillStyle = color; ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.stroke();
-      if(z > 2){ ctx.beginPath(); ctx.moveTo(x-w/2,y+h/2); ctx.lineTo(x,y+h); ctx.lineTo(x,y+h+z); ctx.lineTo(x-w/2,y+h/2+z); ctx.closePath(); ctx.fillStyle = shade(color,-38); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x+w/2,y+h/2); ctx.lineTo(x,y+h); ctx.lineTo(x,y+h+z); ctx.lineTo(x+w/2,y+h/2+z); ctx.closePath(); ctx.fillStyle = shade(color,-58); ctx.fill(); ctx.stroke(); }
-    }
+	      if(z > 2){ ctx.beginPath(); ctx.moveTo(x-w/2,y+h/2); ctx.lineTo(x,y+h); ctx.lineTo(x,y+h+z); ctx.lineTo(x-w/2,y+h/2+z); ctx.closePath(); ctx.fillStyle = shade(color,-38); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x+w/2,y+h/2); ctx.lineTo(x,y+h); ctx.lineTo(x,y+h+z); ctx.lineTo(x+w/2,y+h/2+z); ctx.closePath(); ctx.fillStyle = shade(color,-58); ctx.fill(); ctx.stroke(); }
+	    }
+	    function saveIsoAsExploration(){
+	      const sceneId = safeId('iso_scene');
+	      const explorationId = sceneId.replace('iso_scene', 'expl_iso');
+	      const scene = {
+	        id: sceneId, name: `Escena isometrica ${state.isometricScenes.length + 1}`, type: 'isometric_draft',
+	        cols: document.getElementById('isoCols').value, rows: document.getElementById('isoRows').value, tileW: document.getElementById('isoTileW').value, tileH: document.getElementById('isoTileH').value,
+	        height: document.getElementById('isoHeight').value, mode: document.getElementById('isoMode').value, generatedFromImage: Boolean(isoImage),
+	        note: 'Maqueta generada desde imagen/dibujo/foto para usar como briefing visual.'
+	      };
+	      state.isometricScenes.push(scene);
+	      state.explorations.push({ id: explorationId, name: scene.name, playerSprite: '', startX: '160', startY: '220', backgroundImage: `isometric_scene:${sceneId}`, isometricSceneId: sceneId, collisions: [], interactions: [] });
+	      persist(); renderLists(); updateOutputs(); loadExploration(explorationId);
+	      setStatus('isoStatus', `Creada ${sceneId} y exploracion ${explorationId}`);
+	    }
 
-    document.addEventListener('click', event => {
-      const tabButton = event.target.closest('[data-tab]'); if(tabButton){ document.querySelectorAll('[data-tab]').forEach(btn => btn.classList.toggle('active', btn === tabButton)); document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `tab-${tabButton.dataset.tab}`)); const items = help[tabButton.dataset.tab] || []; document.getElementById('contextHelp').innerHTML = `<h2>${tabButton.textContent}</h2><ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`; return; }
-      const save = event.target.closest('[data-save]'); if(save){ upsertItem(save.dataset.save, schemas[save.dataset.save]); return; }
-      const add = event.target.closest('[data-add]'); if(add){ if(add.dataset.add === 'explorations') saveExploration(); else upsertItem(add.dataset.add, schemas[add.dataset.add]); return; }
-      const clear = event.target.closest('[data-clear-form]'); if(clear){ clearForm(clear.dataset.clearForm); return; }
-      const edit = event.target.closest('[data-edit-item]'); if(edit){ const [collection,id] = edit.dataset.editItem.split('|'); editItem(collection,id); return; }
-      const del = event.target.closest('[data-delete-item]'); if(del){ const [collection,id] = del.dataset.deleteItem.split('|'); deleteItem(collection,id); return; }
-      const mode = event.target.closest('[data-draw-mode]'); if(mode){ drawMode = mode.dataset.drawMode; document.querySelectorAll('[data-draw-mode]').forEach(btn => btn.classList.toggle('active', btn === mode)); return; }
-    });
-    document.getElementById('copyJson').addEventListener('click', () => copyText(packageJson()));
-    document.getElementById('copyJsonTop').addEventListener('click', () => copyText(packageJson()));
-    document.getElementById('copyHtml').addEventListener('click', () => copyText(makeBriefingHtml()));
-    document.getElementById('downloadJson').addEventListener('click', () => downloadFile('pocobot-creative-studio.json','application/json',packageJson()));
-    document.getElementById('downloadHtml').addEventListener('click', () => downloadFile('pocobot-creative-briefing.html','text/html',makeBriefingHtml()));
-    document.getElementById('resetProject').addEventListener('click', () => { if(confirm('¿Vaciar todo el proyecto creativo?')){ Object.keys(state).forEach(key => { if(Array.isArray(state[key])) state[key] = []; }); localStorage.removeItem(STORAGE_KEY); renderLists(); updateOutputs(); drawExploration(); generateIso(); } });
-    document.getElementById('importJson').addEventListener('change', event => { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = () => { const parsed = JSON.parse(reader.result); Object.keys(state).forEach(key => { if(parsed[key]) state[key] = parsed[key]; }); persist(); renderLists(); updateOutputs(); }; reader.readAsText(file); });
-    document.getElementById('explorationImage').addEventListener('change', event => { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = () => { explorationImageData = reader.result; drawExploration(); }; reader.readAsDataURL(file); });
-    const explorationCanvas = document.getElementById('explorationCanvas');
-    explorationCanvas.addEventListener('mousedown', event => { const rect = explorationCanvas.getBoundingClientRect(); const x = Math.round((event.clientX - rect.left) * explorationCanvas.width / rect.width); const y = Math.round((event.clientY - rect.top) * explorationCanvas.height / rect.height); if(drawMode === 'interaction'){ explorationDraft.interactions.push({ x, y, type: document.getElementById('interactionType').value, target: document.getElementById('interactionTarget').value.trim() }); drawExploration(); return; } draftCollision = { x, y, w: 0, h: 0 }; });
-    explorationCanvas.addEventListener('mousemove', event => { if(!draftCollision) return; const rect = explorationCanvas.getBoundingClientRect(); const x = Math.round((event.clientX - rect.left) * explorationCanvas.width / rect.width); const y = Math.round((event.clientY - rect.top) * explorationCanvas.height / rect.height); draftCollision.w = x - draftCollision.x; draftCollision.h = y - draftCollision.y; drawExploration(); });
-    explorationCanvas.addEventListener('mouseup', () => { if(!draftCollision) return; const rect = { x: Math.min(draftCollision.x, draftCollision.x + draftCollision.w), y: Math.min(draftCollision.y, draftCollision.y + draftCollision.h), w: Math.abs(draftCollision.w), h: Math.abs(draftCollision.h) }; if(rect.w > 6 && rect.h > 6) explorationDraft.collisions.push(rect); draftCollision = null; drawExploration(); });
-    document.getElementById('undoExploration').addEventListener('click', () => { if(drawMode === 'interaction') explorationDraft.interactions.pop(); else explorationDraft.collisions.pop(); drawExploration(); });
-    document.getElementById('isoImage').addEventListener('change', event => { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = () => { isoImage = new Image(); isoImage.onload = generateIso; isoImage.src = reader.result; }; reader.readAsDataURL(file); });
-    ['isoCols','isoRows','isoTileW','isoTileH','isoHeight','isoMode'].forEach(id => document.getElementById(id).addEventListener('input', generateIso));
-    document.getElementById('generateIso').addEventListener('click', generateIso);
-    document.getElementById('downloadIsoPng').addEventListener('click', () => { const canvas = document.getElementById('isoCanvas'); canvas.toBlob(blob => { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'pocobot-isometric-draft.png'; link.click(); URL.revokeObjectURL(url); }); });
-    document.getElementById('saveIsoScene').addEventListener('click', () => { const scene = { id: safeId('iso_scene'), type: 'isometric_draft', cols: document.getElementById('isoCols').value, rows: document.getElementById('isoRows').value, tileW: document.getElementById('isoTileW').value, tileH: document.getElementById('isoTileH').value, height: document.getElementById('isoHeight').value, mode: document.getElementById('isoMode').value, note: 'Maqueta generada desde imagen/dibujo/foto para usar como briefing visual.' }; state.isometricScenes.push(scene); persist(); updateOutputs(); });
+	    document.addEventListener('click', event => {
+	      const tabButton = event.target.closest('[data-tab]'); if(tabButton){ document.querySelectorAll('[data-tab]').forEach(btn => btn.classList.toggle('active', btn === tabButton)); document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `tab-${tabButton.dataset.tab}`)); const items = help[tabButton.dataset.tab] || []; document.getElementById('contextHelp').innerHTML = `<h2>${tabButton.textContent}</h2><ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`; return; }
+	      const save = event.target.closest('[data-save]'); if(save){ upsertItem(save.dataset.save, schemas[save.dataset.save]); return; }
+	      const add = event.target.closest('[data-add]'); if(add){ if(add.dataset.add === 'explorations') saveExploration(); else upsertItem(add.dataset.add, schemas[add.dataset.add]); return; }
+	      const clear = event.target.closest('[data-clear-form]'); if(clear){ clearForm(clear.dataset.clearForm); return; }
+	      const edit = event.target.closest('[data-edit-item]'); if(edit){ const [collection,id] = edit.dataset.editItem.split('|'); editItem(collection,id); return; }
+	      const del = event.target.closest('[data-delete-item]'); if(del){ const [collection,id] = del.dataset.deleteItem.split('|'); deleteItem(collection,id); return; }
+	      const load = event.target.closest('[data-load-exploration]'); if(load){ loadExploration(load.dataset.loadExploration); return; }
+	      const mode = event.target.closest('[data-draw-mode]'); if(mode){ drawMode = mode.dataset.drawMode; draftCollision = null; document.querySelectorAll('[data-draw-mode]').forEach(btn => btn.classList.toggle('active', btn === mode)); drawExploration(); return; }
+	    });
+	    document.getElementById('expertToggle').addEventListener('click', () => setExpertMode(!document.body.classList.contains('expert-mode')));
+	    document.getElementById('copyJson').addEventListener('click', () => copyText(packageJson()));
+	    document.getElementById('copyJsonTop').addEventListener('click', () => copyText(packageJson()));
+	    document.getElementById('copyHtml').addEventListener('click', () => copyText(makeBriefingHtml()));
+	    document.getElementById('downloadJson').addEventListener('click', () => downloadFile('pocobot-creative-studio.json','application/json',packageJson()));
+	    document.getElementById('downloadHtml').addEventListener('click', () => downloadFile('pocobot-creative-briefing.html','text/html',makeBriefingHtml()));
+	    document.getElementById('resetProject').addEventListener('click', () => { if(confirm('¿Vaciar todo el proyecto creativo?')){ Object.keys(state).forEach(key => { if(Array.isArray(state[key])) state[key] = []; }); localStorage.removeItem(STORAGE_KEY); renderLists(); updateOutputs(); drawExploration(); generateIso(); } });
+	    document.getElementById('importJson').addEventListener('change', event => { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = () => { const parsed = JSON.parse(reader.result); Object.keys(state).forEach(key => { if(Array.isArray(state[key]) && Array.isArray(parsed[key])) state[key] = parsed[key]; }); persist(); renderLists(); updateOutputs(); }; reader.readAsText(file); });
+	    document.getElementById('explorationImage').addEventListener('change', event => { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = () => { explorationImageData = reader.result; drawExploration(); }; reader.readAsDataURL(file); });
+	    document.getElementById('conversationBackgroundFile').addEventListener('change', event => {
+	      const file = event.target.files[0]; if(!file) return;
+	      const folder = (document.getElementById('conversationBackgroundFolder').value || 'assets/Historia/CARPETAX').replace(/\/+$/,'');
+	      const fileName = file.name.replace(/\s+/g, '_');
+	      const target = document.querySelector('[data-form="conversations"] [data-field="background"]');
+	      if(target) target.value = `${folder}/${fileName}`;
+	      document.getElementById('saveState').textContent = `Ruta de fondo preparada: ${fileName}`;
+	    });
+	    document.getElementById('mapTargetPicker').addEventListener('change', event => { const target = document.querySelector('[data-form="mapPoints"] [data-field="target"]'); if(target) target.value = event.target.value; });
+	    document.getElementById('interactionType').addEventListener('change', fillInteractionTargetPicker);
+	    document.getElementById('interactionTargetPicker').addEventListener('change', event => { if(event.target.value) document.getElementById('interactionTarget').value = event.target.value; });
+	    document.getElementById('savedExplorationSelect').addEventListener('change', event => { if(event.target.value) loadExploration(event.target.value); });
+	    document.getElementById('loadExploration').addEventListener('click', () => { const id = document.getElementById('savedExplorationSelect').value; if(id) loadExploration(id); });
+	    document.getElementById('shopItemPicker').addEventListener('change', event => {
+	      const item = state.inventoryItems.find(entry => entry.id === event.target.value);
+	      if(!item) return;
+	      const textarea = document.querySelector('[data-form="shops"] [data-field="items"]');
+	      appendLine(textarea, `id: ${item.id} | tipo: ${item.type || 'objeto'} | precio: pendiente | descripcion: ${item.description || item.name || ''}`);
+	    });
+	    document.getElementById('chapterStepType').addEventListener('change', fillChapterStepTarget);
+	    document.getElementById('appendChapterStep').addEventListener('click', () => {
+	      const textarea = document.querySelector('[data-form="chapters"] [data-field="sequence"]');
+	      const type = document.getElementById('chapterStepType').value;
+	      const target = document.getElementById('chapterStepTarget').value;
+	      if(!target) return;
+	      const next = textarea.value.trim().split('\n').filter(Boolean).length + 1;
+	      appendLine(textarea, `${next}) ${type}: ${target}`);
+	    });
+	    const explorationCanvas = document.getElementById('explorationCanvas');
+	    explorationCanvas.addEventListener('mousedown', event => {
+	      const point = canvasPoint(event);
+	      if(drawMode === 'erase'){ eraseAt(point); return; }
+	      if(drawMode === 'interaction'){ explorationDraft.interactions.push({ x: point.x, y: point.y, type: document.getElementById('interactionType').value, target: document.getElementById('interactionTarget').value.trim() }); drawExploration(); return; }
+	      if(drawMode === 'collision-poly'){ draftPolygon.push(point); setStatus('explorationStatus', `${draftPolygon.length} vertices de poligono`); drawExploration(); return; }
+	      draftCollision = drawMode === 'collision-circle' ? { shape: 'circle', x: point.x, y: point.y, r: 0 } : { shape: 'rect', x: point.x, y: point.y, w: 0, h: 0 };
+	    });
+	    explorationCanvas.addEventListener('mousemove', event => {
+	      if(!draftCollision) return;
+	      const point = canvasPoint(event);
+	      if(draftCollision.shape === 'circle') draftCollision.r = Math.round(Math.hypot(point.x - draftCollision.x, point.y - draftCollision.y));
+	      else { draftCollision.w = point.x - draftCollision.x; draftCollision.h = point.y - draftCollision.y; }
+	      drawExploration();
+	    });
+	    explorationCanvas.addEventListener('mouseup', () => {
+	      if(!draftCollision) return;
+	      if(draftCollision.shape === 'circle'){ if(draftCollision.r > 6) explorationDraft.collisions.push(draftCollision); }
+	      else {
+	        const rect = { shape: 'rect', x: Math.min(draftCollision.x, draftCollision.x + draftCollision.w), y: Math.min(draftCollision.y, draftCollision.y + draftCollision.h), w: Math.abs(draftCollision.w), h: Math.abs(draftCollision.h) };
+	        if(rect.w > 6 && rect.h > 6) explorationDraft.collisions.push(rect);
+	      }
+	      draftCollision = null; drawExploration();
+	    });
+	    document.getElementById('finishPolygon').addEventListener('click', () => {
+	      if(draftPolygon.length < 3){ setStatus('explorationStatus', 'El poligono necesita al menos 3 vertices'); return; }
+	      explorationDraft.collisions.push({ shape: 'polygon', points: clone(draftPolygon) });
+	      draftPolygon = []; setStatus('explorationStatus', 'Poligono creado'); drawExploration();
+	    });
+	    document.getElementById('clearExplorationDraft').addEventListener('click', () => { if(confirm('¿Vaciar colisiones e interacciones de este lienzo?')){ explorationDraft.collisions = []; explorationDraft.interactions = []; draftPolygon = []; draftCollision = null; drawExploration(); } });
+	    document.getElementById('undoExploration').addEventListener('click', () => { if(draftPolygon.length) draftPolygon.pop(); else if(drawMode === 'interaction') explorationDraft.interactions.pop(); else explorationDraft.collisions.pop(); drawExploration(); });
+	    document.getElementById('isoImage').addEventListener('change', event => { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = () => { isoImage = new Image(); isoImage.onload = generateIso; isoImage.src = reader.result; }; reader.readAsDataURL(file); });
+	    ['isoCols','isoRows','isoTileW','isoTileH','isoHeight','isoMode'].forEach(id => document.getElementById(id).addEventListener('input', generateIso));
+	    document.getElementById('generateIso').addEventListener('click', generateIso);
+	    document.getElementById('downloadIsoPng').addEventListener('click', () => { const canvas = document.getElementById('isoCanvas'); canvas.toBlob(blob => { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'pocobot-isometric-draft.png'; link.click(); URL.revokeObjectURL(url); }); });
+	    document.getElementById('saveIsoScene').addEventListener('click', saveIsoAsExploration);
 
-    bindHiddenLabAccess(); loadStored(); renderLists(); updateOutputs(); drawExploration(); generateIso();
-  </script>
+	    bindHiddenLabAccess(); loadStored(); setExpertMode(localStorage.getItem(EXPERT_KEY) === '1'); renderLists(); updateOutputs(); drawExploration(); generateIso();
+	  </script>
 </body>
 </html>
