@@ -4,741 +4,1095 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PoCoBOT Creative Studio</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_creative_studio_icon_32.png?v=20260508-creative-pocobot">
-  <link rel="icon" type="image/png" sizes="64x64" href="assets/pocobot_creative_studio_icon_64.png?v=20260508-creative-pocobot">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_creative_studio_icon_180.png?v=20260508-creative-pocobot">
-  <link rel="manifest" href="creative-studio.webmanifest?v=20260508-creative-pocobot">
-  <meta name="theme-color" content="#07111f">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_creative_studio_icon_32.png?v=20260509-studio-v2">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/pocobot_creative_studio_icon_64.png?v=20260509-studio-v2">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_creative_studio_icon_180.png?v=20260509-studio-v2">
+  <link rel="manifest" href="creative-studio.webmanifest?v=20260509-studio-v2">
+  <meta name="theme-color" content="#08111e">
   <meta name="apple-mobile-web-app-title" content="Creative PoCoBOT">
   <meta name="application-name" content="Creative PoCoBOT">
   <style>
     :root{
-      --bg:#07111f;
-      --panel:#101f36;
-      --panel-2:#152a47;
-      --line:rgba(143,244,255,.18);
-      --cyan:#55dcff;
-      --cyan-2:#8ff4ff;
-      --gold:#ffd55f;
-      --pink:#ff6dd8;
-      --green:#76ffb6;
-      --red:#ff7b86;
-      --white:#f7fbff;
-      --muted:#a8b9cf;
-      --shadow:0 24px 60px rgba(0,0,0,.42);
-      font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+      --bg:#08111e;
+      --ink:#f6fbff;
+      --muted:#9eb1c7;
+      --soft:#cedbed;
+      --panel:#111e30;
+      --panel2:#172840;
+      --panel3:#0d1727;
+      --line:rgba(147,203,255,.18);
+      --cyan:#56d7ff;
+      --mint:#7effc4;
+      --gold:#ffd364;
+      --red:#ff7a8a;
+      --violet:#c6a5ff;
+      --shadow:0 20px 55px rgba(0,0,0,.36);
+      font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      min-height:100vh;
-      color:var(--white);
+      color:var(--ink);
       background:
-        radial-gradient(circle at 12% 0%, rgba(85,220,255,.18), transparent 30%),
-        radial-gradient(circle at 88% 8%, rgba(255,109,216,.12), transparent 28%),
-        linear-gradient(180deg,#06101d 0%, #0a1425 48%, #050914 100%);
+        linear-gradient(90deg,rgba(86,215,255,.08) 1px,transparent 1px),
+        linear-gradient(180deg,rgba(86,215,255,.06) 1px,transparent 1px),
+        radial-gradient(circle at 16% 8%,rgba(86,215,255,.18),transparent 28%),
+        radial-gradient(circle at 88% 16%,rgba(255,211,100,.11),transparent 28%),
+        linear-gradient(180deg,#07101e 0%,#0b1424 52%,#050913 100%);
+      background-size:64px 64px,64px 64px,auto,auto,auto;
+      min-height:100vh;
     }
     button,input,select,textarea{font:inherit}
     a{color:inherit;text-decoration:none}
-    .studio-shell{width:min(1480px,100% - 28px);margin:0 auto;padding:24px 0 42px}
-    .topbar,.hero,.panel,.help-card,.studio-footer{
+    button{cursor:pointer}
+    .shell{width:min(1540px,100% - 28px);margin:0 auto;padding:18px 0 34px}
+    .topbar,.intro,.module,.side-card,.footer{
       border:1px solid var(--line);
-      background:linear-gradient(180deg,rgba(16,31,54,.94),rgba(8,17,32,.98));
+      background:linear-gradient(180deg,rgba(17,30,48,.96),rgba(8,16,29,.98));
       box-shadow:var(--shadow);
-      border-radius:26px;
+      border-radius:18px;
     }
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 16px;margin-bottom:18px;position:sticky;top:10px;z-index:20;backdrop-filter:blur(16px)}
+    .topbar{
+      position:sticky;top:10px;z-index:30;
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      padding:12px 14px;margin-bottom:14px;backdrop-filter:blur(16px);
+    }
     .brand{display:flex;align-items:center;gap:12px;min-width:280px}
-    .brand img{width:48px;height:48px;border-radius:14px;box-shadow:0 0 22px rgba(85,220,255,.22)}
-    #creativeStudioIcon{cursor:default;user-select:none}
-    .brand strong{display:block;color:var(--gold);font-weight:900;letter-spacing:.03em}
-    .brand span{display:block;color:var(--muted);font-size:.86rem}
-    .top-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
-    .chip,.top-actions a,.top-actions button,.tab-button,.tool-button{
-      border:1px solid rgba(143,244,255,.22);
-      background:rgba(85,220,255,.08);
-      color:var(--white);
+    .brand img{width:46px;height:46px;border-radius:12px;box-shadow:0 0 22px rgba(86,215,255,.22)}
+    .brand strong{display:block;color:var(--gold);font-weight:900}
+    .brand span{display:block;color:var(--muted);font-size:.85rem}
+    .top-actions,.row,.button-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .chip,.btn,.tab{
+      border:1px solid rgba(147,203,255,.22);
+      background:rgba(86,215,255,.08);
+      color:var(--ink);
       border-radius:999px;
       padding:9px 13px;
-      font-weight:800;
-      cursor:pointer;
+      font-weight:850;
+      line-height:1.1;
     }
-    .top-actions a:hover,.top-actions button:hover,.tab-button:hover,.tool-button:hover{border-color:var(--cyan);box-shadow:0 0 18px rgba(85,220,255,.18)}
-    .primary{background:linear-gradient(135deg,var(--gold),#ff9f4a);color:#241705;border-color:rgba(255,213,95,.7)}
-    .danger{background:rgba(255,123,134,.14);border-color:rgba(255,123,134,.38)}
-    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;padding:30px;margin-bottom:18px;overflow:hidden;position:relative}
-    .hero:before{content:"";position:absolute;inset:auto -12% -42% 44%;height:340px;background:radial-gradient(circle,rgba(85,220,255,.18),transparent 64%);pointer-events:none}
-    .kicker{display:inline-flex;align-items:center;gap:8px;color:var(--gold);font-weight:900;text-transform:uppercase;letter-spacing:.14em;font-size:.76rem}
-    h1{font-size:clamp(2.2rem,5vw,5rem);line-height:.94;margin:12px 0 14px;letter-spacing:-.07em}
-    h2{font-size:1.42rem;margin:0 0 8px;color:var(--cyan-2)}
-    h3{font-size:1.05rem;margin:0 0 8px;color:var(--gold)}
-    p{color:var(--muted);line-height:1.58;margin:0 0 12px}
-    .hero-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
-    .hero-point,.mini-card{border:1px solid rgba(143,244,255,.16);background:rgba(255,255,255,.04);border-radius:20px;padding:14px}
-    .hero-point strong,.mini-card strong{display:block;color:var(--white);margin-bottom:6px}
-    .hero-visual{display:grid;gap:14px;align-content:center}
-    .json-preview{min-height:320px;border-radius:22px;padding:16px;background:#050b14;border:1px solid rgba(143,244,255,.18);font-family:"SFMono-Regular",Consolas,monospace;font-size:.78rem;color:#c9f8ff;white-space:pre-wrap;overflow:auto;max-height:430px}
-    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px;position:sticky;top:92px;z-index:15;padding:10px;border-radius:24px;background:rgba(7,17,31,.76);backdrop-filter:blur(16px);border:1px solid rgba(143,244,255,.12)}
-    .tab-button.active{background:linear-gradient(135deg,rgba(85,220,255,.28),rgba(255,213,95,.18));border-color:var(--cyan);color:#fff}
-    .workspace{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
-    .tab-panel{display:none}.tab-panel.active{display:block}
-    .panel{padding:20px;margin-bottom:18px}
-    .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
-    .panel-head p{margin:0}.button-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-    label{display:grid;gap:7px;color:var(--cyan-2);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900}
+    .btn:hover,.tab:hover,.chip{border-color:rgba(86,215,255,.46)}
+    .primary{background:linear-gradient(135deg,var(--gold),#ffa64e);color:#251704;border-color:rgba(255,211,100,.72)}
+    .danger{background:rgba(255,122,138,.14);border-color:rgba(255,122,138,.44)}
+    .success{background:rgba(126,255,196,.12);border-color:rgba(126,255,196,.38)}
+    .intro{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:18px;padding:20px;margin-bottom:14px}
+    h1{font-size:clamp(2rem,4.4vw,4.8rem);line-height:.96;margin:0 0 12px;letter-spacing:0}
+    h2{font-size:1.34rem;margin:0 0 8px;color:var(--cyan)}
+    h3{font-size:1rem;margin:0 0 8px;color:var(--gold)}
+    p{margin:0 0 12px;color:var(--muted);line-height:1.55}
+    .intro-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px}
+    .step-card,.item-card,.mini-panel{
+      border:1px solid rgba(147,203,255,.14);
+      background:rgba(255,255,255,.035);
+      border-radius:14px;
+      padding:12px;
+    }
+    .step-card strong,.item-card strong{display:block;color:var(--ink);margin-bottom:5px}
+    .step-card span,.item-card small{display:block;color:var(--muted);font-size:.84rem;line-height:1.35}
+    .preview-code{
+      margin:0;min-height:260px;max-height:330px;overflow:auto;
+      border:1px solid rgba(147,203,255,.16);border-radius:14px;
+      background:#050b14;color:#c9f7ff;padding:14px;
+      white-space:pre-wrap;font:12px/1.45 "SFMono-Regular",Consolas,monospace;
+    }
+    .tabs{
+      display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;
+      padding:8px;margin-bottom:14px;border:1px solid var(--line);
+      border-radius:18px;background:rgba(7,15,27,.78);position:sticky;top:86px;z-index:25;backdrop-filter:blur(14px);
+    }
+    .tab{border-radius:12px;padding:12px;text-align:center}
+    .tab.active{background:linear-gradient(135deg,rgba(86,215,255,.24),rgba(255,211,100,.18));border-color:var(--cyan)}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:start}
+    .panel{display:none}.panel.active{display:block}
+    .module{padding:18px;margin-bottom:14px}
+    .module-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+    .module-head p{margin:0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .full{grid-column:1/-1}
+    label{display:grid;gap:7px;color:var(--cyan);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900}
     input,select,textarea{
-      width:100%;border:1px solid rgba(143,244,255,.18);background:rgba(3,8,17,.74);color:var(--white);border-radius:14px;padding:11px 12px;outline:none;
+      width:100%;border:1px solid rgba(147,203,255,.18);background:rgba(4,9,18,.76);
+      color:var(--ink);border-radius:11px;padding:10px 11px;outline:none;
     }
-    input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(85,220,255,.1)}
-    textarea{min-height:98px;resize:vertical;text-transform:none;letter-spacing:0;color:var(--white)}
-    .full{grid-column:1/-1}.hint{color:var(--muted);font-size:.86rem;text-transform:none;letter-spacing:0;font-weight:500}.list{display:grid;gap:10px;margin-top:14px}
-    .item-card{border:1px solid rgba(143,244,255,.14);border-radius:18px;background:rgba(255,255,255,.035);padding:13px;display:grid;gap:10px}
-    .item-title{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.item-title strong{color:var(--white)}.item-title small{color:var(--muted);font-family:monospace}
-    .help-rail{position:sticky;top:92px;display:grid;gap:14px}.help-card{padding:18px}.help-card ul{margin:8px 0 0;padding-left:18px;color:var(--muted);line-height:1.52}.help-card li{margin-bottom:8px}.help-card code{color:var(--gold)}
-	    .canvas-wrap{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:start}.canvas-frame{position:relative;border:1px solid rgba(143,244,255,.2);background:#040913;border-radius:20px;overflow:auto;min-height:420px}.canvas-frame canvas{display:block;max-width:100%;height:auto;margin:auto}.tools-panel{display:grid;gap:12px}.inline{display:flex;gap:8px;align-items:end}.inline > *{flex:1}
-	    .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.export-box{min-height:360px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.78rem;white-space:pre;overflow:auto}
-	    .iso-stage{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px}.iso-canvas{background:#06101c;border:1px solid rgba(143,244,255,.2);border-radius:20px;overflow:auto;min-height:520px}.iso-canvas canvas{display:block;margin:16px auto;max-width:100%;height:auto}
-	    .reference-panel{border:1px solid rgba(143,244,255,.14);background:rgba(255,255,255,.035);border-radius:18px;padding:13px;margin:14px 0;display:grid;gap:10px}
-	    .reference-panel strong{color:var(--gold)}
-	    .status-line{color:var(--green);font-size:.86rem;min-height:1.4em}
-	    .expert-only{display:none!important}
-	    body.expert-mode .expert-only{display:grid!important}
-	    body.expert-mode .expert-flex{display:flex!important}
-	    .studio-footer{padding:18px;margin-top:18px;text-align:center}.hidden{display:none!important}
-    @media (max-width:1120px){.hero,.workspace,.canvas-wrap,.iso-stage,.export-grid{grid-template-columns:1fr}.help-rail{position:static}.tabs{top:86px}.hero-grid,.form-grid,.form-grid.three{grid-template-columns:1fr}}
-    @media (max-width:760px){.studio-shell{width:min(100% - 16px,100%);padding-top:10px}.topbar{position:static;align-items:flex-start;flex-direction:column}.tabs{position:static}.hero{padding:20px}h1{font-size:2.35rem}.top-actions{justify-content:flex-start}}
+    textarea{min-height:88px;resize:vertical;text-transform:none;letter-spacing:0}
+    input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(86,215,255,.1)}
+    .hint{font-size:.84rem;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:500}
+    .scenario-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px;align-items:start}
+    .canvas-box{border:1px solid rgba(147,203,255,.2);border-radius:16px;background:#040913;overflow:auto;min-height:560px}
+    canvas{display:block;max-width:100%;height:auto;margin:auto}
+    .tools{display:grid;gap:10px}
+    .tool-group{display:grid;gap:8px;padding:10px;border:1px solid rgba(147,203,255,.14);border-radius:14px;background:rgba(255,255,255,.025)}
+    .tool-button.active{background:rgba(86,215,255,.22);border-color:var(--cyan)}
+    .inspector{display:grid;gap:10px}
+    .status{min-height:1.3em;color:var(--mint);font-size:.86rem}
+    .list{display:grid;gap:10px;margin-top:12px}
+    .item-title{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .item-title small{font-family:"SFMono-Regular",Consolas,monospace}
+    .conversation-block{border:1px solid rgba(147,203,255,.13);border-radius:14px;padding:12px;background:rgba(255,255,255,.025);display:grid;gap:10px}
+    .expert-only{display:none!important}
+    body.expert-mode .expert-only{display:grid!important}
+    body.expert-mode .expert-flex{display:flex!important}
+    .side{position:sticky;top:86px;display:grid;gap:14px}
+    .side-card{padding:15px}
+    .side-card ul{margin:8px 0 0;padding-left:18px;color:var(--muted);line-height:1.5}
+    .side-card li{margin-bottom:8px}
+    .compile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .test-frame{width:100%;min-height:520px;border:1px solid rgba(147,203,255,.2);border-radius:16px;background:#fff}
+    .export-box{min-height:520px;font:12px/1.45 "SFMono-Regular",Consolas,monospace;white-space:pre;overflow:auto}
+    .footer{padding:16px;text-align:center;color:var(--muted)}
+    .hidden{display:none!important}
+    @media(max-width:1160px){
+      .intro,.layout,.scenario-grid,.compile-grid{grid-template-columns:1fr}
+      .intro-grid,.grid,.grid.three,.grid.four{grid-template-columns:1fr}
+      .side{position:static}.tabs{top:82px}
+    }
+    @media(max-width:760px){
+      .shell{width:min(100% - 16px,100%);padding-top:8px}
+      .topbar{position:static;align-items:flex-start;flex-direction:column}
+      .tabs{position:static;grid-template-columns:1fr}
+      .intro{padding:16px}.top-actions{justify-content:flex-start}
+    }
   </style>
 </head>
 <body>
-  <div class="studio-shell">
+  <div class="shell">
     <header class="topbar">
       <div class="brand">
         <img id="creativeStudioIcon" src="assets/pocobot_creative_studio_icon_192.png" alt="Creative PoCoBOT icono">
-        <div><strong>PoCoBOT Creative Studio</strong><span>Editor visual de capítulos, escenas y prototipos exportables</span></div>
+        <div><strong>PoCoBOT Creative Studio</strong><span>Escenarios, diálogos, combates, tiendas y compilación</span></div>
       </div>
-	      <div class="top-actions">
-	        <span class="chip" id="saveState">Borrador local activo</span>
-	        <button class="primary" type="button" id="copyJsonTop">Copiar JSON</button>
-	        <button class="tool-button" type="button" id="expertToggle" aria-pressed="false">Modo experto</button>
-	        <a href="pocobot_lore_biblia.html" target="_blank" rel="noopener">Biblia PoCoBOT</a>
-	      </div>
+      <div class="top-actions">
+        <span class="chip" id="saveState">Borrador local activo</span>
+        <button class="btn primary" type="button" id="copyJsonTop">Copiar JSON</button>
+        <button class="btn" type="button" id="expertToggle" aria-pressed="false">Modo experto</button>
+        <a class="btn" href="pocobot_lore_biblia.html" target="_blank" rel="noopener">Biblia</a>
+      </div>
     </header>
 
-    <section class="hero">
+    <section class="intro">
       <div>
-        <span class="kicker">Herramienta para creativos · sin tocar código del juego</span>
-        <h1>Diseña una expansión de PoCoBOT y entrégala como JSON.</h1>
-        <p>Esta página está pensada para escritores, diseñadores de mapas, artistas y testers. Cada pestaña explica qué hay que rellenar, crea datos reutilizables y genera un paquete que una IA o un programador puede transformar después en escenas reales de PoCoBOT.</p>
-        <div class="hero-grid">
-          <div class="hero-point"><strong>Aprendizaje rápido</strong><span>Las ayudas laterales explican qué hace cada herramienta y sugieren el flujo de trabajo.</span></div>
-          <div class="hero-point"><strong>Mapa + escenas</strong><span>Crea puntos de mapa, mapas explorables, diálogos, tiendas, combates e inventario.</span></div>
-          <div class="hero-point"><strong>Isométrico desde imagen</strong><span>Carga un dibujo o foto y conviértelo en una base isométrica editable/exportable.</span></div>
+        <h1>Construye contenido jugable en cinco pasos.</h1>
+        <p>El estudio se reorganiza alrededor del flujo creativo real: crear un escenario, enlazar diálogos, preparar combates, ajustar tiendas y compilarlo todo en JSON o en un HTML de prueba.</p>
+        <div class="intro-grid">
+          <div class="step-card"><strong>1 Escenario</strong><span>Imagen, colisiones e interacciones.</span></div>
+          <div class="step-card"><strong>2 Conversación</strong><span>Fondos, poses, preguntas y recompensas.</span></div>
+          <div class="step-card"><strong>3 Combate</strong><span>Enemigos normales, especiales o hackeados.</span></div>
+          <div class="step-card"><strong>4 Tiendas</strong><span>Artículos, vendedor y condiciones.</span></div>
+          <div class="step-card"><strong>5 Compilación</strong><span>Prueba HTML y JSON final.</span></div>
         </div>
       </div>
-      <div class="hero-visual">
-        <h2>Vista rápida del paquete</h2>
-        <pre class="json-preview" id="livePreview"></pre>
+      <div>
+        <h2>Resumen vivo</h2>
+        <pre class="preview-code" id="livePreview"></pre>
       </div>
     </section>
 
-    <nav class="tabs" aria-label="Herramientas de creación">
-      <button class="tab-button active" data-tab="guide" type="button">Guía rápida</button>
-      <button class="tab-button" data-tab="map" type="button">Puntos del mapa</button>
-      <button class="tab-button" data-tab="exploration" type="button">Exploración</button>
-      <button class="tab-button" data-tab="conversation" type="button">Conversaciones</button>
-      <button class="tab-button" data-tab="inventory" type="button">Inventario</button>
-      <button class="tab-button" data-tab="shops" type="button">Tiendas</button>
-      <button class="tab-button" data-tab="combats" type="button">Combates</button>
-      <button class="tab-button" data-tab="chapters" type="button">Capítulos</button>
-      <button class="tab-button" data-tab="isometric" type="button">Generador isométrico</button>
-      <button class="tab-button" data-tab="export" type="button">Exportar</button>
+    <nav class="tabs" aria-label="Partes del estudio">
+      <button class="tab active" data-tab="scenario" type="button">Escenario</button>
+      <button class="tab" data-tab="conversation" type="button">Escenas de conversación</button>
+      <button class="tab" data-tab="combat" type="button">Combate</button>
+      <button class="tab" data-tab="shops" type="button">Tiendas</button>
+      <button class="tab" data-tab="compile" type="button">Compilación Final</button>
     </nav>
 
-    <main class="workspace">
+    <main class="layout">
       <div>
-        <section class="tab-panel active" id="tab-guide">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Guía rápida para creativos</h2><p>Empieza por crear piezas pequeñas y conecta todo al final en capítulos.</p></div></div>
-            <div class="form-grid three">
-              <div class="mini-card"><strong>1 · Puntos del mapa</strong><p>Define lugares elegibles: mercado, hangar, torre, conversación, tienda o combate.</p></div>
-              <div class="mini-card"><strong>2 · Escenas</strong><p>Crea exploración, conversación, tienda o combate. Usa IDs claros para enlazarlo todo.</p></div>
-              <div class="mini-card"><strong>3 · Capítulos</strong><p>Ordena la aventura: cada paso puede apuntar a una escena creada previamente.</p></div>
-              <div class="mini-card"><strong>4 · Recompensas</strong><p>Añade monedas, cartas, objetos narrativos o desbloqueos a cualquier fase.</p></div>
-              <div class="mini-card"><strong>5 · Exporta</strong><p>Copia el JSON para pasarlo a la IA con una instrucción del tipo “integra este capítulo”.</p></div>
-              <div class="mini-card"><strong>6 · Itera</strong><p>Importa el JSON de nuevo, modifica lo que necesites y vuelve a exportar.</p></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="tab-panel" id="tab-map">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Puntos elegibles del mapa</h2><p>Crea nodos que después podrán aparecer en la secuencia de capítulos.</p></div><button class="primary" type="button" data-add="mapPoints">Añadir punto</button></div>
-            <div class="form-grid" data-form="mapPoints">
-              <label>ID del punto<input data-field="id" placeholder="mercado_reles_muertos"></label>
-              <label>Nombre visible<input data-field="name" placeholder="Mercado de relés muertos"></label>
-	              <label>Tipo<select data-field="type"><option>exploracion</option><option>conversacion</option><option>tienda</option><option>combate</option><option>evento_personalizado</option></select></label>
-	              <label>Estado inicial<select data-field="initialState"><option>disponible</option><option>bloqueado</option><option>oculto</option><option>completado</option></select></label>
-	              <label>Capítulos<input data-field="chapters" placeholder="capitulo_1, capitulo_2"></label>
-	              <label>Escena enlazada<input data-field="target" placeholder="expl_mercado_01"></label>
-	              <label>Usar escena existente<select id="mapTargetPicker"><option value="">Elegir escena creada...</option></select></label>
-	              <label class="full expert-only">Condiciones de desbloqueo<textarea data-field="unlockConditions" placeholder="Ej: completar conversacion_mara_intro o tener llave_torre"></textarea></label>
-	              <label class="full expert-only">Recompensas del punto<textarea data-field="rewards" placeholder="Ej: monedas: 15; desbloquea: tienda_vera"></textarea></label>
-	            </div>
-            <div class="button-row"><button class="tool-button" type="button" data-save="mapPoints">Guardar punto</button><button class="tool-button danger" type="button" data-clear-form="mapPoints">Limpiar</button></div>
-            <div class="list" id="list-mapPoints"></div>
-          </div>
-        </section>
-
-        <section class="tab-panel" id="tab-exploration">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Modo exploración</h2><p>Carga una imagen de mapa, coloca colisiones e interacciones, y define qué ocurre al tocarlas.</p></div><button class="primary" type="button" data-add="explorations">Guardar mapa</button></div>
-            <div class="canvas-wrap">
+        <section class="panel active" id="tab-scenario">
+          <div class="module">
+            <div class="module-head">
               <div>
-                <div class="form-grid">
-	                  <label>ID del mapa<input data-field="id" data-exploration placeholder="expl_mercado_01"></label>
-	                  <label>Nombre<input data-field="name" data-exploration placeholder="Mercado explorable"></label>
-	                  <label>Imagen de fondo<input type="file" id="explorationImage" accept="image/*"></label>
-	                  <label>Personaje controlable<input data-field="playerSprite" data-exploration placeholder="assets/.../pocobot.png"></label>
-	                  <label>Inicio X<input type="number" data-field="startX" data-exploration value="160"></label>
-	                  <label>Inicio Y<input type="number" data-field="startY" data-exploration value="220"></label>
-	                </div>
-	                <div class="reference-panel">
-	                  <strong>Reutilizar iteraciones</strong>
-	                  <div class="inline">
-	                    <label>Mapa guardado<select id="savedExplorationSelect"><option value="">Elegir exploración...</option></select></label>
-	                    <button class="tool-button" type="button" id="loadExploration">Cargar</button>
-	                  </div>
-	                  <p class="hint">Una exploración guardada o una escena isométrica convertida se puede cargar aquí para seguir editando colisiones e interacciones.</p>
-	                </div>
-	                <div class="canvas-frame"><canvas id="explorationCanvas" width="960" height="540"></canvas></div>
-	                <div class="list" id="list-explorations"></div>
-	              </div>
-	              <div class="tools-panel">
-	                <h3>Herramientas del lienzo</h3>
-	                <button class="tool-button active" type="button" data-draw-mode="collision-rect">Colisión rectángulo</button>
-	                <button class="tool-button" type="button" data-draw-mode="collision-circle">Colisión círculo</button>
-	                <button class="tool-button" type="button" data-draw-mode="collision-poly">Colisión polígono</button>
-	                <button class="tool-button" type="button" id="finishPolygon">Cerrar polígono</button>
-	                <button class="tool-button" type="button" data-draw-mode="interaction">Añadir interacción</button>
-	                <button class="tool-button danger" type="button" data-draw-mode="erase">Borrar elemento</button>
-	                <button class="tool-button danger" type="button" id="undoExploration">Deshacer último</button>
-	                <button class="tool-button danger expert-only" type="button" id="clearExplorationDraft">Vaciar lienzo</button>
-	                <label>Tipo de interacción<select id="interactionType"><option>ir_a_mapa</option><option>conversacion</option><option>combate</option><option>tienda</option><option>recompensa</option><option>codigo_personalizado</option></select></label>
-	                <label>Destino creado<select id="interactionTargetPicker"><option value="">Elegir destino...</option></select></label>
-	                <label>Destino / instrucción<textarea id="interactionTarget" placeholder="ID de escena, tienda, combate o pseudocódigo"></textarea></label>
-	                <p class="hint">Rectángulo/círculo: arrastra. Polígono: haz clic en vértices y cierra. Borrar: clic sobre una colisión o punto dorado.</p>
-	                <div class="status-line" id="explorationStatus"></div>
-	              </div>
+                <h2>Escenario</h2>
+                <p>Carga una imagen, dibuja colisiones e inserta puntos de interacción hacia otros escenarios, combates, conversaciones u objetos.</p>
+              </div>
+              <button class="btn primary" type="button" id="saveScenario">Guardar escenario</button>
+            </div>
+            <div class="scenario-grid">
+              <div>
+                <div class="grid">
+                  <label>ID escenario<input id="scenarioId" placeholder="esc_mercado_reles"></label>
+                  <label>Nombre visible<input id="scenarioName" placeholder="Mercado de relés muertos"></label>
+                  <label>Imagen de escenario<input type="file" id="scenarioImage" accept="image/*"></label>
+                  <label>Ruta sugerida del asset<input id="scenarioAssetPath" placeholder="assets/Historia/CARPETAX/"></label>
+                  <label class="expert-only">Inicio jugador X<input type="number" id="scenarioStartX" value="160"></label>
+                  <label class="expert-only">Inicio jugador Y<input type="number" id="scenarioStartY" value="220"></label>
+                </div>
+                <div class="canvas-box"><canvas id="scenarioCanvas" width="960" height="540"></canvas></div>
+                <div class="list" id="list-scenarios"></div>
+              </div>
+              <aside class="tools">
+                <div class="tool-group">
+                  <h3>Herramientas</h3>
+                  <button class="btn tool-button active" type="button" data-tool="rect">Colisión rectángulo</button>
+                  <button class="btn tool-button" type="button" data-tool="oval">Colisión óvalo</button>
+                  <button class="btn tool-button" type="button" data-tool="interaction">Punto de interacción</button>
+                  <button class="btn tool-button" type="button" data-tool="edit">Editar</button>
+                  <button class="btn tool-button danger" type="button" data-tool="erase">Borrar</button>
+                  <button class="btn tool-button expert-only" type="button" data-tool="crop">Recortar imagen</button>
+                  <button class="btn expert-only" type="button" id="applyCrop">Aplicar recorte</button>
+                  <button class="btn danger" type="button" id="undoScenario">Deshacer último</button>
+                </div>
+                <div class="tool-group">
+                  <h3>Interacción</h3>
+                  <label>Tipo<select id="interactionType">
+                    <option value="scenario">Escenario</option>
+                    <option value="combat">Combate</option>
+                    <option value="conversation">Conversación</option>
+                    <option value="object">Objeto a inventario</option>
+                  </select></label>
+                  <label>Destino creado<select id="interactionTarget"><option value="">Elegir...</option></select></label>
+                  <label>Nombre visible<input id="interactionLabel" placeholder="Hablar con Vera"></label>
+                  <label class="expert-only">Condición<textarea id="interactionCondition" placeholder="Ej: tener llave_torre"></textarea></label>
+                </div>
+                <div class="tool-group inspector">
+                  <h3>Inspector</h3>
+                  <label>Elemento seleccionado<select id="selectedElement"><option value="">Nada seleccionado</option></select></label>
+                  <div class="grid">
+                    <label>X<input type="number" id="editX"></label>
+                    <label>Y<input type="number" id="editY"></label>
+                    <label>Ancho<input type="number" id="editW"></label>
+                    <label>Alto<input type="number" id="editH"></label>
+                  </div>
+                  <label>Etiqueta / destino<input id="editLabel"></label>
+                  <button class="btn success" type="button" id="applyEdit">Aplicar edición</button>
+                  <p class="hint">En modo editar también puedes hacer clic sobre el lienzo para seleccionar.</p>
+                </div>
+                <div class="status" id="scenarioStatus"></div>
+              </aside>
             </div>
           </div>
         </section>
 
-        <section class="tab-panel" id="tab-conversation">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Modo conversación</h2><p>Estructura compatible con presentación, poses y rondas de preguntas como Mara, Vera y Xavor.</p></div><button class="primary" type="button" data-add="conversations">Añadir conversación</button></div>
-            <div class="form-grid" data-form="conversations">
-	              <label>ID de escena<input data-field="id" placeholder="conv_mara_intro"></label>
-	              <label>Personaje<input data-field="character" placeholder="Mara"></label>
-	              <label>Fondo inmutable<input data-field="background" placeholder="assets/fondos/...png"></label>
-	              <label>Subir fondo<input type="file" id="conversationBackgroundFile" accept="image/*"></label>
-	              <label>Carpeta de assets<input data-field="backgroundAssetFolder" id="conversationBackgroundFolder" value="assets/Historia/CARPETAX" placeholder="assets/Historia/CARPETAX"></label>
-	              <label>Imagen presentación<input data-field="presentationImage" placeholder="assets/personajes/mara_presentacion.png"></label>
-	              <label>Pose 1<input data-field="pose1" placeholder="neutral"></label>
-	              <label>Pose 2<input data-field="pose2" placeholder="sonrisa"></label>
-	              <label class="expert-only">Pose 3<input data-field="pose3" placeholder="duda"></label>
-	              <label class="expert-only">Pose 4<input data-field="pose4" placeholder="alerta"></label>
-	              <label class="full">Texto introductorio<textarea data-field="introText" placeholder="Texto de entrada narrativo"></textarea></label>
-	              <label class="full">Preguntas y respuestas ronda 1<textarea data-field="round1" placeholder="P: ¿...? | R1: ... -> consecuencia | R2: ... -> consecuencia"></textarea></label>
-	              <label class="expert-only">Activar segunda ronda<select data-field="secondRoundEnabled"><option value="no">No</option><option value="si">Sí</option></select></label>
-	              <label class="expert-only">Selector / TIC<input data-field="secondRoundSelector" placeholder="tic_confianza_mara"></label>
-	              <label class="full expert-only">Preguntas y respuestas ronda 2<textarea data-field="round2" placeholder="Solo se activa si el selector/TIC se cumple"></textarea></label>
-	            </div>
-	            <div class="reference-panel">
-	              <strong>Enlazar desde otra sección</strong>
-	              <p class="hint">Al guardar, esta conversación aparecerá automáticamente en Puntos del mapa, Interacciones de exploración y Capítulos.</p>
-	            </div>
-            <div class="button-row"><button class="tool-button" type="button" data-save="conversations">Guardar conversación</button><button class="tool-button danger" type="button" data-clear-form="conversations">Limpiar</button></div>
+        <section class="panel" id="tab-conversation">
+          <div class="module">
+            <div class="module-head">
+              <div>
+                <h2>Escenas de conversación</h2>
+                <p>Define personaje, fondo, presentación opcional, cuatro poses y dos rondas posibles de preguntas/respuestas.</p>
+              </div>
+              <button class="btn primary" type="button" id="saveConversation">Guardar conversación</button>
+            </div>
+            <div class="grid">
+              <label>ID conversación<input id="conversationId" placeholder="conv_vera_intro"></label>
+              <label>Personaje<select id="characterSelect"></select></label>
+              <label>Nombre personaje custom<input id="customCharacter" placeholder="Nombre si eliges personalizado"></label>
+              <label>Ruta fondo<input id="conversationBackgroundPath" placeholder="assets/Historia/CARPETAX/"></label>
+              <label>Imagen fondo<input type="file" id="conversationBackgroundFile" accept="image/*"></label>
+              <label>Escena de presentación<select id="hasPresentation"><option value="no">No</option><option value="si">Sí</option></select></label>
+              <label class="presentation-field">Imagen presentación<input type="file" id="presentationImageFile" accept="image/*"></label>
+              <label class="presentation-field">Ruta presentación<input id="presentationImagePath" placeholder="assets/Historia/CARPETAX/"></label>
+              <label>Pose 1<input type="file" id="pose1File" accept="image/*"></label>
+              <label>Ruta pose 1<input id="pose1Path" placeholder="assets/Historia/CARPETAX/"></label>
+              <label>Pose 2<input type="file" id="pose2File" accept="image/*"></label>
+              <label>Ruta pose 2<input id="pose2Path" placeholder="assets/Historia/CARPETAX/"></label>
+              <label>Pose 3<input type="file" id="pose3File" accept="image/*"></label>
+              <label>Ruta pose 3<input id="pose3Path" placeholder="assets/Historia/CARPETAX/"></label>
+              <label>Pose 4<input type="file" id="pose4File" accept="image/*"></label>
+              <label>Ruta pose 4<input id="pose4Path" placeholder="assets/Historia/CARPETAX/"></label>
+              <label class="full">Parte del personaje inicial<textarea id="dialogueIntro" placeholder="Vera mira el mercado desde la cornisa..."></textarea></label>
+            </div>
+            <div class="conversation-block">
+              <h3>Ronda 1: tres preguntas y tres respuestas</h3>
+              <div class="grid three" id="roundOneFields"></div>
+            </div>
+            <div class="conversation-block expert-only">
+              <h3>Ronda 2 opcional</h3>
+              <div class="grid">
+                <label>Activar segunda ronda<select id="secondRoundEnabled"><option value="no">No</option><option value="si">Sí</option></select></label>
+                <label>Selector / TIC<input id="secondRoundCondition" placeholder="tic_confianza_vera"></label>
+              </div>
+              <div class="grid three" id="roundTwoFields"></div>
+            </div>
+            <div class="conversation-block">
+              <h3>Cierre y recompensa opcional</h3>
+              <div class="grid">
+                <label class="full">Frase final del personaje<textarea id="dialogueFinal" placeholder="Cuando vuelvas, trae una carta que no tiemble."></textarea></label>
+                <label>Recompensa existente<select id="conversationReward"><option value="">Sin recompensa</option></select></label>
+                <label>Nuevo objeto: nombre<input id="newRewardName" placeholder="Llave de Vera"></label>
+                <label>Nuevo objeto: imagen<input type="file" id="newRewardImageFile" accept="image/*"></label>
+                <label>Nuevo objeto: ruta<input id="newRewardImagePath" placeholder="assets/Historia/CARPETAX/"></label>
+                <label class="full">Nuevo objeto: efecto<textarea id="newRewardEffect" placeholder="Abre la puerta trasera del hangar"></textarea></label>
+              </div>
+            </div>
             <div class="list" id="list-conversations"></div>
           </div>
         </section>
 
-        <section class="tab-panel" id="tab-inventory">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Inventario y recompensas</h2><p>Define objetos y recompensas reutilizables en fases, combates, tiendas o capítulos.</p></div><button class="primary" type="button" data-add="inventoryItems">Añadir objeto</button></div>
-            <div class="form-grid" data-form="inventoryItems">
-              <label>ID<input data-field="id" placeholder="llave_torre_4b"></label>
-              <label>Nombre<input data-field="name" placeholder="Llave oxidada de la torre"></label>
-	              <label>Tipo<select data-field="type"><option>monedas</option><option>carta</option><option>imagen_objeto</option><option>objeto_narrativo</option><option>desbloqueo</option><option>variable</option></select></label>
-	              <label>Valor / cantidad<input data-field="value" placeholder="25"></label>
-	              <label>Imagen<input data-field="image" placeholder="assets/objetos/llave.png"></label>
-	              <label class="expert-only">Rareza<select data-field="rarity"><option>comun</option><option>raro</option><option>epico</option><option>legendario</option><option>historia</option></select></label>
-              <label class="full">Descripción<textarea data-field="description" placeholder="Qué es y para qué sirve"></textarea></label>
+        <section class="panel" id="tab-combat">
+          <div class="module">
+            <div class="module-head">
+              <div>
+                <h2>Combate</h2>
+                <p>El nombre del combate es el identificador que después podrás seleccionar desde un punto de interacción del escenario.</p>
+              </div>
+              <button class="btn primary" type="button" id="saveCombat">Guardar combate</button>
             </div>
-            <div class="button-row"><button class="tool-button" type="button" data-save="inventoryItems">Guardar objeto</button><button class="tool-button danger" type="button" data-clear-form="inventoryItems">Limpiar</button></div>
-            <div class="list" id="list-inventoryItems"></div>
-          </div>
-        </section>
-
-        <section class="tab-panel" id="tab-shops">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Tiendas</h2><p>Modifica la tienda de Vera o crea tiendas nuevas enlazables desde interacciones.</p></div><button class="primary" type="button" data-add="shops">Añadir tienda</button></div>
-            <div class="form-grid" data-form="shops">
-              <label>ID de tienda<input data-field="id" placeholder="tienda_vera"></label>
-              <label>Nombre<input data-field="name" placeholder="Tienda de Vera"></label>
-	              <label>Vendedor<input data-field="vendor" placeholder="Vera"></label>
-	              <label>Fondo / imagen<input data-field="background" placeholder="assets/tiendas/vera.png"></label>
-	              <label class="full">Artículos<textarea data-field="items" placeholder="1) id: carta_corazones_7 | tipo: carta | precio: 20 | descripción:...&#10;2) id: reliquia_x | tipo: imagen_objeto | precio: 60 | imagen:..."></textarea></label>
-	              <label class="expert-only">Añadir objeto existente<select id="shopItemPicker"><option value="">Elegir objeto...</option></select></label>
-	              <label class="full expert-only">Condiciones de aparición<textarea data-field="conditions" placeholder="Ej: aparece desde capítulo 2 o tras completar conv_vera_confianza"></textarea></label>
+            <div class="grid">
+              <label>ID / nombre del combate<input id="combatId" placeholder="combate_xavor_01"></label>
+              <label>Enemigo<input id="combatEnemy" placeholder="Xavor"></label>
+              <label>Tipo visual<select id="combatVisualType">
+                <option>mecha_evolutivo_normal</option>
+                <option>imagen_fija</option>
+                <option>sprite_combate</option>
+                <option>perfil_personalizado</option>
+              </select></label>
+              <label>Imagen / perfil<input id="combatVisualSource" placeholder="assets/... o STORY_TOWER_COMBAT_PROFILES.xavor"></label>
+              <label>Panel inicial<input id="combatInitialPanel" placeholder="ataque: 5; defensa: 3; combustible: 2"></label>
+              <label>Privación de palo<select id="combatForbiddenSuit">
+                <option value="">Ninguna</option>
+                <option>corazones</option>
+                <option>diamantes</option>
+                <option>treboles</option>
+                <option>picas</option>
+              </select></label>
+              <label>Combate especial<select id="combatSpecialEnabled"><option value="no">No</option><option value="si">Sí</option></select></label>
+              <label>Combate hackeado<select id="combatHackedEnabled"><option value="no">No</option><option value="si">Sí</option></select></label>
+              <label class="full">Descripción de combate especial<textarea id="combatSpecialDescription" placeholder="Qué regla especial tiene, cuándo se activa y qué debe sentir el jugador."></textarea></label>
+              <label class="full">Cómo afecta el hackeo<textarea id="combatHackEffect" placeholder="Ej: cambia probabilidades, bloquea palo, altera combustible, roba una carta..."></textarea></label>
+              <label class="full expert-only">Reglas extra<textarea id="combatExtraRules" placeholder="Reglas técnicas, duración por turnos, flags y condiciones."></textarea></label>
+              <label class="full">Resultados y recompensas<textarea id="combatOutcomes" placeholder="Victoria: ... | Derrota: ..."></textarea></label>
             </div>
-            <div class="button-row"><button class="tool-button" type="button" data-save="shops">Guardar tienda</button><button class="tool-button danger" type="button" data-clear-form="shops">Limpiar</button></div>
-            <div class="list" id="list-shops"></div>
-          </div>
-        </section>
-
-        <section class="tab-panel" id="tab-combats">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Editor de combates</h2><p>Configura enemigo, visual, panel inicial, reglas especiales y comentarios de diseño.</p></div><button class="primary" type="button" data-add="combats">Añadir combate</button></div>
-            <div class="form-grid" data-form="combats">
-              <label>ID de combate<input data-field="id" placeholder="combate_xavor_01"></label>
-              <label>Nombre enemigo<input data-field="enemyName" placeholder="Xavor"></label>
-              <label>Tipo visual<select data-field="visualType"><option>mecha_evolutivo_normal</option><option>imagen_fija</option><option>sprite_combate</option><option>perfil_personalizado</option></select></label>
-              <label>Imagen / perfil<input data-field="visualSource" placeholder="assets/... o STORY_TOWER_COMBAT_PROFILES.xavor"></label>
-	              <label>Panel inicial enemigo<input data-field="initialPanel" placeholder="ataque: 5; defensa: 3; combustible: 2"></label>
-	              <label>Regla de privación de palo<select data-field="forbiddenSuit"><option value="">Ninguna</option><option>corazones</option><option>diamantes</option><option>treboles</option><option>picas</option></select></label>
-	              <label class="full expert-only">Reglas especiales<textarea data-field="specialRules" placeholder="Ej: durante 3 turnos no se pueden usar picas; al fallar defensa pierde 1 moneda"></textarea></label>
-	              <label class="full expert-only">Comentarios de diseño<textarea data-field="designerComments" placeholder="Notas para IA/programador/tester"></textarea></label>
-	              <label class="full expert-only">Recompensas / derrota<textarea data-field="outcomes" placeholder="Victoria: ... | Derrota: ..."></textarea></label>
-            </div>
-            <div class="button-row"><button class="tool-button" type="button" data-save="combats">Guardar combate</button><button class="tool-button danger" type="button" data-clear-form="combats">Limpiar</button></div>
             <div class="list" id="list-combats"></div>
           </div>
         </section>
 
-        <section class="tab-panel" id="tab-chapters">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Capítulos y secuencia</h2><p>Ordena capítulos y enlaza pasos con escenas o posibilidades creadas previamente.</p></div><button class="primary" type="button" data-add="chapters">Añadir capítulo</button></div>
-            <div class="form-grid" data-form="chapters">
-              <label>ID capítulo<input data-field="id" placeholder="capitulo_1"></label>
-              <label>Título<input data-field="title" placeholder="La señal bajo el mercado"></label>
-              <label>Orden<input type="number" data-field="order" placeholder="1"></label>
-              <label>Estado inicial<select data-field="initialState"><option>bloqueado</option><option>disponible</option><option>completado</option></select></label>
-	              <label class="full">Secuencia<textarea data-field="sequence" placeholder="1) mapa: mercado_reles_muertos&#10;2) conversacion: conv_mara_intro&#10;3) exploracion: expl_mercado_01&#10;4) combate: combate_xavor_01"></textarea></label>
-	              <label class="expert-only">Tipo de paso<select id="chapterStepType"><option value="mapa">mapa</option><option value="exploracion">exploracion</option><option value="conversacion">conversacion</option><option value="tienda">tienda</option><option value="combate">combate</option><option value="isometrico">isometrico</option><option value="recompensa">recompensa</option></select></label>
-	              <label class="expert-only">Elemento existente<select id="chapterStepTarget"><option value="">Elegir elemento...</option></select></label>
-	              <label class="full expert-only">Condiciones de avance<textarea data-field="advanceConditions" placeholder="Qué debe ocurrir para pasar al siguiente capítulo"></textarea></label>
-	              <label class="full expert-only">Recompensa final<textarea data-field="finalReward" placeholder="Monedas, objetos, desbloqueos, variables de historia"></textarea></label>
-	            </div>
-	            <div class="button-row expert-flex expert-only"><button class="tool-button" type="button" id="appendChapterStep">Añadir paso seleccionado</button></div>
-            <div class="button-row"><button class="tool-button" type="button" data-save="chapters">Guardar capítulo</button><button class="tool-button danger" type="button" data-clear-form="chapters">Limpiar</button></div>
-            <div class="list" id="list-chapters"></div>
+        <section class="panel" id="tab-shops">
+          <div class="module">
+            <div class="module-head">
+              <div>
+                <h2>Tiendas</h2>
+                <p>Mantiene el modelo actual: tienda, vendedor, fondo, artículos y condiciones opcionales.</p>
+              </div>
+              <button class="btn primary" type="button" id="saveShop">Guardar tienda</button>
+            </div>
+            <div class="grid">
+              <label>ID tienda<input id="shopId" placeholder="tienda_vera"></label>
+              <label>Nombre<input id="shopName" placeholder="Tienda de Vera"></label>
+              <label>Vendedor<input id="shopVendor" placeholder="Vera"></label>
+              <label>Fondo / imagen<input id="shopBackground" placeholder="assets/tiendas/vera.png"></label>
+              <label class="full">Artículos<textarea id="shopItems" placeholder="1) id: carta_corazones_7 | tipo: carta | precio: 20 | descripción:..."></textarea></label>
+              <label>Añadir objeto existente<select id="shopObjectPicker"><option value="">Elegir objeto...</option></select></label>
+              <label class="full expert-only">Condiciones de aparición<textarea id="shopConditions" placeholder="Ej: capítulo 2, tras completar conv_vera_confianza"></textarea></label>
+            </div>
+            <div class="list" id="list-shops"></div>
           </div>
         </section>
 
-        <section class="tab-panel" id="tab-isometric">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Generador de escenarios de vista isométrica</h2><p>Carga una foto, dibujo o mapa plano. El estudio la muestrea y genera una maqueta isométrica por teselas.</p></div></div>
-            <div class="iso-stage">
-              <div class="iso-canvas"><canvas id="isoCanvas" width="1100" height="720"></canvas></div>
-              <div class="tools-panel">
-                <label>Imagen base<input type="file" id="isoImage" accept="image/*"></label>
-	                <div class="inline"><label>Columnas<input type="number" id="isoCols" value="14" min="4" max="42"></label><label>Filas<input type="number" id="isoRows" value="14" min="4" max="42"></label></div>
-	                <div class="inline expert-flex expert-only"><label>Ancho tesela<input type="number" id="isoTileW" value="64" min="24" max="140"></label><label>Alto tesela<input type="number" id="isoTileH" value="32" min="12" max="80"></label></div>
-                <label>Extrusión / relieve<input type="range" id="isoHeight" min="0" max="42" value="16"></label>
-                <label>Interpretación<select id="isoMode"><option value="color">Color dominante</option><option value="height">Relieve por luminosidad</option><option value="mixed">Color + relieve</option></select></label>
-                <button class="primary" type="button" id="generateIso">Generar isométrico</button>
-	                <button class="tool-button" type="button" id="saveIsoScene">Guardar como escena de exploración</button>
-	                <button class="tool-button" type="button" id="downloadIsoPng">Descargar PNG</button>
-	                <p class="hint">Al guardar, se crea una escena isométrica y también una exploración cargable desde la sección Exploración.</p>
-	                <div class="status-line" id="isoStatus"></div>
-	              </div>
+        <section class="panel" id="tab-compile">
+          <div class="module">
+            <div class="module-head">
+              <div>
+                <h2>Compilación Final</h2>
+                <p>Prueba lo creado en un HTML sencillo y extrae el JSON final para integración.</p>
+              </div>
+              <div class="button-row">
+                <button class="btn primary" type="button" id="refreshPreview">Probar HTML</button>
+                <button class="btn" type="button" id="copyJson">Copiar JSON</button>
+                <button class="btn" type="button" id="downloadJson">Descargar JSON</button>
+                <button class="btn" type="button" id="downloadHtml">Descargar HTML</button>
+                <label class="btn">Importar JSON<input class="hidden" type="file" id="importJson" accept="application/json,.json"></label>
+                <button class="btn danger" type="button" id="resetProject">Vaciar</button>
+              </div>
             </div>
-          </div>
-        </section>
-
-        <section class="tab-panel" id="tab-export">
-          <div class="panel">
-            <div class="panel-head"><div><h2>Exportar, importar y compartir</h2><p>JSON primero. HTML opcional con el paquete embebido para compartir un briefing autocontenido.</p></div></div>
-            <div class="button-row">
-              <button class="primary" type="button" id="copyJson">Copiar JSON</button>
-              <button class="tool-button" type="button" id="downloadJson">Descargar .json</button>
-              <button class="tool-button" type="button" id="copyHtml">Copiar HTML briefing</button>
-              <button class="tool-button" type="button" id="downloadHtml">Descargar .html</button>
-              <label class="tool-button">Importar JSON<input class="hidden" type="file" id="importJson" accept="application/json,.json"></label>
-              <button class="tool-button danger" type="button" id="resetProject">Vaciar proyecto</button>
-            </div>
-            <div class="export-grid">
+            <div class="compile-grid">
+              <iframe class="test-frame" id="testFrame" title="Prueba HTML Creative Studio"></iframe>
               <textarea class="export-box" id="jsonOutput" spellcheck="false"></textarea>
-              <textarea class="export-box" id="htmlOutput" spellcheck="false"></textarea>
             </div>
           </div>
         </section>
       </div>
 
-      <aside class="help-rail" aria-label="Ayuda de herramientas">
-        <div class="help-card" id="contextHelp"><h2>Ayuda contextual</h2><p>Selecciona una pestaña para ver instrucciones concretas.</p></div>
-        <div class="help-card">
-          <h3>Consejo de IDs</h3>
-          <p>Usa IDs cortos, sin espacios y descriptivos: <code>conv_vera_tienda_01</code>, <code>expl_hangar_baja</code>, <code>combate_mara_prueba</code>.</p>
+      <aside class="side" aria-label="Ayuda contextual">
+        <div class="side-card" id="contextHelp">
+          <h2>Escenario</h2>
+          <ul>
+            <li>Dibuja colisiones como rectángulos u óvalos.</li>
+            <li>Los puntos dorados enlazan con escenarios, combates, conversaciones u objetos.</li>
+            <li>Activa modo experto para recortar, condiciones y ajustes finos.</li>
+          </ul>
         </div>
-        <div class="help-card">
-          <h3>Prompt sugerido para IA</h3>
-          <p>“Integra este JSON en PoCoBOT respetando la estructura existente de modo historia, diálogos, tiendas y combates. Si falta información, pregunta antes de inventar.”</p>
+        <div class="side-card">
+          <h3>Inventario del proyecto</h3>
+          <p id="projectStats">Sin elementos todavía.</p>
+        </div>
+        <div class="side-card">
+          <h3>Personajes conocidos</h3>
+          <p class="hint">El desplegable incluye personajes base. Si eliges uno existente, las imágenes son opcionales porque el juego puede resolverlas durante la integración.</p>
         </div>
       </aside>
     </main>
 
-    <footer class="studio-footer">PoCoBOT Creative Studio · prototipador interno para convertir ideas creativas en datos listos para integración.</footer>
+    <footer class="footer">PoCoBOT Creative Studio · JSON primero, HTML de prueba para revisar lo creado sin tocar código del juego.</footer>
   </div>
 
-	  <script>
-	    const STORAGE_KEY = 'pocobotCreativeStudioProject';
-	    const EXPERT_KEY = 'pocobotCreativeStudioExpertMode';
-	    const state = {
-	      meta: { tool: 'PoCoBOT Creative Studio', version: '1.1.0', jsonFirst: true, htmlOptional: true, linkedSections: true },
-	      mapPoints: [], explorations: [], conversations: [], inventoryItems: [], shops: [], combats: [], chapters: [], isometricScenes: []
-	    };
-	    const help = {
-	      guide: ['Esta guía enseña el orden recomendado.', 'No hace falta saber programar: escribe ideas claras, IDs y consecuencias.', 'Activa Modo experto solo cuando quieras condiciones, reglas avanzadas o ajustes finos.'],
-	      map: ['Un punto de mapa es una puerta de entrada a una escena.', 'Usa “Usar escena existente” para enlazar algo creado en otra pestaña sin copiar IDs a mano.', 'Las condiciones y recompensas viven en Modo experto para no molestar durante el boceto rápido.'],
-	      exploration: ['Carga una imagen base, una escena guardada o una iteración isométrica.', 'Puedes crear colisiones rectangulares, circulares o poligonales, y borrar elementos con clic.', 'Las interacciones pueden apuntar a conversaciones, tiendas, combates, recompensas o mapas ya creados.'],
-	      conversation: ['Puedes escribir una ruta de fondo o subir una imagen para generar la ruta assets/Historia/CARPETAX/nombre.png.', 'Al guardar, la conversación queda disponible para mapa, exploración y capítulos.', 'Poses extra y segunda ronda se muestran en Modo experto.'],
-	      inventory: ['Crea recompensas reutilizables: monedas, cartas, objetos, imágenes o desbloqueos.', 'Después puedes seleccionarlas desde tiendas, interacciones y capítulos.', 'Describe siempre para qué sirve cada objeto.'],
-	      shops: ['Puedes recrear la tienda de Vera o crear una nueva.', 'En Modo experto puedes añadir objetos existentes al listado de artículos.', 'Las tiendas se pueden enlazar desde puntos de interacción o mapa.'],
-	      combats: ['Define enemigo, visual, panel inicial y regla principal.', 'Las reglas especiales y comentarios avanzados quedan en Modo experto.', 'Los combates se pueden seleccionar desde mapa, exploración y capítulos.'],
-	      chapters: ['El capítulo ordena el contenido en pasos.', 'En Modo experto puedes insertar pasos seleccionando elementos creados en otras pestañas.', 'La secuencia puede estar escrita en lenguaje natural o lista numerada.'],
-	      isometric: ['Carga una imagen, dibujo o foto para crear una maqueta isométrica.', 'El generador muestrea colores y puede levantar teselas según luminosidad.', 'Guardar como escena crea también una exploración cargable en la pestaña Exploración.'],
-	      export: ['Copia o descarga JSON como formato principal.', 'El HTML opcional crea un briefing autocontenido.', 'Importa un JSON previo para continuar editando.']
-	    };
-	    const schemas = {
-	      mapPoints: ['id','name','type','initialState','chapters','target','unlockConditions','rewards'],
-	      conversations: ['id','character','background','backgroundAssetFolder','presentationImage','pose1','pose2','pose3','pose4','introText','round1','secondRoundEnabled','secondRoundSelector','round2'],
-	      inventoryItems: ['id','name','type','value','image','rarity','description'],
-	      shops: ['id','name','vendor','background','items','conditions'],
-	      combats: ['id','enemyName','visualType','visualSource','initialPanel','forbiddenSuit','specialRules','designerComments','outcomes'],
-	      chapters: ['id','title','order','initialState','sequence','advanceConditions','finalReward']
-	    };
-	    let explorationImageData = '';
-	    let isoImage = null;
-	    let drawMode = 'collision-rect';
-	    let draftCollision = null;
-	    let draftPolygon = [];
-	    const explorationDraft = { collisions: [], interactions: [] };
+  <script>
+    const STORAGE_KEY = 'pocobotCreativeStudioProjectV2';
+    const OLD_STORAGE_KEY = 'pocobotCreativeStudioProject';
+    const EXPERT_KEY = 'pocobotCreativeStudioExpertModeV2';
+    const GAME_CHARACTERS = ['PoCoBOT','Mara','Vera','Xavor','Piloto 4B','Rival anónimo','Personalizado'];
+    const ASSET_FOLDER = 'assets/Historia/CARPETAX';
+    const state = {
+      meta: {
+        tool: 'PoCoBOT Creative Studio',
+        version: '2.0.0',
+        structure: 'scenario-conversation-combat-shops-compile',
+        jsonFirst: true,
+        htmlPreview: true
+      },
+      scenarios: [],
+      conversations: [],
+      combats: [],
+      shops: [],
+      inventoryItems: []
+    };
+    const mediaStore = {};
+    const scenarioDraft = {
+      imageData: '',
+      collisions: [],
+      interactions: [],
+      crop: null,
+      selected: null
+    };
+    let tool = 'rect';
+    let dragStart = null;
+    let dragPreview = null;
 
-	    function cloneProject(){ return JSON.parse(JSON.stringify(state)); }
-	    function safeId(prefix){ return `${prefix}_${Date.now().toString(36)}`; }
-	    function formValue(formName, field){ const node = document.querySelector(`[data-form="${formName}"] [data-field="${field}"]`); return node ? node.value.trim() : ''; }
-	    function clearForm(formName){ document.querySelectorAll(`[data-form="${formName}"] [data-field]`).forEach(node => node.value = node.tagName === 'SELECT' ? node.options[0].value : ''); }
-	    function upsertItem(collection, fields){
-	      const item = {}; fields.forEach(field => item[field] = formValue(collection, field));
-	      if(!item.id) item.id = safeId(collection);
-	      const index = state[collection].findIndex(entry => entry.id === item.id);
-	      if(index >= 0) state[collection][index] = item; else state[collection].push(item);
-	      clearForm(collection); persist(); renderLists(); updateOutputs();
-	    }
-	    function deleteItem(collection, id){ state[collection] = state[collection].filter(item => item.id !== id); persist(); renderLists(); updateOutputs(); }
-	    function editItem(collection, id){ const item = state[collection].find(entry => entry.id === id); if(!item) return; Object.entries(item).forEach(([field,value]) => { const node = document.querySelector(`[data-form="${collection}"] [data-field="${field}"]`); if(node) node.value = value; }); }
-	    function renderLists(){
-	      Object.keys(schemas).forEach(collection => {
-	        const list = document.getElementById(`list-${collection}`);
-	        if(!list) return;
-	        list.innerHTML = state[collection].map(item => `<article class="item-card"><div class="item-title"><div><strong>${escapeHtml(item.name || item.title || item.enemyName || item.character || item.id)}</strong><small>${escapeHtml(item.id)}</small></div><div class="button-row"><button class="tool-button" type="button" data-edit-item="${collection}|${item.id}">Editar</button><button class="tool-button danger" type="button" data-delete-item="${collection}|${item.id}">Eliminar</button></div></div><p>${escapeHtml(item.type || item.visualType || item.initialState || item.target || '')}</p></article>`).join('');
-	      });
-	      renderExplorationsList();
-	      populateReferenceControls();
-	    }
-	    function renderExplorationsList(){
-	      const list = document.getElementById('list-explorations');
-	      if(!list) return;
-	      list.innerHTML = state.explorations.map(item => `<article class="item-card"><div class="item-title"><div><strong>${escapeHtml(item.name || item.id)}</strong><small>${escapeHtml(item.id)}</small></div><div class="button-row"><button class="tool-button" type="button" data-load-exploration="${item.id}">Cargar</button><button class="tool-button danger" type="button" data-delete-item="explorations|${item.id}">Eliminar</button></div></div><p>${escapeHtml(`${(item.collisions || []).length} colisiones · ${(item.interactions || []).length} interacciones`)}</p></article>`).join('');
-	    }
-	    function escapeHtml(text){ return String(text || '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
-	    function persist(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('saveState').textContent = 'Guardado local'; }
-	    function loadStored(){
-	      const raw = localStorage.getItem(STORAGE_KEY);
-	      if(!raw) return;
-	      try {
-	        const parsed = JSON.parse(raw);
-	        Object.keys(state).forEach(key => {
-	          if(Array.isArray(state[key]) && Array.isArray(parsed[key])) state[key] = parsed[key];
-	          else if(key === 'meta' && parsed[key]) state[key] = { ...state[key], ...parsed[key], version: state.meta.version, linkedSections: true };
-	        });
-	      } catch(error) { console.warn('No se pudo importar el borrador local', error); }
-	    }
-	    function packageJson(){ return JSON.stringify(cloneProject(), null, 2); }
-	    function makeBriefingHtml(){ const json = packageJson(); return `<!DOCTYPE html>\n<html lang="es"><head><meta charset="UTF-8"><title>Briefing PoCoBOT</title><style>body{font-family:system-ui;background:#07111f;color:#f7fbff;padding:24px}pre{white-space:pre-wrap;background:#050b14;border:1px solid #55dcff55;border-radius:18px;padding:18px}</style></head><body><h1>Briefing PoCoBOT Creative Studio</h1><p>Paquete exportado para revisión creativa o integración técnica.</p><pre>${escapeHtml(json)}</pre></body></html>`; }
-	    function updateOutputs(){ const json = packageJson(); document.getElementById('livePreview').textContent = json.slice(0, 1800) + (json.length > 1800 ? '\n…' : ''); document.getElementById('jsonOutput').value = json; document.getElementById('htmlOutput').value = makeBriefingHtml(); }
-	    async function copyText(text){ await navigator.clipboard.writeText(text); document.getElementById('saveState').textContent = 'Copiado al portapapeles'; }
-	    function downloadFile(name, type, content){ const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = name; link.click(); URL.revokeObjectURL(url); }
-	    function setStatus(id, text){ const node = document.getElementById(id); if(node) node.textContent = text || ''; }
-	    function setExpertMode(enabled){
-	      document.body.classList.toggle('expert-mode', enabled);
-	      localStorage.setItem(EXPERT_KEY, enabled ? '1' : '0');
-	      const toggle = document.getElementById('expertToggle');
-	      toggle.setAttribute('aria-pressed', String(enabled));
-	      toggle.textContent = enabled ? 'Modo experto activo' : 'Modo experto';
-	    }
-	    function bindHiddenLabAccess(){
-	      const icon = document.getElementById('creativeStudioIcon');
-	      if(!icon) return;
+    const help = {
+      scenario: ['Dibuja colisiones arrastrando sobre la imagen.', 'Usa puntos de interacción para enlazar contenido ya creado.', 'Editar selecciona un elemento y permite ajustar coordenadas.'],
+      conversation: ['Si eliges personaje existente, las imágenes son opcionales.', 'La primera ronda siempre tiene tres opciones de pregunta.', 'Modo experto desbloquea segunda ronda con selector/TIC.'],
+      combat: ['El ID del combate será el nombre que aparece en Escenario.', 'Marca especial o hackeado y describe cómo afecta.', 'Las reglas extra viven en modo experto.'],
+      shops: ['Puedes escribir artículos manualmente o insertar objetos del inventario.', 'Las condiciones de aparición están en modo experto.', 'El modelo se mantiene compatible con la tienda actual.'],
+      compile: ['Probar HTML genera una maqueta navegable local.', 'El JSON es el contrato principal para integrar el contenido.', 'Puedes importar JSON para seguir iterando.']
+    };
+
+    function $(selector){ return document.querySelector(selector); }
+    function $all(selector){ return Array.from(document.querySelectorAll(selector)); }
+    function safeId(prefix){ return `${prefix}_${Date.now().toString(36)}`; }
+    function escapeHtml(value){ return String(value || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function clone(value){ return JSON.parse(JSON.stringify(value)); }
+    function status(text){ $('#saveState').textContent = text; }
+    function setScenarioStatus(text){ $('#scenarioStatus').textContent = text || ''; }
+    function filePathFromInput(file, folder = ASSET_FOLDER){ return file ? `${folder}/${file.name.replace(/\s+/g, '_')}` : ''; }
+    function readFileAsDataUrl(file, callback){
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => callback(reader.result);
+      reader.readAsDataURL(file);
+    }
+
+    function packageData(){
+      const project = clone(state);
+      project.references = {
+        scenarioTargets: referenceOptions('scenario').map(item => item.id),
+        combatTargets: referenceOptions('combat').map(item => item.id),
+        conversationTargets: referenceOptions('conversation').map(item => item.id),
+        inventoryTargets: referenceOptions('object').map(item => item.id)
+      };
+      return project;
+    }
+    function packageJson(){ return JSON.stringify(packageData(), null, 2); }
+    function persist(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      status('Guardado local');
+      renderAll();
+    }
+    function loadStored(){
+      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(OLD_STORAGE_KEY);
+      if(!raw) return;
+      try{
+        const parsed = JSON.parse(raw);
+        state.scenarios = parsed.scenarios || parsed.explorations || [];
+        state.conversations = parsed.conversations || [];
+        state.combats = parsed.combats || [];
+        state.shops = parsed.shops || [];
+        state.inventoryItems = parsed.inventoryItems || [];
+      }catch(error){
+        console.warn('No se pudo cargar el borrador', error);
+      }
+    }
+    function updateOutputs(){
+      const json = packageJson();
+      $('#livePreview').textContent = json.slice(0, 1800) + (json.length > 1800 ? '\n...' : '');
+      $('#jsonOutput').value = json;
+      $('#projectStats').textContent = `${state.scenarios.length} escenarios · ${state.conversations.length} conversaciones · ${state.combats.length} combates · ${state.shops.length} tiendas · ${state.inventoryItems.length} objetos`;
+    }
+
+    function setExpertMode(enabled){
+      document.body.classList.toggle('expert-mode', enabled);
+      localStorage.setItem(EXPERT_KEY, enabled ? '1' : '0');
+      $('#expertToggle').setAttribute('aria-pressed', String(enabled));
+      $('#expertToggle').textContent = enabled ? 'Modo experto activo' : 'Modo experto';
+    }
+    function bindHiddenLabAccess(){
+      const icon = $('#creativeStudioIcon');
       let taps = 0;
       let timer = null;
       icon.addEventListener('click', () => {
         taps += 1;
-        window.clearTimeout(timer);
-        if(taps >= 5){
-          window.location.href = 'MODO_DESARROLLADOR_POCObot.html';
-          return;
-        }
-	        timer = window.setTimeout(() => { taps = 0; }, 1800);
-	      });
-	    }
-	    function referenceOptions(kind = 'all'){
-	      const wrap = (collection, type, labeler) => state[collection].map(item => ({ id: item.id, type, label: labeler(item) }));
-	      const groups = {
-	        mapa: wrap('mapPoints', 'mapa', item => item.name || item.id),
-	        exploracion: wrap('explorations', 'exploracion', item => item.name || item.id),
-	        conversacion: wrap('conversations', 'conversacion', item => `${item.character || 'Conversacion'} · ${item.id}`),
-	        tienda: wrap('shops', 'tienda', item => item.name || item.id),
-	        combate: wrap('combats', 'combate', item => item.enemyName || item.id),
-	        isometrico: wrap('isometricScenes', 'isometrico', item => item.name || item.id),
-	        recompensa: wrap('inventoryItems', 'recompensa', item => item.name || item.id)
-	      };
-	      if(kind === 'all') return Object.values(groups).flat();
-	      return groups[kind] || [];
-	    }
-	    function fillSelect(select, options, placeholder){
-	      if(!select) return;
-	      const previous = select.value;
-	      select.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + options.map(option => `<option value="${escapeHtml(option.id)}" data-type="${escapeHtml(option.type)}">${escapeHtml(option.type)} · ${escapeHtml(option.label)}</option>`).join('');
-	      if(options.some(option => option.id === previous)) select.value = previous;
-	    }
-	    function populateReferenceControls(){
-	      fillSelect(document.getElementById('mapTargetPicker'), referenceOptions('all'), 'Elegir escena creada...');
-	      fillSelect(document.getElementById('savedExplorationSelect'), referenceOptions('exploracion'), 'Elegir exploracion...');
-	      fillInteractionTargetPicker();
-	      fillChapterStepTarget();
-	      fillSelect(document.getElementById('shopItemPicker'), referenceOptions('recompensa'), 'Elegir objeto...');
-	    }
-	    function fillInteractionTargetPicker(){
-	      const map = { ir_a_mapa: 'mapa', conversacion: 'conversacion', combate: 'combate', tienda: 'tienda', recompensa: 'recompensa' };
-	      const type = document.getElementById('interactionType').value;
-	      fillSelect(document.getElementById('interactionTargetPicker'), referenceOptions(map[type] || 'all'), 'Elegir destino...');
-	    }
-	    function fillChapterStepTarget(){
-	      const type = document.getElementById('chapterStepType')?.value || 'mapa';
-	      fillSelect(document.getElementById('chapterStepTarget'), referenceOptions(type), 'Elegir elemento...');
-	    }
-	    function appendLine(textarea, line){
-	      if(!textarea || !line) return;
-	      const prefix = textarea.value.trim() ? '\n' : '';
-	      textarea.value += `${prefix}${line}`;
-	    }
-
-	    function drawExploration(){
-	      const canvas = document.getElementById('explorationCanvas'); const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = '#091526'; ctx.fillRect(0,0,canvas.width,canvas.height);
-	      const finish = () => {
-	        ctx.strokeStyle = 'rgba(143,244,255,.18)';
-	        for(let x=0;x<canvas.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
-	        for(let y=0;y<canvas.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
-	        explorationDraft.collisions.concat(draftCollision ? [draftCollision] : []).forEach((collision,index) => drawCollision(ctx, collision, index + 1));
-	        drawDraftPolygon(ctx);
-	        explorationDraft.interactions.forEach((point,index) => {
-	          ctx.fillStyle = '#ffd55f'; ctx.strokeStyle = '#241705'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(point.x, point.y, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#241705'; ctx.font = 'bold 11px system-ui'; ctx.fillText(String(index + 1), point.x - 3, point.y + 4);
-	        });
-	        const startX = Number(document.querySelector('[data-exploration][data-field="startX"]').value || 160); const startY = Number(document.querySelector('[data-exploration][data-field="startY"]').value || 220); ctx.fillStyle = '#55dcff'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(startX,startY,13,0,Math.PI*2); ctx.fill(); ctx.stroke();
-	      };
-	      if(explorationImageData){ const img = new Image(); img.onload = () => { ctx.drawImage(img,0,0,canvas.width,canvas.height); finish(); }; img.src = explorationImageData; } else finish();
-	    }
-	    function drawCollision(ctx, collision, index){
-	      const shape = collision.shape || 'rect';
-	      ctx.fillStyle = 'rgba(255,123,134,.24)'; ctx.strokeStyle = '#ff7b86'; ctx.lineWidth = 2;
-	      if(shape === 'circle'){
-	        ctx.beginPath(); ctx.arc(collision.x, collision.y, Math.max(1, collision.r || 1), 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-	      } else if(shape === 'polygon'){
-	        drawPath(ctx, collision.points || [], true); ctx.fill(); ctx.stroke();
-	      } else {
-	        const x = Math.min(collision.x, collision.x + (collision.w || 0)); const y = Math.min(collision.y, collision.y + (collision.h || 0)); const w = Math.abs(collision.w || 0); const h = Math.abs(collision.h || 0); ctx.fillRect(x,y,w,h); ctx.strokeRect(x,y,w,h);
-	      }
-	      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px system-ui'; ctx.fillText(String(index), (collision.x || collision.points?.[0]?.x || 8) + 5, (collision.y || collision.points?.[0]?.y || 8) - 6);
-	    }
-	    function drawPath(ctx, points, close){
-	      if(!points.length) return;
-	      ctx.beginPath(); points.forEach((point,index) => index ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y)); if(close) ctx.closePath();
-	    }
-	    function drawDraftPolygon(ctx){
-	      if(!draftPolygon.length) return;
-	      ctx.strokeStyle = '#ff7b86'; ctx.fillStyle = '#ff7b86'; ctx.lineWidth = 2; drawPath(ctx, draftPolygon, false); ctx.stroke();
-	      draftPolygon.forEach(point => { ctx.beginPath(); ctx.arc(point.x, point.y, 5, 0, Math.PI * 2); ctx.fill(); });
-	    }
-	    function saveExploration(){
-	      const data = {}; document.querySelectorAll('[data-exploration]').forEach(node => data[node.dataset.field] = node.value.trim());
-	      if(!data.id) data.id = safeId('expl');
-	      const existing = state.explorations.find(item => item.id === data.id);
-	      data.backgroundImage = explorationImageData ? 'imagen_cargada_localmente_no_exportada' : existing?.backgroundImage || '';
-	      data.collisions = clone(explorationDraft.collisions);
-	      data.interactions = clone(explorationDraft.interactions);
-	      const index = state.explorations.findIndex(item => item.id === data.id);
-	      if(index >= 0) state.explorations[index] = data; else state.explorations.push(data);
-	      setStatus('explorationStatus', `Guardado ${data.id}`);
-	      persist(); renderLists(); updateOutputs();
-	    }
-	    function clone(value){ return JSON.parse(JSON.stringify(value)); }
-	    function loadExploration(id){
-	      const item = state.explorations.find(entry => entry.id === id);
-	      if(!item) return;
-	      document.querySelectorAll('[data-exploration]').forEach(node => { if(item[node.dataset.field] !== undefined) node.value = item[node.dataset.field]; });
-	      explorationDraft.collisions = clone(item.collisions || []);
-	      explorationDraft.interactions = clone(item.interactions || []);
-	      draftCollision = null; draftPolygon = []; explorationImageData = '';
-	      setStatus('explorationStatus', `Cargado ${item.id}`);
-	      drawExploration();
-	    }
-	    function canvasPoint(event){
-	      const canvas = document.getElementById('explorationCanvas');
-	      const rect = canvas.getBoundingClientRect();
-	      return { x: Math.round((event.clientX - rect.left) * canvas.width / rect.width), y: Math.round((event.clientY - rect.top) * canvas.height / rect.height) };
-	    }
-	    function hitCollision(collision, point){
-	      const shape = collision.shape || 'rect';
-	      if(shape === 'circle') return Math.hypot(point.x - collision.x, point.y - collision.y) <= (collision.r || 0);
-	      if(shape === 'polygon') return pointInPolygon(point, collision.points || []);
-	      const x = Math.min(collision.x, collision.x + (collision.w || 0)); const y = Math.min(collision.y, collision.y + (collision.h || 0)); const w = Math.abs(collision.w || 0); const h = Math.abs(collision.h || 0);
-	      return point.x >= x && point.x <= x + w && point.y >= y && point.y <= y + h;
-	    }
-	    function pointInPolygon(point, points){
-	      let inside = false;
-	      for(let i = 0, j = points.length - 1; i < points.length; j = i++){
-	        const xi = points[i].x, yi = points[i].y, xj = points[j].x, yj = points[j].y;
-	        const intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / ((yj - yi) || 1) + xi);
-	        if(intersect) inside = !inside;
-	      }
-	      return inside;
-	    }
-	    function eraseAt(point){
-	      const interactionIndex = [...explorationDraft.interactions].reverse().findIndex(item => Math.hypot(point.x - item.x, point.y - item.y) <= 16);
-	      if(interactionIndex >= 0){ explorationDraft.interactions.splice(explorationDraft.interactions.length - 1 - interactionIndex, 1); setStatus('explorationStatus', 'Interaccion borrada'); drawExploration(); return; }
-	      const collisionIndex = [...explorationDraft.collisions].reverse().findIndex(item => hitCollision(item, point));
-	      if(collisionIndex >= 0){ explorationDraft.collisions.splice(explorationDraft.collisions.length - 1 - collisionIndex, 1); setStatus('explorationStatus', 'Colision borrada'); drawExploration(); return; }
-	      setStatus('explorationStatus', 'No habia nada bajo el cursor');
-	    }
-
-	    function generateIso(){
-      const canvas = document.getElementById('isoCanvas'); const ctx = canvas.getContext('2d'); const cols = Number(document.getElementById('isoCols').value); const rows = Number(document.getElementById('isoRows').value); const tileW = Number(document.getElementById('isoTileW').value); const tileH = Number(document.getElementById('isoTileH').value); const height = Number(document.getElementById('isoHeight').value); const mode = document.getElementById('isoMode').value; canvas.width = Math.max(900, (cols + rows) * tileW / 2 + 180); canvas.height = Math.max(620, (cols + rows) * tileH / 2 + height + 160); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = '#06101c'; ctx.fillRect(0,0,canvas.width,canvas.height);
-      let sampler = null; if(isoImage){ const sampleCanvas = document.createElement('canvas'); sampleCanvas.width = cols; sampleCanvas.height = rows; const sampleCtx = sampleCanvas.getContext('2d'); sampleCtx.drawImage(isoImage, 0, 0, cols, rows); sampler = sampleCtx.getImageData(0,0,cols,rows).data; }
-      const originX = canvas.width / 2; const originY = 70;
-      const tiles = [];
-      for(let y=0;y<rows;y++){ for(let x=0;x<cols;x++){ const i = (y * cols + x) * 4; const r = sampler ? sampler[i] : 38 + x * 4; const g = sampler ? sampler[i+1] : 92 + y * 3; const b = sampler ? sampler[i+2] : 120; const lum = (r+g+b)/3; const h = mode === 'color' ? height * .35 : mode === 'height' ? (lum/255) * height : (lum/255) * height; tiles.push({x,y,r,g,b,h}); } }
-      tiles.forEach(tile => { const sx = originX + (tile.x - tile.y) * tileW / 2; const sy = originY + (tile.x + tile.y) * tileH / 2 - tile.h; drawIsoTile(ctx, sx, sy, tileW, tileH, tile.h, `rgb(${tile.r},${tile.g},${tile.b})`); });
-      ctx.fillStyle = '#f7fbff'; ctx.font = 'bold 18px system-ui'; ctx.fillText('PoCoBOT isometric scene draft', 22, 34);
+        clearTimeout(timer);
+        if(taps >= 5) window.location.href = 'MODO_DESARROLLADOR_POCObot.html';
+        timer = setTimeout(() => { taps = 0; }, 1800);
+      });
     }
-    function shade(rgb, amount){ const parts = rgb.match(/\d+/g).map(Number); return `rgb(${parts.map(value => Math.max(0, Math.min(255, value + amount))).join(',')})`; }
-    function drawIsoTile(ctx, x, y, w, h, z, color){
-      const top = [[x,y],[x+w/2,y+h/2],[x,y+h],[x-w/2,y+h/2]];
-      ctx.beginPath(); top.forEach((p,i)=> i ? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1])); ctx.closePath(); ctx.fillStyle = color; ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.stroke();
-	      if(z > 2){ ctx.beginPath(); ctx.moveTo(x-w/2,y+h/2); ctx.lineTo(x,y+h); ctx.lineTo(x,y+h+z); ctx.lineTo(x-w/2,y+h/2+z); ctx.closePath(); ctx.fillStyle = shade(color,-38); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x+w/2,y+h/2); ctx.lineTo(x,y+h); ctx.lineTo(x,y+h+z); ctx.lineTo(x+w/2,y+h/2+z); ctx.closePath(); ctx.fillStyle = shade(color,-58); ctx.fill(); ctx.stroke(); }
-	    }
-	    function saveIsoAsExploration(){
-	      const sceneId = safeId('iso_scene');
-	      const explorationId = sceneId.replace('iso_scene', 'expl_iso');
-	      const scene = {
-	        id: sceneId, name: `Escena isometrica ${state.isometricScenes.length + 1}`, type: 'isometric_draft',
-	        cols: document.getElementById('isoCols').value, rows: document.getElementById('isoRows').value, tileW: document.getElementById('isoTileW').value, tileH: document.getElementById('isoTileH').value,
-	        height: document.getElementById('isoHeight').value, mode: document.getElementById('isoMode').value, generatedFromImage: Boolean(isoImage),
-	        note: 'Maqueta generada desde imagen/dibujo/foto para usar como briefing visual.'
-	      };
-	      state.isometricScenes.push(scene);
-	      state.explorations.push({ id: explorationId, name: scene.name, playerSprite: '', startX: '160', startY: '220', backgroundImage: `isometric_scene:${sceneId}`, isometricSceneId: sceneId, collisions: [], interactions: [] });
-	      persist(); renderLists(); updateOutputs(); loadExploration(explorationId);
-	      setStatus('isoStatus', `Creada ${sceneId} y exploracion ${explorationId}`);
-	    }
 
-	    document.addEventListener('click', event => {
-	      const tabButton = event.target.closest('[data-tab]'); if(tabButton){ document.querySelectorAll('[data-tab]').forEach(btn => btn.classList.toggle('active', btn === tabButton)); document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `tab-${tabButton.dataset.tab}`)); const items = help[tabButton.dataset.tab] || []; document.getElementById('contextHelp').innerHTML = `<h2>${tabButton.textContent}</h2><ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`; return; }
-	      const save = event.target.closest('[data-save]'); if(save){ upsertItem(save.dataset.save, schemas[save.dataset.save]); return; }
-	      const add = event.target.closest('[data-add]'); if(add){ if(add.dataset.add === 'explorations') saveExploration(); else upsertItem(add.dataset.add, schemas[add.dataset.add]); return; }
-	      const clear = event.target.closest('[data-clear-form]'); if(clear){ clearForm(clear.dataset.clearForm); return; }
-	      const edit = event.target.closest('[data-edit-item]'); if(edit){ const [collection,id] = edit.dataset.editItem.split('|'); editItem(collection,id); return; }
-	      const del = event.target.closest('[data-delete-item]'); if(del){ const [collection,id] = del.dataset.deleteItem.split('|'); deleteItem(collection,id); return; }
-	      const load = event.target.closest('[data-load-exploration]'); if(load){ loadExploration(load.dataset.loadExploration); return; }
-	      const mode = event.target.closest('[data-draw-mode]'); if(mode){ drawMode = mode.dataset.drawMode; draftCollision = null; document.querySelectorAll('[data-draw-mode]').forEach(btn => btn.classList.toggle('active', btn === mode)); drawExploration(); return; }
-	    });
-	    document.getElementById('expertToggle').addEventListener('click', () => setExpertMode(!document.body.classList.contains('expert-mode')));
-	    document.getElementById('copyJson').addEventListener('click', () => copyText(packageJson()));
-	    document.getElementById('copyJsonTop').addEventListener('click', () => copyText(packageJson()));
-	    document.getElementById('copyHtml').addEventListener('click', () => copyText(makeBriefingHtml()));
-	    document.getElementById('downloadJson').addEventListener('click', () => downloadFile('pocobot-creative-studio.json','application/json',packageJson()));
-	    document.getElementById('downloadHtml').addEventListener('click', () => downloadFile('pocobot-creative-briefing.html','text/html',makeBriefingHtml()));
-	    document.getElementById('resetProject').addEventListener('click', () => { if(confirm('¿Vaciar todo el proyecto creativo?')){ Object.keys(state).forEach(key => { if(Array.isArray(state[key])) state[key] = []; }); localStorage.removeItem(STORAGE_KEY); renderLists(); updateOutputs(); drawExploration(); generateIso(); } });
-	    document.getElementById('importJson').addEventListener('change', event => { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = () => { const parsed = JSON.parse(reader.result); Object.keys(state).forEach(key => { if(Array.isArray(state[key]) && Array.isArray(parsed[key])) state[key] = parsed[key]; }); persist(); renderLists(); updateOutputs(); }; reader.readAsText(file); });
-	    document.getElementById('explorationImage').addEventListener('change', event => { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = () => { explorationImageData = reader.result; drawExploration(); }; reader.readAsDataURL(file); });
-	    document.getElementById('conversationBackgroundFile').addEventListener('change', event => {
-	      const file = event.target.files[0]; if(!file) return;
-	      const folder = (document.getElementById('conversationBackgroundFolder').value || 'assets/Historia/CARPETAX').replace(/\/+$/,'');
-	      const fileName = file.name.replace(/\s+/g, '_');
-	      const target = document.querySelector('[data-form="conversations"] [data-field="background"]');
-	      if(target) target.value = `${folder}/${fileName}`;
-	      document.getElementById('saveState').textContent = `Ruta de fondo preparada: ${fileName}`;
-	    });
-	    document.getElementById('mapTargetPicker').addEventListener('change', event => { const target = document.querySelector('[data-form="mapPoints"] [data-field="target"]'); if(target) target.value = event.target.value; });
-	    document.getElementById('interactionType').addEventListener('change', fillInteractionTargetPicker);
-	    document.getElementById('interactionTargetPicker').addEventListener('change', event => { if(event.target.value) document.getElementById('interactionTarget').value = event.target.value; });
-	    document.getElementById('savedExplorationSelect').addEventListener('change', event => { if(event.target.value) loadExploration(event.target.value); });
-	    document.getElementById('loadExploration').addEventListener('click', () => { const id = document.getElementById('savedExplorationSelect').value; if(id) loadExploration(id); });
-	    document.getElementById('shopItemPicker').addEventListener('change', event => {
-	      const item = state.inventoryItems.find(entry => entry.id === event.target.value);
-	      if(!item) return;
-	      const textarea = document.querySelector('[data-form="shops"] [data-field="items"]');
-	      appendLine(textarea, `id: ${item.id} | tipo: ${item.type || 'objeto'} | precio: pendiente | descripcion: ${item.description || item.name || ''}`);
-	    });
-	    document.getElementById('chapterStepType').addEventListener('change', fillChapterStepTarget);
-	    document.getElementById('appendChapterStep').addEventListener('click', () => {
-	      const textarea = document.querySelector('[data-form="chapters"] [data-field="sequence"]');
-	      const type = document.getElementById('chapterStepType').value;
-	      const target = document.getElementById('chapterStepTarget').value;
-	      if(!target) return;
-	      const next = textarea.value.trim().split('\n').filter(Boolean).length + 1;
-	      appendLine(textarea, `${next}) ${type}: ${target}`);
-	    });
-	    const explorationCanvas = document.getElementById('explorationCanvas');
-	    explorationCanvas.addEventListener('mousedown', event => {
-	      const point = canvasPoint(event);
-	      if(drawMode === 'erase'){ eraseAt(point); return; }
-	      if(drawMode === 'interaction'){ explorationDraft.interactions.push({ x: point.x, y: point.y, type: document.getElementById('interactionType').value, target: document.getElementById('interactionTarget').value.trim() }); drawExploration(); return; }
-	      if(drawMode === 'collision-poly'){ draftPolygon.push(point); setStatus('explorationStatus', `${draftPolygon.length} vertices de poligono`); drawExploration(); return; }
-	      draftCollision = drawMode === 'collision-circle' ? { shape: 'circle', x: point.x, y: point.y, r: 0 } : { shape: 'rect', x: point.x, y: point.y, w: 0, h: 0 };
-	    });
-	    explorationCanvas.addEventListener('mousemove', event => {
-	      if(!draftCollision) return;
-	      const point = canvasPoint(event);
-	      if(draftCollision.shape === 'circle') draftCollision.r = Math.round(Math.hypot(point.x - draftCollision.x, point.y - draftCollision.y));
-	      else { draftCollision.w = point.x - draftCollision.x; draftCollision.h = point.y - draftCollision.y; }
-	      drawExploration();
-	    });
-	    explorationCanvas.addEventListener('mouseup', () => {
-	      if(!draftCollision) return;
-	      if(draftCollision.shape === 'circle'){ if(draftCollision.r > 6) explorationDraft.collisions.push(draftCollision); }
-	      else {
-	        const rect = { shape: 'rect', x: Math.min(draftCollision.x, draftCollision.x + draftCollision.w), y: Math.min(draftCollision.y, draftCollision.y + draftCollision.h), w: Math.abs(draftCollision.w), h: Math.abs(draftCollision.h) };
-	        if(rect.w > 6 && rect.h > 6) explorationDraft.collisions.push(rect);
-	      }
-	      draftCollision = null; drawExploration();
-	    });
-	    document.getElementById('finishPolygon').addEventListener('click', () => {
-	      if(draftPolygon.length < 3){ setStatus('explorationStatus', 'El poligono necesita al menos 3 vertices'); return; }
-	      explorationDraft.collisions.push({ shape: 'polygon', points: clone(draftPolygon) });
-	      draftPolygon = []; setStatus('explorationStatus', 'Poligono creado'); drawExploration();
-	    });
-	    document.getElementById('clearExplorationDraft').addEventListener('click', () => { if(confirm('¿Vaciar colisiones e interacciones de este lienzo?')){ explorationDraft.collisions = []; explorationDraft.interactions = []; draftPolygon = []; draftCollision = null; drawExploration(); } });
-	    document.getElementById('undoExploration').addEventListener('click', () => { if(draftPolygon.length) draftPolygon.pop(); else if(drawMode === 'interaction') explorationDraft.interactions.pop(); else explorationDraft.collisions.pop(); drawExploration(); });
-	    document.getElementById('isoImage').addEventListener('change', event => { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = () => { isoImage = new Image(); isoImage.onload = generateIso; isoImage.src = reader.result; }; reader.readAsDataURL(file); });
-	    ['isoCols','isoRows','isoTileW','isoTileH','isoHeight','isoMode'].forEach(id => document.getElementById(id).addEventListener('input', generateIso));
-	    document.getElementById('generateIso').addEventListener('click', generateIso);
-	    document.getElementById('downloadIsoPng').addEventListener('click', () => { const canvas = document.getElementById('isoCanvas'); canvas.toBlob(blob => { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'pocobot-isometric-draft.png'; link.click(); URL.revokeObjectURL(url); }); });
-	    document.getElementById('saveIsoScene').addEventListener('click', saveIsoAsExploration);
+    function initCharacterSelect(){
+      $('#characterSelect').innerHTML = GAME_CHARACTERS.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+    }
+    function initDialogueFields(){
+      const makeFields = (prefix) => Array.from({ length: 3 }, (_, index) => {
+        const n = index + 1;
+        return `<label>Pregunta ${n}<textarea id="${prefix}Question${n}" placeholder="¿Qué está pasando?"></textarea></label><label>Respuesta ${n}<textarea id="${prefix}Answer${n}" placeholder="Respuesta del personaje"></textarea></label><label class="expert-only">Pose respuesta ${n}<select id="${prefix}Pose${n}"><option>pose1</option><option>pose2</option><option>pose3</option><option>pose4</option></select></label>`;
+      }).join('');
+      $('#roundOneFields').innerHTML = makeFields('r1');
+      $('#roundTwoFields').innerHTML = makeFields('r2');
+    }
 
-	    bindHiddenLabAccess(); loadStored(); setExpertMode(localStorage.getItem(EXPERT_KEY) === '1'); renderLists(); updateOutputs(); drawExploration(); generateIso();
-	  </script>
+    function referenceOptions(type){
+      if(type === 'scenario') return state.scenarios.map(item => ({ id: item.id, label: item.name || item.id, type }));
+      if(type === 'combat') return state.combats.map(item => ({ id: item.id, label: item.enemy || item.id, type }));
+      if(type === 'conversation') return state.conversations.map(item => ({ id: item.id, label: item.character || item.id, type }));
+      if(type === 'object') return state.inventoryItems.map(item => ({ id: item.id, label: item.name || item.id, type }));
+      return [];
+    }
+    function fillSelect(node, options, placeholder){
+      if(!node) return;
+      const previous = node.value;
+      node.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + options.map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.label)} (${escapeHtml(item.id)})</option>`).join('');
+      if(options.some(item => item.id === previous)) node.value = previous;
+    }
+    function refreshReferenceSelects(){
+      fillSelect($('#interactionTarget'), referenceOptions($('#interactionType').value), 'Elegir destino...');
+      fillSelect($('#conversationReward'), referenceOptions('object'), 'Sin recompensa');
+      fillSelect($('#shopObjectPicker'), referenceOptions('object'), 'Elegir objeto...');
+    }
+
+    function canvasPoint(event){
+      const canvas = $('#scenarioCanvas');
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: Math.round((event.clientX - rect.left) * canvas.width / rect.width),
+        y: Math.round((event.clientY - rect.top) * canvas.height / rect.height)
+      };
+    }
+    function drawScenario(){
+      const canvas = $('#scenarioCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = '#091525';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      const finish = () => {
+        drawGrid(ctx, canvas);
+        scenarioDraft.collisions.concat(dragPreview && (dragPreview.kind === 'rect' || dragPreview.kind === 'oval') ? [dragPreview] : []).forEach((item, index) => drawCollision(ctx, item, index));
+        scenarioDraft.interactions.forEach((item, index) => drawInteraction(ctx, item, index));
+        if(scenarioDraft.crop || (dragPreview && dragPreview.kind === 'crop')) drawCrop(ctx, scenarioDraft.crop || dragPreview);
+        drawStart(ctx);
+      };
+      if(scenarioDraft.imageData){
+        const img = new Image();
+        img.onload = () => { ctx.drawImage(img,0,0,canvas.width,canvas.height); finish(); };
+        img.src = scenarioDraft.imageData;
+      } else {
+        ctx.fillStyle = '#263a55';
+        ctx.font = '700 22px system-ui';
+        ctx.fillText('Carga una imagen para empezar el escenario', 260, 260);
+        finish();
+      }
+    }
+    function drawGrid(ctx, canvas){
+      ctx.strokeStyle = 'rgba(147,203,255,.16)';
+      ctx.lineWidth = 1;
+      for(let x=0;x<canvas.width;x+=48){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke(); }
+      for(let y=0;y<canvas.height;y+=48){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
+    }
+    function drawCollision(ctx, item, index){
+      const selected = scenarioDraft.selected === `collision:${index}`;
+      ctx.fillStyle = selected ? 'rgba(126,255,196,.28)' : 'rgba(255,122,138,.24)';
+      ctx.strokeStyle = selected ? '#7effc4' : '#ff7a8a';
+      ctx.lineWidth = selected ? 3 : 2;
+      if(item.kind === 'oval'){
+        ctx.beginPath();
+        ctx.ellipse(item.x + item.w / 2, item.y + item.h / 2, Math.abs(item.w / 2), Math.abs(item.h / 2), 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+      } else {
+        ctx.fillRect(item.x,item.y,item.w,item.h);
+        ctx.strokeRect(item.x,item.y,item.w,item.h);
+      }
+      ctx.fillStyle = '#fff';
+      ctx.font = '800 12px system-ui';
+      ctx.fillText(`C${index + 1}`, item.x + 6, item.y + 16);
+    }
+    function drawInteraction(ctx, item, index){
+      const selected = scenarioDraft.selected === `interaction:${index}`;
+      ctx.fillStyle = selected ? '#7effc4' : '#ffd364';
+      ctx.strokeStyle = '#1e1302';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(item.x, item.y, selected ? 15 : 12, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#1e1302';
+      ctx.font = '900 11px system-ui';
+      ctx.fillText(String(index + 1), item.x - 3, item.y + 4);
+    }
+    function drawCrop(ctx, crop){
+      ctx.fillStyle = 'rgba(0,0,0,.34)';
+      ctx.fillRect(0,0,960,540);
+      ctx.clearRect(crop.x,crop.y,crop.w,crop.h);
+      ctx.strokeStyle = '#ffd364';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(crop.x,crop.y,crop.w,crop.h);
+    }
+    function drawStart(ctx){
+      const x = Number($('#scenarioStartX').value || 160);
+      const y = Number($('#scenarioStartY').value || 220);
+      ctx.fillStyle = '#56d7ff';
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(x,y,12,0,Math.PI*2);
+      ctx.fill(); ctx.stroke();
+    }
+    function normalizeRect(start, end, kind){
+      return {
+        kind,
+        x: Math.min(start.x, end.x),
+        y: Math.min(start.y, end.y),
+        w: Math.abs(end.x - start.x),
+        h: Math.abs(end.y - start.y)
+      };
+    }
+    function hitTest(point){
+      for(let i = scenarioDraft.interactions.length - 1; i >= 0; i--){
+        const item = scenarioDraft.interactions[i];
+        if(Math.hypot(point.x - item.x, point.y - item.y) <= 16) return { type:'interaction', index:i };
+      }
+      for(let i = scenarioDraft.collisions.length - 1; i >= 0; i--){
+        const item = scenarioDraft.collisions[i];
+        const inside = item.kind === 'oval'
+          ? ovalContains(item, point)
+          : point.x >= item.x && point.x <= item.x + item.w && point.y >= item.y && point.y <= item.y + item.h;
+        if(inside) return { type:'collision', index:i };
+      }
+      return null;
+    }
+    function ovalContains(item, point){
+      const rx = Math.max(1, item.w / 2);
+      const ry = Math.max(1, item.h / 2);
+      const cx = item.x + rx;
+      const cy = item.y + ry;
+      return ((point.x - cx) ** 2) / (rx ** 2) + ((point.y - cy) ** 2) / (ry ** 2) <= 1;
+    }
+    function selectElement(ref){
+      scenarioDraft.selected = ref ? `${ref.type}:${ref.index}` : null;
+      populateSelectedElement();
+      drawScenario();
+    }
+    function populateSelectedElement(){
+      const selected = $('#selectedElement');
+      const options = ['<option value="">Nada seleccionado</option>'];
+      scenarioDraft.collisions.forEach((item,index) => options.push(`<option value="collision:${index}">Colisión ${index + 1} · ${item.kind}</option>`));
+      scenarioDraft.interactions.forEach((item,index) => options.push(`<option value="interaction:${index}">Interacción ${index + 1} · ${item.label || item.target || item.type}</option>`));
+      selected.innerHTML = options.join('');
+      selected.value = scenarioDraft.selected || '';
+      const item = currentSelectedItem();
+      $('#editX').value = item ? item.x : '';
+      $('#editY').value = item ? item.y : '';
+      $('#editW').value = item && item.w !== undefined ? item.w : '';
+      $('#editH').value = item && item.h !== undefined ? item.h : '';
+      $('#editLabel').value = item ? (item.label || item.target || '') : '';
+    }
+    function currentSelectedItem(){
+      if(!scenarioDraft.selected) return null;
+      const [type, indexText] = scenarioDraft.selected.split(':');
+      const index = Number(indexText);
+      return type === 'collision' ? scenarioDraft.collisions[index] : scenarioDraft.interactions[index];
+    }
+    function applyScenarioEdit(){
+      const item = currentSelectedItem();
+      if(!item) return;
+      item.x = Number($('#editX').value || item.x || 0);
+      item.y = Number($('#editY').value || item.y || 0);
+      if(item.kind === 'rect' || item.kind === 'oval'){
+        item.w = Number($('#editW').value || item.w || 1);
+        item.h = Number($('#editH').value || item.h || 1);
+      }
+      if(item.type) item.label = $('#editLabel').value.trim();
+      setScenarioStatus('Elemento editado');
+      populateSelectedElement();
+      drawScenario();
+    }
+    function applyCrop(){
+      const crop = scenarioDraft.crop;
+      if(!crop || !scenarioDraft.imageData || crop.w < 12 || crop.h < 12) return;
+      const img = new Image();
+      img.onload = () => {
+        const base = document.createElement('canvas');
+        base.width = 960; base.height = 540;
+        const baseCtx = base.getContext('2d');
+        baseCtx.drawImage(img,0,0,960,540);
+        const cropped = document.createElement('canvas');
+        cropped.width = 960; cropped.height = 540;
+        cropped.getContext('2d').drawImage(base, crop.x, crop.y, crop.w, crop.h, 0, 0, 960, 540);
+        scenarioDraft.imageData = cropped.toDataURL('image/png');
+        scenarioDraft.crop = null;
+        setScenarioStatus('Imagen recortada');
+        drawScenario();
+      };
+      img.src = scenarioDraft.imageData;
+    }
+
+    function saveScenario(){
+      const id = $('#scenarioId').value.trim() || safeId('esc');
+      const item = {
+        id,
+        name: $('#scenarioName').value.trim() || id,
+        assetPath: $('#scenarioAssetPath').value.trim(),
+        backgroundImage: $('#scenarioAssetPath').value.trim() || (scenarioDraft.imageData ? 'imagen_cargada_localmente' : ''),
+        start: { x: Number($('#scenarioStartX').value || 160), y: Number($('#scenarioStartY').value || 220) },
+        collisions: clone(scenarioDraft.collisions),
+        interactions: clone(scenarioDraft.interactions)
+      };
+      const index = state.scenarios.findIndex(entry => entry.id === id);
+      if(index >= 0) state.scenarios[index] = item; else state.scenarios.push(item);
+      if(scenarioDraft.imageData) mediaStore[`scenario:${id}`] = scenarioDraft.imageData;
+      persist();
+      setScenarioStatus(`Escenario guardado: ${id}`);
+    }
+    function loadScenario(id){
+      const item = state.scenarios.find(entry => entry.id === id);
+      if(!item) return;
+      $('#scenarioId').value = item.id;
+      $('#scenarioName').value = item.name || '';
+      $('#scenarioAssetPath').value = item.assetPath || item.backgroundImage || '';
+      $('#scenarioStartX').value = item.start?.x || 160;
+      $('#scenarioStartY').value = item.start?.y || 220;
+      scenarioDraft.imageData = mediaStore[`scenario:${id}`] || '';
+      scenarioDraft.collisions = clone(item.collisions || []);
+      scenarioDraft.interactions = clone(item.interactions || []);
+      scenarioDraft.crop = null;
+      scenarioDraft.selected = null;
+      setScenarioStatus(`Escenario cargado: ${id}`);
+      populateSelectedElement();
+      drawScenario();
+    }
+    function deleteItem(collection, id){
+      state[collection] = state[collection].filter(item => item.id !== id);
+      persist();
+    }
+
+    function readDialogueRound(prefix){
+      return [1,2,3].map(n => ({
+        question: $(`#${prefix}Question${n}`).value.trim(),
+        answer: $(`#${prefix}Answer${n}`).value.trim(),
+        pose: $(`#${prefix}Pose${n}`)?.value || `pose${n}`
+      }));
+    }
+    function saveConversation(){
+      let rewardId = $('#conversationReward').value;
+      if($('#newRewardName').value.trim()){
+        const object = {
+          id: safeId('obj'),
+          name: $('#newRewardName').value.trim(),
+          image: $('#newRewardImagePath').value.trim(),
+          effect: $('#newRewardEffect').value.trim(),
+          source: 'conversation'
+        };
+        state.inventoryItems.push(object);
+        rewardId = object.id;
+      }
+      const selectedCharacter = $('#characterSelect').value;
+      const id = $('#conversationId').value.trim() || safeId('conv');
+      const item = {
+        id,
+        character: selectedCharacter === 'Personalizado' ? ($('#customCharacter').value.trim() || 'Personaje nuevo') : selectedCharacter,
+        usesExistingCharacter: selectedCharacter !== 'Personalizado',
+        background: $('#conversationBackgroundPath').value.trim(),
+        hasPresentation: $('#hasPresentation').value === 'si',
+        presentationImage: $('#presentationImagePath').value.trim(),
+        poses: {
+          pose1: $('#pose1Path').value.trim(),
+          pose2: $('#pose2Path').value.trim(),
+          pose3: $('#pose3Path').value.trim(),
+          pose4: $('#pose4Path').value.trim()
+        },
+        intro: $('#dialogueIntro').value.trim(),
+        round1: readDialogueRound('r1'),
+        round2Enabled: $('#secondRoundEnabled').value === 'si',
+        round2Condition: $('#secondRoundCondition').value.trim(),
+        round2: readDialogueRound('r2'),
+        finalPhrase: $('#dialogueFinal').value.trim(),
+        reward: rewardId || ''
+      };
+      const index = state.conversations.findIndex(entry => entry.id === id);
+      if(index >= 0) state.conversations[index] = item; else state.conversations.push(item);
+      persist();
+      status(`Conversación guardada: ${id}`);
+    }
+
+    function saveCombat(){
+      const id = $('#combatId').value.trim() || safeId('combat');
+      const item = {
+        id,
+        enemy: $('#combatEnemy').value.trim() || id,
+        visualType: $('#combatVisualType').value,
+        visualSource: $('#combatVisualSource').value.trim(),
+        initialPanel: $('#combatInitialPanel').value.trim(),
+        forbiddenSuit: $('#combatForbiddenSuit').value,
+        special: {
+          enabled: $('#combatSpecialEnabled').value === 'si',
+          description: $('#combatSpecialDescription').value.trim()
+        },
+        hacked: {
+          enabled: $('#combatHackedEnabled').value === 'si',
+          effect: $('#combatHackEffect').value.trim()
+        },
+        extraRules: $('#combatExtraRules').value.trim(),
+        outcomes: $('#combatOutcomes').value.trim()
+      };
+      const index = state.combats.findIndex(entry => entry.id === id);
+      if(index >= 0) state.combats[index] = item; else state.combats.push(item);
+      persist();
+      status(`Combate guardado: ${id}`);
+    }
+
+    function saveShop(){
+      const id = $('#shopId').value.trim() || safeId('shop');
+      const item = {
+        id,
+        name: $('#shopName').value.trim() || id,
+        vendor: $('#shopVendor').value.trim(),
+        background: $('#shopBackground').value.trim(),
+        items: $('#shopItems').value.trim(),
+        conditions: $('#shopConditions').value.trim()
+      };
+      const index = state.shops.findIndex(entry => entry.id === id);
+      if(index >= 0) state.shops[index] = item; else state.shops.push(item);
+      persist();
+      status(`Tienda guardada: ${id}`);
+    }
+
+    function renderLists(){
+      renderCollection('scenarios', '#list-scenarios', item => item.name || item.id, item => `${(item.collisions || []).length} colisiones · ${(item.interactions || []).length} interacciones`, true);
+      renderCollection('conversations', '#list-conversations', item => item.character || item.id, item => item.id);
+      renderCollection('combats', '#list-combats', item => item.enemy || item.id, item => `${item.id}${item.hacked?.enabled ? ' · hackeado' : ''}${item.special?.enabled ? ' · especial' : ''}`);
+      renderCollection('shops', '#list-shops', item => item.name || item.id, item => item.vendor || item.id);
+    }
+    function renderCollection(collection, selector, titleFn, subtitleFn, loadable = false){
+      const list = $(selector);
+      list.innerHTML = state[collection].map(item => `
+        <article class="item-card">
+          <div class="item-title">
+            <div><strong>${escapeHtml(titleFn(item))}</strong><small>${escapeHtml(subtitleFn(item))}</small></div>
+            <div class="button-row">
+              ${loadable ? `<button class="btn" type="button" data-load-scenario="${escapeHtml(item.id)}">Cargar</button>` : ''}
+              <button class="btn danger" type="button" data-delete="${collection}|${escapeHtml(item.id)}">Eliminar</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+    function renderAll(){
+      renderLists();
+      refreshReferenceSelects();
+      updateOutputs();
+      updatePreview();
+    }
+
+    function makePreviewHtml(){
+      const data = packageData();
+      const firstScenario = data.scenarios[0];
+      const scenarioImage = firstScenario ? mediaStore[`scenario:${firstScenario.id}`] : '';
+      const style = `body{margin:0;font-family:Inter,system-ui;background:#08111e;color:#f6fbff}header{padding:16px 18px;background:#111e30;border-bottom:1px solid #24415f}main{padding:18px;display:grid;gap:16px}.stage{position:relative;min-height:320px;border:1px solid #24415f;border-radius:14px;overflow:hidden;background:#0d1727}.stage img{width:100%;height:100%;object-fit:cover;display:block;min-height:320px}.pin{position:absolute;width:24px;height:24px;border-radius:50%;background:#ffd364;border:3px solid #1e1302;transform:translate(-50%,-50%);display:grid;place-items:center;color:#1e1302;font-weight:900}.collision{position:absolute;border:2px solid #ff7a8a;background:rgba(255,122,138,.22)}.oval{border-radius:999px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.card{border:1px solid #24415f;border-radius:12px;padding:12px;background:#111e30}small{color:#9eb1c7}`;
+      const interactions = firstScenario ? (firstScenario.interactions || []).map((item,index) => `<div class="pin" style="left:${item.x / 9.6}%;top:${item.y / 5.4}%">${index + 1}</div>`).join('') : '';
+      const collisions = firstScenario ? (firstScenario.collisions || []).map(item => `<div class="collision ${item.kind === 'oval' ? 'oval' : ''}" style="left:${item.x / 9.6}%;top:${item.y / 5.4}%;width:${item.w / 9.6}%;height:${item.h / 5.4}%"></div>`).join('') : '';
+      return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>${style}</style></head><body><header><strong>Prueba PoCoBOT Creative Studio</strong><br><small>${data.scenarios.length} escenarios · ${data.conversations.length} conversaciones · ${data.combats.length} combates · ${data.shops.length} tiendas</small></header><main><section class="stage">${scenarioImage ? `<img src="${scenarioImage}" alt="">` : ''}${collisions}${interactions}</section><section class="cards">${data.scenarios.map(item => `<article class="card"><strong>Escenario</strong><p>${escapeHtml(item.name || item.id)}</p><small>${escapeHtml(item.id)}</small></article>`).join('')}${data.conversations.map(item => `<article class="card"><strong>Conversación</strong><p>${escapeHtml(item.character)}</p><small>${escapeHtml(item.id)}</small></article>`).join('')}${data.combats.map(item => `<article class="card"><strong>Combate</strong><p>${escapeHtml(item.enemy)}</p><small>${escapeHtml(item.id)}</small></article>`).join('')}${data.shops.map(item => `<article class="card"><strong>Tienda</strong><p>${escapeHtml(item.name)}</p><small>${escapeHtml(item.id)}</small></article>`).join('')}</section></main></body></html>`;
+    }
+    function updatePreview(){
+      $('#testFrame').srcdoc = makePreviewHtml();
+    }
+    async function copyText(text){
+      try{
+        await navigator.clipboard.writeText(text);
+      }catch(error){
+        const fallback = document.createElement('textarea');
+        fallback.value = text;
+        fallback.setAttribute('readonly','');
+        fallback.style.position = 'fixed';
+        fallback.style.left = '-9999px';
+        document.body.appendChild(fallback);
+        fallback.select();
+        document.execCommand('copy');
+        fallback.remove();
+      }
+      status('Copiado al portapapeles');
+    }
+    function downloadFile(name, type, content){
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener('click', event => {
+      const tab = event.target.closest('[data-tab]');
+      if(tab){
+        $all('[data-tab]').forEach(node => node.classList.toggle('active', node === tab));
+        $all('.panel').forEach(node => node.classList.toggle('active', node.id === `tab-${tab.dataset.tab}`));
+        $('#contextHelp').innerHTML = `<h2>${escapeHtml(tab.textContent)}</h2><ul>${help[tab.dataset.tab].map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+        return;
+      }
+      const toolButton = event.target.closest('[data-tool]');
+      if(toolButton){
+        tool = toolButton.dataset.tool;
+        $all('[data-tool]').forEach(node => node.classList.toggle('active', node === toolButton));
+        dragPreview = null;
+        setScenarioStatus(`Herramienta: ${toolButton.textContent.trim()}`);
+        drawScenario();
+        return;
+      }
+      const load = event.target.closest('[data-load-scenario]');
+      if(load){ loadScenario(load.dataset.loadScenario); return; }
+      const del = event.target.closest('[data-delete]');
+      if(del){
+        const [collection,id] = del.dataset.delete.split('|');
+        deleteItem(collection,id);
+      }
+    });
+    $('#expertToggle').addEventListener('click', () => setExpertMode(!document.body.classList.contains('expert-mode')));
+    $('#copyJsonTop').addEventListener('click', () => copyText(packageJson()));
+    $('#copyJson').addEventListener('click', () => copyText(packageJson()));
+    $('#downloadJson').addEventListener('click', () => downloadFile('pocobot-creative-studio.json','application/json',packageJson()));
+    $('#downloadHtml').addEventListener('click', () => downloadFile('pocobot-creative-test' + '.html','text/html',makePreviewHtml()));
+    $('#refreshPreview').addEventListener('click', () => { updatePreview(); status('HTML de prueba actualizado'); });
+    $('#resetProject').addEventListener('click', () => {
+      if(!confirm('¿Vaciar todo el proyecto creativo?')) return;
+      ['scenarios','conversations','combats','shops','inventoryItems'].forEach(key => state[key] = []);
+      localStorage.removeItem(STORAGE_KEY);
+      renderAll();
+      drawScenario();
+    });
+    $('#importJson').addEventListener('change', event => {
+      const file = event.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const parsed = JSON.parse(reader.result);
+        ['scenarios','conversations','combats','shops','inventoryItems'].forEach(key => state[key] = Array.isArray(parsed[key]) ? parsed[key] : []);
+        persist();
+      };
+      reader.readAsText(file);
+    });
+    $('#scenarioImage').addEventListener('change', event => {
+      const file = event.target.files[0];
+      if(!file) return;
+      $('#scenarioAssetPath').value = filePathFromInput(file);
+      readFileAsDataUrl(file, dataUrl => {
+        scenarioDraft.imageData = dataUrl;
+        drawScenario();
+        setScenarioStatus('Imagen de escenario cargada');
+      });
+    });
+    $('#scenarioCanvas').addEventListener('mousedown', event => {
+      const point = canvasPoint(event);
+      if(tool === 'interaction'){
+        const target = $('#interactionTarget').value.trim();
+        scenarioDraft.interactions.push({
+          x: point.x,
+          y: point.y,
+          type: $('#interactionType').value,
+          target,
+          label: $('#interactionLabel').value.trim() || target,
+          condition: $('#interactionCondition').value.trim()
+        });
+        populateSelectedElement();
+        drawScenario();
+        return;
+      }
+      if(tool === 'erase'){
+        const hit = hitTest(point);
+        if(hit){
+          if(hit.type === 'collision') scenarioDraft.collisions.splice(hit.index,1);
+          else scenarioDraft.interactions.splice(hit.index,1);
+          selectElement(null);
+          setScenarioStatus('Elemento borrado');
+        }
+        return;
+      }
+      if(tool === 'edit'){
+        const hit = hitTest(point);
+        selectElement(hit);
+        return;
+      }
+      dragStart = point;
+      dragPreview = null;
+    });
+    $('#scenarioCanvas').addEventListener('mousemove', event => {
+      if(!dragStart) return;
+      const point = canvasPoint(event);
+      if(tool === 'rect' || tool === 'oval') dragPreview = normalizeRect(dragStart, point, tool);
+      if(tool === 'crop') dragPreview = normalizeRect(dragStart, point, 'crop');
+      drawScenario();
+    });
+    $('#scenarioCanvas').addEventListener('mouseup', event => {
+      if(!dragStart) return;
+      const point = canvasPoint(event);
+      const shape = normalizeRect(dragStart, point, tool === 'crop' ? 'crop' : tool);
+      if(shape.w > 6 && shape.h > 6){
+        if(tool === 'crop') scenarioDraft.crop = shape;
+        else scenarioDraft.collisions.push(shape);
+      }
+      dragStart = null;
+      dragPreview = null;
+      populateSelectedElement();
+      drawScenario();
+    });
+    $('#undoScenario').addEventListener('click', () => {
+      if(scenarioDraft.interactions.length && tool === 'interaction') scenarioDraft.interactions.pop();
+      else scenarioDraft.collisions.pop();
+      populateSelectedElement();
+      drawScenario();
+    });
+    $('#applyCrop').addEventListener('click', applyCrop);
+    $('#applyEdit').addEventListener('click', applyScenarioEdit);
+    $('#selectedElement').addEventListener('change', event => { scenarioDraft.selected = event.target.value || null; populateSelectedElement(); drawScenario(); });
+    $('#interactionType').addEventListener('change', refreshReferenceSelects);
+    $('#saveScenario').addEventListener('click', saveScenario);
+    $('#saveConversation').addEventListener('click', saveConversation);
+    $('#saveCombat').addEventListener('click', saveCombat);
+    $('#saveShop').addEventListener('click', saveShop);
+    $('#shopObjectPicker').addEventListener('change', event => {
+      const item = state.inventoryItems.find(entry => entry.id === event.target.value);
+      if(!item) return;
+      $('#shopItems').value += `${$('#shopItems').value.trim() ? '\n' : ''}id: ${item.id} | nombre: ${item.name} | precio: pendiente | efecto: ${item.effect || ''}`;
+    });
+    $('#hasPresentation').addEventListener('change', () => $all('.presentation-field').forEach(node => node.classList.toggle('hidden', $('#hasPresentation').value !== 'si')));
+    [
+      ['conversationBackgroundFile','conversationBackgroundPath'],
+      ['presentationImageFile','presentationImagePath'],
+      ['pose1File','pose1Path'],
+      ['pose2File','pose2Path'],
+      ['pose3File','pose3Path'],
+      ['pose4File','pose4Path'],
+      ['newRewardImageFile','newRewardImagePath']
+    ].forEach(([fileId,pathId]) => {
+      $(`#${fileId}`).addEventListener('change', event => {
+        const file = event.target.files[0];
+        if(file) $(`#${pathId}`).value = filePathFromInput(file);
+      });
+    });
+
+    bindHiddenLabAccess();
+    initCharacterSelect();
+    initDialogueFields();
+    loadStored();
+    setExpertMode(localStorage.getItem(EXPERT_KEY) === '1');
+    $('#hasPresentation').dispatchEvent(new Event('change'));
+    renderAll();
+    populateSelectedElement();
+    drawScenario();
+  </script>
 </body>
 </html>
