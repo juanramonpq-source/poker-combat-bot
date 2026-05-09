@@ -269,7 +269,7 @@
             <div class="module-head">
               <div>
                 <h2>Escenas de conversación</h2>
-                <p>Define personaje, fondo, presentación opcional, cuatro poses y dos rondas posibles de preguntas/respuestas.</p>
+                <p>Formato basado en las escenas reales: presentación paginada, líneas de personaje, opciones de diálogo con respuesta, acciones, desbloqueos y recompensa.</p>
               </div>
               <button class="btn primary" type="button" id="saveConversation">Guardar conversación</button>
             </div>
@@ -290,19 +290,31 @@
               <label>Ruta pose 3<input id="pose3Path" placeholder="assets/Historia/CARPETAX/"></label>
               <label>Pose 4<input type="file" id="pose4File" accept="image/*"></label>
               <label>Ruta pose 4<input id="pose4Path" placeholder="assets/Historia/CARPETAX/"></label>
-              <label class="full">Parte del personaje inicial<textarea id="dialogueIntro" placeholder="Vera mira el mercado desde la cornisa..."></textarea></label>
+              <label>Formato de escena<select id="conversationFormat">
+                <option value="interactive_dialogue">Diálogo interactivo</option>
+                <option value="presentation_overlay">Presentación paginada</option>
+                <option value="radio_queue">Radio / cola de líneas</option>
+              </select></label>
+              <label class="full">Líneas iniciales del personaje<textarea id="dialogueOpeningLines" placeholder="Una línea por línea. Ej: Vera Hex: vuelve al diálogo del mercado."></textarea></label>
+            </div>
+            <div class="conversation-block" id="presentationPagesBlock">
+              <h3>Presentación paginada como Xavor</h3>
+              <p class="hint">Cada página equivale a los objetos reales con <code>kicker</code>, <code>title</code>, <code>subtitle</code> y <code>text</code>. Si no hay presentación, puedes dejarlo vacío.</p>
+              <div class="grid" id="presentationPageFields"></div>
             </div>
             <div class="conversation-block">
-              <h3>Ronda 1: tres preguntas y tres respuestas</h3>
-              <div class="grid three" id="roundOneFields"></div>
+              <h3>Opciones de diálogo</h3>
+              <p class="hint">No son “pregunta/respuesta” genéricas: cada opción del jugador dispara una respuesta del personaje, una pose y opcionalmente una acción como <code>talk-vera</code>, desbloqueos o recompensa.</p>
+              <div class="grid" id="choiceFields"></div>
             </div>
             <div class="conversation-block expert-only">
-              <h3>Ronda 2 opcional</h3>
+              <h3>Follow-up opcional por selector/TIC</h3>
               <div class="grid">
-                <label>Activar segunda ronda<select id="secondRoundEnabled"><option value="no">No</option><option value="si">Sí</option></select></label>
+                <label>Activar follow-up<select id="secondRoundEnabled"><option value="no">No</option><option value="si">Sí</option></select></label>
                 <label>Selector / TIC<input id="secondRoundCondition" placeholder="tic_confianza_vera"></label>
+                <label class="full">Líneas iniciales follow-up<textarea id="followupOpeningLines" placeholder="Ej: Xavor: ordenador preparado. Ve al terminal azul y pulsa E."></textarea></label>
               </div>
-              <div class="grid three" id="roundTwoFields"></div>
+              <div class="grid" id="followupChoiceFields"></div>
             </div>
             <div class="conversation-block">
               <h3>Cierre y recompensa opcional</h3>
@@ -540,12 +552,35 @@
       $('#characterSelect').innerHTML = GAME_CHARACTERS.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
     }
     function initDialogueFields(){
-      const makeFields = (prefix) => Array.from({ length: 3 }, (_, index) => {
+      $('#presentationPageFields').innerHTML = Array.from({ length: 4 }, (_, index) => {
         const n = index + 1;
-        return `<label>Pregunta ${n}<textarea id="${prefix}Question${n}" placeholder="¿Qué está pasando?"></textarea></label><label>Respuesta ${n}<textarea id="${prefix}Answer${n}" placeholder="Respuesta del personaje"></textarea></label><label class="expert-only">Pose respuesta ${n}<select id="${prefix}Pose${n}"><option>pose1</option><option>pose2</option><option>pose3</option><option>pose4</option></select></label>`;
+        return `
+          <div class="conversation-block">
+            <h3>Página ${n}</h3>
+            <label>Kicker<input id="presentationKicker${n}" placeholder="${n === 1 ? 'Presentación' : 'Lore PoCoBOT'}"></label>
+            <label>Título<input id="presentationTitle${n}" placeholder="${n === 1 ? 'Xavor Glitch' : 'La baraja encontrada'}"></label>
+            <label>Subtítulo<input id="presentationSubtitle${n}" placeholder="Técnico de frontera · Restaurador de sistemas muertos"></label>
+            <label class="full">Texto<textarea id="presentationText${n}" placeholder="Texto de la página de presentación"></textarea></label>
+          </div>
+        `;
       }).join('');
-      $('#roundOneFields').innerHTML = makeFields('r1');
-      $('#roundTwoFields').innerHTML = makeFields('r2');
+      const makeChoiceFields = (prefix, title) => Array.from({ length: 3 }, (_, index) => {
+        const n = index + 1;
+        return `
+          <div class="conversation-block">
+            <h3>${title} ${n}</h3>
+            <label>Texto de opción del jugador<textarea id="${prefix}Choice${n}" placeholder="Preguntar por la torre"></textarea></label>
+            <label>Respuesta del personaje<textarea id="${prefix}Response${n}" placeholder="Xavor: Torre 4B sigue cerrada..."></textarea></label>
+            <label>Pose / página visual<select id="${prefix}Pose${n}"><option>pose1</option><option>pose2</option><option>pose3</option><option>pose4</option><option>presentacion</option><option>radio</option></select></label>
+            <label class="expert-only">Acción<input id="${prefix}Action${n}" placeholder="talk-vera, xavor-introduction, unlock-blue-computer"></label>
+            <label class="expert-only">Desbloqueos<input id="${prefix}Unlocks${n}" placeholder="blue-computer, xavor-dialogue"></label>
+            <label class="expert-only">Recompensa<select id="${prefix}Reward${n}"><option value="">Sin recompensa</option></select></label>
+            <label class="expert-only">Siguiente nodo<input id="${prefix}Next${n}" placeholder="followup, close, combat_x"></label>
+          </div>
+        `;
+      }).join('');
+      $('#choiceFields').innerHTML = makeChoiceFields('choice', 'Opción');
+      $('#followupChoiceFields').innerHTML = makeChoiceFields('followup', 'Opción follow-up');
     }
 
     function referenceOptions(type){
@@ -564,6 +599,10 @@
     function refreshReferenceSelects(){
       fillSelect($('#interactionTarget'), referenceOptions($('#interactionType').value), 'Elegir destino...');
       fillSelect($('#conversationReward'), referenceOptions('object'), 'Sin recompensa');
+      [1,2,3].forEach(n => {
+        fillSelect($(`#choiceReward${n}`), referenceOptions('object'), 'Sin recompensa');
+        fillSelect($(`#followupReward${n}`), referenceOptions('object'), 'Sin recompensa');
+      });
       fillSelect($('#shopObjectPicker'), referenceOptions('object'), 'Elegir objeto...');
     }
 
@@ -780,12 +819,35 @@
       persist();
     }
 
-    function readDialogueRound(prefix){
+    function linesFromTextarea(selector){
+      return ($(selector).value || '')
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(Boolean);
+    }
+    function commaList(value){
+      return String(value || '').split(',').map(item => item.trim()).filter(Boolean);
+    }
+    function readPresentationPages(){
+      return [1,2,3,4].map(n => ({
+        kicker: $(`#presentationKicker${n}`).value.trim(),
+        title: $(`#presentationTitle${n}`).value.trim(),
+        subtitle: $(`#presentationSubtitle${n}`).value.trim(),
+        text: $(`#presentationText${n}`).value.trim()
+      })).filter(page => page.kicker || page.title || page.subtitle || page.text);
+    }
+    function readDialogueChoices(prefix){
       return [1,2,3].map(n => ({
-        question: $(`#${prefix}Question${n}`).value.trim(),
-        answer: $(`#${prefix}Answer${n}`).value.trim(),
-        pose: $(`#${prefix}Pose${n}`)?.value || `pose${n}`
-      }));
+        id: `${prefix}_${n}`,
+        label: $(`#${prefix}Choice${n}`).value.trim(),
+        response: $(`#${prefix}Response${n}`).value.trim(),
+        responseLines: linesFromTextarea(`#${prefix}Response${n}`),
+        pose: $(`#${prefix}Pose${n}`)?.value || 'pose1',
+        action: $(`#${prefix}Action${n}`)?.value.trim() || '',
+        unlocks: commaList($(`#${prefix}Unlocks${n}`)?.value || ''),
+        reward: $(`#${prefix}Reward${n}`)?.value || '',
+        next: $(`#${prefix}Next${n}`)?.value.trim() || ''
+      })).filter(choice => choice.label || choice.response || choice.action || choice.reward || choice.unlocks.length || choice.next);
     }
     function saveConversation(){
       let rewardId = $('#conversationReward').value;
@@ -802,24 +864,52 @@
       }
       const selectedCharacter = $('#characterSelect').value;
       const id = $('#conversationId').value.trim() || safeId('conv');
+      const presentationPages = readPresentationPages();
+      const choices = readDialogueChoices('choice');
+      const followupChoices = readDialogueChoices('followup');
       const item = {
         id,
+        format: 'story_character_scene',
+        sceneType: $('#conversationFormat').value,
         character: selectedCharacter === 'Personalizado' ? ($('#customCharacter').value.trim() || 'Personaje nuevo') : selectedCharacter,
         usesExistingCharacter: selectedCharacter !== 'Personalizado',
         background: $('#conversationBackgroundPath').value.trim(),
-        hasPresentation: $('#hasPresentation').value === 'si',
-        presentationImage: $('#presentationImagePath').value.trim(),
-        poses: {
+        assets: {
+          background: $('#conversationBackgroundPath').value.trim(),
+          presentationImage: $('#presentationImagePath').value.trim(),
           pose1: $('#pose1Path').value.trim(),
           pose2: $('#pose2Path').value.trim(),
           pose3: $('#pose3Path').value.trim(),
           pose4: $('#pose4Path').value.trim()
         },
-        intro: $('#dialogueIntro').value.trim(),
-        round1: readDialogueRound('r1'),
+        hasPresentation: $('#hasPresentation').value === 'si' || presentationPages.length > 0,
+        presentation: {
+          active: false,
+          page: 0,
+          image: $('#presentationImagePath').value.trim(),
+          pages: presentationPages
+        },
+        dialogue: {
+          speaker: selectedCharacter === 'Personalizado' ? ($('#customCharacter').value.trim() || 'Personaje nuevo') : selectedCharacter,
+          openingLines: linesFromTextarea('#dialogueOpeningLines'),
+          choices,
+          followup: {
+            enabled: $('#secondRoundEnabled').value === 'si',
+            condition: $('#secondRoundCondition').value.trim(),
+            openingLines: linesFromTextarea('#followupOpeningLines'),
+            choices: followupChoices
+          }
+        },
+        integrationHints: {
+          queueRadioCompatible: $('#conversationFormat').value === 'radio_queue',
+          presentationOverlayCompatible: presentationPages.length > 0,
+          actionExamples: ['talk-vera','xavor-introduction','xavor-finale-request','unlock-blue-computer']
+        },
+        intro: linesFromTextarea('#dialogueOpeningLines').join('\n'),
+        round1: choices,
         round2Enabled: $('#secondRoundEnabled').value === 'si',
         round2Condition: $('#secondRoundCondition').value.trim(),
-        round2: readDialogueRound('r2'),
+        round2: followupChoices,
         finalPhrase: $('#dialogueFinal').value.trim(),
         reward: rewardId || ''
       };
