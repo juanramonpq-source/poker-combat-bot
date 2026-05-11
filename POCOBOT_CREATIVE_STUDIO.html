@@ -261,6 +261,8 @@
                   <button class="btn tool-button active" type="button" data-tool="rect">Colisión rectángulo</button>
                   <button class="btn tool-button" type="button" data-tool="oval">Colisión óvalo</button>
                   <button class="btn tool-button" type="button" data-tool="interaction">Punto de interacción</button>
+                  <button class="btn tool-button" type="button" data-tool="enemy">Enemigo</button>
+                  <button class="btn tool-button" type="button" data-tool="enemy-path">Ruta enemigo</button>
                   <button class="btn tool-button" type="button" data-tool="start">Punto de inicio</button>
                   <button class="btn tool-button" type="button" data-tool="door-smoke">Humo de puerta</button>
                   <button class="btn tool-button" type="button" data-tool="edit">Editar</button>
@@ -280,6 +282,21 @@
                   <label>Destino creado<select id="interactionTarget"><option value="">Elegir...</option></select></label>
                   <label>Nombre visible<input id="interactionLabel" placeholder="Hablar con Vera"></label>
                   <label class="expert-only">Condición<textarea id="interactionCondition" placeholder="Ej: tener llave_torre"></textarea></label>
+                </div>
+                <div class="tool-group">
+                  <h3>Enemigo</h3>
+                  <p class="hint">Coloca el enemigo en el lienzo y después usa “Ruta enemigo” para dibujar su patrulla punto a punto.</p>
+                  <label>ID enemigo<input id="enemyId" placeholder="drone_argos_01"></label>
+                  <label>Nombre visible<input id="enemyLabel" placeholder="Dron patrulla Argos"></label>
+                  <label>Combate enlazado<select id="enemyCombatTarget"><option value="">Elegir combate...</option></select></label>
+                  <label>Imagen / sprite<input type="file" id="enemyVisualFile" accept="image/*,.gif"></label>
+                  <label>Ruta imagen<input id="enemyVisualSource" placeholder="assets/Historia/CARPETAX/enemigo"></label>
+                  <div class="grid">
+                    <label>Velocidad<input type="number" id="enemySpeed" value="60" min="0" step="5"></label>
+                    <label>Radio combate<input type="number" id="enemyRadius" value="44" min="8" step="2"></label>
+                  </div>
+                  <label>Patrulla<select id="enemyLoop"><option value="loop">Bucle</option><option value="pingpong">Ida y vuelta</option><option value="static">Quieto</option></select></label>
+                  <label class="expert-only">Condición<textarea id="enemyCondition" placeholder="Ej: si alarma_activa"></textarea></label>
                 </div>
                 <div class="tool-group inspector">
                   <h3>Inspector</h3>
@@ -546,6 +563,7 @@
       imageData: '',
       collisions: [],
       interactions: [],
+      enemies: [],
       doorSmokePoints: [],
       crop: null,
       selected: null
@@ -590,7 +608,8 @@
         targetGame: 'PoCoBOT story mode',
         outputPriority: 'JSON primero; HTML de prueba opcional',
         runtimeExpectations: [
-          'Los escenarios contienen start, entry, layers, collisions, interactions, radioBlocks y doorEvent.',
+          'Los escenarios contienen start, entry, layers, collisions, interactions, enemies, radioBlocks y doorEvent.',
+          'Los enemigos de escenario contienen posición, combate enlazado, visualSource, radio, velocidad y path de patrulla.',
           'Las conversaciones usan formato story_character_scene con presentation.pages y dialogue.choices.',
           'Las opciones de conversación vacías aparecen en skippedSlots y deben saltarse en el juego.',
           'Los combates se enlazan desde Escenario por id.',
@@ -611,7 +630,7 @@
         `Conversaciones: ${(data.conversations || []).map(item => item.id).join(', ') || 'ninguna'}.`,
         `Combates: ${(data.combats || []).map(item => item.id).join(', ') || 'ninguno'}.`,
         `Tiendas: ${(data.shops || []).map(item => item.id).join(', ') || 'ninguna'}.`,
-        'Reglas clave: colisiones rect/oval; interactions enlazan scenario/combat/conversation/object; radioBlocks se disparan por enter, interaction, time o combat_complete; doorEvent cambia imagen cerrada/abierta, reproduce humo/sonido y puede mandar a otro escenario.',
+        'Reglas clave: colisiones rect/oval; interactions enlazan scenario/combat/conversation/object; enemies colocan rivales en mapa con combatId y path de patrulla; radioBlocks se disparan por enter, interaction, time o combat_complete; doorEvent cambia imagen cerrada/abierta, reproduce humo/sonido y puede mandar a otro escenario.',
         'Conversaciones: usa presentation.pages, dialogue.openingLines, choices y followup. Cualquier slot incluido en skippedSlots debe omitirse.',
         'Combates: visualSource puede ser imagen/gif o perfil del juego; special/hacked describen reglas que deben implementarse.',
         'Tiendas: parsedItems y availableDeck ayudan a convertir el texto en catálogo real.'
@@ -748,6 +767,7 @@
     }
     function refreshReferenceSelects(){
       fillSelect($('#interactionTarget'), referenceOptions($('#interactionType').value), 'Elegir destino...');
+      fillSelect($('#enemyCombatTarget'), referenceOptions('combat'), 'Elegir combate...');
       const originMap = { scenario: 'scenario', shop: 'shop', combat: 'combat', main_map: 'scenario' };
       fillSelect($('#scenarioEntryLink'), referenceOptions(originMap[$('#scenarioEntryOrigin').value] || 'scenario'), $('#scenarioEntryOrigin').value === 'main_map' ? 'Mapa principal' : 'Elegir origen...');
       fillSelect($('#doorDestination'), referenceOptions('scenario'), 'Quedarse aquí');
@@ -778,6 +798,7 @@
         drawGrid(ctx, canvas);
         scenarioDraft.collisions.concat(dragPreview && (dragPreview.kind === 'rect' || dragPreview.kind === 'oval') ? [dragPreview] : []).forEach((item, index) => drawCollision(ctx, item, index));
         scenarioDraft.interactions.forEach((item, index) => drawInteraction(ctx, item, index));
+        scenarioDraft.enemies.forEach((item, index) => drawEnemy(ctx, item, index));
         scenarioDraft.doorSmokePoints.forEach((point, index) => drawSmokePoint(ctx, point, index));
         if(scenarioDraft.crop || (dragPreview && dragPreview.kind === 'crop')) drawCrop(ctx, scenarioDraft.crop || dragPreview);
         drawStart(ctx);
@@ -830,6 +851,49 @@
       ctx.font = '900 11px system-ui';
       ctx.fillText(String(index + 1), item.x - 3, item.y + 4);
     }
+    function drawEnemy(ctx, item, index){
+      const selected = scenarioDraft.selected === `enemy:${index}`;
+      const path = item.path || [];
+      ctx.save();
+      if(path.length > 1){
+        ctx.strokeStyle = selected ? '#7effc4' : 'rgba(255,211,100,.84)';
+        ctx.lineWidth = selected ? 4 : 3;
+        ctx.setLineDash([10, 8]);
+        ctx.beginPath();
+        path.forEach((point, pointIndex) => {
+          if(pointIndex === 0) ctx.moveTo(point.x, point.y); else ctx.lineTo(point.x, point.y);
+        });
+        if(item.loop === 'loop') ctx.closePath();
+        ctx.stroke();
+        ctx.setLineDash([]);
+        path.forEach((point, pointIndex) => {
+          ctx.fillStyle = pointIndex === 0 ? '#ff7a8a' : '#ffd364';
+          ctx.strokeStyle = '#1e1302';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        });
+      }
+      ctx.fillStyle = selected ? '#7effc4' : '#ff7a8a';
+      ctx.strokeStyle = '#1e1302';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(item.x, item.y - 18);
+      ctx.lineTo(item.x + 18, item.y + 14);
+      ctx.lineTo(item.x - 18, item.y + 14);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#1e1302';
+      ctx.font = '900 11px system-ui';
+      ctx.fillText(`E${index + 1}`, item.x - 8, item.y + 8);
+      ctx.fillStyle = '#f6fbff';
+      ctx.font = '800 12px system-ui';
+      ctx.fillText(item.label || item.id || `Enemigo ${index + 1}`, item.x + 22, item.y - 12);
+      ctx.restore();
+    }
     function drawSmokePoint(ctx, point, index){
       ctx.save();
       ctx.fillStyle = 'rgba(210,230,238,.32)';
@@ -879,6 +943,12 @@
         const item = scenarioDraft.interactions[i];
         if(Math.hypot(point.x - item.x, point.y - item.y) <= 16) return { type:'interaction', index:i };
       }
+      for(let i = scenarioDraft.enemies.length - 1; i >= 0; i--){
+        const item = scenarioDraft.enemies[i];
+        if(Math.hypot(point.x - item.x, point.y - item.y) <= 24) return { type:'enemy', index:i };
+        const pathIndex = (item.path || []).findIndex(pathPoint => Math.hypot(point.x - pathPoint.x, point.y - pathPoint.y) <= 12);
+        if(pathIndex >= 0) return { type:'enemyPath', index:i, pathIndex };
+      }
       for(let i = scenarioDraft.doorSmokePoints.length - 1; i >= 0; i--){
         const item = scenarioDraft.doorSmokePoints[i];
         if(Math.hypot(point.x - item.x, point.y - item.y) <= (item.size || 34) + 8) return { type:'doorSmoke', index:i };
@@ -909,6 +979,7 @@
       const options = ['<option value="">Nada seleccionado</option>'];
       scenarioDraft.collisions.forEach((item,index) => options.push(`<option value="collision:${index}">Colisión ${index + 1} · ${item.kind}</option>`));
       scenarioDraft.interactions.forEach((item,index) => options.push(`<option value="interaction:${index}">Interacción ${index + 1} · ${item.label || item.target || item.type}</option>`));
+      scenarioDraft.enemies.forEach((item,index) => options.push(`<option value="enemy:${index}">Enemigo ${index + 1} · ${item.label || item.id || item.combatId}</option>`));
       scenarioDraft.doorSmokePoints.forEach((item,index) => options.push(`<option value="doorSmoke:${index}">Humo puerta ${index + 1}</option>`));
       selected.innerHTML = options.join('');
       selected.value = scenarioDraft.selected || '';
@@ -925,6 +996,7 @@
       const index = Number(indexText);
       if(type === 'collision') return scenarioDraft.collisions[index];
       if(type === 'interaction') return scenarioDraft.interactions[index];
+      if(type === 'enemy') return scenarioDraft.enemies[index];
       if(type === 'doorSmoke') return scenarioDraft.doorSmokePoints[index];
       return null;
     }
@@ -939,6 +1011,10 @@
       }
       if(scenarioDraft.selected?.startsWith('doorSmoke:')) item.size = Number($('#editW').value || item.size || 34);
       if(item.type) item.label = $('#editLabel').value.trim();
+      if(scenarioDraft.selected?.startsWith('enemy:')){
+        item.label = $('#editLabel').value.trim() || item.label;
+        if((item.path || []).length) item.path[0] = { x: item.x, y: item.y };
+      }
       setScenarioStatus('Elemento editado');
       populateSelectedElement();
       drawScenario();
@@ -1011,6 +1087,40 @@
         once: true
       };
     }
+    function makeEnemyFromForm(point){
+      const label = $('#enemyLabel').value.trim();
+      const combatId = $('#enemyCombatTarget').value;
+      const id = $('#enemyId').value.trim() || slug(label || combatId || `enemy-${scenarioDraft.enemies.length + 1}`, `enemy-${scenarioDraft.enemies.length + 1}`);
+      return {
+        id,
+        label: label || id,
+        x: point.x,
+        y: point.y,
+        combatId,
+        visualSource: $('#enemyVisualSource').value.trim(),
+        speed: Number($('#enemySpeed').value || 60),
+        radius: Number($('#enemyRadius').value || 44),
+        loop: $('#enemyLoop').value,
+        condition: $('#enemyCondition').value.trim(),
+        path: [{ x: point.x, y: point.y }]
+      };
+    }
+    function selectedEnemyIndex(){
+      if(!scenarioDraft.selected?.startsWith('enemy:')) return -1;
+      return Number(scenarioDraft.selected.split(':')[1]);
+    }
+    function nearestEnemyIndex(point){
+      let nearest = -1;
+      let bestDistance = Infinity;
+      scenarioDraft.enemies.forEach((enemy, index) => {
+        const distance = Math.hypot(point.x - enemy.x, point.y - enemy.y);
+        if(distance < bestDistance){
+          bestDistance = distance;
+          nearest = index;
+        }
+      });
+      return bestDistance <= 180 ? nearest : -1;
+    }
     function saveScenario(){
       const id = $('#scenarioId').value.trim() || safeId('esc');
       const item = {
@@ -1027,6 +1137,7 @@
         layers: readScenarioLayers(),
         collisions: clone(scenarioDraft.collisions),
         interactions: clone(scenarioDraft.interactions),
+        enemies: clone(scenarioDraft.enemies),
         radioBlocks: readScenarioRadioBlocks(),
         doorEvent: readDoorEvent()
       };
@@ -1048,6 +1159,7 @@
       scenarioDraft.imageData = mediaStore[`scenario:${id}`] || '';
       scenarioDraft.collisions = clone(item.collisions || []);
       scenarioDraft.interactions = clone(item.interactions || []);
+      scenarioDraft.enemies = clone(item.enemies || []);
       scenarioDraft.doorSmokePoints = clone(item.doorEvent?.smokePoints || []);
       hydrateScenarioAdvancedFields(item);
       scenarioDraft.crop = null;
@@ -1418,10 +1530,51 @@
           { kind: 'oval', x: 690, y: 112, w: 190, h: 210 },
           { kind: 'rect', x: 236, y: 356, w: 164, h: 92 }
         ],
-        interactions: [
+      interactions: [
           { id: 'blue-computer', x: 191, y: 273, type: 'conversation', target: 'xavor_radio_4b', label: 'Ordenador azul', condition: 'Sin hackear' },
           { id: 'tower-door', x: 479, y: 213, type: 'scenario', target: 'torre_4b_interior_baja', label: 'Puerta 4B', condition: 'tower-door-open' },
           { id: 'relay-bridge', x: 774, y: 282, type: 'combat', target: 'argos_patrol_drone', label: 'Pasarela este', condition: 'Si salta alarma' }
+        ],
+        enemies: [
+          {
+            id: 'argos_drone_west',
+            label: 'Dron oeste',
+            x: 292,
+            y: 188,
+            combatId: 'argos_patrol_drone',
+            visualSource: 'assets/Historia/torre-seguimiento-4b-tutorial/assets/chapter/argos-patrol-drone.png',
+            speed: 54,
+            radius: 46,
+            loop: 'pingpong',
+            condition: 'Patrulla inicial',
+            path: [{ x: 292, y: 188 }, { x: 404, y: 156 }, { x: 486, y: 196 }]
+          },
+          {
+            id: 'argos_drone_bridge',
+            label: 'Dron pasarela',
+            x: 690,
+            y: 286,
+            combatId: 'argos_patrol_drone',
+            visualSource: 'assets/Historia/torre-seguimiento-4b-tutorial/assets/chapter/argos-patrol-drone.png',
+            speed: 72,
+            radius: 48,
+            loop: 'loop',
+            condition: 'Antes de abrir puerta',
+            path: [{ x: 690, y: 286 }, { x: 802, y: 250 }, { x: 842, y: 344 }, { x: 728, y: 372 }]
+          },
+          {
+            id: 'argos_drone_south',
+            label: 'Dron sur',
+            x: 514,
+            y: 404,
+            combatId: 'argos_patrol_drone',
+            visualSource: 'assets/Historia/torre-seguimiento-4b-tutorial/assets/chapter/argos-patrol-drone.png',
+            speed: 48,
+            radius: 44,
+            loop: 'pingpong',
+            condition: 'Ruta inferior',
+            path: [{ x: 514, y: 404 }, { x: 642, y: 424 }, { x: 742, y: 388 }]
+          }
         ],
         radioBlocks: [
           {
@@ -1502,6 +1655,7 @@
         layers: [],
         collisions: [],
         interactions: [{ x: 770, y: 260, type: 'scenario', target: 'torre_4b_sala_control', label: 'Subir a sala de control', condition: '' }],
+        enemies: [],
         radioBlocks: [],
         doorEvent: { enabled: false, smokePoints: [] }
       });
@@ -1516,6 +1670,7 @@
         layers: [],
         collisions: [],
         interactions: [],
+        enemies: [],
         radioBlocks: [],
         doorEvent: { enabled: false, smokePoints: [] }
       });
@@ -1566,6 +1721,7 @@
         openImage: door.openImage || image,
         interactions: item.interactions || [],
         collisions: item.collisions || [],
+        enemies: item.enemies || [],
         radioBlocks: item.radioBlocks || [],
         smokePoints: door.smokePoints || [],
         afterRadio: door.after?.radio || [],
@@ -1582,6 +1738,9 @@
         .pin,.start{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;font-weight:900}
         .pin{width:26px;height:26px;border-radius:50%;background:#ffd364;border:3px solid #1e1302;color:#1e1302}
         .start{width:28px;height:28px;border-radius:50%;background:#56d7ff;border:3px solid #fff;color:#06101d}
+        .enemy{position:absolute;width:48px;height:48px;margin:-24px 0 0 -24px;border:3px solid #1e1302;border-radius:50%;background:#ff7a8a;display:grid;place-items:center;color:#1e1302;font-weight:900;box-shadow:0 0 0 4px rgba(255,122,138,.2)}
+        .enemy img{width:100%;height:100%;min-height:0;object-fit:contain;border-radius:50%}
+        .route{position:absolute;inset:0;pointer-events:none}
         .smoke{position:absolute;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:radial-gradient(circle,rgba(232,244,246,.9),rgba(232,244,246,.28) 45%,rgba(232,244,246,0));opacity:0;pointer-events:none}
         .smoke.play{animation:smoke 2.4s ease-out forwards}
         @keyframes smoke{0%{opacity:0;transform:scale(.4)}20%{opacity:1}100%{opacity:0;transform:scale(2.1) translateY(-18px)}}
@@ -1591,7 +1750,8 @@
         .radio strong{color:#7effc4}.radio p{margin:8px 0 0;line-height:1.35}.layer{border:1px solid #24415f;border-radius:10px;padding:10px;background:#111e30}small{color:#9eb1c7}
         @media(max-width:760px){.wrap{grid-template-columns:1fr}.stage img{min-height:360px}aside{border-left:0;border-top:1px solid #24415f}}
       `;
-      return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>${style}</style></head><body><div class="wrap"><main class="stage" id="stage"><img id="stageImage" src="${escapeHtml(data.image)}" alt="">${data.collisions.map(item => `<div class="collision ${item.kind === 'oval' ? 'oval' : ''}" style="left:${item.x / 9.6}%;top:${item.y / 5.4}%;width:${item.w / 9.6}%;height:${item.h / 5.4}%"></div>`).join('')}${data.interactions.map((pin,index) => `<button class="pin" data-radio="${escapeHtml(pin.id || pin.target || pin.label || '')}" style="left:${pin.x / 9.6}%;top:${pin.y / 5.4}%" title="${escapeHtml(pin.label || pin.target || '')}">${index + 1}</button>`).join('')}<div class="start" style="left:${start.x / 9.6}%;top:${start.y / 5.4}%" title="Inicio">I</div>${data.smokePoints.map((point,index) => `<div class="smoke" id="smoke${index}" style="left:${point.x / 9.6}%;top:${point.y / 5.4}%"></div>`).join('')}<section class="radio" id="radio"><strong>Xavor Glitch</strong><p>Escena preparada. Pulsa una radio o abre la puerta para probar el flujo.</p></section></main><aside><h1>${escapeHtml(data.name)}</h1><small>${escapeHtml(data.id)}</small><button id="playEnter" type="button">Reproducir radio de entrada</button><button id="openDoor" type="button">Emular apertura de puerta</button>${data.layers.map(layer => `<article class="layer"><strong>${escapeHtml(layer.name || layer.id)}</strong><br><small>${escapeHtml(layer.condition || 'Sin condición')}</small>${layer.launchUrl ? `<button type="button" data-layer-url="${escapeHtml(layer.launchUrl)}">Abrir HTML real</button>` : ''}</article>`).join('')}</aside></div><script>const data=${safeScriptJson(data)};const radio=document.getElementById('radio');function speak(lines,speaker){radio.innerHTML='<strong>'+speaker+'</strong><p>'+lines.join('<br>')+'</p>'}function playByTrigger(trigger,target){const block=data.radioBlocks.find(item=>item.trigger===trigger&&(!target||item.target===target))||data.radioBlocks.find(item=>item.trigger===trigger);if(block)speak(block.lines,block.speaker||'Radio')}document.getElementById('playEnter').onclick=()=>playByTrigger('enter');document.getElementById('openDoor').onclick=()=>{document.getElementById('stageImage').src=data.openImage||data.image;data.smokePoints.forEach((_,index)=>document.getElementById('smoke'+index)?.classList.add('play'));speak(data.afterRadio.length?data.afterRadio:['Puerta abierta.'], 'Xavor Glitch')};document.querySelectorAll('[data-radio]').forEach(node=>node.onclick=()=>playByTrigger('interaction',node.dataset.radio));document.querySelectorAll('[data-layer-url]').forEach(node=>node.onclick=()=>{window.location.href=node.dataset.layerUrl});playByTrigger('enter');<\/script></body></html>`;
+      const routeSvg = `<svg class="route" viewBox="0 0 960 540" preserveAspectRatio="none">${data.enemies.map(enemy => (enemy.path || []).length > 1 ? `<polyline points="${enemy.path.map(point => `${point.x},${point.y}`).join(' ')}" fill="none" stroke="rgba(255,211,100,.78)" stroke-width="3" stroke-dasharray="10 8"/>` : '').join('')}</svg>`;
+      return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>${style}</style></head><body><div class="wrap"><main class="stage" id="stage"><img id="stageImage" src="${escapeHtml(data.image)}" alt="">${routeSvg}${data.collisions.map(item => `<div class="collision ${item.kind === 'oval' ? 'oval' : ''}" style="left:${item.x / 9.6}%;top:${item.y / 5.4}%;width:${item.w / 9.6}%;height:${item.h / 5.4}%"></div>`).join('')}${data.interactions.map((pin,index) => `<button class="pin" data-radio="${escapeHtml(pin.id || pin.target || pin.label || '')}" style="left:${pin.x / 9.6}%;top:${pin.y / 5.4}%" title="${escapeHtml(pin.label || pin.target || '')}">${index + 1}</button>`).join('')}${data.enemies.map((enemy,index) => `<button class="enemy" data-enemy="${index}" style="left:${enemy.x / 9.6}%;top:${enemy.y / 5.4}%" title="${escapeHtml(enemy.label || enemy.id || '')}">${enemy.visualSource ? `<img src="${escapeHtml(enemy.visualSource)}" alt="">` : `E${index + 1}`}</button>`).join('')}<div class="start" style="left:${start.x / 9.6}%;top:${start.y / 5.4}%" title="Inicio">I</div>${data.smokePoints.map((point,index) => `<div class="smoke" id="smoke${index}" style="left:${point.x / 9.6}%;top:${point.y / 5.4}%"></div>`).join('')}<section class="radio" id="radio"><strong>Xavor Glitch</strong><p>Escena preparada. Pulsa una radio o abre la puerta para probar el flujo.</p></section></main><aside><h1>${escapeHtml(data.name)}</h1><small>${escapeHtml(data.id)}</small><button id="playEnter" type="button">Reproducir radio de entrada</button><button id="openDoor" type="button">Emular apertura de puerta</button>${data.enemies.map(enemy => `<article class="layer"><strong>${escapeHtml(enemy.label || enemy.id)}</strong><br><small>Combate: ${escapeHtml(enemy.combatId || 'sin enlazar')} · Ruta: ${(enemy.path || []).length} puntos</small></article>`).join('')}${data.layers.map(layer => `<article class="layer"><strong>${escapeHtml(layer.name || layer.id)}</strong><br><small>${escapeHtml(layer.condition || 'Sin condición')}</small>${layer.launchUrl ? `<button type="button" data-layer-url="${escapeHtml(layer.launchUrl)}">Abrir HTML real</button>` : ''}</article>`).join('')}</aside></div><script>const data=${safeScriptJson(data)};const radio=document.getElementById('radio');function speak(lines,speaker){radio.innerHTML='<strong>'+speaker+'</strong><p>'+lines.join('<br>')+'</p>'}function playByTrigger(trigger,target){const block=data.radioBlocks.find(item=>item.trigger===trigger&&(!target||item.target===target))||data.radioBlocks.find(item=>item.trigger===trigger);if(block)speak(block.lines,block.speaker||'Radio')}function pointAt(path,t,loop){if(!path||path.length<2)return path&&path[0]||{x:0,y:0};const max=path.length-1;let scaled=(loop==='static'?0:t*max);if(loop==='pingpong'){const cycle=max*2;scaled=(t*cycle)%cycle;if(scaled>max)scaled=cycle-scaled}else if(loop==='loop'){scaled=(t*path.length)%path.length}const a=Math.floor(scaled)%path.length;const b=(a+1)%path.length;const f=scaled-a;return{x:path[a].x+(path[b].x-path[a].x)*f,y:path[a].y+(path[b].y-path[a].y)*f}}function animate(time){document.querySelectorAll('[data-enemy]').forEach(node=>{const enemy=data.enemies[Number(node.dataset.enemy)];const p=pointAt(enemy.path,time/3500,enemy.loop);node.style.left=(p.x/9.6)+'%';node.style.top=(p.y/5.4)+'%'});requestAnimationFrame(animate)}document.getElementById('playEnter').onclick=()=>playByTrigger('enter');document.getElementById('openDoor').onclick=()=>{document.getElementById('stageImage').src=data.openImage||data.image;data.smokePoints.forEach((_,index)=>document.getElementById('smoke'+index)?.classList.add('play'));speak(data.afterRadio.length?data.afterRadio:['Puerta abierta.'], 'Xavor Glitch')};document.querySelectorAll('[data-radio]').forEach(node=>node.onclick=()=>playByTrigger('interaction',node.dataset.radio));document.querySelectorAll('[data-enemy]').forEach(node=>node.onclick=()=>{const enemy=data.enemies[Number(node.dataset.enemy)];speak(['Enemigo: '+(enemy.label||enemy.id),'Combate enlazado: '+(enemy.combatId||'sin combate'),'Ruta: '+((enemy.path||[]).length)+' puntos.'], 'Sistema de escenario')});document.querySelectorAll('[data-layer-url]').forEach(node=>node.onclick=()=>{window.location.href=node.dataset.layerUrl});playByTrigger('enter');requestAnimationFrame(animate);<\/script></body></html>`;
     }
     function launchScenarioPreview(){
       const id = $('#scenarioId').value.trim();
@@ -1939,11 +2099,38 @@
         drawScenario();
         return;
       }
+      if(tool === 'enemy'){
+        const enemy = makeEnemyFromForm(point);
+        scenarioDraft.enemies.push(enemy);
+        scenarioDraft.selected = `enemy:${scenarioDraft.enemies.length - 1}`;
+        populateSelectedElement();
+        setScenarioStatus(`Enemigo colocado: ${enemy.label}`);
+        drawScenario();
+        return;
+      }
+      if(tool === 'enemy-path'){
+        let index = selectedEnemyIndex();
+        if(index < 0) index = nearestEnemyIndex(point);
+        if(index < 0){
+          setScenarioStatus('Selecciona o coloca un enemigo antes de dibujar su ruta');
+          return;
+        }
+        const enemy = scenarioDraft.enemies[index];
+        enemy.path = enemy.path || [{ x: enemy.x, y: enemy.y }];
+        enemy.path.push({ x: point.x, y: point.y });
+        scenarioDraft.selected = `enemy:${index}`;
+        populateSelectedElement();
+        setScenarioStatus(`Punto de ruta añadido a ${enemy.label || enemy.id}`);
+        drawScenario();
+        return;
+      }
       if(tool === 'erase'){
         const hit = hitTest(point);
         if(hit){
           if(hit.type === 'collision') scenarioDraft.collisions.splice(hit.index,1);
           else if(hit.type === 'interaction') scenarioDraft.interactions.splice(hit.index,1);
+          else if(hit.type === 'enemy') scenarioDraft.enemies.splice(hit.index,1);
+          else if(hit.type === 'enemyPath') scenarioDraft.enemies[hit.index]?.path?.splice(hit.pathIndex,1);
           else if(hit.type === 'doorSmoke') scenarioDraft.doorSmokePoints.splice(hit.index,1);
           selectElement(null);
           setScenarioStatus('Elemento borrado');
@@ -1952,7 +2139,7 @@
       }
       if(tool === 'edit'){
         const hit = hitTest(point);
-        selectElement(hit);
+        selectElement(hit?.type === 'enemyPath' ? { type:'enemy', index: hit.index } : hit);
         return;
       }
       dragStart = point;
@@ -1980,6 +2167,11 @@
     });
     $('#undoScenario').addEventListener('click', () => {
       if(scenarioDraft.interactions.length && tool === 'interaction') scenarioDraft.interactions.pop();
+      else if(scenarioDraft.enemies.length && tool === 'enemy') scenarioDraft.enemies.pop();
+      else if(tool === 'enemy-path'){
+        const index = selectedEnemyIndex();
+        if(index >= 0 && (scenarioDraft.enemies[index].path || []).length > 1) scenarioDraft.enemies[index].path.pop();
+      }
       else if(scenarioDraft.doorSmokePoints.length && tool === 'door-smoke') scenarioDraft.doorSmokePoints.pop();
       else scenarioDraft.collisions.pop();
       populateSelectedElement();
@@ -2020,6 +2212,10 @@
       if(!file) return;
       $('#customCardImage').value = filePathFromInput(file);
       readFileAsDataUrl(file, dataUrl => { draftMedia.customCardImageData = dataUrl; });
+    });
+    $('#enemyVisualFile').addEventListener('change', event => {
+      const file = event.target.files[0];
+      if(file) $('#enemyVisualSource').value = filePathFromInput(file);
     });
     $('#hasPresentation').addEventListener('change', () => $all('.presentation-field').forEach(node => node.classList.toggle('hidden', $('#hasPresentation').value !== 'si')));
     [
