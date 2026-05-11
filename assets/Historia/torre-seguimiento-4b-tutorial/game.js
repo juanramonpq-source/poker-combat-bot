@@ -290,14 +290,14 @@ const collisionZones = [
   { type: "ellipse", x: 23, y: 439, width: 158, height: 234 },
   { type: "ellipse", x: 34, y: 717, width: 203, height: 203 },
   { type: "ellipse", x: 237, y: 865, width: 323, height: 143 },
-  { type: "ellipse", x: 720, y: 782, width: 152, height: 124 },
-  { type: "ellipse", x: 973, y: 623, width: 274, height: 260 },
+  { type: "ellipse", x: 690.4120481927711, y: 827.0365684917969, width: 152, height: 70 },
   { type: "ellipse", x: 960, y: 91, width: 315, height: 192 },
   { type: "ellipse", x: 1157, y: 235, width: 173, height: 151 },
   { type: "ellipse", x: 1348, y: 345, width: 188, height: 411 },
   { type: "ellipse", x: 1195, y: 630, width: 198, height: 150 },
-  { type: "ellipse", x: 832, y: 485, width: 149, height: 127 },
-  { type: "ellipse", x: 552, y: 678, width: 49, height: 33 },
+  { type: "ellipse", x: 868.6506024096385, y: 505.29898624798807, width: 100, height: 100 },
+  { type: "ellipse", x: 561.5783132530121, y: 684.1735520853923, width: 49, height: 33 },
+  { type: "ellipse", x: 1075.5180722891566, y: 660.7616129669896, width: 101, height: 216 },
 ];
 window.PoCoBOTStoryCollisionEditor?.applySceneZones("tower-exterior", collisionZones);
 
