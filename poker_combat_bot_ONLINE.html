@@ -7824,6 +7824,8 @@ body.desktop-compact-mode > footer{
 #compactProjectileOnlyBtn,
 #compactConfirmAttackBtn,
 #compactMobileConfirmAttackBtn,
+#compactMobileProjectileModeBtn,
+#compactMobileProjectileOnlyBtn,
 #compactMobileDrawDiamondBtn,
 #compactMobileFigureBurstBtn,
 #compactConfirmDefenseBtn,
@@ -7838,6 +7840,8 @@ body.desktop-compact-mode > footer{
 #compactProjectileOnlyBtn,
 #compactConfirmAttackBtn,
 #compactMobileConfirmAttackBtn,
+#compactMobileProjectileModeBtn,
+#compactMobileProjectileOnlyBtn,
 #compactMobileDrawDiamondBtn,
 #compactMobileFigureBurstBtn,
 #compactConfirmDefenseBtn,
@@ -7847,6 +7851,8 @@ body.desktop-compact-mode > footer{
 
 #compactConfirmAttackBtn,
 #compactMobileConfirmAttackBtn,
+#compactMobileProjectileModeBtn,
+#compactMobileProjectileOnlyBtn,
 #compactMobileDrawDiamondBtn,
 #compactMobileFigureBurstBtn,
 #compactConfirmDefenseBtn,
@@ -10702,6 +10708,8 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
           <button class="cyan" data-mobile-drawer="player" id="compactMobilePlayerDrawerBtn" type="button">Panel jugador</button>
           <button class="primary" data-source-button="actionAddBtn" id="compactMobileModifyBtn" type="button">Modificar</button>
           <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Abrir ataque</button>
+          <button class="warn compact-action-hidden" data-contextual-projectile-mode="true" data-source-button="toggleProjectileBtn" id="compactMobileProjectileModeBtn" type="button">Modo proyectil</button>
+          <button class="warn compact-action-hidden" data-contextual-projectile-only="true" data-source-button="projectileOnlyBtn" id="compactMobileProjectileOnlyBtn" type="button">Solo proyectil</button>
           <button class="danger" data-contextual-attack="true" data-source-button="confirmAttackBtn" id="compactMobileConfirmAttackBtn" type="button">Confirmar ataque</button>
           <button class="danger compact-action-hidden" data-compact-defense-action="primary" id="compactMobileConfirmDefenseBtn" type="button">Elegir 1♦</button>
           <button class="warn compact-action-hidden" data-compact-defense-action="skip" id="compactMobileSkipDefenseBtn" type="button">No defender</button>
@@ -16089,6 +16097,10 @@ function syncDesktopCompactButtons(){
     let shouldHide = false;
     if(btn.dataset.contextualAttack === 'true'){
       shouldHide = !attackContextOpen && !!source.disabled;
+    }else if(btn.dataset.contextualProjectileOnly === 'true'){
+      shouldHide = !attackContextOpen || (currentTutorialAction !== 'projectileOnly' && !!source.disabled);
+    }else if(btn.dataset.contextualProjectileMode === 'true'){
+      shouldHide = !attackContextOpen || (currentTutorialAction !== 'toggleProjectile' && !!source.disabled);
     }else if(btn.dataset.contextualDefense === 'true'){
       shouldHide = !defenseContextOpen && !!source.disabled;
     }else if(btn.dataset.contextualDraw === 'true'){
@@ -16105,6 +16117,12 @@ function syncDesktopCompactButtons(){
     if((btn.id === 'compactActionAddBtn' || btn.id === 'compactMobileModifyBtn') && hasCompactDraft){
       btn.disabled = false;
       btn.classList.add('button-live');
+    }
+    if(btn.dataset.contextualProjectileOnly === 'true' && currentTutorialAction === 'projectileOnly'){
+      const expectedSelection = tutorialExpectedSelection(tutorialGetCurrentStep()?.id) || [];
+      const projectileReady = expectedSelection.length ? tutorialSelectionMatches(expectedSelection) : !btn.disabled;
+      btn.disabled = !projectileReady;
+      btn.classList.toggle('button-live', projectileReady);
     }
     if(btn.id === 'compactClearBtn' && hasCompactDraft){
       btn.disabled = false;
@@ -22005,9 +22023,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-projectile-only',
         title: 'Fase 10 · Solo proyectil',
-        body: 'El <strong>proyectil</strong> es una pica que se dispara y se descarta. En modo “solo proyectil” no necesitas fuel: solo una pica montada y el disparo desbloqueado. Precisamente por eso, puede convertirse en un <strong>golpe de gracia</strong> cuando ya no te queda combustible.',
-        objective: 'Pulsa <strong>Atacar</strong> o <strong>Abrir ataque</strong>, selecciona <strong>7♠</strong> y usa <strong>Solo proyectil</strong>.',
-        tip: 'He dejado activo también el botón Atacar del panel del jugador para que puedas subir al control principal sin perderte.',
+        body: 'El <strong>proyectil</strong> es una pica que se dispara y se descarta. En modo “solo proyectil” no necesitas fuel: solo una pica montada y el disparo desbloqueado. En modo horizontal móvil, al abrir ataque aparecerá <strong>Solo proyectil</strong> directamente en Controles; si quieres ver la consola completa, abre <strong>Todas las acciones</strong>.',
+        objective: 'Pulsa <strong>Atacar</strong> o <strong>Abrir ataque</strong>, selecciona <strong>7♠</strong> y usa <strong>Solo proyectil</strong>. En horizontal móvil no hace falta abrir el panel completo: el botón aparece en Controles.',
+        tip: 'He dejado activo también el botón Atacar del panel del jugador para que puedas subir al control principal sin perderte. El botón Solo proyectil se ilumina cuando la pica marcada ya sirve para disparar.',
         allowedButtons: ['attackModeBtn', 'projectileOnlyBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackA],
         highlightButtons: ['attackModeBtn', 'projectileOnlyBtn'],
@@ -22024,9 +22042,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-projectile-combo',
         title: 'Fase 10 · Ataque normal + proyectil',
-        body: 'Ahora combinamos ambos mundos: <strong>4♦</strong> limita el ataque principal a <strong>8</strong>, así que solo podrás usar la <strong>8♠</strong> como ataque normal y necesitarás sumar la <strong>4♠</strong> como proyectil para rematar. <strong>Importante:</strong> la <strong>última carta marcada</strong> en ataque será la que salga como proyectil.',
-        objective: 'Pulsa <strong>Atacar</strong> desde el panel del jugador, activa <strong>Modo proyectil</strong> y marca <strong>4♦ + 8♠</strong>, dejando <strong>4♠</strong> como última carta seleccionada antes de confirmar.',
-        tip: 'Si intentas cerrar este paso sin combinar proyectil con ataque, la fase se reinicia. Recuerda: la última pica marcada será el proyectil.',
+        body: 'Ahora combinamos ambos mundos: <strong>4♦</strong> limita el ataque principal a <strong>8</strong>, así que solo podrás usar la <strong>8♠</strong> como ataque normal y necesitarás sumar la <strong>4♠</strong> como proyectil para rematar. En horizontal móvil, tras abrir ataque, <strong>Modo proyectil</strong> aparece también en Controles. <strong>Importante:</strong> la <strong>última carta marcada</strong> en ataque será la que salga como proyectil.',
+        objective: 'Pulsa <strong>Atacar</strong> o <strong>Abrir ataque</strong>, activa <strong>Modo proyectil</strong> desde Controles y marca <strong>4♦ + 8♠</strong>, dejando <strong>4♠</strong> como última carta seleccionada antes de confirmar.',
+        tip: 'Si intentas cerrar este paso sin combinar proyectil con ataque, la fase se reinicia. Recuerda: la última pica marcada será el proyectil. Para ver la consola completa, abre <strong>Todas las acciones</strong>.',
         allowedButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
         allowedCardIds: [ACADEMY_CARD_IDS.lesson10Fuel, TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
         highlightButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn'],
