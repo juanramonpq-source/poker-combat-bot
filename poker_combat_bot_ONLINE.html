@@ -22209,6 +22209,7 @@ function startAcademyLesson(lessonId){
   hideIntroScreen();
   academyHideOverlay('academyLessonOverlay');
   academyHideOverlay('academyCertificateOverlay');
+  prepareNormalCombatStartHudMode();
   render();
   scheduleCombatOpeningSequence('academy', 150);
   window.setTimeout(() => {
@@ -22237,6 +22238,7 @@ function startTutorialMode(){
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.add('hidden');
 
+  prepareNormalCombatStartHudMode();
   render();
   scheduleCombatOpeningSequence('tutorial', 150);
   window.setTimeout(() => {
