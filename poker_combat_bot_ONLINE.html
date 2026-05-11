@@ -15570,7 +15570,7 @@ function isMobileLandscapeViewport(){
 }
 
 function shouldUseStoryMobileCompactMode(){
-  return STORY_EMBED_MODE && storyHudMode === 'horizontal' && isStoryMobileViewport() && isMobileLandscapeViewport();
+  return STORY_EMBED_MODE && storyHudMode === 'horizontal' && isStoryMobileViewport();
 }
 
 function canUseDesktopCompactHud(){
@@ -15587,6 +15587,7 @@ function canUseMobilePanoramaHud(){
   try{
     const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
     const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
+    const portraitReady = !!window.matchMedia && window.matchMedia('(max-width: 820px) and (orientation: portrait) and (pointer: coarse)').matches;
     const landscapeReady = isMobileLandscapeViewport();
     const storyForcedMobile = shouldUseStoryMobileCompactMode();
     return !!state.gameStarted
@@ -15594,7 +15595,7 @@ function canUseMobilePanoramaHud(){
       && lobbyHidden
       && hasCoarsePointer
       && compactMobileViewport
-      && (storyForcedMobile || landscapeReady);
+      && (storyForcedMobile || portraitReady || landscapeReady || mobilePanoramaRequested);
   }catch(_err){
     return false;
   }
@@ -15733,6 +15734,8 @@ function syncDesktopHudAvailability(){
   if(!available && devHudModeOverride === 'auto'){
     if(shouldPreserveMobilePanoramaRequest()){
       preservingMobilePanoramaRequest = true;
+      mobilePanoramaAvailable = true;
+      available = true;
       desktopHudMode = 'compact';
     }else{
       desktopHudMode = 'expanded';
