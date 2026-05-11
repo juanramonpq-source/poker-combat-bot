@@ -7824,6 +7824,8 @@ body.desktop-compact-mode > footer{
 #compactProjectileOnlyBtn,
 #compactConfirmAttackBtn,
 #compactMobileConfirmAttackBtn,
+#compactMobileDrawDiamondBtn,
+#compactMobileFigureBurstBtn,
 #compactConfirmDefenseBtn,
 #compactMobileConfirmDefenseBtn{
   font-size:0.69rem !important;
@@ -7836,6 +7838,8 @@ body.desktop-compact-mode > footer{
 #compactProjectileOnlyBtn,
 #compactConfirmAttackBtn,
 #compactMobileConfirmAttackBtn,
+#compactMobileDrawDiamondBtn,
+#compactMobileFigureBurstBtn,
 #compactConfirmDefenseBtn,
 #compactMobileConfirmDefenseBtn{
   padding-inline:10px !important;
@@ -7843,6 +7847,8 @@ body.desktop-compact-mode > footer{
 
 #compactConfirmAttackBtn,
 #compactMobileConfirmAttackBtn,
+#compactMobileDrawDiamondBtn,
+#compactMobileFigureBurstBtn,
 #compactConfirmDefenseBtn,
 #compactMobileConfirmDefenseBtn{
   font-size:0.67rem !important;
@@ -10699,6 +10705,8 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
           <button class="danger" data-contextual-attack="true" data-source-button="confirmAttackBtn" id="compactMobileConfirmAttackBtn" type="button">Confirmar ataque</button>
           <button class="danger compact-action-hidden" data-compact-defense-action="primary" id="compactMobileConfirmDefenseBtn" type="button">Elegir 1♦</button>
           <button class="warn compact-action-hidden" data-compact-defense-action="skip" id="compactMobileSkipDefenseBtn" type="button">No defender</button>
+          <button class="warn compact-action-hidden" data-contextual-draw="true" data-source-button="actionDrawDiamondBtn" id="compactMobileDrawDiamondBtn" type="button">Robar con ♦</button>
+          <button class="primary compact-action-hidden" data-compact-figure-action="true" id="compactMobileFigureBurstBtn" type="button">2 Figuras → 4</button>
           <button data-source-button="actionPassBtn" id="compactMobilePassBtn" type="button">Pasar</button>
         </div>
       </aside>
@@ -15533,6 +15541,18 @@ function canUseMobilePanoramaHud(){
   }
 }
 
+function shouldPreserveMobilePanoramaRequest(){
+  if(!mobilePanoramaRequested || STORY_EMBED_MODE || devHudModeOverride !== 'auto') return false;
+  if(!state.gameStarted) return false;
+  try{
+    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const compactishMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 920;
+    return hasCoarsePointer && compactishMobileViewport;
+  }catch(_err){
+    return false;
+  }
+}
+
 async function requestLandscapeOrientationBestEffort(){
   try{
     if(screen.orientation?.lock){
@@ -15651,8 +15671,12 @@ function syncDesktopHudAvailability(){
   }
   const available = desktopAvailable || mobilePanoramaAvailable;
   if(!available && devHudModeOverride === 'auto'){
-    desktopHudMode = 'expanded';
-    mobilePanoramaRequested = false;
+    if(shouldPreserveMobilePanoramaRequest()){
+      desktopHudMode = 'compact';
+    }else{
+      desktopHudMode = 'expanded';
+      mobilePanoramaRequested = false;
+    }
   }
   const compactActive = available && desktopHudMode === 'compact';
   const mobilePanoramaActive = compactActive && mobilePanoramaAvailable && !desktopAvailable;
@@ -16051,6 +16075,7 @@ function syncDesktopCompactButtons(){
   const compactPlayer = state.players?.[playerIdx] || null;
   const tutorialFigureEnabled = !tutorialIsGuided() || tutorialAllowsButton('quickFigureDrawBtn');
   const showFigureAction = !!compactPlayer && playerIdx === state.currentPlayer && hasFigureBurstCondition(compactPlayer);
+  const currentTutorialAction = tutorialExpectedAction(tutorialGetCurrentStep()?.id);
   document.querySelectorAll('#desktopCompactShell [data-source-button]').forEach(btn => {
     const source = document.getElementById(btn.dataset.sourceButton);
     if(!source){
@@ -16066,6 +16091,8 @@ function syncDesktopCompactButtons(){
       shouldHide = !attackContextOpen && !!source.disabled;
     }else if(btn.dataset.contextualDefense === 'true'){
       shouldHide = !defenseContextOpen && !!source.disabled;
+    }else if(btn.dataset.contextualDraw === 'true'){
+      shouldHide = currentTutorialAction !== 'drawWithDiamond' && !!source.disabled;
     }else if(btn.dataset.contextualClear === 'true'){
       shouldHide = !hasCompactDraft && state.selected.length === 0 && !!source.disabled;
     }else if(btn.dataset.hideWhenDisabled === 'true'){
@@ -16086,13 +16113,12 @@ function syncDesktopCompactButtons(){
     }
   });
 
-  const compactFigureBurstBtn = document.getElementById('compactFigureBurstBtn');
-  if(compactFigureBurstBtn){
+  document.querySelectorAll('#compactFigureBurstBtn, #compactMobileFigureBurstBtn').forEach(compactFigureBurstBtn => {
     const figureEnabled = canUseInteractiveTurnAction() && showFigureAction && tutorialFigureEnabled;
     compactFigureBurstBtn.disabled = !figureEnabled;
     compactFigureBurstBtn.classList.toggle('button-live', figureEnabled && (!!compactPlayer?.flags?.figureBurstButtonUnlocked || tutorialIsGuided()));
-    compactFigureBurstBtn.classList.toggle('compact-action-hidden', !showFigureAction);
-  }
+    compactFigureBurstBtn.classList.toggle('compact-action-hidden', !showFigureAction || (tutorialIsGuided() && !tutorialFigureEnabled));
+  });
 }
 
 function getCompactDragActiveZone(clientX, clientY, legalZones){
@@ -16194,8 +16220,9 @@ function handleCompactHandDragMove(event){
   compactPointerDragState.latestX = event.clientX;
   compactPointerDragState.latestY = event.clientY;
   const distance = Math.hypot(event.clientX - compactPointerDragState.startX, event.clientY - compactPointerDragState.startY);
+  const dragStartDistance = compactPointerDragState.tapSelectOnRelease ? 18 : 6;
 
-  if(!compactPointerDragState.dragging && distance > 6){
+  if(!compactPointerDragState.dragging && distance > dragStartDistance){
     compactPointerDragState.dragging = true;
     const rect = compactPointerDragState.sourceEl.getBoundingClientRect();
     const ghost = compactPointerDragState.sourceEl.cloneNode(true);
@@ -16231,6 +16258,7 @@ function handleCompactHandDragEnd(event){
   const activeZone = completedDrag
     ? getCompactDragActiveZone(event.clientX, event.clientY, dragState.legalZones)
     : '';
+  const releaseDistance = Math.hypot(event.clientX - dragState.startX, event.clientY - dragState.startY);
   teardownCompactHandDrag();
   if(!completedDrag){
     if(dragState.tapSelectOnRelease){
@@ -16243,6 +16271,11 @@ function handleCompactHandDragEnd(event){
 
   compactSuppressCardClickUntil = Date.now() + 320;
   compactSuppressCardClickId = dragState.cardId;
+
+  if(dragState.tapSelectOnRelease && !activeZone && releaseDistance <= 44 && !compactDraftPlacements.has(dragState.cardId)){
+    toggleSelect(dragState.cardId);
+    return;
+  }
 
   if(activeZone){
     compactDraftOwnerIdx = dragState.ownerIdx;
@@ -20177,7 +20210,7 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
     triggerDesktopHudModeTransition(btn.dataset.viewMode);
     return;
   }
-  if(btn.id === 'compactFigureBurstBtn'){
+  if(btn.id === 'compactFigureBurstBtn' || btn.dataset.compactFigureAction === 'true'){
     if(btn.disabled) return;
     drawWithTwoFigures();
     return;
@@ -21801,9 +21834,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-diamond-draw',
         title: 'Fase 6 · Roba con diamantes',
-        body: 'Un <strong>♦ numérico en mano</strong> también puede convertirse en robo. Lo descargas y robas tantas cartas como indique su valor. <strong>Ojo:</strong> no puedes cambiar diamantes por robo <strong>dos turnos propios seguidos</strong>.',
-        objective: 'Selecciona <strong>2♦</strong> de tu mano y pulsa <strong>Robar con ♦</strong>.',
-        tip: 'Ese bloqueo solo afecta a volver a robar con ♦ en tu siguiente turno propio. Aun así, si ya tienes piloto y copiloto, luego podrás reciclar mano con <strong>2 Figuras → 4</strong>.',
+        body: 'Un <strong>♦ numérico en mano</strong> también puede convertirse en robo. Lo descargas y robas tantas cartas como indique su valor. En modo horizontal móvil aparece un acceso rápido <strong>Robar con ♦</strong> en Controles; si quieres ver la consola completa, abre <strong>Todas las acciones</strong>. <strong>Ojo:</strong> no puedes cambiar diamantes por robo <strong>dos turnos propios seguidos</strong>.',
+        objective: 'Selecciona <strong>2♦</strong> de tu mano y pulsa <strong>Robar con ♦</strong>. En horizontal móvil usa el botón rápido de Controles cuando se ilumine.',
+        tip: 'Ese bloqueo solo afecta a volver a robar con ♦ en tu siguiente turno propio. Aun así, si ya tienes piloto y copiloto, luego podrás reciclar mano con el acceso rápido <strong>2 Figuras → 4</strong>.',
         allowedButtons: ['actionDrawDiamondBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0DrawDiamond],
         highlightButtons: ['actionDrawDiamondBtn'],
@@ -21818,9 +21851,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-figure-burst',
         title: 'Fase 6 · Exceso de figuras',
-        body: 'Cuando ya tienes <strong>piloto</strong> y <strong>copiloto</strong>, si consigues otras <strong>2 figuras cualquiera</strong> en tu mano puedes descartarlas en un sencillo movimiento y robar <strong>4 cartas extra</strong> del mazo. <strong>¡Incluso aunque hayas robado cartas del mazo descartando diamantes en el turno anterior! ASÍ DE FÁCIL.</strong>',
-        objective: 'Pulsa <strong>2 Figuras → 4</strong> en el panel del jugador.',
-        tip: 'El límite de “no robar dos veces seguidas con ♦” no impide este reciclado especial por figuras.',
+        body: 'Cuando ya tienes <strong>piloto</strong> y <strong>copiloto</strong>, si consigues otras <strong>2 figuras cualquiera</strong> en tu mano puedes descartarlas en un sencillo movimiento y robar <strong>4 cartas extra</strong> del mazo. En modo horizontal móvil aparece el acceso rápido <strong>2 Figuras → 4</strong> en Controles. <strong>¡Incluso aunque hayas robado cartas del mazo descartando diamantes en el turno anterior! ASÍ DE FÁCIL.</strong>',
+        objective: 'Pulsa <strong>2 Figuras → 4</strong>. En horizontal móvil lo tienes como botón directo en Controles; en el modo completo también puedes abrir el panel del jugador.',
+        tip: 'El límite de “no robar dos veces seguidas con ♦” no impide este reciclado especial por figuras. Si no ves un botón avanzado, abre <strong>Todas las acciones</strong> para consultar la consola completa.',
         allowedButtons: ['quickFigureDrawBtn'],
         allowedCardIds: [],
         highlightButtons: ['quickFigureDrawBtn'],
