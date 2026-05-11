@@ -1,5 +1,6 @@
 (function(){
   const STORAGE_KEY = "pocobot_story_collision_overrides_v1";
+  const INTERACTION_STORAGE_KEY = "pocobot_story_interaction_overrides_v1";
   const VERSION = 1;
 
   function clone(value){
@@ -13,7 +14,7 @@
 
   function normalizeZone(zone){
     if (!zone || typeof zone !== "object") return null;
-    const type = zone.type === "circle" || zone.type === "poly" ? zone.type : "rect";
+    const type = ["circle", "ellipse", "poly"].includes(zone.type) ? zone.type : "rect";
 
     if (type === "circle") {
       const radius = Math.max(1, toFiniteNumber(zone.radius, 1));
@@ -23,6 +24,17 @@
         x: toFiniteNumber(zone.x),
         y: toFiniteNumber(zone.y),
         radius,
+      };
+    }
+
+    if (type === "ellipse") {
+      return {
+        ...zone,
+        type,
+        x: toFiniteNumber(zone.x),
+        y: toFiniteNumber(zone.y),
+        width: Math.max(1, toFiniteNumber(zone.width, 1)),
+        height: Math.max(1, toFiniteNumber(zone.height, 1)),
       };
     }
 
@@ -54,9 +66,35 @@
     return zones.map(normalizeZone).filter(Boolean);
   }
 
+  function normalizeInteractionPoint(point){
+    if (!point || typeof point !== "object" || !point.id) return null;
+    return {
+      id: String(point.id),
+      x: toFiniteNumber(point.x),
+      y: toFiniteNumber(point.y),
+      radius: Math.max(1, toFiniteNumber(point.radius, 1)),
+    };
+  }
+
+  function normalizeInteractionPoints(points){
+    if (!Array.isArray(points)) return [];
+    return points.map(normalizeInteractionPoint).filter(Boolean);
+  }
+
   function loadAll(){
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      return parsed && typeof parsed === "object" && parsed.scenes
+        ? parsed
+        : { version: VERSION, updatedAt: 0, scenes: {} };
+    } catch (error) {
+      return { version: VERSION, updatedAt: 0, scenes: {} };
+    }
+  }
+
+  function loadAllInteractions(){
+    try {
+      const parsed = JSON.parse(localStorage.getItem(INTERACTION_STORAGE_KEY) || "{}");
       return parsed && typeof parsed === "object" && parsed.scenes
         ? parsed
         : { version: VERSION, updatedAt: 0, scenes: {} };
@@ -72,6 +110,16 @@
       scenes: data?.scenes && typeof data.scenes === "object" ? data.scenes : {},
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    return next;
+  }
+
+  function saveAllInteractions(data){
+    const next = {
+      version: VERSION,
+      updatedAt: Date.now(),
+      scenes: data?.scenes && typeof data.scenes === "object" ? data.scenes : {},
+    };
+    localStorage.setItem(INTERACTION_STORAGE_KEY, JSON.stringify(next));
     return next;
   }
 
@@ -106,13 +154,60 @@
     return targetZones;
   }
 
+  function getSceneInteractionOverride(sceneId){
+    const stored = loadAllInteractions().scenes?.[sceneId];
+    return Array.isArray(stored) ? normalizeInteractionPoints(stored) : null;
+  }
+
+  function applyPhysicalInteractionPoints(targetPoints, overridePoints){
+    if (!Array.isArray(targetPoints) || !Array.isArray(overridePoints)) return targetPoints;
+    const byId = new Map(overridePoints.map((point) => [point.id, point]));
+    targetPoints.forEach((point) => {
+      const override = byId.get(String(point.id));
+      if (!override) return;
+      point.x = override.x;
+      point.y = override.y;
+      point.radius = override.radius;
+    });
+    return targetPoints;
+  }
+
+  function getSceneInteractionPoints(sceneId, fallbackPoints){
+    const points = clone(Array.isArray(fallbackPoints) ? fallbackPoints : []);
+    return applyPhysicalInteractionPoints(points, getSceneInteractionOverride(sceneId) || []);
+  }
+
+  function saveSceneInteractionPoints(sceneId, points){
+    const data = loadAllInteractions();
+    data.scenes = data.scenes || {};
+    data.scenes[sceneId] = normalizeInteractionPoints(points);
+    return saveAllInteractions(data);
+  }
+
+  function clearSceneInteractionPoints(sceneId){
+    const data = loadAllInteractions();
+    if (data.scenes) delete data.scenes[sceneId];
+    return saveAllInteractions(data);
+  }
+
+  function applySceneInteractionPoints(sceneId, targetPoints){
+    return applyPhysicalInteractionPoints(targetPoints, getSceneInteractionOverride(sceneId) || []);
+  }
+
   window.PoCoBOTStoryCollisionEditor = {
     STORAGE_KEY,
+    INTERACTION_STORAGE_KEY,
     normalizeZones,
+    normalizeInteractionPoints,
     getSceneZones,
     saveSceneZones,
     clearSceneZones,
     applySceneZones,
+    getSceneInteractionPoints,
+    saveSceneInteractionPoints,
+    clearSceneInteractionPoints,
+    applySceneInteractionPoints,
     loadAll,
+    loadAllInteractions,
   };
 })();

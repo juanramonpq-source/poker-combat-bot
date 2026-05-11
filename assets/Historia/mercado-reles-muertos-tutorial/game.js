@@ -134,76 +134,21 @@ const assets = {
 };
 
 const collisionZones = [
-  { type: "rect", x: 0, y: 0, width: 1536, height: 146 },
-  { type: "rect", x: 0, y: 146, width: 216, height: 500 },
-  { type: "rect", x: 1318, y: 128, width: 218, height: 896 },
-  { type: "rect", x: 0, y: 878, width: 1536, height: 146 },
-
-  {
-    type: "poly",
-    points: [
-      { x: 268, y: 158 },
-      { x: 600, y: 170 },
-      { x: 626, y: 304 },
-      { x: 278, y: 318 },
-    ],
-  },
-  {
-    type: "poly",
-    points: [
-      { x: 282, y: 372 },
-      { x: 542, y: 326 },
-      { x: 556, y: 404 },
-      { x: 308, y: 458 },
-    ],
-  },
-  {
-    type: "poly",
-    points: [
-      { x: 94, y: 480 },
-      { x: 332, y: 444 },
-      { x: 382, y: 580 },
-      { x: 220, y: 674 },
-      { x: 34, y: 616 },
-    ],
-  },
-  {
-    type: "poly",
-    points: [
-      { x: 284, y: 746 },
-      { x: 600, y: 750 },
-      { x: 704, y: 896 },
-      { x: 232, y: 904 },
-    ],
-  },
-  {
-    type: "poly",
-    points: [
-      { x: 984, y: 188 },
-      { x: 1238, y: 186 },
-      { x: 1262, y: 382 },
-      { x: 996, y: 404 },
-      { x: 918, y: 304 },
-    ],
-  },
-  {
-    type: "poly",
-    points: [
-      { x: 1208, y: 470 },
-      { x: 1536, y: 430 },
-      { x: 1536, y: 680 },
-      { x: 1172, y: 704 },
-    ],
-  },
-  {
-    type: "poly",
-    points: [
-      { x: 970, y: 760 },
-      { x: 1252, y: 692 },
-      { x: 1290, y: 892 },
-      { x: 892, y: 922 },
-    ],
-  },
+  { type: "rect", x: 4.842370744010168, y: -118.18643967606549, width: 1536, height: 146 },
+  { type: "rect", x: 1508.7969735182849, y: 6.4843648401016765, width: 218, height: 896 },
+  { type: "rect", x: 2.17906683480453, y: 990.0955252113259, width: 1536, height: 146 },
+  { type: "rect", x: 1513, y: 903, width: 23, height: 93 },
+  { type: "rect", x: 0, y: 20, width: 21, height: 1004 },
+  { type: "ellipse", x: 921, y: 741, width: 316, height: 242 },
+  { type: "ellipse", x: 1208, y: 431, width: 290, height: 175 },
+  { type: "ellipse", x: 1318, y: 262, width: 192, height: 129 },
+  { type: "ellipse", x: 968, y: 81, width: 284, height: 223 },
+  { type: "ellipse", x: 599, y: 123, width: 194, height: 161 },
+  { type: "ellipse", x: 434, y: 49, width: 169, height: 98 },
+  { type: "ellipse", x: 274, y: 226, width: 222, height: 164 },
+  { type: "ellipse", x: 49, y: 161, width: 209, height: 123 },
+  { type: "ellipse", x: 101, y: 340, width: 193, height: 182 },
+  { type: "ellipse", x: 154, y: 687, width: 356, height: 264 },
 ];
 window.PoCoBOTStoryCollisionEditor?.applySceneZones("market", collisionZones);
 
@@ -257,6 +202,7 @@ const interactables = [
     message: "La salida del Mercado devuelve a la Ruta Ceniza.",
   },
 ];
+window.PoCoBOTStoryCollisionEditor?.applySceneInteractionPoints("market", interactables);
 
 const interactionState = {
   active: null,
@@ -817,6 +763,16 @@ function circleCircleCollision(circleX, circleY, radius, zone) {
   return dx * dx + dy * dy < combinedRadius * combinedRadius;
 }
 
+function circleEllipseCollision(circleX, circleY, radius, zone) {
+  const rx = Math.max(1, zone.width / 2);
+  const ry = Math.max(1, zone.height / 2);
+  const cx = zone.x + rx;
+  const cy = zone.y + ry;
+  const dx = (circleX - cx) / (rx + radius);
+  const dy = (circleY - cy) / (ry + radius);
+  return dx * dx + dy * dy <= 1;
+}
+
 function distanceToSegmentSquared(pointX, pointY, start, end) {
   const segmentX = end.x - start.x;
   const segmentY = end.y - start.y;
@@ -879,6 +835,10 @@ function collisionZoneHit(circleX, circleY, radius, zone) {
 
   if (zone.type === "circle") {
     return circleCircleCollision(circleX, circleY, radius, zone);
+  }
+
+  if (zone.type === "ellipse") {
+    return circleEllipseCollision(circleX, circleY, radius, zone);
   }
 
   return circlePolygonCollision(circleX, circleY, radius, zone.points);

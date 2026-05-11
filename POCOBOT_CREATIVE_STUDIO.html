@@ -140,6 +140,7 @@
     .side-card li{margin-bottom:8px}
     .compile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .test-frame{width:100%;min-height:520px;border:1px solid rgba(147,203,255,.2);border-radius:16px;background:#fff}
+    .scenario-test-frame{width:100%;min-height:460px;border:1px solid rgba(147,203,255,.2);border-radius:16px;background:#06101d;margin-top:12px}
     .export-box{min-height:520px;font:12px/1.45 "SFMono-Regular",Consolas,monospace;white-space:pre;overflow:auto}
     .footer{padding:16px;text-align:center;color:var(--muted)}
     .hidden{display:none!important}
@@ -206,7 +207,11 @@
                 <h2>Escenario</h2>
                 <p>Carga una imagen, dibuja colisiones e inserta puntos de interacción hacia otros escenarios, combates, conversaciones u objetos.</p>
               </div>
-              <button class="btn primary" type="button" id="saveScenario">Guardar escenario</button>
+              <div class="button-row">
+                <button class="btn" type="button" id="loadTower4BExample">Cargar ejemplo Torre 4B</button>
+                <button class="btn" type="button" id="launchScenarioPreview">Lanzar escena</button>
+                <button class="btn primary" type="button" id="saveScenario">Guardar escenario</button>
+              </div>
             </div>
             <div class="scenario-grid">
               <div>
@@ -215,10 +220,39 @@
                   <label>Nombre visible<input id="scenarioName" placeholder="Mercado de relés muertos"></label>
                   <label>Imagen de escenario<input type="file" id="scenarioImage" accept="image/*"></label>
                   <label>Ruta sugerida del asset<input id="scenarioAssetPath" placeholder="assets/Historia/CARPETAX/"></label>
-                  <label class="expert-only">Inicio jugador X<input type="number" id="scenarioStartX" value="160"></label>
-                  <label class="expert-only">Inicio jugador Y<input type="number" id="scenarioStartY" value="220"></label>
+                  <label>Origen de entrada<select id="scenarioEntryOrigin"><option value="main_map">Mapa principal</option><option value="scenario">Otro escenario</option><option value="shop">Tienda</option><option value="combat">Combate</option></select></label>
+                  <label>Enlazar origen<select id="scenarioEntryLink"><option value="">Elegir origen...</option></select></label>
+                  <label>Inicio jugador X<input type="number" id="scenarioStartX" value="160"></label>
+                  <label>Inicio jugador Y<input type="number" id="scenarioStartY" value="220"></label>
+                </div>
+                <div class="conversation-block">
+                  <h3>Subescenarios enlazables</h3>
+                  <p class="hint">Puedes cargar hasta 4 imágenes opcionales dentro de un mismo escenario, como los niveles de Torre 4B.</p>
+                  <div class="grid" id="scenarioLayerFields"></div>
+                </div>
+                <div class="conversation-block">
+                  <h3>Radio de escenario</h3>
+                  <p class="hint">Hasta 10 bloques opcionales. Úsalos para emular conversaciones de radio como Xavor: al entrar, por tiempo, al llegar a una interacción o 5 segundos después de un combate.</p>
+                  <div class="grid" id="scenarioRadioFields"></div>
+                </div>
+                <div class="conversation-block">
+                  <h3>Apertura de puerta</h3>
+                  <div class="grid">
+                    <label>Activar evento<select id="doorEnabled"><option value="no">No</option><option value="si">Sí</option></select></label>
+                    <label>ID evento<input id="doorEventId" placeholder="tower_4b_gate_open"></label>
+                    <label>Imagen puerta cerrada<input id="doorClosedImage" placeholder="Ruta de imagen cerrada"></label>
+                    <label>Imagen puerta abierta<input id="doorOpenImage" placeholder="Ruta de imagen abierta"></label>
+                    <label>Trigger<select id="doorTriggerType"><option value="interaction">Interacción</option><option value="combat_complete">Combate completado</option><option value="variable">Variable/TIC</option><option value="object">Objeto</option><option value="time">Tiempo</option></select></label>
+                    <label>Trigger destino/input<input id="doorTriggerTarget" placeholder="blue-computer"></label>
+                    <label>Sonido<input id="doorSound" placeholder="Ruta de sonido"></label>
+                    <label>Delay cambio imagen<input type="number" id="doorSwapDelay" value="0.6" step="0.1"></label>
+                    <label>Destino tras abrir<select id="doorDestination"><option value="">Quedarse aquí</option></select></label>
+                    <label class="full">Radio tras abrir<textarea id="doorAfterRadio" placeholder="Xavor: la compuerta ha cedido. Ve hasta la puerta y entra con cuidado."></textarea></label>
+                  </div>
+                  <p class="hint">Usa la herramienta “Humo de puerta” y haz clic donde quieras colocar el humo.</p>
                 </div>
                 <div class="canvas-box"><canvas id="scenarioCanvas" width="960" height="540"></canvas></div>
+                <iframe class="scenario-test-frame" id="scenarioTestFrame" title="Prueba de escenario"></iframe>
                 <div class="list" id="list-scenarios"></div>
               </div>
               <aside class="tools">
@@ -227,6 +261,8 @@
                   <button class="btn tool-button active" type="button" data-tool="rect">Colisión rectángulo</button>
                   <button class="btn tool-button" type="button" data-tool="oval">Colisión óvalo</button>
                   <button class="btn tool-button" type="button" data-tool="interaction">Punto de interacción</button>
+                  <button class="btn tool-button" type="button" data-tool="start">Punto de inicio</button>
+                  <button class="btn tool-button" type="button" data-tool="door-smoke">Humo de puerta</button>
                   <button class="btn tool-button" type="button" data-tool="edit">Editar</button>
                   <button class="btn tool-button danger" type="button" data-tool="erase">Borrar</button>
                   <button class="btn tool-button expert-only" type="button" data-tool="crop">Recortar imagen</button>
@@ -271,7 +307,11 @@
                 <h2>Escenas de conversación</h2>
                 <p>Formato basado en las escenas reales: presentación paginada, líneas de personaje, opciones de diálogo con respuesta, acciones, desbloqueos y recompensa.</p>
               </div>
-              <button class="btn primary" type="button" id="saveConversation">Guardar conversación</button>
+              <div class="button-row">
+                <button class="btn" type="button" id="loadXavorConversationExample">Cargar ejemplo Xavor</button>
+                <button class="btn" type="button" id="launchConversationPreview">Lanzar conversación</button>
+                <button class="btn primary" type="button" id="saveConversation">Guardar conversación</button>
+              </div>
             </div>
             <div class="grid">
               <label>ID conversación<input id="conversationId" placeholder="conv_vera_intro"></label>
@@ -325,8 +365,10 @@
                 <label>Nuevo objeto: imagen<input type="file" id="newRewardImageFile" accept="image/*"></label>
                 <label>Nuevo objeto: ruta<input id="newRewardImagePath" placeholder="assets/Historia/CARPETAX/"></label>
                 <label class="full">Nuevo objeto: efecto<textarea id="newRewardEffect" placeholder="Abre la puerta trasera del hangar"></textarea></label>
+                <label class="full">Notas para integración especial<textarea id="conversationNotes" placeholder="Ej: al terminar, Xavor entrega la radio y desbloquea xavor-radio."></textarea></label>
               </div>
             </div>
+            <iframe class="scenario-test-frame" id="conversationTestFrame" title="Prueba de conversación"></iframe>
             <div class="list" id="list-conversations"></div>
           </div>
         </section>
@@ -338,7 +380,11 @@
                 <h2>Combate</h2>
                 <p>El nombre del combate es el identificador que después podrás seleccionar desde un punto de interacción del escenario.</p>
               </div>
-              <button class="btn primary" type="button" id="saveCombat">Guardar combate</button>
+              <div class="button-row">
+                <button class="btn" type="button" id="loadCombatExample">Cargar ejemplo Argos</button>
+                <button class="btn" type="button" id="launchCombatPreview">Lanzar combate</button>
+                <button class="btn primary" type="button" id="saveCombat">Guardar combate</button>
+              </div>
             </div>
             <div class="grid">
               <label>ID / nombre del combate<input id="combatId" placeholder="combate_xavor_01"></label>
@@ -349,6 +395,7 @@
                 <option>sprite_combate</option>
                 <option>perfil_personalizado</option>
               </select></label>
+              <label>Subir imagen / gif<input type="file" id="combatVisualFile" accept="image/*,.gif"></label>
               <label>Imagen / perfil<input id="combatVisualSource" placeholder="assets/... o STORY_TOWER_COMBAT_PROFILES.xavor"></label>
               <label>Panel inicial<input id="combatInitialPanel" placeholder="ataque: 5; defensa: 3; combustible: 2"></label>
               <label>Privación de palo<select id="combatForbiddenSuit">
@@ -365,6 +412,7 @@
               <label class="full expert-only">Reglas extra<textarea id="combatExtraRules" placeholder="Reglas técnicas, duración por turnos, flags y condiciones."></textarea></label>
               <label class="full">Resultados y recompensas<textarea id="combatOutcomes" placeholder="Victoria: ... | Derrota: ..."></textarea></label>
             </div>
+            <iframe class="scenario-test-frame" id="combatTestFrame" title="Prueba de combate"></iframe>
             <div class="list" id="list-combats"></div>
           </div>
         </section>
@@ -376,7 +424,11 @@
                 <h2>Tiendas</h2>
                 <p>Mantiene el modelo actual: tienda, vendedor, fondo, artículos y condiciones opcionales.</p>
               </div>
-              <button class="btn primary" type="button" id="saveShop">Guardar tienda</button>
+              <div class="button-row">
+                <button class="btn" type="button" id="loadVeraShopExample">Cargar tienda Vera</button>
+                <button class="btn" type="button" id="launchShopPreview">Lanzar tienda</button>
+                <button class="btn primary" type="button" id="saveShop">Guardar tienda</button>
+              </div>
             </div>
             <div class="grid">
               <label>ID tienda<input id="shopId" placeholder="tienda_vera"></label>
@@ -385,8 +437,25 @@
               <label>Fondo / imagen<input id="shopBackground" placeholder="assets/tiendas/vera.png"></label>
               <label class="full">Artículos<textarea id="shopItems" placeholder="1) id: carta_corazones_7 | tipo: carta | precio: 20 | descripción:..."></textarea></label>
               <label>Añadir objeto existente<select id="shopObjectPicker"><option value="">Elegir objeto...</option></select></label>
+              <label>Carta de la baraja<select id="deckCardPicker"><option value="">Elegir carta...</option></select></label>
+              <label>Precio carta<input id="deckCardPrice" type="number" min="0" value="20"></label>
+              <label class="full">Descripción carta<textarea id="deckCardDescription" placeholder="Carta estable para construir ataque, defensa o combustible."></textarea></label>
+              <div class="button-row full">
+                <button class="btn" type="button" id="addDeckCardToShop">Añadir carta a tienda</button>
+              </div>
+              <label>Nombre carta nueva<input id="customCardName" placeholder="Carta de relé inestable"></label>
+              <label>Palo / tipo<input id="customCardSuit" placeholder="especial"></label>
+              <label>Valor<input id="customCardRank" placeholder="+2 energía"></label>
+              <label>Imagen carta nueva<input type="file" id="customCardFile" accept="image/*"></label>
+              <label>Ruta carta nueva<input id="customCardImage" placeholder="assets/Historia/CARPETAX/nombre-de-la-carta"></label>
+              <label>Precio carta nueva<input id="customCardPrice" type="number" min="0" value="35"></label>
+              <label class="full">Efecto carta nueva<textarea id="customCardEffect" placeholder="Efecto que tendrá esta carta al integrarse."></textarea></label>
+              <div class="button-row full">
+                <button class="btn" type="button" id="addCustomCardToShop">Crear y añadir carta nueva</button>
+              </div>
               <label class="full expert-only">Condiciones de aparición<textarea id="shopConditions" placeholder="Ej: capítulo 2, tras completar conv_vera_confianza"></textarea></label>
             </div>
+            <iframe class="scenario-test-frame" id="shopTestFrame" title="Prueba de tienda"></iframe>
             <div class="list" id="list-shops"></div>
           </div>
         </section>
@@ -398,8 +467,9 @@
                 <h2>Compilación Final</h2>
                 <p>Prueba lo creado en un HTML sencillo y extrae el JSON final para integración.</p>
               </div>
-              <div class="button-row">
+            <div class="button-row">
                 <button class="btn primary" type="button" id="refreshPreview">Probar HTML</button>
+                <button class="btn" type="button" id="copyAiHandoff">Copiar briefing IA</button>
                 <button class="btn" type="button" id="copyJson">Copiar JSON</button>
                 <button class="btn" type="button" id="downloadJson">Descargar JSON</button>
                 <button class="btn" type="button" id="downloadHtml">Descargar HTML</button>
@@ -442,12 +512,21 @@
     const STORAGE_KEY = 'pocobotCreativeStudioProjectV2';
     const OLD_STORAGE_KEY = 'pocobotCreativeStudioProject';
     const EXPERT_KEY = 'pocobotCreativeStudioExpertModeV2';
-    const GAME_CHARACTERS = ['PoCoBOT','Mara','Vera','Xavor','Piloto 4B','Rival anónimo','Personalizado'];
+    const GAME_CHARACTERS = ['PoCoBOT','Mara','Vera','Xavor','Xavor Glitch','Piloto 4B','Rival anónimo','Personalizado'];
     const ASSET_FOLDER = 'assets/Historia/CARPETAX';
+    const SUIT_LABELS = { hearts: 'corazones', diamonds: 'diamantes', clubs: 'treboles', spades: 'picas' };
+    const RANK_LABELS = { ace: 'as', king: 'rey', queen: 'reina', jack: 'jota', '10': '10', '9': '9', '8': '8', '7': '7', '6': '6', '5': '5', '4': '4', '3': '3', '2': '2' };
+    const DECK_CARDS = ['hearts','diamonds','clubs','spades'].flatMap(suit => ['ace','king','queen','jack','10','9','8','7','6','5','4','3','2'].map(rank => ({
+      id: `card_${rank}_of_${suit}`,
+      rank,
+      suit,
+      name: `${RANK_LABELS[rank]} de ${SUIT_LABELS[suit]}`,
+      image: `assets/cards/hayeah-full/${rank}_of_${suit}.svg`
+    })));
     const state = {
       meta: {
         tool: 'PoCoBOT Creative Studio',
-        version: '2.0.0',
+        version: '2.1.0',
         structure: 'scenario-conversation-combat-shops-compile',
         jsonFirst: true,
         htmlPreview: true
@@ -459,10 +538,15 @@
       inventoryItems: []
     };
     const mediaStore = {};
+    const draftMedia = {
+      combatImageData: '',
+      customCardImageData: ''
+    };
     const scenarioDraft = {
       imageData: '',
       collisions: [],
       interactions: [],
+      doorSmokePoints: [],
       crop: null,
       selected: null
     };
@@ -481,6 +565,7 @@
     function $(selector){ return document.querySelector(selector); }
     function $all(selector){ return Array.from(document.querySelectorAll(selector)); }
     function safeId(prefix){ return `${prefix}_${Date.now().toString(36)}`; }
+    function slug(value, fallback = 'item'){ return String(value || fallback).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || fallback; }
     function escapeHtml(value){ return String(value || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
     function clone(value){ return JSON.parse(JSON.stringify(value)); }
     function status(text){ $('#saveState').textContent = text; }
@@ -501,9 +586,37 @@
         conversationTargets: referenceOptions('conversation').map(item => item.id),
         inventoryTargets: referenceOptions('object').map(item => item.id)
       };
+      project.integrationContract = {
+        targetGame: 'PoCoBOT story mode',
+        outputPriority: 'JSON primero; HTML de prueba opcional',
+        runtimeExpectations: [
+          'Los escenarios contienen start, entry, layers, collisions, interactions, radioBlocks y doorEvent.',
+          'Las conversaciones usan formato story_character_scene con presentation.pages y dialogue.choices.',
+          'Las opciones de conversación vacías aparecen en skippedSlots y deben saltarse en el juego.',
+          'Los combates se enlazan desde Escenario por id.',
+          'Las tiendas incluyen items en texto legible, parsedItems y availableDeck.'
+        ],
+        aiHandoff: 'Si este paquete se entrega a una IA, debe convertir estos datos en archivos/assets del juego respetando ids, rutas, triggers, condiciones y notas de integración.'
+      };
+      project.aiImplementationBrief = makeAiHandoffText(project);
       return project;
     }
     function packageJson(){ return JSON.stringify(packageData(), null, 2); }
+    function makeAiHandoffText(project = state){
+      const data = project.scenarios ? project : packageData();
+      return [
+        'Implementa este paquete de PoCoBOT Creative Studio en el juego.',
+        'Respeta los IDs porque enlazan secciones entre sí.',
+        `Escenarios: ${(data.scenarios || []).map(item => item.id).join(', ') || 'ninguno'}.`,
+        `Conversaciones: ${(data.conversations || []).map(item => item.id).join(', ') || 'ninguna'}.`,
+        `Combates: ${(data.combats || []).map(item => item.id).join(', ') || 'ninguno'}.`,
+        `Tiendas: ${(data.shops || []).map(item => item.id).join(', ') || 'ninguna'}.`,
+        'Reglas clave: colisiones rect/oval; interactions enlazan scenario/combat/conversation/object; radioBlocks se disparan por enter, interaction, time o combat_complete; doorEvent cambia imagen cerrada/abierta, reproduce humo/sonido y puede mandar a otro escenario.',
+        'Conversaciones: usa presentation.pages, dialogue.openingLines, choices y followup. Cualquier slot incluido en skippedSlots debe omitirse.',
+        'Combates: visualSource puede ser imagen/gif o perfil del juego; special/hacked describen reglas que deben implementarse.',
+        'Tiendas: parsedItems y availableDeck ayudan a convertir el texto en catálogo real.'
+      ].join('\n');
+    }
     function persist(){
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       status('Guardado local');
@@ -551,6 +664,42 @@
     function initCharacterSelect(){
       $('#characterSelect').innerHTML = GAME_CHARACTERS.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
     }
+    function initDeckTools(){
+      $('#deckCardPicker').innerHTML = '<option value="">Elegir carta...</option>' + DECK_CARDS.map(card => `<option value="${escapeHtml(card.id)}">${escapeHtml(card.name)}</option>`).join('');
+    }
+    function initScenarioFields(){
+      $('#scenarioLayerFields').innerHTML = Array.from({ length: 4 }, (_, index) => {
+        const n = index + 1;
+        return `
+          <div class="conversation-block">
+            <h3>Subescenario ${n}</h3>
+            <label>ID<input id="layerId${n}" placeholder="torre_4b_nivel_${n}"></label>
+            <label>Nombre<input id="layerName${n}" placeholder="Torre 4B · Nivel ${n}"></label>
+            <label>Imagen<input type="file" id="layerImageFile${n}" accept="image/*"></label>
+            <label>Ruta imagen<input id="layerImage${n}" placeholder="assets/Historia/..."></label>
+            <label>Enlace a escenario<select id="layerLinksTo${n}"><option value="">Sin enlace</option></select></label>
+            <label class="expert-only">HTML de prueba<input id="layerLaunchUrl${n}" placeholder="assets/Historia/.../index.html"></label>
+            <label class="expert-only">Condición<input id="layerCondition${n}" placeholder="tower-door-open"></label>
+          </div>
+        `;
+      }).join('');
+      $('#scenarioRadioFields').innerHTML = Array.from({ length: 10 }, (_, index) => {
+        const n = index + 1;
+        return `
+          <div class="conversation-block">
+            <h3>Radio ${n}</h3>
+            <label>Activador<select id="radioTrigger${n}"><option value="">Sin usar</option><option value="enter">Al entrar</option><option value="interaction">Punto de interacción</option><option value="time">Por tiempo</option><option value="combat_complete">Tras combate +5s</option></select></label>
+            <label>Objetivo / segundos<input id="radioTarget${n}" placeholder="blue-computer o 8"></label>
+            <label>Speaker<input id="radioSpeaker${n}" placeholder="Xavor Glitch"></label>
+            <label>Subir imagen radio<input type="file" id="radioPortraitFile${n}" accept="image/*"></label>
+            <label>Imagen radio<input id="radioPortrait${n}" placeholder="assets/Historia/low/characters/xavor-glitch-transparent.webp"></label>
+            <label>Glitch<select id="radioGlitch${n}"><option value="no">No</option><option value="si">Sí</option></select></label>
+            <label>Una vez<select id="radioOnce${n}"><option value="si">Sí</option><option value="no">No</option></select></label>
+            <label class="full">Líneas<textarea id="radioLines${n}" placeholder="Una línea por línea"></textarea></label>
+          </div>
+        `;
+      }).join('');
+    }
     function initDialogueFields(){
       $('#presentationPageFields').innerHTML = Array.from({ length: 4 }, (_, index) => {
         const n = index + 1;
@@ -588,6 +737,7 @@
       if(type === 'combat') return state.combats.map(item => ({ id: item.id, label: item.enemy || item.id, type }));
       if(type === 'conversation') return state.conversations.map(item => ({ id: item.id, label: item.character || item.id, type }));
       if(type === 'object') return state.inventoryItems.map(item => ({ id: item.id, label: item.name || item.id, type }));
+      if(type === 'shop') return state.shops.map(item => ({ id: item.id, label: item.name || item.id, type }));
       return [];
     }
     function fillSelect(node, options, placeholder){
@@ -598,6 +748,10 @@
     }
     function refreshReferenceSelects(){
       fillSelect($('#interactionTarget'), referenceOptions($('#interactionType').value), 'Elegir destino...');
+      const originMap = { scenario: 'scenario', shop: 'shop', combat: 'combat', main_map: 'scenario' };
+      fillSelect($('#scenarioEntryLink'), referenceOptions(originMap[$('#scenarioEntryOrigin').value] || 'scenario'), $('#scenarioEntryOrigin').value === 'main_map' ? 'Mapa principal' : 'Elegir origen...');
+      fillSelect($('#doorDestination'), referenceOptions('scenario'), 'Quedarse aquí');
+      [1,2,3,4].forEach(n => fillSelect($(`#layerLinksTo${n}`), referenceOptions('scenario'), 'Sin enlace'));
       fillSelect($('#conversationReward'), referenceOptions('object'), 'Sin recompensa');
       [1,2,3].forEach(n => {
         fillSelect($(`#choiceReward${n}`), referenceOptions('object'), 'Sin recompensa');
@@ -624,13 +778,16 @@
         drawGrid(ctx, canvas);
         scenarioDraft.collisions.concat(dragPreview && (dragPreview.kind === 'rect' || dragPreview.kind === 'oval') ? [dragPreview] : []).forEach((item, index) => drawCollision(ctx, item, index));
         scenarioDraft.interactions.forEach((item, index) => drawInteraction(ctx, item, index));
+        scenarioDraft.doorSmokePoints.forEach((point, index) => drawSmokePoint(ctx, point, index));
         if(scenarioDraft.crop || (dragPreview && dragPreview.kind === 'crop')) drawCrop(ctx, scenarioDraft.crop || dragPreview);
         drawStart(ctx);
       };
-      if(scenarioDraft.imageData){
+      const imageSource = scenarioDraft.imageData || $('#scenarioAssetPath').value.trim();
+      if(imageSource){
         const img = new Image();
         img.onload = () => { ctx.drawImage(img,0,0,canvas.width,canvas.height); finish(); };
-        img.src = scenarioDraft.imageData;
+        img.onerror = finish;
+        img.src = imageSource;
       } else {
         ctx.fillStyle = '#263a55';
         ctx.font = '700 22px system-ui';
@@ -673,6 +830,20 @@
       ctx.font = '900 11px system-ui';
       ctx.fillText(String(index + 1), item.x - 3, item.y + 4);
     }
+    function drawSmokePoint(ctx, point, index){
+      ctx.save();
+      ctx.fillStyle = 'rgba(210,230,238,.32)';
+      ctx.strokeStyle = '#dff5ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, point.size || 34, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#06101d';
+      ctx.font = '900 11px system-ui';
+      ctx.fillText(`H${index + 1}`, point.x - 9, point.y + 4);
+      ctx.restore();
+    }
     function drawCrop(ctx, crop){
       ctx.fillStyle = 'rgba(0,0,0,.34)';
       ctx.fillRect(0,0,960,540);
@@ -690,6 +861,9 @@
       ctx.beginPath();
       ctx.arc(x,y,12,0,Math.PI*2);
       ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#06101d';
+      ctx.font = '900 10px system-ui';
+      ctx.fillText('INICIO', x - 18, y - 18);
     }
     function normalizeRect(start, end, kind){
       return {
@@ -704,6 +878,10 @@
       for(let i = scenarioDraft.interactions.length - 1; i >= 0; i--){
         const item = scenarioDraft.interactions[i];
         if(Math.hypot(point.x - item.x, point.y - item.y) <= 16) return { type:'interaction', index:i };
+      }
+      for(let i = scenarioDraft.doorSmokePoints.length - 1; i >= 0; i--){
+        const item = scenarioDraft.doorSmokePoints[i];
+        if(Math.hypot(point.x - item.x, point.y - item.y) <= (item.size || 34) + 8) return { type:'doorSmoke', index:i };
       }
       for(let i = scenarioDraft.collisions.length - 1; i >= 0; i--){
         const item = scenarioDraft.collisions[i];
@@ -731,6 +909,7 @@
       const options = ['<option value="">Nada seleccionado</option>'];
       scenarioDraft.collisions.forEach((item,index) => options.push(`<option value="collision:${index}">Colisión ${index + 1} · ${item.kind}</option>`));
       scenarioDraft.interactions.forEach((item,index) => options.push(`<option value="interaction:${index}">Interacción ${index + 1} · ${item.label || item.target || item.type}</option>`));
+      scenarioDraft.doorSmokePoints.forEach((item,index) => options.push(`<option value="doorSmoke:${index}">Humo puerta ${index + 1}</option>`));
       selected.innerHTML = options.join('');
       selected.value = scenarioDraft.selected || '';
       const item = currentSelectedItem();
@@ -744,7 +923,10 @@
       if(!scenarioDraft.selected) return null;
       const [type, indexText] = scenarioDraft.selected.split(':');
       const index = Number(indexText);
-      return type === 'collision' ? scenarioDraft.collisions[index] : scenarioDraft.interactions[index];
+      if(type === 'collision') return scenarioDraft.collisions[index];
+      if(type === 'interaction') return scenarioDraft.interactions[index];
+      if(type === 'doorSmoke') return scenarioDraft.doorSmokePoints[index];
+      return null;
     }
     function applyScenarioEdit(){
       const item = currentSelectedItem();
@@ -755,6 +937,7 @@
         item.w = Number($('#editW').value || item.w || 1);
         item.h = Number($('#editH').value || item.h || 1);
       }
+      if(scenarioDraft.selected?.startsWith('doorSmoke:')) item.size = Number($('#editW').value || item.size || 34);
       if(item.type) item.label = $('#editLabel').value.trim();
       setScenarioStatus('Elemento editado');
       populateSelectedElement();
@@ -780,6 +963,54 @@
       img.src = scenarioDraft.imageData;
     }
 
+    function readScenarioLayers(){
+      return [1,2,3,4].map(n => ({
+        id: $(`#layerId${n}`).value.trim(),
+        name: $(`#layerName${n}`).value.trim(),
+        image: $(`#layerImage${n}`).value.trim(),
+        linksTo: $(`#layerLinksTo${n}`).value,
+        launchUrl: $(`#layerLaunchUrl${n}`)?.value.trim() || '',
+        condition: $(`#layerCondition${n}`)?.value.trim() || ''
+      })).filter(layer => layer.id || layer.name || layer.image || layer.linksTo || layer.launchUrl || layer.condition);
+    }
+    function readScenarioRadioBlocks(){
+      return Array.from({ length: 10 }, (_, index) => {
+        const n = index + 1;
+        const trigger = $(`#radioTrigger${n}`).value;
+        return {
+          id: `radio_${n}`,
+          trigger,
+          target: $(`#radioTarget${n}`).value.trim(),
+          delaySeconds: trigger === 'combat_complete' ? 5 : Number($(`#radioTarget${n}`).value || 0),
+          speaker: $(`#radioSpeaker${n}`).value.trim() || 'Xavor Glitch',
+          portrait: $(`#radioPortrait${n}`).value.trim(),
+          unstable: $(`#radioGlitch${n}`).value === 'si',
+          once: $(`#radioOnce${n}`).value !== 'no',
+          lines: linesFromTextarea(`#radioLines${n}`)
+        };
+      }).filter(block => block.trigger || block.lines.length || block.target);
+    }
+    function readDoorEvent(){
+      return {
+        enabled: $('#doorEnabled').value === 'si',
+        id: $('#doorEventId').value.trim() || 'door_opening',
+        type: 'door_opening',
+        closedImage: $('#doorClosedImage').value.trim(),
+        openImage: $('#doorOpenImage').value.trim(),
+        trigger: {
+          type: $('#doorTriggerType').value,
+          targetId: $('#doorTriggerTarget').value.trim()
+        },
+        smokePoints: clone(scenarioDraft.doorSmokePoints),
+        sound: $('#doorSound').value.trim(),
+        imageSwapDelay: Number($('#doorSwapDelay').value || 0.6),
+        after: {
+          radio: linesFromTextarea('#doorAfterRadio'),
+          destinationScenario: $('#doorDestination').value
+        },
+        once: true
+      };
+    }
     function saveScenario(){
       const id = $('#scenarioId').value.trim() || safeId('esc');
       const item = {
@@ -787,9 +1018,17 @@
         name: $('#scenarioName').value.trim() || id,
         assetPath: $('#scenarioAssetPath').value.trim(),
         backgroundImage: $('#scenarioAssetPath').value.trim() || (scenarioDraft.imageData ? 'imagen_cargada_localmente' : ''),
+        entry: {
+          origin: $('#scenarioEntryOrigin').value,
+          from: $('#scenarioEntryLink').value,
+          start: { x: Number($('#scenarioStartX').value || 160), y: Number($('#scenarioStartY').value || 220) }
+        },
         start: { x: Number($('#scenarioStartX').value || 160), y: Number($('#scenarioStartY').value || 220) },
+        layers: readScenarioLayers(),
         collisions: clone(scenarioDraft.collisions),
-        interactions: clone(scenarioDraft.interactions)
+        interactions: clone(scenarioDraft.interactions),
+        radioBlocks: readScenarioRadioBlocks(),
+        doorEvent: readDoorEvent()
       };
       const index = state.scenarios.findIndex(entry => entry.id === id);
       if(index >= 0) state.scenarios[index] = item; else state.scenarios.push(item);
@@ -803,16 +1042,54 @@
       $('#scenarioId').value = item.id;
       $('#scenarioName').value = item.name || '';
       $('#scenarioAssetPath').value = item.assetPath || item.backgroundImage || '';
+      $('#scenarioEntryOrigin').value = item.entry?.origin || 'main_map';
       $('#scenarioStartX').value = item.start?.x || 160;
       $('#scenarioStartY').value = item.start?.y || 220;
       scenarioDraft.imageData = mediaStore[`scenario:${id}`] || '';
       scenarioDraft.collisions = clone(item.collisions || []);
       scenarioDraft.interactions = clone(item.interactions || []);
+      scenarioDraft.doorSmokePoints = clone(item.doorEvent?.smokePoints || []);
+      hydrateScenarioAdvancedFields(item);
       scenarioDraft.crop = null;
       scenarioDraft.selected = null;
       setScenarioStatus(`Escenario cargado: ${id}`);
       populateSelectedElement();
       drawScenario();
+    }
+    function hydrateScenarioAdvancedFields(item){
+      $('#scenarioEntryOrigin').value = item.entry?.origin || 'main_map';
+      refreshReferenceSelects();
+      $('#scenarioEntryLink').value = item.entry?.from || '';
+      [1,2,3,4].forEach(n => {
+        const layer = (item.layers || [])[n - 1] || {};
+        $(`#layerId${n}`).value = layer.id || '';
+        $(`#layerName${n}`).value = layer.name || '';
+        $(`#layerImage${n}`).value = layer.image || '';
+        $(`#layerLinksTo${n}`).value = layer.linksTo || '';
+        $(`#layerLaunchUrl${n}`).value = layer.launchUrl || '';
+        $(`#layerCondition${n}`).value = layer.condition || '';
+      });
+      Array.from({ length: 10 }, (_, index) => index + 1).forEach(n => {
+        const block = (item.radioBlocks || [])[n - 1] || {};
+        $(`#radioTrigger${n}`).value = block.trigger || '';
+        $(`#radioTarget${n}`).value = block.target || (block.trigger === 'time' ? String(block.delaySeconds || '') : '');
+        $(`#radioSpeaker${n}`).value = block.speaker || '';
+        $(`#radioPortrait${n}`).value = block.portrait || '';
+        $(`#radioGlitch${n}`).value = block.unstable ? 'si' : 'no';
+        $(`#radioOnce${n}`).value = block.once === false ? 'no' : 'si';
+        $(`#radioLines${n}`).value = (block.lines || []).join('\n');
+      });
+      const door = item.doorEvent || {};
+      $('#doorEnabled').value = door.enabled ? 'si' : 'no';
+      $('#doorEventId').value = door.id || '';
+      $('#doorClosedImage').value = door.closedImage || '';
+      $('#doorOpenImage').value = door.openImage || '';
+      $('#doorTriggerType').value = door.trigger?.type || 'interaction';
+      $('#doorTriggerTarget').value = door.trigger?.targetId || '';
+      $('#doorSound').value = door.sound || '';
+      $('#doorSwapDelay').value = door.imageSwapDelay ?? 0.6;
+      $('#doorDestination').value = door.after?.destinationScenario || '';
+      $('#doorAfterRadio').value = (door.after?.radio || []).join('\n');
     }
     function deleteItem(collection, id){
       state[collection] = state[collection].filter(item => item.id !== id);
@@ -848,6 +1125,35 @@
         reward: $(`#${prefix}Reward${n}`)?.value || '',
         next: $(`#${prefix}Next${n}`)?.value.trim() || ''
       })).filter(choice => choice.label || choice.response || choice.action || choice.reward || choice.unlocks.length || choice.next);
+    }
+    function readSkippedConversationSlots(){
+      const isBlank = (prefix, n) => !$(`#${prefix}Choice${n}`).value.trim() && !$(`#${prefix}Response${n}`).value.trim();
+      return {
+        round1: [1,2,3].filter(n => isBlank('choice', n)).map(n => `choice_${n}`),
+        followup: [1,2,3].filter(n => isBlank('followup', n)).map(n => `followup_${n}`),
+        behavior: 'blank_slots_are_skipped_in_game'
+      };
+    }
+    function writePresentationPages(pages = []){
+      [1,2,3,4].forEach(n => {
+        const page = pages[n - 1] || {};
+        $(`#presentationKicker${n}`).value = page.kicker || '';
+        $(`#presentationTitle${n}`).value = page.title || '';
+        $(`#presentationSubtitle${n}`).value = page.subtitle || '';
+        $(`#presentationText${n}`).value = page.text || '';
+      });
+    }
+    function writeDialogueChoices(prefix, choices = []){
+      [1,2,3].forEach(n => {
+        const choice = choices[n - 1] || {};
+        $(`#${prefix}Choice${n}`).value = choice.label || '';
+        $(`#${prefix}Response${n}`).value = choice.response || (choice.responseLines || []).join('\n') || '';
+        $(`#${prefix}Pose${n}`).value = choice.pose || 'pose1';
+        $(`#${prefix}Action${n}`).value = choice.action || '';
+        $(`#${prefix}Unlocks${n}`).value = (choice.unlocks || []).join(', ');
+        $(`#${prefix}Reward${n}`).value = choice.reward || '';
+        $(`#${prefix}Next${n}`).value = choice.next || '';
+      });
     }
     function saveConversation(){
       let rewardId = $('#conversationReward').value;
@@ -903,20 +1209,54 @@
         integrationHints: {
           queueRadioCompatible: $('#conversationFormat').value === 'radio_queue',
           presentationOverlayCompatible: presentationPages.length > 0,
-          actionExamples: ['talk-vera','xavor-introduction','xavor-finale-request','unlock-blue-computer']
+          actionExamples: ['talk-vera','xavor-introduction','xavor-finale-request','unlock-blue-computer'],
+          skipBlankSlots: true
         },
+        skippedSlots: readSkippedConversationSlots(),
         intro: linesFromTextarea('#dialogueOpeningLines').join('\n'),
         round1: choices,
         round2Enabled: $('#secondRoundEnabled').value === 'si',
         round2Condition: $('#secondRoundCondition').value.trim(),
         round2: followupChoices,
         finalPhrase: $('#dialogueFinal').value.trim(),
-        reward: rewardId || ''
+        reward: rewardId || '',
+        notes: $('#conversationNotes').value.trim()
       };
       const index = state.conversations.findIndex(entry => entry.id === id);
       if(index >= 0) state.conversations[index] = item; else state.conversations.push(item);
       persist();
       status(`Conversación guardada: ${id}`);
+    }
+    function loadConversation(id){
+      const item = state.conversations.find(entry => entry.id === id);
+      if(!item) return;
+      $('#conversationId').value = item.id || '';
+      const character = GAME_CHARACTERS.includes(item.character) ? item.character : 'Personalizado';
+      $('#characterSelect').value = character;
+      $('#customCharacter').value = character === 'Personalizado' ? item.character || '' : '';
+      $('#conversationBackgroundPath').value = item.assets?.background || item.background || '';
+      $('#hasPresentation').value = item.hasPresentation ? 'si' : 'no';
+      $('#presentationImagePath').value = item.assets?.presentationImage || item.presentation?.image || '';
+      $('#pose1Path').value = item.assets?.pose1 || '';
+      $('#pose2Path').value = item.assets?.pose2 || '';
+      $('#pose3Path').value = item.assets?.pose3 || '';
+      $('#pose4Path').value = item.assets?.pose4 || '';
+      $('#conversationFormat').value = item.sceneType || item.format || 'interactive_dialogue';
+      $('#dialogueOpeningLines').value = (item.dialogue?.openingLines || (item.intro ? [item.intro] : [])).join('\n');
+      writePresentationPages(item.presentation?.pages || []);
+      writeDialogueChoices('choice', item.dialogue?.choices || item.round1 || []);
+      $('#secondRoundEnabled').value = item.dialogue?.followup?.enabled || item.round2Enabled ? 'si' : 'no';
+      $('#secondRoundCondition').value = item.dialogue?.followup?.condition || item.round2Condition || '';
+      $('#followupOpeningLines').value = (item.dialogue?.followup?.openingLines || []).join('\n');
+      writeDialogueChoices('followup', item.dialogue?.followup?.choices || item.round2 || []);
+      $('#dialogueFinal').value = item.finalPhrase || '';
+      $('#conversationReward').value = item.reward || '';
+      $('#newRewardName').value = '';
+      $('#newRewardImagePath').value = '';
+      $('#newRewardEffect').value = '';
+      $('#conversationNotes').value = item.notes || '';
+      $('#hasPresentation').dispatchEvent(new Event('change'));
+      status(`Conversación cargada: ${id}`);
     }
 
     function saveCombat(){
@@ -941,8 +1281,27 @@
       };
       const index = state.combats.findIndex(entry => entry.id === id);
       if(index >= 0) state.combats[index] = item; else state.combats.push(item);
+      if(draftMedia.combatImageData) mediaStore[`combat:${id}`] = draftMedia.combatImageData;
       persist();
       status(`Combate guardado: ${id}`);
+    }
+    function loadCombat(id){
+      const item = state.combats.find(entry => entry.id === id);
+      if(!item) return;
+      $('#combatId').value = item.id || '';
+      $('#combatEnemy').value = item.enemy || '';
+      $('#combatVisualType').value = item.visualType || 'imagen_fija';
+      $('#combatVisualSource').value = item.visualSource || '';
+      $('#combatInitialPanel').value = item.initialPanel || '';
+      $('#combatForbiddenSuit').value = item.forbiddenSuit || '';
+      $('#combatSpecialEnabled').value = item.special?.enabled ? 'si' : 'no';
+      $('#combatHackedEnabled').value = item.hacked?.enabled ? 'si' : 'no';
+      $('#combatSpecialDescription').value = item.special?.description || '';
+      $('#combatHackEffect').value = item.hacked?.effect || '';
+      $('#combatExtraRules').value = item.extraRules || '';
+      $('#combatOutcomes').value = item.outcomes || '';
+      draftMedia.combatImageData = mediaStore[`combat:${id}`] || '';
+      status(`Combate cargado: ${id}`);
     }
 
     function saveShop(){
@@ -953,19 +1312,43 @@
         vendor: $('#shopVendor').value.trim(),
         background: $('#shopBackground').value.trim(),
         items: $('#shopItems').value.trim(),
+        parsedItems: parseShopItems($('#shopItems').value),
+        availableDeck: DECK_CARDS,
         conditions: $('#shopConditions').value.trim()
       };
       const index = state.shops.findIndex(entry => entry.id === id);
       if(index >= 0) state.shops[index] = item; else state.shops.push(item);
+      if(draftMedia.customCardImageData) mediaStore[`customCard:${$('#customCardName').value.trim()}`] = draftMedia.customCardImageData;
       persist();
       status(`Tienda guardada: ${id}`);
+    }
+    function loadShop(id){
+      const item = state.shops.find(entry => entry.id === id);
+      if(!item) return;
+      $('#shopId').value = item.id || '';
+      $('#shopName').value = item.name || '';
+      $('#shopVendor').value = item.vendor || '';
+      $('#shopBackground').value = item.background || '';
+      $('#shopItems').value = item.items || '';
+      $('#shopConditions').value = item.conditions || '';
+      status(`Tienda cargada: ${id}`);
+    }
+    function parseShopItems(text){
+      return String(text || '').split('\n').map(line => line.trim()).filter(Boolean).map(line => {
+        const fields = {};
+        line.split('|').forEach(part => {
+          const [key, ...rest] = part.replace(/^\d+\)\s*/, '').split(':');
+          if(key && rest.length) fields[slug(key.trim())] = rest.join(':').trim();
+        });
+        return { raw: line, ...fields };
+      });
     }
 
     function renderLists(){
       renderCollection('scenarios', '#list-scenarios', item => item.name || item.id, item => `${(item.collisions || []).length} colisiones · ${(item.interactions || []).length} interacciones`, true);
-      renderCollection('conversations', '#list-conversations', item => item.character || item.id, item => item.id);
-      renderCollection('combats', '#list-combats', item => item.enemy || item.id, item => `${item.id}${item.hacked?.enabled ? ' · hackeado' : ''}${item.special?.enabled ? ' · especial' : ''}`);
-      renderCollection('shops', '#list-shops', item => item.name || item.id, item => item.vendor || item.id);
+      renderCollection('conversations', '#list-conversations', item => item.character || item.id, item => item.id, true);
+      renderCollection('combats', '#list-combats', item => item.enemy || item.id, item => `${item.id}${item.hacked?.enabled ? ' · hackeado' : ''}${item.special?.enabled ? ' · especial' : ''}`, true);
+      renderCollection('shops', '#list-shops', item => item.name || item.id, item => item.vendor || item.id, true);
     }
     function renderCollection(collection, selector, titleFn, subtitleFn, loadable = false){
       const list = $(selector);
@@ -974,7 +1357,7 @@
           <div class="item-title">
             <div><strong>${escapeHtml(titleFn(item))}</strong><small>${escapeHtml(subtitleFn(item))}</small></div>
             <div class="button-row">
-              ${loadable ? `<button class="btn" type="button" data-load-scenario="${escapeHtml(item.id)}">Cargar</button>` : ''}
+              ${loadable ? `<button class="btn" type="button" data-load-item="${collection}|${escapeHtml(item.id)}">Cargar</button>` : ''}
               <button class="btn danger" type="button" data-delete="${collection}|${escapeHtml(item.id)}">Eliminar</button>
             </div>
           </div>
@@ -986,6 +1369,425 @@
       refreshReferenceSelects();
       updateOutputs();
       updatePreview();
+    }
+
+    function upsert(collection, item){
+      const index = state[collection].findIndex(entry => entry.id === item.id);
+      if(index >= 0) state[collection][index] = item; else state[collection].push(item);
+    }
+    function tower4BExample(){
+      const closedMap = 'assets/Historia/torre-seguimiento-4b-tutorial/assets/torre-seguimiento-4b-rendered-map.png';
+      const openMap = 'assets/Historia/torre-seguimiento-4b-tutorial/assets/torre-seguimiento-4b-door-open-map.png';
+      return {
+        id: 'torre_4b_exterior',
+        name: 'Torre de seguimiento 4B · Exterior',
+        assetPath: closedMap,
+        backgroundImage: closedMap,
+        launchUrl: 'assets/Historia/torre-seguimiento-4b-tutorial/index.html',
+        entry: { origin: 'main_map', from: '', start: { x: 134, y: 432 } },
+        start: { x: 134, y: 432 },
+        layers: [
+          {
+            id: 'torre_4b_exterior',
+            name: 'Exterior · puerta cerrada',
+            image: closedMap,
+            linksTo: 'torre_4b_interior_baja',
+            launchUrl: 'assets/Historia/torre-seguimiento-4b-tutorial/index.html',
+            condition: 'tower-door-closed'
+          },
+          {
+            id: 'torre_4b_interior_baja',
+            name: 'Interior bajo · Torre 4B',
+            image: 'assets/Historia/torre-seguimiento-4b-interior-baja/assets/torre-4b-interior-baja-map.png',
+            linksTo: 'torre_4b_sala_control',
+            launchUrl: 'assets/Historia/torre-seguimiento-4b-interior-baja/index.html',
+            condition: 'tower-door-open'
+          },
+          {
+            id: 'torre_4b_sala_control',
+            name: 'Sala de control · Torre 4B',
+            image: 'assets/Historia/torre-seguimiento-4b-sala-control/assets/torre-4b-sala-control-map.png',
+            linksTo: '',
+            launchUrl: 'assets/Historia/torre-seguimiento-4b-sala-control/index.html',
+            condition: 'tower-control-access'
+          }
+        ],
+        collisions: [
+          { kind: 'rect', x: 0, y: 0, w: 960, h: 88 },
+          { kind: 'rect', x: 0, y: 470, w: 960, h: 70 },
+          { kind: 'oval', x: 690, y: 112, w: 190, h: 210 },
+          { kind: 'rect', x: 236, y: 356, w: 164, h: 92 }
+        ],
+        interactions: [
+          { id: 'blue-computer', x: 191, y: 273, type: 'conversation', target: 'xavor_radio_4b', label: 'Ordenador azul', condition: 'Sin hackear' },
+          { id: 'tower-door', x: 479, y: 213, type: 'scenario', target: 'torre_4b_interior_baja', label: 'Puerta 4B', condition: 'tower-door-open' },
+          { id: 'relay-bridge', x: 774, y: 282, type: 'combat', target: 'argos_patrol_drone', label: 'Pasarela este', condition: 'Si salta alarma' }
+        ],
+        radioBlocks: [
+          {
+            id: 'radio_1',
+            trigger: 'enter',
+            target: '',
+            delaySeconds: 1,
+            speaker: 'Xavor Glitch',
+            portrait: 'assets/Historia/low/characters/xavor-glitch-transparent.webp',
+            unstable: true,
+            once: true,
+            lines: [
+              'Xavor: PoCoBOT, estás frente a la Torre 4B. Esa puerta no se abre con educación.',
+              'Xavor: Busca el ordenador azul. Si todavía respira, lo haremos cantar.'
+            ]
+          },
+          {
+            id: 'radio_2',
+            trigger: 'interaction',
+            target: 'blue-computer',
+            delaySeconds: 0,
+            speaker: 'Xavor Glitch',
+            portrait: 'assets/Historia/low/characters/xavor-glitch-transparent.webp',
+            unstable: true,
+            once: true,
+            lines: [
+              'Xavor: Ese terminal tiene un pulso raro. Mantén la mano firme.',
+              'Xavor: Si la puerta cede, verás humo primero. Eso es buena señal, más o menos.'
+            ]
+          },
+          {
+            id: 'radio_3',
+            trigger: 'combat_complete',
+            target: 'argos_patrol_drone',
+            delaySeconds: 5,
+            speaker: 'Xavor Glitch',
+            portrait: 'assets/Historia/low/characters/xavor-glitch-transparent.webp',
+            unstable: false,
+            once: true,
+            lines: [
+              'Xavor: Combate cerrado. Dame cinco segundos para que el sistema deje de quejarse.',
+              'Xavor: Vía limpia hacia la compuerta.'
+            ]
+          }
+        ],
+        doorEvent: {
+          enabled: true,
+          id: 'tower_4b_door_opening',
+          type: 'door_opening',
+          closedImage: closedMap,
+          openImage: openMap,
+          trigger: { type: 'interaction', targetId: 'blue-computer' },
+          smokePoints: [{ x: 479, y: 213, size: 48, duration: 2.4 }],
+          sound: 'assets/Historia/torre-seguimiento-4b-tutorial/assets/sfx/motor_looping_cc0.mp3',
+          imageSwapDelay: 0.6,
+          after: {
+            radio: [
+              'Xavor: Puerta 4B abierta. Eso dicen todas... pero esta vez es verdad.',
+              'Xavor: Ve hasta la puerta y entra con cuidado.'
+            ],
+            destinationScenario: 'torre_4b_interior_baja'
+          },
+          once: true
+        }
+      };
+    }
+    function loadTower4BExample(){
+      const example = tower4BExample();
+      upsert('scenarios', example);
+      upsert('scenarios', {
+        id: 'torre_4b_interior_baja',
+        name: 'Torre de seguimiento 4B · Interior bajo',
+        assetPath: 'assets/Historia/torre-seguimiento-4b-interior-baja/assets/torre-4b-interior-baja-map.png',
+        backgroundImage: 'assets/Historia/torre-seguimiento-4b-interior-baja/assets/torre-4b-interior-baja-map.png',
+        launchUrl: 'assets/Historia/torre-seguimiento-4b-interior-baja/index.html',
+        entry: { origin: 'scenario', from: 'torre_4b_exterior', start: { x: 118, y: 404 } },
+        start: { x: 118, y: 404 },
+        layers: [],
+        collisions: [],
+        interactions: [{ x: 770, y: 260, type: 'scenario', target: 'torre_4b_sala_control', label: 'Subir a sala de control', condition: '' }],
+        radioBlocks: [],
+        doorEvent: { enabled: false, smokePoints: [] }
+      });
+      upsert('scenarios', {
+        id: 'torre_4b_sala_control',
+        name: 'Torre de seguimiento 4B · Sala de control',
+        assetPath: 'assets/Historia/torre-seguimiento-4b-sala-control/assets/torre-4b-sala-control-map.png',
+        backgroundImage: 'assets/Historia/torre-seguimiento-4b-sala-control/assets/torre-4b-sala-control-map.png',
+        launchUrl: 'assets/Historia/torre-seguimiento-4b-sala-control/index.html',
+        entry: { origin: 'scenario', from: 'torre_4b_interior_baja', start: { x: 122, y: 398 } },
+        start: { x: 122, y: 398 },
+        layers: [],
+        collisions: [],
+        interactions: [],
+        radioBlocks: [],
+        doorEvent: { enabled: false, smokePoints: [] }
+      });
+      upsert('conversations', {
+        id: 'xavor_radio_4b',
+        format: 'story_character_scene',
+        sceneType: 'radio_queue',
+        character: 'Xavor Glitch',
+        usesExistingCharacter: true,
+        background: '',
+        assets: { presentationImage: 'assets/Historia/low/characters/xavor-glitch-transparent.webp' },
+        hasPresentation: false,
+        dialogue: {
+          speaker: 'Xavor Glitch',
+          openingLines: ['Xavor entra por radio y guía a PoCoBOT durante la Torre 4B.'],
+          choices: []
+        },
+        notes: 'Ejemplo de conversación radio enlazada desde Escenario. Los eventos especiales no configurables se documentan aquí.'
+      });
+      upsert('combats', {
+        id: 'argos_patrol_drone',
+        enemy: 'Dron patrulla Argos',
+        visualType: 'image',
+        visualSource: 'assets/Historia/torre-seguimiento-4b-tutorial/assets/chapter/argos-patrol-drone.png',
+        forbiddenSuit: 'none',
+        special: { enabled: true, description: 'Combate de alarma en pasarela; al terminar puede disparar radio tras 5 segundos.' },
+        hacked: { enabled: false, effect: '' },
+        extraRules: '',
+        outcomes: 'Victoria: limpia la pasarela y dispara radio de Xavor.'
+      });
+      persist();
+      loadScenario(example.id);
+      launchScenarioPreview();
+      setScenarioStatus('Ejemplo Torre 4B cargado con 3 subescenarios, radio de Xavor y puerta con humo');
+    }
+    function safeScriptJson(value){
+      return JSON.stringify(value).replace(/</g, '\\u003c');
+    }
+    function makeScenarioPreviewHtml(scenario){
+      const item = scenario || state.scenarios[0] || tower4BExample();
+      const door = item.doorEvent || {};
+      const start = item.start || item.entry?.start || { x: 160, y: 220 };
+      const image = mediaStore[`scenario:${item.id}`] || item.assetPath || item.backgroundImage || door.closedImage || '';
+      const data = {
+        id: item.id,
+        name: item.name || item.id,
+        image,
+        openImage: door.openImage || image,
+        interactions: item.interactions || [],
+        collisions: item.collisions || [],
+        radioBlocks: item.radioBlocks || [],
+        smokePoints: door.smokePoints || [],
+        afterRadio: door.after?.radio || [],
+        layers: item.layers || [],
+        start
+      };
+      const style = `
+        body{margin:0;font-family:Inter,system-ui;background:#07111f;color:#f6fbff}
+        .wrap{display:grid;grid-template-columns:minmax(0,1fr) 280px;min-height:100vh}
+        .stage{position:relative;overflow:hidden;background:#101d2e}
+        .stage img{width:100%;height:100%;object-fit:cover;display:block;min-height:520px}
+        .collision{position:absolute;border:2px solid rgba(255,122,138,.8);background:rgba(255,122,138,.18)}
+        .oval{border-radius:999px}
+        .pin,.start{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;font-weight:900}
+        .pin{width:26px;height:26px;border-radius:50%;background:#ffd364;border:3px solid #1e1302;color:#1e1302}
+        .start{width:28px;height:28px;border-radius:50%;background:#56d7ff;border:3px solid #fff;color:#06101d}
+        .smoke{position:absolute;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:radial-gradient(circle,rgba(232,244,246,.9),rgba(232,244,246,.28) 45%,rgba(232,244,246,0));opacity:0;pointer-events:none}
+        .smoke.play{animation:smoke 2.4s ease-out forwards}
+        @keyframes smoke{0%{opacity:0;transform:scale(.4)}20%{opacity:1}100%{opacity:0;transform:scale(2.1) translateY(-18px)}}
+        aside{border-left:1px solid #24415f;background:#0d1929;padding:16px;display:grid;gap:12px;align-content:start}
+        h1{font-size:18px;line-height:1.15;margin:0}button{border:1px solid #3d5975;background:#142844;color:#f6fbff;border-radius:8px;padding:9px 10px;font-weight:800;cursor:pointer;text-align:left}
+        button:hover{border-color:#7effc4}.radio{position:absolute;left:18px;right:18px;bottom:18px;background:rgba(6,16,29,.88);border:1px solid #3d5975;border-radius:12px;padding:14px;box-shadow:0 16px 40px rgba(0,0,0,.32)}
+        .radio strong{color:#7effc4}.radio p{margin:8px 0 0;line-height:1.35}.layer{border:1px solid #24415f;border-radius:10px;padding:10px;background:#111e30}small{color:#9eb1c7}
+        @media(max-width:760px){.wrap{grid-template-columns:1fr}.stage img{min-height:360px}aside{border-left:0;border-top:1px solid #24415f}}
+      `;
+      return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>${style}</style></head><body><div class="wrap"><main class="stage" id="stage"><img id="stageImage" src="${escapeHtml(data.image)}" alt="">${data.collisions.map(item => `<div class="collision ${item.kind === 'oval' ? 'oval' : ''}" style="left:${item.x / 9.6}%;top:${item.y / 5.4}%;width:${item.w / 9.6}%;height:${item.h / 5.4}%"></div>`).join('')}${data.interactions.map((pin,index) => `<button class="pin" data-radio="${escapeHtml(pin.id || pin.target || pin.label || '')}" style="left:${pin.x / 9.6}%;top:${pin.y / 5.4}%" title="${escapeHtml(pin.label || pin.target || '')}">${index + 1}</button>`).join('')}<div class="start" style="left:${start.x / 9.6}%;top:${start.y / 5.4}%" title="Inicio">I</div>${data.smokePoints.map((point,index) => `<div class="smoke" id="smoke${index}" style="left:${point.x / 9.6}%;top:${point.y / 5.4}%"></div>`).join('')}<section class="radio" id="radio"><strong>Xavor Glitch</strong><p>Escena preparada. Pulsa una radio o abre la puerta para probar el flujo.</p></section></main><aside><h1>${escapeHtml(data.name)}</h1><small>${escapeHtml(data.id)}</small><button id="playEnter" type="button">Reproducir radio de entrada</button><button id="openDoor" type="button">Emular apertura de puerta</button>${data.layers.map(layer => `<article class="layer"><strong>${escapeHtml(layer.name || layer.id)}</strong><br><small>${escapeHtml(layer.condition || 'Sin condición')}</small>${layer.launchUrl ? `<button type="button" data-layer-url="${escapeHtml(layer.launchUrl)}">Abrir HTML real</button>` : ''}</article>`).join('')}</aside></div><script>const data=${safeScriptJson(data)};const radio=document.getElementById('radio');function speak(lines,speaker){radio.innerHTML='<strong>'+speaker+'</strong><p>'+lines.join('<br>')+'</p>'}function playByTrigger(trigger,target){const block=data.radioBlocks.find(item=>item.trigger===trigger&&(!target||item.target===target))||data.radioBlocks.find(item=>item.trigger===trigger);if(block)speak(block.lines,block.speaker||'Radio')}document.getElementById('playEnter').onclick=()=>playByTrigger('enter');document.getElementById('openDoor').onclick=()=>{document.getElementById('stageImage').src=data.openImage||data.image;data.smokePoints.forEach((_,index)=>document.getElementById('smoke'+index)?.classList.add('play'));speak(data.afterRadio.length?data.afterRadio:['Puerta abierta.'], 'Xavor Glitch')};document.querySelectorAll('[data-radio]').forEach(node=>node.onclick=()=>playByTrigger('interaction',node.dataset.radio));document.querySelectorAll('[data-layer-url]').forEach(node=>node.onclick=()=>{window.location.href=node.dataset.layerUrl});playByTrigger('enter');<\/script></body></html>`;
+    }
+    function launchScenarioPreview(){
+      const id = $('#scenarioId').value.trim();
+      const scenario = state.scenarios.find(item => item.id === id) || state.scenarios[0] || tower4BExample();
+      $('#scenarioTestFrame').srcdoc = makeScenarioPreviewHtml(scenario);
+      status('Escenario lanzado en iframe');
+    }
+
+    function xavorConversationExample(){
+      return {
+        id: 'xavor_intro_4b',
+        format: 'story_character_scene',
+        sceneType: 'interactive_dialogue',
+        character: 'Xavor Glitch',
+        usesExistingCharacter: true,
+        background: 'assets/Historia/low/torre_4b_compacta.webp',
+        assets: {
+          background: 'assets/Historia/low/torre_4b_compacta.webp',
+          presentationImage: 'assets/Historia/Brutos/transparent/XAVORpresentacion-transparent.png',
+          pose1: 'assets/Historia/Brutos/transparent/XAVOR1-transparent.png',
+          pose2: 'assets/Historia/Brutos/transparent/XAVOR2-transparent.png',
+          pose3: 'assets/Historia/Brutos/transparent/XAVOR3-transparent.png',
+          pose4: 'assets/Historia/Brutos/transparent/XAVOR4-transparent.png'
+        },
+        hasPresentation: true,
+        presentation: {
+          active: false,
+          page: 0,
+          image: 'assets/Historia/Brutos/transparent/XAVORpresentacion-transparent.png',
+          pages: [
+            { kicker: 'Presentación', title: 'Xavor Glitch', subtitle: 'Técnico de frontera · Restaurador de sistemas muertos', text: 'La furgoneta se detiene como si hubiera esquivado a la muerte por costumbre... Xavor Glitch baja entre cables, monitores abiertos y una sonrisa demasiado tranquila para alguien que sabe leer una ruina encendida.' },
+            { kicker: 'Lore PoCoBOT', title: 'La baraja encontrada', subtitle: 'La interfaz humana que sobrevivió al metal', text: '¿A que no sabes por qué los mechas a los que llamamos PoCoBOT se configuran con cartas de poker? Ven a hablar conmigo, que te lo explico...' },
+            { kicker: 'Misión', title: 'Restaurar transmisiones', subtitle: 'Torre de Seguimiento 4B', text: 'La Caída apagó casi todo: voces humanas, rutas de auxilio, avisos de frontera. Para restablecer transmisiones hay que llegar al panel de control superior y tumbar la inteligencia artificial que lo domina.' },
+            { kicker: 'Siguiente paso', title: 'Hackeo preparado', subtitle: 'Ordenador azul del escenario', text: 'De momento la puerta está cerrada. Yo puedo abrir una grieta desde la furgoneta y desbloquear el ordenador azul que mantiene la compuerta cerrada.' }
+          ]
+        },
+        dialogue: {
+          speaker: 'Xavor Glitch',
+          openingLines: [
+            'Xavor: furgoneta en posición. Acércate y te cuento por qué esa torre importa.',
+            'Xavor: tengo el ordenador azul a tiro, pero primero necesito que entiendas qué vamos a romper.'
+          ],
+          choices: [
+            { id: 'choice_1', label: '¿Por qué usamos cartas?', response: 'Xavor: porque una carta es una orden humana compacta. Ataque, defensa, combustible, riesgo. La máquina entiende números; nosotros recordamos símbolos.', responseLines: ['Xavor: porque una carta es una orden humana compacta.', 'Ataque, defensa, combustible, riesgo. La máquina entiende números; nosotros recordamos símbolos.'], pose: 'pose1', action: 'xavor-lore-cards', unlocks: ['cards-as-human-readable-mecha-configuration'], reward: '', next: '' },
+            { id: 'choice_2', label: '¿Qué pasa en la Torre 4B?', response: 'Xavor: transmisiones muertas, drones patrullando y una puerta con complejo de reina. Si abres el terminal azul, el resto empieza a respirar.', responseLines: ['Xavor: transmisiones muertas, drones patrullando y una puerta con complejo de reina.', 'Si abres el terminal azul, el resto empieza a respirar.'], pose: 'pose2', action: 'xavor-mission-briefing', unlocks: ['tower-4b-objective'], reward: '', next: '' },
+            { id: 'choice_3', label: 'Prepara el hackeo.', response: 'Xavor: ordenador preparado. Ve al terminal azul y pulsa E. ¡Aprovecha, que lo tenemos tontorrón!', responseLines: ['Xavor: ordenador preparado.', 'Ve al terminal azul y pulsa E. ¡Aprovecha, que lo tenemos tontorrón!'], pose: 'pose4', action: 'xavor-introduction', unlocks: ['blue-computer'], reward: '', next: 'followup' }
+          ],
+          followup: {
+            enabled: true,
+            condition: 'tower-door-open',
+            openingLines: ['Xavor: la compuerta ha cedido. Eso dicen todas... pero esta vez es verdad.'],
+            choices: [
+              { id: 'followup_1', label: '¿Ahora por dónde?', response: 'Xavor: entra en la torre y sube. Si algo te mira demasiado tiempo, probablemente sea un combate.', responseLines: ['Xavor: entra en la torre y sube.', 'Si algo te mira demasiado tiempo, probablemente sea un combate.'], pose: 'pose3', action: 'xavor-route-interior', unlocks: ['tower-interior'], reward: '', next: '' },
+              { id: 'followup_2', label: '¿Me das la radio?', response: 'Xavor: toma. Si empieza a chisporrotear, no la golpees. Bueno, no mucho.', responseLines: ['Xavor: toma.', 'Si empieza a chisporrotear, no la golpees. Bueno, no mucho.'], pose: 'pose4', action: 'xavor-finale-request', unlocks: ['xavor-radio'], reward: 'obj_radio_xavor', next: 'close' }
+            ]
+          }
+        },
+        skippedSlots: { round1: [], followup: ['followup_3'], behavior: 'blank_slots_are_skipped_in_game' },
+        finalPhrase: 'Xavor: recompensa entregada, transmisiones vivas y furgoneta sin explotar. Final elegante.',
+        reward: 'obj_radio_xavor',
+        notes: 'Evento especial: al terminar la conversación final se entrega la radio de Xavor y se desbloquea xavor-radio. Si una opción queda vacía, el juego debe saltarla sin mostrar huecos.'
+      };
+    }
+    function loadXavorConversationExample(){
+      upsert('inventoryItems', {
+        id: 'obj_radio_xavor',
+        name: 'Radio de Xavor',
+        image: 'assets/Historia/low/characters/xavor-glitch-transparent.webp',
+        effect: 'Desbloquea conversaciones de radio de Xavor y mensajes contextuales durante la Torre 4B.',
+        source: 'conversation'
+      });
+      const example = xavorConversationExample();
+      upsert('conversations', example);
+      persist();
+      refreshReferenceSelects();
+      loadConversation(example.id);
+      launchConversationPreview();
+    }
+    function makeConversationPreviewHtml(item){
+      const conversation = item || state.conversations.find(entry => entry.id === $('#conversationId').value.trim()) || state.conversations[0] || xavorConversationExample();
+      const choices = conversation.dialogue?.choices || [];
+      const followup = conversation.dialogue?.followup?.choices || [];
+      const pages = conversation.presentation?.pages || [];
+      const assets = conversation.assets || {};
+      const data = { conversation, choices, followup, pages, assets };
+      const style = `
+        body{margin:0;font-family:Inter,system-ui;background:#07111f;color:#f6fbff;min-height:100vh}
+        .scene{min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) 340px;background:linear-gradient(90deg,rgba(7,17,31,.78),rgba(7,17,31,.18)),url('${escapeHtml(assets.background || conversation.background || '')}') center/cover no-repeat}
+        .left{position:relative;display:grid;align-content:end;padding:24px}.portrait{position:absolute;right:28px;bottom:0;max-height:92%;max-width:42%;object-fit:contain;filter:drop-shadow(0 20px 34px rgba(0,0,0,.45))}
+        .dialogue{position:relative;z-index:2;border:1px solid #3d5975;background:rgba(6,16,29,.88);border-radius:14px;padding:16px;max-width:760px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+        .dialogue strong{color:#7effc4}.dialogue p{line-height:1.45;margin:8px 0 0}.side{background:#0d1929;border-left:1px solid #24415f;padding:16px;display:grid;gap:10px;align-content:start}
+        button{border:1px solid #3d5975;background:#142844;color:#f6fbff;border-radius:9px;padding:10px;font-weight:800;text-align:left;cursor:pointer}button:hover{border-color:#7effc4}
+        .page{border:1px solid #24415f;background:#111e30;border-radius:12px;padding:12px}.page small{color:#ffd364;text-transform:uppercase;font-weight:900}.muted{color:#9eb1c7;font-size:13px}
+        @media(max-width:800px){.scene{grid-template-columns:1fr}.portrait{position:relative;right:auto;max-width:70%;justify-self:end}.side{border-left:0;border-top:1px solid #24415f}}
+      `;
+      return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>${style}</style></head><body><main class="scene"><section class="left"><img class="portrait" id="portrait" src="${escapeHtml(assets.presentationImage || assets.pose1 || '')}" alt=""><article class="dialogue" id="dialogue"><strong>${escapeHtml(conversation.character)}</strong><p>${escapeHtml((conversation.dialogue?.openingLines || []).join(' '))}</p></article></section><aside class="side"><h1>${escapeHtml(conversation.character)}</h1><div class="muted">${escapeHtml(conversation.id)}</div><button id="opening">Líneas iniciales</button>${pages.map((page,index) => `<button data-page="${index}">Presentación ${index + 1}: ${escapeHtml(page.title)}</button>`).join('')}${choices.map((choice,index) => `<button data-choice="${index}">${escapeHtml(choice.label)}</button>`).join('')}${followup.map((choice,index) => `<button data-followup="${index}">Follow-up: ${escapeHtml(choice.label)}</button>`).join('')}</aside></main><script>const data=${safeScriptJson(data)};const box=document.getElementById('dialogue');const portrait=document.getElementById('portrait');function show(title,lines,img){box.innerHTML='<strong>'+title+'</strong><p>'+lines.join('<br>')+'</p>';if(img)portrait.src=img}document.getElementById('opening').onclick=()=>show(data.conversation.character,data.conversation.dialogue.openingLines||[],data.assets.pose1||data.assets.presentationImage);document.querySelectorAll('[data-page]').forEach(btn=>btn.onclick=()=>{const p=data.pages[Number(btn.dataset.page)];show(p.title,[p.subtitle,p.text],data.assets.presentationImage)});document.querySelectorAll('[data-choice]').forEach(btn=>btn.onclick=()=>{const c=data.choices[Number(btn.dataset.choice)];show(data.conversation.character,c.responseLines&&c.responseLines.length?c.responseLines:[c.response],data.assets[c.pose]||data.assets.pose1)});document.querySelectorAll('[data-followup]').forEach(btn=>btn.onclick=()=>{const c=data.followup[Number(btn.dataset.followup)];show(data.conversation.character,c.responseLines&&c.responseLines.length?c.responseLines:[c.response],data.assets[c.pose]||data.assets.pose4)});<\/script></body></html>`;
+    }
+    function launchConversationPreview(){
+      const id = $('#conversationId').value.trim();
+      const item = state.conversations.find(entry => entry.id === id) || state.conversations[0] || xavorConversationExample();
+      $('#conversationTestFrame').srcdoc = makeConversationPreviewHtml(item);
+      status('Conversación lanzada en iframe');
+    }
+    function combatExample(){
+      return {
+        id: 'argos_patrol_drone',
+        enemy: 'Dron patrulla Argos',
+        visualType: 'imagen_fija',
+        visualSource: 'assets/Historia/torre-seguimiento-4b-tutorial/assets/chapter/argos-patrol-drone.png',
+        initialPanel: 'ataque: 6; defensa: 4; combustible: 3; conducta: patrulla exterior',
+        forbiddenSuit: '',
+        special: { enabled: true, description: 'Combate de alarma en pasarela. Si el jugador gana, el escenario dispara una radio de Xavor cinco segundos después.' },
+        hacked: { enabled: true, effect: 'Interferencias de Argos: cada 3 turnos cambia el palo recomendado y puede bloquear una carta si coincide con la señal roja.' },
+        extraRules: 'trigger: relay-bridge | onVictory: unlock tower-route-safe, queue radio combat_complete argos_patrol_drone',
+        outcomes: 'Victoria: limpia la pasarela y habilita la ruta. Derrota: devuelve al punto de inicio del exterior con una línea de Xavor.'
+      };
+    }
+    function loadCombatExample(){
+      const example = combatExample();
+      upsert('combats', example);
+      persist();
+      refreshReferenceSelects();
+      loadCombat(example.id);
+      launchCombatPreview();
+    }
+    function makeCombatPreviewHtml(item){
+      const combat = item || state.combats.find(entry => entry.id === $('#combatId').value.trim()) || state.combats[0] || combatExample();
+      const image = mediaStore[`combat:${combat.id}`] || combat.visualSource || '';
+      const style = `body{margin:0;font-family:Inter,system-ui;background:#08111e;color:#f6fbff}main{min-height:100vh;display:grid;grid-template-columns:1fr 330px}.arena{display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 44%,rgba(255,211,100,.12),transparent 34%),#07111f}.enemy{max-width:min(62vw,520px);max-height:70vh;object-fit:contain;filter:drop-shadow(0 24px 42px rgba(0,0,0,.45))}.panel{background:#0d1929;border-left:1px solid #24415f;padding:18px;display:grid;gap:12px;align-content:start}.card{border:1px solid #24415f;border-radius:12px;background:#111e30;padding:12px}.special{border-color:#ffd364}.hacked{border-color:#ff7a8a}button{border:1px solid #3d5975;background:#142844;color:#f6fbff;border-radius:9px;padding:10px;font-weight:800;cursor:pointer}small{color:#9eb1c7}p{line-height:1.45}@media(max-width:760px){main{grid-template-columns:1fr}.panel{border-left:0;border-top:1px solid #24415f}}`;
+      return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>${style}</style></head><body><main><section class="arena"><img class="enemy" src="${escapeHtml(image)}" alt="${escapeHtml(combat.enemy)}"></section><aside class="panel"><h1>${escapeHtml(combat.enemy)}</h1><small>${escapeHtml(combat.id)}</small><article class="card"><strong>Panel inicial</strong><p>${escapeHtml(combat.initialPanel || 'Sin panel')}</p></article><article class="card special"><strong>Especial</strong><p>${escapeHtml(combat.special?.description || 'No marcado')}</p></article><article class="card hacked"><strong>Hackeado</strong><p>${escapeHtml(combat.hacked?.effect || 'No marcado')}</p></article><article class="card"><strong>Resultados</strong><p>${escapeHtml(combat.outcomes || '')}</p></article><button onclick="document.body.style.filter='saturate(1.4) contrast(1.08)'">Simular pulso hack</button></aside></main></body></html>`;
+    }
+    function launchCombatPreview(){
+      const id = $('#combatId').value.trim();
+      const item = state.combats.find(entry => entry.id === id) || state.combats[0] || combatExample();
+      $('#combatTestFrame').srcdoc = makeCombatPreviewHtml(item);
+      status('Combate lanzado en iframe');
+    }
+    function deckLine(card, price = 20, description = ''){
+      return `id: ${card.id} | tipo: carta | nombre: ${card.name} | palo: ${SUIT_LABELS[card.suit]} | valor: ${RANK_LABELS[card.rank]} | precio: ${price} | imagen: ${card.image} | efecto: ${description || 'Carta de baraja disponible para construcción PoCoBOT.'}`;
+    }
+    function veraShopExample(){
+      return {
+        id: 'tienda_vera_cartas',
+        name: 'Tienda de Vera · Baraja completa',
+        vendor: 'Vera Hex',
+        background: 'assets/Historia/mercado-reles-muertos-tutorial/assets/vera-hex-rendered.png',
+        items: DECK_CARDS.map(card => deckLine(card, 20, 'Carta base de la baraja para añadir al inventario o a una build.')).join('\n'),
+        parsedItems: DECK_CARDS.map(card => ({ id: card.id, tipo: 'carta', nombre: card.name, palo: SUIT_LABELS[card.suit], valor: RANK_LABELS[card.rank], precio: '20', imagen: card.image, efecto: 'Carta base de la baraja para añadir al inventario o a una build.' })),
+        availableDeck: DECK_CARDS,
+        conditions: 'Disponible en Mercado de Relés Muertos después de hablar con Vera.'
+      };
+    }
+    function loadVeraShopExample(){
+      const example = veraShopExample();
+      upsert('shops', example);
+      persist();
+      loadShop(example.id);
+      launchShopPreview();
+    }
+    function addDeckCardToShop(){
+      const card = DECK_CARDS.find(entry => entry.id === $('#deckCardPicker').value);
+      if(!card) return;
+      const price = Number($('#deckCardPrice').value || 20);
+      const description = $('#deckCardDescription').value.trim();
+      $('#shopItems').value += `${$('#shopItems').value.trim() ? '\n' : ''}${deckLine(card, price, description)}`;
+      status(`Carta añadida: ${card.name}`);
+    }
+    function addCustomCardToShop(){
+      const name = $('#customCardName').value.trim();
+      if(!name) return;
+      const item = {
+        id: slug(`custom_card_${name}`),
+        name,
+        suit: $('#customCardSuit').value.trim(),
+        rank: $('#customCardRank').value.trim(),
+        image: $('#customCardImage').value.trim(),
+        effect: $('#customCardEffect').value.trim(),
+        source: 'shop_custom_card'
+      };
+      upsert('inventoryItems', item);
+      const line = `id: ${item.id} | tipo: carta_custom | nombre: ${item.name} | palo: ${item.suit} | valor: ${item.rank} | precio: ${Number($('#customCardPrice').value || 35)} | imagen: ${item.image} | efecto: ${item.effect}`;
+      $('#shopItems').value += `${$('#shopItems').value.trim() ? '\n' : ''}${line}`;
+      persist();
+      status(`Carta custom creada: ${item.name}`);
+    }
+    function makeShopPreviewHtml(item){
+      const shop = item || state.shops.find(entry => entry.id === $('#shopId').value.trim()) || state.shops[0] || veraShopExample();
+      const items = parseShopItems(shop.items || '').slice(0, 52);
+      const style = `body{margin:0;font-family:Inter,system-ui;background:#08111e;color:#f6fbff}header{padding:18px;background:#111e30;border-bottom:1px solid #24415f}main{padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}.card{border:1px solid #24415f;background:#111e30;border-radius:12px;padding:10px;display:grid;gap:8px;min-height:190px}.card img{width:100%;height:112px;object-fit:contain;background:#07111f;border-radius:8px}.price{color:#ffd364;font-weight:900}small{color:#9eb1c7}`;
+      return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>${style}</style></head><body><header><strong>${escapeHtml(shop.name)}</strong><br><small>${escapeHtml(shop.vendor)} · ${items.length} cartas/artículos cargados</small></header><main>${items.map(entry => `<article class="card"><img src="${escapeHtml(entry.imagen || '')}" alt=""><strong>${escapeHtml(entry.nombre || entry.id || 'Artículo')}</strong><span class="price">${escapeHtml(entry.precio || '0')} monedas</span><small>${escapeHtml(entry.efecto || '')}</small></article>`).join('')}</main></body></html>`;
+    }
+    function launchShopPreview(){
+      const id = $('#shopId').value.trim();
+      const item = state.shops.find(entry => entry.id === id) || state.shops[0] || veraShopExample();
+      $('#shopTestFrame').srcdoc = makeShopPreviewHtml(item);
+      status('Tienda lanzada en iframe');
     }
 
     function makePreviewHtml(){
@@ -1043,8 +1845,15 @@
         drawScenario();
         return;
       }
-      const load = event.target.closest('[data-load-scenario]');
-      if(load){ loadScenario(load.dataset.loadScenario); return; }
+      const loadItem = event.target.closest('[data-load-item]');
+      if(loadItem){
+        const [collection,id] = loadItem.dataset.loadItem.split('|');
+        if(collection === 'scenarios') loadScenario(id);
+        if(collection === 'conversations') loadConversation(id);
+        if(collection === 'combats') loadCombat(id);
+        if(collection === 'shops') loadShop(id);
+        return;
+      }
       const del = event.target.closest('[data-delete]');
       if(del){
         const [collection,id] = del.dataset.delete.split('|');
@@ -1054,6 +1863,7 @@
     $('#expertToggle').addEventListener('click', () => setExpertMode(!document.body.classList.contains('expert-mode')));
     $('#copyJsonTop').addEventListener('click', () => copyText(packageJson()));
     $('#copyJson').addEventListener('click', () => copyText(packageJson()));
+    $('#copyAiHandoff').addEventListener('click', () => copyText(makeAiHandoffText(packageData())));
     $('#downloadJson').addEventListener('click', () => downloadFile('pocobot-creative-studio.json','application/json',packageJson()));
     $('#downloadHtml').addEventListener('click', () => downloadFile('pocobot-creative-test' + '.html','text/html',makePreviewHtml()));
     $('#refreshPreview').addEventListener('click', () => { updatePreview(); status('HTML de prueba actualizado'); });
@@ -1075,6 +1885,7 @@
       };
       reader.readAsText(file);
     });
+    initScenarioFields();
     $('#scenarioImage').addEventListener('change', event => {
       const file = event.target.files[0];
       if(!file) return;
@@ -1085,11 +1896,38 @@
         setScenarioStatus('Imagen de escenario cargada');
       });
     });
+    [1,2,3,4].forEach(n => {
+      $(`#layerImageFile${n}`).addEventListener('change', event => {
+        const file = event.target.files[0];
+        if(file) $(`#layerImage${n}`).value = filePathFromInput(file);
+      });
+    });
+    Array.from({ length: 10 }, (_, index) => index + 1).forEach(n => {
+      $(`#radioPortraitFile${n}`).addEventListener('change', event => {
+        const file = event.target.files[0];
+        if(file) $(`#radioPortrait${n}`).value = filePathFromInput(file);
+      });
+    });
     $('#scenarioCanvas').addEventListener('mousedown', event => {
       const point = canvasPoint(event);
+      if(tool === 'start'){
+        $('#scenarioStartX').value = point.x;
+        $('#scenarioStartY').value = point.y;
+        setScenarioStatus(`Punto de inicio colocado en ${point.x}, ${point.y}`);
+        drawScenario();
+        return;
+      }
+      if(tool === 'door-smoke'){
+        scenarioDraft.doorSmokePoints.push({ x: point.x, y: point.y, size: 42, duration: 2.4 });
+        populateSelectedElement();
+        setScenarioStatus(`Humo de puerta colocado en ${point.x}, ${point.y}`);
+        drawScenario();
+        return;
+      }
       if(tool === 'interaction'){
         const target = $('#interactionTarget').value.trim();
         scenarioDraft.interactions.push({
+          id: slug($('#interactionLabel').value.trim() || target || $('#interactionType').value, `interaction-${scenarioDraft.interactions.length + 1}`),
           x: point.x,
           y: point.y,
           type: $('#interactionType').value,
@@ -1105,7 +1943,8 @@
         const hit = hitTest(point);
         if(hit){
           if(hit.type === 'collision') scenarioDraft.collisions.splice(hit.index,1);
-          else scenarioDraft.interactions.splice(hit.index,1);
+          else if(hit.type === 'interaction') scenarioDraft.interactions.splice(hit.index,1);
+          else if(hit.type === 'doorSmoke') scenarioDraft.doorSmokePoints.splice(hit.index,1);
           selectElement(null);
           setScenarioStatus('Elemento borrado');
         }
@@ -1130,7 +1969,7 @@
       if(!dragStart) return;
       const point = canvasPoint(event);
       const shape = normalizeRect(dragStart, point, tool === 'crop' ? 'crop' : tool);
-      if(shape.w > 6 && shape.h > 6){
+      if((tool === 'rect' || tool === 'oval' || tool === 'crop') && shape.w > 6 && shape.h > 6){
         if(tool === 'crop') scenarioDraft.crop = shape;
         else scenarioDraft.collisions.push(shape);
       }
@@ -1141,6 +1980,7 @@
     });
     $('#undoScenario').addEventListener('click', () => {
       if(scenarioDraft.interactions.length && tool === 'interaction') scenarioDraft.interactions.pop();
+      else if(scenarioDraft.doorSmokePoints.length && tool === 'door-smoke') scenarioDraft.doorSmokePoints.pop();
       else scenarioDraft.collisions.pop();
       populateSelectedElement();
       drawScenario();
@@ -1149,14 +1989,37 @@
     $('#applyEdit').addEventListener('click', applyScenarioEdit);
     $('#selectedElement').addEventListener('change', event => { scenarioDraft.selected = event.target.value || null; populateSelectedElement(); drawScenario(); });
     $('#interactionType').addEventListener('change', refreshReferenceSelects);
+    $('#scenarioEntryOrigin').addEventListener('change', refreshReferenceSelects);
+    $('#loadTower4BExample').addEventListener('click', loadTower4BExample);
+    $('#launchScenarioPreview').addEventListener('click', launchScenarioPreview);
     $('#saveScenario').addEventListener('click', saveScenario);
+    $('#loadXavorConversationExample').addEventListener('click', loadXavorConversationExample);
+    $('#launchConversationPreview').addEventListener('click', launchConversationPreview);
     $('#saveConversation').addEventListener('click', saveConversation);
+    $('#loadCombatExample').addEventListener('click', loadCombatExample);
+    $('#launchCombatPreview').addEventListener('click', launchCombatPreview);
     $('#saveCombat').addEventListener('click', saveCombat);
+    $('#loadVeraShopExample').addEventListener('click', loadVeraShopExample);
+    $('#launchShopPreview').addEventListener('click', launchShopPreview);
     $('#saveShop').addEventListener('click', saveShop);
+    $('#addDeckCardToShop').addEventListener('click', addDeckCardToShop);
+    $('#addCustomCardToShop').addEventListener('click', addCustomCardToShop);
     $('#shopObjectPicker').addEventListener('change', event => {
       const item = state.inventoryItems.find(entry => entry.id === event.target.value);
       if(!item) return;
       $('#shopItems').value += `${$('#shopItems').value.trim() ? '\n' : ''}id: ${item.id} | nombre: ${item.name} | precio: pendiente | efecto: ${item.effect || ''}`;
+    });
+    $('#combatVisualFile').addEventListener('change', event => {
+      const file = event.target.files[0];
+      if(!file) return;
+      $('#combatVisualSource').value = filePathFromInput(file);
+      readFileAsDataUrl(file, dataUrl => { draftMedia.combatImageData = dataUrl; });
+    });
+    $('#customCardFile').addEventListener('change', event => {
+      const file = event.target.files[0];
+      if(!file) return;
+      $('#customCardImage').value = filePathFromInput(file);
+      readFileAsDataUrl(file, dataUrl => { draftMedia.customCardImageData = dataUrl; });
     });
     $('#hasPresentation').addEventListener('change', () => $all('.presentation-field').forEach(node => node.classList.toggle('hidden', $('#hasPresentation').value !== 'si')));
     [
@@ -1176,6 +2039,7 @@
 
     bindHiddenLabAccess();
     initCharacterSelect();
+    initDeckTools();
     initDialogueFields();
     loadStored();
     setExpertMode(localStorage.getItem(EXPERT_KEY) === '1');

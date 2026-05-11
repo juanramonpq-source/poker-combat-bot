@@ -317,6 +317,7 @@ const interactables = [
     message: "Ventanal: las transmisiones restauradas se extienden sobre la Ruta Ceniza.",
   },
 ];
+window.PoCoBOTStoryCollisionEditor?.applySceneInteractionPoints("tower-control", interactables);
 
 const interactionState = {
   active: null,
@@ -846,6 +847,16 @@ function circleCircleCollision(circleX, circleY, radius, zone) {
   return dx * dx + dy * dy < combinedRadius * combinedRadius;
 }
 
+function circleEllipseCollision(circleX, circleY, radius, zone) {
+  const rx = Math.max(1, zone.width / 2);
+  const ry = Math.max(1, zone.height / 2);
+  const cx = zone.x + rx;
+  const cy = zone.y + ry;
+  const dx = (circleX - cx) / (rx + radius);
+  const dy = (circleY - cy) / (ry + radius);
+  return dx * dx + dy * dy <= 1;
+}
+
 function distanceToSegmentSquared(pointX, pointY, start, end) {
   const segmentX = end.x - start.x;
   const segmentY = end.y - start.y;
@@ -908,6 +919,10 @@ function collisionZoneHit(circleX, circleY, radius, zone) {
 
   if (zone.type === "circle") {
     return circleCircleCollision(circleX, circleY, radius, zone);
+  }
+
+  if (zone.type === "ellipse") {
+    return circleEllipseCollision(circleX, circleY, radius, zone);
   }
 
   return circlePolygonCollision(circleX, circleY, radius, zone.points);
@@ -1707,6 +1722,8 @@ function drawCollisionDebug() {
       ctx.rect(zone.x, zone.y, zone.width, zone.height);
     } else if (zone.type === "circle") {
       ctx.arc(zone.x, zone.y, zone.radius, 0, Math.PI * 2);
+    } else if (zone.type === "ellipse") {
+      ctx.ellipse(zone.x + zone.width / 2, zone.y + zone.height / 2, zone.width / 2, zone.height / 2, 0, 0, Math.PI * 2);
     } else {
       ctx.moveTo(zone.points[0].x, zone.points[0].y);
       zone.points.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
