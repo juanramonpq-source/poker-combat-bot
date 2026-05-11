@@ -11328,7 +11328,11 @@ function prepareStoryCombatStartHudMode(){
   setStoryHudMode(useHorizontal ? 'horizontal' : 'compact');
   desktopHudMode = 'compact';
   mobilePanoramaRequested = useHorizontal;
-  if(useHorizontal) requestLandscapeOrientationBestEffort();
+  if(useHorizontal){
+    resetTutorialSession();
+    state.tutorial = false;
+    requestLandscapeOrientationBestEffort();
+  }
 }
 
 function prepareStoryArgosHackScrollMode(){
@@ -12817,6 +12821,7 @@ const STORY_MISSION_BOOT = STORY_BOOT_PARAMS.get('story_mission') || '';
 const STORY_STANDALONE_MODE = STORY_BOOT_PARAMS.get('story_standalone') === '1';
 const STORY_EMBED_MODE = STORY_BOOT_PARAMS.get('story_embed') === '1' || STORY_STANDALONE_MODE;
 const STORY_AUDIO_MODE = STORY_BOOT_PARAMS.get('story_audio') || '';
+const STORY_OPENING_SFX_MODE = STORY_BOOT_PARAMS.get('story_opening_sfx') || '';
 const STORY_RETURN_URL = STORY_BOOT_PARAMS.get('story_return') || '';
 const STORY_NODE_BOOT = STORY_BOOT_PARAMS.get('story_node') || '';
 const STORY_BRIEF_MODE = STORY_BOOT_PARAMS.get('story_brief') || '';
@@ -13322,6 +13327,7 @@ function playNoise(duration=.12, volume=.018){
 }
 function playCombatOpeningElectricSound(){
   if(!state.soundOn) return;
+  if(STORY_EMBED_MODE && STORY_OPENING_SFX_MODE === 'external') return;
   duckMusic(820, 0.06);
   playSample('combatOpeningThunder', 1, 1);
 }
