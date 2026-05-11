@@ -8916,15 +8916,23 @@ body.desktop-compact-mode > footer{
   .app.mobile-panorama-mode .compact-tutorial-panel{
     display:none;
     position:absolute;
-    right:8px;
-    bottom:8px;
-    width:min(310px, 44%);
-    height:min(210px, calc(100% - 74px));
-    z-index:60;
+    top:64px;
+    left:194px;
+    right:144px;
+    bottom:auto;
+    width:auto;
+    height:min(132px, calc(100% - 206px));
+    z-index:52;
+    border-radius:12px;
     box-shadow:0 18px 42px rgba(28,6,6,.42);
   }
   body.mobile-panorama-mode.compact-tutorial-popup-active .compact-tutorial-panel{
     display:grid;
+  }
+  body.mobile-panorama-mode.compact-mobile-actions-open .compact-tutorial-panel,
+  body.mobile-panorama-mode.compact-mobile-rival-open .compact-tutorial-panel,
+  body.mobile-panorama-mode.compact-mobile-player-open .compact-tutorial-panel{
+    display:none !important;
   }
   .app.mobile-panorama-mode .compact-tutorial-scroll{
     max-height:none;
@@ -8932,15 +8940,16 @@ body.desktop-compact-mode > footer{
   }
   .app.mobile-panorama-mode .compact-tutorial-body,
   .app.mobile-panorama-mode .compact-tutorial-meta{
-    font-size:.68rem;
-    line-height:1.22;
+    font-size:.58rem;
+    line-height:1.16;
   }
   .app.mobile-panorama-mode .compact-tutorial-actions{
-    gap:6px;
+    gap:5px;
   }
   .app.mobile-panorama-mode .compact-tutorial-action-btn{
-    min-height:34px;
-    font-size:.7rem;
+    min-height:26px;
+    padding:5px 8px;
+    font-size:.56rem;
   }
   .app.mobile-panorama-mode #compactExpandedToggleBtn{
     grid-column:auto;
