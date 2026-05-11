@@ -7824,7 +7824,8 @@ body.desktop-compact-mode > footer{
 #compactProjectileOnlyBtn,
 #compactConfirmAttackBtn,
 #compactMobileConfirmAttackBtn,
-#compactConfirmDefenseBtn{
+#compactConfirmDefenseBtn,
+#compactMobileConfirmDefenseBtn{
   font-size:0.69rem !important;
   line-height:0.98 !important;
   letter-spacing:0.006em !important;
@@ -7835,13 +7836,15 @@ body.desktop-compact-mode > footer{
 #compactProjectileOnlyBtn,
 #compactConfirmAttackBtn,
 #compactMobileConfirmAttackBtn,
-#compactConfirmDefenseBtn{
+#compactConfirmDefenseBtn,
+#compactMobileConfirmDefenseBtn{
   padding-inline:10px !important;
 }
 
 #compactConfirmAttackBtn,
 #compactMobileConfirmAttackBtn,
-#compactConfirmDefenseBtn{
+#compactConfirmDefenseBtn,
+#compactMobileConfirmDefenseBtn{
   font-size:0.67rem !important;
   line-height:0.96 !important;
   letter-spacing:0.004em !important;
@@ -10694,6 +10697,8 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
           <button class="primary" data-source-button="actionAddBtn" id="compactMobileModifyBtn" type="button">Modificar</button>
           <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Abrir ataque</button>
           <button class="danger" data-contextual-attack="true" data-source-button="confirmAttackBtn" id="compactMobileConfirmAttackBtn" type="button">Confirmar ataque</button>
+          <button class="danger compact-action-hidden" data-compact-defense-action="primary" id="compactMobileConfirmDefenseBtn" type="button">Elegir 1♦</button>
+          <button class="warn compact-action-hidden" data-compact-defense-action="skip" id="compactMobileSkipDefenseBtn" type="button">No defender</button>
           <button data-source-button="actionPassBtn" id="compactMobilePassBtn" type="button">Pasar</button>
         </div>
       </aside>
@@ -16729,6 +16734,8 @@ function renderDesktopCompactHud(){
   const compactDefenseSelected = compactDefenseVisible && state.selected.length === 1 && isNumericDiamondCard(state.selected[0])
     ? state.selected[0]
     : null;
+  const compactDefensePrimaryAllowed = tutorialAllowsButton('confirmDefenseBtn');
+  const compactDefenseSkipAllowed = tutorialAllowsButton('skipDefenseBtn');
   const compactDefenseDefender = compactDefenseVisible ? state.players[state.pendingDefense.defenderIndex] : null;
   if(compactDefenseWarning){
     compactDefenseWarning.classList.toggle('show', compactDefenseVisible);
@@ -16747,15 +16754,17 @@ function renderDesktopCompactHud(){
   if(compactDefenseWarningActions){
     compactDefenseWarningActions.hidden = !compactDefenseVisible;
   }
-  if(compactDefenseWarningPrimary){
-    compactDefenseWarningPrimary.textContent = compactDefenseSelected ? 'Confirmar defensa' : 'Elegir 1♦';
-    compactDefenseWarningPrimary.disabled = !compactDefenseVisible;
-    compactDefenseWarningPrimary.classList.toggle('button-live', compactDefenseVisible);
-  }
-  if(compactDefenseWarningSkip){
-    compactDefenseWarningSkip.disabled = !compactDefenseVisible;
-    compactDefenseWarningSkip.classList.toggle('button-live', compactDefenseVisible);
-  }
+  document.querySelectorAll('[data-compact-defense-action="primary"]').forEach(btn => {
+    btn.textContent = compactDefenseSelected ? 'Confirmar defensa' : 'Elegir 1♦';
+    btn.disabled = !compactDefenseVisible || !compactDefensePrimaryAllowed;
+    btn.classList.toggle('button-live', compactDefenseVisible && compactDefensePrimaryAllowed);
+    if(btn.id === 'compactMobileConfirmDefenseBtn') btn.classList.toggle('compact-action-hidden', !compactDefenseVisible);
+  });
+  document.querySelectorAll('[data-compact-defense-action="skip"]').forEach(btn => {
+    btn.disabled = !compactDefenseVisible || !compactDefenseSkipAllowed;
+    btn.classList.toggle('button-live', compactDefenseVisible && compactDefenseSkipAllowed);
+    if(btn.id === 'compactMobileSkipDefenseBtn') btn.classList.toggle('compact-action-hidden', !compactDefenseVisible);
+  });
 
   ['0', '1'].forEach(rawIdx => {
     const idx = Number(rawIdx);
@@ -21721,9 +21730,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-active-defense',
         title: 'Fase 4 · Defensa activa',
-        body: 'Cuando te atacan, puedes usar <strong>1 ♦ numérico de la mano</strong> para recortar el daño antes de que toque tu blindaje. Es una respuesta inmediata, no un módulo del panel.',
-        objective: 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>.',
-        tip: 'Las figuras de diamantes no valen aquí; solo cuentan los diamantes numéricos.',
+        body: 'Cuando te atacan, puedes usar <strong>1 ♦ numérico de la mano</strong> para recortar el daño antes de que toque tu blindaje. En modo horizontal móvil aparece un <strong>acceso rápido de defensa</strong> en Controles; si quieres ver la consola completa, abre <strong>Todas las acciones</strong>.',
+        objective: 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>. En horizontal móvil puedes usar el botón rápido <strong>Elegir 1♦ / Confirmar defensa</strong>.',
+        tip: 'Las figuras de diamantes no valen aquí; solo cuentan los diamantes numéricos. Si no ves el botón principal, abre Todas las acciones.',
         allowedButtons: ['confirmDefenseBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0DefendDiamond],
         highlightButtons: ['confirmDefenseBtn'],
