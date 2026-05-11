@@ -9613,6 +9613,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
 <div class="story-embed-nav" id="storyEmbedNav" hidden>
   <button class="story-embed-nav-btn" id="storyEmbedTopBtn" type="button">Panel</button>
   <button class="story-embed-nav-btn" id="storyEmbedHandBtn" type="button">Mano</button>
+  <button class="story-embed-nav-btn" id="storyEmbedCompactBtn" type="button">Modo compacto</button>
   <button class="story-embed-nav-btn story-return-map-btn" id="storyStandaloneReturnBtn" type="button" hidden>Volver al mapa</button>
 </div>
 <div class="story-mission-brief-bar" id="storyMissionBriefBar" hidden>
@@ -11122,19 +11123,30 @@ function shouldStartTowerCombatInMobileHorizontal(mission){
   return false;
 }
 
-function prepareStoryTowerCombatHudMode(mission){
-  if(!shouldStartTowerCombatInMobileHorizontal(mission)) return;
-  setStoryHudMode('horizontal');
+function prepareStoryCombatStartHudMode(){
+  if(!STORY_EMBED_MODE) return;
+  if(storyHudMode === 'scroll'){
+    desktopHudMode = 'expanded';
+    mobilePanoramaRequested = false;
+    releaseOrientationLockBestEffort();
+    return;
+  }
+  const useHorizontal = storyHudMode === 'horizontal';
+  setStoryHudMode(useHorizontal ? 'horizontal' : 'compact');
   desktopHudMode = 'compact';
-  mobilePanoramaRequested = true;
-  requestLandscapeOrientationBestEffort();
+  mobilePanoramaRequested = useHorizontal;
+  if(useHorizontal) requestLandscapeOrientationBestEffort();
 }
 
 function prepareStoryArgosHackScrollMode(){
-  setStoryHudMode('scroll');
-  desktopHudMode = 'expanded';
-  mobilePanoramaRequested = false;
-  releaseOrientationLockBestEffort();
+  prepareStoryCombatStartHudMode();
+}
+
+function prepareStoryTowerCombatHudMode(mission){
+  if(shouldStartTowerCombatInMobileHorizontal(mission)){
+    setStoryHudMode('horizontal');
+  }
+  prepareStoryCombatStartHudMode();
 }
 
 function startStoryTowerCombatMission(mission, profile){
@@ -11171,6 +11183,8 @@ function autoStartStoryMissionIfRequested(){
   if(!STORY_MISSION_BOOT) return false;
   if(state.gameStarted && state.storyMission === STORY_MISSION_BOOT && !state.winner){
     hideIntroScreen();
+    prepareStoryCombatStartHudMode();
+    render();
     scheduleStoryEmbedNavigationSetup();
     return true;
   }
@@ -11184,6 +11198,8 @@ function autoStartStoryMissionIfRequested(){
       primeOfflineMode('local');
       newGame();
       hideIntroScreen();
+      prepareStoryCombatStartHudMode();
+      render();
       scheduleStoryEmbedNavigationSetup();
       addToast('Mision historia: construye un bot valido para el taller', 'warn');
       log('📜 Mision historia: construye un bot valido para el taller.');
@@ -11197,6 +11213,8 @@ function autoStartStoryMissionIfRequested(){
       primeOfflineMode('single', 'hard');
       newGame();
       hideIntroScreen();
+      prepareStoryCombatStartHudMode();
+      render();
       scheduleStoryEmbedNavigationSetup();
       addToast('Mision historia: deja tu PoCoBOT listo para atacar antes que Mara', 'warn');
       log('📜 Mision historia: adelántate a Mara y deja tu PoCoBOT listo para atacar.');
@@ -11211,8 +11229,9 @@ function autoStartStoryMissionIfRequested(){
       newGame();
       clearSinglePlayerAiTimer();
       setupStoryPatioDuelScenario();
-      render();
       hideIntroScreen();
+      prepareStoryCombatStartHudMode();
+      render();
       scheduleStoryEmbedNavigationSetup();
       addToast('Mision historia: ofensiva y mas ofensiva en el Patio', 'warn');
       window.setTimeout(() => {
@@ -11226,6 +11245,8 @@ function autoStartStoryMissionIfRequested(){
       primeOfflineMode('single', 'easy');
       newGame();
       hideIntroScreen();
+      prepareStoryCombatStartHudMode();
+      render();
       scheduleStoryEmbedNavigationSetup();
       addToast('Mision historia: prueba tu mazo ampliado en el Mercado', 'warn');
       log('📜 Mision historia: sparring del Mercado de Relés Muertos con deck propio.');
@@ -12546,7 +12567,11 @@ const STORY_PENDING_MISSION_RESULT_KEY = 'pocobot_story_pending_mission_result_v
 const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
 const STORY_ACTIVE_MISSION_SESSION_KEY = 'pocobot_story_active_mission';
 const STORY_ACTIVE_SURFACE_SESSION_KEY = 'pocobot_story_active_surface_v1';
-let storyHudMode = STORY_BOOT_PARAMS.get('story_ui') || (STORY_BOOT_PARAMS.get('story_compact') === '1' ? 'compact' : 'scroll');
+function getDefaultStoryCombatHudMode(){
+  if(!STORY_EMBED_MODE || !STORY_MISSION_BOOT) return 'scroll';
+  return isStoryMobileViewport() ? 'horizontal' : 'compact';
+}
+let storyHudMode = STORY_BOOT_PARAMS.get('story_ui') || (STORY_BOOT_PARAMS.get('story_compact') === '1' ? 'compact' : getDefaultStoryCombatHudMode());
 if(!['scroll', 'compact', 'horizontal'].includes(storyHudMode)) storyHudMode = 'scroll';
 let storyOrientationToastTimer = null;
 let storyOrientationToastShownForMode = false;
