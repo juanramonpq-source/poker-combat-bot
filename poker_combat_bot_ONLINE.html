@@ -7962,6 +7962,17 @@ body.desktop-compact-mode > footer{
   background:linear-gradient(180deg, rgba(204,77,75,.96), rgba(170,58,56,.96)) !important;
 }
 
+.desktop-compact-shell,
+.desktop-compact-shell img{
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+.desktop-compact-shell img{
+  -webkit-user-drag:none;
+}
+
 .compact-mobile-actions-panel{
   display:none;
 }
@@ -8951,6 +8962,7 @@ body.desktop-compact-mode > footer{
     z-index:52;
     border-radius:12px;
     box-shadow:0 18px 42px rgba(28,6,6,.42);
+    pointer-events:auto;
   }
   body.mobile-panorama-mode.compact-tutorial-popup-active .compact-tutorial-panel{
     display:grid;
@@ -15545,8 +15557,20 @@ function isDesktopCompactLikelyFullscreen(){
   return Math.abs(targetWidth - window.innerWidth) <= 32 && Math.abs(targetHeight - window.innerHeight) <= 108;
 }
 
+function isMobileLandscapeViewport(){
+  try{
+    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const compactViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
+    const landscapeQuery = !!window.matchMedia && window.matchMedia('(max-height: 820px) and (orientation: landscape) and (pointer: coarse)').matches;
+    const landscapeGeometry = (window.innerWidth || 0) > (window.innerHeight || 0);
+    return hasCoarsePointer && compactViewport && (landscapeQuery || landscapeGeometry);
+  }catch(_err){
+    return false;
+  }
+}
+
 function shouldUseStoryMobileCompactMode(){
-  return STORY_EMBED_MODE && storyHudMode === 'horizontal' && isStoryMobileViewport();
+  return STORY_EMBED_MODE && storyHudMode === 'horizontal' && isStoryMobileViewport() && isMobileLandscapeViewport();
 }
 
 function canUseDesktopCompactHud(){
@@ -15563,15 +15587,14 @@ function canUseMobilePanoramaHud(){
   try{
     const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
     const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
-    const portraitReady = !!window.matchMedia && window.matchMedia('(max-width: 820px) and (orientation: portrait) and (pointer: coarse)').matches;
-    const landscapeReady = !!window.matchMedia && window.matchMedia('(max-height: 820px) and (orientation: landscape) and (pointer: coarse)').matches;
+    const landscapeReady = isMobileLandscapeViewport();
     const storyForcedMobile = shouldUseStoryMobileCompactMode();
     return !!state.gameStarted
       && introHidden
       && lobbyHidden
       && hasCoarsePointer
       && compactMobileViewport
-      && (storyForcedMobile || portraitReady || landscapeReady || mobilePanoramaRequested);
+      && (storyForcedMobile || landscapeReady);
   }catch(_err){
     return false;
   }
@@ -15710,8 +15733,6 @@ function syncDesktopHudAvailability(){
   if(!available && devHudModeOverride === 'auto'){
     if(shouldPreserveMobilePanoramaRequest()){
       preservingMobilePanoramaRequest = true;
-      mobilePanoramaAvailable = true;
-      available = true;
       desktopHudMode = 'compact';
     }else{
       desktopHudMode = 'expanded';
@@ -20210,7 +20231,15 @@ document.getElementById('mobilePanoramaToggleBtn').addEventListener('click', asy
   requestLandscapeOrientationBestEffort();
   triggerDesktopHudModeTransition('compact');
 });
+document.getElementById('desktopCompactShell').addEventListener('contextmenu', (event) => {
+  if(!document.body?.classList.contains('mobile-panorama-mode')) return;
+  event.preventDefault();
+});
 document.getElementById('desktopCompactShell').addEventListener('click', (event) => {
+  if(document.body?.classList.contains('mobile-panorama-mode') && event.target.closest('.compact-tutorial-panel')){
+    event.preventDefault();
+    return;
+  }
   const mechaStage = event.target.closest('.compact-mecha-stage');
   if(mechaStage && document.body?.classList.contains('mobile-panorama-mode') && !event.target.closest('button')){
     const stageIdx = Number(mechaStage.id.split('-').pop());
@@ -20291,6 +20320,10 @@ document.getElementById('desktopCompactShell').addEventListener('pointerdown', (
   if(event.button !== 0) return;
   if(!isDesktopCompactModeActive() || !canUseInteractiveTurnAction()) return;
   const mobilePanorama = document.body?.classList.contains('mobile-panorama-mode');
+  if(mobilePanorama){
+    const topHit = document.elementFromPoint(event.clientX, event.clientY);
+    if(!topHit?.closest('#compactHandCards')) return;
+  }
   const cardEl = mobilePanorama
     ? resolveCompactHandCardFromPoint(event.clientX, event.clientY)
     : event.target.closest('#compactHandCards .card[data-card-id]');
