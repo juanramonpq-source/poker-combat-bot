@@ -997,6 +997,186 @@ body.victory .winner-banner.show{
 @keyframes cinematicImpact{0%{opacity:0;transform:translate(-50%,-50%) scale(.15)}55%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
 @keyframes cinematicBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.15) rotate(0deg)}55%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4) rotate(60deg)}}
 
+/* ── Combat opening spectacle ── */
+.combat-opening-overlay{
+  position:fixed;
+  inset:0;
+  z-index:8800;
+  pointer-events:none;
+  overflow:hidden;
+  opacity:0;
+  visibility:hidden;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.20), rgba(255,178,46,.16) 16%, rgba(35,216,255,.10) 32%, rgba(2,5,12,.88) 72%),
+    linear-gradient(90deg, rgba(255,178,46,.10), transparent 30%, transparent 70%, rgba(35,216,255,.10));
+}
+.combat-opening-overlay.play{
+  visibility:visible;
+  animation:combatOpeningOverlay 1.95s cubic-bezier(.16,.78,.2,1) both;
+}
+.combat-opening-overlay::before,
+.combat-opening-overlay::after{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  opacity:0;
+  background:
+    repeating-conic-gradient(from 8deg, rgba(255,231,151,.78) 0deg 2deg, transparent 2deg 12deg),
+    radial-gradient(circle at center, transparent 0 22%, rgba(35,216,255,.25) 23% 24%, transparent 25% 39%, rgba(255,178,46,.26) 40% 41%, transparent 42%);
+  mix-blend-mode:screen;
+  filter:blur(.2px) drop-shadow(0 0 16px rgba(255,178,46,.44));
+  transform:scale(.45) rotate(0deg);
+}
+.combat-opening-overlay::after{
+  background:
+    repeating-conic-gradient(from -14deg, rgba(35,216,255,.62) 0deg 1deg, transparent 1deg 9deg),
+    radial-gradient(circle at center, transparent 0 30%, rgba(255,255,255,.20) 31% 32%, transparent 33%);
+  transform:scale(.34) rotate(28deg);
+}
+.combat-opening-overlay.play::before{
+  animation:combatOpeningRays 1.72s cubic-bezier(.15,.82,.2,1) both;
+}
+.combat-opening-overlay.play::after{
+  animation:combatOpeningRaysAlt 1.85s cubic-bezier(.15,.82,.2,1) both;
+}
+.combat-opening-gate{
+  position:absolute;
+  inset:0;
+}
+.combat-opening-gate::before,
+.combat-opening-gate::after{
+  content:"";
+  position:absolute;
+  top:-8%;
+  bottom:-8%;
+  width:50vw;
+  background:
+    linear-gradient(90deg, rgba(3,9,22,.98), rgba(15,45,84,.74) 66%, rgba(35,216,255,.24)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 2px, transparent 2px 18px);
+  box-shadow:0 0 34px rgba(35,216,255,.28), inset 0 0 36px rgba(255,178,46,.10);
+  opacity:.94;
+}
+.combat-opening-gate::before{
+  left:0;
+  transform-origin:left center;
+}
+.combat-opening-gate::after{
+  right:0;
+  transform-origin:right center;
+  scale:-1 1;
+}
+.combat-opening-overlay.play .combat-opening-gate::before{
+  animation:combatOpeningGateLeft 1.55s cubic-bezier(.18,.78,.18,1) both;
+}
+.combat-opening-overlay.play .combat-opening-gate::after{
+  animation:combatOpeningGateRight 1.55s cubic-bezier(.18,.78,.18,1) both;
+}
+.combat-opening-bolts{
+  position:absolute;
+  inset:0;
+  filter:drop-shadow(0 0 12px rgba(255,231,151,.72)) drop-shadow(0 0 24px rgba(35,216,255,.36));
+}
+.combat-opening-bolts span{
+  position:absolute;
+  width:clamp(70px, 10vw, 160px);
+  height:clamp(170px, 28vh, 360px);
+  opacity:0;
+  background:linear-gradient(180deg, #fff8c5, #ffd65c 36%, #23d8ff 72%, transparent);
+  clip-path:polygon(48% 0, 72% 0, 54% 35%, 78% 35%, 34% 100%, 43% 50%, 22% 50%);
+  mix-blend-mode:screen;
+}
+.combat-opening-bolts span:nth-child(1){ left:10%; top:5%; transform:rotate(-18deg); }
+.combat-opening-bolts span:nth-child(2){ right:12%; top:2%; transform:rotate(20deg) scaleX(-1); }
+.combat-opening-bolts span:nth-child(3){ left:42%; top:-8%; transform:rotate(4deg) scale(.86); }
+.combat-opening-overlay.play .combat-opening-bolts span:nth-child(1){ animation:combatOpeningBolt 1.2s .12s steps(2,end) both; }
+.combat-opening-overlay.play .combat-opening-bolts span:nth-child(2){ animation:combatOpeningBolt 1.2s .22s steps(2,end) both; }
+.combat-opening-overlay.play .combat-opening-bolts span:nth-child(3){ animation:combatOpeningBolt 1.2s .32s steps(2,end) both; }
+.combat-opening-core{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(740px, calc(100vw - 36px));
+  transform:translate(-50%, -50%) scale(.8);
+  text-align:center;
+  opacity:0;
+  color:#f9fcff;
+  text-transform:uppercase;
+  text-shadow:0 0 18px rgba(35,216,255,.55), 0 0 36px rgba(255,178,46,.34), 0 2px 0 rgba(0,0,0,.72);
+}
+.combat-opening-kicker{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:28px;
+  padding:0 14px;
+  border:1px solid rgba(35,216,255,.55);
+  border-radius:999px;
+  background:rgba(3,12,22,.82);
+  color:#9ff7ff;
+  font-size:clamp(.68rem, 1.4vw, .9rem);
+  font-weight:900;
+  letter-spacing:.18em;
+}
+.combat-opening-title{
+  margin:10px 0 4px;
+  color:#fff6d7;
+  font-size:clamp(3rem, 11vw, 8.8rem);
+  font-weight:1000;
+  line-height:.82;
+  letter-spacing:.06em;
+}
+.combat-opening-subtitle{
+  color:#c9f7ff;
+  font-size:clamp(.78rem, 2vw, 1.18rem);
+  font-weight:900;
+  letter-spacing:.14em;
+}
+.combat-opening-overlay.play .combat-opening-core{
+  animation:combatOpeningCore 1.72s cubic-bezier(.18,.82,.18,1) both;
+}
+@keyframes combatOpeningOverlay{
+  0%{opacity:0}
+  8%{opacity:1}
+  72%{opacity:1}
+  100%{opacity:0}
+}
+@keyframes combatOpeningRays{
+  0%{opacity:0;transform:scale(.36) rotate(-20deg)}
+  18%{opacity:.96}
+  64%{opacity:.70;transform:scale(1.05) rotate(42deg)}
+  100%{opacity:0;transform:scale(1.55) rotate(72deg)}
+}
+@keyframes combatOpeningRaysAlt{
+  0%{opacity:0;transform:scale(.28) rotate(42deg)}
+  22%{opacity:.72}
+  68%{opacity:.48;transform:scale(1.1) rotate(-24deg)}
+  100%{opacity:0;transform:scale(1.62) rotate(-54deg)}
+}
+@keyframes combatOpeningGateLeft{
+  0%{transform:translateX(0) skewX(-2deg)}
+  18%{transform:translateX(0) skewX(2deg)}
+  52%{transform:translateX(-54vw) skewX(-6deg)}
+  100%{transform:translateX(-58vw) skewX(-7deg)}
+}
+@keyframes combatOpeningGateRight{
+  0%{transform:translateX(0) skewX(2deg)}
+  18%{transform:translateX(0) skewX(-2deg)}
+  52%{transform:translateX(54vw) skewX(6deg)}
+  100%{transform:translateX(58vw) skewX(7deg)}
+}
+@keyframes combatOpeningBolt{
+  0%, 100%{opacity:0}
+  12%, 20%, 34%, 44%, 58%{opacity:1}
+  16%, 28%, 40%, 52%, 70%{opacity:.12}
+}
+@keyframes combatOpeningCore{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.62);filter:blur(10px)}
+  18%{opacity:1;transform:translate(-50%,-50%) scale(1.1);filter:blur(0)}
+  34%{transform:translate(-50%,-50%) scale(.98)}
+  72%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.22);filter:blur(4px)}
+}
+
 /* ── Floating damage number ── */
 .damage-number{
   position:fixed;
@@ -9628,6 +9808,19 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
   <span class="story-orientation-toast-icon" aria-hidden="true">🔒↻</span>
   <span>Activa el bloqueo de pantalla</span>
 </div>
+<div class="combat-opening-overlay" id="combatOpeningOverlay" aria-hidden="true">
+  <div class="combat-opening-gate" aria-hidden="true"></div>
+  <div class="combat-opening-bolts" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <div class="combat-opening-core">
+    <div class="combat-opening-kicker" id="combatOpeningKicker">Sistema tactico</div>
+    <div class="combat-opening-title" id="combatOpeningTitle">Combate</div>
+    <div class="combat-opening-subtitle" id="combatOpeningSubtitle">Radar de ataque activado</div>
+  </div>
+</div>
 <div class="story-argos-hack-gate" id="storyArgosHackGate" hidden role="dialog" aria-modal="true" aria-labelledby="storyArgosHackGateTitle" aria-describedby="storyArgosHackGateText">
   <div class="story-argos-hack-gate-card">
     <div class="story-argos-hack-skull" aria-hidden="true">☠</div>
@@ -11165,10 +11358,12 @@ function startStoryTowerCombatMission(mission, profile){
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => showStoryArgosHackGate(profile));
     });
+    scheduleCombatOpeningSequence('story', 180);
     return;
   }
   startStoryCombatMusicAtStart(false);
   scheduleStoryEmbedNavigationSetup();
+  scheduleCombatOpeningSequence('story', 180);
   addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');
   log(`📜 Mision historia Torre 4B: ${profile?.intro || 'combate especial'}`);
   window.setTimeout(() => {
@@ -11186,6 +11381,7 @@ function autoStartStoryMissionIfRequested(){
     prepareStoryCombatStartHudMode();
     render();
     scheduleStoryEmbedNavigationSetup();
+    scheduleCombatOpeningSequence('story', 180);
     return true;
   }
   if(storyMissionAutoStartDone) return false;
@@ -11201,6 +11397,7 @@ function autoStartStoryMissionIfRequested(){
       prepareStoryCombatStartHudMode();
       render();
       scheduleStoryEmbedNavigationSetup();
+      scheduleCombatOpeningSequence('story', 180);
       addToast('Mision historia: construye un bot valido para el taller', 'warn');
       log('📜 Mision historia: construye un bot valido para el taller.');
       window.setTimeout(() => {
@@ -11216,6 +11413,7 @@ function autoStartStoryMissionIfRequested(){
       prepareStoryCombatStartHudMode();
       render();
       scheduleStoryEmbedNavigationSetup();
+      scheduleCombatOpeningSequence('story', 180);
       addToast('Mision historia: deja tu PoCoBOT listo para atacar antes que Mara', 'warn');
       log('📜 Mision historia: adelántate a Mara y deja tu PoCoBOT listo para atacar.');
       window.setTimeout(() => {
@@ -11233,6 +11431,7 @@ function autoStartStoryMissionIfRequested(){
       prepareStoryCombatStartHudMode();
       render();
       scheduleStoryEmbedNavigationSetup();
+      scheduleCombatOpeningSequence('story', 180);
       addToast('Mision historia: ofensiva y mas ofensiva en el Patio', 'warn');
       window.setTimeout(() => {
         scrollToPlayerPanel(0, 'smooth');
@@ -11248,6 +11447,7 @@ function autoStartStoryMissionIfRequested(){
       prepareStoryCombatStartHudMode();
       render();
       scheduleStoryEmbedNavigationSetup();
+      scheduleCombatOpeningSequence('story', 180);
       addToast('Mision historia: prueba tu mazo ampliado en el Mercado', 'warn');
       log('📜 Mision historia: sparring del Mercado de Relés Muertos con deck propio.');
       window.setTimeout(() => {
@@ -12351,6 +12551,72 @@ function ensureEnhancedFxDom(){
     screen.appendChild(rippleLayer);
   }
 }
+let combatOpeningTimer = null;
+function getCombatOpeningCopy(reason='combat'){
+  const storyActive = typeof STORY_EMBED_MODE !== 'undefined' && STORY_EMBED_MODE && (state.storyMission || STORY_MISSION_BOOT);
+  if(storyActive){
+    const mission = state.storyMission || STORY_MISSION_BOOT || '';
+    const profile = typeof getStoryTowerCombatProfile === 'function' ? getStoryTowerCombatProfile(mission) : null;
+    const title = profile?.title || STORY_MISSION_BRIEFS?.[mission]?.title || 'Combate del modo historia';
+    return {
+      kicker: 'Modo historia',
+      title: 'COMBATE',
+      subtitle: title
+    };
+  }
+  if(tutorialSystem.enabled && tutorialSystem.mode === 'academy'){
+    return { kicker:'Academia PoCoBOT', title:'COMBATE', subtitle:'Fase tactica activada' };
+  }
+  if(tutorialSystem.enabled || state.gameMode === 'tutorial'){
+    return { kicker:'Tutorial PoCoBOT', title:'COMBATE', subtitle:'Entrenamiento tactico activado' };
+  }
+  if(_ol.active || state.gameMode === 'online'){
+    return { kicker:'Modo online', title:'COMBATE', subtitle:'Enlace de duelo sincronizado' };
+  }
+  if(state.gameMode === 'single'){
+    return { kicker:'CPU rival detectada', title:'COMBATE', subtitle:'Radar de ataque activado' };
+  }
+  return { kicker:'Sistema tactico', title:'COMBATE', subtitle:'Radar de ataque activado' };
+}
+function triggerCombatOpeningSequence(reason='combat'){
+  ensureEnhancedFxDom();
+  const overlay = document.getElementById('combatOpeningOverlay');
+  if(!overlay) return;
+  const copy = getCombatOpeningCopy(reason);
+  const kicker = document.getElementById('combatOpeningKicker');
+  const title = document.getElementById('combatOpeningTitle');
+  const subtitle = document.getElementById('combatOpeningSubtitle');
+  if(kicker) kicker.textContent = copy.kicker;
+  if(title) title.textContent = copy.title;
+  if(subtitle) subtitle.textContent = copy.subtitle;
+  overlay.classList.remove('play');
+  void overlay.offsetWidth;
+  overlay.classList.add('play');
+  triggerScreenRipple('amber');
+  const target = (typeof getCompactCombatSurface === 'function' && getCompactCombatSurface())
+    || document.getElementById('tacticalScreen')
+    || document.querySelector('.app');
+  if(target) spawnElementSparks(target, document.body?.classList.contains('mobile-panorama-mode') ? 34 : 46, 'amber');
+  const screen = document.getElementById('tacticalScreen');
+  if(screen){
+    screen.classList.remove('battle-shake-heavy');
+    void screen.offsetWidth;
+    screen.classList.add('battle-shake-heavy');
+    window.setTimeout(() => screen.classList.remove('battle-shake-heavy'), 620);
+  }
+  playCombatOpeningElectricSound();
+  if(navigator.userActivation?.hasBeenActive){
+    pulseVibrate([28, 30, 70]);
+  }
+  window.setTimeout(() => overlay.classList.remove('play'), 2100);
+}
+function scheduleCombatOpeningSequence(reason='combat', delay=160){
+  if(combatOpeningTimer) window.clearTimeout(combatOpeningTimer);
+  combatOpeningTimer = window.setTimeout(() => {
+    combatOpeningTimer = null;
+    triggerCombatOpeningSequence(reason);
+  }, delay);
+}
 function clearConfetti(){
   const layer = document.getElementById('confettiLayer');
   if(layer) layer.innerHTML = '';
@@ -12602,7 +12868,8 @@ const AUDIO_SFX_URIS = {
   unlock: "assets/sfx/unlock.wav",
   projectile: "assets/sfx/projectile.wav",
   impact: "assets/sfx/impact.wav",
-  explosion: "assets/sfx/attack_explosion.mp3"
+  explosion: "assets/sfx/attack_explosion.mp3",
+  combatOpeningThunder: "assets/sfx/lightning-strike.mp3"
 };
 
 function isStoryMissionExternalAudio(){
@@ -13052,6 +13319,11 @@ function playNoise(duration=.12, volume=.018){
   filter.connect(gain);
   gain.connect(ctx.destination);
   src.start();
+}
+function playCombatOpeningElectricSound(){
+  if(!state.soundOn) return;
+  duckMusic(820, 0.06);
+  playSample('combatOpeningThunder', 1, 1);
 }
 function playUiSound(kind='tap'){
   if(!state.soundOn) return;
@@ -14265,6 +14537,7 @@ function newGame(){
   if(storyDecksActive) log(`📜 Deck propio de historia activo: ${state.storyPlayerDecks?.[0]?.length || 0} cartas restantes tras el reparto.`);
   addToast('Nueva partida iniciada', 'ok');
   render();
+  scheduleCombatOpeningSequence('new-game', 190);
   startIntroMusic(true);
   maybeQueueAttackReadyPrompt(state.currentPlayer);
   window.setTimeout(() => {
@@ -21904,6 +22177,7 @@ function startAcademyLesson(lessonId){
   academyHideOverlay('academyLessonOverlay');
   academyHideOverlay('academyCertificateOverlay');
   render();
+  scheduleCombatOpeningSequence('academy', 150);
   window.setTimeout(() => {
     scrollToPlayerPanel(0, 'smooth');
   }, 220);
@@ -21931,6 +22205,7 @@ function startTutorialMode(){
   if(intro) intro.classList.add('hidden');
 
   render();
+  scheduleCombatOpeningSequence('tutorial', 150);
   window.setTimeout(() => {
     scrollToPlayerPanel(0, 'smooth');
   }, 220);

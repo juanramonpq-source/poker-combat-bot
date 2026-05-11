@@ -249,6 +249,20 @@
     .story-transition-veil.mission-spiral.active::before{
       animation:missionSpiralGlow .82s cubic-bezier(.2,.86,.2,1) forwards;
     }
+    .story-transition-veil.mission-spiral.combat-opening{
+      background:
+        repeating-conic-gradient(from 0deg, rgba(143,244,255,0) 0deg, rgba(143,244,255,.28) 14deg, rgba(255,185,109,.46) 26deg, rgba(7,11,17,.98) 48deg, rgba(7,11,17,.98) 68deg),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,.22) 0 10%, rgba(255,185,109,.20) 18%, rgba(143,244,255,.13) 34%, rgba(7,11,17,.92) 68%);
+      box-shadow:inset 0 0 90px rgba(255,185,109,.26), inset 0 0 150px rgba(143,244,255,.16);
+    }
+    .story-transition-veil.mission-spiral.combat-opening::before{
+      inset:-34%;
+      background:
+        repeating-conic-gradient(from 90deg, transparent 0deg, rgba(255,255,255,.28) 8deg, transparent 18deg, rgba(143,244,255,.16) 26deg, transparent 38deg),
+        linear-gradient(112deg, transparent 0 28%, rgba(255,245,184,.86) 29% 30%, transparent 31% 100%),
+        linear-gradient(68deg, transparent 0 62%, rgba(143,244,255,.72) 63% 64%, transparent 65% 100%);
+      filter:blur(10px) drop-shadow(0 0 18px rgba(255,185,109,.55));
+    }
     @keyframes missionSpiralOpen{
       0%{opacity:0; transform:scale(.18) rotate(0turn)}
       34%{opacity:1}
@@ -5743,7 +5757,7 @@
 
     function clearStoryTransitionState() {
       if (storyTransitionVeil) {
-        storyTransitionVeil.classList.remove('active', 'mission-spiral');
+        storyTransitionVeil.classList.remove('active', 'mission-spiral', 'combat-opening');
       }
       storyTransitionBusy = false;
     }
@@ -9219,7 +9233,7 @@
       }
 
       storyTransitionBusy = true;
-      storyTransitionVeil.classList.add('mission-spiral', 'active');
+      storyTransitionVeil.classList.add('mission-spiral', 'combat-opening', 'active');
       window.setTimeout(navigate, 760);
     }
 
@@ -9496,7 +9510,7 @@
         return true;
       }
       storyTransitionBusy = true;
-      storyTransitionVeil.classList.add('mission-spiral', 'active');
+      storyTransitionVeil.classList.add('mission-spiral', 'combat-opening', 'active');
       window.setTimeout(launchCombat, 760);
       return true;
     }
@@ -10097,7 +10111,7 @@
       }
       if (storyTransitionBusy) return;
       storyTransitionBusy = true;
-      storyTransitionVeil.classList.remove('mission-spiral');
+      storyTransitionVeil.classList.remove('mission-spiral', 'combat-opening');
       storyTransitionVeil.classList.add('active');
       window.setTimeout(() => {
         onMidpoint();

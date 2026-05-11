@@ -10,6 +10,7 @@ Sound effects:
 - `projectile.wav`
 - `ui_click.wav`
 - `unlock.wav`
+- `lightning-strike.mp3`
 
 Source:
 
@@ -17,6 +18,11 @@ Source:
 - Music page: `https://mixkit.co/free-stock-music/`
 - SFX page: `https://mixkit.co/free-sound-effects/`
 - License page: `https://mixkit.co/license/`
+
+Additional combat opening source:
+
+- `lightning-strike.mp3`
+- Source: user-provided file in `assets/sfx`.
 
 Usage note:
 
