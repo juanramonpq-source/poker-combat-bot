@@ -262,17 +262,12 @@ const assets = {
 };
 
 const collisionZones = [
-  { type: "rect", x: 0, y: 0, width: 1536, height: 112 },
   { type: "rect", x: 0, y: 922, width: 1536, height: 102 },
   { type: "rect", x: 0, y: 0, width: 128, height: 1024 },
   { type: "rect", x: 1394, y: 0, width: 142, height: 1024 },
-  { type: "rect", x: 154, y: 244, width: 172, height: 292 },
   { type: "rect", x: 330, y: 96, width: 142, height: 210 },
-  { type: "rect", x: 518, y: 112, width: 300, height: 156 },
-  { type: "rect", x: 900, y: 118, width: 96, height: 128 },
   { type: "rect", x: 1256, y: 226, width: 84, height: 238 },
-  { type: "circle", x: 1276, y: 602, radius: 132 },
-  { type: "rect", x: 1044, y: 612, width: 132, height: 138 },
+  { type: "circle", x: 1302.3682219419923, y: 545.3431459478631, radius: 132 },
   { type: "rect", x: 360, y: 742, width: 198, height: 178 },
   { type: "rect", x: 820, y: 760, width: 218, height: 156 },
   { type: "rect", x: 1046, y: 814, width: 148, height: 108 },
@@ -286,6 +281,20 @@ const collisionZones = [
       { x: 1268, y: 198 },
     ],
   },
+  { type: "ellipse", x: 1169, y: 18, width: 62, height: 183 },
+  { type: "ellipse", x: 1145, y: 63, width: 44, height: 70 },
+  { type: "ellipse", x: 1136, y: 105, width: 33, height: 119 },
+  { type: "ellipse", x: 1083, y: 133, width: 61, height: 118 },
+  { type: "ellipse", x: 1037, y: 210, width: 58, height: 54 },
+  { type: "ellipse", x: 1148, y: 218, width: 153, height: 206 },
+  { type: "rect", x: 704, y: 21, width: 246, height: 37 },
+  { type: "rect", x: 647, y: 51, width: 259, height: 56 },
+  { type: "rect", x: 801, y: 95, width: 57, height: 86 },
+  { type: "rect", x: 772, y: 174, width: 36, height: 79 },
+  { type: "rect", x: 440, y: 6, width: 336, height: 201 },
+  { type: "rect", x: 129, y: 5, width: 361, height: 178 },
+  { type: "ellipse", x: 127, y: 184, width: 240, height: 303 },
+  { type: "ellipse", x: 116, y: 691, width: 297, height: 228 },
 ];
 window.PoCoBOTStoryCollisionEditor?.applySceneZones("tower-interior", collisionZones);
 
@@ -329,8 +338,8 @@ const interactables = [
   },
   {
     id: "stairs-up",
-    x: 1042,
-    y: 236,
+    x: 1054.0832282471627,
+    y: 67.25518708990958,
     radius: 96,
     label: "Escaleras superiores",
     hint: "Tocar para subir",

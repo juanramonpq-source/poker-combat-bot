@@ -578,6 +578,7 @@
                 <button class="warn" id="openCollisionSceneBtn" type="button">Probar escenario</button>
                 <button class="danger" id="resetCollisionSceneBtn" type="button">Restaurar base</button>
                 <button id="copyCollisionJsonBtn" type="button">Copiar JSON</button>
+                <button class="warn" id="copyUnifiedPhysicsJsonBtn" type="button">Copiar JSON completo</button>
               </div>
               <div class="status" id="collisionStatusBox">Dibuja rectangulos u ovalos rojos sobre el mapa, borra zonas y pulsa actualizar colisiones.</div>
             </div>
@@ -689,21 +690,30 @@
         map:'assets/Historia/torre-seguimiento-4b-tutorial/assets/torre-seguimiento-4b-rendered-map.png',
         openUrl:() => buildTowerSceneUrl('exterior'),
         zones:[
-          { type:'poly', points:[{ x:492, y:252 }, { x:662, y:254 }, { x:640, y:354 }, { x:536, y:366 }, { x:458, y:318 }] },
-          { type:'poly', points:[{ x:890, y:258 }, { x:988, y:258 }, { x:1030, y:336 }, { x:878, y:398 }, { x:844, y:336 }] },
-          { type:'rect', x:708, y:288, width:116, height:64, opensWithDoor:true },
-          { type:'circle', x:120, y:638, radius:44 },
-          { type:'rect', x:178, y:694, width:72, height:48 },
-          { type:'rect', x:566, y:800, width:54, height:44 },
-          { type:'rect', x:704, y:838, width:154, height:36 },
-          { type:'rect', x:1194, y:430, width:62, height:66 },
-          { type:'poly', points:[{ x:1056, y:430 }, { x:1110, y:440 }, { x:1130, y:482 }, { x:1082, y:506 }, { x:1038, y:480 }] }
+          { type:'ellipse', x:501, y:11, width:471, height:172 },
+          { type:'ellipse', x:458, y:148, width:184, height:210 },
+          { type:'ellipse', x:312, y:261, width:187, height:127 },
+          { type:'ellipse', x:498, y:506, width:137, height:91 },
+          { type:'ellipse', x:198, y:686, width:154, height:74 },
+          { type:'ellipse', x:4, y:19, width:141, height:536 },
+          { type:'ellipse', x:60, y:190, width:350, height:253 },
+          { type:'ellipse', x:23, y:439, width:158, height:234 },
+          { type:'ellipse', x:34, y:717, width:203, height:203 },
+          { type:'ellipse', x:237, y:865, width:323, height:143 },
+          { type:'ellipse', x:720, y:782, width:152, height:124 },
+          { type:'ellipse', x:973, y:623, width:274, height:260 },
+          { type:'ellipse', x:960, y:91, width:315, height:192 },
+          { type:'ellipse', x:1157, y:235, width:173, height:151 },
+          { type:'ellipse', x:1348, y:345, width:188, height:411 },
+          { type:'ellipse', x:1195, y:630, width:198, height:150 },
+          { type:'ellipse', x:832, y:485, width:149, height:127 },
+          { type:'ellipse', x:552, y:678, width:49, height:33 }
         ],
         interactions:[
           { id:'blue-computer', x:318, y:506, radius:132, label:'Ordenador azul' },
-          { id:'tower-door', x:798, y:394, radius:156, label:'Puerta 4B' },
+          { id:'tower-door', x:800.2622950819672, y:264.36566767157285, radius:156, label:'Puerta 4B' },
           { id:'relay-bridge', x:1290, y:522, radius:124, label:'Pasarela este' },
-          { id:'xavor-van', x:282, y:724, radius:152, label:'Furgoneta de Xavor' }
+          { id:'xavor-van', x:313, y:723, radius:100, label:'Furgoneta de Xavor' }
         ]
       },
       {
@@ -725,27 +735,36 @@
           return url.href;
         },
         zones:[
-          { type:'rect', x:0, y:0, width:1536, height:112 },
           { type:'rect', x:0, y:922, width:1536, height:102 },
           { type:'rect', x:0, y:0, width:128, height:1024 },
           { type:'rect', x:1394, y:0, width:142, height:1024 },
-          { type:'rect', x:154, y:244, width:172, height:292 },
           { type:'rect', x:330, y:96, width:142, height:210 },
-          { type:'rect', x:518, y:112, width:300, height:156 },
-          { type:'rect', x:900, y:118, width:96, height:128 },
           { type:'rect', x:1256, y:226, width:84, height:238 },
-          { type:'circle', x:1276, y:602, radius:132 },
-          { type:'rect', x:1044, y:612, width:132, height:138 },
+          { type:'circle', x:1302.3682219419923, y:545.3431459478631, radius:132 },
           { type:'rect', x:360, y:742, width:198, height:178 },
           { type:'rect', x:820, y:760, width:218, height:156 },
           { type:'rect', x:1046, y:814, width:148, height:108 },
           { type:'circle', x:238, y:640, radius:92 },
-          { type:'poly', points:[{ x:1262, y:96 }, { x:1322, y:76 }, { x:1322, y:178 }, { x:1268, y:198 }] }
+          { type:'poly', points:[{ x:1262, y:96 }, { x:1322, y:76 }, { x:1322, y:178 }, { x:1268, y:198 }] },
+          { type:'ellipse', x:1169, y:18, width:62, height:183 },
+          { type:'ellipse', x:1145, y:63, width:44, height:70 },
+          { type:'ellipse', x:1136, y:105, width:33, height:119 },
+          { type:'ellipse', x:1083, y:133, width:61, height:118 },
+          { type:'ellipse', x:1037, y:210, width:58, height:54 },
+          { type:'ellipse', x:1148, y:218, width:153, height:206 },
+          { type:'rect', x:704, y:21, width:246, height:37 },
+          { type:'rect', x:647, y:51, width:259, height:56 },
+          { type:'rect', x:801, y:95, width:57, height:86 },
+          { type:'rect', x:772, y:174, width:36, height:79 },
+          { type:'rect', x:440, y:6, width:336, height:201 },
+          { type:'rect', x:129, y:5, width:361, height:178 },
+          { type:'ellipse', x:127, y:184, width:240, height:303 },
+          { type:'ellipse', x:116, y:691, width:297, height:228 }
         ],
         interactions:[
           { id:'entry-door', x:760, y:850, radius:148, label:'Puerta exterior' },
           { id:'lock-console', x:1036, y:382, radius:118, label:'Ordenador de escalera' },
-          { id:'stairs-up', x:1042, y:236, radius:96, label:'Escaleras superiores' }
+          { id:'stairs-up', x:1054.0832282471627, y:67.25518708990958, radius:96, label:'Escaleras superiores' }
         ]
       },
       {
@@ -758,21 +777,26 @@
           { type:'rect', x:0, y:926, width:1536, height:98 },
           { type:'rect', x:0, y:0, width:116, height:1024 },
           { type:'rect', x:1418, y:0, width:118, height:1024 },
-          { type:'rect', x:160, y:156, width:142, height:264 },
-          { type:'rect', x:304, y:384, width:188, height:128 },
           { type:'rect', x:524, y:116, width:112, height:218 },
-          { type:'rect', x:1048, y:142, width:124, height:208 },
-          { type:'rect', x:1218, y:360, width:180, height:166 },
+          { type:'rect', x:1016.2295081967211, y:123.34893893716378, width:124, height:208 },
+          { type:'rect', x:1271.7276166456495, y:375.0873086244606, width:180, height:166 },
           { type:'rect', x:1128, y:648, width:166, height:180 },
-          { type:'rect', x:686, y:756, width:334, height:164 },
+          { type:'rect', x:717.1197982345524, y:745.7778565939587, width:334, height:164 },
           { type:'rect', x:132, y:740, width:172, height:156 },
-          { type:'circle', x:1090, y:612, radius:92 },
-          { type:'poly', points:[{ x:610, y:170 }, { x:1042, y:170 }, { x:1096, y:330 }, { x:948, y:410 }, { x:682, y:404 }, { x:562, y:306 }] },
-          { type:'poly', points:[{ x:1258, y:96 }, { x:1536, y:96 }, { x:1536, y:320 }, { x:1264, y:304 }] }
+          { type:'circle', x:1133.906683480454, y:663.6781935331323, radius:92 },
+          { type:'poly', points:[{ x:625.5182849936949, y:82.46485783531361 }, { x:1057.5182849936941, y:82.46485783531361 }, { x:1111.5182849936941, y:242.46485783531344 }, { x:963.5182849936949, y:322.4648578353135 }, { x:697.5182849936949, y:316.4648578353135 }, { x:577.5182849936949, y:218.46485783531355 }] },
+          { type:'ellipse', x:331, y:208, width:92, height:194 },
+          { type:'ellipse', x:377.33291298865066, y:378.68806525979784, width:62, height:116 },
+          { type:'ellipse', x:111, y:376, width:108, height:282 },
+          { type:'ellipse', x:190.64564943253467, y:584.0235857421528, width:74, height:95 },
+          { type:'ellipse', x:99, y:120, width:199, height:234 },
+          { type:'ellipse', x:1145, y:88, width:388, height:161 },
+          { type:'ellipse', x:999, y:83, width:303, height:75 },
+          { type:'ellipse', x:1024, y:92, width:191, height:97 }
         ],
         interactions:[
-          { id:'stairs-down', x:334, y:540, radius:150, label:'Escalera inferior' },
-          { id:'main-control', x:820, y:346, radius:190, label:'Ordenador base de datos' },
+          { id:'stairs-down', x:255.0088272383354, y:409.99491635632796, radius:150, label:'Escalera inferior' },
+          { id:'main-control', x:844.5296343001261, y:326.6906661937696, radius:190, label:'Ordenador base de datos' },
           { id:'observation-window', x:1264, y:244, radius:158, label:'Ventanal de observacion' }
         ]
       }
@@ -1226,6 +1250,20 @@
       };
     }
 
+    function getUnifiedPhysicsJson(){
+      return JSON.stringify({
+        sceneId:collisionEditor.scene?.id || '',
+        sceneLabel:collisionEditor.scene?.label || '',
+        collisions:normalizeCollisionZones(collisionEditor.zones),
+        interactions:normalizeInteractionPoints(collisionEditor.interactions).map(point => ({
+          id:point.id,
+          x:point.x,
+          y:point.y,
+          radius:point.radius
+        }))
+      }, null, 2);
+    }
+
     function saveCollisionOverrides(){
       try{
         const parsed = JSON.parse(collisionJson.value);
@@ -1506,6 +1544,17 @@
         }catch(error){
           sourceJson.select();
           setCollisionStatus('No se pudo copiar automaticamente; el JSON queda seleccionado.');
+        }
+      });
+      document.getElementById('copyUnifiedPhysicsJsonBtn').addEventListener('click', async () => {
+        const unifiedJson = getUnifiedPhysicsJson();
+        try{
+          await navigator.clipboard.writeText(unifiedJson);
+          setCollisionStatus('JSON completo copiado: escenario, colisiones e interacciones fisicas.');
+        }catch(error){
+          collisionJson.value = unifiedJson;
+          collisionJson.select();
+          setCollisionStatus('No se pudo copiar automaticamente; el JSON completo queda en el campo de colisiones y seleccionado.');
         }
       });
       document.getElementById('openCollisionSceneBtn').addEventListener('click', () => {

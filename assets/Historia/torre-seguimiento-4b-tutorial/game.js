@@ -280,42 +280,24 @@ const walkableZones = [
 ];
 
 const collisionZones = [
-  {
-    type: "poly",
-    points: [
-      { x: 492, y: 252 },
-      { x: 662, y: 254 },
-      { x: 640, y: 354 },
-      { x: 536, y: 366 },
-      { x: 458, y: 318 },
-    ],
-  },
-  {
-    type: "poly",
-    points: [
-      { x: 890, y: 258 },
-      { x: 988, y: 258 },
-      { x: 1030, y: 336 },
-      { x: 878, y: 398 },
-      { x: 844, y: 336 },
-    ],
-  },
-  { type: "rect", x: 708, y: 288, width: 116, height: 64, opensWithDoor: true },
-  { type: "circle", x: 120, y: 638, radius: 44 },
-  { type: "rect", x: 178, y: 694, width: 72, height: 48 },
-  { type: "rect", x: 566, y: 800, width: 54, height: 44 },
-  { type: "rect", x: 704, y: 838, width: 154, height: 36 },
-  { type: "rect", x: 1194, y: 430, width: 62, height: 66 },
-  {
-    type: "poly",
-    points: [
-      { x: 1056, y: 430 },
-      { x: 1110, y: 440 },
-      { x: 1130, y: 482 },
-      { x: 1082, y: 506 },
-      { x: 1038, y: 480 },
-    ],
-  },
+  { type: "ellipse", x: 501, y: 11, width: 471, height: 172 },
+  { type: "ellipse", x: 458, y: 148, width: 184, height: 210 },
+  { type: "ellipse", x: 312, y: 261, width: 187, height: 127 },
+  { type: "ellipse", x: 498, y: 506, width: 137, height: 91 },
+  { type: "ellipse", x: 198, y: 686, width: 154, height: 74 },
+  { type: "ellipse", x: 4, y: 19, width: 141, height: 536 },
+  { type: "ellipse", x: 60, y: 190, width: 350, height: 253 },
+  { type: "ellipse", x: 23, y: 439, width: 158, height: 234 },
+  { type: "ellipse", x: 34, y: 717, width: 203, height: 203 },
+  { type: "ellipse", x: 237, y: 865, width: 323, height: 143 },
+  { type: "ellipse", x: 720, y: 782, width: 152, height: 124 },
+  { type: "ellipse", x: 973, y: 623, width: 274, height: 260 },
+  { type: "ellipse", x: 960, y: 91, width: 315, height: 192 },
+  { type: "ellipse", x: 1157, y: 235, width: 173, height: 151 },
+  { type: "ellipse", x: 1348, y: 345, width: 188, height: 411 },
+  { type: "ellipse", x: 1195, y: 630, width: 198, height: 150 },
+  { type: "ellipse", x: 832, y: 485, width: 149, height: 127 },
+  { type: "ellipse", x: 552, y: 678, width: 49, height: 33 },
 ];
 window.PoCoBOTStoryCollisionEditor?.applySceneZones("tower-exterior", collisionZones);
 
@@ -346,8 +328,8 @@ const interactables = [
   },
   {
     id: "tower-door",
-    x: 798,
-    y: 394,
+    x: 800.2622950819672,
+    y: 264.36566767157285,
     radius: 156,
     label: "Puerta 4B",
     hint: "Entrar",
@@ -364,9 +346,9 @@ const interactables = [
   },
   {
     id: "xavor-van",
-    x: 282,
-    y: 724,
-    radius: 152,
+    x: 313,
+    y: 723,
+    radius: 100,
     label: "Furgoneta de Xavor",
     hint: "Hablar",
     message: "La furgoneta chisporrotea como si supiera reirse antes de arrancar.",
