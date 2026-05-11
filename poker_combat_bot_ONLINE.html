@@ -8811,6 +8811,17 @@ body.desktop-compact-mode > footer{
   .app.mobile-panorama-mode .compact-mobile-action-grid button.compact-action-hidden{
     display:none !important;
   }
+  .app.mobile-panorama-mode #compactMobileConfirmAttackBtn,
+  .app.mobile-panorama-mode #compactMobileConfirmDefenseBtn{
+    min-height:34px;
+    padding:4px 4px !important;
+    font-size:.45rem !important;
+    line-height:.86 !important;
+    letter-spacing:.002em !important;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    text-wrap:balance;
+  }
   .app.mobile-panorama-mode .compact-hand-panel{
     grid-area:hand;
     display:grid;
@@ -9068,6 +9079,16 @@ body.desktop-compact-mode > footer{
   }
 }
 
+@media (orientation: landscape) and (pointer: coarse){
+  .app.mobile-panorama-mode .desktop-compact-shell{
+    left:0;
+    top:0;
+    width:100dvw;
+    height:min(100dvh, 100svh);
+    transform:none;
+  }
+}
+
 @media (max-height: 680px) and (orientation: landscape) and (pointer: coarse){
   .app.mobile-panorama-mode .desktop-compact-shell{
     grid-template-columns:164px minmax(0, 1fr) 124px;
@@ -9096,6 +9117,13 @@ body.desktop-compact-mode > footer{
     min-height:28px;
     padding:4px 5px !important;
     font-size:.52rem !important;
+  }
+  .app.mobile-panorama-mode #compactMobileConfirmAttackBtn,
+  .app.mobile-panorama-mode #compactMobileConfirmDefenseBtn{
+    min-height:31px;
+    padding:3px 4px !important;
+    font-size:.42rem !important;
+    line-height:.84 !important;
   }
 }
 
@@ -15670,6 +15698,7 @@ function syncDesktopHudAvailability(){
   if(!app) return false;
   let desktopAvailable = canUseDesktopCompactHud();
   let mobilePanoramaAvailable = canUseMobilePanoramaHud();
+  let preservingMobilePanoramaRequest = false;
   syncDevMobilePanoramaEmulation(devHudModeOverride === 'mobile-horizontal');
   if(devHudModeOverride === 'compact' || isDevHorizontalHudOverride()){
     desktopAvailable = devHudModeOverride === 'compact';
@@ -15677,9 +15706,12 @@ function syncDesktopHudAvailability(){
     desktopHudMode = 'compact';
     mobilePanoramaRequested = isDevHorizontalHudOverride();
   }
-  const available = desktopAvailable || mobilePanoramaAvailable;
+  let available = desktopAvailable || mobilePanoramaAvailable;
   if(!available && devHudModeOverride === 'auto'){
     if(shouldPreserveMobilePanoramaRequest()){
+      preservingMobilePanoramaRequest = true;
+      mobilePanoramaAvailable = true;
+      available = true;
       desktopHudMode = 'compact';
     }else{
       desktopHudMode = 'expanded';
@@ -15691,7 +15723,7 @@ function syncDesktopHudAvailability(){
   if(!compactActive){
     teardownCompactHandDrag();
     setCompactDropzoneHighlights([], '');
-    if(!canUseExpandedDraftSurface()) clearCompactDraftPlacements(false);
+    if(!preservingMobilePanoramaRequest && !canUseExpandedDraftSurface()) clearCompactDraftPlacements(false);
   }
   if(!mobilePanoramaActive) mobilePanoramaVitalityStage = null;
   app.classList.toggle('desktop-compact-available', available);
