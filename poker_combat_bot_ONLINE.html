@@ -8916,12 +8916,12 @@ body.desktop-compact-mode > footer{
   .app.mobile-panorama-mode .compact-tutorial-panel{
     display:none;
     position:absolute;
-    top:64px;
-    left:194px;
-    right:144px;
+    top:50px;
+    left:184px;
+    right:140px;
     bottom:auto;
     width:auto;
-    height:min(132px, calc(100% - 206px));
+    height:min(224px, calc(100% - 164px));
     z-index:52;
     border-radius:12px;
     box-shadow:0 18px 42px rgba(28,6,6,.42);
@@ -8940,8 +8940,8 @@ body.desktop-compact-mode > footer{
   }
   .app.mobile-panorama-mode .compact-tutorial-body,
   .app.mobile-panorama-mode .compact-tutorial-meta{
-    font-size:.58rem;
-    line-height:1.16;
+    font-size:.66rem;
+    line-height:1.2;
   }
   .app.mobile-panorama-mode .compact-tutorial-actions{
     gap:5px;
@@ -11319,6 +11319,24 @@ function primeOfflineMode(gameMode, difficulty=null){
   desktopHudMode = 'expanded';
   mobilePanoramaRequested = false;
   releaseOrientationLockBestEffort();
+}
+
+function shouldDefaultNormalCombatToMobileHorizontal(){
+  if(STORY_EMBED_MODE) return false;
+  try{
+    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const compactViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
+    return hasCoarsePointer && compactViewport;
+  }catch(_err){
+    return false;
+  }
+}
+
+function prepareNormalCombatStartHudMode(){
+  if(STORY_EMBED_MODE) return;
+  desktopHudMode = 'compact';
+  mobilePanoramaRequested = shouldDefaultNormalCombatToMobileHorizontal();
+  if(mobilePanoramaRequested) requestLandscapeOrientationBestEffort();
 }
 
 function shouldStartTowerCombatInMobileHorizontal(mission){
@@ -22252,6 +22270,7 @@ function startLocalMode(){
   playUiSound('alert');
   primeOfflineMode('local');
   hideIntroScreen();
+  prepareNormalCombatStartHudMode();
   newGame();
 }
 
@@ -22262,6 +22281,7 @@ function startSinglePlayerMode(difficulty){
   playUiSound('alert');
   primeOfflineMode('single', difficulty);
   hideIntroScreen();
+  prepareNormalCombatStartHudMode();
   newGame();
 }
 
