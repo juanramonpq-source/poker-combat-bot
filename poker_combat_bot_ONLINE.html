@@ -7406,14 +7406,15 @@ body.desktop-compact-mode > footer{
 }
 
 .compact-zone-card.compact-dropzone-legal{
-  border-color:rgba(255,214,97,.76);
-  box-shadow:inset 0 0 18px rgba(255,214,97,.12), 0 0 18px rgba(255,214,97,.12);
+  border-color:rgba(56,224,126,.86);
+  background:linear-gradient(180deg, rgba(235,255,241,.98), rgba(197,244,213,.96));
+  box-shadow:inset 0 0 18px rgba(56,224,126,.18), 0 0 18px rgba(56,224,126,.18);
 }
 
 .compact-zone-card.compact-dropzone-active{
-  border-color:rgba(255,151,72,.94);
-  background:linear-gradient(180deg, rgba(255,249,228,.98), rgba(255,227,176,.95));
-  box-shadow:inset 0 0 20px rgba(255,193,92,.16), 0 0 20px rgba(255,151,72,.16);
+  border-color:rgba(21,204,103,.98);
+  background:linear-gradient(180deg, rgba(230,255,238,.99), rgba(148,235,179,.97));
+  box-shadow:inset 0 0 22px rgba(21,204,103,.24), 0 0 24px rgba(21,204,103,.24);
 }
 
 .compact-rival-panel.compact-turn-rival-glow{
@@ -8523,7 +8524,8 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   z-index:80;
   transform:translateY(-3px) scale(1.035);
   overflow:visible;
-  box-shadow:0 16px 34px rgba(10,22,56,.26), 0 0 0 3px rgba(255,214,97,.22), inset 0 0 22px rgba(255,237,177,.16) !important;
+  border-color:rgba(21,204,103,.98) !important;
+  box-shadow:0 16px 34px rgba(10,22,56,.26), 0 0 0 3px rgba(57,225,128,.32), inset 0 0 22px rgba(113,244,164,.20) !important;
 }
 
 @keyframes compactDropPreviewIn{
@@ -9993,17 +9995,75 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   }
   .app.mobile-compact-mode .compact-tutorial-panel{
     display:none;
-    position:absolute;
-    left:8px;
-    right:8px;
-    top:50px;
-    max-height:190px;
-    z-index:52;
-    border-radius:12px;
+    position:fixed;
+    left:10px;
+    right:10px;
+    top:68px;
+    z-index:170;
+    grid-template-columns:minmax(0, 1fr) auto;
+    grid-template-rows:auto;
+    gap:6px 8px;
+    max-height:none;
+    min-height:0;
+    padding:8px 10px !important;
+    border-radius:14px;
     box-shadow:0 18px 42px rgba(28,6,6,.42);
+    overflow:hidden;
+    cursor:pointer;
   }
   body.mobile-compact-mode.compact-tutorial-popup-active .compact-tutorial-panel{
     display:grid;
+  }
+  .app.mobile-compact-mode .compact-tutorial-panel .compact-kicker{
+    grid-column:1;
+    font-size:.46rem;
+    line-height:1;
+  }
+  .app.mobile-compact-mode .compact-tutorial-panel h2{
+    grid-column:1;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .app.mobile-compact-mode .compact-tutorial-toggle{
+    display:inline-flex;
+    grid-column:2;
+    grid-row:1 / span 2;
+    align-self:center;
+    min-height:30px;
+    padding:5px 10px !important;
+    border-radius:999px !important;
+    font-size:.52rem !important;
+    line-height:1 !important;
+    white-space:nowrap;
+    z-index:2;
+  }
+  .app.mobile-compact-mode .compact-tutorial-scroll,
+  .app.mobile-compact-mode .compact-tutorial-actions{
+    display:none;
+  }
+  .app.mobile-compact-mode .compact-tutorial-panel.compact-tutorial-expanded{
+    top:102px;
+    bottom:calc(286px + env(safe-area-inset-bottom));
+    grid-template-columns:minmax(0, 1fr) auto;
+    grid-template-rows:auto auto minmax(0, 1fr) auto;
+    padding:10px 12px 12px !important;
+    cursor:default;
+  }
+  .app.mobile-compact-mode .compact-tutorial-panel.compact-tutorial-expanded h2{
+    white-space:normal;
+  }
+  .app.mobile-compact-mode .compact-tutorial-panel.compact-tutorial-expanded .compact-tutorial-scroll{
+    display:grid;
+    grid-column:1 / -1;
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding-right:6px;
+  }
+  .app.mobile-compact-mode .compact-tutorial-panel.compact-tutorial-expanded .compact-tutorial-actions:not([hidden]){
+    display:flex;
+    grid-column:1 / -1;
   }
   body.mobile-compact-mode.compact-mobile-actions-open .compact-tutorial-panel,
   body.mobile-compact-mode.compact-mobile-rival-open .compact-tutorial-panel{
@@ -11484,19 +11544,20 @@ body.story-argos-hack-ui{
 
   .app.mobile-compact-mode .compact-mobile-action-grid{
     position:fixed;
-    left:10px;
-    right:10px;
-    top:auto;
-    bottom:calc(282px + env(safe-area-inset-bottom));
-    width:auto;
-    height:auto;
-    max-height:190px;
+    left:var(--compact-action-menu-left, calc(50vw + 6px));
+    right:auto;
+    top:var(--compact-action-menu-top, 338px);
+    bottom:auto;
+    width:var(--compact-action-menu-width, calc(50vw - 16px));
+    height:var(--compact-action-menu-height, 92px);
+    max-height:var(--compact-action-menu-height, 92px);
     display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    grid-auto-rows:minmax(34px, auto);
-    gap:7px;
-    padding:8px;
-    border-radius:16px;
+    grid-template-columns:minmax(0, 1fr);
+    grid-auto-rows:minmax(28px, auto);
+    align-content:start;
+    gap:5px;
+    padding:6px;
+    border-radius:14px;
     border:2px solid rgba(35,216,255,.32);
     background:linear-gradient(180deg, rgba(246,251,255,.98), rgba(214,231,255,.98) 58%, rgba(191,208,244,.98));
     box-shadow:0 18px 42px rgba(7,14,44,.34), 0 0 0 999px rgba(3,8,28,.18);
@@ -11515,10 +11576,12 @@ body.story-argos-hack-ui{
     width:auto;
     min-width:0;
     max-width:none;
-    min-height:34px !important;
-    padding:6px 7px !important;
-    font-size:.56rem !important;
-    line-height:.95 !important;
+    min-height:28px !important;
+    padding:5px 7px !important;
+    font-size:.5rem !important;
+    line-height:.92 !important;
+    white-space:normal;
+    overflow-wrap:anywhere;
     opacity:1;
     visibility:visible;
     pointer-events:auto;
@@ -11586,13 +11649,19 @@ body.story-argos-hack-ui{
     min-width:0;
     max-width:none;
     height:auto;
-    min-height:26px !important;
-    padding:3px 5px !important;
-    font-size:.46rem !important;
+    min-height:28px !important;
+    padding:5px 7px !important;
+    font-size:.5rem !important;
     line-height:.9 !important;
+    white-space:normal;
+    overflow-wrap:anywhere;
     opacity:1;
     visibility:visible;
     pointer-events:auto;
+  }
+
+  body.compact-action-hub-open .app.mobile-compact-mode #compactMobilePlayerDrawerBtn{
+    display:none !important;
   }
 
   .app.mobile-compact-mode .compact-mode-tabs{
@@ -11612,8 +11681,8 @@ body.story-argos-hack-ui{
     grid-template-columns:repeat(2, minmax(0, 1fr));
     grid-template-rows:minmax(0, .95fr) minmax(0, .95fr) minmax(0, 1.15fr);
     grid-template-areas:
-      "core armor"
-      "attack defense"
+      "core defense"
+      "attack armor"
       "fuel fuel";
     gap:7px;
   }
@@ -13805,7 +13874,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
         <div class="compact-section-head compact-section-head-tight">
           <div>
             <div class="compact-kicker">Consola</div>
-            <h2>Otras acciones</h2>
+            <h2>Acciones</h2>
           </div>
           <div class="compact-chip-stack">
             <span class="compact-chip" id="compactSelectionSummary">0 seleccionadas</span>
@@ -13874,16 +13943,17 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
         <div class="compact-mobile-action-grid" id="compactMobileActionGrid">
           <button class="primary" data-source-button="actionAddBtn" id="compactMobileModifyBtn" type="button">Modificar</button>
           <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Abrir ataque</button>
-          <button class="primary" data-mobile-drawer="actions" id="compactMobileActionsDrawerBtn" type="button">Otras acciones</button>
           <button class="cyan" data-mobile-drawer="rival" id="compactMobileRivalDrawerBtn" type="button">Ver rival</button>
           <button class="cyan" data-mobile-drawer="player" id="compactMobilePlayerDrawerBtn" type="button">Panel jugador</button>
           <button class="warn compact-action-hidden" data-contextual-projectile-mode="true" data-source-button="toggleProjectileBtn" id="compactMobileProjectileModeBtn" type="button">Modo proyectil</button>
           <button class="warn compact-action-hidden" data-contextual-projectile-only="true" data-source-button="projectileOnlyBtn" id="compactMobileProjectileOnlyBtn" type="button">Solo proyectil</button>
           <button class="danger" data-contextual-attack="true" data-source-button="confirmAttackBtn" id="compactMobileConfirmAttackBtn" type="button">Confirmar ataque</button>
+          <button class="warn compact-action-hidden" data-contextual-attack="true" data-source-button="cancelAttackBtn" id="compactMobileCancelAttackBtn" type="button">Cancelar ataque</button>
           <button class="danger compact-action-hidden" data-compact-defense-action="primary" id="compactMobileConfirmDefenseBtn" type="button">Elegir 1♦</button>
           <button class="warn compact-action-hidden" data-compact-defense-action="skip" id="compactMobileSkipDefenseBtn" type="button">No defender</button>
           <button class="warn compact-action-hidden" data-contextual-draw="true" data-source-button="actionDrawDiamondBtn" id="compactMobileDrawDiamondBtn" type="button">Robar con ♦</button>
           <button class="primary compact-action-hidden" data-compact-figure-action="true" id="compactMobileFigureBurstBtn" type="button">2 Figuras → 4</button>
+          <button class="cyan compact-action-hidden" data-contextual-clear="true" data-source-button="clearSelectionBtn" id="compactMobileClearBtn" type="button">Limpiar</button>
           <button data-source-button="actionPassBtn" id="compactMobilePassBtn" type="button">Pasar</button>
         </div>
         <nav class="compact-mode-tabs" aria-label="Paneles móviles">
@@ -13897,6 +13967,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
       <aside class="frame compact-tutorial-panel">
         <div class="compact-kicker">Tutorial integrado</div>
         <h2 id="compactTutorialBoxTitle">Lectura tactica</h2>
+        <button class="compact-tutorial-toggle" id="compactTutorialToggleBtn" type="button" aria-expanded="false">Abrir guía</button>
         <div class="compact-tutorial-scroll" id="compactTutorialScroll">
           <div class="compact-tutorial-body" id="compactTutorialBoxText">
             La lectura del tutorial aparecerá aquí cuando la guía esté activa o cuando una acción importante necesite contexto.
@@ -14205,6 +14276,7 @@ let compactSuppressCardClickUntil = 0;
 let compactSuppressCardClickId = null;
 let compactMobileActionHubOpen = false;
 let compactActionHubPointerHandledUntil = 0;
+let compactTutorialExpanded = false;
 let mobilePanoramaVitalityStage = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -18897,13 +18969,16 @@ function updateCompactActionHubMenuAnchor(){
   const rect = target.getBoundingClientRect();
   const viewportW = window.innerWidth || document.documentElement.clientWidth || rect.right;
   const viewportH = window.innerHeight || document.documentElement.clientHeight || rect.bottom;
+  const containingRect = (grid.parentElement || document.body).getBoundingClientRect();
   const inset = 4;
   const minWidth = 160;
   const minHeight = 74;
-  const left = Math.max(inset, Math.min(rect.left + inset, viewportW - minWidth - inset));
-  const top = Math.max(inset, Math.min(rect.top + inset, viewportH - minHeight - inset));
-  const width = Math.max(minWidth, Math.min(rect.width - inset * 2, viewportW - left - inset));
-  const height = Math.max(minHeight, Math.min(rect.height - inset * 2, viewportH - top - inset));
+  const viewportLeft = Math.max(inset, Math.min(rect.left + inset, viewportW - minWidth - inset));
+  const viewportTop = Math.max(inset, Math.min(rect.top + inset, viewportH - minHeight - inset));
+  const width = Math.max(minWidth, Math.min(rect.width - inset * 2, viewportW - viewportLeft - inset));
+  const height = Math.max(minHeight, Math.min(rect.height - inset * 2, viewportH - viewportTop - inset));
+  const left = viewportLeft - containingRect.left;
+  const top = viewportTop - containingRect.top;
 
   grid.style.setProperty('--compact-action-menu-left', `${Math.round(left)}px`);
   grid.style.setProperty('--compact-action-menu-top', `${Math.round(top)}px`);
@@ -18919,6 +18994,15 @@ function setCompactActionHubOpen(open){
   const btn = document.getElementById('accionesBtn') || document.getElementById('compactActionHubButton');
   btn?.setAttribute('aria-expanded', compactMobileActionHubOpen ? 'true' : 'false');
   updateCompactActionHubMenuAnchor();
+}
+
+function setCompactTutorialExpanded(expanded){
+  compactTutorialExpanded = !!expanded;
+  const panel = document.querySelector('.compact-tutorial-panel');
+  const toggle = document.getElementById('compactTutorialToggleBtn');
+  panel?.classList.toggle('compact-tutorial-expanded', compactTutorialExpanded);
+  toggle?.setAttribute('aria-expanded', compactTutorialExpanded ? 'true' : 'false');
+  if(toggle) toggle.textContent = compactTutorialExpanded ? 'Reducir' : 'Abrir guía';
 }
 
 function isDesktopCompactModeActive(){
@@ -19518,8 +19602,16 @@ function syncDesktopCompactButtons(){
     btn.disabled = !!source.disabled;
     btn.classList.toggle('button-live', source.classList.contains('button-live'));
     let shouldHide = false;
-    if(btn.dataset.contextualAttack === 'true'){
-      shouldHide = !attackContextOpen && !!source.disabled;
+    if(btn.id === 'compactMobilePlayerDrawerBtn'){
+      shouldHide = true;
+    }else if(btn.id === 'compactMobileModifyBtn'){
+      shouldHide = attackContextOpen || (!hasCompactDraft && !!source.disabled);
+    }else if(btn.id === 'compactMobileAttackModeBtn'){
+      shouldHide = attackContextOpen || !!source.disabled;
+    }else if(btn.id === 'compactMobilePassBtn'){
+      shouldHide = !!source.disabled;
+    }else if(btn.dataset.contextualAttack === 'true'){
+      shouldHide = !attackContextOpen;
     }else if(btn.dataset.contextualProjectileOnly === 'true'){
       shouldHide = !attackContextOpen;
     }else if(btn.dataset.contextualProjectileMode === 'true'){
@@ -19529,7 +19621,7 @@ function syncDesktopCompactButtons(){
     }else if(btn.dataset.contextualDraw === 'true'){
       shouldHide = currentTutorialAction !== 'drawWithDiamond' && !!source.disabled;
     }else if(btn.dataset.contextualClear === 'true'){
-      shouldHide = !hasCompactDraft && state.selected.length === 0 && !!source.disabled;
+      shouldHide = !hasCompactDraft && state.selected.length === 0;
     }else if(btn.dataset.hideWhenDisabled === 'true'){
       shouldHide = !!source.disabled;
     }
@@ -20408,6 +20500,15 @@ function renderDesktopCompactHud(){
       compactTutorialActions.hidden = true;
       compactTutorialActions.innerHTML = '';
     }
+  }
+  const compactTutorialPanel = document.querySelector('.compact-tutorial-panel');
+  const compactTutorialToggleBtn = document.getElementById('compactTutorialToggleBtn');
+  if(compactTutorialPanel){
+    compactTutorialPanel.classList.toggle('compact-tutorial-expanded', compactTutorialExpanded);
+  }
+  if(compactTutorialToggleBtn){
+    compactTutorialToggleBtn.setAttribute('aria-expanded', compactTutorialExpanded ? 'true' : 'false');
+    compactTutorialToggleBtn.textContent = compactTutorialExpanded ? 'Reducir' : 'Abrir guía';
   }
   updateCompactActionHubMenuAnchor();
 }
@@ -23774,10 +23875,28 @@ if(accionesBtn){
     setCompactActionHubOpen(!compactMobileActionHubOpen);
   });
 }
+document.getElementById('compactTutorialToggleBtn')?.addEventListener('click', (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  setCompactTutorialExpanded(!compactTutorialExpanded);
+});
+document.querySelector('.compact-tutorial-panel')?.addEventListener('click', (event) => {
+  if(!document.body?.classList.contains('mobile-compact-mode')) return;
+  if(compactTutorialExpanded) return;
+  if(event.target.closest('button')) return;
+  setCompactTutorialExpanded(true);
+});
 document.getElementById('desktopCompactShell').addEventListener('contextmenu', (event) => {
   if(!document.body?.classList.contains('mobile-panorama-mode')) return;
   event.preventDefault();
 });
+document.getElementById('desktopCompactShell').addEventListener('pointerdown', (event) => {
+  if(!document.body?.classList.contains('mobile-compact-mode')) return;
+  if(!document.body.classList.contains('compact-action-hub-open')) return;
+  if(event.target.closest('#compactMobileActionGrid') || event.target.closest('#accionesBtn')) return;
+  event.preventDefault();
+  event.stopPropagation();
+}, true);
 document.getElementById('desktopCompactShell').addEventListener('click', (event) => {
   if(document.body?.classList.contains('mobile-panorama-mode') && event.target.closest('.compact-tutorial-panel')){
     event.preventDefault();
@@ -23808,6 +23927,7 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
     return;
   }
   if(btn.dataset.mobileDrawer){
+    setCompactActionHubOpen(false);
     setCompactMobileDrawer(btn.dataset.mobileDrawer);
     return;
   }
@@ -23846,6 +23966,7 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
   }
   if(btn.id === 'compactFigureBurstBtn' || btn.dataset.compactFigureAction === 'true'){
     if(btn.disabled) return;
+    setCompactActionHubOpen(false);
     drawWithTwoFigures();
     return;
   }
@@ -23855,6 +23976,7 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
   const hasCompactDraft = compactDraftOwnerIdx === playerIdx && compactDraftPlacements.size > 0;
   if((btn.id === 'compactActionAddBtn' || btn.id === 'compactMobileModifyBtn') && hasCompactDraft){
     if(!commitCompactDraftSelections()) return;
+    setCompactActionHubOpen(false);
     modifyMecha();
     if((_ol.active && _ol.role === 'guest') || state.transitionLock){
       clearCompactDraftPlacements(false);
@@ -23869,6 +23991,10 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
     return;
   }
   if(!source || source.disabled) return;
+  const keepMobileHubOpen = btn.id === 'compactMobileAttackModeBtn' || btn.id === 'compactMobileProjectileModeBtn';
+  if(document.body?.classList.contains('mobile-compact-mode') && !keepMobileHubOpen){
+    setCompactActionHubOpen(false);
+  }
   source.click();
 });
 document.getElementById('desktopCompactShell').addEventListener('pointerdown', (event) => {

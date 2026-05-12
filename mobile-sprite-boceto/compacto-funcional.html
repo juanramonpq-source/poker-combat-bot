@@ -157,9 +157,9 @@
     .brand-plate {
       position: relative;
       z-index: 2;
-      width: min(266px, 72vw);
-      height: 56px;
-      margin: 0 auto 5px;
+      width: min(286px, 74vw);
+      height: 68px;
+      margin: 0 auto 4px;
       padding: 0;
       border-radius: 19px;
       border: 4px solid #052d5c;
@@ -177,6 +177,7 @@
     }
 
     .top-menu-toggle {
+      display: none;
       position: absolute;
       z-index: 28;
       top: 16px;
@@ -203,8 +204,8 @@
       display: block;
       position: absolute;
       left: 50%;
-      top: -43px;
-      width: min(294px, calc(100% + 42px));
+      top: -35px;
+      width: min(304px, calc(100% + 42px));
       max-width: none;
       height: auto;
       transform: translateX(-50%);
@@ -226,15 +227,15 @@
     .screw-br { bottom: 7px; right: 8px; }
 
     .top-menu {
-      position: absolute;
+      position: relative;
       z-index: 27;
-      left: 12px;
-      right: 12px;
-      top: 72px;
+      left: auto;
+      right: auto;
+      top: auto;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 4px;
-      margin: 0;
+      margin: 0 4px 5px;
       padding: 6px;
       border: 3px solid #704d25;
       border-radius: 14px;
@@ -242,15 +243,15 @@
         repeating-linear-gradient(135deg, rgba(114, 78, 33, .08) 0 1px, transparent 1px 8px),
         linear-gradient(180deg, var(--cream-0), var(--cream-1));
       box-shadow: inset 0 2px 0 rgba(255, 255, 255, .7), 0 5px 0 rgba(0, 22, 48, .72);
-      opacity: 0;
-      transform: translateY(-8px) scale(.98);
-      pointer-events: none;
-      transition: opacity .16s ease, transform .16s ease;
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+      transition: filter .16s ease;
     }
 
     .phone-shell.menu-open .top-menu {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: none;
       pointer-events: auto;
     }
 
@@ -737,12 +738,12 @@
       position: relative;
       z-index: 1;
       display: block;
-      width: 150px;
-      height: 174px;
+      width: 166px;
+      height: 194px;
       max-width: none;
       object-fit: contain;
       object-position: center bottom;
-      margin: -3px 0 -10px -17px;
+      margin: -5px 0 -8px -24px;
       filter: drop-shadow(0 15px 15px rgba(0, 0, 0, .62)) saturate(1.08);
       pointer-events: none;
       transition: filter .2s ease, opacity .2s ease;
@@ -754,7 +755,7 @@
     }
 
     .fighter-red .mecha-phase-live {
-      margin-left: -3px;
+      margin-left: -8px;
       transform: rotate(4deg) translateX(4px);
       animation: mechaIdleRed 4.8s ease-in-out infinite;
       animation-delay: .65s;
@@ -1541,6 +1542,7 @@
       box-shadow: 0 8px 12px rgba(51, 34, 15, .34);
       transition: translate .09s ease, transform .16s ease, filter .16s ease, outline-color .16s ease, box-shadow .16s ease;
       overflow: hidden;
+      touch-action: none;
     }
 
     .card img {
@@ -1549,6 +1551,26 @@
       object-fit: contain;
       display: block;
       pointer-events: none;
+    }
+
+    .card.is-touch-dragging {
+      opacity: .34;
+      filter: saturate(.8);
+    }
+
+    .touch-drag-ghost {
+      position: fixed;
+      z-index: 80;
+      width: 58px;
+      height: 86px;
+      border-radius: 9px;
+      border: 2px solid rgba(255, 229, 151, .92);
+      box-shadow:
+        0 18px 26px rgba(0, 0, 0, .45),
+        0 0 22px rgba(255, 202, 49, .48);
+      opacity: .98;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1.08);
     }
 
     .cards .card + .card { margin-left: -22px; }
@@ -2242,11 +2264,45 @@
         height: 100dvh;
         min-height: 100svh;
         min-height: 100dvh;
+        display: grid;
+        grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+        align-content: stretch;
+        row-gap: 0;
         border-radius: 0;
         border-left: 0;
         border-right: 0;
         border-top-width: 4px;
         border-bottom-width: 4px;
+      }
+
+      .brand-plate,
+      .top-menu,
+      .status-strip {
+        align-self: start;
+      }
+
+      .combat-screen {
+        min-height: 0;
+        height: auto;
+        align-self: stretch;
+      }
+
+      .fighter {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+      }
+
+      .mecha-phase-live {
+        align-self: center;
+      }
+
+      .stats-card {
+        align-self: end;
+      }
+
+      .tab-bar,
+      .hand-tray {
+        align-self: end;
       }
 
       .board-drawer {
@@ -2262,24 +2318,18 @@
       }
 
       .brand-plate {
-        height: 48px;
+        height: 60px;
         margin-bottom: 4px;
       }
 
       .brand-plate img {
-        top: -49px;
-        width: min(276px, calc(100% + 38px));
-      }
-
-      .top-menu-toggle {
-        top: 10px;
+        top: -36px;
+        width: min(286px, calc(100% + 38px));
       }
 
       .top-menu {
-        top: 58px;
-      }
-
-      .top-menu {
+        top: auto;
+        margin-bottom: 4px;
         padding: 5px;
       }
 
@@ -2301,8 +2351,8 @@
       }
 
       .mecha-phase-live {
-        width: 136px;
-        height: 154px;
+        width: 148px;
+        height: 170px;
       }
 
       .stats-card {
@@ -2358,8 +2408,6 @@
       <i class="screw screw-br"></i>
       <img src="../assets/pocobot_title_blue.png" alt="PoCoBOT Poker Combat Bot">
     </section>
-    <button class="top-menu-toggle" type="button" data-menu-toggle aria-expanded="false">Menú</button>
-
     <nav class="top-menu" aria-label="Menú de partida">
       <button class="menu-button danger" type="button" data-menu="new">Nueva</button>
       <button class="menu-button" type="button" data-menu="back">Volver</button>
@@ -2555,6 +2603,8 @@
     let attackVideoTimer = null;
     let attackReadyCueKey = "";
     let handShiftTimer = null;
+    let touchDrag = null;
+    let suppressCardClickUntil = 0;
 
     const state = {
       gameStarted: false,
@@ -4104,6 +4154,101 @@
       renderActions();
     }
 
+    function isTouchPointer(event) {
+      return event.pointerType === "touch"
+        || event.pointerType === "pen"
+        || event.pointerType === ""
+        || (event.pointerType === "mouse" && event.button === 0);
+    }
+
+    function makeTouchDragGhost(cardNode) {
+      const ghost = cardNode.cloneNode(true);
+      ghost.classList.add("touch-drag-ghost");
+      ghost.classList.remove("is-selected", "is-touch-dragging");
+      ghost.removeAttribute("draggable");
+      ghost.setAttribute("aria-hidden", "true");
+      document.body.appendChild(ghost);
+      return ghost;
+    }
+
+    function moveTouchDragGhost(x, y) {
+      if (!touchDrag?.ghost) return;
+      touchDrag.ghost.style.left = `${x}px`;
+      touchDrag.ghost.style.top = `${y}px`;
+    }
+
+    function beginTouchCardDrag(event) {
+      if (!touchDrag || touchDrag.active) return false;
+      const found = findCard(touchDrag.cardId);
+      if (!canHintBuildTargets(found)) {
+        touchDrag = null;
+        return false;
+      }
+      event.preventDefault();
+      closeActions();
+      updateDropHints(touchDrag.cardId);
+      shell.classList.add("touch-dragging");
+      touchDrag.ghost = makeTouchDragGhost(touchDrag.source);
+      touchDrag.source.classList.add("is-touch-dragging");
+      touchDrag.active = true;
+      moveTouchDragGhost(event.clientX, event.clientY);
+      return true;
+    }
+
+    function startTouchCardDrag(event) {
+      if (!isTouchPointer(event)) return;
+      const cardNode = event.target.closest?.(".card");
+      if (!cardNode || !cardNode.closest("[data-hand-cards]") || cardNode.disabled) return;
+      const cardId = cardNode.dataset.cardId;
+      const found = cardId ? findCard(cardId) : null;
+      if (!found || found.player !== state.players[0] || found.zone !== "hand") return;
+      touchDrag = {
+        pointerId: event.pointerId,
+        cardId,
+        source: cardNode,
+        startX: event.clientX,
+        startY: event.clientY,
+        active: false,
+        ghost: null
+      };
+      try { cardNode.setPointerCapture(event.pointerId); } catch (error) {}
+    }
+
+    function updateTouchDrag(event) {
+      if (!touchDrag || event.pointerId !== touchDrag.pointerId) return;
+      const dx = event.clientX - touchDrag.startX;
+      const dy = event.clientY - touchDrag.startY;
+      if (!touchDrag.active && Math.hypot(dx, dy) < 8) return;
+      if (!touchDrag.active && !beginTouchCardDrag(event)) return;
+      event.preventDefault();
+      moveTouchDragGhost(event.clientX, event.clientY);
+      const hoverZone = document.elementFromPoint(event.clientX, event.clientY)?.closest(".drop-zone");
+      updateDropHover(hoverZone);
+    }
+
+    function finishTouchCardDrag(event, cancelled = false) {
+      if (!touchDrag || event.pointerId !== touchDrag.pointerId) return;
+      const drag = touchDrag;
+      touchDrag = null;
+      if (!drag.active) return;
+      event.preventDefault();
+      suppressCardClickUntil = Date.now() + 500;
+      const dropZone = cancelled
+        ? null
+        : document.elementFromPoint(event.clientX, event.clientY)?.closest(".drop-zone");
+      const targetZone = dropZone?.dataset.zone;
+      const canDrop = Boolean(targetZone && targetZone !== "reg" && dropZone.classList.contains("is-drop-valid"));
+      drag.ghost?.remove();
+      drag.source?.classList.remove("is-touch-dragging");
+      shell.classList.remove("touch-dragging");
+      clearDropHints();
+      if (canDrop) {
+        placeCard(drag.cardId, targetZone);
+      } else if (!cancelled) {
+        toast("Suelta la carta sobre un campo iluminado.");
+      }
+    }
+
     function clearPressedButtons() {
       document.querySelectorAll("button.is-pressing").forEach((button) => button.classList.remove("is-pressing"));
     }
@@ -4113,6 +4258,11 @@
       if (!button || button.disabled) return;
       button.classList.add("is-pressing");
     }, { passive: true });
+
+    document.addEventListener("pointerdown", startTouchCardDrag, { passive: false });
+    document.addEventListener("pointermove", updateTouchDrag, { passive: false });
+    document.addEventListener("pointerup", (event) => finishTouchCardDrag(event), { passive: false });
+    document.addEventListener("pointercancel", (event) => finishTouchCardDrag(event, true), { passive: false });
 
     document.addEventListener("pointerup", clearPressedButtons, { passive: true });
     document.addEventListener("pointercancel", clearPressedButtons, { passive: true });
@@ -4125,6 +4275,11 @@
     document.addEventListener("click", (event) => {
       const button = event.target.closest("button");
       const zone = event.target.closest(".drop-zone");
+      if (button?.dataset.cardId && Date.now() < suppressCardClickUntil) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       if (!button && zone && zone.dataset.zone !== "reg") {
         const selectedHand = state.selected.map((id) => findCard(id)).find((item) => item && item.player === state.players[0] && item.zone === "hand");
         if (selectedHand) placeCard(selectedHand.card.id, zone.dataset.zone);
