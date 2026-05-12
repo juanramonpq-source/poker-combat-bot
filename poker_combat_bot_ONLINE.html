@@ -11741,10 +11741,19 @@ body.story-argos-hack-ui{
     overflow-x:auto;
     overflow-y:visible;
     align-items:flex-end;
-    padding:4px 9px 2px !important;
+    padding:10px 12px 8px !important;
+    height:100% !important;
     perspective:520px;
     mask-image:linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
     -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  }
+
+  .app.mobile-panorama-mode .compact-hand-panel{
+    grid-template-rows:minmax(0, 1fr) !important;
+  }
+
+  .app.mobile-panorama-mode .compact-hand-panel > .compact-section-head{
+    display:none !important;
   }
 
   .app.mobile-panorama-mode .compact-hand-tray .card,
@@ -19435,9 +19444,9 @@ function syncCompactHandTraySizing(tray, cardCount){
   const mobilePanorama = document.body?.classList.contains('mobile-panorama-mode');
   const mobileCompact = document.body?.classList.contains('mobile-compact-mode');
   if(mobileCompact || mobilePanorama){
-    const cardWidth = mobileCompact ? 60 : 46;
-    const cardHeight = mobileCompact ? 86 : 65;
-    const step = mobileCompact ? 48 : 42;
+    const cardWidth = mobileCompact ? 60 : 54;
+    const cardHeight = mobileCompact ? 86 : 77;
+    const step = mobileCompact ? 48 : 50;
     tray.style.setProperty('--compact-hand-card-width', `${cardWidth}px`);
     tray.style.setProperty('--compact-hand-card-height', `${cardHeight}px`);
     tray.style.setProperty('--compact-hand-card-step', `${step}px`);
