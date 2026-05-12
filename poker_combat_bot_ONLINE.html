@@ -1380,6 +1380,231 @@ body.victory .winner-banner.show{
   100%{transform:translate(var(--drift, 0px), 116vh) rotate(var(--twist, 720deg)) scaleY(.88); opacity:1}
 }
 
+.mobile-pro-fx-layer{
+  position:fixed;
+  inset:0;
+  z-index:9600;
+  pointer-events:none;
+  overflow:hidden;
+  display:none;
+  opacity:0;
+  --mobile-fx-main:#74fff2;
+  --mobile-fx-alt:#ffd65c;
+  --mobile-fx-danger:#ff5d34;
+}
+body.mobile-compact-mode .mobile-pro-fx-layer.show,
+body.mobile-panorama-mode .mobile-pro-fx-layer.show{
+  display:block;
+  animation:mobileFxLayerFade var(--mobile-fx-dur, 980ms) ease both;
+}
+.mobile-pro-fx-vignette,
+.mobile-pro-fx-grid,
+.mobile-pro-fx-ring,
+.mobile-pro-fx-streaks,
+.mobile-pro-fx-shards,
+.mobile-pro-fx-trophy,
+.mobile-pro-fx-caption{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%, -50%);
+}
+.mobile-pro-fx-vignette{
+  inset:0;
+  left:0;
+  top:0;
+  transform:none;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.12), transparent 18%),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--mobile-fx-main) 22%, transparent), transparent 42%),
+    linear-gradient(90deg, rgba(3,8,26,.18), transparent 28%, transparent 72%, rgba(3,8,26,.18));
+  mix-blend-mode:screen;
+  opacity:.0;
+}
+.mobile-pro-fx-grid{
+  width:min(620px, 120vw);
+  height:min(620px, 120vw);
+  border-radius:50%;
+  background:
+    repeating-radial-gradient(circle, transparent 0 26px, color-mix(in srgb, var(--mobile-fx-main) 24%, transparent) 27px 28px),
+    repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--mobile-fx-main) 35%, transparent) 0deg 1deg, transparent 1deg 12deg);
+  opacity:0;
+  filter:drop-shadow(0 0 18px color-mix(in srgb, var(--mobile-fx-main) 42%, transparent));
+}
+.mobile-pro-fx-ring{
+  width:min(420px, 84vw);
+  aspect-ratio:1;
+  border-radius:50%;
+  border:3px solid color-mix(in srgb, var(--mobile-fx-main) 74%, transparent);
+  box-shadow:
+    0 0 0 12px color-mix(in srgb, var(--mobile-fx-main) 12%, transparent),
+    0 0 34px color-mix(in srgb, var(--mobile-fx-main) 38%, transparent),
+    inset 0 0 24px color-mix(in srgb, var(--mobile-fx-alt) 20%, transparent);
+  opacity:0;
+}
+.mobile-pro-fx-streaks,
+.mobile-pro-fx-shards{
+  inset:-12%;
+  left:0;
+  top:0;
+  transform:none;
+}
+.mobile-pro-fx-streaks::before,
+.mobile-pro-fx-streaks::after{
+  content:"";
+  position:absolute;
+  left:-20%;
+  right:-20%;
+  top:36%;
+  height:16%;
+  opacity:0;
+  background:
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--mobile-fx-main) 72%, transparent), transparent 62%),
+    repeating-linear-gradient(90deg, transparent 0 46px, color-mix(in srgb, var(--mobile-fx-alt) 48%, transparent) 48px 56px, transparent 58px 96px);
+  filter:blur(.4px) drop-shadow(0 0 14px color-mix(in srgb, var(--mobile-fx-main) 50%, transparent));
+  transform:skewY(-8deg);
+}
+.mobile-pro-fx-streaks::after{
+  top:52%;
+  transform:skewY(7deg) scaleX(-1);
+}
+.mobile-pro-fx-shards::before,
+.mobile-pro-fx-shards::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:0;
+  background:
+    radial-gradient(circle at 18% 45%, var(--mobile-fx-alt) 0 3px, transparent 4px),
+    radial-gradient(circle at 34% 32%, var(--mobile-fx-main) 0 4px, transparent 5px),
+    radial-gradient(circle at 60% 38%, #fff 0 3px, transparent 4px),
+    radial-gradient(circle at 74% 58%, var(--mobile-fx-alt) 0 4px, transparent 5px),
+    radial-gradient(circle at 86% 44%, var(--mobile-fx-main) 0 3px, transparent 4px);
+  filter:drop-shadow(0 0 12px color-mix(in srgb, var(--mobile-fx-main) 50%, transparent));
+}
+.mobile-pro-fx-caption{
+  top:50%;
+  min-width:min(420px, calc(100vw - 34px));
+  padding:9px 18px 11px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb, var(--mobile-fx-main) 72%, transparent);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.18), transparent 58%),
+    linear-gradient(180deg, rgba(5,12,35,.86), rgba(2,5,18,.92));
+  color:#fff6d6;
+  text-align:center;
+  font:1000 clamp(.78rem, 3.4vw, 1.18rem)/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  text-shadow:0 0 14px color-mix(in srgb, var(--mobile-fx-main) 48%, transparent), 0 2px 0 rgba(0,0,0,.68);
+  box-shadow:0 0 28px color-mix(in srgb, var(--mobile-fx-main) 22%, transparent), inset 0 0 18px rgba(255,255,255,.06);
+  opacity:0;
+}
+.mobile-pro-fx-trophy{
+  top:43%;
+  font-size:clamp(5.4rem, 22vw, 10rem);
+  line-height:1;
+  opacity:0;
+  filter:
+    drop-shadow(0 0 18px rgba(255,214,92,.52))
+    drop-shadow(0 18px 16px rgba(3,7,18,.36));
+}
+.mobile-pro-fx-layer.fx-modify{
+  --mobile-fx-main:#74fff2;
+  --mobile-fx-alt:#ffd65c;
+  --mobile-fx-dur:1180ms;
+}
+.mobile-pro-fx-layer.fx-attack{
+  --mobile-fx-main:#ff5d34;
+  --mobile-fx-alt:#ffd65c;
+  --mobile-fx-dur:1040ms;
+}
+.mobile-pro-fx-layer.fx-defense{
+  --mobile-fx-main:#74fff2;
+  --mobile-fx-alt:#8affcb;
+  --mobile-fx-dur:980ms;
+}
+.mobile-pro-fx-layer.fx-impact{
+  --mobile-fx-main:#ff5d34;
+  --mobile-fx-alt:#ffcf68;
+  --mobile-fx-dur:920ms;
+}
+.mobile-pro-fx-layer.fx-victory{
+  --mobile-fx-main:#ffd65c;
+  --mobile-fx-alt:#74fff2;
+  --mobile-fx-dur:2300ms;
+}
+.mobile-pro-fx-layer.show .mobile-pro-fx-vignette{ animation:mobileFxVignette var(--mobile-fx-dur, 980ms) ease both; }
+.mobile-pro-fx-layer.show .mobile-pro-fx-grid{ animation:mobileFxGrid var(--mobile-fx-dur, 980ms) cubic-bezier(.18,.82,.2,1) both; }
+.mobile-pro-fx-layer.show .mobile-pro-fx-ring{ animation:mobileFxRing var(--mobile-fx-dur, 980ms) cubic-bezier(.14,.86,.18,1) both; }
+.mobile-pro-fx-layer.show .mobile-pro-fx-caption{ animation:mobileFxCaption var(--mobile-fx-dur, 980ms) cubic-bezier(.18,.82,.2,1) both; }
+.mobile-pro-fx-layer.fx-attack.show .mobile-pro-fx-streaks::before,
+.mobile-pro-fx-layer.fx-impact.show .mobile-pro-fx-streaks::before{ animation:mobileFxStreakLeft var(--mobile-fx-dur, 980ms) ease both; }
+.mobile-pro-fx-layer.fx-attack.show .mobile-pro-fx-streaks::after,
+.mobile-pro-fx-layer.fx-impact.show .mobile-pro-fx-streaks::after{ animation:mobileFxStreakRight var(--mobile-fx-dur, 980ms) ease both; }
+.mobile-pro-fx-layer.fx-modify.show .mobile-pro-fx-shards::before,
+.mobile-pro-fx-layer.fx-defense.show .mobile-pro-fx-shards::before,
+.mobile-pro-fx-layer.fx-victory.show .mobile-pro-fx-shards::before{ animation:mobileFxShards var(--mobile-fx-dur, 980ms) ease both; }
+.mobile-pro-fx-layer.fx-victory.show .mobile-pro-fx-trophy{ animation:mobileFxTrophy 2300ms cubic-bezier(.16,.86,.18,1) both; }
+.mobile-pro-fx-layer.fx-victory.show .mobile-pro-fx-caption{ top:64%; }
+@keyframes mobileFxLayerFade{
+  0%{opacity:0}
+  8%,78%{opacity:1}
+  100%{opacity:0}
+}
+@keyframes mobileFxVignette{
+  0%{opacity:0}
+  18%,60%{opacity:.92}
+  100%{opacity:0}
+}
+@keyframes mobileFxGrid{
+  0%{opacity:0; transform:translate(-50%,-50%) scale(.45) rotate(-18deg)}
+  22%{opacity:.86}
+  68%{opacity:.38; transform:translate(-50%,-50%) scale(1.15) rotate(26deg)}
+  100%{opacity:0; transform:translate(-50%,-50%) scale(1.44) rotate(48deg)}
+}
+@keyframes mobileFxRing{
+  0%{opacity:0; transform:translate(-50%,-50%) scale(.22)}
+  20%{opacity:1}
+  70%{opacity:.42}
+  100%{opacity:0; transform:translate(-50%,-50%) scale(1.38)}
+}
+@keyframes mobileFxCaption{
+  0%{opacity:0; transform:translate(-50%,-50%) scale(.78); filter:blur(6px)}
+  22%{opacity:1; transform:translate(-50%,-50%) scale(1.07); filter:blur(0)}
+  42%,70%{opacity:1; transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0; transform:translate(-50%,-50%) scale(.94); filter:blur(2px)}
+}
+@keyframes mobileFxStreakLeft{
+  0%{opacity:0; transform:translateX(-30%) skewY(-8deg)}
+  18%{opacity:.94}
+  100%{opacity:0; transform:translateX(34%) skewY(-8deg)}
+}
+@keyframes mobileFxStreakRight{
+  0%{opacity:0; transform:translateX(30%) skewY(7deg) scaleX(-1)}
+  18%{opacity:.76}
+  100%{opacity:0; transform:translateX(-34%) skewY(7deg) scaleX(-1)}
+}
+@keyframes mobileFxShards{
+  0%{opacity:0; transform:scale(.78)}
+  20%{opacity:1}
+  100%{opacity:0; transform:scale(1.12)}
+}
+@keyframes mobileFxTrophy{
+  0%{opacity:0; transform:translate(-50%,-50%) scale(.25) rotate(-18deg)}
+  18%{opacity:1; transform:translate(-50%,-50%) scale(1.18) rotate(5deg)}
+  34%{transform:translate(-50%,-50%) scale(.98) rotate(-3deg)}
+  72%{opacity:1; transform:translate(-50%,-52%) scale(1.04) rotate(2deg)}
+  100%{opacity:0; transform:translate(-50%,-60%) scale(1.28) rotate(8deg)}
+}
+
+@media (prefers-reduced-motion: reduce){
+  body.mobile-compact-mode .mobile-pro-fx-layer,
+  body.mobile-panorama-mode .mobile-pro-fx-layer{
+    display:none !important;
+  }
+}
+
 @media (max-width:1120px){
   .dual-mecha-stage{ position:relative; inset:auto; padding:18px 0 4px; }
 }
@@ -6942,7 +7167,7 @@ body.desktop-compact-mode > footer{
 
 .compact-topbar-actions{
   display:grid;
-  grid-template-columns:repeat(5, minmax(0, 1fr));
+  grid-template-columns:repeat(6, minmax(0, 1fr));
   gap:8px;
 }
 
@@ -7249,6 +7474,30 @@ body.desktop-compact-mode > footer{
 
 .desktop-compact-shell.compact-turn-shell-shake{
   animation:cockpitShakeLight .44s ease;
+}
+.desktop-compact-shell.compact-hud-shake-light{
+  animation:compactHudShakeLight .42s ease;
+}
+.desktop-compact-shell.compact-hud-shake-heavy{
+  animation:compactHudShakeHeavy .58s ease;
+}
+body.mobile-compact-mode .desktop-compact-shell.compact-hud-shake-heavy,
+body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
+  animation:compactHudShakeHeavy .66s cubic-bezier(.16,.86,.18,1);
+}
+@keyframes compactHudShakeLight{
+  0%,100%{ transform:translate3d(0,0,0); }
+  24%{ transform:translate3d(-3px,1px,0); }
+  48%{ transform:translate3d(4px,-2px,0); }
+  72%{ transform:translate3d(-2px,1px,0); }
+}
+@keyframes compactHudShakeHeavy{
+  0%,100%{ transform:translate3d(0,0,0) rotate(0deg); }
+  12%{ transform:translate3d(-7px,3px,0) rotate(-.35deg); }
+  30%{ transform:translate3d(8px,-4px,0) rotate(.28deg); }
+  48%{ transform:translate3d(-6px,3px,0) rotate(-.22deg); }
+  66%{ transform:translate3d(5px,-2px,0) rotate(.18deg); }
+  84%{ transform:translate3d(-3px,1px,0) rotate(-.1deg); }
 }
 
 .compact-zone-cards{
@@ -8078,8 +8327,11 @@ body.desktop-compact-mode > footer{
 
 .app.desktop-compact-mode .compact-hand-tray .card,
 .app.desktop-compact-mode .compact-hand-tray .card.card-detailed{
+  flex:0 0 var(--compact-hand-card-width) !important;
   width:var(--compact-hand-card-width) !important;
+  min-width:var(--compact-hand-card-width) !important;
   height:var(--compact-hand-card-height) !important;
+  min-height:var(--compact-hand-card-height) !important;
   border-radius:9px !important;
   margin-left:calc(var(--compact-hand-card-step) - var(--compact-hand-card-width));
 }
@@ -8131,6 +8383,99 @@ body.desktop-compact-mode > footer{
   box-shadow:0 18px 30px rgba(8,16,42,.34) !important;
   filter:drop-shadow(0 12px 18px rgba(8,16,42,.34)) drop-shadow(0 0 12px rgba(116,255,242,.18));
   will-change:left, top, transform;
+}
+
+.compact-drop-preview{
+  --compact-preview-y:-100%;
+  position:fixed;
+  z-index:10080;
+  display:none;
+  width:min(310px, calc(100vw - 18px));
+  padding:10px;
+  border-radius:16px;
+  border:2px solid rgba(255,236,177,.86);
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255,244,198,.28), transparent 42%),
+    linear-gradient(180deg, rgba(17,34,80,.96), rgba(9,18,46,.98));
+  color:#f7fbff;
+  box-shadow:0 18px 42px rgba(5,12,34,.42), 0 0 24px rgba(255,214,97,.18);
+  pointer-events:none;
+  transform:translate(-50%, var(--compact-preview-y)) scale(.98);
+  transform-origin:50% 100%;
+}
+
+.compact-drop-preview.show{
+  display:grid;
+  gap:8px;
+  animation:compactDropPreviewIn .14s ease both;
+}
+
+.compact-drop-preview-title{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  color:#fff2bd;
+  font:900 .68rem/1.05 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.compact-drop-preview-title strong{
+  color:#74fff2;
+  white-space:nowrap;
+}
+
+.compact-drop-preview-cards{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  min-height:58px;
+  overflow:hidden;
+}
+
+.compact-drop-preview-card{
+  min-width:42px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  border:2px solid rgba(255,255,255,.22);
+  background:linear-gradient(180deg, rgba(245,250,255,.96), rgba(196,214,246,.94));
+  color:#183564;
+  font:1000 .78rem/1 "Courier New",monospace;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.76);
+}
+
+.compact-drop-preview-card.incoming{
+  min-width:50px;
+  height:68px;
+  border-color:rgba(255,214,97,.92);
+  background:linear-gradient(180deg, #fff8d8, #ffbf72);
+  color:#612400;
+  box-shadow:0 0 18px rgba(255,214,97,.22), inset 0 1px 0 rgba(255,255,255,.86);
+}
+
+.compact-drop-preview-empty{
+  color:#bcd7ff;
+  font-size:.66rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.compact-zone-card.compact-dropzone-preview,
+.zone.compact-dropzone-preview,
+.module-box.compact-dropzone-preview{
+  position:relative;
+  z-index:80;
+  transform:translateY(-3px) scale(1.035);
+  overflow:visible;
+  box-shadow:0 16px 34px rgba(10,22,56,.26), 0 0 0 3px rgba(255,214,97,.22), inset 0 0 22px rgba(255,237,177,.16) !important;
+}
+
+@keyframes compactDropPreviewIn{
+  0%{opacity:0; transform:translate(-50%, calc(var(--compact-preview-y) + 8px)) scale(.94)}
+  100%{opacity:1; transform:translate(-50%, var(--compact-preview-y)) scale(1)}
 }
 
 @keyframes compactRadarSweep{
@@ -8529,7 +8874,7 @@ body.desktop-compact-mode > footer{
     padding:6px !important;
   }
   .app.mobile-panorama-mode .compact-topbar-actions{
-    grid-template-columns:repeat(5, minmax(0, 1fr));
+    grid-template-columns:repeat(6, minmax(0, 1fr));
     gap:6px;
   }
   .app.mobile-panorama-mode .compact-topbar-actions button{
@@ -8845,13 +9190,20 @@ body.desktop-compact-mode > footer{
   .app.mobile-panorama-mode .compact-hand-tray{
     --compact-hand-card-width:46px;
     --compact-hand-card-height:65px;
-    --compact-hand-card-step:25px;
+    --compact-hand-card-step:42px;
     padding:6px 9px;
     border-radius:12px;
     align-items:center;
-    touch-action:none;
+    overflow-x:auto;
+    overflow-y:hidden;
+    touch-action:pan-x;
     user-select:none;
     -webkit-user-select:none;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .app.mobile-panorama-mode .compact-hand-tray::-webkit-scrollbar{
+    display:none;
   }
   .app.mobile-panorama-mode .compact-hand-tray .card,
   .app.mobile-panorama-mode [data-compact-dropzone]{
@@ -9136,6 +9488,372 @@ body.desktop-compact-mode > footer{
     padding:3px 4px !important;
     font-size:.42rem !important;
     line-height:.84 !important;
+  }
+}
+
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse){
+  body.mobile-compact-mode{
+    overflow:hidden;
+    background:#070f31;
+  }
+  .app.mobile-compact-mode{
+    position:fixed;
+    inset:0;
+    z-index:1200;
+    width:100vw;
+    height:100dvh;
+    max-width:none !important;
+    min-height:100dvh;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 20%, rgba(138,210,255,.18), transparent 38%),
+      linear-gradient(180deg, #091540, #07102c 68%, #060b22);
+  }
+  .app.mobile-compact-mode .cockpit-grid,
+  .app.mobile-compact-mode .board,
+  .app.mobile-compact-mode .bottom-strip,
+  .app.mobile-compact-mode .footer-note{
+    display:none !important;
+  }
+  .app.mobile-compact-mode .desktop-compact-shell{
+    display:grid !important;
+    position:absolute;
+    inset:0;
+    width:100dvw;
+    height:min(100dvh, 100svh);
+    max-width:none;
+    min-height:0;
+    grid-template-columns:minmax(0, 1fr);
+    grid-template-rows:42px minmax(160px, .9fr) minmax(154px, .62fr) minmax(116px, .42fr) minmax(92px, .28fr);
+    grid-template-areas:
+      "topbar"
+      "arena"
+      "player"
+      "hand"
+      "dock";
+    gap:5px;
+    padding:max(5px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+    overflow:hidden;
+    transform:none;
+  }
+  .app.mobile-compact-mode .desktop-compact-main,
+  .app.mobile-compact-mode .desktop-compact-bottom{
+    display:contents;
+  }
+  .app.mobile-compact-mode .compact-topbar{
+    grid-area:topbar;
+    padding:5px !important;
+  }
+  .app.mobile-compact-mode .compact-topbar-actions{
+    grid-template-columns:repeat(6, minmax(0, 1fr));
+    gap:4px;
+  }
+  .app.mobile-compact-mode .compact-topbar-actions button{
+    min-height:30px;
+    padding:4px 5px !important;
+    font-size:.48rem !important;
+    line-height:.92 !important;
+    letter-spacing:.005em !important;
+    white-space:normal;
+    overflow-wrap:anywhere;
+  }
+  .app.mobile-compact-mode .compact-arena-panel{
+    grid-area:arena;
+    min-height:0;
+    grid-template-rows:minmax(0, 1fr) auto;
+    gap:5px;
+    padding:5px !important;
+  }
+  .app.mobile-compact-mode .compact-arena-core{
+    min-height:0;
+    padding:4px 7px 3px;
+    grid-template-columns:minmax(0, 1fr) minmax(58px, .12fr) minmax(0, 1fr);
+  }
+  .app.mobile-compact-mode .compact-arena-brand{
+    width:clamp(58px, 15vw, 84px);
+    margin-top:5px;
+    opacity:.68;
+  }
+  .app.mobile-compact-mode .compact-mecha-stage{
+    min-height:0;
+    padding:1px 1px 2px;
+    align-content:start;
+  }
+  .app.mobile-compact-mode .compact-mecha-stage-head{
+    padding:0 4px;
+    gap:4px;
+  }
+  .app.mobile-compact-mode .compact-mecha-stage-head span{
+    font-size:.52rem;
+  }
+  .app.mobile-compact-mode .compact-mecha-stage-head strong{
+    font-size:.66rem;
+  }
+  .app.mobile-compact-mode .compact-mecha-ring{
+    width:clamp(88px, 27vw, 118px);
+    height:clamp(88px, 27vw, 118px);
+    border-width:7px;
+  }
+  .app.mobile-compact-mode .compact-mecha-ring-fill{
+    inset:9px;
+    border-width:3px;
+  }
+  .app.mobile-compact-mode .compact-mecha-ring img{
+    height:132%;
+    --mecha-float-base:translateY(-6px);
+    transform:var(--mecha-float-base);
+  }
+  .app.mobile-compact-mode .compact-mecha-stage-foot{
+    min-height:10px;
+    margin-top:-3px;
+    font-size:.48rem;
+  }
+  .app.mobile-compact-mode .compact-mecha-module-values{
+    display:none;
+  }
+  .app.mobile-compact-mode .compact-readout-strip{
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:4px;
+  }
+  .app.mobile-compact-mode .compact-readout{
+    min-height:34px;
+    padding:4px 5px !important;
+    border-width:2px !important;
+  }
+  .app.mobile-compact-mode .compact-readout .tiny-label{
+    font-size:.4rem;
+  }
+  .app.mobile-compact-mode .compact-readout .value{
+    margin-top:2px;
+    font-size:.52rem !important;
+  }
+  .app.mobile-compact-mode .compact-player-panel{
+    grid-area:player;
+    min-height:0;
+    grid-template-rows:auto minmax(0, 1fr);
+    gap:5px;
+    padding:6px !important;
+    overflow:hidden;
+  }
+  .app.mobile-compact-mode .compact-section-head{
+    gap:5px;
+    margin-bottom:4px;
+  }
+  .app.mobile-compact-mode .compact-section-head h2,
+  .app.mobile-compact-mode .compact-tutorial-panel h2{
+    font-size:.84rem;
+  }
+  .app.mobile-compact-mode .compact-kicker{
+    font-size:.5rem;
+  }
+  .app.mobile-compact-mode .compact-chip{
+    min-height:20px;
+    padding:3px 6px;
+    font-size:.5rem;
+  }
+  .app.mobile-compact-mode .compact-player-zones{
+    grid-template-rows:minmax(44px, .68fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap:5px;
+    min-height:0;
+  }
+  .app.mobile-compact-mode .compact-zone-card{
+    gap:3px;
+    padding:5px;
+    border-radius:10px;
+    min-height:0;
+  }
+  .app.mobile-compact-mode .compact-zone-head{
+    font-size:.48rem;
+    line-height:1;
+    gap:4px;
+    letter-spacing:.07em;
+  }
+  .app.mobile-compact-mode .compact-zone-head strong{
+    font-size:.56rem;
+  }
+  .app.mobile-compact-mode .compact-zone-cards{
+    --compact-zone-card-width:28px;
+    --compact-zone-card-height:40px;
+    min-height:35px;
+    gap:3px;
+    overflow-y:auto;
+  }
+  .app.mobile-compact-mode .compact-empty{
+    min-width:44px;
+    min-height:23px;
+    padding:0 5px;
+    font-size:.46rem;
+  }
+  .app.mobile-compact-mode .compact-hand-panel{
+    grid-area:hand;
+    display:grid;
+    grid-template-rows:auto minmax(0, 1fr);
+    gap:4px;
+    min-height:0;
+    padding:5px !important;
+  }
+  .app.mobile-compact-mode .compact-hand-panel .compact-section-head{
+    margin-bottom:0;
+  }
+  .app.mobile-compact-mode .compact-hand-metrics{
+    gap:3px;
+  }
+  .app.mobile-compact-mode .compact-hand-chip{
+    min-height:19px;
+    padding:2px 5px;
+    font-size:.48rem;
+  }
+  .app.mobile-compact-mode .compact-hand-chip-wide{
+    max-width:84px;
+  }
+  .app.mobile-compact-mode .compact-hand-tray{
+    --compact-hand-card-width:54px;
+    --compact-hand-card-height:77px;
+    --compact-hand-card-step:60px;
+    min-height:0;
+    padding:5px 7px 7px;
+    border-radius:12px;
+    align-items:center;
+    overflow-x:auto;
+    overflow-y:hidden;
+    touch-action:pan-x;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .app.mobile-compact-mode .compact-hand-tray::-webkit-scrollbar{
+    display:none;
+  }
+  .app.mobile-compact-mode .compact-hand-tray .card,
+  .app.mobile-compact-mode [data-compact-dropzone]{
+    touch-action:none;
+  }
+  .app.mobile-compact-mode .compact-mobile-actions-panel{
+    grid-area:dock;
+    display:grid;
+    grid-template-rows:auto minmax(0, 1fr);
+    gap:4px;
+    min-height:0;
+    padding:5px !important;
+    background:linear-gradient(180deg, rgba(128,158,232,.97), rgba(61,88,186,.97)) !important;
+  }
+  .app.mobile-compact-mode .compact-mobile-actions-panel .compact-section-head{
+    display:none;
+  }
+  .app.mobile-compact-mode .compact-mobile-hand-summary{
+    display:none;
+  }
+  .app.mobile-compact-mode .compact-mobile-action-grid{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-auto-rows:minmax(27px, auto);
+    gap:4px;
+    min-height:0;
+    overflow-y:auto;
+    padding-right:2px;
+  }
+  .app.mobile-compact-mode .compact-mobile-action-grid button{
+    min-height:27px;
+    padding:4px 5px !important;
+    font-size:.46rem !important;
+    line-height:.9 !important;
+    letter-spacing:0 !important;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    text-wrap:balance;
+  }
+  .app.mobile-compact-mode #compactMobileModifyBtn{
+    min-height:34px;
+    font-size:.56rem !important;
+  }
+  .app.mobile-compact-mode #compactMobilePlayerDrawerBtn{
+    display:none;
+  }
+  .app.mobile-compact-mode #compactMobileConfirmAttackBtn,
+  .app.mobile-compact-mode #compactMobileConfirmDefenseBtn{
+    min-height:34px;
+    font-size:.44rem !important;
+    line-height:.84 !important;
+  }
+  .app.mobile-compact-mode .compact-rival-panel,
+  .app.mobile-compact-mode .compact-actions-panel{
+    display:grid;
+    position:absolute;
+    top:50px;
+    bottom:104px;
+    left:6px;
+    right:6px;
+    z-index:54;
+    min-height:0;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(8px) scale(.985);
+    transition:opacity .16s ease, transform .16s ease;
+    box-shadow:0 18px 44px rgba(7,14,44,.42), 0 0 0 999px rgba(3,8,28,.24);
+  }
+  body.mobile-compact-mode.compact-mobile-actions-open .compact-actions-panel,
+  body.mobile-compact-mode.compact-mobile-rival-open .compact-rival-panel{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0) scale(1);
+  }
+  .app.mobile-compact-mode .compact-action-grid{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-auto-rows:minmax(38px, 1fr);
+    gap:6px;
+    overflow-y:auto;
+  }
+  .app.mobile-compact-mode .compact-action-grid button{
+    min-height:38px;
+    padding:6px 7px !important;
+    font-size:.58rem !important;
+    line-height:.96 !important;
+  }
+  .app.mobile-compact-mode .compact-rival-zones{
+    min-height:0;
+    overflow-y:auto;
+  }
+  .app.mobile-compact-mode .compact-mobile-drawer-close{
+    display:none !important;
+    min-height:22px;
+    padding:3px 8px !important;
+    border-radius:999px;
+    font-size:.52rem !important;
+  }
+  body.mobile-compact-mode.compact-mobile-actions-open .compact-actions-panel .compact-mobile-drawer-close,
+  body.mobile-compact-mode.compact-mobile-rival-open .compact-rival-panel .compact-mobile-drawer-close{
+    display:inline-flex !important;
+  }
+  .app.mobile-compact-mode .compact-tutorial-panel{
+    display:none;
+    position:absolute;
+    left:8px;
+    right:8px;
+    top:50px;
+    max-height:190px;
+    z-index:52;
+    border-radius:12px;
+    box-shadow:0 18px 42px rgba(28,6,6,.42);
+  }
+  body.mobile-compact-mode.compact-tutorial-popup-active .compact-tutorial-panel{
+    display:grid;
+  }
+  body.mobile-compact-mode.compact-mobile-actions-open .compact-tutorial-panel,
+  body.mobile-compact-mode.compact-mobile-rival-open .compact-tutorial-panel{
+    display:none !important;
+  }
+  .app.mobile-compact-mode .compact-defense-warning{
+    top:50%;
+    left:50%;
+    right:auto;
+    bottom:auto;
+    width:min(330px, calc(100vw - 28px));
+    transform:translate(-50%, -50%) scale(.94);
+    z-index:80;
+  }
+  .app.mobile-compact-mode .compact-defense-warning.show{
+    transform:translate(-50%, -50%) scale(1);
   }
 }
 
@@ -10478,8 +11196,9 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
   <section class="desktop-compact-shell" id="desktopCompactShell" aria-hidden="true">
     <div class="frame compact-topbar">
       <div class="compact-topbar-actions">
-        <button class="primary" data-source-button="saveGameBtn" id="compactSaveBtn" type="button">Salvar partida</button>
+        <button class="primary" data-source-button="saveGameBtn" id="compactSaveBtn" type="button">Guardar</button>
         <button class="cyan" data-source-button="loadGameBtn" id="compactLoadBtn" type="button">Cargar partida</button>
+        <button data-source-button="newGameBtn" id="compactNewGameBtn" type="button">Nueva partida</button>
         <button data-source-button="returnHomeBtn" id="compactReturnBtn" type="button">Volver</button>
         <button data-source-button="toggleTutorialBtn" id="compactTutorialBtn" type="button">Tutorial ON</button>
         <button class="warn" data-view-mode="expanded" id="compactExpandedToggleBtn" type="button">Interfaz expandida</button>
@@ -10677,7 +11396,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
         <div class="compact-section-head compact-section-head-tight">
           <div>
             <div class="compact-kicker">Consola</div>
-            <h2>Acciones del turno</h2>
+            <h2>Otras acciones</h2>
           </div>
           <div class="compact-chip-stack">
             <span class="compact-chip" id="compactSelectionSummary">0 seleccionadas</span>
@@ -10743,11 +11462,11 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
           </div>
         </div>
         <div class="compact-mobile-action-grid">
-          <button class="primary" data-mobile-drawer="actions" id="compactMobileActionsDrawerBtn" type="button">Todas las acciones</button>
-          <button class="cyan" data-mobile-drawer="rival" id="compactMobileRivalDrawerBtn" type="button">Ver rival</button>
-          <button class="cyan" data-mobile-drawer="player" id="compactMobilePlayerDrawerBtn" type="button">Panel jugador</button>
           <button class="primary" data-source-button="actionAddBtn" id="compactMobileModifyBtn" type="button">Modificar</button>
           <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Abrir ataque</button>
+          <button class="primary" data-mobile-drawer="actions" id="compactMobileActionsDrawerBtn" type="button">Otras acciones</button>
+          <button class="cyan" data-mobile-drawer="rival" id="compactMobileRivalDrawerBtn" type="button">Ver rival</button>
+          <button class="cyan" data-mobile-drawer="player" id="compactMobilePlayerDrawerBtn" type="button">Panel jugador</button>
           <button class="warn compact-action-hidden" data-contextual-projectile-mode="true" data-source-button="toggleProjectileBtn" id="compactMobileProjectileModeBtn" type="button">Modo proyectil</button>
           <button class="warn compact-action-hidden" data-contextual-projectile-only="true" data-source-button="projectileOnlyBtn" id="compactMobileProjectileOnlyBtn" type="button">Solo proyectil</button>
           <button class="danger" data-contextual-attack="true" data-source-button="confirmAttackBtn" id="compactMobileConfirmAttackBtn" type="button">Confirmar ataque</button>
@@ -11383,25 +12102,18 @@ function primeOfflineMode(gameMode, difficulty=null){
 }
 
 function shouldDefaultNormalCombatToMobileHorizontal(){
-  if(STORY_EMBED_MODE) return false;
-  try{
-    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-    const compactViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
-    return hasCoarsePointer && compactViewport;
-  }catch(_err){
-    return false;
-  }
+  return false;
 }
 
 function prepareNormalCombatStartHudMode(){
   if(STORY_EMBED_MODE) return;
   desktopHudMode = 'compact';
-  mobilePanoramaRequested = shouldDefaultNormalCombatToMobileHorizontal();
-  if(mobilePanoramaRequested) requestLandscapeOrientationBestEffort();
+  mobilePanoramaRequested = false;
+  releaseOrientationLockBestEffort();
 }
 
 function shouldStartTowerCombatInMobileHorizontal(mission){
-  return false;
+  return isStoryMobileViewport();
 }
 
 function prepareStoryCombatStartHudMode(){
@@ -12636,12 +13348,65 @@ function ensureEnhancedFxDom(){
     layer.className = 'ui-particle-layer';
     document.body.appendChild(layer);
   }
+  if(!document.getElementById('mobileProFxLayer')){
+    const layer = document.createElement('div');
+    layer.id = 'mobileProFxLayer';
+    layer.className = 'mobile-pro-fx-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML = `
+      <div class="mobile-pro-fx-vignette"></div>
+      <div class="mobile-pro-fx-grid"></div>
+      <div class="mobile-pro-fx-ring"></div>
+      <div class="mobile-pro-fx-streaks"></div>
+      <div class="mobile-pro-fx-shards"></div>
+      <div class="mobile-pro-fx-trophy">🏆</div>
+      <div class="mobile-pro-fx-caption"></div>
+    `;
+    document.body.appendChild(layer);
+  }
   if(screen && !document.getElementById('screenRippleLayer')){
     const rippleLayer = document.createElement('div');
     rippleLayer.id = 'screenRippleLayer';
     rippleLayer.className = 'screen-ripple-layer';
     screen.appendChild(rippleLayer);
   }
+}
+
+function isMobileProHudActive(){
+  return !!document.body?.classList.contains('mobile-compact-mode') || !!document.body?.classList.contains('mobile-panorama-mode');
+}
+
+function triggerMobileProFx(kind='impact', options={}){
+  if(!isMobileProHudActive()) return false;
+  ensureEnhancedFxDom();
+  const layer = document.getElementById('mobileProFxLayer');
+  if(!layer) return false;
+  const normalized = ['modify','attack','defense','impact','victory'].includes(kind) ? kind : 'impact';
+  const caption = layer.querySelector('.mobile-pro-fx-caption');
+  const text = options.text || {
+    modify:'Sistema modificado',
+    attack:'Ataque declarado',
+    defense:'Defensa activada',
+    impact:'Impacto',
+    victory:'Victoria'
+  }[normalized];
+  if(caption) caption.textContent = text;
+  layer.className = `mobile-pro-fx-layer fx-${normalized}`;
+  void layer.offsetWidth;
+  layer.classList.add('show');
+  window.clearTimeout(layer._mobileFxTimer);
+  layer._mobileFxTimer = window.setTimeout(() => {
+    layer.classList.remove('show');
+  }, options.duration || (normalized === 'victory' ? 2300 : 1200));
+
+  const target = Number.isInteger(options.playerIdx)
+    ? (getCompactMechaAnchor(options.playerIdx)?.target || getCompactCombatSurface())
+    : getCompactCombatSurface();
+  if(target){
+    const palette = normalized === 'defense' ? 'cyan' : normalized === 'modify' || normalized === 'victory' ? 'amber' : (options.heavy ? 'red' : 'amber');
+    spawnElementSparks(target, normalized === 'victory' ? 46 : options.heavy ? 34 : 24, palette);
+  }
+  return true;
 }
 let combatOpeningTimer = null;
 function getCombatOpeningCopy(reason='combat'){
@@ -12751,10 +13516,21 @@ function triggerVictorySequence(){
   document.body.classList.add('victory');
   stopAllMusic(false);
   state.musicPhase = 'none';
-  const mobilePanoramaVictory = !!document.body?.classList.contains('mobile-panorama-mode');
-  spawnConfetti(mobilePanoramaVictory ? 260 : 180, { streamers: mobilePanoramaVictory });
+  const mobileVictory = isMobileProHudActive();
+  spawnConfetti(mobileVictory ? 320 : 180, { streamers: mobileVictory });
+  const playMobileVictoryFx = () => {
+    triggerMobileProFx('victory', { text: state.winner ? `${state.winner} gana` : 'Victoria', duration: 2300 });
+  };
+  window.setTimeout(playMobileVictoryFx, mobileVictory ? 40 : 0);
+  if(mobileVictory){
+    window.setTimeout(() => {
+      const layer = document.getElementById('mobileProFxLayer');
+      if(layer && !layer.classList.contains('show')) playMobileVictoryFx();
+    }, 190);
+  }
   playUiSound('victory');
   triggerScreenRipple('amber');
+  triggerScreenShake(mobileVictory ? 'heavy' : 'light');
   pulseVibrate([60, 40, 60, 40, 120]);
 }
 function spawnDamageNumber(defenderIdx, points){
@@ -14053,6 +14829,11 @@ function exitStoryEmbedSpecialMode(options = {}){
 function toggleStoryEmbedInterfaceMode(){
   if(!STORY_EMBED_MODE) return;
   if(storyHudMode !== 'scroll' || isDesktopCompactModeActive()){
+    if(isStoryMobileViewport() && storyHudMode === 'horizontal'){
+      addToast('En móvil, el modo historia usa la interfaz horizontal.', 'warn');
+      requestLandscapeOrientationBestEffort();
+      return;
+    }
     exitStoryEmbedSpecialMode();
     return;
   }
@@ -15581,24 +16362,34 @@ function canUseDesktopCompactHud(){
   return !!state.gameStarted && introHidden && lobbyHidden && isDesktopCompactCapable() && isDesktopCompactLikelyFullscreen();
 }
 
-function canUseMobilePanoramaHud(){
+function canOfferMobilePanoramaHud(){
   const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
   try{
     const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
     const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
-    const portraitReady = !!window.matchMedia && window.matchMedia('(max-width: 820px) and (orientation: portrait) and (pointer: coarse)').matches;
-    const landscapeReady = isMobileLandscapeViewport();
-    const storyForcedMobile = shouldUseStoryMobileCompactMode();
-    return !!state.gameStarted
-      && introHidden
-      && lobbyHidden
-      && hasCoarsePointer
-      && compactMobileViewport
-      && (storyForcedMobile || portraitReady || landscapeReady || mobilePanoramaRequested);
+    return !!state.gameStarted && introHidden && lobbyHidden && hasCoarsePointer && compactMobileViewport;
   }catch(_err){
     return false;
   }
+}
+
+function canOfferMobileCompactHud(){
+  if(STORY_EMBED_MODE && storyHudMode === 'horizontal') return false;
+  const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
+  const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
+  try{
+    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 920;
+    const portrait = !!window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
+    return !!state.gameStarted && introHidden && lobbyHidden && hasCoarsePointer && compactMobileViewport && portrait;
+  }catch(_err){
+    return false;
+  }
+}
+
+function canUseMobilePanoramaHud(){
+  return canOfferMobilePanoramaHud() && (shouldUseStoryMobileCompactMode() || mobilePanoramaRequested);
 }
 
 function shouldPreserveMobilePanoramaRequest(){
@@ -15651,7 +16442,7 @@ function setCompactMobileDrawer(drawer){
 }
 
 function closeCompactMobileDrawersForCombat(){
-  if(!document.body?.classList.contains('mobile-panorama-mode')) return;
+  if(!document.body?.classList.contains('mobile-panorama-mode') && !document.body?.classList.contains('mobile-compact-mode')) return;
   setCompactMobileDrawer('');
 }
 
@@ -15721,20 +16512,24 @@ function syncDesktopHudAvailability(){
   const app = document.querySelector('.app');
   if(!app) return false;
   let desktopAvailable = canUseDesktopCompactHud();
+  let mobileCompactAvailable = canOfferMobileCompactHud();
   let mobilePanoramaAvailable = canUseMobilePanoramaHud();
   let preservingMobilePanoramaRequest = false;
   syncDevMobilePanoramaEmulation(devHudModeOverride === 'mobile-horizontal');
   if(devHudModeOverride === 'compact' || isDevHorizontalHudOverride()){
     desktopAvailable = devHudModeOverride === 'compact';
+    mobileCompactAvailable = false;
     mobilePanoramaAvailable = isDevHorizontalHudOverride();
     desktopHudMode = 'compact';
     mobilePanoramaRequested = isDevHorizontalHudOverride();
   }
-  let available = desktopAvailable || mobilePanoramaAvailable;
+  if(mobilePanoramaAvailable) mobileCompactAvailable = false;
+  let available = desktopAvailable || mobileCompactAvailable || mobilePanoramaAvailable;
   if(!available && devHudModeOverride === 'auto'){
     if(shouldPreserveMobilePanoramaRequest()){
       preservingMobilePanoramaRequest = true;
       mobilePanoramaAvailable = true;
+      mobileCompactAvailable = false;
       available = true;
       desktopHudMode = 'compact';
     }else{
@@ -15744,6 +16539,7 @@ function syncDesktopHudAvailability(){
   }
   const compactActive = available && desktopHudMode === 'compact';
   const mobilePanoramaActive = compactActive && mobilePanoramaAvailable && !desktopAvailable;
+  const mobileCompactActive = compactActive && mobileCompactAvailable && !desktopAvailable && !mobilePanoramaActive;
   if(!compactActive){
     teardownCompactHandDrag();
     setCompactDropzoneHighlights([], '');
@@ -15752,18 +16548,21 @@ function syncDesktopHudAvailability(){
   if(!mobilePanoramaActive) mobilePanoramaVitalityStage = null;
   app.classList.toggle('desktop-compact-available', available);
   app.classList.toggle('desktop-compact-mode', compactActive);
+  app.classList.toggle('mobile-compact-mode', mobileCompactActive);
   app.classList.toggle('mobile-panorama-mode', mobilePanoramaActive);
   document.body.classList.toggle('desktop-compact-mode', compactActive);
+  document.body.classList.toggle('mobile-compact-mode', mobileCompactActive);
   document.body.classList.toggle('mobile-panorama-mode', mobilePanoramaActive);
-  document.body.classList.toggle('compact-tutorial-popup-active', mobilePanoramaActive && (state.tutorial || tutorialSystem.enabled));
+  document.body.classList.toggle('compact-tutorial-popup-active', (mobilePanoramaActive || mobileCompactActive) && (state.tutorial || tutorialSystem.enabled));
   if(mobilePanoramaActive && STORY_EMBED_MODE && !storyOrientationToastShownForMode){
     storyOrientationToastShownForMode = true;
     window.setTimeout(showStoryOrientationLockToast, 160);
   }
-  if(!mobilePanoramaActive){
+  if(!mobilePanoramaActive && !mobileCompactActive){
     storyOrientationToastShownForMode = false;
     setCompactMobileDrawer('');
   }
+  const mobilePanoramaOffered = canOfferMobilePanoramaHud();
   const topToggleBtn = document.getElementById('desktopCompactToggleTopBtn');
   if(topToggleBtn){
     topToggleBtn.hidden = !desktopAvailable;
@@ -15772,8 +16571,8 @@ function syncDesktopHudAvailability(){
   }
   const mobileToggleBtn = document.getElementById('mobilePanoramaToggleBtn');
   if(mobileToggleBtn){
-    mobileToggleBtn.hidden = !mobilePanoramaAvailable;
-    mobileToggleBtn.disabled = !mobilePanoramaAvailable;
+    mobileToggleBtn.hidden = !mobilePanoramaOffered;
+    mobileToggleBtn.disabled = !mobilePanoramaOffered;
     mobileToggleBtn.textContent = 'Modo horizontal';
   }
   const shell = document.getElementById('desktopCompactShell');
@@ -15781,7 +16580,9 @@ function syncDesktopHudAvailability(){
   syncMobilePanoramaVitalityPanels();
   const compactExpandedBtn = document.getElementById('compactExpandedToggleBtn');
   if(compactExpandedBtn){
-    compactExpandedBtn.textContent = STORY_EMBED_MODE ? 'Modo scroll' : (mobilePanoramaActive ? 'Modo vertical' : 'Interfaz expandida');
+    compactExpandedBtn.textContent = STORY_EMBED_MODE
+      ? (mobilePanoramaActive ? 'Historia horizontal' : 'Modo scroll')
+      : ((mobilePanoramaActive || mobileCompactActive) ? 'Interfaz clásica' : 'Interfaz expandida');
   }
   const compactReturnBtn = document.getElementById('compactReturnBtn');
   if(compactReturnBtn && STORY_EMBED_MODE){
@@ -15792,7 +16593,7 @@ function syncDesktopHudAvailability(){
 }
 
 function setDesktopHudMode(mode){
-  if(mode === 'compact' && devHudModeOverride === 'auto' && !(canUseDesktopCompactHud() || canUseMobilePanoramaHud())) return;
+  if(mode === 'compact' && devHudModeOverride === 'auto' && !(canUseDesktopCompactHud() || canOfferMobileCompactHud() || canUseMobilePanoramaHud())) return;
   desktopHudMode = mode === 'compact' ? 'compact' : 'expanded';
   syncDesktopHudAvailability();
   render();
@@ -15800,7 +16601,7 @@ function setDesktopHudMode(mode){
 
 function triggerDesktopHudModeTransition(mode){
   if(mode !== 'compact' && mode !== 'expanded') return;
-  if(mode === 'compact' && devHudModeOverride === 'auto' && !(canUseDesktopCompactHud() || canUseMobilePanoramaHud())) return;
+  if(mode === 'compact' && devHudModeOverride === 'auto' && !(canUseDesktopCompactHud() || canOfferMobileCompactHud() || canUseMobilePanoramaHud())) return;
 
   const app = document.querySelector('.app');
   const overlay = document.getElementById('desktopHudTransition');
@@ -16058,6 +16859,91 @@ function setCompactDropzoneHighlights(legalZones=[], activeZone=''){
     section.classList.toggle('compact-dropzone-legal', isLegal);
     section.classList.toggle('compact-dropzone-active', isLegal && activeZone === entry.zone);
   });
+  syncCompactDropPreview(legalZones, activeZone, compactPointerDragState?.cardId || '', playerIdx);
+}
+
+function getCompactDropPreviewElement(){
+  let preview = document.getElementById('compactDropPreview');
+  if(preview) return preview;
+  preview = document.createElement('div');
+  preview.id = 'compactDropPreview';
+  preview.className = 'compact-drop-preview';
+  preview.innerHTML = `
+    <div class="compact-drop-preview-title">
+      <span>Destino</span>
+      <strong></strong>
+    </div>
+    <div class="compact-drop-preview-cards"></div>
+  `;
+  document.body.appendChild(preview);
+  return preview;
+}
+
+function getCompactPreviewZoneCards(player, zone){
+  if(!player) return [];
+  if(zone === 'core') return createCoreArray(player).filter(Boolean);
+  return Array.isArray(player[zone]) ? player[zone].filter(Boolean) : [];
+}
+
+function hideCompactDropPreview(){
+  document.querySelectorAll('.compact-dropzone-preview').forEach(node => node.classList.remove('compact-dropzone-preview'));
+  const preview = document.getElementById('compactDropPreview');
+  if(preview) preview.classList.remove('show');
+}
+
+function syncCompactDropPreview(legalZones=[], activeZone='', cardId='', playerIdx=getDesktopCompactPlayerIndex()){
+  document.querySelectorAll('.compact-dropzone-preview').forEach(node => node.classList.remove('compact-dropzone-preview'));
+  if(!activeZone || !legalZones.includes(activeZone) || !cardId){
+    hideCompactDropPreview();
+    return;
+  }
+  const dropzone = getCompactDraftDropzoneMap(playerIdx)[activeZone];
+  const section = dropzone ? document.getElementById(dropzone.sectionId) : null;
+  const cardsWrap = dropzone ? document.getElementById(dropzone.cardsId) : null;
+  const player = state.players?.[playerIdx];
+  const incoming = player?.hand?.find(card => card.id === cardId);
+  if(!section || !cardsWrap || !player || !incoming){
+    hideCompactDropPreview();
+    return;
+  }
+
+  section.classList.add('compact-dropzone-preview');
+  const preview = getCompactDropPreviewElement();
+  const title = preview.querySelector('.compact-drop-preview-title strong');
+  const cardList = preview.querySelector('.compact-drop-preview-cards');
+  if(title) title.textContent = dropzone.label;
+  if(cardList){
+    const currentCards = getCompactPreviewZoneCards(player, activeZone).slice(-5);
+    cardList.innerHTML = '';
+    if(!currentCards.length){
+      const empty = document.createElement('div');
+      empty.className = 'compact-drop-preview-empty';
+      empty.textContent = 'Vacío';
+      cardList.appendChild(empty);
+    }
+    currentCards.forEach(card => {
+      const node = document.createElement('div');
+      node.className = 'compact-drop-preview-card';
+      node.textContent = cardText(card);
+      node.dataset.suit = card.suit || '';
+      cardList.appendChild(node);
+    });
+    const incomingNode = document.createElement('div');
+    incomingNode.className = 'compact-drop-preview-card incoming';
+    incomingNode.textContent = `+ ${cardText(incoming)}`;
+    incomingNode.dataset.suit = incoming.suit || '';
+    cardList.appendChild(incomingNode);
+  }
+
+  const rect = section.getBoundingClientRect();
+  const estimatedWidth = Math.min(310, Math.max(220, window.innerWidth - 18));
+  const left = Math.min(window.innerWidth - estimatedWidth / 2 - 9, Math.max(estimatedWidth / 2 + 9, rect.left + rect.width / 2));
+  const previewAbove = rect.top > 178;
+  preview.style.left = `${left}px`;
+  preview.style.top = previewAbove ? `${rect.top - 10}px` : `${rect.bottom + 10}px`;
+  preview.style.setProperty('--compact-preview-y', previewAbove ? '-100%' : '0px');
+  preview.style.transformOrigin = previewAbove ? '50% 100%' : '50% 0%';
+  preview.classList.add('show');
 }
 
 function getCompactDraftPreviewCardCount(playerIdx, zone, actualCount){
@@ -16261,7 +17147,7 @@ function teardownCompactHandDrag(){
 function beginCompactHandDrag(event, cardEl, cardId, ownerIdx = getDesktopCompactPlayerIndex(), options = {}){
   const playerIdx = Number.isInteger(ownerIdx) ? ownerIdx : getDesktopCompactPlayerIndex();
   const legalZones = getCompactDraftLegalZones(playerIdx, cardId);
-  if(!legalZones.length) return false;
+  if(!legalZones.length && !options.tapSelectOnRelease) return false;
   event.preventDefault();
   try{
     if(cardEl.setPointerCapture && event.pointerId !== undefined){
@@ -16279,9 +17165,12 @@ function beginCompactHandDrag(event, cardEl, cardId, ownerIdx = getDesktopCompac
     sourceEl: cardEl,
     ghost: null,
     dragging: false,
+    scrolling: false,
     legalZones,
     activeZone: '',
-    tapSelectOnRelease: !!options.tapSelectOnRelease
+    tapSelectOnRelease: !!options.tapSelectOnRelease,
+    scrollTray: options.scrollTray || null,
+    scrollStartLeft: options.scrollTray ? options.scrollTray.scrollLeft : 0
   };
   window.addEventListener('pointermove', handleCompactHandDragMove);
   window.addEventListener('pointerup', handleCompactHandDragEnd);
@@ -16293,10 +17182,24 @@ function handleCompactHandDragMove(event){
   if(!compactPointerDragState) return;
   compactPointerDragState.latestX = event.clientX;
   compactPointerDragState.latestY = event.clientY;
-  const distance = Math.hypot(event.clientX - compactPointerDragState.startX, event.clientY - compactPointerDragState.startY);
+  const deltaX = event.clientX - compactPointerDragState.startX;
+  const deltaY = event.clientY - compactPointerDragState.startY;
+  const distance = Math.hypot(deltaX, deltaY);
   const dragStartDistance = compactPointerDragState.tapSelectOnRelease ? 18 : 6;
 
-  if(!compactPointerDragState.dragging && distance > dragStartDistance){
+  if(!compactPointerDragState.dragging && compactPointerDragState.scrollTray){
+    const trayRect = compactPointerDragState.scrollTray.getBoundingClientRect();
+    const withinTrayBand = event.clientY >= trayRect.top - 12 && event.clientY <= trayRect.bottom + 12;
+    const horizontalIntent = withinTrayBand && Math.abs(deltaY) <= 8 && Math.abs(deltaX) > 24 && Math.abs(deltaX) > Math.abs(deltaY) * 2.2;
+    if(horizontalIntent || compactPointerDragState.scrolling){
+      compactPointerDragState.scrolling = true;
+      event.preventDefault();
+      compactPointerDragState.scrollTray.scrollLeft = compactPointerDragState.scrollStartLeft - deltaX;
+      return;
+    }
+  }
+
+  if(!compactPointerDragState.dragging && distance > dragStartDistance && compactPointerDragState.legalZones.length){
     compactPointerDragState.dragging = true;
     const rect = compactPointerDragState.sourceEl.getBoundingClientRect();
     const ghost = compactPointerDragState.sourceEl.cloneNode(true);
@@ -16334,8 +17237,13 @@ function handleCompactHandDragEnd(event){
     : '';
   const releaseDistance = Math.hypot(event.clientX - dragState.startX, event.clientY - dragState.startY);
   teardownCompactHandDrag();
+  if(dragState.scrolling){
+    compactSuppressCardClickUntil = Date.now() + 220;
+    compactSuppressCardClickId = dragState.cardId;
+    return;
+  }
   if(!completedDrag){
-    if(dragState.tapSelectOnRelease){
+    if(dragState.tapSelectOnRelease && releaseDistance <= 44){
       compactSuppressCardClickUntil = Date.now() + 360;
       compactSuppressCardClickId = dragState.cardId;
       toggleSelect(dragState.cardId);
@@ -16379,6 +17287,17 @@ function getCompactHandMetricText(player, playerIdx){
 function syncCompactHandTraySizing(tray, cardCount){
   if(!tray) return;
   const mobilePanorama = document.body?.classList.contains('mobile-panorama-mode');
+  const mobileCompact = document.body?.classList.contains('mobile-compact-mode');
+  if(mobileCompact || mobilePanorama){
+    const cardWidth = mobileCompact ? 54 : 46;
+    const cardHeight = mobileCompact ? 77 : 65;
+    const step = mobileCompact ? 60 : 42;
+    tray.style.setProperty('--compact-hand-card-width', `${cardWidth}px`);
+    tray.style.setProperty('--compact-hand-card-height', `${cardHeight}px`);
+    tray.style.setProperty('--compact-hand-card-step', `${step}px`);
+    tray.dataset.handCount = String(cardCount || 0);
+    return;
+  }
   const resolvedCount = Math.max(1, Number(cardCount) || 0);
   const availableWidth = Math.max(320, Math.floor((tray.clientWidth || tray.parentElement?.clientWidth || 720) - 26));
   const minCardWidth = mobilePanorama ? 42 : 66;
@@ -16587,6 +17506,7 @@ function getModifyFeedbackSparkTarget(playerIdx){
 
 function triggerCompactBuildFeedback(playerIdx){
   if(!isDesktopCompactModeActive()) return false;
+  triggerMobileProFx('modify', { playerIdx, text:'Sistema modificado' });
   pulseElementWithDuration(`compactMechaStage-${playerIdx}`, 'compact-build-stage-rise', 820);
   pulseElementWithDuration(`compactMechaStage-${playerIdx}`, 'compact-build-overdrive', 1080);
   pulseElementWithDuration(`compactMechaRing-${playerIdx}`, 'compact-build-ring-burst', 960);
@@ -16622,6 +17542,7 @@ function triggerCompactAttackCinematic(attackerIdx, withProjectile=false){
   const defenderRingId = `compactMechaRing-${defenderIdx}`;
   const directionClass = attackerIdx === 0 ? 'from-left' : 'from-right';
   const palette = withProjectile ? 'amber' : 'red';
+  triggerMobileProFx('attack', { playerIdx: attackerIdx, text: withProjectile ? 'Proyectil armado' : 'Ataque declarado', heavy: withProjectile });
 
   label.textContent = withProjectile ? 'Proyectil' : 'Ataque';
   layer.classList.remove('active', 'from-left', 'from-right', 'with-projectile');
@@ -16655,6 +17576,7 @@ function triggerCompactAttackCinematic(attackerIdx, withProjectile=false){
 function triggerCompactImpactFeedback(defenderIdx, attackPoints=0, heavy=false){
   if(!isDesktopCompactModeActive()) return false;
   const palette = heavy ? 'red' : 'amber';
+  triggerMobileProFx('impact', { playerIdx: defenderIdx, text: attackPoints > 0 ? `Impacto ${attackPoints}` : 'Impacto', heavy });
   const label = document.getElementById('compactAttackLabel');
   const layer = document.getElementById('compactAttackLayer');
   if(label && layer){
@@ -16677,11 +17599,12 @@ function triggerCompactImpactFeedback(defenderIdx, attackPoints=0, heavy=false){
 function triggerCompactHudShake(level='light'){
   const shell = document.getElementById('desktopCompactShell');
   if(!shell) return;
-  shell.classList.remove('compact-turn-shell-shake');
+  const cls = level === 'heavy' ? 'compact-hud-shake-heavy' : 'compact-hud-shake-light';
+  shell.classList.remove('compact-turn-shell-shake', 'compact-hud-shake-light', 'compact-hud-shake-heavy');
   void shell.offsetWidth;
-  shell.classList.add('compact-turn-shell-shake');
+  shell.classList.add(cls);
   window.setTimeout(() => {
-    shell.classList.remove('compact-turn-shell-shake');
+    shell.classList.remove(cls);
   }, level === 'heavy' ? 560 : 460);
 }
 
@@ -17973,6 +18896,7 @@ function resolveAttackAfterDefense(defenseCard){
     addToast(`Ataque reducido en ${defenseCard.value}`, 'warn');
     playUiSound('defense');
     triggerScreenRipple('cyan');
+    triggerMobileProFx('defense', { playerIdx: defenderIdx, text: `Defensa −${defenseCard.value}` });
   }else{
     log(`🛡️ ${defender.name} no usa defensa.`);
   }
@@ -20282,6 +21206,11 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
   if(btn.dataset.viewMode){
     if(btn.dataset.viewMode === 'expanded'){
       if(STORY_EMBED_MODE){
+        if(isStoryMobileViewport() && storyHudMode === 'horizontal'){
+          addToast('En móvil, el modo historia usa la interfaz horizontal.', 'warn');
+          requestLandscapeOrientationBestEffort();
+          return;
+        }
         exitStoryEmbedSpecialMode();
         return;
       }
@@ -20323,6 +21252,7 @@ document.getElementById('desktopCompactShell').addEventListener('pointerdown', (
   if(event.button !== 0) return;
   if(!isDesktopCompactModeActive() || !canUseInteractiveTurnAction()) return;
   const mobilePanorama = document.body?.classList.contains('mobile-panorama-mode');
+  const mobileCompact = document.body?.classList.contains('mobile-compact-mode');
   if(mobilePanorama){
     const topHit = document.elementFromPoint(event.clientX, event.clientY);
     if(!topHit?.closest('#compactHandCards')) return;
@@ -20331,10 +21261,12 @@ document.getElementById('desktopCompactShell').addEventListener('pointerdown', (
     ? resolveCompactHandCardFromPoint(event.clientX, event.clientY)
     : event.target.closest('#compactHandCards .card[data-card-id]');
   if(!cardEl) return;
+  const handTray = document.getElementById('compactHandCards');
   const dragStarted = beginCompactHandDrag(event, cardEl, cardEl.dataset.cardId, getDesktopCompactPlayerIndex(), {
-    tapSelectOnRelease: mobilePanorama
+    tapSelectOnRelease: mobilePanorama || mobileCompact,
+    scrollTray: mobilePanorama || mobileCompact ? handTray : null
   });
-  if(mobilePanorama && !dragStarted){
+  if((mobilePanorama || mobileCompact) && !dragStarted){
     event.preventDefault();
     compactSuppressCardClickUntil = Date.now() + 360;
     compactSuppressCardClickId = cardEl.dataset.cardId;
