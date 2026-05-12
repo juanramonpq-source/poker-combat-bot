@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PoCoBOT · Campamento de las Placas Rojas</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <aside
+      id="orientation-overlay"
+      class="orientation-overlay"
+      aria-live="polite"
+      hidden
+    >
+      <div class="orientation-card">
+        <p class="orientation-kicker">Modo horizontal recomendado</p>
+        <h2>Gira el movil para jugar</h2>
+        <p>
+          Este campamento esta pensado para explorarse en horizontal, con mas
+          campo de vision y controles tactiles comodos.
+        </p>
+        <button id="orientation-lock-button" type="button">
+          Intentar activar horizontal
+        </button>
+        <small id="orientation-lock-status">
+          Algunos navegadores solo permiten bloquear orientacion desde pantalla
+          completa.
+        </small>
+      </div>
+    </aside>
+
+    <main class="layout">
+      <button id="story-map-button" class="floating-map-button" type="button">
+        Volver al mapa
+      </button>
+      <section class="panel">
+        <h1>PoCoBOT // Campamento de las Placas Rojas</h1>
+        <p>
+          Escenario explorable amplio para el modo historia. Mueve el PoCoBOT
+          con <strong>WASD</strong>, flechas, raton o tactil.
+        </p>
+      </section>
+
+      <canvas
+        id="game"
+        width="960"
+        height="540"
+        aria-label="Campamento explorable de las Placas Rojas"
+      ></canvas>
+      <audio
+        id="camp-music"
+        src="../Silencio de Acero.mp3"
+        loop
+        preload="auto"
+        playsinline
+      ></audio>
+    </main>
+
+    <script src="../story-collision-editor.js?v=20260512-red-plates-camp"></script>
+    <script src="../shared-mecha-orientation/pocobot-player-visual.js?v=20260506-no-ghost-legs"></script>
+    <script src="./game.js?v=20260512-red-plates-camp"></script>
+  </body>
+</html>

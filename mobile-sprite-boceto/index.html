@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PoCoBOT · Boceto Sprite Web</title>
+  <meta name="description" content="Boceto web texturizado con botones tipo sprite para PoCoBOT.">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="phone-shell" aria-label="Boceto web texturizado de PoCoBOT">
+    <div class="top-vents vents-left" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="top-vents vents-right" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+    <section class="brand-plate">
+      <i class="screw screw-tl"></i>
+      <i class="screw screw-tr"></i>
+      <i class="screw screw-bl"></i>
+      <i class="screw screw-br"></i>
+      <h1><span>PoCo</span><b>BOT</b><em>★</em></h1>
+    </section>
+
+    <section class="status-top" aria-label="Estado superior">
+      <article class="meter-pill fuel-pill">
+        <span class="fuel-icon" aria-hidden="true"></span>
+        <div><small>Fuel</small><strong>37</strong></div>
+        <i class="mini-bars"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></i>
+      </article>
+
+      <article class="turn-dial">
+        <button type="button" class="dial-tab" aria-label="Turno anterior">‹</button>
+        <div><span>TURNO</span><strong>06</strong></div>
+        <button type="button" class="dial-tab" aria-label="Turno siguiente">›</button>
+      </article>
+
+      <article class="meter-pill core-pill">
+        <i class="core-ring" aria-hidden="true"></i>
+        <div><small>Núcleo</small><strong>3/3</strong></div>
+        <i class="mini-bars is-muted"><b></b><b></b><b></b><b></b><b></b></i>
+      </article>
+    </section>
+
+    <section class="combat-screen" aria-label="Combate">
+      <div class="scan-grid" aria-hidden="true"></div>
+      <div class="versus" aria-hidden="true">VS</div>
+      <div class="split-light" aria-hidden="true"></div>
+
+      <article class="fighter fighter-blue">
+        <header>JUGADOR 1</header>
+        <img src="../assets/image_16.png" alt="Mecha azul de jugador 1">
+        <section class="stats-card">
+          <p><span class="heart"></span><b>Vitalidad</b><strong>74/100</strong><i style="--w:74%"></i></p>
+          <p><span class="shield"></span><b>Armadura</b><strong>48/70</strong><i style="--w:68%"></i></p>
+          <p><span class="diamond"></span><b>Defensa</b><strong>18</strong><i style="--w:55%"></i></p>
+        </section>
+      </article>
+
+      <article class="fighter fighter-red">
+        <header>RIVAL</header>
+        <img src="../assets/image_17.png" alt="Mecha rojo rival">
+        <section class="stats-card">
+          <p><span class="heart"></span><b>Vitalidad</b><strong>62/100</strong><i style="--w:62%"></i></p>
+          <p><span class="shield"></span><b>Armadura</b><strong>35/70</strong><i style="--w:50%"></i></p>
+          <p><span class="diamond"></span><b>Defensa</b><strong>14</strong><i style="--w:43%"></i></p>
+        </section>
+      </article>
+    </section>
+
+    <section class="command-panel" aria-label="Acciones">
+      <button class="sprite-button small blue" type="button" data-action="modify">
+        <span class="sprite icon-modify" aria-hidden="true"></span>
+        <b>Modificar</b>
+      </button>
+      <button class="sprite-button attack is-hot" type="button" data-action="attack">
+        <span class="sprite icon-target" aria-hidden="true"></span>
+        <b>Atacar</b>
+      </button>
+      <button class="sprite-button small cyan" type="button" data-action="pass">
+        <span class="sprite icon-pass" aria-hidden="true"></span>
+        <b>Pasar</b>
+      </button>
+      <div class="leds" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+    </section>
+
+    <nav class="tab-bar" aria-label="Secciones">
+      <button class="tab-sprite" type="button" data-tab="mecha"><span class="sprite icon-mecha"></span><b>Mecha</b></button>
+      <button class="tab-sprite" type="button" data-tab="rival"><span class="sprite icon-rival"></span><b>Rival</b></button>
+      <button class="tab-sprite is-active" type="button" data-tab="combat"><span class="sprite icon-swords"></span><b>Combat</b></button>
+      <button class="tab-sprite" type="button" data-tab="log"><span class="sprite icon-log"></span><b>Log</b></button>
+      <button class="round-menu" type="button" aria-label="Menú">≡</button>
+    </nav>
+
+    <section class="hand-tray" aria-label="Mano">
+      <header><span>▱ Mano</span><strong>5/7</strong></header>
+      <button class="side-arrow left" type="button" aria-label="Cartas anteriores">‹</button>
+      <div class="cards">
+        <img src="../assets/cards/hayeah-full/ace_of_spades.svg" alt="As de picas">
+        <img src="../assets/cards/hayeah-full/king_of_hearts.svg" alt="Rey de corazones">
+        <img src="../assets/cards/hayeah-full/queen_of_clubs.svg" alt="Reina de tréboles">
+        <img src="../assets/cards/hayeah-full/10_of_diamonds.svg" alt="Diez de diamantes">
+        <img src="../assets/cards/hayeah-full/7_of_spades.svg" alt="Siete de picas">
+        <img src="../assets/cards/hayeah-full/3_of_hearts.svg" alt="Tres de corazones">
+        <img src="../assets/cards/hayeah-full/2_of_clubs.svg" alt="Dos de tréboles">
+      </div>
+      <button class="side-arrow right" type="button" aria-label="Cartas siguientes">›</button>
+      <footer aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></footer>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

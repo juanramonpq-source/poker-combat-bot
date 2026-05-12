@@ -66,6 +66,8 @@
     "assets/pocobot_creative_studio_icon_192.png",
     "assets/pocobot_creative_studio_icon_512.png",
     "assets/pocobot_creative_studio_icon_1024.png",
+    "assets/acciones_button_metal.png",
+    "assets/acciones_button_metal_pressed.png",
     "assets/cards/THIRD_PARTY_CARDS.md",
     "assets/videos/Ataque1.mp4"
   ],
@@ -76,6 +78,7 @@
     "assets/Historia",
     "assets/cards/hayeah-full",
     "assets/sfx",
+    "mobile-sprite-boceto",
     "scripts"
   ],
   "ignoreNames": [

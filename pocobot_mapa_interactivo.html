@@ -749,6 +749,16 @@
         learn: "Economía de ruina, inventario persistente y preparación antes de abandonar el taller."
       });
     }
+    const campamentoStoryNode = nodes.find((node) => node.id === "campamento");
+    if (campamentoStoryNode) {
+      Object.assign(campamentoStoryNode, {
+        type: "EXPLORACIÓN",
+        subtype: "PLACAS ROJAS",
+        description: "Un gran campamento de veteranos bajo lonas rojas y señales de la baraja francesa. El PoCoBOT puede recorrerlo libremente antes de que añadamos encuentros y puntos de interacción.",
+        mission: "Explorar el Campamento de las Placas Rojas con PoCoBOT.",
+        learn: "Movimiento libre, tono del mundo y preparación de futuros eventos narrativos."
+      });
+    }
     const STORAGE_KEY = "pocobot-map-progress-v1";
 
     const mapShell = document.getElementById("mapShell");

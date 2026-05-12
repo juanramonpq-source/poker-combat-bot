@@ -7132,10 +7132,13 @@ body.desktop-compact-mode > footer{
 }
 
 .compact-topbar{
+  position:relative;
+  z-index:220;
   display:grid;
   grid-template-columns:minmax(0, 1fr);
   gap:8px;
   align-items:center;
+  overflow:visible;
 }
 
 .compact-kicker{
@@ -7169,6 +7172,56 @@ body.desktop-compact-mode > footer{
   display:grid;
   grid-template-columns:repeat(6, minmax(0, 1fr));
   gap:8px;
+}
+.compact-menu-toggle{
+  display:none;
+}
+.compact-action-hub-button{
+  display:none;
+}
+
+.acciones-btn{
+  position:absolute;
+  right:18px;
+  bottom:18px;
+  z-index:50;
+  width:128px;
+  height:128px;
+  border:3px solid rgba(105,69,0,.48);
+  border-radius:50%;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#ffd13f;
+  color:#251000;
+  font:1000 .74rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-align:center;
+  box-shadow:
+    0 6px 0 rgba(122,70,0,.28),
+    0 14px 24px rgba(5,15,42,.28);
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.acciones-btn::before{
+  content:"Acciones";
+  display:block;
+  max-width:88px;
+  pointer-events:none;
+}
+
+.acciones-btn:active,
+.acciones-btn.is-pressed{
+  background:#f0b72a;
+  background-image:none;
+  transform:translateY(2px) scale(.985);
+  box-shadow:
+    0 3px 0 rgba(122,70,0,.25),
+    0 9px 18px rgba(5,15,42,.24);
 }
 
 .desktop-compact-main{
@@ -9491,6 +9544,119 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   }
 }
 
+@media (orientation: landscape) and (pointer: coarse){
+  .app.mobile-panorama-mode .compact-mobile-actions-panel{
+    overflow:visible !important;
+  }
+
+  .app.mobile-panorama-mode .compact-action-hub-button{
+    top:62px !important;
+    width:96px !important;
+    height:96px !important;
+    min-width:96px !important;
+    min-height:96px !important;
+    max-width:96px !important;
+    max-height:96px !important;
+    border:3px solid rgba(255,232,154,.9) !important;
+    border-radius:18px !important;
+    background:#ffd13f !important;
+    background-image:none !important;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.82),
+      inset 0 -4px 0 rgba(130,68,0,.28),
+      0 4px 0 rgba(96,49,0,.34),
+      0 13px 22px rgba(5,15,42,.30),
+      0 0 0 2px rgba(26,52,106,.22) !important;
+    color:#291000 !important;
+    font:1000 .64rem/1.02 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif !important;
+    letter-spacing:.035em !important;
+    text-transform:uppercase;
+    text-shadow:0 1px 0 rgba(255,255,255,.38);
+  }
+
+  .app.mobile-panorama-mode .compact-action-hub-button::before{
+    content:attr(data-label);
+    display:block;
+    max-width:82px;
+    white-space:normal;
+    text-align:center;
+  }
+
+  .app.mobile-panorama-mode .compact-action-hub-button:active,
+  .app.mobile-panorama-mode .compact-action-hub-button.is-pressed{
+    background:#f0b72a !important;
+    background-image:none !important;
+    transform:translate(-50%, calc(-50% + 2px)) scale(.985) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.60),
+      inset 0 -2px 0 rgba(92,45,0,.24),
+      0 2px 0 rgba(96,49,0,.34),
+      0 8px 16px rgba(5,15,42,.26) !important;
+  }
+
+  body.compact-action-hub-open .app.mobile-panorama-mode .compact-mobile-action-grid{
+    position:fixed !important;
+    left:min(49vw, calc(100vw - 304px)) !important;
+    right:auto !important;
+    top:150px !important;
+    bottom:auto !important;
+    width:clamp(236px, 32vw, 282px) !important;
+    max-height:calc(100dvh - 90px) !important;
+    height:112px !important;
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows:minmax(28px, auto) !important;
+    align-content:center !important;
+    gap:6px 8px !important;
+    padding:0 !important;
+    overflow-y:auto !important;
+    overflow-x:visible !important;
+    transform:none !important;
+    z-index:130 !important;
+    pointer-events:auto !important;
+    filter:drop-shadow(0 14px 18px rgba(4,18,48,.28));
+    scrollbar-width:thin;
+  }
+
+  body.compact-action-hub-open .app.mobile-panorama-mode .compact-mobile-action-grid button{
+    position:static !important;
+    left:auto !important;
+    top:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    transform:none !important;
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    min-height:28px !important;
+    height:auto !important;
+    padding:4px 8px !important;
+    border-radius:15px !important;
+    font-size:.56rem !important;
+    line-height:.96 !important;
+    letter-spacing:.01em !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+    text-wrap:balance;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+  }
+
+  body.compact-action-hub-open .app.mobile-panorama-mode .compact-mobile-action-grid button.compact-action-hidden{
+    display:none !important;
+  }
+
+  .app.mobile-panorama-mode .compact-mode-tabs button{
+    font-size:.48rem !important;
+    line-height:.9 !important;
+    letter-spacing:0 !important;
+    overflow-wrap:anywhere;
+    text-wrap:balance;
+  }
+}
+
 @media (max-width: 820px) and (orientation: portrait) and (pointer: coarse){
   body.mobile-compact-mode{
     overflow:hidden;
@@ -9891,6 +10057,1885 @@ body.story-argos-hack-ui{
   --green-led:#66ff8e;
   --red-led:#ff3145;
   --yellow-led:#c9ff66;
+}
+
+/* === PoCoBOT mobile console concept: physical shell + circular action hub === */
+.compact-console-brand,
+.compact-top-status,
+.compact-turn-dial,
+.compact-top-resource,
+.compact-log-panel,
+.compact-mode-tabs{
+  display:none;
+}
+
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse),
+       (max-height: 820px) and (orientation: landscape) and (pointer: coarse){
+  body.mobile-compact-mode,
+  body.mobile-panorama-mode{
+    background:#05080d;
+  }
+
+  .app.mobile-compact-mode,
+  .app.mobile-panorama-mode{
+    --poco-blue-1:#0f63b8;
+    --poco-blue-2:#0a4386;
+    --poco-blue-3:#052a5b;
+    --poco-cream:#f4dfbb;
+    --poco-cream-dark:#d1af78;
+    --poco-screen:#06101d;
+    background:
+      radial-gradient(circle at 50% 13%, rgba(35,216,255,.10), transparent 28%),
+      linear-gradient(180deg, #063d82, #082c66 48%, #041b3c) !important;
+  }
+
+  .app.mobile-compact-mode .desktop-compact-shell,
+  .app.mobile-panorama-mode .desktop-compact-shell{
+    border-radius:22px;
+    border:3px solid rgba(3,20,50,.74);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.09), transparent 15%),
+      linear-gradient(180deg, var(--poco-blue-1), var(--poco-blue-2) 48%, var(--poco-blue-3));
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,.13),
+      inset 0 -18px 38px rgba(0,0,0,.18);
+  }
+
+  .app.mobile-compact-mode .compact-topbar,
+  .app.mobile-panorama-mode .compact-topbar{
+    position:relative;
+    display:grid;
+    grid-template-columns:minmax(68px, .62fr) minmax(0, 1.85fr) minmax(68px, .62fr) minmax(74px, .68fr);
+    gap:6px;
+    align-items:center;
+    min-height:56px;
+    border-radius:18px;
+    border:2px solid rgba(3,20,50,.54);
+    background:
+      linear-gradient(180deg, rgba(25,112,204,.95), rgba(8,60,129,.98));
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.20),
+      inset 0 -4px 0 rgba(4,23,55,.22),
+      0 4px 0 rgba(2,15,38,.22);
+    z-index:90;
+  }
+
+  .app.mobile-compact-mode .compact-menu-toggle,
+  .app.mobile-panorama-mode .compact-menu-toggle{
+    display:inline-flex;
+    grid-column:4;
+    grid-row:1;
+    align-items:center;
+    justify-content:center;
+    min-height:35px;
+    border-radius:13px;
+    border:2px solid rgba(28,17,7,.32);
+    background:linear-gradient(180deg, #fff4d5, #ffbf55 58%, #ff8c22);
+    color:#3b1900;
+    font-size:.7rem;
+    font-weight:1000;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.82), 0 3px 0 rgba(76,34,0,.24), 0 0 14px rgba(255,178,46,.18);
+  }
+
+  .app.mobile-compact-mode .compact-console-brand,
+  .app.mobile-panorama-mode .compact-console-brand,
+  .app.mobile-compact-mode .compact-top-status,
+  .app.mobile-panorama-mode .compact-top-status,
+  .app.mobile-compact-mode .compact-turn-dial,
+  .app.mobile-panorama-mode .compact-turn-dial,
+  .app.mobile-compact-mode .compact-top-resource,
+  .app.mobile-panorama-mode .compact-top-resource{
+    display:flex;
+  }
+
+  .app.mobile-compact-mode .compact-console-brand,
+  .app.mobile-panorama-mode .compact-console-brand{
+    grid-column:2;
+    grid-row:1;
+    min-width:0;
+    overflow:hidden;
+    align-items:center;
+    justify-content:center;
+    height:42px;
+    padding:3px 4px;
+    border-radius:14px;
+    border:2px solid rgba(91,54,18,.28);
+    background:linear-gradient(180deg, #f7e7c6, #e1bf83);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.74), 0 3px 0 rgba(38,22,8,.18);
+  }
+
+  .app.mobile-compact-mode .compact-console-brand img,
+  .app.mobile-panorama-mode .compact-console-brand img{
+    width:138%;
+    height:138%;
+    max-width:none;
+    object-fit:contain;
+    transform:scale(1.18);
+    filter:drop-shadow(0 1px 0 rgba(255,255,255,.42));
+  }
+
+  .app.mobile-compact-mode .compact-turn-dial,
+  .app.mobile-panorama-mode .compact-turn-dial{
+    display:none !important;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    width:52px;
+    height:52px;
+    justify-self:center;
+    border-radius:50%;
+    border:2px solid rgba(63,38,16,.34);
+    background:radial-gradient(circle at 50% 36%, #fff3d6, #d7b176 72%, #8a6434);
+    color:#1c1308;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.72), 0 4px 0 rgba(32,21,12,.20), 0 0 0 4px rgba(6,40,92,.44);
+  }
+
+  .app.mobile-compact-mode .compact-turn-dial span,
+  .app.mobile-panorama-mode .compact-turn-dial span{
+    font-size:.45rem;
+    font-weight:1000;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  .app.mobile-compact-mode .compact-turn-dial strong,
+  .app.mobile-panorama-mode .compact-turn-dial strong{
+    font-family:"Courier New",monospace;
+    font-size:1.18rem;
+    line-height:.92;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource,
+  .app.mobile-panorama-mode .compact-top-resource{
+    min-width:0;
+    height:39px;
+    padding:4px 6px;
+    flex-direction:column;
+    justify-content:center;
+    border-radius:12px;
+    border:2px solid rgba(2,14,31,.58);
+    background:linear-gradient(180deg, rgba(8,20,34,.96), rgba(4,9,16,.98));
+    box-shadow:inset 0 0 0 1px rgba(35,216,255,.14);
+  }
+
+  .app.mobile-compact-mode .compact-top-resource-fuel,
+  .app.mobile-panorama-mode .compact-top-resource-fuel{
+    grid-column:1;
+    grid-row:1;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource-core,
+  .app.mobile-panorama-mode .compact-top-resource-core{
+    grid-column:3;
+    grid-row:1;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource span,
+  .app.mobile-panorama-mode .compact-top-resource span{
+    color:#f4dfbb;
+    font-size:.46rem;
+    font-weight:1000;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource strong,
+  .app.mobile-panorama-mode .compact-top-resource strong{
+    color:var(--cyan);
+    font:1000 .88rem/1 "Courier New",monospace;
+    text-shadow:0 0 10px rgba(35,216,255,.28);
+  }
+
+	  .app.mobile-compact-mode .compact-topbar-actions,
+	  .app.mobile-panorama-mode .compact-topbar-actions{
+    position:absolute;
+    left:auto;
+    right:6px;
+    top:calc(100% + 6px);
+    width:min(236px, calc(100vw - 18px));
+    display:grid;
+    grid-template-columns:1fr;
+    gap:6px;
+    padding:8px;
+    border-radius:14px;
+    border:2px solid rgba(255,178,46,.56);
+    background:linear-gradient(180deg, rgba(6,10,16,.98), rgba(10,16,25,.98));
+    box-shadow:0 18px 38px rgba(0,0,0,.42), var(--shadow);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:translateY(-6px) scale(.98);
+    transition:opacity .16s ease, transform .16s ease, visibility .16s ease;
+	    z-index:240;
+	  }
+
+  body.compact-menu-open .app.mobile-compact-mode .compact-topbar-actions,
+  body.compact-menu-open .app.mobile-panorama-mode .compact-topbar-actions{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transform:translateY(0) scale(1);
+  }
+
+  .app.mobile-compact-mode .compact-topbar-actions button,
+  .app.mobile-panorama-mode .compact-topbar-actions button{
+    min-height:34px !important;
+    height:auto !important;
+    padding:7px 10px !important;
+    border-radius:10px !important;
+    font-size:.62rem !important;
+    line-height:1 !important;
+    white-space:nowrap;
+  }
+
+  .app.mobile-compact-mode .compact-arena-panel,
+  .app.mobile-panorama-mode .compact-arena-panel,
+  .app.mobile-compact-mode .compact-player-panel,
+  .app.mobile-panorama-mode .compact-player-panel,
+  .app.mobile-compact-mode .compact-hand-panel,
+  .app.mobile-panorama-mode .compact-hand-panel,
+  .app.mobile-compact-mode .compact-mobile-actions-panel,
+  .app.mobile-panorama-mode .compact-mobile-actions-panel{
+    border-radius:18px;
+    border:2px solid rgba(4,20,50,.46);
+    background:linear-gradient(180deg, rgba(247,231,201,.96), rgba(218,188,139,.96)) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.72), 0 4px 0 rgba(2,15,38,.18);
+  }
+
+  .app.mobile-compact-mode .compact-arena-panel,
+  .app.mobile-panorama-mode .compact-arena-panel{
+    background:linear-gradient(180deg, rgba(6,10,16,.96), rgba(10,16,25,.98)) !important;
+    border-color:rgba(255,156,28,.36);
+  }
+
+  .app.mobile-compact-mode .compact-arena-core,
+  .app.mobile-panorama-mode .compact-arena-core{
+    border-radius:15px;
+    border:2px solid rgba(255,156,28,.28);
+    background:
+      linear-gradient(110deg, rgba(35,216,255,.16) 0 46%, rgba(255,93,52,.16) 54% 100%),
+      linear-gradient(90deg, rgba(35,216,255,.14), rgba(6,10,16,.92) 48%, rgba(255,93,52,.14)),
+      linear-gradient(180deg, #07111f, #04080f) !important;
+    box-shadow:inset 0 0 0 1px rgba(35,216,255,.08), inset 0 0 24px rgba(0,0,0,.26);
+  }
+
+  .app.mobile-compact-mode .compact-arena-core::before,
+  .app.mobile-panorama-mode .compact-arena-core::before{
+    content:"VS";
+    position:absolute;
+    left:50%;
+    top:52%;
+    transform:translate(-50%, -50%);
+    z-index:1;
+    color:#dffcff;
+    font-family:"Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+    font-size:clamp(1.3rem, 7vw, 2.2rem);
+    font-weight:1000;
+    text-shadow:0 0 18px rgba(35,216,255,.44), 0 0 18px rgba(255,93,52,.34);
+  }
+
+  .app.mobile-compact-mode .compact-arena-brand,
+  .app.mobile-panorama-mode .compact-arena-brand{
+    display:none;
+  }
+
+  .app.mobile-compact-mode #compactMechaStage-0 .compact-mecha-stage-head,
+  .app.mobile-panorama-mode #compactMechaStage-0 .compact-mecha-stage-head{
+    color:#8ff4ff;
+  }
+
+  .app.mobile-compact-mode #compactMechaStage-1 .compact-mecha-stage-head,
+  .app.mobile-panorama-mode #compactMechaStage-1 .compact-mecha-stage-head{
+    color:#ff9b82;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-head,
+  .app.mobile-panorama-mode .compact-mecha-stage-head{
+    position:relative;
+    z-index:5;
+    border-radius:10px;
+    background:rgba(3,8,14,.62);
+    border:1px solid rgba(255,255,255,.10);
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-head strong,
+  .app.mobile-panorama-mode .compact-mecha-stage-head strong{
+    color:#fff2bd;
+    text-shadow:0 0 9px rgba(255,178,46,.24);
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-foot,
+  .app.mobile-panorama-mode .compact-mecha-stage-foot{
+    color:#dffcff;
+    text-shadow:0 0 8px rgba(35,216,255,.18);
+  }
+
+  .app.mobile-compact-mode #compactMechaStage-1 .compact-mecha-ring img,
+  .app.mobile-panorama-mode #compactMechaStage-1 .compact-mecha-ring img{
+    --mecha-float-base:translateY(-7px) scaleX(-1);
+  }
+
+  .app.mobile-compact-mode .compact-readout-strip,
+  .app.mobile-panorama-mode .compact-readout-strip{
+    gap:5px;
+  }
+
+  .app.mobile-compact-mode .compact-readout,
+  .app.mobile-panorama-mode .compact-readout{
+    min-height:32px;
+    padding:5px 6px !important;
+    border-radius:10px;
+    background:linear-gradient(180deg, rgba(8,20,34,.95), rgba(4,9,16,.98)) !important;
+    border:1px solid rgba(35,216,255,.20) !important;
+  }
+
+  .app.mobile-compact-mode .compact-readout .tiny-label,
+  .app.mobile-panorama-mode .compact-readout .tiny-label{
+    font-size:.42rem;
+    color:#f4dfbb !important;
+  }
+
+  .app.mobile-compact-mode .compact-readout .value,
+  .app.mobile-panorama-mode .compact-readout .value{
+    font-size:.56rem !important;
+    color:var(--cyan) !important;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-actions-panel,
+  .app.mobile-panorama-mode .compact-mobile-actions-panel{
+    position:relative;
+    overflow:visible;
+    z-index:40;
+    padding:5px !important;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-actions-panel .compact-section-head,
+  .app.mobile-panorama-mode .compact-mobile-actions-panel .compact-section-head,
+  .app.mobile-compact-mode .compact-mobile-hand-summary,
+  .app.mobile-panorama-mode .compact-mobile-hand-summary{
+    display:none;
+  }
+
+  .app.mobile-compact-mode .compact-action-hub-button,
+  .app.mobile-panorama-mode .compact-action-hub-button{
+    display:flex !important;
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:96px !important;
+    height:96px !important;
+    min-width:96px !important;
+    min-height:96px !important;
+    max-width:96px !important;
+    max-height:96px !important;
+    transform:translate(-50%, -50%);
+    z-index:5;
+    align-items:center;
+    justify-content:center;
+    padding:0 !important;
+    border-radius:50% !important;
+    border:3px solid rgba(105,69,0,.48) !important;
+    background:#ffd13f !important;
+    background-image:none !important;
+    color:#251000 !important;
+    font:1000 .62rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif !important;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    text-align:center;
+    box-shadow:
+      0 6px 0 rgba(122,70,0,.28),
+      0 14px 24px rgba(5,15,42,.28) !important;
+    cursor:pointer;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  .app.mobile-compact-mode .compact-action-hub-button:active,
+  .app.mobile-panorama-mode .compact-action-hub-button:active,
+  .app.mobile-compact-mode .compact-action-hub-button.is-pressed,
+  .app.mobile-panorama-mode .compact-action-hub-button.is-pressed{
+    background:#f0b72a !important;
+    background-image:none !important;
+    transform:translate(-50%, calc(-50% + 2px)) scale(.985);
+    box-shadow:
+      0 3px 0 rgba(122,70,0,.25),
+      0 9px 18px rgba(5,15,42,.24) !important;
+  }
+
+  .app.mobile-compact-mode .compact-action-hub-button span,
+  .app.mobile-panorama-mode .compact-action-hub-button span{
+    display:none;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-action-grid,
+  .app.mobile-panorama-mode .compact-mobile-action-grid{
+    position:absolute;
+    inset:0;
+    display:block;
+    overflow:visible;
+    padding:0;
+    pointer-events:none;
+  }
+
+  body:not(.compact-action-hub-open) .app.mobile-compact-mode .compact-mobile-action-grid button,
+  body:not(.compact-action-hub-open) .app.mobile-panorama-mode .compact-mobile-action-grid button{
+    opacity:0;
+    visibility:hidden;
+    transform:translate(-50%, -50%) scale(.72);
+    pointer-events:none;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-action-grid button,
+  .app.mobile-panorama-mode .compact-mobile-action-grid button{
+    position:absolute;
+    left:50%;
+    top:50%;
+    display:flex !important;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    min-width:72px;
+    max-width:96px;
+    min-height:31px !important;
+    height:31px;
+    padding:4px 8px !important;
+    border-radius:16px !important;
+    font-size:.5rem !important;
+    line-height:.92 !important;
+    letter-spacing:.02em !important;
+    white-space:normal;
+    pointer-events:auto;
+    transform:translate(-50%, -50%);
+    transform-origin:center;
+    transition:opacity .16s ease, visibility .16s ease, transform .18s cubic-bezier(.2,.78,.2,1);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.72), 0 3px 0 rgba(17,33,87,.16), 0 9px 16px rgba(0,0,0,.18) !important;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-action-grid button.compact-action-hidden,
+  .app.mobile-panorama-mode .compact-mobile-action-grid button.compact-action-hidden{
+    display:none !important;
+  }
+
+  .app.mobile-compact-mode #compactMobileModifyBtn,
+  .app.mobile-panorama-mode #compactMobileModifyBtn{
+    transform:translate(calc(-50% - 96px), calc(-50% - 22px));
+  }
+
+  .app.mobile-compact-mode #compactMobileAttackModeBtn,
+  .app.mobile-panorama-mode #compactMobileAttackModeBtn{
+    transform:translate(calc(-50% - 50px), calc(-50% - 58px));
+  }
+
+  .app.mobile-compact-mode #compactMobileActionsDrawerBtn,
+  .app.mobile-panorama-mode #compactMobileActionsDrawerBtn{
+    transform:translate(-50%, calc(-50% - 70px));
+    border-color:rgba(255,178,46,.86) !important;
+    background:linear-gradient(180deg, #fff6d5, #ffb22e 62%, #ff8c22) !important;
+    color:#311400 !important;
+  }
+
+  .app.mobile-compact-mode #compactMobileRivalDrawerBtn,
+  .app.mobile-panorama-mode #compactMobileRivalDrawerBtn{
+    transform:translate(calc(-50% + 50px), calc(-50% - 58px));
+  }
+
+  .app.mobile-compact-mode #compactMobilePassBtn,
+  .app.mobile-panorama-mode #compactMobilePassBtn{
+    transform:translate(calc(-50% + 96px), calc(-50% - 22px));
+  }
+
+  .app.mobile-compact-mode #compactMobilePlayerDrawerBtn,
+  .app.mobile-panorama-mode #compactMobilePlayerDrawerBtn{
+    display:none !important;
+  }
+
+  .app.mobile-compact-mode #compactMobileConfirmAttackBtn,
+  .app.mobile-panorama-mode #compactMobileConfirmAttackBtn,
+  .app.mobile-compact-mode #compactMobileConfirmDefenseBtn,
+  .app.mobile-panorama-mode #compactMobileConfirmDefenseBtn,
+  .app.mobile-compact-mode #compactMobileSkipDefenseBtn,
+  .app.mobile-panorama-mode #compactMobileSkipDefenseBtn,
+  .app.mobile-compact-mode #compactMobileProjectileModeBtn,
+  .app.mobile-panorama-mode #compactMobileProjectileModeBtn,
+  .app.mobile-compact-mode #compactMobileProjectileOnlyBtn,
+  .app.mobile-panorama-mode #compactMobileProjectileOnlyBtn,
+  .app.mobile-compact-mode #compactMobileDrawDiamondBtn,
+  .app.mobile-panorama-mode #compactMobileDrawDiamondBtn,
+  .app.mobile-compact-mode #compactMobileFigureBurstBtn,
+  .app.mobile-panorama-mode #compactMobileFigureBurstBtn{
+    top:auto;
+    bottom:5px;
+    min-width:88px;
+    max-width:118px;
+    height:27px;
+    min-height:27px !important;
+    font-size:.44rem !important;
+  }
+
+  .app.mobile-compact-mode #compactMobileConfirmAttackBtn,
+  .app.mobile-panorama-mode #compactMobileConfirmAttackBtn{
+    left:28%;
+    transform:translateX(-50%);
+  }
+
+  .app.mobile-compact-mode #compactMobileProjectileModeBtn,
+  .app.mobile-panorama-mode #compactMobileProjectileModeBtn,
+  .app.mobile-compact-mode #compactMobileDrawDiamondBtn,
+  .app.mobile-panorama-mode #compactMobileDrawDiamondBtn{
+    left:50%;
+    transform:translateX(-50%);
+  }
+
+  .app.mobile-compact-mode #compactMobileProjectileOnlyBtn,
+  .app.mobile-panorama-mode #compactMobileProjectileOnlyBtn,
+  .app.mobile-compact-mode #compactMobileFigureBurstBtn,
+  .app.mobile-panorama-mode #compactMobileFigureBurstBtn,
+  .app.mobile-compact-mode #compactMobileConfirmDefenseBtn,
+  .app.mobile-panorama-mode #compactMobileConfirmDefenseBtn,
+  .app.mobile-compact-mode #compactMobileSkipDefenseBtn,
+  .app.mobile-panorama-mode #compactMobileSkipDefenseBtn{
+    left:72%;
+    transform:translateX(-50%);
+  }
+
+  .app.mobile-compact-mode .compact-mode-tabs,
+  .app.mobile-panorama-mode .compact-mode-tabs{
+    position:absolute;
+    left:6px;
+    right:6px;
+    bottom:-38px;
+    z-index:4;
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:4px;
+  }
+
+  .app.mobile-compact-mode .compact-mode-tabs button,
+  .app.mobile-panorama-mode .compact-mode-tabs button{
+    min-height:32px;
+    padding:4px 5px;
+    border-radius:12px 12px 9px 9px;
+    border:2px solid rgba(3,20,50,.44);
+    background:linear-gradient(180deg, #0e5ba8, #07356f);
+    color:#f4dfbb;
+    font-size:.54rem;
+    font-weight:1000;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 3px 0 rgba(2,15,38,.18);
+  }
+
+  .app.mobile-compact-mode .compact-mode-tabs button.active,
+  .app.mobile-panorama-mode .compact-mode-tabs button.active{
+    background:linear-gradient(180deg, #ffe7a0, #ffb22e 58%, #ff8c22);
+    color:#281100;
+  }
+
+  .app.mobile-compact-mode .compact-player-panel,
+  .app.mobile-panorama-mode .compact-player-panel{
+    padding-top:42px !important;
+  }
+
+  .app.mobile-compact-mode .compact-player-panel > .compact-section-head,
+  .app.mobile-panorama-mode .compact-player-panel > .compact-section-head{
+    display:none;
+  }
+
+  .app.mobile-compact-mode .compact-player-zones,
+  .app.mobile-panorama-mode .compact-player-zones{
+    grid-template-rows:repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "core fuel"
+      "attack defense"
+      "armor armor";
+    gap:5px;
+  }
+
+  .app.mobile-compact-mode .compact-zone-card,
+  .app.mobile-panorama-mode .compact-zone-card{
+    border-color:rgba(17,33,87,.24);
+    background:linear-gradient(180deg, rgba(255,247,229,.96), rgba(225,202,166,.96));
+  }
+
+  .app.mobile-compact-mode #compactPlayerArmorZone,
+  .app.mobile-panorama-mode #compactPlayerArmorZone{
+    grid-column:1 / -1;
+  }
+
+  .app.mobile-compact-mode .compact-zone-head,
+  .app.mobile-panorama-mode .compact-zone-head{
+    color:#17335e;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel,
+  .app.mobile-panorama-mode .compact-hand-panel{
+    overflow:hidden;
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray,
+  .app.mobile-panorama-mode .compact-hand-tray{
+    border-radius:15px;
+    border:2px solid rgba(72,45,18,.18);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,.08)),
+      linear-gradient(180deg, #f5dfb8, #dbc08d);
+    overflow-x:auto;
+    overflow-y:hidden;
+    touch-action:pan-x;
+  }
+
+  .app.mobile-compact-mode .compact-log-panel,
+  .app.mobile-panorama-mode .compact-log-panel{
+    display:grid;
+    position:absolute;
+    z-index:54;
+    grid-template-rows:auto minmax(0, 1fr);
+    gap:8px;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:translateY(8px) scale(.985);
+    transition:opacity .16s ease, transform .16s ease, visibility .16s ease;
+    border-radius:18px;
+    border:2px solid rgba(255,156,28,.36);
+    background:linear-gradient(180deg, rgba(6,10,16,.98), rgba(10,16,25,.98)) !important;
+    box-shadow:0 18px 44px rgba(7,14,44,.42), 0 0 0 999px rgba(3,8,28,.24);
+  }
+
+  .app.mobile-compact-mode .compact-log-content,
+  .app.mobile-panorama-mode .compact-log-content{
+    min-height:0;
+    overflow:auto;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  body.mobile-compact-mode.compact-mobile-log-open .compact-log-panel,
+  body.mobile-panorama-mode.compact-mobile-log-open .compact-log-panel{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transform:translateY(0) scale(1);
+  }
+
+  body.mobile-compact-mode.compact-mobile-log-open .compact-log-panel .compact-mobile-drawer-close,
+  body.mobile-panorama-mode.compact-mobile-log-open .compact-log-panel .compact-mobile-drawer-close{
+    display:inline-flex !important;
+  }
+
+  body.mobile-compact-mode.compact-mobile-player-open .compact-mode-tabs button[data-mobile-drawer="player"],
+  body.mobile-compact-mode.compact-mobile-rival-open .compact-mode-tabs button[data-mobile-drawer="rival"],
+  body.mobile-compact-mode.compact-mobile-actions-open .compact-mode-tabs button[data-mobile-drawer="actions"],
+  body.mobile-compact-mode.compact-mobile-log-open .compact-mode-tabs button[data-mobile-drawer="log"],
+  body.mobile-panorama-mode.compact-mobile-player-open .compact-mode-tabs button[data-mobile-drawer="player"],
+  body.mobile-panorama-mode.compact-mobile-rival-open .compact-mode-tabs button[data-mobile-drawer="rival"],
+  body.mobile-panorama-mode.compact-mobile-actions-open .compact-mode-tabs button[data-mobile-drawer="actions"],
+  body.mobile-panorama-mode.compact-mobile-log-open .compact-mode-tabs button[data-mobile-drawer="log"]{
+    background:linear-gradient(180deg, #ffe7a0, #ffb22e 58%, #ff8c22);
+    color:#281100;
+  }
+}
+
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse){
+  .app.mobile-compact-mode .desktop-compact-shell{
+    grid-template-rows:64px minmax(242px, 1fr) 92px minmax(132px, .44fr) minmax(156px, .45fr);
+    grid-template-areas:
+      "topbar"
+      "arena"
+      "dock"
+      "player"
+      "hand";
+    gap:6px;
+    padding:max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(7px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+  }
+
+  .app.mobile-compact-mode .compact-arena-panel{
+    grid-template-rows:minmax(0, 1fr) 35px;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-ring{
+    width:clamp(112px, 34vw, 145px);
+    height:clamp(112px, 34vw, 145px);
+  }
+
+  .app.mobile-compact-mode .compact-mecha-ring img{
+    height:92% !important;
+    max-height:92% !important;
+    --mecha-float-base:translateY(1px);
+  }
+
+  .app.mobile-compact-mode #compactMechaStage-1 .compact-mecha-ring img{
+    --mecha-float-base:translateY(1px) scaleX(-1);
+  }
+
+  .app.mobile-compact-mode .compact-player-zones{
+    grid-template-columns:repeat(5, minmax(0, 1fr));
+    grid-template-rows:1fr;
+    grid-template-areas:"core attack defense armor fuel";
+  }
+
+  .app.mobile-compact-mode #compactPlayerArmorZone{
+    grid-column:auto;
+  }
+
+  .app.mobile-compact-mode .compact-zone-cards{
+    --compact-zone-card-width:27px;
+    --compact-zone-card-height:38px;
+    min-height:38px;
+    overflow:hidden;
+  }
+
+  .app.mobile-compact-mode .compact-log-panel,
+  .app.mobile-compact-mode .compact-rival-panel,
+  .app.mobile-compact-mode .compact-actions-panel{
+    top:74px;
+    bottom:166px;
+    left:8px;
+    right:8px;
+  }
+}
+
+@media (orientation: landscape) and (pointer: coarse){
+  .app.mobile-panorama-mode .desktop-compact-shell{
+    grid-template-columns:182px minmax(0, 1fr) 150px;
+    grid-template-rows:54px minmax(0, 1fr) 112px;
+    grid-template-areas:
+      "topbar topbar topbar"
+      "player arena dock"
+      "player hand hand";
+    gap:6px;
+    padding:6px max(6px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+  }
+
+  .app.mobile-panorama-mode .compact-topbar{
+    grid-template-columns:74px minmax(150px, 1fr) 58px minmax(76px, .45fr) minmax(76px, .45fr);
+    min-height:48px;
+  }
+
+  .app.mobile-panorama-mode .compact-turn-dial{
+    width:48px;
+    height:48px;
+  }
+
+  .app.mobile-panorama-mode .compact-mobile-actions-panel{
+    min-height:0;
+  }
+
+  .app.mobile-panorama-mode .compact-action-hub-button{
+    top:30%;
+    width:66px !important;
+    height:66px !important;
+    min-width:66px !important;
+    min-height:66px !important;
+    max-width:66px !important;
+    max-height:66px !important;
+  }
+
+  .app.mobile-panorama-mode #compactMobileModifyBtn{ transform:translate(calc(-50% - 72px), calc(-50% - 16px)); }
+  .app.mobile-panorama-mode #compactMobileAttackModeBtn{ transform:translate(calc(-50% - 38px), calc(-50% - 48px)); }
+  .app.mobile-panorama-mode #compactMobileActionsDrawerBtn{ transform:translate(-50%, calc(-50% - 58px)); }
+  .app.mobile-panorama-mode #compactMobileRivalDrawerBtn{ transform:translate(calc(-50% + 38px), calc(-50% - 48px)); }
+  .app.mobile-panorama-mode #compactMobilePassBtn{ transform:translate(calc(-50% + 72px), calc(-50% - 16px)); }
+
+  body.compact-action-hub-open .app.mobile-panorama-mode .compact-mobile-action-grid{
+    position:fixed;
+    left:min(49vw, calc(100vw - 304px));
+    right:auto;
+    top:150px;
+    width:clamp(236px, 32vw, 282px);
+    height:112px;
+    min-height:0;
+    max-height:calc(100vh - 168px);
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    grid-auto-rows:minmax(28px, auto);
+    align-content:center;
+    gap:6px 8px;
+    padding:6px 0;
+    overflow-y:auto;
+    overflow-x:visible;
+    transform:none;
+    z-index:120;
+    pointer-events:auto;
+    scrollbar-width:thin;
+  }
+
+  body.compact-action-hub-open .app.mobile-panorama-mode .compact-mobile-action-grid button{
+    position:static;
+    left:auto;
+    top:auto;
+    bottom:auto;
+    transform:none !important;
+    width:auto;
+    min-width:0;
+    max-width:none;
+    height:auto;
+    min-height:28px !important;
+    padding:4px 8px !important;
+    font-size:.5rem !important;
+    line-height:.92 !important;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    text-wrap:balance;
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+
+  .app.mobile-panorama-mode .compact-mode-tabs{
+    bottom:4px;
+    left:4px;
+    right:4px;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  .app.mobile-panorama-mode .compact-mode-tabs button{
+    min-height:26px;
+    font-size:.46rem;
+    border-radius:9px;
+  }
+
+  .app.mobile-panorama-mode .compact-player-panel{
+    padding-top:6px !important;
+  }
+
+  .app.mobile-panorama-mode .compact-player-panel > .compact-section-head{
+    display:flex;
+  }
+
+  .app.mobile-panorama-mode .compact-player-zones{
+    grid-template-rows:minmax(58px, .82fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "core core"
+      "attack defense"
+      "armor fuel";
+  }
+
+  .app.mobile-panorama-mode #compactPlayerArmorZone{
+    grid-column:auto;
+  }
+
+  .app.mobile-panorama-mode .compact-log-panel{
+    top:60px;
+    bottom:6px;
+    left:194px;
+    right:156px;
+  }
+}
+
+/* Palette correction: keep PoCoBOT blue/ice identity, reserve amber for emphasis. */
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse),
+       (max-height: 820px) and (orientation: landscape) and (pointer: coarse){
+  .app.mobile-compact-mode,
+  .app.mobile-panorama-mode{
+    --poco-ice-1:#eef7ff;
+    --poco-ice-2:#d9e9ff;
+    --poco-ice-3:#c3d4f7;
+    --poco-ink-blue:#183564;
+    --poco-panel-blue:#546fd3;
+    --poco-panel-blue-2:#405bc4;
+    --poco-panel-dark:#091948;
+  }
+
+  .app.mobile-compact-mode .compact-console-brand,
+  .app.mobile-panorama-mode .compact-console-brand{
+    background:linear-gradient(180deg, var(--poco-ice-1), var(--poco-ice-2) 56%, var(--poco-ice-3));
+    border-color:rgba(24,53,100,.22);
+  }
+
+  .app.mobile-compact-mode .compact-player-panel,
+  .app.mobile-panorama-mode .compact-player-panel,
+  .app.mobile-compact-mode .compact-hand-panel,
+  .app.mobile-panorama-mode .compact-hand-panel,
+  .app.mobile-compact-mode .compact-mobile-actions-panel,
+  .app.mobile-panorama-mode .compact-mobile-actions-panel{
+    background:linear-gradient(180deg, #f0f8ff, #d8e8ff 55%, #bfcff4) !important;
+    border-color:rgba(24,53,100,.24);
+  }
+
+  .app.mobile-compact-mode .compact-zone-card,
+  .app.mobile-panorama-mode .compact-zone-card{
+    background:linear-gradient(180deg, rgba(243,249,255,.98), rgba(213,229,255,.98) 56%, rgba(195,212,247,.98));
+    border-color:rgba(89,111,178,.42);
+    color:var(--poco-ink-blue);
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray,
+  .app.mobile-panorama-mode .compact-hand-tray{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.12)),
+      linear-gradient(180deg, #edf6ff, #d5e4fb 64%, #c4d3f6);
+    border-color:rgba(89,111,178,.32);
+  }
+
+  .app.mobile-compact-mode .compact-mode-tabs button,
+  .app.mobile-panorama-mode .compact-mode-tabs button{
+    background:linear-gradient(180deg, #213c8d, #112765 58%, #091948);
+    color:#e9f5ff;
+    border-color:rgba(137,160,226,.42);
+  }
+
+  .app.mobile-compact-mode .compact-mode-tabs button.active,
+  .app.mobile-panorama-mode .compact-mode-tabs button.active,
+  body.mobile-compact-mode.compact-mobile-player-open .compact-mode-tabs button[data-mobile-drawer="player"],
+  body.mobile-compact-mode.compact-mobile-rival-open .compact-mode-tabs button[data-mobile-drawer="rival"],
+  body.mobile-compact-mode.compact-mobile-actions-open .compact-mode-tabs button[data-mobile-drawer="actions"],
+  body.mobile-compact-mode.compact-mobile-log-open .compact-mode-tabs button[data-mobile-drawer="log"],
+  body.mobile-panorama-mode.compact-mobile-player-open .compact-mode-tabs button[data-mobile-drawer="player"],
+  body.mobile-panorama-mode.compact-mobile-rival-open .compact-mode-tabs button[data-mobile-drawer="rival"],
+  body.mobile-panorama-mode.compact-mobile-actions-open .compact-mode-tabs button[data-mobile-drawer="actions"],
+  body.mobile-panorama-mode.compact-mobile-log-open .compact-mode-tabs button[data-mobile-drawer="log"]{
+    background:linear-gradient(180deg, #f6fbff, #dcecff 56%, #c6d6f6);
+    color:#183564;
+  }
+
+  .app.mobile-compact-mode .compact-action-hub-button,
+  .app.mobile-panorama-mode .compact-action-hub-button{
+    background:#ffd13f !important;
+    background-image:none !important;
+  }
+
+  .app.mobile-compact-mode #compactMobileModifyBtn,
+  .app.mobile-panorama-mode #compactMobileModifyBtn,
+  .app.mobile-compact-mode #compactMobilePassBtn,
+  .app.mobile-panorama-mode #compactMobilePassBtn{
+    border-color:rgba(89,111,178,.48) !important;
+    background:linear-gradient(180deg, #f6fbff, #dcecff 56%, #c6d6f6) !important;
+    color:#183564 !important;
+  }
+
+  .app.mobile-compact-mode #compactMobileAttackModeBtn,
+  .app.mobile-panorama-mode #compactMobileAttackModeBtn{
+    border-color:rgba(255,118,96,.62) !important;
+    background:linear-gradient(180deg, #ffdfd7, #ff8d74 56%, #d93227) !important;
+    color:#471005 !important;
+  }
+
+  .app.mobile-compact-mode #compactMobileRivalDrawerBtn,
+  .app.mobile-panorama-mode #compactMobileRivalDrawerBtn{
+    border-color:rgba(35,216,255,.46) !important;
+    background:linear-gradient(180deg, #eaffff, #9df1ff 58%, #54c7df) !important;
+    color:#17335e !important;
+  }
+
+  .app.mobile-compact-mode .compact-section-head h2,
+  .app.mobile-panorama-mode .compact-section-head h2,
+  .app.mobile-compact-mode .compact-hand-panel h2,
+  .app.mobile-panorama-mode .compact-hand-panel h2{
+    color:#fff;
+    text-shadow:0 2px 0 rgba(24,53,100,.28);
+  }
+
+  .app.mobile-compact-mode .compact-hand-chip,
+  .app.mobile-panorama-mode .compact-hand-chip,
+  .app.mobile-compact-mode .compact-chip,
+  .app.mobile-panorama-mode .compact-chip{
+    background:linear-gradient(180deg, #f6fbff, #dcecff 56%, #c6d6f6);
+    color:#183564;
+    border-color:rgba(89,111,178,.28);
+  }
+
+  .app.mobile-compact-mode #compactMechaStage-0 .compact-mecha-ring img,
+  .app.mobile-panorama-mode #compactMechaStage-0 .compact-mecha-ring img{
+    --mecha-float-base:translateY(1px) scaleX(-1);
+  }
+
+  .app.mobile-compact-mode #compactMechaStage-1 .compact-mecha-ring img,
+  .app.mobile-panorama-mode #compactMechaStage-1 .compact-mecha-ring img{
+    --mecha-float-base:translate(-14px, 1px);
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel,
+  .app.mobile-panorama-mode .compact-hand-panel{
+    grid-template-rows:38px minmax(0, 1fr) !important;
+    gap:5px;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel .compact-section-head,
+  .app.mobile-panorama-mode .compact-hand-panel .compact-section-head{
+    min-height:0;
+    align-items:center;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel .compact-kicker,
+  .app.mobile-panorama-mode .compact-hand-panel .compact-kicker{
+    display:none;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel h2,
+  .app.mobile-panorama-mode .compact-hand-panel h2{
+    font-size:1rem;
+    line-height:1;
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray,
+  .app.mobile-panorama-mode .compact-hand-tray{
+    align-items:center;
+    min-height:0;
+    height:100%;
+    padding:6px 9px !important;
+  }
+}
+
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse){
+  .app.mobile-compact-mode .desktop-compact-shell{
+    grid-template-rows:58px minmax(170px, .72fr) 82px 96px minmax(178px, .58fr);
+  }
+
+  .app.mobile-compact-mode .compact-mecha-ring{
+    width:clamp(104px, 31vw, 132px);
+    height:clamp(104px, 31vw, 132px);
+  }
+
+  .app.mobile-compact-mode .compact-mecha-ring img{
+    height:88% !important;
+    max-height:88% !important;
+    max-width:132% !important;
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray{
+    --compact-hand-card-width:58px;
+    --compact-hand-card-height:82px;
+    --compact-hand-card-step:64px;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel{
+    grid-template-rows:32px minmax(0, 1fr) !important;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel .compact-section-head{
+    height:32px;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel h2{
+    font-size:.84rem;
+  }
+}
+
+/* Mobile PRO pass: hub closed by default, module board promoted, hand space reclaimed. */
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse){
+  .app.mobile-compact-mode .desktop-compact-shell{
+    grid-template-rows:56px minmax(172px, .56fr) minmax(216px, .82fr) minmax(158px, 174px);
+    grid-template-areas:
+      "topbar"
+      "arena"
+      "player"
+      "hand";
+    gap:6px;
+    align-content:stretch;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-actions-panel{
+    grid-area:hand;
+    align-self:start;
+    justify-self:stretch;
+    height:0;
+    min-height:0;
+    padding:0 !important;
+    border:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    overflow:visible;
+    pointer-events:none;
+    z-index:86;
+  }
+
+  .app.mobile-compact-mode .compact-action-hub-button{
+    top:-38px;
+    left:82%;
+    width:128px !important;
+    height:128px !important;
+    min-width:128px !important;
+    min-height:128px !important;
+    max-width:128px !important;
+    max-height:128px !important;
+    pointer-events:auto;
+    transform:translate(-50%, -48%);
+    font-size:.72rem !important;
+  }
+
+  .app.mobile-compact-mode .compact-action-hub-button:active,
+  .app.mobile-compact-mode .compact-action-hub-button.is-pressed{
+    transform:translate(-50%, calc(-48% + 2px)) scale(.985);
+  }
+
+  .app.mobile-compact-mode .compact-action-hub-button::after{
+    content:none;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-action-grid{
+    position:absolute;
+    left:0;
+    right:0;
+    top:-170px;
+    height:160px;
+    pointer-events:none;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-action-grid button{
+    pointer-events:auto;
+  }
+
+  .app.mobile-compact-mode #compactMobileModifyBtn{ transform:translate(calc(-50% - 104px), calc(-50% - 4px)); }
+  .app.mobile-compact-mode #compactMobileAttackModeBtn{ transform:translate(calc(-50% - 58px), calc(-50% - 42px)); }
+  .app.mobile-compact-mode #compactMobileActionsDrawerBtn{ transform:translate(-50%, calc(-50% - 56px)); }
+  .app.mobile-compact-mode #compactMobileRivalDrawerBtn{ transform:translate(calc(-50% + 58px), calc(-50% - 42px)); }
+  .app.mobile-compact-mode #compactMobilePassBtn{ transform:translate(calc(-50% + 104px), calc(-50% - 4px)); }
+
+  body.compact-action-hub-open .app.mobile-compact-mode .compact-mobile-action-grid{
+    position:fixed;
+    left:var(--compact-action-menu-left, 50vw);
+    right:auto;
+    top:var(--compact-action-menu-top, 50vh);
+    width:var(--compact-action-menu-width, min(44vw, 250px));
+    height:var(--compact-action-menu-height, 160px);
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    grid-auto-rows:minmax(26px, auto);
+    align-content:center;
+    gap:4px 6px;
+    padding:4px 6px;
+    border-radius:16px;
+    border:0;
+    background:transparent;
+    box-shadow:none;
+    overflow-y:auto;
+    overflow-x:visible;
+    pointer-events:auto;
+    transform:none;
+    z-index:180;
+    scrollbar-width:none;
+  }
+
+  body.compact-action-hub-open .app.mobile-panorama-mode .compact-mobile-action-grid{
+    position:fixed;
+    left:max(14px, env(safe-area-inset-left));
+    right:auto;
+    top:142px;
+    width:clamp(152px, 21vw, 180px);
+    height:auto;
+    min-height:0;
+    max-height:calc(100vh - 154px);
+    display:grid;
+    grid-template-columns:minmax(0, 1fr);
+    grid-auto-rows:minmax(30px, auto);
+    align-content:center;
+    gap:6px;
+    padding:6px 0;
+    overflow-y:auto;
+    overflow-x:visible;
+    transform:none;
+    z-index:120;
+    pointer-events:auto;
+    scrollbar-width:thin;
+  }
+
+  body.compact-action-hub-open .app.mobile-panorama-mode .compact-mobile-action-grid button{
+    position:static;
+    left:auto;
+    top:auto;
+    bottom:auto;
+    transform:none !important;
+    width:auto;
+    min-width:0;
+    max-width:none;
+    height:auto;
+    min-height:30px !important;
+    padding:5px 8px !important;
+    font-size:.5rem !important;
+    line-height:.92 !important;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    text-wrap:balance;
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+
+  body.compact-action-hub-open .app.mobile-compact-mode .compact-mobile-action-grid button{
+    position:static;
+    left:auto;
+    top:auto;
+    bottom:auto;
+    transform:none !important;
+    width:auto;
+    min-width:0;
+    max-width:none;
+    height:auto;
+    min-height:26px !important;
+    padding:3px 5px !important;
+    font-size:.46rem !important;
+    line-height:.9 !important;
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+
+  .app.mobile-compact-mode .compact-mode-tabs{
+    display:none;
+  }
+
+  .app.mobile-compact-mode .compact-player-panel{
+    display:grid;
+    grid-template-rows:minmax(0, 1fr) !important;
+    padding:7px !important;
+    overflow:hidden;
+  }
+
+  .app.mobile-compact-mode .compact-player-zones{
+    height:100%;
+    min-height:0;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    grid-template-rows:minmax(0, .95fr) minmax(0, .95fr) minmax(0, 1.15fr);
+    grid-template-areas:
+      "core armor"
+      "attack defense"
+      "fuel fuel";
+    gap:7px;
+  }
+
+  .app.mobile-compact-mode .compact-zone-card{
+    align-content:stretch;
+    grid-template-rows:auto minmax(0, 1fr);
+    min-height:0;
+    padding:7px;
+    gap:5px;
+    border-radius:13px;
+  }
+
+  .app.mobile-compact-mode #compactPlayerArmorZone{
+    grid-column:auto;
+  }
+
+  .app.mobile-compact-mode #compactPlayerFuelZone{
+    grid-column:1 / -1;
+  }
+
+  .app.mobile-compact-mode .compact-zone-head{
+    font-size:.56rem;
+    letter-spacing:.08em;
+  }
+
+  .app.mobile-compact-mode .compact-zone-head strong{
+    font-size:.66rem;
+  }
+
+  .app.mobile-compact-mode .compact-zone-cards{
+    --compact-zone-card-width:34px;
+    --compact-zone-card-height:48px;
+    min-height:0;
+    height:100%;
+    align-items:center;
+    align-content:center;
+    gap:4px;
+    overflow:hidden;
+  }
+
+  .app.mobile-compact-mode #compactPlayerFuelZone .compact-zone-cards{
+    --compact-zone-card-width:40px;
+    --compact-zone-card-height:56px;
+  }
+
+  .app.mobile-compact-mode .compact-empty{
+    min-width:72px;
+    min-height:30px;
+    font-size:.58rem;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel{
+    grid-template-rows:28px minmax(0, 1fr) !important;
+    padding:6px 7px 8px !important;
+    gap:5px;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel .compact-section-head{
+    height:28px;
+    margin:0;
+    justify-content:flex-start;
+    gap:6px;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel h2{
+    flex:0 0 auto;
+    max-width:74px;
+    font-size:.72rem;
+    color:#183564;
+    text-shadow:none;
+  }
+
+  .app.mobile-compact-mode .compact-hand-metrics{
+    flex:0 1 auto;
+    justify-content:flex-start;
+    flex-wrap:nowrap;
+    gap:5px;
+    min-width:0;
+  }
+
+  .app.mobile-compact-mode .compact-hand-chip{
+    min-height:21px;
+    padding:2px 6px;
+    font-size:.51rem;
+    white-space:nowrap;
+    line-height:1;
+  }
+
+  .app.mobile-compact-mode .compact-hand-chip-wide{
+    max-width:none;
+    white-space:nowrap;
+    word-break:normal;
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray{
+    --compact-hand-card-width:60px !important;
+    --compact-hand-card-height:86px !important;
+    --compact-hand-card-step:48px !important;
+    align-items:flex-end;
+    padding:10px 10px 8px !important;
+    border-radius:18px;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-ring{
+    width:clamp(120px, 35vw, 146px);
+    height:clamp(120px, 35vw, 146px);
+  }
+
+  .app.mobile-compact-mode .compact-mecha-ring img{
+    width:86% !important;
+    height:86% !important;
+    max-width:86% !important;
+    max-height:86% !important;
+    object-fit:contain;
+    object-position:center center;
+  }
+
+  .app.mobile-compact-mode #compactMechaStage-0 .compact-mecha-ring img{
+    --mecha-float-base:translate(0, 1px) scaleX(-1);
+  }
+
+  .app.mobile-compact-mode #compactMechaStage-1 .compact-mecha-ring img{
+    --mecha-float-base:translate(0, 1px);
+  }
+}
+
+/* Mobile PRO polish: aggressive floating brand + defensive text fitting. */
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse){
+  .app.mobile-compact-mode .compact-topbar{
+    grid-template-columns:minmax(66px, .55fr) minmax(0, 2.1fr) minmax(66px, .55fr) minmax(72px, .62fr);
+  }
+
+  .app.mobile-compact-mode .compact-console-brand{
+    height:48px;
+    padding:0 2px;
+    overflow:visible;
+  }
+
+  .app.mobile-compact-mode .compact-console-brand img{
+    width:176%;
+    height:176%;
+    transform:scale(1.28);
+    filter:drop-shadow(0 2px 0 rgba(255,255,255,.38)) drop-shadow(0 7px 12px rgba(5,18,52,.22));
+  }
+
+  .app.mobile-compact-mode .compact-arena-brand{
+    display:flex !important;
+    position:absolute;
+    grid-column:1 / -1;
+    grid-row:1;
+    left:50%;
+    top:-12px;
+    z-index:3;
+    width:clamp(172px, 60vw, 252px);
+    height:64px;
+    margin:0;
+    transform:translateX(-50%);
+    align-items:center;
+    justify-content:center;
+    overflow:visible;
+    opacity:.74;
+    pointer-events:none;
+    filter:drop-shadow(0 5px 10px rgba(0,0,0,.38)) drop-shadow(0 0 18px rgba(35,216,255,.24));
+  }
+
+  .app.mobile-compact-mode .compact-arena-brand img{
+    width:166%;
+    height:166%;
+    max-width:none;
+    object-fit:contain;
+    transform:scale(1.05);
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage{
+    z-index:4;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-head{
+    z-index:9;
+    width:calc(100% - 6px);
+    min-width:0;
+    min-height:20px;
+    padding:2px 6px;
+    gap:4px;
+    overflow:hidden;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-head span{
+    min-width:0;
+    flex:1 1 auto;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:clamp(.45rem, 2.2vw, .58rem);
+    line-height:1;
+    letter-spacing:.045em;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-head strong{
+    flex:0 0 auto;
+    font-size:clamp(.54rem, 2.65vw, .72rem);
+    line-height:1;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-foot{
+    width:min(100%, 128px);
+    min-height:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-top:0;
+    padding:2px 6px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(3,8,14,.48);
+    font-size:clamp(.41rem, 2.05vw, .52rem);
+    line-height:1;
+    letter-spacing:.035em;
+    white-space:nowrap;
+  }
+
+  .app.mobile-compact-mode .compact-zone-head,
+  .app.mobile-compact-mode .compact-readout,
+  .app.mobile-compact-mode .compact-hand-chip,
+  .app.mobile-compact-mode .compact-mobile-action-grid button,
+  .app.mobile-compact-mode .compact-topbar-actions button{
+    min-width:0;
+  }
+
+  .app.mobile-compact-mode .compact-zone-head span,
+  .app.mobile-compact-mode .compact-readout-label{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    line-height:1;
+  }
+
+  .app.mobile-compact-mode .compact-zone-head strong{
+    flex:0 0 auto;
+    line-height:1;
+  }
+
+  .app.mobile-compact-mode .compact-readout-strip{
+    gap:4px;
+  }
+
+  .app.mobile-compact-mode .compact-readout{
+    min-height:42px;
+    display:grid;
+    grid-template-rows:minmax(18px, auto) minmax(9px, auto);
+    align-content:center;
+    gap:1px;
+    padding:3px 5px !important;
+  }
+
+  .app.mobile-compact-mode .compact-readout .tiny-label,
+  .app.mobile-compact-mode .compact-readout .value{
+    min-width:0;
+    max-width:100%;
+    line-height:1;
+  }
+
+  .app.mobile-compact-mode .compact-readout .tiny-label{
+    min-height:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:visible;
+    text-overflow:clip;
+    white-space:normal;
+    text-align:center;
+    text-wrap:balance;
+    font-size:.39rem;
+    line-height:.88;
+    letter-spacing:.035em;
+  }
+
+  .app.mobile-compact-mode .compact-readout .value{
+    min-height:9px;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    margin-top:0;
+    font-size:.46rem !important;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-action-grid button,
+  .app.mobile-compact-mode .compact-topbar-actions button,
+  .app.mobile-compact-mode .compact-hand-chip{
+    overflow-wrap:anywhere;
+    text-wrap:balance;
+  }
+}
+
+/* Mobile PRO command strip, floating action petals and fanned hand. */
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse){
+  .app.mobile-compact-mode .compact-console-brand{
+    display:none !important;
+  }
+
+  .app.mobile-compact-mode .compact-arena-brand{
+    display:none !important;
+  }
+
+  .app.mobile-compact-mode .compact-top-status{
+    grid-column:2;
+    grid-row:1;
+    min-width:0;
+    height:42px;
+    display:flex !important;
+    flex-direction:column;
+    justify-content:center;
+    padding:4px 10px;
+    border-radius:14px;
+    border:2px solid rgba(35,216,255,.28);
+    background:linear-gradient(180deg, rgba(8,20,34,.96), rgba(4,9,16,.98));
+    box-shadow:inset 0 0 0 1px rgba(35,216,255,.10), 0 3px 0 rgba(2,15,38,.18);
+  }
+
+  .app.mobile-compact-mode .compact-top-status span{
+    color:#f4dfbb;
+    font-size:.46rem;
+    font-weight:1000;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+
+  .app.mobile-compact-mode .compact-top-status strong{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:var(--cyan);
+    font:1000 .78rem/1 "Courier New", monospace;
+    text-shadow:0 0 10px rgba(35,216,255,.28);
+  }
+
+  .app.mobile-compact-mode .compact-readout-strip{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:6px;
+  }
+
+  .app.mobile-compact-mode .compact-readout:has(#compactRightStatusText){
+    display:none !important;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage{
+    display:grid;
+    grid-template-rows:auto auto auto;
+    align-content:start;
+    justify-items:center;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-ring{
+    order:1;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-head{
+    order:2;
+    width:min(100%, 128px);
+    min-height:18px;
+    justify-self:center;
+    justify-content:center;
+    margin-top:-3px;
+    padding:2px 7px;
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-head span{
+    flex:0 1 auto;
+    max-width:calc(100% - 34px);
+  }
+
+  .app.mobile-compact-mode .compact-mecha-stage-foot{
+    order:3;
+    margin-top:2px;
+  }
+
+  .app.mobile-compact-mode .compact-mobile-action-grid{
+    filter:drop-shadow(0 14px 16px rgba(4,18,48,.28));
+  }
+
+  body.compact-action-hub-open .app.mobile-compact-mode .compact-mobile-action-grid button{
+    backdrop-filter:blur(5px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.78), 0 4px 0 rgba(17,33,87,.16), 0 14px 20px rgba(4,18,48,.22) !important;
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray{
+    overflow-x:auto;
+    overflow-y:visible;
+    align-items:flex-end;
+    padding:4px 10px 2px !important;
+    perspective:520px;
+    mask-image:linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray .card,
+  .app.mobile-compact-mode .compact-hand-tray .card.card-detailed{
+    transform:translateY(var(--compact-hand-card-lift, 0px)) rotate(var(--compact-hand-card-angle, 0deg));
+    transform-origin:50% 108%;
+    transition:transform .16s cubic-bezier(.2,.78,.2,1), box-shadow .16s ease, outline .12s ease;
+    box-shadow:0 5px 0 rgba(17,33,87,.10), 0 12px 18px rgba(6,18,52,.20) !important;
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray .card.clickable:hover{
+    transform:translateY(calc(var(--compact-hand-card-lift, 0px) - 4px)) rotate(var(--compact-hand-card-angle, 0deg)) scale(1.035);
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray .card.selected{
+    transform:translateY(calc(var(--compact-hand-card-lift, 0px) - 6px)) rotate(var(--compact-hand-card-angle, 0deg)) scale(1.045);
+  }
+
+  .app.mobile-compact-mode .compact-hand-tray .card.compact-draft-origin{
+    transform:translateY(calc(var(--compact-hand-card-lift, 0px) + 8px)) rotate(var(--compact-hand-card-angle, 0deg)) scale(.94);
+  }
+
+  .app.mobile-compact-mode .compact-defense-warning{
+    position:fixed;
+    left:18px;
+    right:18px;
+    top:56vh;
+    width:auto;
+    min-width:0;
+    max-width:none;
+    padding:10px 12px 12px;
+    transform:translateY(-50%) scale(.94);
+    z-index:10060;
+  }
+
+  .app.mobile-compact-mode .compact-defense-warning.show{
+    transform:translateY(-50%) scale(1);
+  }
+}
+
+/* Mobile PRO landscape also keeps the hand as a light floating fan. */
+@media (max-height: 820px) and (orientation: landscape) and (pointer: coarse){
+  .app.mobile-panorama-mode .compact-arena-brand{
+    display:none !important;
+  }
+
+  .app.mobile-panorama-mode .compact-hand-tray{
+    overflow-x:auto;
+    overflow-y:visible;
+    align-items:flex-end;
+    padding:4px 9px 2px !important;
+    perspective:520px;
+    mask-image:linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  }
+
+  .app.mobile-panorama-mode .compact-hand-tray .card,
+  .app.mobile-panorama-mode .compact-hand-tray .card.card-detailed{
+    transform:translateY(var(--compact-hand-card-lift, 0px)) rotate(var(--compact-hand-card-angle, 0deg));
+    transform-origin:50% 108%;
+    transition:transform .16s cubic-bezier(.2,.78,.2,1), box-shadow .16s ease, outline .12s ease;
+    box-shadow:0 4px 0 rgba(17,33,87,.10), 0 10px 16px rgba(6,18,52,.18) !important;
+  }
+
+  .app.mobile-panorama-mode .compact-hand-tray .card.clickable:hover{
+    transform:translateY(calc(var(--compact-hand-card-lift, 0px) - 3px)) rotate(var(--compact-hand-card-angle, 0deg)) scale(1.03);
+  }
+
+  .app.mobile-panorama-mode .compact-hand-tray .card.selected{
+    transform:translateY(calc(var(--compact-hand-card-lift, 0px) - 5px)) rotate(var(--compact-hand-card-angle, 0deg)) scale(1.04);
+  }
+
+  .app.mobile-panorama-mode .compact-hand-tray .card.compact-draft-origin{
+    transform:translateY(calc(var(--compact-hand-card-lift, 0px) + 7px)) rotate(var(--compact-hand-card-angle, 0deg)) scale(.94);
+  }
+}
+
+@media (orientation: landscape) and (pointer: coarse){
+  .app.mobile-panorama-mode .compact-action-hub-button{
+    top:62px !important;
+    width:96px !important;
+    height:96px !important;
+    min-width:96px !important;
+    min-height:96px !important;
+    max-width:96px !important;
+    max-height:96px !important;
+    border:3px solid rgba(255,232,154,.9) !important;
+    border-radius:18px !important;
+    background:#ffd13f !important;
+    background-image:none !important;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.82),
+      inset 0 -4px 0 rgba(130,68,0,.28),
+      0 4px 0 rgba(96,49,0,.34),
+      0 13px 22px rgba(5,15,42,.30),
+      0 0 0 2px rgba(26,52,106,.22) !important;
+    color:#291000 !important;
+    font:1000 .64rem/1.02 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif !important;
+    letter-spacing:.035em !important;
+    text-transform:uppercase;
+    text-shadow:0 1px 0 rgba(255,255,255,.38);
+  }
+
+  .app.mobile-panorama-mode .compact-action-hub-button::before{
+    content:attr(data-label);
+    display:block;
+    max-width:82px;
+    white-space:normal;
+    text-align:center;
+  }
+
+  .app.mobile-panorama-mode .compact-action-hub-button:active,
+  .app.mobile-panorama-mode .compact-action-hub-button.is-pressed{
+    background:#f0b72a !important;
+    background-image:none !important;
+    transform:translate(-50%, calc(-50% + 2px)) scale(.985) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.60),
+      inset 0 -2px 0 rgba(92,45,0,.24),
+      0 2px 0 rgba(96,49,0,.34),
+      0 8px 16px rgba(5,15,42,.26) !important;
+  }
+}
+
+@media (max-height: 820px) and (orientation: landscape) and (pointer: coarse){
+  .app.mobile-panorama-mode .compact-topbar{
+    grid-template-columns:74px minmax(160px, 1fr) 70px minmax(112px, .42fr);
+    gap:6px;
+  }
+
+  .app.mobile-panorama-mode .compact-console-brand{
+    display:none !important;
+  }
+
+  .app.mobile-panorama-mode .compact-turn-dial{
+    display:none !important;
+  }
+
+  .app.mobile-panorama-mode .compact-top-status{
+    grid-column:2;
+    grid-row:1;
+    min-width:0;
+    height:42px;
+    display:flex !important;
+    flex-direction:column;
+    justify-content:center;
+    padding:4px 10px;
+    border-radius:14px;
+    border:2px solid rgba(35,216,255,.28);
+    background:linear-gradient(180deg, rgba(8,20,34,.96), rgba(4,9,16,.98));
+    box-shadow:inset 0 0 0 1px rgba(35,216,255,.10), 0 3px 0 rgba(2,15,38,.18);
+  }
+
+  .app.mobile-panorama-mode .compact-top-status span{
+    color:#f4dfbb;
+    font-size:.42rem;
+    font-weight:1000;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+
+  .app.mobile-panorama-mode .compact-top-status strong{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:var(--cyan);
+    font:1000 .74rem/1 "Courier New", monospace;
+    text-shadow:0 0 10px rgba(35,216,255,.28);
+  }
+
+  .app.mobile-panorama-mode .compact-top-resource-fuel{
+    grid-column:1;
+  }
+
+  .app.mobile-panorama-mode .compact-top-resource-core{
+    grid-column:3;
+  }
+
+  .app.mobile-panorama-mode .compact-menu-toggle{
+    grid-column:4;
+  }
+
+  .app.mobile-panorama-mode .compact-arena-brand{
+    display:none !important;
+    position:absolute;
+    left:50%;
+    top:-8px;
+    z-index:7;
+    width:clamp(138px, 28vw, 214px);
+    height:54px;
+    margin:0;
+    transform:translateX(-50%);
+    align-items:center;
+    justify-content:center;
+    overflow:visible;
+    opacity:.92;
+    pointer-events:none;
+    filter:drop-shadow(0 4px 9px rgba(0,0,0,.36));
+  }
+
+  .app.mobile-panorama-mode .compact-arena-brand img{
+    width:158%;
+    height:158%;
+    max-width:none;
+    object-fit:contain;
+    transform:scale(1.02);
+  }
+
+  .app.mobile-panorama-mode .compact-mecha-stage-head{
+    min-width:0;
+    overflow:hidden;
+  }
+
+  .app.mobile-panorama-mode .compact-mecha-stage-head span{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .app.mobile-panorama-mode .compact-mecha-stage-foot{
+    max-width:132px;
+    padding:1px 5px;
+    border-radius:999px;
+    background:rgba(3,8,14,.42);
+    white-space:nowrap;
+  }
+
+  .app.mobile-panorama-mode .compact-mecha-ring img{
+    width:88% !important;
+    height:88% !important;
+    max-width:88% !important;
+    max-height:88% !important;
+    object-fit:contain;
+    object-position:center center;
+  }
+
+  .app.mobile-panorama-mode #compactMechaStage-0 .compact-mecha-ring img{
+    --mecha-float-base:translate(0, 1px) scaleX(-1);
+  }
+
+  .app.mobile-panorama-mode #compactMechaStage-1 .compact-mecha-ring img{
+    --mecha-float-base:translate(0, 1px);
+  }
 }
 
 html:has(body.story-argos-hack-ui){
@@ -10586,7 +12631,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
   </div>
   <button class="story-embed-nav-btn" id="storyMissionBriefToggleBtn" type="button">Ocultar info</button>
 </div>
-<div class="story-orientation-toast" id="storyOrientationToast" role="status" aria-live="polite">
+<div class="story-orientation-toast" id="storyOrientationToast" role="status" aria-live="polite" hidden>
   <span class="story-orientation-toast-icon" aria-hidden="true">🔒↻</span>
   <span>Activa el bloqueo de pantalla</span>
 </div>
@@ -11195,7 +13240,27 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
 
   <section class="desktop-compact-shell" id="desktopCompactShell" aria-hidden="true">
     <div class="frame compact-topbar">
-      <div class="compact-topbar-actions">
+      <button class="compact-menu-toggle" id="compactMenuToggleBtn" type="button" aria-expanded="false" aria-controls="compactTopbarMenu">Menú</button>
+      <div class="compact-console-brand" aria-hidden="true">
+        <img src="assets/pocobot_title_blue.png" alt="">
+      </div>
+      <div class="compact-top-status" aria-label="Estado de combate">
+        <span>Status</span>
+        <strong id="compactTopStatusText">Idle</strong>
+      </div>
+      <div class="compact-turn-dial" aria-label="Turno actual">
+        <span id="compactTurnDialPlayer">Turno</span>
+        <strong id="compactTurnDialValue">00</strong>
+      </div>
+      <div class="compact-top-resource compact-top-resource-fuel">
+        <span>Fuel</span>
+        <strong id="compactTopFuelValue">0</strong>
+      </div>
+      <div class="compact-top-resource compact-top-resource-core">
+        <span>Núcleo</span>
+        <strong id="compactTopCoreValue">0/3</strong>
+      </div>
+      <div class="compact-topbar-actions" id="compactTopbarMenu">
         <button class="primary" data-source-button="saveGameBtn" id="compactSaveBtn" type="button">Guardar</button>
         <button class="cyan" data-source-button="loadGameBtn" id="compactLoadBtn" type="button">Cargar partida</button>
         <button data-source-button="newGameBtn" id="compactNewGameBtn" type="button">Nueva partida</button>
@@ -11253,7 +13318,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
 
           <section class="compact-zone-card compact-zone-card-fuel" id="compactPlayerFuelZone" data-compact-dropzone="fuel">
             <div class="compact-zone-head">
-              <span>Combustible</span>
+              <span>Fuel</span>
               <strong id="compactFuelSummary">0</strong>
             </div>
             <div class="compact-zone-cards" id="compactFuelCards"></div>
@@ -11389,6 +13454,20 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
           </section>
         </div>
       </aside>
+
+      <aside class="frame compact-log-panel" id="compactLogPanel">
+        <div class="compact-section-head compact-section-head-tight">
+          <div>
+            <div class="compact-kicker">Registro</div>
+            <h2>Log</h2>
+          </div>
+          <div class="compact-chip-stack">
+            <span class="compact-chip" id="compactLogCount">0 entradas</span>
+            <button class="compact-mobile-drawer-close" data-mobile-drawer-close type="button">Cerrar</button>
+          </div>
+        </div>
+        <div class="compact-log-content" id="compactLogContent"></div>
+      </aside>
     </div>
 
     <div class="desktop-compact-bottom">
@@ -11461,7 +13540,8 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
             <strong id="compactMobileCapacityText">0/18</strong>
           </div>
         </div>
-        <div class="compact-mobile-action-grid">
+        <button class="compact-action-hub-button acciones-btn" id="accionesBtn" type="button" aria-label="Menú de acciones" data-label="Menú de Acciones" aria-expanded="false" aria-controls="compactMobileActionGrid"></button>
+        <div class="compact-mobile-action-grid" id="compactMobileActionGrid">
           <button class="primary" data-source-button="actionAddBtn" id="compactMobileModifyBtn" type="button">Modificar</button>
           <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Abrir ataque</button>
           <button class="primary" data-mobile-drawer="actions" id="compactMobileActionsDrawerBtn" type="button">Otras acciones</button>
@@ -11476,6 +13556,12 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
           <button class="primary compact-action-hidden" data-compact-figure-action="true" id="compactMobileFigureBurstBtn" type="button">2 Figuras → 4</button>
           <button data-source-button="actionPassBtn" id="compactMobilePassBtn" type="button">Pasar</button>
         </div>
+        <nav class="compact-mode-tabs" aria-label="Paneles móviles">
+          <button data-mobile-drawer="player" id="compactTabMechaBtn" type="button">Mecha</button>
+          <button data-mobile-drawer="rival" id="compactTabRivalBtn" type="button">Rival</button>
+          <button data-mobile-drawer="actions" id="compactTabCombatBtn" class="active" type="button">Combate</button>
+          <button data-mobile-drawer="log" id="compactTabLogBtn" type="button">Log</button>
+        </nav>
       </aside>
 
       <aside class="frame compact-tutorial-panel">
@@ -11768,10 +13854,13 @@ var _ol = {
 let defenseUiCueKey = '';
 let defenseAlertTimer = null;
 let attackSpecialPopupTimer = null;
+const ATTACK_LAUNCH_DELAY_MS = 360;
+const ATTACK_SPECIAL_POPUP_DURATION_MS = 3200;
+const ATTACK_RESOLVE_AFTER_LAUNCH_MS = 1500;
 let olLastFxCueId = null;
 let olWaitingRevealBlockedUntil = 0;
 let olWaitingRevealTimer = null;
-let desktopHudMode = 'expanded';
+let desktopHudMode = 'compact';
 let mobilePanoramaRequested = false;
 let devHudModeOverride = 'auto';
 let devMobilePanoramaCssCache = null;
@@ -11784,6 +13873,7 @@ let compactDraftOwnerIdx = null;
 let compactPointerDragState = null;
 let compactSuppressCardClickUntil = 0;
 let compactSuppressCardClickId = null;
+let compactMobileActionHubOpen = false;
 let mobilePanoramaVitalityStage = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -11843,23 +13933,22 @@ function replayOnlineAttackFx(cue){
 
   if(!Number.isFinite(attackerIdx) || !Number.isFinite(defenderIdx)) return;
 
-  olSuppressWaitingVeil(3200);
+  const completeAttack = shouldPlayCompleteAttackSpecial(attackerIdx, typeof cue.completeAttack === 'boolean' ? cue.completeAttack : undefined);
+  const specialShown = completeAttack ? showAttackSpecialPopup(attackerIdx, { force:true }) : false;
+  if(specialShown){
+    triggerCompleteAttackChargeFeedback(attackerIdx);
+  }
+  const launchDelay = specialShown ? ATTACK_SPECIAL_POPUP_DURATION_MS : ATTACK_LAUNCH_DELAY_MS;
+  const impactDelay = launchDelay + ATTACK_RESOLVE_AFTER_LAUNCH_MS;
+
+  olSuppressWaitingVeil(Math.max(3200, impactDelay + 520));
   scrollToTopArea('auto');
   window.setTimeout(() => scrollToTopArea('auto'), 80);
   window.setTimeout(() => scrollToTopArea('auto'), 320);
 
   window.setTimeout(() => {
-    triggerBeam();
-    triggerCombatCinematic(attackerIdx, withProjectile);
-    flushFxQueue();
-    triggerSideRadarAttack(attackerIdx, withProjectile);
-    playUiSound(withProjectile ? 'heavy' : 'attack');
-    triggerScreenShake(withProjectile ? 'heavy' : 'light');
-    triggerScreenRipple(withProjectile ? 'amber' : 'red');
-    pulseVibrate([40, 24, 60]);
-    spawnElementSparks(getCompactCombatSurface() || document.getElementById('tacticalScreen'), withProjectile ? 42 : 28, withProjectile ? 'amber' : 'red');
-    if(withProjectile) window.setTimeout(spawnComboText, 300);
-  }, 360);
+    triggerAttackLaunchFeedback(attackerIdx, withProjectile, { completeAttack });
+  }, launchDelay);
 
   window.setTimeout(() => {
     if(!(destroyedArmorCount > 0 || destroyedDefenseCount > 0 || attackPoints > 0)) return;
@@ -11880,7 +13969,7 @@ function replayOnlineAttackFx(cue){
     triggerImpactFlash(destroyedDefenseCount > 0 ? 'red' : 'amber');
     if(destroyedArmorCount > 0) pulseRadarStat(defenderIdx, 'armor');
     if(destroyedDefenseCount > 0) pulseRadarStat(defenderIdx, 'defense');
-  }, 1860);
+  }, impactDelay);
 }
 
 function replayOnlineFxCue(cue){
@@ -12096,7 +14185,7 @@ function primeOfflineMode(gameMode, difficulty=null){
   state.singleDifficulty = gameMode === 'single' ? difficulty : null;
   state.onlineFxCue = null;
   state.tutorial = false;
-  desktopHudMode = 'expanded';
+  desktopHudMode = 'compact';
   mobilePanoramaRequested = false;
   releaseOrientationLockBestEffort();
 }
@@ -13622,9 +15711,9 @@ function spawnComboText(){
   window.setTimeout(() => el.remove(), 1400);
 }
 
-function triggerCombatCinematic(attackerIdx, withProjectile=false){
+function triggerCombatCinematic(attackerIdx, withProjectile=false, options={}){
   if(isDesktopCompactModeActive()){
-    triggerCompactAttackCinematic(attackerIdx, withProjectile);
+    triggerCompactAttackCinematic(attackerIdx, withProjectile, options);
     return;
   }
   const screen = document.getElementById('tacticalScreen');
@@ -14759,7 +16848,7 @@ function broadcastStoryEmbedUiState(compactActive, compactRequested){
 }
 
 function getStoryEmbedSpecialModeLabel(){
-  return isStoryMobileViewport() ? 'Modo horizontal' : 'Modo compacto';
+  return 'Modo compacto';
 }
 
 function isStoryMobileViewport(){
@@ -14778,15 +16867,9 @@ function setStoryHudMode(mode){
 }
 
 function showStoryOrientationLockToast(){
-  const mobilePanoramaActive = !!document.body?.classList.contains('mobile-panorama-mode');
-  if(!STORY_EMBED_MODE || (!isStoryMobileViewport() && !mobilePanoramaActive)) return;
   const toast = document.getElementById('storyOrientationToast');
-  if(!toast) return;
+  if(toast) toast.classList.remove('show');
   window.clearTimeout(storyOrientationToastTimer);
-  toast.classList.add('show');
-  storyOrientationToastTimer = window.setTimeout(() => {
-    toast.classList.remove('show');
-  }, 3000);
 }
 
 function activateStoryEmbedSpecialMode(){
@@ -15247,6 +17330,7 @@ async function restoreGameFromCode(code, options = {}){
 
   if(state.gameStarted){
     hideIntroScreen();
+    if(!STORY_EMBED_MODE) prepareNormalCombatStartHudMode();
   }
   render();
   log('💾 Partida cargada desde código.');
@@ -15354,6 +17438,7 @@ function newGame(){
   clearVictoryFx();
   ensureEnhancedFxDom();
   state.gameStarted = true;
+  prepareNormalCombatStartHudMode();
   state.firstAttackTriggered = false;
   state.musicPhase = 'intro';
   ensureMusicElements();
@@ -16322,7 +18407,7 @@ function getShowcaseStatusText(player){
 
 function isDesktopCompactCapable(){
   try{
-    return !!window.matchMedia && window.matchMedia('(min-width: 1121px) and (pointer: fine)').matches;
+    return !!window.matchMedia && window.matchMedia('(pointer: fine)').matches;
   }catch(_err){
     return false;
   }
@@ -16359,7 +18444,7 @@ function canUseDesktopCompactHud(){
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
   const storyForcedDesktop = STORY_EMBED_MODE && storyHudMode === 'compact';
   if(storyForcedDesktop) return introHidden && lobbyHidden;
-  return !!state.gameStarted && introHidden && lobbyHidden && isDesktopCompactCapable() && isDesktopCompactLikelyFullscreen();
+  return !!state.gameStarted && introHidden && lobbyHidden && isDesktopCompactCapable();
 }
 
 function canOfferMobilePanoramaHud(){
@@ -16389,7 +18474,7 @@ function canOfferMobileCompactHud(){
 }
 
 function canUseMobilePanoramaHud(){
-  return canOfferMobilePanoramaHud() && (shouldUseStoryMobileCompactMode() || mobilePanoramaRequested);
+  return canOfferMobilePanoramaHud() && (shouldUseStoryMobileCompactMode() || mobilePanoramaRequested || isMobileLandscapeViewport());
 }
 
 function shouldPreserveMobilePanoramaRequest(){
@@ -16411,15 +18496,6 @@ async function requestLandscapeOrientationBestEffort(){
       return true;
     }
   }catch(_err){}
-  try{
-    if(document.documentElement?.requestFullscreen && !document.fullscreenElement){
-      await document.documentElement.requestFullscreen();
-      if(screen.orientation?.lock){
-        await screen.orientation.lock('landscape');
-        return true;
-      }
-    }
-  }catch(_err){}
   return false;
 }
 
@@ -16435,10 +18511,11 @@ async function releaseOrientationLockBestEffort(){
 }
 
 function setCompactMobileDrawer(drawer){
-  const activeDrawer = drawer === 'actions' || drawer === 'rival' || drawer === 'player' ? drawer : '';
+  const activeDrawer = drawer === 'actions' || drawer === 'rival' || drawer === 'player' || drawer === 'log' ? drawer : '';
   document.body.classList.toggle('compact-mobile-actions-open', activeDrawer === 'actions');
   document.body.classList.toggle('compact-mobile-rival-open', activeDrawer === 'rival');
   document.body.classList.toggle('compact-mobile-player-open', activeDrawer === 'player');
+  document.body.classList.toggle('compact-mobile-log-open', activeDrawer === 'log');
 }
 
 function closeCompactMobileDrawersForCombat(){
@@ -16459,6 +18536,46 @@ function toggleMobilePanoramaVitalityStage(idx){
   if(!document.body?.classList.contains('mobile-panorama-mode')) return;
   mobilePanoramaVitalityStage = mobilePanoramaVitalityStage === idx ? null : idx;
   syncMobilePanoramaVitalityPanels();
+}
+
+function clearCompactActionHubMenuAnchor(){
+  const grid = document.getElementById('compactMobileActionGrid');
+  if(!grid) return;
+  [
+    '--compact-action-menu-left',
+    '--compact-action-menu-top',
+    '--compact-action-menu-width',
+    '--compact-action-menu-height'
+  ].forEach(prop => grid.style.removeProperty(prop));
+}
+
+function updateCompactActionHubMenuAnchor(){
+  const grid = document.getElementById('compactMobileActionGrid');
+  if(!grid) return;
+  const anchoredToDefense = document.body?.classList.contains('compact-action-hub-open')
+    && document.body.classList.contains('mobile-compact-mode');
+  if(!anchoredToDefense){
+    clearCompactActionHubMenuAnchor();
+    return;
+  }
+
+  const target = document.getElementById('compactPlayerDefenseZone');
+  if(!target) return;
+  const rect = target.getBoundingClientRect();
+  const viewportW = window.innerWidth || document.documentElement.clientWidth || rect.right;
+  const viewportH = window.innerHeight || document.documentElement.clientHeight || rect.bottom;
+  const inset = 4;
+  const minWidth = 160;
+  const minHeight = 74;
+  const left = Math.max(inset, Math.min(rect.left + inset, viewportW - minWidth - inset));
+  const top = Math.max(inset, Math.min(rect.top + inset, viewportH - minHeight - inset));
+  const width = Math.max(minWidth, Math.min(rect.width - inset * 2, viewportW - left - inset));
+  const height = Math.max(minHeight, Math.min(rect.height - inset * 2, viewportH - top - inset));
+
+  grid.style.setProperty('--compact-action-menu-left', `${Math.round(left)}px`);
+  grid.style.setProperty('--compact-action-menu-top', `${Math.round(top)}px`);
+  grid.style.setProperty('--compact-action-menu-width', `${Math.round(width)}px`);
+  grid.style.setProperty('--compact-action-menu-height', `${Math.round(height)}px`);
 }
 
 function isDesktopCompactModeActive(){
@@ -16562,27 +18679,30 @@ function syncDesktopHudAvailability(){
     storyOrientationToastShownForMode = false;
     setCompactMobileDrawer('');
   }
+  document.body.classList.toggle('compact-action-hub-open', (mobilePanoramaActive || mobileCompactActive) && compactMobileActionHubOpen);
+  updateCompactActionHubMenuAnchor();
+  if(!mobilePanoramaActive && !mobileCompactActive) document.body.classList.remove('compact-menu-open');
   const mobilePanoramaOffered = canOfferMobilePanoramaHud();
   const topToggleBtn = document.getElementById('desktopCompactToggleTopBtn');
+  const mobileProReturnAvailable = !compactActive && (mobileCompactAvailable || mobilePanoramaAvailable);
   if(topToggleBtn){
-    topToggleBtn.hidden = !desktopAvailable;
-    topToggleBtn.disabled = !desktopAvailable;
-    topToggleBtn.textContent = STORY_EMBED_MODE ? 'Modo compacto' : 'Interfaz compacta';
+    const desktopProReturnAvailable = !compactActive && desktopAvailable;
+    topToggleBtn.hidden = !desktopProReturnAvailable;
+    topToggleBtn.disabled = !desktopProReturnAvailable;
+    topToggleBtn.textContent = 'Modo PRO';
   }
   const mobileToggleBtn = document.getElementById('mobilePanoramaToggleBtn');
   if(mobileToggleBtn){
-    mobileToggleBtn.hidden = !mobilePanoramaOffered;
-    mobileToggleBtn.disabled = !mobilePanoramaOffered;
-    mobileToggleBtn.textContent = 'Modo horizontal';
+    mobileToggleBtn.hidden = !mobileProReturnAvailable;
+    mobileToggleBtn.disabled = !mobileProReturnAvailable;
+    mobileToggleBtn.textContent = 'Modo PRO';
   }
   const shell = document.getElementById('desktopCompactShell');
   if(shell) shell.setAttribute('aria-hidden', compactActive ? 'false' : 'true');
   syncMobilePanoramaVitalityPanels();
   const compactExpandedBtn = document.getElementById('compactExpandedToggleBtn');
   if(compactExpandedBtn){
-    compactExpandedBtn.textContent = STORY_EMBED_MODE
-      ? (mobilePanoramaActive ? 'Historia horizontal' : 'Modo scroll')
-      : ((mobilePanoramaActive || mobileCompactActive) ? 'Interfaz clásica' : 'Interfaz expandida');
+    compactExpandedBtn.textContent = compactActive ? 'Modo Scroll Clásica' : 'Modo PRO';
   }
   const compactReturnBtn = document.getElementById('compactReturnBtn');
   if(compactReturnBtn && STORY_EMBED_MODE){
@@ -16643,6 +18763,22 @@ function triggerDesktopHudModeTransition(mode){
     overlay.classList.remove('active');
     app.classList.remove('desktop-hud-enter-compact', 'desktop-hud-enter-expanded');
   }, 660);
+}
+
+function closeCompactTopbarMenu(){
+  document.body.classList.remove('compact-menu-open');
+  const menuBtn = document.getElementById('compactMenuToggleBtn');
+  if(menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+}
+
+function switchToProInterface(){
+  if(STORY_EMBED_MODE){
+    activateStoryEmbedSpecialMode();
+    return;
+  }
+  mobilePanoramaRequested = isMobileLandscapeViewport();
+  setCompactMobileDrawer('');
+  triggerDesktopHudModeTransition('compact');
 }
 
 function getDesktopCompactPlayerIndex(){
@@ -17040,9 +19176,9 @@ function syncDesktopCompactButtons(){
     if(btn.dataset.contextualAttack === 'true'){
       shouldHide = !attackContextOpen && !!source.disabled;
     }else if(btn.dataset.contextualProjectileOnly === 'true'){
-      shouldHide = !attackContextOpen || (currentTutorialAction !== 'projectileOnly' && !!source.disabled);
+      shouldHide = !attackContextOpen;
     }else if(btn.dataset.contextualProjectileMode === 'true'){
-      shouldHide = !attackContextOpen || (currentTutorialAction !== 'toggleProjectile' && !!source.disabled);
+      shouldHide = !attackContextOpen;
     }else if(btn.dataset.contextualDefense === 'true'){
       shouldHide = !defenseContextOpen && !!source.disabled;
     }else if(btn.dataset.contextualDraw === 'true'){
@@ -17289,9 +19425,9 @@ function syncCompactHandTraySizing(tray, cardCount){
   const mobilePanorama = document.body?.classList.contains('mobile-panorama-mode');
   const mobileCompact = document.body?.classList.contains('mobile-compact-mode');
   if(mobileCompact || mobilePanorama){
-    const cardWidth = mobileCompact ? 54 : 46;
-    const cardHeight = mobileCompact ? 77 : 65;
-    const step = mobileCompact ? 60 : 42;
+    const cardWidth = mobileCompact ? 60 : 46;
+    const cardHeight = mobileCompact ? 86 : 65;
+    const step = mobileCompact ? 48 : 42;
     tray.style.setProperty('--compact-hand-card-width', `${cardWidth}px`);
     tray.style.setProperty('--compact-hand-card-height', `${cardHeight}px`);
     tray.style.setProperty('--compact-hand-card-step', `${step}px`);
@@ -17506,7 +19642,14 @@ function getModifyFeedbackSparkTarget(playerIdx){
 
 function triggerCompactBuildFeedback(playerIdx){
   if(!isDesktopCompactModeActive()) return false;
-  triggerMobileProFx('modify', { playerIdx, text:'Sistema modificado' });
+  const player = state.players?.[playerIdx];
+  const completeBuild = !!player && isCompleteAttackMecha(player);
+  triggerMobileProFx('modify', {
+    playerIdx,
+    text: completeBuild ? 'Mecha completo' : 'Sistema modificado',
+    heavy: completeBuild,
+    duration: completeBuild ? 1500 : 1200
+  });
   pulseElementWithDuration(`compactMechaStage-${playerIdx}`, 'compact-build-stage-rise', 820);
   pulseElementWithDuration(`compactMechaStage-${playerIdx}`, 'compact-build-overdrive', 1080);
   pulseElementWithDuration(`compactMechaRing-${playerIdx}`, 'compact-build-ring-burst', 960);
@@ -17525,46 +19668,60 @@ function triggerCompactBuildFeedback(playerIdx){
     spawnElementSparks(anchor.target, 34, 'amber');
     spawnUiSparks(anchor.x, anchor.y, 30, 'amber');
   }
-  triggerCompactHudShake('heavy');
+  triggerCompactHudShake(completeBuild ? 'heavy' : 'light');
+  if(completeBuild){
+    window.setTimeout(() => {
+      playUiSound('alert');
+      triggerScreenRipple('cyan');
+      pulseVibrate([18, 24, 18, 34]);
+    }, 220);
+  }
   return true;
 }
 
-function triggerCompactAttackCinematic(attackerIdx, withProjectile=false){
+function triggerCompactAttackCinematic(attackerIdx, withProjectile=false, options={}){
   if(!isDesktopCompactModeActive()) return false;
   const defenderIdx = attackerIdx === 0 ? 1 : 0;
   const layer = document.getElementById('compactAttackLayer');
   const label = document.getElementById('compactAttackLabel');
   if(!layer || !label) return false;
 
+  const completeAttack = !!options.completeAttack;
   const attackerStageId = `compactMechaStage-${attackerIdx}`;
   const defenderStageId = `compactMechaStage-${defenderIdx}`;
   const attackerRingId = `compactMechaRing-${attackerIdx}`;
   const defenderRingId = `compactMechaRing-${defenderIdx}`;
   const directionClass = attackerIdx === 0 ? 'from-left' : 'from-right';
-  const palette = withProjectile ? 'amber' : 'red';
-  triggerMobileProFx('attack', { playerIdx: attackerIdx, text: withProjectile ? 'Proyectil armado' : 'Ataque declarado', heavy: withProjectile });
+  const heavyLaunch = withProjectile || completeAttack;
+  const palette = heavyLaunch ? 'amber' : 'red';
+  triggerMobileProFx('attack', {
+    playerIdx: attackerIdx,
+    text: completeAttack ? 'Ataque completo' : (withProjectile ? 'Proyectil armado' : 'Ataque declarado'),
+    heavy: heavyLaunch,
+    duration: completeAttack ? 1450 : 1200
+  });
 
-  label.textContent = withProjectile ? 'Proyectil' : 'Ataque';
+  label.textContent = completeAttack ? 'Completo' : (withProjectile ? 'Proyectil' : 'Ataque');
   layer.classList.remove('active', 'from-left', 'from-right', 'with-projectile');
   void layer.offsetWidth;
   layer.classList.add('active', directionClass);
-  if(withProjectile) layer.classList.add('with-projectile');
+  if(heavyLaunch) layer.classList.add('with-projectile');
 
   pulseElementWithDuration(attackerStageId, 'compact-attack-launch', 760);
   pulseElementWithDuration(attackerRingId, 'compact-attack-ring-launch', 920);
   window.setTimeout(() => {
     pulseElementWithDuration(defenderStageId, 'compact-attack-hit', 720);
     pulseElementWithDuration(defenderRingId, 'compact-attack-ring-hit', 920);
-  }, withProjectile ? 380 : 320);
+  }, heavyLaunch ? 380 : 320);
 
   const attackerAnchor = getCompactMechaAnchor(attackerIdx);
   const defenderAnchor = getCompactMechaAnchor(defenderIdx);
-  if(attackerAnchor) spawnElementSparks(attackerAnchor.target, withProjectile ? 24 : 16, palette);
+  if(attackerAnchor) spawnElementSparks(attackerAnchor.target, completeAttack ? 34 : (withProjectile ? 24 : 16), palette);
   if(defenderAnchor){
     window.setTimeout(() => {
-      spawnElementSparks(defenderAnchor.target, withProjectile ? 30 : 20, palette);
-      spawnUiSparks(defenderAnchor.x, defenderAnchor.y, withProjectile ? 26 : 18, palette);
-    }, withProjectile ? 390 : 320);
+      spawnElementSparks(defenderAnchor.target, completeAttack ? 42 : (withProjectile ? 30 : 20), palette);
+      spawnUiSparks(defenderAnchor.x, defenderAnchor.y, completeAttack ? 34 : (withProjectile ? 26 : 18), palette);
+    }, heavyLaunch ? 390 : 320);
   }
 
   window.setTimeout(() => {
@@ -17677,6 +19834,14 @@ function renderDesktopCompactHud(){
 
   const compactPlayerName = document.getElementById('compactPlayerName');
   if(compactPlayerName) compactPlayerName.textContent = player.name;
+  const compactTurnDialPlayer = document.getElementById('compactTurnDialPlayer');
+  if(compactTurnDialPlayer) compactTurnDialPlayer.textContent = 'Turno';
+  const compactTurnDialValue = document.getElementById('compactTurnDialValue');
+  if(compactTurnDialValue) compactTurnDialValue.textContent = String(Math.max(0, state.turnCount || 0)).padStart(2, '0');
+  const compactTopFuelValue = document.getElementById('compactTopFuelValue');
+  if(compactTopFuelValue) compactTopFuelValue.textContent = String(sumCards(player.fuel || []));
+  const compactTopCoreValue = document.getElementById('compactTopCoreValue');
+  if(compactTopCoreValue) compactTopCoreValue.textContent = `${createCoreArray(player).length}/3`;
   const compactPlayerStatus = document.getElementById('compactPlayerStatus');
   if(compactPlayerStatus) compactPlayerStatus.textContent = playerBuild.combatReady ? 'Combate listo' : playerBuild.mounted ? 'Montado' : 'Montaje';
   const compactCoreSummary = document.getElementById('compactCoreSummary');
@@ -17827,6 +19992,8 @@ function renderDesktopCompactHud(){
   if(compactAttackLimitValue) compactAttackLimitValue.textContent = sourceText('attackLimitValue');
   const compactRightStatusText = document.getElementById('compactRightStatusText');
   if(compactRightStatusText) compactRightStatusText.textContent = sourceText('rightStatusText');
+  const compactTopStatusText = document.getElementById('compactTopStatusText');
+  if(compactTopStatusText) compactTopStatusText.textContent = sourceText('rightStatusText');
   const compactFuelToAttackValue = document.getElementById('compactFuelToAttackValue');
   if(compactFuelToAttackValue) compactFuelToAttackValue.textContent = sourceText('fuelToAttackValue');
   const compactProjectileStatusText = document.getElementById('compactProjectileStatusText');
@@ -17860,6 +20027,13 @@ function renderDesktopCompactHud(){
   syncCompactHandTraySizing(compactHandCards, (player.hand || []).length);
   if(isDesktopCompactModeActive()) renderCompactDraftPreview(playerIdx);
 
+  const compactLogCount = document.getElementById('compactLogCount');
+  if(compactLogCount) compactLogCount.textContent = `${state.log?.length || 0} entrada${(state.log?.length || 0) === 1 ? '' : 's'}`;
+  const compactLogContent = document.getElementById('compactLogContent');
+  if(compactLogContent){
+    compactLogContent.innerHTML = (state.log || []).slice(-18).reverse().map(entry => `<div class="log-entry">${entry}</div>`).join('') || '<div class="log-entry">Sin entradas todavía.</div>';
+  }
+
   const compactTutorialBoxTitle = document.getElementById('compactTutorialBoxTitle');
   if(compactTutorialBoxTitle){
     compactTutorialBoxTitle.textContent = state.tutorial ? (sourceText('tutorialPanelTitle') || 'Tutorial activo') : 'Consejo tactico';
@@ -17889,6 +20063,7 @@ function renderDesktopCompactHud(){
       compactTutorialActions.innerHTML = '';
     }
   }
+  updateCompactActionHubMenuAnchor();
 }
 
 function positionShowcaseNearPlayer(playerIdx, overlay){
@@ -18033,13 +20208,13 @@ function playAttackSpecialVideo(video){
   }, 120);
 }
 
-function showAttackSpecialPopup(attackerIdx){
-  if(prefersReducedMotion()) return;
+function showAttackSpecialPopup(attackerIdx, options={}){
+  if(prefersReducedMotion()) return false;
   const player = state.players?.[attackerIdx];
-  if(!player || !isCompleteAttackMecha(player)) return;
+  if(!options.force && (!player || !isCompleteAttackMecha(player))) return false;
   const overlay = document.getElementById('attackSpecialPopupOverlay');
   const video = document.getElementById('attackSpecialPopupVideo');
-  if(!overlay || !video) return;
+  if(!overlay || !video) return false;
 
   hideAttackSpecialPopup();
   positionAttackSpecialPopup(attackerIdx);
@@ -18054,7 +20229,67 @@ function showAttackSpecialPopup(attackerIdx){
   playAttackSpecialVideo(video);
   attackSpecialPopupTimer = window.setTimeout(() => {
     hideAttackSpecialPopup();
-  }, 3200);
+  }, ATTACK_SPECIAL_POPUP_DURATION_MS);
+  return true;
+}
+
+function shouldPlayCompleteAttackSpecial(attackerIdx, override){
+  if(prefersReducedMotion()) return false;
+  if(typeof override === 'boolean') return override;
+  const player = state.players?.[attackerIdx];
+  return !!player && isCompleteAttackMecha(player);
+}
+
+function getAttackFxTotalDelay(completeAttack=false){
+  return (completeAttack ? ATTACK_SPECIAL_POPUP_DURATION_MS : ATTACK_LAUNCH_DELAY_MS) + ATTACK_RESOLVE_AFTER_LAUNCH_MS;
+}
+
+function triggerCompleteAttackChargeFeedback(attackerIdx){
+  playUiSound('alert');
+  triggerScreenRipple('amber');
+  triggerScreenShake('light');
+  pulseVibrate([16, 24, 32]);
+  const anchor = getCompactMechaAnchor(attackerIdx);
+  const target = anchor?.target
+    || document.getElementById(`mechaDial-${attackerIdx}`)
+    || document.getElementById(`player-panel-${attackerIdx}`)
+    || getCompactCombatSurface()
+    || document.getElementById('tacticalScreen');
+  if(target) spawnElementSparks(target, 28, 'amber');
+}
+
+function triggerAttackLaunchFeedback(attackerIdx, withProjectile=false, options={}){
+  const completeAttack = !!options.completeAttack;
+  const heavyLaunch = withProjectile || completeAttack;
+  const palette = withProjectile ? 'amber' : 'red';
+  triggerBeam();
+  triggerCombatCinematic(attackerIdx, withProjectile, { completeAttack });
+  flushFxQueue();
+  triggerSideRadarAttack(attackerIdx, withProjectile);
+  if(!isDesktopCompactModeActive()){
+    triggerMobileProFx('attack', {
+      playerIdx: attackerIdx,
+      text: completeAttack ? 'Ataque completo' : (withProjectile ? 'Proyectil armado' : 'Ataque declarado'),
+      heavy: heavyLaunch,
+      duration: completeAttack ? 1450 : 1200
+    });
+  }
+  playUiSound(withProjectile ? 'projectile' : 'attack');
+  if(completeAttack){
+    window.setTimeout(() => playUiSound('projectile'), 150);
+  }
+  triggerScreenShake(heavyLaunch ? 'heavy' : 'light');
+  triggerScreenRipple(heavyLaunch ? 'amber' : 'red');
+  pulseVibrate(completeAttack ? [36, 22, 48, 30, 72] : (withProjectile ? [34, 22, 50] : [24, 18, 36]));
+  spawnElementSparks(
+    getCompactCombatSurface() || document.getElementById('tacticalScreen'),
+    completeAttack ? 56 : (withProjectile ? 42 : 28),
+    heavyLaunch ? 'amber' : palette
+  );
+  if(completeAttack){
+    window.setTimeout(() => triggerScreenRipple('red'), 260);
+  }
+  if(withProjectile) window.setTimeout(spawnComboText, 300);
 }
 
 function showProjectileUnlockedPrompt(playerIdx, callback){
@@ -18677,22 +20912,19 @@ function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
   scrollToTopArea('auto');
   window.setTimeout(() => scrollToTopArea('auto'), 80);
   window.setTimeout(() => scrollToTopArea('auto'), 320);
+  const completeAttack = shouldPlayCompleteAttackSpecial(attackerIdx);
+  const specialShown = completeAttack ? showAttackSpecialPopup(attackerIdx, { force:true }) : false;
+  if(specialShown){
+    triggerCompleteAttackChargeFeedback(attackerIdx);
+  }
+  const launchDelay = specialShown ? ATTACK_SPECIAL_POPUP_DURATION_MS : ATTACK_LAUNCH_DELAY_MS;
   window.setTimeout(() => {
-    triggerBeam();
-    triggerCombatCinematic(attackerIdx, withProjectile);
-    showAttackSpecialPopup(attackerIdx);
-    triggerSideRadarAttack(attackerIdx, withProjectile);
-    playUiSound(withProjectile ? 'heavy' : 'attack');
-    triggerScreenShake(withProjectile ? 'heavy' : 'light');
-    triggerScreenRipple(withProjectile ? 'amber' : 'red');
-    pulseVibrate([40, 24, 60]);
-    spawnElementSparks(getCompactCombatSurface() || document.getElementById('tacticalScreen'), withProjectile ? 42 : 28, withProjectile ? 'amber' : 'red');
-    if(withProjectile) window.setTimeout(spawnComboText, 300);
-  }, 360);
+    triggerAttackLaunchFeedback(attackerIdx, withProjectile, { completeAttack });
+  }, launchDelay);
   window.setTimeout(() => {
     state.transitionLock = false;
     if(callback) callback();
-  }, 1860);
+  }, launchDelay + ATTACK_RESOLVE_AFTER_LAUNCH_MS);
 }
 
 function getAttackSelection(){
@@ -18906,9 +21138,11 @@ function resolveAttackAfterDefense(defenseCard){
   state.phase = 'Ataque';
   state.postAttackTopFocus = true;
   const outcomePreview = aiSimulateAttackOutcome(defender, totalAttack);
+  const attacker = state.players[pending.attackerIndex];
   const attackFxCueId = queueOnlineFxCue('attack', pending.attackerIndex, {
     defenderIdx,
     withProjectile: !!pending.withProjectile,
+    completeAttack: !!attacker && isCompleteAttackMecha(attacker),
     attackPoints: totalAttack,
     heavyImpact: outcomePreview.destroyedDefenseCount > 0 || totalAttack >= 8,
     destroyedArmorCount: outcomePreview.destroyedArmorCount,
@@ -19789,7 +22023,14 @@ function renderCardsIntoContainer(container, cards, playerIdx, zone){
   visibleCards.forEach((card, index) => {
     const cardEl = createCardEl(card, playerIdx, zone);
     if(zone === 'hand'){
-      cardEl.style.zIndex = String(index + 1);
+      const count = visibleCards.length;
+      const middle = (count - 1) / 2;
+      const offset = index - middle;
+      const angle = Math.max(-9, Math.min(9, offset * 1.7));
+      const lift = -Math.max(0, 5 - Math.abs(offset)) * 1.3;
+      cardEl.style.zIndex = String(100 + Math.round((count - Math.abs(offset)) * 10) + index);
+      cardEl.style.setProperty('--compact-hand-card-angle', `${angle.toFixed(2)}deg`);
+      cardEl.style.setProperty('--compact-hand-card-lift', `${lift.toFixed(1)}px`);
     }
     container.appendChild(cardEl);
   });
@@ -21151,13 +23392,22 @@ document.getElementById('skipDefenseBtn').addEventListener('click', () => {
 });
 document.getElementById('storyArgosHackGateBtn')?.addEventListener('click', resolveStoryArgosHackGate);
 document.getElementById('desktopCompactToggleTopBtn').addEventListener('click', () => {
-  triggerDesktopHudModeTransition('compact');
+  switchToProInterface();
 });
 document.getElementById('mobilePanoramaToggleBtn').addEventListener('click', async () => {
-  mobilePanoramaRequested = true;
-  requestLandscapeOrientationBestEffort();
-  triggerDesktopHudModeTransition('compact');
+  switchToProInterface();
 });
+const accionesBtn = document.getElementById('accionesBtn') || document.getElementById('compactActionHubButton');
+if(accionesBtn){
+  accionesBtn.addEventListener('pointerdown', () => {
+    accionesBtn.classList.add('is-pressed');
+  });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(eventName => {
+    accionesBtn.addEventListener(eventName, () => {
+      accionesBtn.classList.remove('is-pressed');
+    });
+  });
+}
 document.getElementById('desktopCompactShell').addEventListener('contextmenu', (event) => {
   if(!document.body?.classList.contains('mobile-panorama-mode')) return;
   event.preventDefault();
@@ -21177,6 +23427,19 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
   }
   const btn = event.target.closest('button');
   if(!btn) return;
+  if(btn.id === 'compactMenuToggleBtn'){
+    const open = !document.body.classList.contains('compact-menu-open');
+    document.body.classList.toggle('compact-menu-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    return;
+  }
+  if(btn.id === 'accionesBtn' || btn.id === 'compactActionHubButton'){
+    compactMobileActionHubOpen = !compactMobileActionHubOpen;
+    document.body.classList.toggle('compact-action-hub-open', compactMobileActionHubOpen);
+    btn.setAttribute('aria-expanded', compactMobileActionHubOpen ? 'true' : 'false');
+    updateCompactActionHubMenuAnchor();
+    return;
+  }
   if(btn.id === 'compactReturnBtn' && STORY_EMBED_MODE){
     returnToStoryMap();
     return;
@@ -21203,23 +23466,20 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
     }
     return;
   }
-  if(btn.dataset.viewMode){
-    if(btn.dataset.viewMode === 'expanded'){
-      if(STORY_EMBED_MODE){
-        if(isStoryMobileViewport() && storyHudMode === 'horizontal'){
-          addToast('En móvil, el modo historia usa la interfaz horizontal.', 'warn');
-          requestLandscapeOrientationBestEffort();
-          return;
-        }
-        exitStoryEmbedSpecialMode();
-        return;
-      }
-      mobilePanoramaRequested = false;
-      releaseOrientationLockBestEffort();
-      setCompactMobileDrawer('');
-    }
-    triggerDesktopHudModeTransition(btn.dataset.viewMode);
-    return;
+	  if(btn.dataset.viewMode){
+	    if(btn.dataset.viewMode === 'expanded'){
+	      if(STORY_EMBED_MODE){
+	        closeCompactTopbarMenu();
+	        exitStoryEmbedSpecialMode();
+	        return;
+	      }
+	      mobilePanoramaRequested = false;
+	      releaseOrientationLockBestEffort();
+	      setCompactMobileDrawer('');
+	      closeCompactTopbarMenu();
+	    }
+	    triggerDesktopHudModeTransition(btn.dataset.viewMode);
+	    return;
   }
   if(btn.id === 'compactFigureBurstBtn' || btn.dataset.compactFigureAction === 'true'){
     if(btn.disabled) return;
@@ -24086,6 +26346,8 @@ function devResetEnvironment(){
   state.storyMissionProgress = {};
   state.storyDeckMode = false;
   state.storyPlayerDecks = null;
+  desktopHudMode = 'compact';
+  mobilePanoramaRequested = false;
   clearStoryArgosHackInterfaceBoot();
   clearStoryArgosHackGate();
   devCardCounter = 0;
@@ -24495,6 +26757,7 @@ function olStartGame(role) {
   _ol.role = role;
   _ol.myIndex = role === 'host' ? 0 : 1;
   _ol.active = true;
+  prepareNormalCombatStartHudMode();
 
   document.getElementById('olLobbyScreen').classList.add('ol-hidden');
   const bar = document.getElementById('olStatusBar');
@@ -24646,7 +26909,9 @@ function olApplyState(data) {
     replayOnlineFxCue(cueToReplay);
   }
   if(previousCurrentPlayer !== state.currentPlayer){
-    const compactTurnCueDelay = cueToReplay && cueToReplay.type === 'attack' ? 1960 : 0;
+    const compactTurnCueDelay = cueToReplay && cueToReplay.type === 'attack'
+      ? getAttackFxTotalDelay(shouldPlayCompleteAttackSpecial(Number(cueToReplay.playerIdx), typeof cueToReplay.completeAttack === 'boolean' ? cueToReplay.completeAttack : undefined)) + 100
+      : 0;
     window.setTimeout(() => {
       triggerCompactTurnFeedback(previousCurrentPlayer, state.currentPlayer, {
         interactiveIdx: _ol.myIndex,

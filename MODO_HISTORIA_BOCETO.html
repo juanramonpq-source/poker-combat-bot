@@ -5259,6 +5259,7 @@
     const VERA_POSE_FOUR = 'assets/Historia/low/Vera4.webp';
     const MERCADO_RELES_IMAGE = 'assets/Historia/low/mercado_reles_muertos_web_1600.webp';
     const MERCADO_TUTORIAL_URL = 'assets/Historia/mercado-reles-muertos-tutorial/index.html';
+    const CAMPAMENTO_EXPLORATION_URL = 'assets/Historia/campamento-placas-rojas-exploracion/index.html';
     const XAVOR_PRESENTATION_FIGURE = 'assets/Historia/Brutos/transparent/XAVORpresentacion-transparent.png';
     const XAVOR_POSE_ONE = 'assets/Historia/Brutos/transparent/XAVOR1-transparent.png';
     const XAVOR_POSE_TWO = 'assets/Historia/Brutos/transparent/XAVOR2-transparent.png';
@@ -5268,6 +5269,7 @@
       exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
       chapter_clear: 'assets/Historia/cancionMundo.mp3',
       market: 'assets/Historia/MercadodeChatarra.mp3',
+      campamento: 'assets/Historia/Silencio de Acero.mp3',
       post_market: 'assets/Historia/Silencio de Acero.mp3'
     };
     const STORY_WORKSPACE_SESSION_KEY = 'pocobot_story_workspace_active';
@@ -6084,13 +6086,13 @@
         id: 'campamento',
         order: 5,
         title: 'Campamento de las Placas Rojas',
-        type: 'Diálogo',
-        sceneChip: 'Veteranos',
+        type: 'Exploración',
+        sceneChip: 'Placas rojas',
         mobileImage: 'assets/Historia/low/chapter-mobile/campamento-placas-rojas-720.jpg',
-        image: 'assets/Historia/Brutos/5CAMPAMENTO DE LAS PLACAS ROJAS.PNG',
-        lead: 'Refugio de veteranos donde la guerra se recuerda sin épica. Aquí la memoria pesa tanto como la munición y la esperanza nunca sale gratis.',
-        mission: 'Evento narrativo corto con recompensa de contexto.',
-        learn: 'Tono del mundo y rivalidad futura.',
+        image: 'assets/Historia/campamento-placas-rojas-exploracion/assets/campamento-placas-rojas-map.webp',
+        lead: 'Refugio enorme de veteranos, lonas rojas y placas de baraja francesa donde la guerra se recuerda sin épica. Aquí la memoria pesa tanto como la munición y la esperanza nunca sale gratis.',
+        mission: 'Explorar el Campamento de las Placas Rojas con PoCoBOT antes de añadir sus puntos narrativos.',
+        learn: 'Exploración libre, tono del mundo y preparación de la rivalidad futura.',
         tension: 'La ruta se humaniza justo antes de endurecerse de verdad.',
         dialogue: '“Los novatos montan armas. Los supervivientes montan márgenes.”',
         cast: ['Corvo Vanta']
@@ -7888,6 +7890,10 @@
         openStoryTowerScene('exterior');
         return;
       }
+      if (nodeId === 'campamento') {
+        openStoryCampExploration();
+        return;
+      }
       openStoryScene(nodeId);
     }
 
@@ -9037,6 +9043,50 @@
       });
     }
 
+    function buildStoryCampExplorationUrl() {
+      const targetUrl = new URL(CAMPAMENTO_EXPLORATION_URL, window.location.href);
+      targetUrl.searchParams.set('v', '20260512-red-plates-camp');
+      targetUrl.searchParams.set('story_embed', '1');
+      targetUrl.searchParams.set('story_node', 'campamento');
+      targetUrl.searchParams.set('story_audio', 'internal');
+      targetUrl.searchParams.set('story_return', window.location.href);
+      targetUrl.searchParams.set('story_load_id', String(Date.now()));
+      return targetUrl.href;
+    }
+
+    function openStoryCampExploration() {
+      if (!storyExplorationStage || !storyExplorationFrame) return;
+      const localNode = storyDraftNodes.campamento;
+      if (!localNode) return;
+      activeMissionNodeId = null;
+      activeExplorationNodeId = 'campamento';
+      activeExplorationSceneKey = 'campamento';
+      currentStoryNodeId = 'campamento';
+      rememberStoryWorkspace(true);
+      rememberActiveStoryMission(null);
+      rememberStorySurface({ type: 'exploration', nodeId: 'campamento', sceneKey: 'campamento' });
+      renderStoryNode('campamento', { skipSave: true });
+      cutMapMusicForChapter();
+      closeStoryScene({ clearSurface: false });
+      closeStoryMarket({ applyExitTheme: false });
+      closeStoryMission({ preserveMissionId: true });
+
+      storyExplorationStage.hidden = false;
+      showStoryExplorationLoader('Campamento de las Placas Rojas', 'Encendiendo hogueras, lonas rojas y patrullas de veteranos...');
+      storyExplorationFrame.src = buildStoryCampExplorationUrl();
+      storyExplorationStage.classList.add('active');
+      window.setTimeout(focusStoryExplorationFrame, 40);
+    }
+
+    function handleStoryCampAction(data) {
+      const action = data?.action || '';
+      if (action === 'return-map') {
+        closeStoryMarketExploration({ exitThemeKey: 'campamento' });
+        return true;
+      }
+      return false;
+    }
+
     function handleStoryMarketTutorialAction(data) {
       const action = data?.action || '';
       if (action === 'return-map') {
@@ -9126,6 +9176,7 @@
       }
       if (surface.type === 'exploration') {
         if (surface.nodeId === 'torre') openStoryTowerScene(surface.sceneKey || 'exterior');
+        else if (surface.nodeId === 'campamento') openStoryCampExploration();
         else openStoryMarketExploration();
         return true;
       }
@@ -10607,7 +10658,9 @@
     if (storyExplorationMapBtn) {
       storyExplorationMapBtn.addEventListener('click', () => {
         closeStoryMarketExploration({
-          exitThemeKey: activeExplorationNodeId === 'mercado' ? 'post_market' : 'exploration'
+          exitThemeKey: activeExplorationNodeId === 'mercado'
+            ? 'post_market'
+            : activeExplorationNodeId === 'campamento' ? 'campamento' : 'exploration'
         });
       });
     }
@@ -10854,6 +10907,10 @@
       }
       if (data.type === 'pocobot-story-market-tutorial-action') {
         handleStoryMarketTutorialAction(data);
+        return;
+      }
+      if (data.type === 'pocobot-story-camp-action') {
+        handleStoryCampAction(data);
         return;
       }
       if (data.type === 'pocobot-story-embed-ui-state') {

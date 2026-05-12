@@ -1,0 +1,4074 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PoCoBOT · Boceto compacto funcional</title>
+  <meta name="description" content="Boceto compacto funcional con paneles desplegables para PoCoBOT.">
+  <style>
+    :root {
+      color-scheme: dark;
+      --blue-0: #0b6dbe;
+      --blue-1: #064d8f;
+      --blue-2: #032b56;
+      --blue-3: #06172a;
+      --cream-0: #fff1cf;
+      --cream-1: #d5b77f;
+      --cream-2: #845d2f;
+      --cyan: #46ecff;
+      --red: #ff533d;
+      --gold: #ffc42f;
+      --green: #41ff59;
+      --ink: #061525;
+      --shadow: 0 28px 70px rgba(0, 0, 0, .62);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 10px;
+      background:
+        radial-gradient(circle at 50% 8%, rgba(41, 128, 255, .24), transparent 30%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, #05090e, #020306);
+      font-family: "Arial Narrow", "Avenir Next Condensed", "Impact", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      transition:
+        translate .09s ease,
+        filter .12s ease,
+        box-shadow .12s ease,
+        opacity .12s ease,
+        transform .16s ease;
+    }
+
+    button:disabled {
+      cursor: default;
+    }
+
+    button:not(:disabled):focus-visible {
+      outline: 3px solid rgba(255, 242, 189, .86);
+      outline-offset: 2px;
+    }
+
+    button:not(:disabled):active,
+    button.is-pressing {
+      translate: 0 2px;
+      filter: brightness(.95) saturate(1.08);
+    }
+
+    .phone-shell {
+      position: relative;
+      width: min(430px, calc(100vw - 12px));
+      min-height: 914px;
+      padding: 13px 14px 14px;
+      border: 5px solid #03274f;
+      border-radius: 32px;
+      overflow: hidden;
+      color: #f7fbff;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(255, 255, 255, .26), transparent 10%),
+        radial-gradient(circle at 80% 0%, rgba(255, 255, 255, .18), transparent 12%),
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, .045) 0 1px, transparent 1px 7px),
+        linear-gradient(180deg, #0868bb 0%, var(--blue-0) 34%, var(--blue-2) 100%);
+      box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, .34),
+        inset 0 -8px 0 rgba(0, 20, 52, .46),
+        inset 0 0 0 2px rgba(77, 168, 255, .35),
+        var(--shadow);
+    }
+
+    .phone-shell::before,
+    .phone-shell::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .phone-shell::before {
+      inset: 10px;
+      border: 2px solid rgba(1, 28, 64, .7);
+      border-radius: 25px;
+      box-shadow: inset 0 0 0 1px rgba(116, 198, 255, .24);
+    }
+
+    .phone-shell::after {
+      inset: 0;
+      opacity: .14;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, .8) 0 1px, transparent 1.4px),
+        radial-gradient(circle, rgba(0, 0, 0, .8) 0 1px, transparent 1.6px);
+      background-size: 31px 37px, 43px 47px;
+      mix-blend-mode: soft-light;
+    }
+
+    .top-vents {
+      position: absolute;
+      top: 26px;
+      display: grid;
+      gap: 5px;
+      z-index: 1;
+    }
+
+    .top-vents span {
+      display: block;
+      height: 5px;
+      border-radius: 99px;
+      background: #020b14;
+      box-shadow: inset 0 2px 0 rgba(82, 183, 255, .38);
+    }
+
+    .vents-left {
+      left: 29px;
+      width: 39px;
+    }
+
+    .vents-right {
+      right: 32px;
+      grid-template-columns: repeat(3, 7px);
+      gap: 6px;
+    }
+
+    .vents-right span {
+      width: 7px;
+      height: 7px;
+    }
+
+    .brand-plate {
+      position: relative;
+      z-index: 2;
+      width: min(286px, 74vw);
+      height: 70px;
+      margin: 0 auto 8px;
+      padding: 0;
+      border-radius: 19px;
+      border: 4px solid #052d5c;
+      background:
+        linear-gradient(135deg, transparent 0 18px, rgba(255, 255, 255, .2) 19px 22px, transparent 23px),
+        radial-gradient(circle at 50% 0, rgba(100, 219, 255, .24), transparent 62%),
+        linear-gradient(180deg, #0b65b4, #073d79 58%, #041f43);
+      box-shadow:
+        inset 0 2px 0 rgba(146, 221, 255, .42),
+        inset 0 -4px 0 rgba(2, 16, 34, .45),
+        0 6px 0 rgba(1, 35, 78, .75);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .brand-plate img {
+      display: block;
+      position: absolute;
+      left: 50%;
+      top: -37px;
+      width: min(310px, calc(100% + 46px));
+      max-width: none;
+      height: auto;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 3px 0 rgba(0, 10, 25, .48)) drop-shadow(0 0 12px rgba(91, 219, 255, .18));
+    }
+
+    .screw {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #fff6d4, #9d7b4a 45%, #2d2015 72%);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, .35);
+    }
+
+    .screw-tl { top: 7px; left: 8px; }
+    .screw-tr { top: 7px; right: 8px; }
+    .screw-bl { bottom: 7px; left: 8px; }
+    .screw-br { bottom: 7px; right: 8px; }
+
+    .top-menu {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+      margin-bottom: 7px;
+      padding: 8px;
+      border: 3px solid #704d25;
+      border-radius: 14px;
+      background:
+        repeating-linear-gradient(135deg, rgba(114, 78, 33, .08) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, var(--cream-0), var(--cream-1));
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .7), 0 5px 0 rgba(0, 22, 48, .72);
+    }
+
+    .menu-button {
+      min-height: 31px;
+      padding: 4px 5px;
+      border: 2px solid #052044;
+      border-radius: 9px;
+      color: #062033;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, .42), transparent 36%),
+        linear-gradient(180deg, #9fd0ff, #4f8fd6 64%, #235a97);
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .42), inset 0 -3px 0 rgba(0, 35, 73, .32), 0 3px 0 #173558;
+      font-size: 13px;
+      line-height: 1.02;
+      font-weight: 900;
+      text-transform: uppercase;
+      overflow-wrap: anywhere;
+    }
+
+    .menu-button.danger {
+      color: #ffe8bf;
+      border-color: #6c170f;
+      background: linear-gradient(180deg, #ff684c, #c92317 64%, #82140e);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.28), 0 3px 0 #4f0b07;
+    }
+
+    .menu-button.on {
+      background: linear-gradient(180deg, #fff3a7, #ffc42f 66%, #c27600);
+      color: #231606;
+    }
+
+    .status-strip {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 6px;
+    }
+
+    .meter-pill {
+      min-height: 48px;
+      display: grid;
+      grid-template-columns: 25px minmax(0, auto) 43px;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 7px;
+      border: 3px solid #06172a;
+      border-radius: 11px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .12), transparent 42%),
+        linear-gradient(180deg, #10283d, #061421);
+      box-shadow: inset 0 0 0 2px rgba(83, 233, 255, .12), 0 4px 0 rgba(0, 14, 30, .72);
+      overflow: hidden;
+    }
+
+    .meter-pill small {
+      display: block;
+      color: #ffe8c4;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .meter-pill strong {
+      display: block;
+      color: var(--cyan);
+      font-size: 24px;
+      line-height: .95;
+      text-shadow: 0 0 12px rgba(70, 236, 255, .65);
+    }
+
+    .fuel-icon {
+      width: 22px;
+      height: 32px;
+      border: 4px solid #e9cfa5;
+      border-radius: 5px 5px 3px 3px;
+      position: relative;
+    }
+
+    .fuel-icon::before,
+    .fuel-icon::after {
+      content: "";
+      position: absolute;
+      border: 3px solid #e9cfa5;
+    }
+
+    .fuel-icon::before {
+      left: 4px;
+      top: -10px;
+      width: 11px;
+      height: 9px;
+      border-bottom: 0;
+    }
+
+    .fuel-icon::after {
+      right: -10px;
+      top: 8px;
+      width: 9px;
+      height: 15px;
+      border-left: 0;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .core-ring {
+      width: 29px;
+      height: 29px;
+      border: 7px solid #dcc394;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 4px #5b4629;
+    }
+
+    .mini-bars {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 2px;
+      height: 27px;
+    }
+
+    .mini-bars b {
+      border-radius: 2px;
+      background: linear-gradient(180deg, #8fffff, #0fb1ce);
+      box-shadow: 0 0 8px rgba(70, 236, 255, .55);
+    }
+
+    .mini-bars.is-muted b {
+      background: linear-gradient(180deg, #1d394a, #07131d);
+      box-shadow: none;
+    }
+
+    .led-trigger {
+      width: 74px;
+      height: 38px;
+      display: grid;
+      grid-template-columns: repeat(3, 15px);
+      justify-content: center;
+      align-content: center;
+      gap: 7px;
+      border: 3px solid #06172a;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #36404a, #11171d);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.12), 0 4px 0 rgba(0, 14, 30, .76);
+      cursor: default;
+    }
+
+    .led-trigger i,
+    .leds i,
+    .hand-tray footer i {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #101316;
+      border: 2px solid #050607;
+    }
+
+    .led-trigger .on,
+    .leds .on,
+    .hand-tray footer .on {
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+    }
+
+    .combat-screen {
+      position: relative;
+      z-index: 2;
+      min-height: 424px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      overflow: hidden;
+      border: 4px solid #051728;
+      border-radius: 18px;
+      background: linear-gradient(90deg, rgba(0, 188, 255, .18), rgba(255, 68, 44, .18)), #05101c;
+      box-shadow:
+        inset 0 0 0 2px rgba(48, 236, 255, .12),
+        inset 0 -18px 40px rgba(0, 0, 0, .5),
+        0 7px 0 rgba(0, 18, 40, .78);
+    }
+
+    .scan-grid {
+      position: absolute;
+      inset: 0;
+      opacity: .4;
+      background:
+        linear-gradient(rgba(70, 236, 255, .14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(70, 236, 255, .14) 1px, transparent 1px);
+      background-size: 21px 21px;
+      animation: scanDrift 9s linear infinite;
+    }
+
+    .combat-screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .36;
+      background:
+        linear-gradient(105deg, transparent 0 34%, rgba(255,255,255,.1) 43%, transparent 52%),
+        radial-gradient(circle at 50% 0%, rgba(255, 196, 47, .13), transparent 40%);
+      mix-blend-mode: screen;
+      animation: panelSweep 5.8s ease-in-out infinite;
+    }
+
+    .combat-attack-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .combat-attack-beam,
+    .combat-attack-impact,
+    .combat-attack-wave,
+    .combat-attack-label {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .combat-attack-beam {
+      top: 51%;
+      left: 50%;
+      width: 78%;
+      height: 15px;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background:
+        linear-gradient(90deg, transparent, rgba(255,249,201,.96) 13%, rgba(255,137,72,.98) 42%, #fff 50%, rgba(255,118,68,.96) 63%, transparent);
+      box-shadow: 0 0 18px rgba(255,182,92,.55), 0 0 34px rgba(35,216,255,.26);
+      filter: drop-shadow(0 0 18px rgba(255,163,77,.26));
+    }
+
+    .combat-attack-impact,
+    .combat-attack-wave {
+      width: 112px;
+      height: 112px;
+      top: 51%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(.28);
+    }
+
+    .combat-attack-impact {
+      background: radial-gradient(circle, #fff 0 12%, rgba(255,214,97,.94) 20%, rgba(255,117,84,.86) 44%, transparent 74%);
+      box-shadow: 0 0 26px rgba(255,170,66,.34);
+    }
+
+    .combat-attack-wave {
+      border: 4px solid rgba(255,224,128,.68);
+      box-shadow: 0 0 28px rgba(35,216,255,.22);
+    }
+
+    .combat-attack-label {
+      left: 50%;
+      top: 22%;
+      transform: translate(-50%, 0);
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,242,196,.8);
+      background: linear-gradient(180deg, rgba(17,34,80,.92), rgba(28,64,141,.96));
+      color: #fff5cf;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      box-shadow: 0 0 0 3px rgba(35,216,255,.12), 0 12px 24px rgba(8,16,42,.28);
+    }
+
+    .combat-attack-layer.from-left .combat-attack-impact,
+    .combat-attack-layer.from-left .combat-attack-wave { left: 76%; }
+
+    .combat-attack-layer.from-right .combat-attack-impact,
+    .combat-attack-layer.from-right .combat-attack-wave { left: 24%; }
+
+    .combat-attack-layer.with-projectile .combat-attack-beam {
+      height: 10px;
+      background:
+        linear-gradient(90deg, transparent, rgba(226,252,255,.98) 18%, rgba(101,231,255,.98) 48%, #fff 56%, transparent);
+      box-shadow: 0 0 18px rgba(88,216,239,.68), 0 0 40px rgba(88,216,239,.38);
+    }
+
+    .combat-attack-layer.active .combat-attack-label { animation: attackLabelRise 1120ms ease both; }
+    .combat-attack-layer.from-left.active .combat-attack-beam { animation: attackBeamLeft 760ms cubic-bezier(.18,.7,.12,1) both; }
+    .combat-attack-layer.from-right.active .combat-attack-beam { animation: attackBeamRight 760ms cubic-bezier(.18,.7,.12,1) both; }
+    .combat-attack-layer.active .combat-attack-impact { animation: attackImpactFlash 720ms ease-out both; }
+    .combat-attack-layer.active .combat-attack-wave { animation: attackWavePulse 780ms ease-out both; }
+
+    .split-light {
+      position: absolute;
+      inset: -20% 49% -20% auto;
+      width: 3px;
+      transform: rotate(16deg);
+      background: linear-gradient(180deg, transparent, #31e7ff, #ff513d, transparent);
+      box-shadow: 0 0 18px #ff533d;
+    }
+
+    .versus {
+      position: absolute;
+      z-index: 4;
+      left: 50%;
+      top: 46%;
+      width: 62px;
+      height: 62px;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(70, 236, 255, .6);
+      border-radius: 50%;
+      color: #e9fbff;
+      font-size: 31px;
+      font-weight: 900;
+      text-shadow: 0 0 14px #46ecff, 0 0 16px #ff533d;
+      background: radial-gradient(circle, rgba(1, 23, 38, .78), rgba(1, 11, 21, .1));
+    }
+
+    .fighter {
+      position: relative;
+      min-width: 0;
+      padding: 14px 9px 10px;
+      animation: fighterBreath 5.2s ease-in-out infinite;
+      will-change: transform, filter;
+    }
+
+    .fighter-blue {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .fighter-red {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .fighter header {
+      position: relative;
+      z-index: 2;
+      width: 145px;
+      padding: 8px 13px;
+      border: 2px solid currentColor;
+      color: var(--cyan);
+      background: rgba(0, 19, 35, .76);
+      clip-path: polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%);
+      font-size: 18px;
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .fighter.is-ready header {
+      animation: readyHeaderPulse 1.8s ease-in-out infinite;
+    }
+
+    .fighter-red header {
+      margin-left: auto;
+      color: var(--red);
+      text-align: right;
+      clip-path: polygon(10% 0, 100% 0, 100% 100%, 10% 100%, 0 50%);
+    }
+
+    .mecha-blueprint-live {
+      --mecha-tilt: -4deg;
+      position: relative;
+      z-index: 1;
+      width: 190px;
+      height: 218px;
+      margin: -1px 0 -14px -28px;
+      transform: rotate(var(--mecha-tilt)) translateX(3px);
+      filter: drop-shadow(0 14px 14px rgba(0, 0, 0, .62)) saturate(1.12);
+      pointer-events: none;
+    }
+
+    .fighter-red .mecha-blueprint-live {
+      --mecha-tilt: 4deg;
+      margin-left: -18px;
+      transform: scaleX(-1) rotate(var(--mecha-tilt)) translateX(3px);
+      filter: hue-rotate(143deg) saturate(1.32) drop-shadow(0 14px 14px rgba(0, 0, 0, .62));
+    }
+
+    .mecha-blueprint-live::before {
+      content: "";
+      position: absolute;
+      inset: 22px 36px 18px;
+      border-radius: 28px;
+      background:
+        linear-gradient(rgba(70, 236, 255, .06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(70, 236, 255, .06) 1px, transparent 1px);
+      background-size: 9px 9px;
+      box-shadow: inset 0 0 20px rgba(70, 236, 255, .08);
+      opacity: .62;
+    }
+
+    .mecha-layer {
+      position: absolute;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      opacity: 0;
+      transform: translateY(9px) scale(.94);
+      transform-origin: center;
+      transition: opacity .24s ease, transform .24s ease, filter .24s ease;
+      filter: drop-shadow(0 0 8px rgba(70, 236, 255, .16));
+    }
+
+    .mecha-layer.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .mecha-layer.base {
+      background-image: url("../assets/image_01.png");
+      left: 22%;
+      top: 12%;
+      width: 56%;
+      height: 82%;
+      opacity: .98;
+      transform: none;
+      filter: drop-shadow(0 0 4px rgba(255, 255, 255, .12));
+    }
+
+    .mecha-layer.cockpit {
+      background-image: url("../assets/image_02.png");
+      left: 17%;
+      top: 7%;
+      width: 68%;
+      height: 48%;
+    }
+
+    .mecha-layer.torso {
+      background-image: url("../assets/image_03.png");
+      left: 23%;
+      top: 18%;
+      width: 56%;
+      height: 58%;
+    }
+
+    .mecha-layer.left-arm {
+      background-image: url("../assets/image_04.png");
+      left: 0;
+      top: 30%;
+      width: 42%;
+      height: 58%;
+    }
+
+    .mecha-layer.right-weapon {
+      background-image: url("../assets/image_05.png");
+      left: 29%;
+      top: 34%;
+      width: 74%;
+      height: 44%;
+    }
+
+    .mecha-layer.armor {
+      background-image: url("../assets/image_06.png");
+      left: 17%;
+      top: 20%;
+      width: 66%;
+      height: 62%;
+    }
+
+    .mecha-layer.support {
+      background-image: url("../assets/image_07.png");
+      left: 32%;
+      top: 31%;
+      width: 40%;
+      height: 30%;
+      filter: drop-shadow(0 0 10px rgba(255, 196, 47, .18));
+    }
+
+    .mecha-layer.complete {
+      background-image: url("../assets/image_08.png");
+      left: 8%;
+      top: 3%;
+      width: 84%;
+      height: 92%;
+      filter: drop-shadow(0 0 14px rgba(70, 236, 255, .25));
+    }
+
+    .mecha-blueprint-live.ready .mecha-layer.complete.active {
+      filter: drop-shadow(0 0 18px rgba(66, 255, 222, .32));
+    }
+
+    .mecha-phase-live {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 178px;
+      height: 218px;
+      max-width: none;
+      object-fit: contain;
+      object-position: center bottom;
+      margin: -5px 0 -15px -20px;
+      filter: drop-shadow(0 15px 15px rgba(0, 0, 0, .62)) saturate(1.08);
+      pointer-events: none;
+      transition: filter .2s ease, opacity .2s ease;
+    }
+
+    .fighter-blue .mecha-phase-live {
+      transform: scaleX(-1) rotate(-4deg) translateX(-3px);
+      animation: mechaIdleBlue 4.8s ease-in-out infinite;
+    }
+
+    .fighter-red .mecha-phase-live {
+      margin-left: -6px;
+      transform: rotate(4deg) translateX(4px);
+      animation: mechaIdleRed 4.8s ease-in-out infinite;
+      animation-delay: .65s;
+    }
+
+    .mecha-phase-live.ready {
+      filter: drop-shadow(0 15px 15px rgba(0, 0, 0, .62)) drop-shadow(0 0 15px rgba(66, 255, 222, .28)) saturate(1.12);
+    }
+
+    .fighter-blue .mecha-phase-live.ready {
+      animation: mechaReadyBlue 2.1s ease-in-out infinite;
+    }
+
+    .fighter-red .mecha-phase-live.ready {
+      animation: mechaReadyRed 2.1s ease-in-out infinite;
+    }
+
+    .fighter.attack-launch {
+      z-index: 5;
+    }
+
+    .fighter-blue.attack-launch .mecha-phase-live {
+      animation: compactAttackLaunchBlue 760ms cubic-bezier(.16,.78,.2,1) both;
+    }
+
+    .fighter-red.attack-launch .mecha-phase-live {
+      animation: compactAttackLaunchRed 760ms cubic-bezier(.16,.78,.2,1) both;
+    }
+
+    .fighter-blue.attack-hit .mecha-phase-live {
+      animation: compactAttackHitBlue 720ms ease both;
+    }
+
+    .fighter-red.attack-hit .mecha-phase-live {
+      animation: compactAttackHitRed 720ms ease both;
+    }
+
+    .mecha-phase-live.is-evolving {
+      animation: mechaPhaseFlash .46s ease;
+    }
+
+    .stats-card {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 8px;
+      padding: 9px 9px 11px;
+      border: 2px solid currentColor;
+      color: var(--cyan);
+      background: rgba(2, 18, 31, .82);
+      clip-path: polygon(6% 0, 100% 0, 100% 88%, 94% 100%, 0 100%, 0 12%);
+    }
+
+    .fighter-red .stats-card {
+      color: var(--red);
+      clip-path: polygon(0 0, 94% 0, 100% 12%, 100% 100%, 6% 100%, 0 88%);
+    }
+
+    .stats-card p {
+      position: relative;
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 5px;
+      margin: 0;
+      padding-bottom: 11px;
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+      min-width: 0;
+    }
+
+    .stats-card b {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .stats-card strong {
+      color: #fff7e7;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .stats-card i {
+      position: absolute;
+      left: 25px;
+      right: 0;
+      bottom: 0;
+      height: 7px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, .15);
+    }
+
+    .stats-card i::after {
+      content: "";
+      display: block;
+      width: var(--w);
+      height: 100%;
+      border-radius: inherit;
+      background: currentColor;
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .stats-card p.stat-pulse {
+      animation: statPulse .58s ease;
+    }
+
+    .heart,
+    .shield,
+    .diamond {
+      width: 17px;
+      height: 17px;
+      display: block;
+      background: currentColor;
+    }
+
+    .heart { clip-path: path("M9 16 C2 10 0 6 3 3 C5 1 8 2 9 5 C10 2 13 1 15 3 C18 6 16 10 9 16Z"); }
+    .shield { clip-path: polygon(50% 0, 90% 15%, 82% 72%, 50% 100%, 18% 72%, 10% 15%); }
+    .diamond { transform: rotate(45deg) scale(.85); }
+
+    .suit-mark {
+      display: grid;
+      place-items: center;
+      width: 17px;
+      height: 17px;
+      color: currentColor;
+      font-size: 20px;
+      line-height: 1;
+      text-shadow: 0 0 9px currentColor;
+    }
+
+    .message-stack {
+      position: absolute;
+      z-index: 8;
+      left: 15px;
+      right: 15px;
+      top: 74px;
+      display: grid;
+      gap: 7px;
+      pointer-events: none;
+    }
+
+    .floating-message {
+      display: none;
+      min-width: 0;
+      padding: 9px 11px;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 238, 190, .78);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255, 255, 255, .24), transparent 42%),
+        linear-gradient(180deg, rgba(15, 37, 78, .96), rgba(5, 14, 33, .96));
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(255,255,255,.08);
+      color: #fff6db;
+      pointer-events: auto;
+    }
+
+    .floating-message.show {
+      display: block;
+      animation: messageIn .18s ease both;
+    }
+
+    .floating-message.alert {
+      border-color: rgba(255, 97, 72, .9);
+      background: linear-gradient(180deg, rgba(82, 14, 9, .96), rgba(25, 8, 8, .97));
+    }
+
+    .floating-message strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 15px;
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+
+    .floating-message span {
+      display: block;
+      color: #f6fbff;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-size: 12px;
+      line-height: 1.28;
+      overflow-wrap: anywhere;
+    }
+
+    .floating-message .message-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 7px;
+    }
+
+    .message-actions button {
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.28);
+      color: #071425;
+      background: linear-gradient(180deg, #fff7d9, #ffc45d);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .tab-bar {
+      position: relative;
+      z-index: 14;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) 46px;
+      gap: 8px;
+      margin-top: 11px;
+      margin-bottom: 20px;
+    }
+
+    .tab-sprite {
+      height: 76px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border: 3px solid #041a32;
+      border-radius: 13px 13px 8px 8px;
+      color: #ffe9be;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.2), transparent 40%),
+        linear-gradient(180deg, #0b5596, #063564);
+      box-shadow: inset 0 2px 0 rgba(116, 200, 255, .35), 0 5px 0 #021426;
+      font-size: 18px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .tab-sprite.is-active {
+      color: #111406;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.42), transparent 36%),
+        linear-gradient(180deg, #ffd84e, #f2a412 70%, #b86905);
+    }
+
+    .sprite {
+      width: 34px;
+      height: 40px;
+      display: block;
+      margin: 0;
+      background-image: url("./pocobot-ui-sprites.svg");
+      background-size: 238px 51px;
+      background-repeat: no-repeat;
+    }
+
+    .icon-mecha { background-position: 0 0; }
+    .icon-rival { background-position: -34px 0; }
+    .icon-target { background-position: -68px 0; }
+    .icon-pass { background-position: -102px 0; }
+    .icon-swords { background-position: -136px 0; }
+    .icon-log { background-position: -170px 0; }
+    .icon-modify { background-position: -204px 0; }
+
+    .round-menu {
+      align-self: end;
+      width: 44px;
+      height: 44px;
+      margin-bottom: 10px;
+      border-radius: 50%;
+      color: #72dfff;
+      font-size: 27px;
+      background: linear-gradient(180deg, #0b64ad, #053462);
+      box-shadow: inset 0 2px 0 rgba(138, 220, 255, .42), 0 4px 0 #021426;
+    }
+
+    .round-menu.is-active {
+      color: #0b1b29;
+      background: linear-gradient(180deg, #fff0a4, #ffc42f);
+    }
+
+    .board-drawer {
+      position: absolute;
+      z-index: 20;
+      left: 14px;
+      right: 14px;
+      top: 202px;
+      bottom: 168px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 11px;
+      border: 4px solid #06172a;
+      border-radius: 18px;
+      color: #f7fbff;
+      background:
+        radial-gradient(circle at 16% 0%, rgba(70,236,255,.22), transparent 34%),
+        linear-gradient(180deg, rgba(8, 34, 63, .98), rgba(4, 13, 28, .98));
+      box-shadow: 0 22px 50px rgba(0,0,0,.54), inset 0 0 0 2px rgba(70,236,255,.12);
+      transform: translateY(18px) scale(.98);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+
+    .phone-shell.board-open .board-drawer {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .phone-shell.rival-view .board-drawer {
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .phone-shell.rival-view .drawer-foot {
+      display: none;
+    }
+
+    .drawer-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .drawer-head h2 {
+      margin: 0;
+      color: #fff2bd;
+      font-size: 21px;
+      line-height: 1;
+      text-transform: uppercase;
+      overflow-wrap: anywhere;
+    }
+
+    .drawer-head p {
+      margin: 3px 0 0;
+      color: #cbeaff;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-size: 12px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .drawer-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      border: 2px solid rgba(255,255,255,.22);
+      color: #fff6d7;
+      background: linear-gradient(180deg, #d94a38, #87130c);
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .zone-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-areas:
+        "core core"
+        "attack defense"
+        "armor reg"
+        "fuel fuel";
+      grid-auto-rows: minmax(86px, auto);
+      gap: 7px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .zone-grid.is-rival {
+      grid-template-areas:
+        "core core"
+        "attack defense"
+        "armor fuel";
+    }
+
+    .panel-zone,
+    .drop-zone {
+      min-height: 86px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 5px;
+      padding: 7px;
+      border: 2px solid rgba(70, 236, 255, .28);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+    }
+
+    .core-panel { grid-area: core; min-height: 118px; }
+    .zone-attack { grid-area: attack; }
+    .zone-defense { grid-area: defense; }
+    .zone-armor { grid-area: armor; }
+    .zone-reg { grid-area: reg; }
+    .zone-fuel { grid-area: fuel; min-height: 92px; }
+
+    .core-slots {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .core-slot {
+      min-height: 72px;
+      padding: 6px;
+      border-radius: 10px;
+      border: 2px solid rgba(255, 238, 190, .22);
+      background: rgba(0, 18, 34, .34);
+    }
+
+    .core-slot .zone-title {
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    .drop-zone.is-active {
+      border-color: var(--gold);
+      background: linear-gradient(180deg, rgba(255,196,47,.18), rgba(255,196,47,.06));
+    }
+
+    .drop-zone.is-invalid {
+      border-color: var(--red);
+      animation: shake .22s ease;
+    }
+
+    .drop-zone.is-drop-valid {
+      border-color: rgba(65, 255, 89, .9);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(65, 255, 89, .22), transparent 62%),
+        linear-gradient(180deg, rgba(65, 255, 89, .16), rgba(70, 236, 255, .07));
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.1),
+        0 0 18px rgba(65, 255, 89, .28);
+    }
+
+    .drop-zone.is-drop-valid .empty-zone {
+      border-color: rgba(65, 255, 89, .44);
+      color: #eaffef;
+    }
+
+    .drop-zone.is-drop-invalid {
+      opacity: .48;
+      filter: saturate(.56);
+    }
+
+    .drop-zone.is-drop-hover {
+      border-color: var(--gold);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.14),
+        0 0 23px rgba(255, 196, 47, .46);
+    }
+
+    .drop-zone.zone-modified {
+      animation: zoneInstall .82s ease;
+    }
+
+    .zone-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+      color: #fff2bd;
+      font-size: 12px;
+      line-height: 1.05;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .zone-title span {
+      min-width: 0;
+      white-space: normal;
+    }
+
+    .zone-title b {
+      flex: 0 0 auto;
+      color: #74fff2;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .zone-cards {
+      min-height: 45px;
+      display: flex;
+      align-items: end;
+      gap: 4px;
+      flex-wrap: wrap;
+      overflow: hidden;
+    }
+
+    .zone-reg .zone-cards {
+      align-items: stretch;
+    }
+
+    .zone-reg .empty-zone {
+      place-items: start;
+      justify-items: stretch;
+      padding: 8px;
+      line-height: 1.2;
+      text-align: left;
+      text-transform: none;
+      overflow-y: auto;
+    }
+
+    .empty-zone {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      min-height: 38px;
+      border: 2px dashed rgba(255,255,255,.16);
+      border-radius: 9px;
+      color: #a8c8e4;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .drawer-foot {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .drawer-foot button {
+      min-height: 36px;
+      padding: 6px 8px;
+      border: 2px solid rgba(255,255,255,.22);
+      border-radius: 10px;
+      color: #061525;
+      background: linear-gradient(180deg, #fff6d8, #ffc35c);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      overflow-wrap: anywhere;
+    }
+
+    .drawer-foot button.secondary {
+      color: #dff7ff;
+      background: linear-gradient(180deg, #0b64ad, #053462);
+    }
+
+    .hand-tray {
+      position: relative;
+      z-index: 4;
+      margin-top: 4px;
+      padding: 28px 14px 24px;
+      border: 4px solid #09254a;
+      border-radius: 20px;
+      background:
+        repeating-linear-gradient(135deg, rgba(109, 69, 26, .08) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, #fff0cc, #d5b682);
+      box-shadow: inset 0 3px 0 rgba(255,255,255,.7), inset 0 -6px 0 rgba(89,57,23,.22), 0 8px 0 rgba(1,22,45,.75);
+    }
+
+    .phone-shell.actions-open .hand-tray {
+      z-index: 16;
+    }
+
+    .action-hub {
+      position: absolute;
+      z-index: 18;
+      left: 50%;
+      top: 3px;
+      width: 1px;
+      height: 1px;
+      transform: translateX(-50%);
+      display: grid;
+      place-items: center;
+    }
+
+    .actions-button {
+      position: relative;
+      z-index: 3;
+      min-width: 132px;
+      min-height: 38px;
+      padding: 7px 18px 6px;
+      border: 3px solid #5d3900;
+      border-radius: 13px;
+      color: #221301;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.5), transparent 36%),
+        linear-gradient(180deg, #fff28a, #ffc42f 62%, #b86600);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.75),
+        inset 0 -4px 0 rgba(116, 62, 0, .35),
+        0 5px 0 #4b2a00,
+        0 0 18px rgba(255,196,47,.22);
+      font-size: 19px;
+      line-height: 1;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-shadow: 0 1px 0 rgba(255,255,255,.42);
+    }
+
+    .actions-button::before,
+    .actions-button::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #1a1000;
+      box-shadow: 0 0 0 2px rgba(255,255,255,.18);
+      transform: translateY(-50%);
+    }
+
+    .actions-button::before { left: 9px; }
+    .actions-button::after { right: 9px; }
+
+    .phone-shell.actions-open .actions-button {
+      filter: brightness(1.05);
+      transform: translateY(3px);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.75),
+        inset 0 -2px 0 rgba(116, 62, 0, .35),
+        0 2px 0 #4b2a00,
+        0 0 22px rgba(255,196,47,.32);
+    }
+
+    .phone-shell.attack-selection-ready .actions-button {
+      animation: actionReadyPulse 1.16s ease-in-out infinite;
+    }
+
+    .phone-shell.attack-selection-ready .attack-confirm-action {
+      animation: confirmReadyPulse .86s ease-in-out infinite;
+    }
+
+    .action-wheel {
+      position: absolute;
+      left: 50%;
+      top: 45px;
+      width: 356px;
+      height: 164px;
+      transform: translateX(-50%) scale(.82);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .phone-shell.actions-open .action-wheel {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+      pointer-events: auto;
+    }
+
+    .action-wheel::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 276px;
+      height: 122px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,242,189,.2);
+      background: radial-gradient(circle, rgba(1, 17, 34, .72), rgba(1, 17, 34, .12) 64%, transparent 72%);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 28px rgba(0,0,0,.24), inset 0 0 22px rgba(70,236,255,.08);
+      pointer-events: none;
+    }
+
+    .wheel-action {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 90px;
+      min-height: 34px;
+      padding: 5px 8px;
+      border: 2px solid #052044;
+      border-radius: 999px;
+      color: #061525;
+      background: linear-gradient(180deg, #fff8dc, #ffc45d 66%, #bc7206);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.65),
+        inset 0 -2px 0 rgba(88,50,0,.25),
+        0 4px 0 rgba(0,14,30,.52),
+        0 0 12px rgba(255,196,47,.18);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+      transition: opacity .16s ease, transform .16s ease, filter .16s ease;
+      transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y)));
+    }
+
+    .wheel-action.primary {
+      color: #fff6d8;
+      border-color: #65130b;
+      background: linear-gradient(180deg, #ff7658, #cd2718 64%, #7c120b);
+    }
+
+    .wheel-action.utility {
+      color: #dff7ff;
+      background: linear-gradient(180deg, #0d73bd, #064779);
+    }
+
+    .wheel-action.defense {
+      background: linear-gradient(180deg, #c9fff4, #54dcc3 64%, #15806f);
+    }
+
+    .wheel-action.is-active {
+      outline: 3px solid rgba(255,255,255,.68);
+      filter: brightness(1.08);
+    }
+
+    .wheel-action:disabled {
+      opacity: .46;
+      filter: grayscale(.25);
+      cursor: default;
+    }
+
+    .attack-confirm-action {
+      opacity: 0 !important;
+      pointer-events: none;
+      transform: translate(calc(-50% + var(--x) - 10px), calc(-50% + var(--y))) scale(.82);
+    }
+
+    .phone-shell.attack-confirm-open .attack-confirm-action {
+      opacity: 1 !important;
+      pointer-events: auto;
+      transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1);
+    }
+
+    .phone-shell.attack-confirm-open .attack-confirm-action:disabled {
+      opacity: .46 !important;
+      pointer-events: none;
+    }
+
+    .hand-tray header {
+      position: absolute;
+      left: -2px;
+      right: 15px;
+      top: -21px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff0d3;
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    .hand-tray header span {
+      min-width: 137px;
+      padding: 8px 14px;
+      border: 3px solid #041b35;
+      border-radius: 12px 12px 12px 0;
+      background: linear-gradient(180deg, #0c67b1, #06457e);
+      box-shadow: inset 0 2px 0 rgba(145,219,255,.42), 0 4px 0 #021426;
+    }
+
+    .hand-tray header strong {
+      color: #21170e;
+      font-size: 25px;
+      white-space: nowrap;
+    }
+
+    .cards {
+      height: 132px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      padding-top: 31px;
+    }
+
+    .phone-shell.actions-open .cards {
+      filter: brightness(.72) saturate(.78);
+      pointer-events: none;
+    }
+
+    .cards.is-shifting-left .card {
+      animation: handNudgeLeft .2s ease both;
+    }
+
+    .cards.is-shifting-right .card {
+      animation: handNudgeRight .2s ease both;
+    }
+
+    .card {
+      width: 62px;
+      height: 91px;
+      flex: 0 0 62px;
+      display: block;
+      border-radius: 8px;
+      background: #fff4d8;
+      box-shadow: 0 8px 12px rgba(51, 34, 15, .34);
+      transition: translate .09s ease, transform .16s ease, filter .16s ease, outline-color .16s ease, box-shadow .16s ease;
+      overflow: hidden;
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+    }
+
+    .cards .card + .card { margin-left: -25px; }
+    .cards .card:nth-child(1) { transform: rotate(-7deg); }
+    .cards .card:nth-child(2) { transform: translateY(-7px) rotate(-4deg); }
+    .cards .card:nth-child(3) { transform: translateY(-10px) rotate(-1deg); }
+    .cards .card:nth-child(4) { transform: translateY(-12px); }
+    .cards .card:nth-child(5) { transform: translateY(-10px) rotate(2deg); }
+    .cards .card:nth-child(6) { transform: translateY(-7px) rotate(5deg); }
+    .cards .card:nth-child(7) { transform: rotate(8deg); }
+
+    .cards .card.is-selected,
+    .cards .card:hover {
+      z-index: 2;
+      filter: brightness(1.08);
+      transform: translateY(-24px) scale(1.05);
+      outline: 3px solid var(--gold);
+    }
+
+    .zone-cards .card {
+      width: 38px;
+      height: 55px;
+      flex-basis: 38px;
+      border-radius: 6px;
+      box-shadow: 0 4px 7px rgba(0,0,0,.28);
+    }
+
+    .zone-cards .card.is-selected {
+      outline: 3px solid var(--gold);
+      transform: translateY(-3px);
+    }
+
+    .card.is-readonly {
+      cursor: default;
+      opacity: 1;
+      filter: none;
+    }
+
+    .side-arrow {
+      position: absolute;
+      top: 62px;
+      width: 29px;
+      height: 62px;
+      border: 3px solid #052044;
+      border-radius: 10px;
+      color: #ffcc31;
+      font-size: 28px;
+      background: linear-gradient(180deg, #0b68b6, #064177);
+      box-shadow: inset 0 2px 0 rgba(125,210,255,.42), 0 5px 0 #021426;
+    }
+
+    .side-arrow.left { left: -14px; }
+    .side-arrow.right { right: -14px; }
+
+    .menu-button:not(:disabled):active,
+    .menu-button.is-pressing {
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.34),
+        inset 0 5px 10px rgba(0,25,56,.42),
+        0 1px 0 #173558;
+    }
+
+    .menu-button.danger:not(:disabled):active,
+    .menu-button.danger.is-pressing {
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.22),
+        inset 0 5px 11px rgba(60,0,0,.5),
+        0 1px 0 #4f0b07;
+    }
+
+    .message-actions button:not(:disabled):active,
+    .message-actions button.is-pressing,
+    .drawer-foot button:not(:disabled):active,
+    .drawer-foot button.is-pressing {
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.36),
+        inset 0 5px 10px rgba(110,61,0,.28),
+        0 1px 0 rgba(0,0,0,.44);
+    }
+
+    .drawer-foot button.secondary:not(:disabled):active,
+    .drawer-foot button.secondary.is-pressing {
+      box-shadow:
+        inset 0 2px 0 rgba(170,225,255,.28),
+        inset 0 5px 11px rgba(0,20,45,.58),
+        0 1px 0 rgba(0,0,0,.48);
+    }
+
+    .tab-sprite:not(:disabled):active,
+    .tab-sprite.is-pressing,
+    .round-menu:not(:disabled):active,
+    .round-menu.is-pressing,
+    .side-arrow:not(:disabled):active,
+    .side-arrow.is-pressing {
+      translate: 0 4px;
+      box-shadow:
+        inset 0 2px 0 rgba(130,214,255,.28),
+        inset 0 7px 14px rgba(0,21,48,.55),
+        0 1px 0 #021426;
+    }
+
+    .tab-sprite.is-active:not(:disabled):active,
+    .tab-sprite.is-active.is-pressing,
+    .round-menu.is-active:not(:disabled):active,
+    .round-menu.is-active.is-pressing {
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.45),
+        inset 0 7px 14px rgba(116,62,0,.32),
+        0 1px 0 #6e4104;
+    }
+
+    .drawer-close:not(:disabled):active,
+    .drawer-close.is-pressing {
+      translate: 0 2px;
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.2),
+        inset 0 6px 12px rgba(77,0,0,.48),
+        0 1px 0 rgba(0,0,0,.58);
+    }
+
+    .actions-button:not(:disabled):active,
+    .actions-button.is-pressing,
+    .phone-shell.actions-open .actions-button:not(:disabled):active,
+    .phone-shell.actions-open .actions-button.is-pressing {
+      translate: 0 3px;
+      filter: brightness(.97) saturate(1.1);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.68),
+        inset 0 6px 12px rgba(116,62,0,.38),
+        0 1px 0 #4b2a00,
+        0 0 15px rgba(255,196,47,.25);
+    }
+
+    .wheel-action:not(:disabled):active,
+    .wheel-action.is-pressing {
+      translate: 0 3px;
+      filter: brightness(.95) saturate(1.12);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.48),
+        inset 0 6px 11px rgba(88,50,0,.35),
+        0 1px 0 rgba(0,14,30,.52),
+        0 0 10px rgba(255,196,47,.16);
+    }
+
+    .wheel-action.primary:not(:disabled):active,
+    .wheel-action.primary.is-pressing {
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.26),
+        inset 0 6px 12px rgba(82,0,0,.44),
+        0 1px 0 rgba(0,14,30,.56);
+    }
+
+    .wheel-action.defense:not(:disabled):active,
+    .wheel-action.defense.is-pressing {
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.4),
+        inset 0 6px 12px rgba(0,61,55,.38),
+        0 1px 0 rgba(0,14,30,.52);
+    }
+
+    .cards .card:not(:disabled):active,
+    .cards .card.is-pressing {
+      translate: 0 4px;
+      filter: brightness(.98) saturate(1.1);
+      box-shadow:
+        0 3px 5px rgba(51,34,15,.34),
+        inset 0 0 0 2px rgba(255,196,47,.34);
+    }
+
+    .zone-cards .card:not(:disabled):active,
+    .zone-cards .card.is-pressing {
+      translate: 0 2px;
+      box-shadow:
+        0 1px 3px rgba(0,0,0,.34),
+        inset 0 0 0 2px rgba(255,196,47,.34);
+    }
+
+    .card.is-readonly:active,
+    .card.is-readonly.is-pressing {
+      translate: 0 0;
+      filter: none;
+      box-shadow: 0 4px 7px rgba(0,0,0,.28);
+    }
+
+    .toast {
+      position: absolute;
+      z-index: 30;
+      left: 22px;
+      right: 22px;
+      bottom: 24px;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 13px;
+      border: 2px solid rgba(255,242,189,.82);
+      background: linear-gradient(180deg, rgba(12, 32, 64, .97), rgba(5, 12, 28, .97));
+      color: #fff6d8;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-size: 13px;
+      line-height: 1.25;
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0,0,0,.38);
+      overflow-wrap: anywhere;
+    }
+
+    .toast.show {
+      display: block;
+      animation: messageIn .18s ease both;
+    }
+
+    .fx-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 70;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .fx-spark {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: var(--size, 7px);
+      height: var(--size, 7px);
+      border-radius: 50%;
+      color: var(--spark-color, #fff6a8);
+      background: currentColor;
+      box-shadow: 0 0 11px currentColor;
+      transform: translate(-50%, -50%);
+      animation: sparkFly var(--dur, .72s) ease-out both;
+    }
+
+    .fx-spark::after {
+      content: "";
+      position: absolute;
+      inset: 35% -130%;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: .55;
+    }
+
+    .damage-pop {
+      position: absolute;
+      z-index: 72;
+      min-width: 54px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.65);
+      background: linear-gradient(180deg, #fff7cb, #ff7c43);
+      color: #681900;
+      font-family: "Courier New", monospace;
+      font-size: 15px;
+      font-weight: 1000;
+      text-align: center;
+      box-shadow: 0 10px 18px rgba(91,25,0,.3), 0 0 22px rgba(255,132,70,.42);
+      transform: translate(-50%, -50%);
+      animation: damagePop .98s ease both;
+      pointer-events: none;
+    }
+
+    .attack-special-popup-overlay {
+      position: absolute;
+      left: 50%;
+      top: 38%;
+      z-index: 90;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(.86);
+      filter: drop-shadow(0 0 18px rgba(255,180,62,.26));
+      transition: opacity .16s ease, visibility .16s ease, transform .16s ease;
+    }
+
+    .attack-special-popup-overlay.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .attack-special-popup-shell {
+      position: relative;
+      width: clamp(150px, 48vw, 218px);
+      padding: 7px 7px 8px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,214,110,.55);
+      background:
+        linear-gradient(90deg, rgba(255,221,92,.18), transparent 18%, transparent 82%, rgba(96,225,255,.14)),
+        radial-gradient(circle at 50% 0%, rgba(255,186,71,.18), transparent 48%),
+        linear-gradient(180deg, rgba(16,33,58,.88), rgba(5,11,20,.94));
+      box-shadow:
+        0 0 0 1px rgba(146,245,255,.1),
+        inset 0 0 0 1px rgba(255,255,255,.06),
+        inset 0 -10px 18px rgba(0,0,0,.3),
+        0 12px 28px rgba(0,0,0,.38),
+        0 0 24px rgba(255,152,64,.22);
+      backdrop-filter: blur(6px);
+      transform-origin: center;
+    }
+
+    .attack-special-popup-overlay.show .attack-special-popup-shell {
+      animation: attackMonitorPowerOn .48s cubic-bezier(.2, .78, .2, 1.08) both;
+    }
+
+    .attack-special-popup-shell::before,
+    .attack-special-popup-shell::after {
+      content: "";
+      position: absolute;
+      top: 18px;
+      bottom: 14px;
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,213,95,.78), rgba(72,220,255,.18));
+      opacity: .72;
+    }
+
+    .attack-special-popup-shell::before { left: -5px; }
+    .attack-special-popup-shell::after { right: -5px; }
+
+    .attack-special-monitor-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      min-height: 18px;
+      padding: 0 2px 5px;
+    }
+
+    .attack-special-monitor-id {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #9df8ff;
+      font-size: 10px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .attack-special-monitor-led {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ffd65f;
+      box-shadow: 0 0 9px rgba(255,214,95,.86);
+    }
+
+    .attack-special-monitor-bars {
+      display: flex;
+      gap: 2px;
+      align-items: flex-end;
+    }
+
+    .attack-special-monitor-bars span {
+      width: 3px;
+      border-radius: 4px;
+      background: rgba(143,244,255,.72);
+      box-shadow: 0 0 6px rgba(143,244,255,.28);
+    }
+
+    .attack-special-monitor-bars span:nth-child(1) { height: 5px; }
+    .attack-special-monitor-bars span:nth-child(2) { height: 9px; }
+    .attack-special-monitor-bars span:nth-child(3) { height: 7px; }
+
+    .attack-special-popup-frame {
+      position: relative;
+      overflow: hidden;
+      border-radius: 9px;
+      border: 1px solid rgba(150,245,255,.32);
+      background:
+        radial-gradient(circle at 50% 18%, rgba(143,244,255,.1), transparent 42%),
+        linear-gradient(180deg, rgba(5,12,22,.98), rgba(2,6,12,.98));
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.05),
+        inset 0 0 16px rgba(72,214,255,.1);
+    }
+
+    .attack-special-popup-overlay.show .attack-special-popup-frame {
+      animation: attackMonitorTubeBloom .56s cubic-bezier(.18, .82, .22, 1) both;
+    }
+
+    .attack-special-popup-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px);
+      background-size: 100% 5px;
+      mix-blend-mode: screen;
+      opacity: .24;
+      pointer-events: none;
+    }
+
+    .attack-special-popup-overlay.show .attack-special-popup-frame::before {
+      animation: attackMonitorScanWake .68s steps(6, end) both;
+    }
+
+    .attack-special-popup-frame::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      z-index: 2;
+      border: 1px solid rgba(255,213,95,.22);
+      box-shadow: inset 0 0 18px rgba(255,120,50,.1);
+      pointer-events: none;
+    }
+
+    .attack-special-popup-video {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 160px;
+      object-fit: contain;
+      background: transparent;
+    }
+
+    .attack-special-popup-overlay.show .attack-special-popup-video {
+      animation: attackMonitorSignalIn .62s steps(5, end) both;
+    }
+
+    .attack-special-monitor-foot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding-top: 6px;
+    }
+
+    .attack-special-monitor-foot span {
+      width: 14px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(143,244,255,.26);
+    }
+
+    .attack-special-monitor-foot span:nth-child(2) {
+      background: rgba(255,213,95,.58);
+      box-shadow: 0 0 8px rgba(255,213,95,.35);
+    }
+
+    .phone-shell.attack-flash .split-light { animation: slash .52s ease; }
+    .phone-shell.attack-flash .versus { animation: pulse .52s ease; }
+    .phone-shell.shake { animation: shellShake .38s ease; }
+    .phone-shell.screen-shake { animation: screenShake .72s cubic-bezier(.36,.07,.19,.97); }
+
+    @keyframes scanDrift {
+      from { background-position: 0 0, 0 0; }
+      to { background-position: 42px 42px, 42px 42px; }
+    }
+
+    @keyframes panelSweep {
+      0%, 100% { transform: translateX(-34%); opacity: .18; }
+      45% { opacity: .46; }
+      68% { transform: translateX(34%); opacity: .22; }
+    }
+
+    @keyframes fighterBreath {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    @keyframes readyHeaderPulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(65,255,89,0); filter: brightness(1); }
+      50% { box-shadow: 0 0 18px rgba(65,255,89,.34), inset 0 0 14px rgba(70,236,255,.12); filter: brightness(1.12); }
+    }
+
+    @keyframes mechaIdleBlue {
+      0%, 100% { transform: scaleX(-1) rotate(-4deg) translate(-3px, 0); }
+      50% { transform: scaleX(-1) rotate(-3.2deg) translate(-4px, -6px); }
+    }
+
+    @keyframes mechaIdleRed {
+      0%, 100% { transform: rotate(4deg) translate(4px, 0); }
+      50% { transform: rotate(3.2deg) translate(5px, -6px); }
+    }
+
+    @keyframes mechaReadyBlue {
+      0%, 100% { transform: scaleX(-1) rotate(-4deg) translate(-3px, 0); filter: drop-shadow(0 15px 15px rgba(0,0,0,.62)) drop-shadow(0 0 12px rgba(66,255,222,.2)) saturate(1.12); }
+      50% { transform: scaleX(-1) rotate(-3.1deg) translate(-5px, -7px) scale(1.03); filter: drop-shadow(0 15px 15px rgba(0,0,0,.62)) drop-shadow(0 0 26px rgba(66,255,222,.54)) brightness(1.08) saturate(1.2); }
+    }
+
+    @keyframes mechaReadyRed {
+      0%, 100% { transform: rotate(4deg) translate(4px, 0); filter: drop-shadow(0 15px 15px rgba(0,0,0,.62)) drop-shadow(0 0 12px rgba(255,83,61,.18)) saturate(1.12); }
+      50% { transform: rotate(3.1deg) translate(6px, -7px) scale(1.03); filter: drop-shadow(0 15px 15px rgba(0,0,0,.62)) drop-shadow(0 0 25px rgba(255,83,61,.48)) brightness(1.08) saturate(1.2); }
+    }
+
+    @keyframes compactAttackLaunchBlue {
+      0%, 100% { transform: scaleX(-1) rotate(-4deg) translate(-3px, 0); filter: brightness(1); }
+      24% { transform: scaleX(-1) rotate(-7deg) translate(-20px, -10px) scale(1.08); filter: brightness(1.22); }
+      58% { transform: scaleX(-1) rotate(-2deg) translate(-7px, 4px) scale(.99); filter: brightness(.98); }
+    }
+
+    @keyframes compactAttackLaunchRed {
+      0%, 100% { transform: rotate(4deg) translate(4px, 0); filter: brightness(1); }
+      24% { transform: rotate(7deg) translate(20px, -10px) scale(1.08); filter: brightness(1.22); }
+      58% { transform: rotate(2deg) translate(7px, 4px) scale(.99); filter: brightness(.98); }
+    }
+
+    @keyframes compactAttackHitBlue {
+      0%, 100% { transform: scaleX(-1) rotate(-4deg) translate(-3px, 0); filter: brightness(1); }
+      20% { transform: scaleX(-1) rotate(-1deg) translate(10px, 2px) scale(1.02); filter: brightness(1.26); }
+      44% { transform: scaleX(-1) rotate(-6deg) translate(-9px, -1px) scale(.98); filter: brightness(.94); }
+      68% { transform: scaleX(-1) rotate(-3deg) translate(5px, 1px) scale(1.01); }
+    }
+
+    @keyframes compactAttackHitRed {
+      0%, 100% { transform: rotate(4deg) translate(4px, 0); filter: brightness(1); }
+      20% { transform: rotate(1deg) translate(-10px, 2px) scale(1.02); filter: brightness(1.26); }
+      44% { transform: rotate(6deg) translate(9px, -1px) scale(.98); filter: brightness(.94); }
+      68% { transform: rotate(3deg) translate(-5px, 1px) scale(1.01); }
+    }
+
+    @keyframes attackLabelRise {
+      0% { opacity: 0; transform: translate(-50%, 16px) scale(.86); }
+      24% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -8px) scale(1.03); }
+    }
+
+    @keyframes attackBeamLeft {
+      0% { opacity: 0; transform: translate(-64%, -50%) scaleX(.18); }
+      18%, 68% { opacity: 1; }
+      68% { transform: translate(-50%, -50%) scaleX(1); }
+      100% { opacity: 0; transform: translate(-38%, -50%) scaleX(1.06); }
+    }
+
+    @keyframes attackBeamRight {
+      0% { opacity: 0; transform: translate(-36%, -50%) scaleX(.18); }
+      18%, 68% { opacity: 1; }
+      68% { transform: translate(-50%, -50%) scaleX(1); }
+      100% { opacity: 0; transform: translate(-62%, -50%) scaleX(1.06); }
+    }
+
+    @keyframes attackImpactFlash {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.18); }
+      22% { opacity: .96; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+    }
+
+    @keyframes attackWavePulse {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+      24% { opacity: .8; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.42); }
+    }
+
+    @keyframes zoneInstall {
+      0% { transform: scale(.98); box-shadow: inset 0 0 0 2px rgba(84,216,120,0); }
+      36% { transform: scale(1.04); box-shadow: inset 0 0 0 2px rgba(84,216,120,.72), 0 0 18px rgba(84,216,120,.38); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes statPulse {
+      0%, 100% { transform: scale(1); }
+      38% { transform: scale(1.05); filter: brightness(1.14); }
+    }
+
+    @keyframes actionReadyPulse {
+      0%, 100% { filter: brightness(1); box-shadow: inset 0 2px 0 rgba(255,255,255,.75), inset 0 -4px 0 rgba(116,62,0,.35), 0 5px 0 #4b2a00, 0 0 18px rgba(255,196,47,.22); }
+      50% { filter: brightness(1.14); box-shadow: inset 0 2px 0 rgba(255,255,255,.85), inset 0 -4px 0 rgba(116,62,0,.35), 0 5px 0 #4b2a00, 0 0 34px rgba(65,255,89,.34); }
+    }
+
+    @keyframes confirmReadyPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.2) drop-shadow(0 0 14px rgba(255,196,47,.46)); }
+    }
+
+    @keyframes sparkFly {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(.8); }
+      100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.18); }
+    }
+
+    @keyframes damagePop {
+      0% { opacity: 0; transform: translate(-50%, calc(-50% + 10px)) scale(.6); }
+      22% { opacity: 1; transform: translate(-50%, calc(-50% - 8px)) scale(1.18); }
+      72% { opacity: 1; transform: translate(-50%, calc(-50% - 18px)) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, calc(-50% - 28px)) scale(.88); }
+    }
+
+    @keyframes attackMonitorPowerOn {
+      0% { opacity: .72; transform: scaleX(.62) scaleY(.025); filter: brightness(2.5) saturate(.55); }
+      14% { opacity: 1; transform: scaleX(1.1) scaleY(.035); filter: brightness(3.4) saturate(.72); }
+      42% { transform: scaleX(.96) scaleY(1.08); filter: brightness(1.55) saturate(1.15); }
+      68% { transform: scaleX(1.02) scaleY(.97); filter: brightness(1.16) saturate(1.06); }
+      100% { opacity: 1; transform: scale(1); filter: brightness(1) saturate(1); }
+    }
+
+    @keyframes attackMonitorTubeBloom {
+      0% { clip-path: inset(49% 2% 49% 2% round 9px); filter: brightness(2.8) contrast(1.35); }
+      24% { clip-path: inset(45% 0 45% 0 round 9px); filter: brightness(3.15) contrast(1.42); }
+      58% { clip-path: inset(7% 0 7% 0 round 9px); filter: brightness(1.38) contrast(1.12); }
+      100% { clip-path: inset(0 0 0 0 round 9px); filter: brightness(1) contrast(1); }
+    }
+
+    @keyframes attackMonitorSignalIn {
+      0%, 30% { opacity: 0; transform: scaleY(.04); filter: brightness(2.6) contrast(1.8) saturate(.45); }
+      42% { opacity: .34; transform: scaleY(.26); }
+      58% { opacity: .85; transform: scaleY(1.04); filter: brightness(1.42) contrast(1.24) saturate(1.18); }
+      72% { opacity: .62; filter: brightness(.86) contrast(1.28) saturate(1.04); }
+      100% { opacity: 1; transform: scaleY(1); filter: brightness(1) contrast(1) saturate(1); }
+    }
+
+    @keyframes attackMonitorScanWake {
+      0% { opacity: .05; transform: translateY(-18px); }
+      42% { opacity: .4; }
+      100% { opacity: .24; transform: translateY(0); }
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0); }
+      18% { transform: translate(-3px, 2px); }
+      34% { transform: translate(4px, -2px); }
+      50% { transform: translate(-2px, -1px); }
+      68% { transform: translate(2px, 1px); }
+      84% { transform: translate(-1px, 1px); }
+    }
+
+    @keyframes messageIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slash {
+      0% { opacity: .2; transform: rotate(16deg) scaleY(.5); }
+      45% { opacity: 1; transform: rotate(16deg) scaleY(1.2); box-shadow: 0 0 28px #ff533d; }
+      100% { opacity: .7; transform: rotate(16deg) scaleY(1); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      45% { transform: translate(-50%, -50%) scale(1.18); }
+    }
+
+    @keyframes mechaPhaseFlash {
+      0% { opacity: .62; filter: drop-shadow(0 15px 15px rgba(0, 0, 0, .62)) drop-shadow(0 0 0 rgba(66, 255, 222, 0)) brightness(1.45); }
+      52% { opacity: 1; filter: drop-shadow(0 15px 15px rgba(0, 0, 0, .62)) drop-shadow(0 0 22px rgba(66, 255, 222, .55)) brightness(1.18); }
+      100% { opacity: 1; }
+    }
+
+    @keyframes shellShake {
+      0%, 100% { transform: translateX(0); }
+      22% { transform: translateX(-4px); }
+      48% { transform: translateX(5px); }
+      74% { transform: translateX(-2px); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      35% { transform: translateX(-3px); }
+      70% { transform: translateX(3px); }
+    }
+
+    @keyframes handNudgeLeft {
+      0% { translate: 12px 0; opacity: .78; }
+      100% { translate: 0 0; opacity: 1; }
+    }
+
+    @keyframes handNudgeRight {
+      0% { translate: -12px 0; opacity: .78; }
+      100% { translate: 0 0; opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    @media (max-width: 440px) {
+      body {
+        padding: 0;
+        align-items: start;
+      }
+
+      .phone-shell {
+        width: 100vw;
+        min-height: 100vh;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+      }
+
+      .board-drawer {
+        left: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone-shell" aria-label="Boceto compacto funcional de PoCoBOT">
+    <div class="top-vents vents-left" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="top-vents vents-right" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+    <section class="brand-plate">
+      <i class="screw screw-tl"></i>
+      <i class="screw screw-tr"></i>
+      <i class="screw screw-bl"></i>
+      <i class="screw screw-br"></i>
+      <img src="../assets/pocobot_title_blue.png" alt="PoCoBOT Poker Combat Bot">
+    </section>
+
+    <nav class="top-menu" aria-label="Menú de partida">
+      <button class="menu-button danger" type="button" data-menu="new">Nueva</button>
+      <button class="menu-button" type="button" data-menu="back">Volver</button>
+      <button class="menu-button" type="button" data-menu="save">Guardar</button>
+      <button class="menu-button" type="button" data-menu="load">Cargar</button>
+      <button class="menu-button on" type="button" data-menu="music">Música OFF</button>
+      <button class="menu-button" type="button" data-menu="tutorial">Tutorial OFF</button>
+    </nav>
+
+    <section class="status-strip" aria-label="Estado superior">
+      <article class="meter-pill fuel-pill">
+        <span class="fuel-icon" aria-hidden="true"></span>
+        <div><small>Fuel</small><strong data-fuel-value>0</strong></div>
+        <i class="mini-bars" data-fuel-bars></i>
+      </article>
+
+      <div class="led-trigger" role="img" aria-label="Indicador de acciones disponibles">
+        <i class="on"></i><i></i><i></i>
+      </div>
+
+      <article class="meter-pill core-pill">
+        <i class="core-ring" aria-hidden="true"></i>
+        <div><small>Núcleo</small><strong data-core-value>0/3</strong></div>
+        <i class="mini-bars is-muted" data-core-bars></i>
+      </article>
+    </section>
+
+    <section class="combat-screen" aria-label="Combate">
+      <div class="scan-grid" aria-hidden="true"></div>
+      <div class="split-light" aria-hidden="true"></div>
+      <div class="versus" aria-hidden="true">VS</div>
+      <div class="combat-attack-layer" data-attack-layer aria-hidden="true">
+        <div class="combat-attack-beam"></div>
+        <div class="combat-attack-impact"></div>
+        <div class="combat-attack-wave"></div>
+        <div class="combat-attack-label" data-attack-label>Ataque</div>
+      </div>
+
+      <div class="message-stack">
+        <article class="floating-message tutorial" data-tutorial-message>
+          <strong>Tutorial activo</strong>
+          <span data-tutorial-text></span>
+        </article>
+        <article class="floating-message alert" data-alert-message>
+          <strong data-alert-title></strong>
+          <span data-alert-text></span>
+          <div class="message-actions" data-alert-actions></div>
+        </article>
+      </div>
+
+      <article class="fighter fighter-blue">
+        <header data-player-name>JUGADOR 1</header>
+        <img class="mecha-phase-live" data-mecha-img="0" src="../assets/image_10.png" alt="Mecha real de jugador 1">
+        <section class="stats-card">
+          <p><span class="suit-mark">♠</span><b>Ataque</b><strong data-p1-attack>0</strong><i data-p1-attack-bar style="--w:0%"></i></p>
+          <p><span class="suit-mark">♥</span><b>Defensa</b><strong data-p1-defense>0</strong><i data-p1-defense-bar style="--w:0%"></i></p>
+          <p><span class="suit-mark">♣</span><b>Armadura</b><strong data-p1-armor>0</strong><i data-p1-armor-bar style="--w:0%"></i></p>
+        </section>
+      </article>
+
+      <article class="fighter fighter-red">
+        <header>RIVAL</header>
+        <img class="mecha-phase-live" data-mecha-img="1" src="../assets/image_10.png" alt="Mecha real rival">
+        <section class="stats-card">
+          <p><span class="suit-mark">♠</span><b>Ataque</b><strong data-p2-attack>0</strong><i data-p2-attack-bar style="--w:0%"></i></p>
+          <p><span class="suit-mark">♥</span><b>Defensa</b><strong data-p2-defense>0</strong><i data-p2-defense-bar style="--w:0%"></i></p>
+          <p><span class="suit-mark">♣</span><b>Armadura</b><strong data-p2-armor>0</strong><i data-p2-armor-bar style="--w:0%"></i></p>
+        </section>
+      </article>
+    </section>
+
+    <div class="fx-layer" data-fx-layer aria-hidden="true"></div>
+
+    <div class="attack-special-popup-overlay" data-attack-special-overlay aria-hidden="true">
+      <div class="attack-special-popup-shell">
+        <div class="attack-special-monitor-head" aria-hidden="true">
+          <div class="attack-special-monitor-id"><span class="attack-special-monitor-led"></span>COMBAT CAM</div>
+          <div class="attack-special-monitor-bars"><span></span><span></span><span></span></div>
+        </div>
+        <div class="attack-special-popup-frame">
+          <video class="attack-special-popup-video" data-attack-special-video src="../assets/videos/Ataque1.mp4" muted playsinline preload="auto"></video>
+        </div>
+        <div class="attack-special-monitor-foot" aria-hidden="true"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <nav class="tab-bar" aria-label="Secciones">
+      <button class="tab-sprite is-active" type="button" data-tab="mecha"><span class="sprite icon-mecha"></span><b>Mecha</b></button>
+      <button class="tab-sprite" type="button" data-tab="rival"><span class="sprite icon-rival"></span><b>Rival</b></button>
+      <button class="round-menu" type="button" data-board-toggle aria-label="Abrir paneles">≡</button>
+    </nav>
+
+    <section class="board-drawer" aria-label="Paneles de montaje">
+      <header class="drawer-head">
+        <div>
+          <h2 data-drawer-title>Paneles de montaje</h2>
+          <p data-drawer-subtitle>Arrastra cartas de la mano a núcleo, ataque, defensa, armadura o fuel.</p>
+        </div>
+        <button class="drawer-close" type="button" data-board-close aria-label="Cerrar panel">×</button>
+      </header>
+      <div class="zone-grid" data-zone-grid></div>
+      <footer class="drawer-foot">
+        <button type="button" data-apply-build>Aplicar cambios</button>
+        <button class="secondary" type="button" data-action="clear">Limpiar selección</button>
+      </footer>
+    </section>
+
+    <section class="hand-tray" aria-label="Mano">
+      <header><span>▱ Mano</span><strong data-hand-count>0/7</strong></header>
+      <div class="action-hub" aria-label="Acciones de partida">
+        <button class="actions-button" type="button" data-action-toggle aria-expanded="false">Acciones</button>
+        <div class="action-wheel" role="menu">
+          <button class="wheel-action" style="--x:-92px;--y:-52px" type="button" data-action="draw">Robar ♦</button>
+          <button class="wheel-action primary" style="--x:0px;--y:-60px" type="button" data-action="attack-mode">Atacar</button>
+          <button class="wheel-action primary attack-confirm-action" style="--x:98px;--y:-60px" type="button" data-action="confirm">Confirmar</button>
+          <button class="wheel-action" style="--x:112px;--y:-12px" type="button" data-action="modify">MODIFICAR</button>
+          <button class="wheel-action" style="--x:86px;--y:42px" type="button" data-action="projectile">Proyectil</button>
+          <button class="wheel-action" style="--x:0px;--y:56px" type="button" data-action="pass">Pasar</button>
+          <button class="wheel-action defense" style="--x:-104px;--y:36px" type="button" data-action="defend">Defender</button>
+          <button class="wheel-action defense" style="--x:-124px;--y:-12px" type="button" data-action="skip-defense">No Def.</button>
+          <button class="wheel-action utility" style="--x:0px;--y:0px" type="button" data-action="clear">Limpiar</button>
+        </div>
+      </div>
+      <button class="side-arrow left" type="button" data-hand-shift="-1" aria-label="Cartas anteriores">‹</button>
+      <div class="cards" data-hand-cards></div>
+      <button class="side-arrow right" type="button" data-hand-shift="1" aria-label="Cartas siguientes">›</button>
+    </section>
+
+    <div class="toast" data-toast></div>
+  </main>
+
+  <script>
+    const CARD_ASSET_ROOT = "../assets/cards/hayeah-full/";
+    const SAVE_KEY = "pocobot.sprite.compact.functional.v1";
+    const MAX_HAND_SIZE = 7;
+    const MECHA_IMAGES = {
+      base: "../assets/image_10.png",
+      piloto: "../assets/image_11.png",
+      copiloto: "../assets/image_12.png",
+      ataque: "../assets/image_13.png",
+      defensa: "../assets/image_14.png",
+      armadura: "../assets/image_15.png",
+      combustible: "../assets/image_16.png",
+      booster: "../assets/image_17.png",
+      completo: "../assets/image_18.png",
+      piloto_completo: "../assets/image_19.png",
+      piloto_ataque: "../assets/image_20.png",
+      piloto_defensa: "../assets/image_21.png",
+      piloto_armadura: "../assets/image_22.png",
+      piloto_combustible: "../assets/image_23.png",
+      piloto_booster: "../assets/image_24.png",
+      base_ataque: "../assets/image_25.png",
+      base_defensa: "../assets/image_26.png",
+      base_armadura: "../assets/image_27.png",
+      base_combustible: "../assets/image_28.png",
+      base_booster: "../assets/image_29.png"
+    };
+    const MODULES = ["attack", "defense", "armor"];
+    const SUIT_TO_MODULE = { spades: "attack", hearts: "defense", clubs: "armor" };
+    const MODULE_LABELS = {
+      pilot: "Piloto",
+      copilot: "Copiloto",
+      booster: "As",
+      attack: "Ataque",
+      defense: "Defensa",
+      armor: "Armadura",
+      fuel: "Fuel"
+    };
+    const SUIT_LABELS = {
+      spades: "♠",
+      hearts: "♥",
+      clubs: "♣",
+      diamonds: "♦"
+    };
+    const RANK_VALUES = { A: 14, K: 13, Q: 12, J: 11, "10": 10, "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2 };
+    const RANK_FILE = { A: "ace", K: "king", Q: "queen", J: "jack", "10": "10", "9": "9", "8": "8", "7": "7", "6": "6", "5": "5", "4": "4", "3": "3", "2": "2" };
+
+    const shell = document.querySelector(".phone-shell");
+    const toastNode = document.querySelector("[data-toast]");
+    const fxLayer = document.querySelector("[data-fx-layer]");
+    const attackLayer = document.querySelector("[data-attack-layer]");
+    const attackLabel = document.querySelector("[data-attack-label]");
+    const attackSpecialOverlay = document.querySelector("[data-attack-special-overlay]");
+    const attackSpecialVideo = document.querySelector("[data-attack-special-video]");
+    const audio = new Audio("../assets/audio_menu_cyberpunk_city.mp3");
+    audio.loop = true;
+    audio.volume = 0.22;
+
+    let draggedCardId = null;
+    let toastTimer = null;
+    let rivalTimer = null;
+    let attackFxTimer = null;
+    let attackVideoTimer = null;
+    let attackReadyCueKey = "";
+    let handShiftTimer = null;
+
+    const state = {
+      gameStarted: false,
+      deck: [],
+      discard: [],
+      removed: [],
+      currentPlayer: 0,
+      internalTurn: 1,
+      phase: "Montaje",
+      selected: [],
+      attackMode: false,
+      projectileMode: false,
+      projectileUnlocked: false,
+      tutorial: false,
+      musicOn: false,
+      pendingDefense: null,
+      pendingBuildOps: 0,
+      winner: null,
+      activeTab: "mecha",
+      handOffset: 0,
+      log: [],
+      players: []
+    };
+
+    function makeCard(rank, suit, idSuffix = "") {
+      return {
+        id: `${rank}-${suit}-${idSuffix || Math.random().toString(36).slice(2, 8)}`,
+        rank,
+        suit,
+        value: RANK_VALUES[rank],
+        zone: "hand"
+      };
+    }
+
+    function createDeck() {
+      const suits = ["spades", "hearts", "clubs", "diamonds"];
+      const ranks = ["A", "K", "Q", "J", "10", "9", "8", "7", "6", "5", "4", "3", "2"];
+      const deck = [];
+      suits.forEach((suit) => ranks.forEach((rank) => deck.push(makeCard(rank, suit, `${deck.length}`))));
+      for (let i = deck.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      return deck;
+    }
+
+    function createPlayer(name) {
+      return {
+        name,
+        core: { pilot: null, copilot: null, booster: null },
+        attack: [],
+        defense: [],
+        armor: [],
+        fuel: [],
+        hand: [],
+        flags: {}
+      };
+    }
+
+    function cloneForSave() {
+      return JSON.stringify({
+        deck: state.deck,
+        discard: state.discard,
+        removed: state.removed,
+        currentPlayer: state.currentPlayer,
+        internalTurn: state.internalTurn,
+        phase: state.phase,
+        projectileUnlocked: state.projectileUnlocked,
+        tutorial: state.tutorial,
+        handOffset: state.handOffset,
+        players: state.players,
+        log: state.log.slice(-40)
+      });
+    }
+
+    function loadFromSave(raw) {
+      const data = JSON.parse(raw);
+      Object.assign(state, {
+        deck: data.deck || [],
+        discard: data.discard || [],
+        removed: data.removed || [],
+        currentPlayer: data.currentPlayer || 0,
+        internalTurn: data.internalTurn || 1,
+        phase: data.phase || "Montaje",
+        selected: [],
+        attackMode: false,
+        projectileMode: false,
+        projectileUnlocked: !!data.projectileUnlocked,
+        tutorial: data.tutorial === true,
+        pendingDefense: null,
+        pendingBuildOps: 0,
+        winner: null,
+        handOffset: Number.isInteger(data.handOffset) ? data.handOffset : 0,
+        players: data.players || [],
+        log: data.log || []
+      });
+      state.gameStarted = true;
+    }
+
+    function takeFromDeck(predicate) {
+      const index = state.deck.findIndex(predicate);
+      if (index >= 0) return state.deck.splice(index, 1)[0];
+      return state.deck.pop() || null;
+    }
+
+    function addOpeningCard(player, predicate) {
+      const card = takeFromDeck(predicate);
+      if (!card) return;
+      card.zone = "hand";
+      player.hand.push(card);
+    }
+
+    function dealOpeningHand(player, pilotSuit = "spades") {
+      addOpeningCard(player, (card) => isFigure(card) && card.suit === pilotSuit);
+      addOpeningCard(player, (card) => isFigure(card) && card.suit !== "diamonds");
+      addOpeningCard(player, (card) => isAce(card));
+      addOpeningCard(player, (card) => isNumeric(card) && card.suit === pilotSuit);
+      addOpeningCard(player, (card) => isNumeric(card) && card.suit === "hearts");
+      addOpeningCard(player, (card) => isNumeric(card) && card.suit === "clubs");
+      addOpeningCard(player, (card) => isNumericDiamond(card));
+      while (player.hand.length < MAX_HAND_SIZE && state.deck.length) drawCard(player, false);
+    }
+
+    function seedDemoGame() {
+      window.clearTimeout(rivalTimer);
+      Object.assign(state, {
+        gameStarted: true,
+        deck: createDeck(),
+        discard: [],
+        removed: [],
+        currentPlayer: 0,
+        internalTurn: 1,
+        phase: "Montaje",
+        selected: [],
+        attackMode: false,
+        projectileMode: false,
+        projectileUnlocked: false,
+        tutorial: false,
+        pendingDefense: null,
+        pendingBuildOps: 0,
+        winner: null,
+        handOffset: 0,
+        log: [],
+        players: [createPlayer("Jugador 1"), createPlayer("Rival")]
+      });
+
+      const p1 = state.players[0];
+      const p2 = state.players[1];
+
+      dealOpeningHand(p1, "spades");
+      dealOpeningHand(p2, "hearts");
+
+      log("Nueva partida real iniciada: mazo, manos, montaje, ataque y defensa activos.");
+      toast("Nueva partida lista");
+      render();
+    }
+
+    function markZone(card, zone) {
+      card.zone = zone;
+      return card;
+    }
+
+    function cardText(card) {
+      return `${card.rank}${SUIT_LABELS[card.suit]}`;
+    }
+
+    function cardAsset(card) {
+      return `${CARD_ASSET_ROOT}${RANK_FILE[card.rank]}_of_${card.suit}.svg`;
+    }
+
+    function isFigure(card) {
+      return ["J", "Q", "K"].includes(card.rank);
+    }
+
+    function isAce(card) {
+      return card.rank === "A";
+    }
+
+    function isNumeric(card) {
+      return !isFigure(card) && !isAce(card);
+    }
+
+    function isNumericDiamond(card) {
+      return card && card.suit === "diamonds" && isNumeric(card);
+    }
+
+    function isPlayableAttack(card) {
+      return card && card.suit === "spades" && isNumeric(card);
+    }
+
+    function sum(cards) {
+      return cards.reduce((total, card) => total + card.value, 0);
+    }
+
+    function getStats(player) {
+      const attack = sum(player.attack);
+      const defense = sum(player.defense);
+      const armor = sum(player.armor);
+      const vital = defense + armor;
+      const max = Math.max(vital, player.flags.vitalMax || 1, 1);
+      player.flags.vitalMax = max;
+      return { attack, defense, armor, vital, max };
+    }
+
+    function coreCount(player) {
+      return [player.core.pilot, player.core.copilot, player.core.booster].filter(Boolean).length;
+    }
+
+    function moduleLimit(player, module) {
+      let limit = 2;
+      if (player.core.pilot && SUIT_TO_MODULE[player.core.pilot.suit] === module) limit = Math.max(limit, 3);
+      if (player.core.copilot && player.core.copilot.suit !== "diamonds" && SUIT_TO_MODULE[player.core.copilot.suit] === module) limit = Math.max(limit, 3);
+      if (player.core.booster && player.core.booster.suit !== "diamonds" && SUIT_TO_MODULE[player.core.booster.suit] === module) limit = Math.max(limit, 4);
+      return limit;
+    }
+
+    function playerCanAttack(player) {
+      if (!player.core.pilot || player.core.pilot.suit === "diamonds") return false;
+      const statsCards = [...player.attack, ...player.defense, ...player.armor];
+      const pilotSuitCount = statsCards.filter((card) => card.suit === player.core.pilot.suit).length;
+      return statsCards.length >= 3 && player.attack.length > 0 && player.defense.length > 0 && player.armor.length > 0 && pilotSuitCount >= 1;
+    }
+
+    function log(text) {
+      state.log.unshift(text);
+      state.log = state.log.slice(0, 60);
+    }
+
+    function toast(text) {
+      window.clearTimeout(toastTimer);
+      toastNode.textContent = text;
+      toastNode.classList.add("show");
+      toastTimer = window.setTimeout(() => toastNode.classList.remove("show"), 1800);
+    }
+
+    function prefersReducedMotion() {
+      try {
+        return !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      } catch (_error) {
+        return false;
+      }
+    }
+
+    function fighterNode(index) {
+      return document.querySelector(index === 0 ? ".fighter-blue" : ".fighter-red");
+    }
+
+    function mechaNode(index) {
+      return document.querySelector(`[data-mecha-img="${index}"]`);
+    }
+
+    function pulseClass(node, className, duration = 800) {
+      if (!node) return;
+      node.classList.remove(className);
+      void node.offsetWidth;
+      node.classList.add(className);
+      window.setTimeout(() => node.classList.remove(className), duration);
+    }
+
+    function spawnSparksFromElement(element, tone = "amber", count = 18) {
+      if (!fxLayer || !element || prefersReducedMotion()) return;
+      const rect = element.getBoundingClientRect();
+      const host = shell.getBoundingClientRect();
+      const x = rect.left + rect.width / 2 - host.left;
+      const y = rect.top + rect.height / 2 - host.top;
+      const palette = {
+        amber: "#fff1a8",
+        green: "#85ffad",
+        cyan: "#77f3ff",
+        red: "#ff7a58"
+      };
+      for (let i = 0; i < count; i += 1) {
+        const spark = document.createElement("span");
+        spark.className = "fx-spark";
+        const angle = (Math.PI * 2 * i / count) + (Math.random() * .45);
+        const distance = 28 + Math.random() * 54;
+        spark.style.setProperty("--x", `${x}px`);
+        spark.style.setProperty("--y", `${y}px`);
+        spark.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+        spark.style.setProperty("--dy", `${Math.sin(angle) * distance}px`);
+        spark.style.setProperty("--size", `${4 + Math.random() * 5}px`);
+        spark.style.setProperty("--dur", `${.48 + Math.random() * .34}s`);
+        spark.style.setProperty("--spark-color", palette[tone] || palette.amber);
+        fxLayer.appendChild(spark);
+        spark.addEventListener("animationend", () => spark.remove(), { once: true });
+      }
+    }
+
+    function showDamagePop(value, defenderIndex = 1, label = "") {
+      if (!fxLayer || prefersReducedMotion()) return;
+      const target = mechaNode(defenderIndex) || fighterNode(defenderIndex);
+      if (!target) return;
+      const rect = target.getBoundingClientRect();
+      const host = shell.getBoundingClientRect();
+      const pop = document.createElement("div");
+      pop.className = "damage-pop";
+      pop.textContent = label || `-${value}`;
+      pop.style.left = `${rect.left + rect.width * .56 - host.left}px`;
+      pop.style.top = `${rect.top + rect.height * .28 - host.top}px`;
+      fxLayer.appendChild(pop);
+      pop.addEventListener("animationend", () => pop.remove(), { once: true });
+    }
+
+    function positionAttackSpecialPopup(attackerIndex) {
+      if (!attackSpecialOverlay) return;
+      const target = mechaNode(attackerIndex) || fighterNode(attackerIndex);
+      const host = shell.getBoundingClientRect();
+      let left = host.width / 2;
+      let top = host.height * .34;
+      if (target) {
+        const rect = target.getBoundingClientRect();
+        left = rect.left + rect.width * (attackerIndex === 0 ? .62 : .38) - host.left;
+        top = rect.top + rect.height * .34 - host.top;
+      }
+      left = Math.max(100, Math.min(left, host.width - 100));
+      top = Math.max(110, Math.min(top, host.height - 230));
+      attackSpecialOverlay.style.left = `${left}px`;
+      attackSpecialOverlay.style.top = `${top}px`;
+    }
+
+    function hideAttackSpecialPopup() {
+      window.clearTimeout(attackVideoTimer);
+      attackVideoTimer = null;
+      attackSpecialOverlay?.classList.remove("show");
+      attackSpecialOverlay?.setAttribute("aria-hidden", "true");
+      if (attackSpecialVideo) {
+        attackSpecialVideo.pause();
+        try { attackSpecialVideo.currentTime = 0; } catch (_error) {}
+      }
+    }
+
+    function playAttackSpecialVideo() {
+      if (!attackSpecialVideo) return;
+      attackSpecialVideo.muted = true;
+      attackSpecialVideo.defaultMuted = true;
+      attackSpecialVideo.playsInline = true;
+      attackSpecialVideo.setAttribute("muted", "");
+      attackSpecialVideo.setAttribute("playsinline", "");
+      try {
+        if (attackSpecialVideo.readyState < 2) attackSpecialVideo.load();
+      } catch (_error) {}
+      const playAttempt = attackSpecialVideo.play();
+      if (playAttempt && typeof playAttempt.catch === "function") playAttempt.catch(() => {});
+    }
+
+    function showAttackSpecialPopup(attackerIndex = 0, onFinish) {
+      if (prefersReducedMotion() || !attackSpecialOverlay || !attackSpecialVideo) {
+        onFinish?.();
+        return;
+      }
+      hideAttackSpecialPopup();
+      positionAttackSpecialPopup(attackerIndex);
+      attackSpecialOverlay.classList.add("show");
+      attackSpecialOverlay.setAttribute("aria-hidden", "false");
+      spawnSparksFromElement(fighterNode(attackerIndex), "amber", 24);
+      playAttackSpecialVideo();
+      attackVideoTimer = window.setTimeout(() => {
+        hideAttackSpecialPopup();
+        onFinish?.();
+      }, 2300);
+    }
+
+    function isCompleteAttackMecha(player) {
+      const image = getMechaPhaseImage(player);
+      return image === MECHA_IMAGES.completo || image === MECHA_IMAGES.piloto_completo;
+    }
+
+    function runCompactAttackFx({ attackerIndex = 0, damage = 0, projectile = false } = {}) {
+      const defenderIndex = attackerIndex === 0 ? 1 : 0;
+      const attacker = fighterNode(attackerIndex);
+      const defender = fighterNode(defenderIndex);
+      if (!attackLayer || !attackLabel) return;
+      window.clearTimeout(attackFxTimer);
+      attackLabel.textContent = projectile ? "Proyectil" : "Ataque";
+      attackLayer.classList.remove("active", "from-left", "from-right", "with-projectile");
+      void attackLayer.offsetWidth;
+      attackLayer.classList.add("active", attackerIndex === 0 ? "from-left" : "from-right");
+      if (projectile) attackLayer.classList.add("with-projectile");
+      pulseClass(attacker, "attack-launch", 820);
+      spawnSparksFromElement(attacker, projectile ? "cyan" : "amber", projectile ? 20 : 14);
+      window.setTimeout(() => {
+        pulseClass(defender, "attack-hit", 780);
+        shell.classList.add("screen-shake");
+        showDamagePop(damage, defenderIndex, damage ? `ATQ ${damage}` : "ATQ");
+        spawnSparksFromElement(defender, projectile ? "cyan" : "red", projectile ? 22 : 28);
+      }, projectile ? 240 : 320);
+      attackFxTimer = window.setTimeout(() => {
+        attackLayer.classList.remove("active", "from-left", "from-right", "with-projectile");
+        shell.classList.remove("screen-shake");
+      }, 1120);
+    }
+
+    function playAttackFx({ attackerIndex = 0, damage = 0, projectile = false, full = false } = {}) {
+      if (full) {
+        let played = false;
+        const playBoard = () => {
+          if (played) return;
+          played = true;
+          runCompactAttackFx({ attackerIndex, damage, projectile });
+        };
+        showAttackSpecialPopup(attackerIndex, () => window.setTimeout(playBoard, 100));
+        window.setTimeout(playBoard, 2500);
+        return;
+      }
+      runCompactAttackFx({ attackerIndex, damage, projectile });
+    }
+
+    function animateModification(zone) {
+      const zoneNode = document.querySelector(`[data-zone="${zone}"]`);
+      const statMap = {
+        attack: "[data-p1-attack]",
+        defense: "[data-p1-defense]",
+        armor: "[data-p1-armor]"
+      };
+      zoneNode?.classList.remove("zone-modified");
+      if (zoneNode) {
+        void zoneNode.offsetWidth;
+        zoneNode.classList.add("zone-modified");
+        window.setTimeout(() => zoneNode.classList.remove("zone-modified"), 900);
+      }
+      const statNode = statMap[zone] ? document.querySelector(statMap[zone])?.closest("p") : null;
+      statNode?.classList.remove("stat-pulse");
+      if (statNode) {
+        void statNode.offsetWidth;
+        statNode.classList.add("stat-pulse");
+        window.setTimeout(() => statNode.classList.remove("stat-pulse"), 650);
+      }
+      spawnSparksFromElement(zoneNode || mechaNode(0), zone === "fuel" ? "amber" : "green", 18);
+    }
+
+    function getAttackReadiness() {
+      const player = state.players[0];
+      if (!player || state.currentPlayer !== 0 || state.pendingDefense || state.winner || !state.attackMode) {
+        return { ready: false, full: false, key: "" };
+      }
+      const selection = getAttackSelection(player);
+      const ready = !!selection.fuelCards.length
+        && (selection.mainValue > 0 || selection.projectileValue > 0)
+        && selection.mainValue <= selection.limit;
+      const key = ready ? state.selected.slice().sort().join("|") : "";
+      return { ready, full: ready && isCompleteAttackMecha(player), key };
+    }
+
+    function syncAttackReadiness() {
+      const readiness = getAttackReadiness();
+      shell.classList.toggle("attack-selection-ready", readiness.ready);
+      if (!readiness.ready) {
+        attackReadyCueKey = "";
+        return;
+      }
+      if (readiness.full && readiness.key && attackReadyCueKey !== readiness.key) {
+        attackReadyCueKey = readiness.key;
+        showAttackSpecialPopup(0);
+      }
+    }
+
+    function drawCard(player, announce = true) {
+      if (!state.deck.length) state.deck = createDeck();
+      const card = state.deck.pop();
+      if (!card) return null;
+      card.zone = "hand";
+      if (player.hand.length >= MAX_HAND_SIZE) {
+        state.discard.push(card);
+        if (announce) log(`${player.name} roba ${cardText(card)}, pero la mano esta llena y va al descarte.`);
+      } else {
+        player.hand.push(card);
+        if (announce) log(`${player.name} roba ${cardText(card)}.`);
+      }
+      return card;
+    }
+
+    function findCard(cardId) {
+      for (const [playerIndex, player] of state.players.entries()) {
+        for (const zone of ["hand", "attack", "defense", "armor", "fuel"]) {
+          const card = player[zone].find((item) => item.id === cardId);
+          if (card) return { card, player, playerIndex, zone };
+        }
+        for (const slot of ["pilot", "copilot", "booster"]) {
+          const card = player.core[slot];
+          if (card && card.id === cardId) return { card, player, playerIndex, zone: slot };
+        }
+      }
+      return null;
+    }
+
+    function removeCard(player, zone, id) {
+      if (zone in player.core) {
+        const card = player.core[zone];
+        if (card && card.id === id) {
+          player.core[zone] = null;
+          return card;
+        }
+        return null;
+      }
+      const list = player[zone];
+      const index = list.findIndex((card) => card.id === id);
+      if (index < 0) return null;
+      return list.splice(index, 1)[0];
+    }
+
+    function validatePlacement(player, card, zone) {
+      if (zone === "pilot") {
+        if (!isFigure(card) || card.suit === "diamonds") return "El piloto debe ser J, Q o K y no puede ser ♦.";
+        if (player.core.pilot) return "El piloto ya esta ocupado.";
+        return "";
+      }
+      if (zone === "copilot") {
+        if (!isFigure(card)) return "El copiloto debe ser J, Q o K.";
+        if (player.core.copilot) return "El copiloto ya esta ocupado.";
+        return "";
+      }
+      if (zone === "booster") {
+        if (!isAce(card)) return "El potenciador debe ser un As.";
+        if (player.core.booster) return "El As ya esta ocupado.";
+        return "";
+      }
+      if (zone === "fuel") {
+        if (!isNumericDiamond(card)) return "Fuel solo acepta diamantes numericos.";
+        return "";
+      }
+      if (MODULES.includes(zone)) {
+        if (!isNumeric(card) || SUIT_TO_MODULE[card.suit] !== zone) return `${MODULE_LABELS[zone]} no acepta ${cardText(card)}.`;
+        if (player[zone].length >= moduleLimit(player, zone)) return `${MODULE_LABELS[zone]} esta lleno.`;
+        return "";
+      }
+      return "Zona no valida.";
+    }
+
+    function legalZonesForCard(player, card) {
+      return ["pilot", "copilot", "booster", "fuel", "attack", "defense", "armor"]
+        .filter((zone) => !validatePlacement(player, card, zone));
+    }
+
+    function buildOpsLimit() {
+      return state.internalTurn === 1 ? 3 : 2;
+    }
+
+    function buildOpsRemaining() {
+      return Math.max(0, buildOpsLimit() - state.pendingBuildOps);
+    }
+
+    function chooseAutoPlacementZone(player, card) {
+      const zones = legalZonesForCard(player, card);
+      if (!zones.length) return "";
+      const preferred = isFigure(card)
+        ? ["pilot", "copilot"]
+        : isAce(card)
+          ? ["booster"]
+          : card.suit === "diamonds"
+            ? ["fuel"]
+            : [SUIT_TO_MODULE[card.suit]];
+      return preferred.find((zone) => zones.includes(zone)) || zones[0];
+    }
+
+    function selectedHandCardsForPlayer(player) {
+      return state.selected
+        .map((id) => findCard(id))
+        .filter((item) => item && item.player === player && item.zone === "hand");
+    }
+
+    function placeCardDirect(player, card, zone) {
+      removeCard(player, "hand", card.id);
+      markZone(card, zone);
+      if (zone in player.core) player.core[zone] = card;
+      else player[zone].push(card);
+      return true;
+    }
+
+    function rollbackPlacedCards(player, placed) {
+      placed.reverse().forEach(({ card, zone }) => {
+        const removed = removeCard(player, zone, card.id);
+        if (!removed) return;
+        markZone(removed, "hand");
+        player.hand.push(removed);
+      });
+    }
+
+    function modifySelectedCards() {
+      if (state.pendingDefense || state.winner) return false;
+      const player = state.players[0];
+      const handCards = selectedHandCardsForPlayer(player);
+      const selectedCount = state.selected.length;
+      if (!selectedCount) {
+        openBoard("mecha");
+        return true;
+      }
+      const remainingOps = buildOpsRemaining();
+      if (selectedCount > remainingOps) {
+        toast(`Maximo ${buildOpsLimit()} operaciones de modificacion en este turno.`);
+        return false;
+      }
+      if (handCards.length !== selectedCount) {
+        toast("MODIFICAR solo coloca cartas seleccionadas de la mano.");
+        return false;
+      }
+
+      const ordered = [...handCards].sort((a, b) => {
+        const rank = (item) => isFigure(item.card) ? 0 : isAce(item.card) ? 1 : item.card.suit === "diamonds" ? 3 : 2;
+        return rank(a) - rank(b);
+      });
+      const placed = [];
+      for (const { card } of ordered) {
+        const zone = chooseAutoPlacementZone(player, card);
+        if (!zone) {
+          rollbackPlacedCards(player, placed);
+          toast(`No hay hueco legal para ${cardText(card)}.`);
+          state.selected = [];
+          render();
+          return false;
+        }
+        placeCardDirect(player, card, zone);
+        placed.push({ card, zone });
+        flashZone(zone, true);
+      }
+
+      log(`${player.name} modifica el mecha: ${placed.map(({ card, zone }) => `${cardText(card)} a ${MODULE_LABELS[zone]}`).join(", ")}.`);
+      state.selected = [];
+      state.pendingBuildOps = 0;
+      state.attackMode = false;
+      state.projectileMode = false;
+      state.activeTab = "mecha";
+      shell.classList.add("board-open");
+      finishPlayerTurn("modify");
+      placed.forEach(({ zone }, index) => {
+        window.setTimeout(() => animateModification(zone), 80 + index * 120);
+      });
+      return true;
+    }
+
+    function placeCard(cardId, zone) {
+      const found = findCard(cardId);
+      const player = state.players[0];
+      if (!found || found.player !== player || found.zone !== "hand") {
+        toast("Solo puedes montar cartas desde tu mano.");
+        return false;
+      }
+      if (state.pendingBuildOps >= buildOpsLimit()) {
+        toast(`Maximo ${buildOpsLimit()} operaciones de modificacion en este turno.`);
+        return false;
+      }
+      const error = validatePlacement(player, found.card, zone);
+      if (error) {
+        toast(error);
+        flashZone(zone, false);
+        return false;
+      }
+      const card = removeCard(player, "hand", found.card.id);
+      markZone(card, zone);
+      if (zone in player.core) player.core[zone] = card;
+      else player[zone].push(card);
+      state.pendingBuildOps += 1;
+      log(`Montaje: ${cardText(card)} colocado en ${MODULE_LABELS[zone]}.`);
+      render();
+      flashZone(zone, true);
+      animateModification(zone);
+      return true;
+    }
+
+    function flashZone(zone, valid) {
+      const node = document.querySelector(`[data-zone="${zone}"]`);
+      if (!node) return;
+      node.classList.remove("is-active", "is-invalid");
+      node.classList.add(valid ? "is-active" : "is-invalid");
+      window.setTimeout(() => node.classList.remove("is-active", "is-invalid"), 480);
+    }
+
+    function clearDropHints() {
+      document.querySelectorAll(".drop-zone").forEach((node) => {
+        node.classList.remove("is-drop-valid", "is-drop-invalid", "is-drop-hover");
+      });
+    }
+
+    function canHintBuildTargets(found) {
+      return found
+        && found.player === state.players[0]
+        && found.zone === "hand"
+        && state.currentPlayer === 0
+        && state.pendingBuildOps < buildOpsLimit()
+        && !state.pendingDefense
+        && !state.winner;
+    }
+
+    function updateDropHints(cardId) {
+      clearDropHints();
+      const found = findCard(cardId);
+      if (!canHintBuildTargets(found)) return false;
+      state.activeTab = "mecha";
+      shell.classList.add("board-open");
+      renderActions();
+      document.querySelectorAll(".drop-zone").forEach((node) => {
+        if (node.dataset.zone === "reg") return;
+        const isValid = !validatePlacement(state.players[0], found.card, node.dataset.zone);
+        node.classList.toggle("is-drop-valid", isValid);
+        node.classList.toggle("is-drop-invalid", !isValid);
+      });
+      return true;
+    }
+
+    function updateDropHover(zone) {
+      document.querySelectorAll(".drop-zone.is-drop-hover").forEach((node) => {
+        node.classList.remove("is-drop-hover");
+      });
+      if (zone && zone.classList.contains("is-drop-valid")) zone.classList.add("is-drop-hover");
+    }
+
+    function applyBuildChanges() {
+      if (!state.pendingBuildOps) {
+        toast("Arrastra primero una carta al panel.");
+        return;
+      }
+      log(`${state.players[0].name} confirma ${state.pendingBuildOps} cambio(s) de montaje.`);
+      state.pendingBuildOps = 0;
+      state.attackMode = false;
+      state.projectileMode = false;
+      state.selected = [];
+      shell.classList.remove("board-open");
+      finishPlayerTurn("modify");
+    }
+
+    function syncActionFlyouts() {
+      shell.classList.toggle(
+        "attack-confirm-open",
+        shell.classList.contains("actions-open") && state.attackMode && state.currentPlayer === 0 && !state.pendingDefense && !state.winner
+      );
+    }
+
+    function openActions() {
+      shell.classList.toggle("actions-open");
+      document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", shell.classList.contains("actions-open") ? "true" : "false");
+      syncActionFlyouts();
+    }
+
+    function openBoard(tab = "mecha") {
+      state.activeTab = tab;
+      shell.classList.add("board-open");
+      render();
+    }
+
+    function closeBoard() {
+      shell.classList.remove("board-open");
+    }
+
+    function closeActions() {
+      shell.classList.remove("actions-open", "attack-confirm-open");
+      document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleSelected(cardId) {
+      const found = findCard(cardId);
+      if (!found) return;
+      if (state.pendingDefense) {
+        if (found.playerIndex !== state.pendingDefense.defenderIndex || !isNumericDiamond(found.card)) {
+          toast("La defensa solo acepta 1 diamante numerico de la mano.");
+          return;
+        }
+        state.selected = [cardId];
+        render();
+        return;
+      }
+      const currentPlayer = state.players[state.currentPlayer];
+      if (found.player !== currentPlayer) return;
+      if (state.attackMode && !["fuel", "attack", "armor"].includes(found.zone)) {
+        toast("Para atacar selecciona fuel, ataque o armadura con As♦.");
+        return;
+      }
+      if (state.attackMode && found.zone === "armor" && currentPlayer.core.booster?.suit !== "diamonds") {
+        toast("La armadura solo cuenta como fuel con As♦.");
+        return;
+      }
+      if (state.selected.includes(cardId)) state.selected = state.selected.filter((id) => id !== cardId);
+      else state.selected.push(cardId);
+      render();
+    }
+
+    function clearSelection() {
+      state.selected = [];
+      state.attackMode = false;
+      state.projectileMode = false;
+      render();
+    }
+
+    function drawWithDiamond() {
+      const player = state.players[0];
+      const selectedCards = state.selected.map((id) => findCard(id)?.card).filter(Boolean);
+      const card = selectedCards.find((item) => item.zone === "hand" && isNumericDiamond(item));
+      if (!card) {
+        toast("Selecciona 1 diamante numerico de tu mano.");
+        return;
+      }
+      removeCard(player, "hand", card.id);
+      state.discard.push(card);
+      const drawCount = Math.min(card.value, 4);
+      for (let i = 0; i < drawCount; i += 1) drawCard(player);
+      state.selected = [];
+      log(`${player.name} descarta ${cardText(card)} y roba ${drawCount} carta(s).`);
+      finishPlayerTurn("draw");
+    }
+
+    function passTurn() {
+      if (state.pendingDefense) {
+        skipDefense();
+        return;
+      }
+      const player = state.players[0];
+      const selectedHand = state.selected.map((id) => findCard(id)).filter((item) => item && item.player === player && item.zone === "hand");
+      const required = Math.min(2, player.hand.length);
+      if (selectedHand.length !== required) {
+        toast(`Para pasar selecciona ${required} carta(s) de la mano.`);
+        return;
+      }
+      selectedHand.forEach(({ card }) => {
+        removeCard(player, "hand", card.id);
+        state.discard.push(card);
+      });
+      log(`${player.name} pasa y descarta ${required} carta(s).`);
+      finishPlayerTurn("pass");
+    }
+
+    function startAttackMode() {
+      const player = state.players[0];
+      if (!playerCanAttack(player)) {
+        toast("El mecha aun no cumple los requisitos de ataque.");
+        return;
+      }
+      state.attackMode = true;
+      state.projectileMode = false;
+      state.selected = [];
+      openBoard("mecha");
+      toast("Selecciona fuel y cartas de ataque.");
+      render();
+    }
+
+    function toggleProjectileMode() {
+      if (!state.projectileUnlocked) {
+        toast("El proyectil se desbloquea tras el primer ataque.");
+        return;
+      }
+      state.projectileMode = !state.projectileMode;
+      state.attackMode = true;
+      openBoard("mecha");
+      render();
+    }
+
+    function getAttackSelection(player) {
+      const selected = state.selected.map((id) => findCard(id)).filter((item) => item && item.player === player);
+      const fuel = selected.filter((item) => item.zone === "fuel").map((item) => item.card);
+      const armorFuel = player.core.booster?.suit === "diamonds"
+        ? selected.filter((item) => item.zone === "armor").map((item) => item.card)
+        : [];
+      const attackCards = selected.filter((item) => item.zone === "attack" && isPlayableAttack(item.card)).map((item) => item.card);
+      const projectile = state.projectileMode ? attackCards[attackCards.length - 1] : null;
+      const mainAttackCards = projectile ? attackCards.slice(0, -1) : attackCards;
+      const fuelCards = [...fuel, ...armorFuel];
+      return {
+        fuel,
+        armorFuel,
+        fuelCards,
+        fuelValue: sum(fuelCards),
+        limit: sum(fuelCards) * 2,
+        mainAttackCards,
+        mainValue: sum(mainAttackCards),
+        projectile,
+        projectileValue: projectile ? projectile.value : 0
+      };
+    }
+
+    function confirmAttack(projectileOnly = false) {
+      const attacker = state.players[state.currentPlayer];
+      if (state.currentPlayer !== 0) return;
+      if (!state.attackMode && !projectileOnly) {
+        startAttackMode();
+        return;
+      }
+      const selection = getAttackSelection(attacker);
+      let total = 0;
+      let projectile = selection.projectile;
+
+      if (projectileOnly) {
+        const selected = state.selected.map((id) => findCard(id)).filter((item) => item && item.player === attacker && item.zone === "attack" && isPlayableAttack(item.card));
+        if (selected.length !== 1) {
+          toast("Selecciona 1 carta de picas para proyectil.");
+          return;
+        }
+        projectile = selected[0].card;
+        total = projectile.value;
+      } else {
+        if (!selection.fuelCards.length) {
+          toast("Selecciona fuel. Con As♦ tambien vale armadura.");
+          return;
+        }
+        if (!selection.mainValue && !projectile) {
+          toast("Selecciona al menos una carta de ataque.");
+          return;
+        }
+        if (selection.mainValue > selection.limit) {
+          toast(`Ataque ${selection.mainValue}, fuel solo permite ${selection.limit}.`);
+          return;
+        }
+        total = selection.mainValue + selection.projectileValue;
+        selection.fuel.forEach((card) => {
+          removeCard(attacker, "fuel", card.id);
+          state.discard.push(card);
+        });
+        selection.armorFuel.forEach((card) => {
+          removeCard(attacker, "armor", card.id);
+          state.discard.push(card);
+        });
+      }
+
+      if (projectile) {
+        removeCard(attacker, "attack", projectile.id);
+        state.discard.push(projectile);
+      }
+
+      if (!state.projectileUnlocked) state.projectileUnlocked = true;
+      state.attackMode = false;
+      state.projectileMode = false;
+      state.selected = [];
+      log(`${attacker.name} declara ataque de ${total} punto(s).`);
+      shell.classList.add("attack-flash");
+      window.setTimeout(() => shell.classList.remove("attack-flash"), 600);
+      playAttackFx({
+        attackerIndex: state.currentPlayer,
+        damage: total,
+        projectile: !!projectile,
+        full: !projectileOnly && isCompleteAttackMecha(attacker)
+      });
+      beginDefenseWindow(total, !!projectile);
+    }
+
+    function beginDefenseWindow(totalAttack, withProjectile) {
+      const defenderIndex = 1 - state.currentPlayer;
+      const defender = state.players[defenderIndex];
+      const diamonds = defender.hand.filter(isNumericDiamond);
+      state.pendingDefense = {
+        attackerIndex: state.currentPlayer,
+        defenderIndex,
+        totalAttack,
+        withProjectile
+      };
+      state.phase = "Defensa activa";
+      shell.classList.remove("board-open");
+      if (!diamonds.length) {
+        log(`${defender.name} no tiene diamantes para defenderse.`);
+        resolveAttackAfterDefense(0);
+        return;
+      } else {
+        log(`${defender.name} puede defenderse con 1 diamante.`);
+      }
+      render();
+      if (defenderIndex === 1) {
+        rivalTimer = window.setTimeout(cpuResolveDefense, diamonds.length ? 900 : 620);
+      }
+    }
+
+    function cpuResolveDefense() {
+      if (!state.pendingDefense || state.pendingDefense.defenderIndex !== 1) return;
+      const defender = state.players[1];
+      const diamonds = defender.hand.filter(isNumericDiamond).sort((a, b) => a.value - b.value);
+      if (!diamonds.length) {
+        skipDefense();
+        return;
+      }
+      const target = state.pendingDefense.totalAttack;
+      const efficient = diamonds.find((card) => card.value >= Math.min(target, 6)) || diamonds[diamonds.length - 1];
+      state.selected = [efficient.id];
+      log(`CPU prepara ${cardText(efficient)} para defenderse.`);
+      confirmDefense();
+    }
+
+    function confirmDefense() {
+      if (!state.pendingDefense) return;
+      const defender = state.players[state.pendingDefense.defenderIndex];
+      let defenseCard = state.selected.map((id) => findCard(id)).find((item) => item && item.player === defender && item.zone === "hand" && isNumericDiamond(item.card))?.card;
+      if (!defenseCard) defenseCard = defender.hand.find(isNumericDiamond);
+      if (!defenseCard) {
+        skipDefense();
+        return;
+      }
+      removeCard(defender, "hand", defenseCard.id);
+      state.discard.push(defenseCard);
+      log(`${defender.name} usa ${cardText(defenseCard)} y reduce ${defenseCard.value}.`);
+      resolveAttackAfterDefense(defenseCard.value);
+    }
+
+    function skipDefense() {
+      if (!state.pendingDefense) return;
+      log(`${state.players[state.pendingDefense.defenderIndex].name} no se defiende.`);
+      resolveAttackAfterDefense(0);
+    }
+
+    function resolveAttackAfterDefense(reduction) {
+      const pending = state.pendingDefense;
+      if (!pending) return;
+      const total = Math.max(0, pending.totalAttack - reduction);
+      const result = applyAttack(pending.defenderIndex, total);
+      state.pendingDefense = null;
+      state.selected = [];
+      state.phase = "Ataque resuelto";
+      log(result);
+      shell.classList.add("shake");
+      window.setTimeout(() => shell.classList.remove("shake"), 420);
+      if (total > 0) {
+        showDamagePop(total, pending.defenderIndex);
+        spawnSparksFromElement(fighterNode(pending.defenderIndex), "red", total >= 8 ? 30 : 18);
+      }
+      checkWinner();
+      if (state.winner) {
+        render();
+        return;
+      }
+      if (pending.attackerIndex === 0) {
+        finishPlayerTurn("attack");
+      } else {
+        startPlayerTurn();
+      }
+    }
+
+    function applyAttack(defenderIndex, attackPoints) {
+      const defender = state.players[defenderIndex];
+      let remaining = attackPoints;
+      const destroyedArmor = [];
+      const destroyedDefense = [];
+      defender.armor.sort((a, b) => a.value - b.value);
+      defender.defense.sort((a, b) => a.value - b.value);
+      while (defender.armor.length && remaining > 0) {
+        const card = defender.armor[0];
+        if (remaining < card.value) break;
+        remaining -= card.value;
+        destroyedArmor.push(defender.armor.shift());
+      }
+      while (!defender.armor.length && defender.defense.length && remaining > 0) {
+        const card = defender.defense[0];
+        if (remaining < card.value) break;
+        remaining -= card.value;
+        destroyedDefense.push(defender.defense.shift());
+      }
+      destroyedArmor.forEach((card) => state.discard.push(card));
+      destroyedDefense.forEach((card) => state.removed.push(card));
+      return `Impacto ${attackPoints}: armadura x${destroyedArmor.length}, defensa x${destroyedDefense.length}.`;
+    }
+
+    function checkWinner() {
+      state.players.forEach((player, index) => {
+        if (!player.defense.length) state.winner = state.players[1 - index].name;
+      });
+      if (state.winner) {
+        state.phase = "Final";
+        log(`${state.winner} gana la partida.`);
+        toast(`${state.winner} gana`);
+      }
+    }
+
+    function finishPlayerTurn(reason) {
+      state.selected = [];
+      state.attackMode = false;
+      state.projectileMode = false;
+      state.currentPlayer = 1;
+      state.internalTurn += 1;
+      state.phase = "Turno rival";
+      drawCard(state.players[1]);
+      render();
+      rivalTimer = window.setTimeout(simulateRivalTurn, reason === "attack" ? 900 : 650);
+    }
+
+    function startPlayerTurn() {
+      state.currentPlayer = 0;
+      state.internalTurn += 1;
+      state.phase = "Tu turno";
+      drawCard(state.players[0]);
+      render();
+      toast("Tu turno");
+    }
+
+    function simulateRivalTurn() {
+      if (state.winner || state.pendingDefense) return;
+      state.currentPlayer = 1;
+      const rival = state.players[1];
+      const fuel = [...rival.fuel].sort((a, b) => b.value - a.value)[0];
+      const limit = fuel ? fuel.value * 2 : 0;
+      const attack = [...rival.attack].filter(isPlayableAttack).sort((a, b) => b.value - a.value).find((card) => card.value <= limit);
+      if (fuel && attack && playerCanAttack(rival)) {
+        removeCard(rival, "fuel", fuel.id);
+        state.discard.push(fuel);
+        const total = Math.min(attack.value, limit);
+        log(`Rival declara ataque de ${total} punto(s).`);
+        playAttackFx({
+          attackerIndex: 1,
+          damage: total,
+          projectile: false,
+          full: isCompleteAttackMecha(rival)
+        });
+        beginDefenseWindow(total, false);
+        return;
+      }
+
+      const built = cpuBuildBestCards(rival);
+      if (built > 0) {
+        log(`CPU monta ${built} pieza(s) y cede iniciativa.`);
+        startPlayerTurn();
+        return;
+      }
+
+      const diamond = rival.hand.find(isNumericDiamond);
+      if (diamond) {
+        removeCard(rival, "hand", diamond.id);
+        state.discard.push(diamond);
+        const drawCount = Math.min(diamond.value, 4);
+        for (let i = 0; i < drawCount; i += 1) drawCard(rival);
+        log(`CPU usa ${cardText(diamond)} para robar ${drawCount}.`);
+        startPlayerTurn();
+        return;
+      }
+
+      const discardCount = Math.min(2, rival.hand.length);
+      for (let i = 0; i < discardCount; i += 1) {
+        const card = rival.hand.shift();
+        if (card) state.discard.push(card);
+      }
+      log(discardCount ? `CPU descarta ${discardCount} carta(s) y pasa.` : "CPU pasa sin cartas.");
+      startPlayerTurn();
+    }
+
+    function cpuBuildBestCards(player) {
+      const priorities = ["pilot", "copilot", "booster", "fuel", "attack", "defense", "armor"];
+      let built = 0;
+      for (let op = 0; op < 2; op += 1) {
+        let best = null;
+        for (const card of [...player.hand]) {
+          const zones = legalZonesForCard(player, card);
+          if (!zones.length) continue;
+          const zone = priorities.find((item) => zones.includes(item));
+          const score = priorities.indexOf(zone) * 100 - card.value;
+          if (!best || score < best.score) best = { card, zone, score };
+        }
+        if (!best) break;
+        placeCardDirect(player, best.card, best.zone);
+        built += 1;
+      }
+      return built;
+    }
+
+    function handleMenu(action) {
+      if (action === "new") seedDemoGame();
+      if (action === "back") {
+        shell.classList.remove("actions-open", "board-open");
+        state.attackMode = false;
+        state.selected = [];
+        state.phase = "Menu principal";
+        toast("Volver al menu");
+        render();
+      }
+      if (action === "save") {
+        localStorage.setItem(SAVE_KEY, cloneForSave());
+        toast("Partida guardada");
+      }
+      if (action === "load") {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (!raw) {
+          toast("No hay partida guardada");
+          return;
+        }
+        loadFromSave(raw);
+        toast("Partida cargada");
+        render();
+      }
+      if (action === "music") {
+        state.musicOn = !state.musicOn;
+        if (state.musicOn) audio.play().catch(() => toast("Pulsa otra vez para activar audio."));
+        else audio.pause();
+        render();
+      }
+      if (action === "tutorial") {
+        state.tutorial = !state.tutorial;
+        render();
+      }
+      closeActions();
+    }
+
+    function handleAction(action) {
+      if (action === "defend") {
+        if (!state.pendingDefense || state.pendingDefense.defenderIndex !== 0) {
+          toast("No hay defensa activa para ti.");
+          return;
+        }
+        confirmDefense();
+        closeActions();
+        return;
+      }
+      if (action === "skip-defense") {
+        if (!state.pendingDefense || state.pendingDefense.defenderIndex !== 0) {
+          toast("No hay ataque que rechazar.");
+          return;
+        }
+        skipDefense();
+        closeActions();
+        return;
+      }
+      if (state.currentPlayer !== 0 && !state.pendingDefense) {
+        toast("Espera al rival.");
+        return;
+      }
+      if (action === "modify") {
+        modifySelectedCards();
+        closeActions();
+        return;
+      }
+      if (action === "draw") drawWithDiamond();
+      if (action === "attack-mode") {
+        startAttackMode();
+        if (state.attackMode) {
+          shell.classList.add("actions-open");
+          document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", "true");
+          syncActionFlyouts();
+          return;
+        }
+      }
+      if (action === "projectile") toggleProjectileMode();
+      if (action === "confirm") confirmAttack(false);
+      if (action === "pass") passTurn();
+      if (action === "clear") clearSelection();
+      closeActions();
+    }
+
+    function renderBars(container, count, active) {
+      container.innerHTML = "";
+      for (let i = 0; i < count; i += 1) {
+        const b = document.createElement("b");
+        if (i >= active) b.style.opacity = ".25";
+        container.appendChild(b);
+      }
+    }
+
+    function renderStats() {
+      const p1 = state.players[0];
+      const p2 = state.players[1];
+      if (!p1 || !p2) return;
+      const s1 = getStats(p1);
+      const s2 = getStats(p2);
+      document.querySelector("[data-player-name]").textContent = state.currentPlayer === 0 ? "JUGADOR 1" : "EN ESPERA";
+      document.querySelector("[data-fuel-value]").textContent = sum(p1.fuel);
+      document.querySelector("[data-core-value]").textContent = `${coreCount(p1)}/3`;
+      renderBars(document.querySelector("[data-fuel-bars]"), 6, Math.min(6, p1.fuel.length + 1));
+      renderBars(document.querySelector("[data-core-bars]"), 5, coreCount(p1) + 1);
+      setStat("p1", s1);
+      setStat("p2", s2);
+      document.querySelector('[data-menu="music"]').textContent = state.musicOn ? "Música ON" : "Música OFF";
+      document.querySelector('[data-menu="tutorial"]').textContent = state.tutorial ? "Tutorial ON" : "Tutorial OFF";
+      document.querySelector('[data-menu="music"]').classList.toggle("on", state.musicOn);
+      document.querySelector('[data-menu="tutorial"]').classList.toggle("on", state.tutorial);
+    }
+
+    function setStat(prefix, stats) {
+      document.querySelector(`[data-${prefix}-attack]`).textContent = stats.attack;
+      document.querySelector(`[data-${prefix}-defense]`).textContent = stats.defense;
+      document.querySelector(`[data-${prefix}-armor]`).textContent = stats.armor;
+      document.querySelector(`[data-${prefix}-attack-bar]`).style.setProperty("--w", `${Math.min(100, stats.attack * 8)}%`);
+      document.querySelector(`[data-${prefix}-defense-bar]`).style.setProperty("--w", `${Math.min(100, stats.defense * 8)}%`);
+      document.querySelector(`[data-${prefix}-armor-bar]`).style.setProperty("--w", `${Math.min(100, stats.armor * 8)}%`);
+    }
+
+    function getMechaPhaseImage(player) {
+      if (!player || !player.core) return MECHA_IMAGES.base;
+      const hasPilot = !!player.core.pilot;
+      const hasCopilot = !!player.core.copilot;
+      const hasBooster = !!player.core.booster;
+      const hasAttack = player.attack?.length > 0;
+      const hasDefense = player.defense?.length > 0;
+      const hasArmor = player.armor?.length > 0;
+      const hasFuel = player.fuel?.length > 0;
+      const moduleCount = [hasBooster, hasAttack, hasDefense, hasArmor, hasFuel].filter(Boolean).length;
+      const full = moduleCount >= 4 || (hasBooster && moduleCount >= 2);
+      if (full && hasCopilot) return MECHA_IMAGES.completo;
+      if (full && hasPilot) return MECHA_IMAGES.piloto_completo;
+      if (full) return MECHA_IMAGES.base_booster;
+      if (hasCopilot && hasBooster) return MECHA_IMAGES.booster;
+      if (hasCopilot && hasFuel) return MECHA_IMAGES.combustible;
+      if (hasCopilot && hasArmor) return MECHA_IMAGES.armadura;
+      if (hasCopilot && hasDefense) return MECHA_IMAGES.defensa;
+      if (hasCopilot && hasAttack) return MECHA_IMAGES.ataque;
+      if (hasCopilot) return MECHA_IMAGES.copiloto;
+      if (hasPilot && hasBooster) return MECHA_IMAGES.piloto_booster;
+      if (hasPilot && hasFuel) return MECHA_IMAGES.piloto_combustible;
+      if (hasPilot && hasArmor) return MECHA_IMAGES.piloto_armadura;
+      if (hasPilot && hasDefense) return MECHA_IMAGES.piloto_defensa;
+      if (hasPilot && hasAttack) return MECHA_IMAGES.piloto_ataque;
+      if (hasPilot) return MECHA_IMAGES.piloto;
+      if (hasBooster) return MECHA_IMAGES.base_booster;
+      if (hasFuel) return MECHA_IMAGES.base_combustible;
+      if (hasArmor) return MECHA_IMAGES.base_armadura;
+      if (hasDefense) return MECHA_IMAGES.base_defensa;
+      if (hasAttack) return MECHA_IMAGES.base_ataque;
+      return MECHA_IMAGES.base;
+    }
+
+    function renderMechaBuild(player, index) {
+      const node = document.querySelector(`[data-mecha-img="${index}"]`);
+      if (!node || !player) return;
+      const nextSrc = getMechaPhaseImage(player);
+      const fighter = node.closest(".fighter");
+      if (node.getAttribute("src") !== nextSrc) {
+        node.setAttribute("src", nextSrc);
+        node.classList.remove("is-evolving");
+        void node.offsetWidth;
+        node.classList.add("is-evolving");
+        spawnSparksFromElement(node, index === 0 ? "cyan" : "red", 12);
+      }
+      const ready = playerCanAttack(player);
+      node.classList.toggle("ready", ready);
+      fighter?.classList.toggle("is-ready", ready);
+      fighter?.classList.toggle("is-complete", isCompleteAttackMecha(player));
+    }
+
+    function renderMechas() {
+      state.players.forEach((player, index) => renderMechaBuild(player, index));
+    }
+
+    function makeCardNode(card, context) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "card";
+      button.draggable = context === "hand";
+      button.title = cardText(card);
+      if (context === "readonly") {
+        button.disabled = true;
+        button.classList.add("is-readonly");
+      } else {
+        button.dataset.cardId = card.id;
+        if (state.selected.includes(card.id)) button.classList.add("is-selected");
+      }
+      const img = document.createElement("img");
+      img.src = cardAsset(card);
+      img.alt = cardText(card);
+      button.appendChild(img);
+      return button;
+    }
+
+    function normalizeHandOffset() {
+      const handLength = state.players[0]?.hand?.length || 0;
+      if (!handLength) {
+        state.handOffset = 0;
+        return 0;
+      }
+      state.handOffset = ((state.handOffset % handLength) + handLength) % handLength;
+      return state.handOffset;
+    }
+
+    function orderedHandCards(player) {
+      const hand = player?.hand || [];
+      const offset = normalizeHandOffset();
+      if (!offset) return hand;
+      return hand.slice(offset).concat(hand.slice(0, offset));
+    }
+
+    function shiftHand(direction) {
+      const player = state.players[0];
+      if (!player || player.hand.length <= 1) return;
+      state.handOffset += direction;
+      normalizeHandOffset();
+      const tray = document.querySelector("[data-hand-cards]");
+      tray.classList.remove("is-shifting-left", "is-shifting-right");
+      void tray.offsetWidth;
+      tray.classList.add(direction > 0 ? "is-shifting-left" : "is-shifting-right");
+      window.clearTimeout(handShiftTimer);
+      handShiftTimer = window.setTimeout(() => {
+        tray.classList.remove("is-shifting-left", "is-shifting-right");
+      }, 220);
+      renderHand();
+    }
+
+    function renderHand() {
+      const player = state.players[0];
+      const tray = document.querySelector("[data-hand-cards]");
+      tray.innerHTML = "";
+      orderedHandCards(player).forEach((card) => tray.appendChild(makeCardNode(card, "hand")));
+      document.querySelector("[data-hand-count]").textContent = `${player.hand.length}/${MAX_HAND_SIZE}`;
+      document.querySelectorAll("[data-hand-shift]").forEach((button) => {
+        button.disabled = player.hand.length <= 1;
+      });
+    }
+
+    function fillZoneCards(container, cards, emptyText = "Arrastra aqui", context = "zone") {
+      container.innerHTML = "";
+      if (cards.length) {
+        cards.forEach((card) => container.appendChild(makeCardNode(card, context)));
+      } else {
+        container.innerHTML = `<div class="empty-zone">${emptyText}</div>`;
+      }
+    }
+
+    function makeDropZone(zone, title, cards, meta, className = "") {
+      const node = document.createElement("article");
+      node.className = `drop-zone ${className}`.trim();
+      node.dataset.zone = zone;
+      node.innerHTML = `<header class="zone-title"><span>${title}</span><b>${meta}</b></header><div class="zone-cards"></div>`;
+      fillZoneCards(node.querySelector(".zone-cards"), cards);
+      return node;
+    }
+
+    function makePanelZone(title, cards, meta, className = "", emptyText = "Sin cartas") {
+      const node = document.createElement("article");
+      node.className = `panel-zone ${className}`.trim();
+      node.innerHTML = `<header class="zone-title"><span>${title}</span><b>${meta}</b></header><div class="zone-cards"></div>`;
+      fillZoneCards(node.querySelector(".zone-cards"), cards, emptyText, "readonly");
+      return node;
+    }
+
+    function makeCoreSlot(zone, title, card, meta, readonly = false) {
+      const node = document.createElement("section");
+      node.className = readonly ? "core-slot panel-zone" : "core-slot drop-zone";
+      if (!readonly) node.dataset.zone = zone;
+      node.innerHTML = `<header class="zone-title"><span>${title}</span><b>${meta}</b></header><div class="zone-cards"></div>`;
+      fillZoneCards(node.querySelector(".zone-cards"), card ? [card] : [], "Vacio", readonly ? "readonly" : "zone");
+      return node;
+    }
+
+    function renderBoard() {
+      const isRivalView = state.activeTab === "rival" && !state.attackMode;
+      const player = isRivalView ? state.players[1] : state.players[0];
+      const grid = document.querySelector("[data-zone-grid]");
+      shell.classList.toggle("rival-view", isRivalView);
+      grid.classList.toggle("is-rival", isRivalView);
+      grid.innerHTML = "";
+
+      const core = document.createElement("article");
+      core.className = "panel-zone core-panel";
+      core.innerHTML = '<header class="zone-title"><span>Nucleo</span><b>Piloto / Copiloto / Boost</b></header><div class="core-slots"></div>';
+      const coreSlots = core.querySelector(".core-slots");
+      coreSlots.append(
+        makeCoreSlot("pilot", "Piloto", player.core.pilot, "J/Q/K", isRivalView),
+        makeCoreSlot("copilot", "Copiloto", player.core.copilot, "J/Q/K", isRivalView),
+        makeCoreSlot("booster", "Boost", player.core.booster, "A", isRivalView)
+      );
+
+      const attackZone = isRivalView
+        ? makePanelZone("Ataque rival (Picas)", player.attack, `${player.attack.length}/${moduleLimit(player, "attack")} max`, "zone-attack")
+        : makeDropZone("attack", "Ataque (Picas)", player.attack, `${player.attack.length}/${moduleLimit(player, "attack")} max`, "zone-attack");
+      const defenseZone = isRivalView
+        ? makePanelZone("Defensa rival (Corazones)", player.defense, `${player.defense.length}/${moduleLimit(player, "defense")} max`, "zone-defense")
+        : makeDropZone("defense", "Defensa (Corazones)", player.defense, `${player.defense.length}/${moduleLimit(player, "defense")} max`, "zone-defense");
+      const armorZone = isRivalView
+        ? makePanelZone("Armadura rival (Treboles)", player.armor, `${player.armor.length}/${moduleLimit(player, "armor")} max`, "zone-armor")
+        : makeDropZone("armor", "Armadura (Treboles)", player.armor, `${player.armor.length}/${moduleLimit(player, "armor")} max`, "zone-armor");
+      const fuelZone = isRivalView
+        ? makePanelZone("Combustible rival (Fuel)", player.fuel, "sin limite", "zone-fuel")
+        : makeDropZone("fuel", "Combustible (Fuel)", player.fuel, "sin limite", "zone-fuel");
+
+      const reg = document.createElement("article");
+      reg.className = "panel-zone zone-reg";
+      reg.innerHTML = `<header class="zone-title"><span>REG</span><b>${state.log.length}</b></header><div class="zone-cards"><div class="empty-zone">${state.log.slice(0, 6).join("<br>") || "Sin eventos"}</div></div>`;
+
+      grid.append(core, attackZone, defenseZone, armorZone);
+      if (!isRivalView) grid.append(reg);
+      grid.append(fuelZone);
+
+      const title = document.querySelector("[data-drawer-title]");
+      const subtitle = document.querySelector("[data-drawer-subtitle]");
+      if (state.attackMode) {
+        title.textContent = state.projectileMode ? "Ataque con proyectil" : "Seleccion de ataque";
+        subtitle.textContent = "Toca fuel y picas. El ataque principal no puede superar fuel x2.";
+      } else if (isRivalView) {
+        title.textContent = "Panel del rival";
+        subtitle.textContent = "Cartas visibles del rival. La mano permanece oculta.";
+      } else {
+        title.textContent = "Paneles de montaje";
+        subtitle.textContent = `Operaciones: ${state.pendingBuildOps}/${buildOpsLimit()}. Arrastra cartas de la mano al destino.`;
+      }
+    }
+
+    function renderMessages() {
+      const tutorial = document.querySelector("[data-tutorial-message]");
+      const tutorialText = document.querySelector("[data-tutorial-text]");
+      tutorial.classList.toggle("show", state.tutorial);
+      if (state.pendingDefense) {
+        const defender = state.players[state.pendingDefense.defenderIndex];
+        const diamonds = defender.hand.filter(isNumericDiamond);
+        tutorialText.textContent = "Usa Acciones para jugar. MECHA abre tu montaje y RIVAL muestra sus cartas visibles.";
+        const alert = document.querySelector("[data-alert-message]");
+        document.querySelector("[data-alert-title]").textContent = state.pendingDefense.defenderIndex === 0 ? "Ataque enemigo previsto" : "Ventana de defensa rival";
+        document.querySelector("[data-alert-text]").textContent = state.pendingDefense.defenderIndex === 0
+          ? (diamonds.length
+            ? `${defender.name} puede reducir ${state.pendingDefense.totalAttack} punto(s) usando 1♦ numerico.`
+            : `${defender.name} no tiene 1♦ numerico disponible.`)
+          : (diamonds.length
+            ? `CPU evalua defensa contra ${state.pendingDefense.totalAttack} punto(s).`
+            : "CPU no tiene diamantes numericos y recibira el ataque.");
+        const actions = document.querySelector("[data-alert-actions]");
+        actions.innerHTML = "";
+        if (state.pendingDefense.defenderIndex === 0 && diamonds.length) {
+          const defend = document.createElement("button");
+          defend.type = "button";
+          defend.textContent = "Defender";
+          defend.dataset.defenseAction = "confirm";
+          const skip = document.createElement("button");
+          skip.type = "button";
+          skip.textContent = "No defender";
+          skip.dataset.defenseAction = "skip";
+          actions.append(defend, skip);
+        }
+        alert.classList.add("show");
+      } else {
+        document.querySelector("[data-alert-message]").classList.remove("show");
+        if (state.attackMode) tutorialText.textContent = "Modo ataque: selecciona fuel y picas en el panel. Confirmar calcula defensa y armadura.";
+        else if (state.phase === "Turno rival") tutorialText.textContent = "El rival actua en el panel central. Si ataca, la alerta aparece aqui debajo.";
+        else tutorialText.textContent = "Arrastra cartas al panel de montaje. El boton amarillo Acciones abre todas las jugadas.";
+      }
+    }
+
+    function renderActions() {
+      document.querySelectorAll(".tab-sprite").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.tab === state.activeTab);
+      });
+      document.querySelector("[data-board-toggle]").classList.toggle("is-active", shell.classList.contains("board-open"));
+      document.querySelector('[data-action="attack-mode"]').classList.toggle("is-active", state.attackMode);
+      document.querySelector('[data-action="projectile"]').classList.toggle("is-active", state.projectileMode);
+      document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", shell.classList.contains("actions-open") ? "true" : "false");
+      syncActionFlyouts();
+      const playerTurn = state.currentPlayer === 0 && !state.pendingDefense && !state.winner;
+      const defenseTurn = !!state.pendingDefense && state.pendingDefense.defenderIndex === 0;
+      const player = state.players[0];
+      const attackReady = playerTurn && player && playerCanAttack(player);
+      const actionStates = {
+        modify: playerTurn,
+        draw: playerTurn,
+        "attack-mode": attackReady,
+        projectile: playerTurn && state.attackMode && state.projectileUnlocked,
+        confirm: (playerTurn && state.attackMode) || defenseTurn,
+        pass: playerTurn || defenseTurn,
+        defend: defenseTurn,
+        "skip-defense": defenseTurn,
+        clear: playerTurn || defenseTurn
+      };
+      Object.entries(actionStates).forEach(([action, enabled]) => {
+        document.querySelectorAll(`[data-action="${action}"]`).forEach((button) => {
+          button.disabled = !enabled;
+        });
+      });
+      syncAttackReadiness();
+    }
+
+    function render() {
+      renderStats();
+      renderMechas();
+      renderHand();
+      renderBoard();
+      renderMessages();
+      renderActions();
+    }
+
+    function clearPressedButtons() {
+      document.querySelectorAll("button.is-pressing").forEach((button) => button.classList.remove("is-pressing"));
+    }
+
+    document.addEventListener("pointerdown", (event) => {
+      const button = event.target.closest("button");
+      if (!button || button.disabled) return;
+      button.classList.add("is-pressing");
+    }, { passive: true });
+
+    document.addEventListener("pointerup", clearPressedButtons, { passive: true });
+    document.addEventListener("pointercancel", clearPressedButtons, { passive: true });
+    document.addEventListener("pointerleave", (event) => {
+      const button = event.target.closest?.("button");
+      if (button) button.classList.remove("is-pressing");
+    }, true);
+    document.addEventListener("blur", clearPressedButtons, true);
+
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      const zone = event.target.closest(".drop-zone");
+      if (!button && zone && zone.dataset.zone !== "reg") {
+        const selectedHand = state.selected.map((id) => findCard(id)).find((item) => item && item.player === state.players[0] && item.zone === "hand");
+        if (selectedHand) placeCard(selectedHand.card.id, zone.dataset.zone);
+        return;
+      }
+      if (!button) {
+        if (!event.target.closest(".action-hub")) closeActions();
+        return;
+      }
+      if (button.dataset.handShift) {
+        shiftHand(Number(button.dataset.handShift));
+        return;
+      }
+      if (button.dataset.menu) handleMenu(button.dataset.menu);
+      if (button.dataset.actionToggle !== undefined) openActions();
+      if (button.dataset.boardToggle !== undefined) {
+        shell.classList.toggle("board-open");
+        state.activeTab = state.activeTab === "rival" ? "rival" : "mecha";
+        render();
+      }
+      if (button.dataset.boardClose !== undefined) closeBoard();
+      if (button.dataset.applyBuild !== undefined) applyBuildChanges();
+      if (button.dataset.tab) openBoard(button.dataset.tab);
+      if (button.dataset.action) handleAction(button.dataset.action);
+      if (button.dataset.cardId) toggleSelected(button.dataset.cardId);
+      if (button.dataset.defenseAction === "confirm") confirmDefense();
+      if (button.dataset.defenseAction === "skip") skipDefense();
+    });
+
+    document.addEventListener("dragstart", (event) => {
+      const card = event.target.closest(".card");
+      if (!card || !card.draggable) return;
+      const found = findCard(card.dataset.cardId);
+      if (!canHintBuildTargets(found)) {
+        event.preventDefault();
+        toast(state.pendingBuildOps >= buildOpsLimit() ? "Limite de modificacion alcanzado." : "Ahora no puedes montar cartas.");
+        return;
+      }
+      draggedCardId = card.dataset.cardId;
+      event.dataTransfer.setData("text/plain", draggedCardId);
+      event.dataTransfer.effectAllowed = "move";
+      updateDropHints(draggedCardId);
+    });
+
+    document.addEventListener("dragover", (event) => {
+      const zone = event.target.closest(".drop-zone");
+      if (!zone || zone.dataset.zone === "reg" || !draggedCardId) return;
+      updateDropHover(zone);
+      if (!zone.classList.contains("is-drop-valid")) {
+        event.dataTransfer.dropEffect = "none";
+        return;
+      }
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+    });
+
+    document.addEventListener("dragleave", (event) => {
+      const zone = event.target.closest(".drop-zone");
+      if (zone) zone.classList.remove("is-drop-hover");
+    });
+
+    document.addEventListener("drop", (event) => {
+      const zone = event.target.closest(".drop-zone");
+      if (!zone) {
+        clearDropHints();
+        draggedCardId = null;
+        return;
+      }
+      event.preventDefault();
+      if (zone.dataset.zone === "reg") {
+        clearDropHints();
+        draggedCardId = null;
+        return;
+      }
+      if (!zone.classList.contains("is-drop-valid")) {
+        clearDropHints();
+        draggedCardId = null;
+        return;
+      }
+      const cardId = event.dataTransfer.getData("text/plain") || draggedCardId;
+      clearDropHints();
+      draggedCardId = null;
+      placeCard(cardId, zone.dataset.zone);
+    });
+
+    document.addEventListener("dragend", () => {
+      clearDropHints();
+      draggedCardId = null;
+    });
+
+    seedDemoGame();
+  </script>
+</body>
+</html>
