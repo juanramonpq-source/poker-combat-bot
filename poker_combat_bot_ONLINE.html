@@ -8277,6 +8277,10 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   background:linear-gradient(180deg, rgba(204,77,75,.96), rgba(170,58,56,.96)) !important;
 }
 
+.app.desktop-compact-mode:not(.mobile-compact-mode):not(.mobile-panorama-mode):not(.mobile-pc-compact-mode) .compact-tutorial-toggle{
+  display:none !important;
+}
+
 .desktop-compact-shell,
 .desktop-compact-shell img{
   -webkit-touch-callout:none;
@@ -11231,7 +11235,8 @@ body.story-argos-hack-ui{
   }
 
   .app.mobile-pc-compact-mode .desktop-compact-bottom{
-    grid-template-columns:minmax(0, 1fr) 150px;
+    position:relative;
+    grid-template-columns:minmax(0, 1fr);
     gap:5px;
     min-height:0;
   }
@@ -11455,17 +11460,22 @@ body.story-argos-hack-ui{
   }
 
   .app.mobile-pc-compact-mode .compact-hand-panel{
-    grid-template-rows:28px minmax(0, 1fr);
+    position:relative;
+    grid-template-rows:34px minmax(0, 1fr);
     gap:4px;
+    overflow:visible;
   }
 
   .app.mobile-pc-compact-mode .compact-hand-panel .compact-section-head{
+    min-height:32px;
+    padding-right:252px;
     margin-bottom:0;
     align-items:center;
   }
 
   .app.mobile-pc-compact-mode .compact-hand-metrics{
     gap:3px;
+    justify-content:flex-end;
   }
 
   .app.mobile-pc-compact-mode .compact-hand-chip{
@@ -11476,14 +11486,18 @@ body.story-argos-hack-ui{
 
   .app.mobile-pc-compact-mode .compact-hand-modify-btn{
     display:inline-flex;
-    position:static !important;
+    position:absolute !important;
+    right:130px;
+    top:5px;
+    z-index:96;
     align-items:center;
     justify-content:center;
-    flex:0 0 auto;
-    min-height:21px !important;
-    padding:3px 8px !important;
-    border-radius:999px !important;
-    font-size:.48rem !important;
+    width:114px;
+    height:28px !important;
+    min-height:28px !important;
+    padding:4px 9px !important;
+    border-radius:12px !important;
+    font-size:.54rem !important;
     line-height:1 !important;
     letter-spacing:.06em !important;
     transform:none !important;
@@ -11518,17 +11532,96 @@ body.story-argos-hack-ui{
   }
 
   .app.mobile-pc-compact-mode .compact-tutorial-panel{
+    display:grid;
+    position:fixed;
+    left:236px;
+    right:auto;
+    bottom:174px;
+    width:min(260px, 28vw);
+    max-height:46px;
+    padding:6px 10px !important;
+    z-index:90;
+    overflow:hidden;
+    border-radius:14px;
+    background:linear-gradient(180deg, rgba(246,251,255,.96), rgba(214,231,255,.96) 58%, rgba(191,208,244,.96)) !important;
+    border:2px solid rgba(35,216,255,.30);
+    color:#183564;
+    box-shadow:0 10px 22px rgba(7,14,44,.24), inset 0 1px 0 rgba(255,255,255,.74);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+
+  body.mobile-pc-compact-mode.compact-tutorial-popup-active .compact-tutorial-panel{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-panel.compact-tutorial-expanded{
+    left:236px;
+    right:262px;
+    bottom:126px;
+    width:auto;
+    max-height:min(154px, calc(100dvh - 252px));
+    padding:8px 10px !important;
+    overflow:auto;
+    box-shadow:0 18px 34px rgba(7,14,44,.32), 0 0 0 999px rgba(3,8,28,.12), inset 0 1px 0 rgba(255,255,255,.74);
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-panel .compact-kicker,
+  .app.mobile-pc-compact-mode .compact-tutorial-panel h2{
+    display:none;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-toggle{
+    position:relative;
+    z-index:2;
+    min-height:28px;
+    padding:4px 9px !important;
+    border-radius:999px !important;
+    font-size:.54rem !important;
+    line-height:1 !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-scroll{
+    min-height:0;
+    overflow:auto;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-panel:not(.compact-tutorial-expanded) .compact-tutorial-scroll,
+  .app.mobile-pc-compact-mode .compact-tutorial-panel:not(.compact-tutorial-expanded) .compact-tutorial-actions{
     display:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-body,
+  .app.mobile-pc-compact-mode .compact-tutorial-meta{
+    color:#183564 !important;
+    font-size:.62rem;
+    line-height:1.18;
+    text-shadow:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-body *,
+  .app.mobile-pc-compact-mode .compact-tutorial-meta *{
+    color:inherit !important;
+    text-shadow:none !important;
   }
 
   .app.mobile-pc-compact-mode .compact-mobile-actions-panel{
     display:grid !important;
+    position:absolute;
+    right:8px;
+    top:5px;
+    width:114px;
+    height:28px;
     min-height:0;
     padding:0 !important;
     border:0 !important;
     background:transparent !important;
     box-shadow:none !important;
     overflow:visible;
+    z-index:96;
   }
 
   .app.mobile-pc-compact-mode .compact-mobile-actions-panel .compact-section-head,
@@ -11540,19 +11633,19 @@ body.story-argos-hack-ui{
     display:flex !important;
     position:relative;
     inset:auto;
-    width:100% !important;
-    height:100% !important;
+    width:114px !important;
+    height:28px !important;
     min-width:0 !important;
     min-height:0 !important;
     max-width:none !important;
     max-height:none !important;
     transform:none !important;
-    border-radius:16px !important;
+    border-radius:12px !important;
     border:3px solid rgba(255,232,154,.9) !important;
     background:#ffd13f !important;
     background-image:none !important;
     color:#291000 !important;
-    font:1000 .78rem/1.02 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif !important;
+    font:1000 .54rem/1.02 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif !important;
     letter-spacing:.06em !important;
     text-transform:uppercase;
     box-shadow:
@@ -11570,9 +11663,9 @@ body.story-argos-hack-ui{
   .app.mobile-pc-compact-mode .compact-mobile-action-grid{
     position:fixed;
     right:max(8px, env(safe-area-inset-right));
-    bottom:128px;
+    bottom:168px;
     width:min(250px, 34vw);
-    max-height:calc(100dvh - 142px);
+    max-height:calc(100dvh - 184px);
     display:grid;
     grid-template-columns:minmax(0, 1fr);
     grid-auto-rows:minmax(30px, auto);
@@ -19418,7 +19511,7 @@ function syncDesktopHudAvailability(){
     storyOrientationToastShownForMode = false;
     setCompactMobileDrawer('');
   }
-  setCompactActionHubOpen(mobileCompactActive && compactMobileActionHubOpen);
+  setCompactActionHubOpen((mobileCompactActive || mobileLandscapeCompactActive) && compactMobileActionHubOpen);
   if(!mobileLandscapeCompactActive && !mobileCompactActive) document.body.classList.remove('compact-menu-open');
   const mobilePanoramaOffered = canOfferMobilePanoramaHud();
   const topToggleBtn = document.getElementById('desktopCompactToggleTopBtn');

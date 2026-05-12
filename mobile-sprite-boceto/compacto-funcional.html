@@ -1056,6 +1056,10 @@
       transition: transform .18s ease, opacity .18s ease;
     }
 
+    .landscape-mecha-strip {
+      display: none;
+    }
+
     .phone-shell.board-open .board-drawer {
       transform: translateY(0) scale(1);
       opacity: 1;
@@ -2290,6 +2294,7 @@
       .fighter {
         display: grid;
         grid-template-rows: auto minmax(0, 1fr) auto;
+        padding-bottom: 14px;
       }
 
       .mecha-phase-live {
@@ -2298,6 +2303,7 @@
 
       .stats-card {
         align-self: end;
+        margin-bottom: 4px;
       }
 
       .tab-bar,
@@ -2392,6 +2398,551 @@
       .board-drawer {
         top: 150px;
         bottom: 122px;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .phone-shell {
+        --land-left: clamp(136px, 20vw, 168px);
+        --land-hand: clamp(204px, 29vw, 252px);
+        width: 100vw;
+        height: 100svh;
+        height: 100dvh;
+        min-height: 0;
+        padding: 6px 8px;
+        display: grid;
+        grid-template-columns: var(--land-left) minmax(0, 1fr) var(--land-hand);
+        grid-template-rows: 54px 88px minmax(0, 1fr);
+        grid-template-areas:
+          "brand combat tabs"
+          "menu combat hand"
+          "status combat hand";
+        gap: 6px;
+        align-content: stretch;
+        border-width: 4px;
+        border-radius: 0;
+      }
+
+      .phone-shell::before {
+        inset: 4px;
+        border-radius: 16px;
+      }
+
+      .top-vents {
+        display: none;
+      }
+
+      .brand-plate {
+        grid-area: brand;
+        width: 100%;
+        height: 54px;
+        margin: 0;
+        border-width: 3px;
+        border-radius: 15px;
+      }
+
+      .brand-plate img {
+        top: -31px;
+        width: min(220px, calc(100% + 42px));
+      }
+
+      .screw {
+        width: 8px;
+        height: 8px;
+      }
+
+      .screw-tl { top: 5px; left: 6px; }
+      .screw-tr { top: 5px; right: 6px; }
+      .screw-bl { bottom: 5px; left: 6px; }
+      .screw-br { bottom: 5px; right: 6px; }
+
+      .top-menu {
+        grid-area: menu;
+        margin: 0;
+        padding: 4px;
+        gap: 3px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-width: 2px;
+        border-radius: 12px;
+        box-shadow: inset 0 2px 0 rgba(255, 255, 255, .7), 0 3px 0 rgba(0, 22, 48, .72);
+      }
+
+      .menu-button {
+        min-height: 22px;
+        padding: 2px 3px;
+        border-width: 2px;
+        border-radius: 7px;
+        font-size: 9px;
+      }
+
+      .status-strip {
+        grid-area: status;
+        align-self: stretch;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 5px;
+        margin: 0;
+      }
+
+      .meter-pill {
+        min-height: 32px;
+        grid-template-columns: 20px minmax(0, 1fr) 30px;
+        gap: 3px;
+        padding: 3px 5px;
+        border-width: 2px;
+        border-radius: 9px;
+      }
+
+      .meter-pill small {
+        font-size: 10px;
+      }
+
+      .meter-pill strong {
+        font-size: 18px;
+      }
+
+      .fuel-icon {
+        width: 16px;
+        height: 24px;
+        border-width: 3px;
+      }
+
+      .core-ring {
+        width: 22px;
+        height: 22px;
+        border-width: 5px;
+      }
+
+      .mini-bars {
+        height: 18px;
+      }
+
+      .led-trigger {
+        width: 100%;
+        height: 26px;
+        grid-template-columns: repeat(3, 12px);
+        border-width: 2px;
+        border-radius: 12px;
+      }
+
+      .combat-screen {
+        grid-area: combat;
+        min-height: 0;
+        height: 100%;
+        align-self: stretch;
+        border-width: 3px;
+        border-radius: 16px;
+      }
+
+      .fighter {
+        padding: 7px 6px 12px;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+      }
+
+      .fighter header {
+        width: 112px;
+        padding: 5px 8px;
+        font-size: 13px;
+      }
+
+      .mecha-phase-live {
+        width: 146px;
+        height: 166px;
+        margin: -5px 0 -8px -22px;
+        align-self: center;
+      }
+
+      .fighter-red .mecha-phase-live {
+        margin-left: -5px;
+      }
+
+      .stats-card {
+        gap: 2px;
+        padding: 5px 5px 6px;
+        margin-bottom: 2px;
+      }
+
+      .stats-card p {
+        grid-template-columns: 14px minmax(0, 1fr) auto;
+        gap: 3px;
+        padding-bottom: 6px;
+        font-size: 10px;
+      }
+
+      .suit-mark {
+        width: 14px;
+        height: 14px;
+        font-size: 16px;
+      }
+
+      .versus {
+        top: 46%;
+        width: 42px;
+        height: 42px;
+        font-size: 22px;
+      }
+
+      .tab-bar {
+        grid-area: tabs;
+        align-self: start;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr 36px;
+        gap: 5px;
+      }
+
+      .tab-sprite {
+        height: 52px;
+        padding: 4px 5px;
+        border-width: 2px;
+        border-radius: 11px 11px 7px 7px;
+        gap: 4px;
+        font-size: 13px;
+      }
+
+      .sprite {
+        width: 26px;
+        height: 31px;
+      }
+
+      .round-menu {
+        width: 36px;
+        height: 36px;
+        margin: 8px 0 0;
+        font-size: 22px;
+      }
+
+      .hand-tray {
+        grid-area: hand;
+        align-self: stretch;
+        min-height: 0;
+        height: 100%;
+        margin: 0;
+        padding: 38px 10px 10px;
+        border-width: 3px;
+        border-radius: 16px;
+      }
+
+      .hand-tray header {
+        top: -2px;
+        left: 0;
+        right: 8px;
+        font-size: 16px;
+      }
+
+      .hand-tray header span {
+        min-width: 92px;
+        padding: 5px 9px;
+        border-width: 2px;
+        border-radius: 10px 10px 10px 0;
+      }
+
+      .hand-tray header strong {
+        font-size: 18px;
+      }
+
+      .action-hub {
+        top: 13px;
+        left: 58%;
+      }
+
+      .actions-button {
+        min-width: 105px;
+        min-height: 30px;
+        padding: 5px 12px;
+        border-width: 2px;
+        border-radius: 11px;
+        font-size: 14px;
+      }
+
+      .action-wheel {
+        top: 32px;
+        width: 270px;
+        height: 125px;
+        transform: translateX(-50%) scale(.78);
+      }
+
+      .phone-shell.actions-open .action-wheel {
+        transform: translateX(-50%) scale(.9);
+      }
+
+      .action-wheel::before {
+        width: 210px;
+        height: 92px;
+      }
+
+      .wheel-action {
+        width: 72px;
+        min-height: 27px;
+        padding: 3px 5px;
+        font-size: 9px;
+      }
+
+      .cards {
+        height: calc(100% - 4px);
+        padding-top: 24px;
+        align-items: end;
+        justify-content: center;
+      }
+
+      .card {
+        width: 48px;
+        height: 70px;
+        flex-basis: 48px;
+      }
+
+      .cards .card + .card {
+        margin-left: -28px;
+      }
+
+      .side-arrow {
+        top: 50%;
+        width: 24px;
+        height: 48px;
+        transform: translateY(-20%);
+      }
+
+      .side-arrow.left { left: -10px; }
+      .side-arrow.right { right: -10px; }
+
+      .board-drawer {
+        top: 8px;
+        bottom: 8px;
+        left: calc(var(--land-left) + 14px);
+        right: calc(var(--land-hand) + 14px);
+        grid-template-rows: 74px minmax(0, 1fr) auto;
+        gap: 5px;
+        padding: 7px;
+        border-width: 3px;
+        border-radius: 14px;
+      }
+
+      .landscape-mecha-strip {
+        position: relative;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 46px minmax(0, 1fr);
+        align-items: center;
+        gap: 6px;
+        padding: 4px 42px 4px 12px;
+        border: 2px solid rgba(70, 236, 255, .24);
+        border-radius: 12px;
+        background:
+          linear-gradient(106deg, rgba(0, 192, 255, .3) 0 48%, rgba(5, 16, 28, .72) 48.2% 51.8%, rgba(255, 64, 48, .31) 52% 100%),
+          linear-gradient(rgba(70, 236, 255, .07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(70, 236, 255, .06) 1px, transparent 1px),
+          rgba(2, 15, 28, .74);
+        background-size: auto, 13px 13px, 13px 13px, auto;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+        overflow: hidden;
+      }
+
+      .landscape-mecha-strip::before {
+        content: "";
+        position: absolute;
+        z-index: 0;
+        top: -24%;
+        bottom: -24%;
+        left: 50%;
+        width: 4px;
+        transform: rotate(14deg);
+        background: linear-gradient(180deg, transparent, #31e7ff 18%, #fff7bf 50%, #ff513d 82%, transparent);
+        box-shadow: 0 0 16px rgba(70, 236, 255, .62), 0 0 18px rgba(255, 83, 61, .54);
+      }
+
+      .landscape-mecha-strip::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 25% 50%, rgba(70, 236, 255, .16), transparent 34%),
+          radial-gradient(circle at 75% 50%, rgba(255, 83, 61, .17), transparent 34%);
+        pointer-events: none;
+      }
+
+      .landscape-mecha-strip img {
+        position: relative;
+        z-index: 1;
+        width: 112px;
+        height: 72px;
+        max-width: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 10px 9px rgba(0, 0, 0, .62)) saturate(1.08);
+      }
+
+      .landscape-mecha-strip .mini-player {
+        justify-self: end;
+        transform: scaleX(-1) rotate(-4deg);
+      }
+
+      .landscape-mecha-strip .mini-rival {
+        justify-self: start;
+        transform: rotate(4deg);
+      }
+
+      .landscape-mecha-strip b {
+        position: relative;
+        z-index: 1;
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border: 2px solid rgba(255, 242, 189, .52);
+        border-radius: 50%;
+        color: #fff3be;
+        background: radial-gradient(circle, rgba(1, 23, 38, .9), rgba(1, 11, 21, .44));
+        font-size: 17px;
+        font-weight: 900;
+        text-shadow: 0 0 10px #46ecff, 0 0 10px #ff533d;
+      }
+
+      .drawer-head {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        z-index: 2;
+        display: flex;
+        justify-content: flex-end;
+        pointer-events: none;
+      }
+
+      .drawer-head > div {
+        display: none;
+      }
+
+      .drawer-head h2 {
+        font-size: 16px;
+      }
+
+      .drawer-head p {
+        font-size: 10px;
+        line-height: 1.18;
+      }
+
+      .drawer-close {
+        width: 26px;
+        height: 26px;
+        pointer-events: auto;
+      }
+
+      .zone-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: minmax(64px, .9fr) minmax(52px, 1fr) minmax(52px, 1fr);
+        grid-template-areas:
+          "core core core"
+          "attack defense fuel"
+          "armor reg fuel";
+        grid-auto-rows: auto;
+        gap: 5px;
+        overflow: hidden;
+      }
+
+      .zone-grid.is-rival {
+        grid-template-areas:
+          "core core core"
+          "attack defense fuel"
+          "armor armor fuel";
+      }
+
+      .panel-zone,
+      .drop-zone {
+        min-height: 0;
+        gap: 3px;
+        padding: 5px;
+        border-radius: 10px;
+      }
+
+      .core-panel {
+        min-height: 0;
+      }
+
+      .core-slot {
+        min-height: 42px;
+        padding: 4px;
+      }
+
+      .core-slot .zone-title {
+        margin-bottom: 2px;
+        font-size: 9px;
+      }
+
+      .zone-fuel {
+        min-height: 0;
+      }
+
+      .zone-title {
+        gap: 4px;
+        font-size: 10px;
+        line-height: 1.05;
+      }
+
+      .zone-title b {
+        font-size: 10px;
+        white-space: normal;
+      }
+
+      .zone-cards {
+        min-height: 28px;
+        gap: 2px;
+      }
+
+      .zone-cards .card {
+        width: 30px;
+        height: 44px;
+        flex-basis: 30px;
+      }
+
+      .empty-zone {
+        min-height: 24px;
+        border-radius: 7px;
+        font-size: 9px;
+      }
+
+      .zone-reg .empty-zone {
+        padding: 5px;
+        font-size: 9px;
+        line-height: 1.12;
+      }
+
+      .drawer-foot {
+        gap: 5px;
+      }
+
+      .drawer-foot button {
+        min-height: 32px;
+        font-size: 10px;
+      }
+
+      .message-stack {
+        top: 44px;
+        left: 8px;
+        right: 8px;
+        gap: 5px;
+      }
+
+      .floating-message {
+        padding: 7px 9px;
+      }
+
+      .floating-message strong {
+        font-size: 13px;
+      }
+
+      .floating-message span {
+        font-size: 10px;
+      }
+
+      .toast {
+        left: calc(var(--land-left) + 16px);
+        right: calc(var(--land-hand) + 16px);
+        bottom: 12px;
+        min-height: 30px;
+        padding: 7px 12px;
+        font-size: 12px;
       }
     }
   </style>
@@ -2501,6 +3052,11 @@
     </nav>
 
     <section class="board-drawer" aria-label="Paneles de montaje">
+      <div class="landscape-mecha-strip" aria-hidden="true">
+        <img class="mini-player" data-mecha-mini-img="0" src="../assets/image_10.png" alt="">
+        <b>VS</b>
+        <img class="mini-rival" data-mecha-mini-img="1" src="../assets/image_10.png" alt="">
+      </div>
       <header class="drawer-head">
         <div>
           <h2 data-drawer-title>Paneles de montaje</h2>
@@ -2520,6 +3076,7 @@
       <div class="action-hub" aria-label="Acciones de partida">
         <button class="actions-button" type="button" data-action-toggle aria-expanded="false">Acciones</button>
         <div class="action-wheel" role="menu">
+          <button class="wheel-action" style="--x:-82px;--y:-78px" type="button" data-action="figures">2 Fig.</button>
           <button class="wheel-action" style="--x:-82px;--y:-45px" type="button" data-action="draw">Robar ♦</button>
           <button class="wheel-action primary" style="--x:0px;--y:-51px" type="button" data-action="attack-mode">Atacar</button>
           <button class="wheel-action primary attack-confirm-action" style="--x:89px;--y:-51px" type="button" data-action="confirm">Confirmar</button>
@@ -3061,8 +3618,11 @@
       }
     }
 
-    function drawCard(player, announce = true) {
-      if (!state.deck.length) state.deck = createDeck();
+    function drawCard(player, announce = true, recycle = true) {
+      if (!state.deck.length) {
+        if (!recycle) return null;
+        state.deck = createDeck();
+      }
       const card = state.deck.pop();
       if (!card) return null;
       card.zone = "hand";
@@ -3397,10 +3957,64 @@
       removeCard(player, "hand", card.id);
       state.discard.push(card);
       const drawCount = Math.min(card.value, 4);
-      for (let i = 0; i < drawCount; i += 1) drawCard(player);
+      for (let i = 0; i < drawCount; i += 1) drawCard(player, true, false);
       state.selected = [];
       log(`${player.name} descarta ${cardText(card)} y roba ${drawCount} carta(s).`);
       finishPlayerTurn("draw");
+    }
+
+    function firstTwoFigures(player) {
+      return player.hand.filter(isFigure).slice(0, 2);
+    }
+
+    function canDrawWithTwoFigures(player) {
+      return Boolean(player?.core?.pilot && player?.core?.copilot && firstTwoFigures(player).length >= 2);
+    }
+
+    function performTwoFigureDraw(player, cards = firstTwoFigures(player)) {
+      if (!cards || cards.length < 2) return null;
+      const discarded = [];
+      cards.slice(0, 2).forEach((card) => {
+        const removed = removeCard(player, "hand", card.id);
+        if (removed) {
+          state.discard.push(removed);
+          discarded.push(removed);
+        }
+      });
+      if (discarded.length < 2) return null;
+      let drawn = 0;
+      for (let i = 0; i < 4; i += 1) {
+        if (!drawCard(player, true, false)) break;
+        drawn += 1;
+      }
+      return { discarded, drawn };
+    }
+
+    function drawWithTwoFigures() {
+      const player = state.players[0];
+      if (!player.core.pilot || !player.core.copilot) {
+        toast("Necesitas piloto y copiloto instalados.");
+        return;
+      }
+      const selectedHand = selectedHandCardsForPlayer(player);
+      const selectedFigures = selectedHand.filter((item) => isFigure(item.card)).map((item) => item.card);
+      if (selectedHand.length && (selectedHand.length !== 2 || selectedFigures.length !== 2)) {
+        toast("Selecciona exactamente 2 figuras de la mano, o ninguna para usar las primeras.");
+        return;
+      }
+      const cards = selectedFigures.length === 2 ? selectedFigures : firstTwoFigures(player);
+      if (cards.length < 2) {
+        toast("No tienes 2 figuras J/Q/K en la mano.");
+        return;
+      }
+      const result = performTwoFigureDraw(player, cards);
+      if (!result) {
+        toast("No se pudieron descartar las figuras.");
+        return;
+      }
+      state.selected = [];
+      log(`${player.name} descarta ${result.discarded.map(cardText).join(" y ")} y roba ${result.drawn} carta(s).`);
+      finishPlayerTurn("figureBurst");
     }
 
     function passTurn() {
@@ -3713,8 +4327,15 @@
         removeCard(rival, "hand", diamond.id);
         state.discard.push(diamond);
         const drawCount = Math.min(diamond.value, 4);
-        for (let i = 0; i < drawCount; i += 1) drawCard(rival);
+        for (let i = 0; i < drawCount; i += 1) drawCard(rival, true, false);
         log(`CPU usa ${cardText(diamond)} para robar ${drawCount}.`);
+        startPlayerTurn();
+        return;
+      }
+
+      if (canDrawWithTwoFigures(rival)) {
+        const result = performTwoFigureDraw(rival);
+        log(`CPU descarta ${result.discarded.map(cardText).join(" y ")} y roba ${result.drawn}.`);
         startPlayerTurn();
         return;
       }
@@ -3813,6 +4434,7 @@
         return;
       }
       if (action === "draw") drawWithDiamond();
+      if (action === "figures") drawWithTwoFigures();
       if (action === "attack-mode") {
         startAttackMode();
         if (state.attackMode) {
@@ -3902,18 +4524,23 @@
 
     function renderMechaBuild(player, index) {
       const node = document.querySelector(`[data-mecha-img="${index}"]`);
-      if (!node || !player) return;
+      const miniNodes = [...document.querySelectorAll(`[data-mecha-mini-img="${index}"]`)];
+      if ((!node && !miniNodes.length) || !player) return;
       const nextSrc = getMechaPhaseImage(player);
-      const fighter = node.closest(".fighter");
-      if (node.getAttribute("src") !== nextSrc) {
-        node.setAttribute("src", nextSrc);
-        node.classList.remove("is-evolving");
-        void node.offsetWidth;
-        node.classList.add("is-evolving");
+      const fighter = node?.closest(".fighter");
+      const ready = playerCanAttack(player);
+      [node, ...miniNodes].filter(Boolean).forEach((image) => {
+        if (image.getAttribute("src") !== nextSrc) {
+          image.setAttribute("src", nextSrc);
+          image.classList.remove("is-evolving");
+          void image.offsetWidth;
+          image.classList.add("is-evolving");
+        }
+        image.classList.toggle("ready", ready);
+      });
+      if (node?.classList.contains("is-evolving")) {
         spawnSparksFromElement(node, index === 0 ? "cyan" : "red", 12);
       }
-      const ready = playerCanAttack(player);
-      node.classList.toggle("ready", ready);
       fighter?.classList.toggle("is-ready", ready);
       fighter?.classList.toggle("is-complete", isCompleteAttackMecha(player));
     }
@@ -4129,6 +4756,7 @@
       const actionStates = {
         modify: playerTurn,
         draw: playerTurn,
+        figures: playerTurn && canDrawWithTwoFigures(player),
         "attack-mode": attackReady,
         projectile: playerTurn && state.attackMode && state.projectileUnlocked,
         confirm: (playerTurn && state.attackMode) || defenseTurn,
@@ -4309,13 +4937,17 @@
       }
       if (button.dataset.actionToggle !== undefined) openActions();
       if (button.dataset.boardToggle !== undefined) {
+        closeActions();
         shell.classList.toggle("board-open");
         state.activeTab = state.activeTab === "rival" ? "rival" : "mecha";
         render();
       }
       if (button.dataset.boardClose !== undefined) closeBoard();
       if (button.dataset.applyBuild !== undefined) applyBuildChanges();
-      if (button.dataset.tab) openBoard(button.dataset.tab);
+      if (button.dataset.tab) {
+        closeActions();
+        openBoard(button.dataset.tab);
+      }
       if (button.dataset.action) handleAction(button.dataset.action);
       if (button.dataset.cardId) toggleSelected(button.dataset.cardId);
       if (button.dataset.defenseAction === "confirm") confirmDefense();
