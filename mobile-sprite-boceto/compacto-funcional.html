@@ -415,6 +415,10 @@
       box-shadow: 0 0 10px var(--green);
     }
 
+    .quick-modify-button {
+      display: none;
+    }
+
     .combat-screen {
       position: relative;
       z-index: 2;
@@ -1698,7 +1702,9 @@
     .actions-button:not(:disabled):active,
     .actions-button.is-pressing,
     .phone-shell.actions-open .actions-button:not(:disabled):active,
-    .phone-shell.actions-open .actions-button.is-pressing {
+    .phone-shell.actions-open .actions-button.is-pressing,
+    .quick-modify-button:not(:disabled):active,
+    .quick-modify-button.is-pressing {
       translate: 0 3px;
       filter: brightness(.97) saturate(1.1);
       box-shadow:
@@ -2480,7 +2486,8 @@
         align-self: stretch;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto;
+        grid-template-rows: auto auto auto auto;
+        align-content: space-between;
         gap: 5px;
         margin: 0;
       }
@@ -2524,6 +2531,35 @@
         grid-template-columns: repeat(3, 12px);
         border-width: 2px;
         border-radius: 12px;
+      }
+
+      .quick-modify-button {
+        min-height: 32px;
+        display: grid;
+        place-items: center;
+        width: 100%;
+        padding: 4px 7px;
+        border: 2px solid #5d3900;
+        border-radius: 10px;
+        color: #221301;
+        background:
+          linear-gradient(135deg, rgba(255,255,255,.5), transparent 38%),
+          linear-gradient(180deg, #fff4a4, #ffc42f 64%, #b86600);
+        box-shadow:
+          inset 0 2px 0 rgba(255,255,255,.7),
+          inset 0 -3px 0 rgba(116,62,0,.35),
+          0 4px 0 #4b2a00,
+          0 0 14px rgba(255,196,47,.18);
+        font-size: 12px;
+        line-height: 1;
+        font-weight: 900;
+        text-transform: uppercase;
+        text-shadow: 0 1px 0 rgba(255,255,255,.42);
+      }
+
+      .quick-modify-button:disabled {
+        opacity: .52;
+        filter: saturate(.55) brightness(.85);
       }
 
       .combat-screen {
@@ -2666,6 +2702,11 @@
 
       .phone-shell.actions-open .action-wheel {
         transform: translateX(-50%) scale(.9);
+        pointer-events: none;
+      }
+
+      .phone-shell.actions-open .wheel-action {
+        pointer-events: auto;
       }
 
       .action-wheel::before {
@@ -2685,6 +2726,11 @@
         padding-top: 24px;
         align-items: end;
         justify-content: center;
+      }
+
+      .phone-shell.actions-open .cards {
+        filter: brightness(.92) saturate(.92);
+        pointer-events: auto;
       }
 
       .card {
@@ -2978,6 +3024,8 @@
       <div class="led-trigger" role="img" aria-label="Indicador de acciones disponibles">
         <i class="on"></i><i></i><i></i>
       </div>
+
+      <button class="quick-modify-button" type="button" data-action="modify">Modificar</button>
 
       <article class="meter-pill core-pill">
         <i class="core-ring" aria-hidden="true"></i>
