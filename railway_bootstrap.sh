@@ -29,7 +29,8 @@ git sparse-checkout set --no-cone \
   '/assets/cards/**' \
   '/assets/sfx/**' \
   '/assets/videos/Ataque1.mp4' \
-  '/assets/Historia/**'
+  '/assets/Historia/**' \
+  '/mobile-sprite-boceto/**'
 git checkout
 
 npm ci --omit=dev
