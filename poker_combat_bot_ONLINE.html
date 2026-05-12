@@ -8039,6 +8039,14 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   text-shadow:0 0 8px rgba(244,93,89,.18) !important;
 }
 
+.compact-readout-help{
+  display:none;
+}
+
+.compact-panel-expand-btn{
+  display:none;
+}
+
 .compact-rival-panel{
   display:grid;
   grid-template-rows:auto auto minmax(0, 1fr);
@@ -8200,6 +8208,10 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
     inset 0 -2px 0 rgba(128,54,0,.22),
     0 4px 0 rgba(106,45,0,.22),
     0 0 16px rgba(255,139,66,.18) !important;
+}
+
+.compact-hand-modify-btn{
+  display:none;
 }
 
 .compact-hand-panel{
@@ -11213,13 +11225,13 @@ body.story-argos-hack-ui{
   }
 
   .app.mobile-pc-compact-mode .desktop-compact-main{
-    grid-template-columns:188px minmax(0, 1fr) 166px;
+    grid-template-columns:226px minmax(0, 1fr) 188px;
     gap:5px;
     min-height:0;
   }
 
   .app.mobile-pc-compact-mode .desktop-compact-bottom{
-    grid-template-columns:198px minmax(0, 1fr) 178px;
+    grid-template-columns:minmax(0, 1fr) 150px;
     gap:5px;
     min-height:0;
   }
@@ -11365,15 +11377,30 @@ body.story-argos-hack-ui{
   }
 
   .app.mobile-pc-compact-mode .compact-mecha-ring{
-    width:clamp(82px, 16dvw, 118px);
-    height:clamp(82px, 16dvw, 118px);
+    width:clamp(78px, 13dvw, 104px);
+    height:clamp(78px, 13dvw, 104px);
     border-width:7px;
   }
 
   .app.mobile-pc-compact-mode .compact-mecha-ring img{
-    height:105% !important;
-    max-height:105% !important;
-    max-width:132% !important;
+    width:90% !important;
+    height:90% !important;
+    max-width:90% !important;
+    max-height:90% !important;
+    object-fit:contain;
+    object-position:center center;
+  }
+
+  .app.mobile-pc-compact-mode #compactMechaStage-0 .compact-mecha-ring img{
+    --mecha-float-base:translate(0, 1px) scaleX(-1);
+  }
+
+  .app.mobile-pc-compact-mode #compactMechaStage-1 .compact-mecha-ring img{
+    --mecha-float-base:translate(0, 1px);
+  }
+
+  .app.mobile-pc-compact-mode .compact-mecha-module-values{
+    display:none !important;
   }
 
   .app.mobile-pc-compact-mode .compact-mecha-stage-head span{
@@ -11395,6 +11422,8 @@ body.story-argos-hack-ui{
   .app.mobile-pc-compact-mode .compact-readout{
     min-height:36px;
     padding:5px !important;
+    position:relative;
+    z-index:8;
   }
 
   .app.mobile-pc-compact-mode .compact-readout .tiny-label{
@@ -11410,6 +11439,10 @@ body.story-argos-hack-ui{
     grid-auto-rows:minmax(27px, auto);
     gap:4px;
     overflow:auto;
+  }
+
+  .app.mobile-pc-compact-mode .compact-actions-panel{
+    display:none !important;
   }
 
   .app.mobile-pc-compact-mode .compact-action-grid button{
@@ -11441,6 +11474,22 @@ body.story-argos-hack-ui{
     font-size:.46rem;
   }
 
+  .app.mobile-pc-compact-mode .compact-hand-modify-btn{
+    display:inline-flex;
+    position:static !important;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    min-height:21px !important;
+    padding:3px 8px !important;
+    border-radius:999px !important;
+    font-size:.48rem !important;
+    line-height:1 !important;
+    letter-spacing:.06em !important;
+    transform:none !important;
+    white-space:nowrap;
+  }
+
   .app.mobile-pc-compact-mode .compact-hand-tray{
     --compact-hand-card-width:54px;
     --compact-hand-card-height:77px;
@@ -11464,13 +11513,167 @@ body.story-argos-hack-ui{
     touch-action:none;
   }
 
-  .app.mobile-pc-compact-mode .compact-mobile-actions-panel,
   .app.mobile-pc-compact-mode .compact-mode-tabs{
     display:none !important;
   }
 
   .app.mobile-pc-compact-mode .compact-tutorial-panel{
-    overflow:hidden;
+    display:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-mobile-actions-panel{
+    display:grid !important;
+    min-height:0;
+    padding:0 !important;
+    border:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    overflow:visible;
+  }
+
+  .app.mobile-pc-compact-mode .compact-mobile-actions-panel .compact-section-head,
+  .app.mobile-pc-compact-mode .compact-mobile-hand-summary{
+    display:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-action-hub-button{
+    display:flex !important;
+    position:relative;
+    inset:auto;
+    width:100% !important;
+    height:100% !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    max-width:none !important;
+    max-height:none !important;
+    transform:none !important;
+    border-radius:16px !important;
+    border:3px solid rgba(255,232,154,.9) !important;
+    background:#ffd13f !important;
+    background-image:none !important;
+    color:#291000 !important;
+    font:1000 .78rem/1.02 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif !important;
+    letter-spacing:.06em !important;
+    text-transform:uppercase;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.82),
+      inset 0 -4px 0 rgba(130,68,0,.28),
+      0 4px 0 rgba(96,49,0,.34),
+      0 12px 20px rgba(5,15,42,.25) !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-action-hub-button::before{
+    content:attr(data-label);
+    max-width:none;
+  }
+
+  .app.mobile-pc-compact-mode .compact-mobile-action-grid{
+    position:fixed;
+    right:max(8px, env(safe-area-inset-right));
+    bottom:128px;
+    width:min(250px, 34vw);
+    max-height:calc(100dvh - 142px);
+    display:grid;
+    grid-template-columns:minmax(0, 1fr);
+    grid-auto-rows:minmax(30px, auto);
+    align-content:start;
+    gap:6px;
+    padding:8px;
+    border-radius:16px;
+    border:2px solid rgba(35,216,255,.32);
+    background:linear-gradient(180deg, rgba(246,251,255,.98), rgba(214,231,255,.98) 58%, rgba(191,208,244,.98));
+    box-shadow:0 18px 42px rgba(7,14,44,.34), 0 0 0 999px rgba(3,8,28,.16);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    overflow-y:auto;
+    z-index:185;
+    transform:translateY(8px) scale(.985);
+    transition:opacity .14s ease, transform .14s ease, visibility .14s ease;
+  }
+
+  body.compact-action-hub-open .app.mobile-pc-compact-mode .compact-mobile-action-grid{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transform:translateY(0) scale(1);
+  }
+
+  .app.mobile-pc-compact-mode .compact-mobile-action-grid button{
+    position:static !important;
+    transform:none !important;
+    width:auto;
+    min-width:0;
+    max-width:none;
+    min-height:30px !important;
+    height:auto;
+    padding:5px 8px !important;
+    font-size:.52rem !important;
+    line-height:.94 !important;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+
+  .app.mobile-pc-compact-mode .compact-mobile-action-grid button.compact-action-hidden{
+    display:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-panel-expand-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:18px;
+    padding:2px 7px !important;
+    border-radius:999px !important;
+    border:2px solid rgba(35,216,255,.32) !important;
+    background:linear-gradient(180deg, #eaffff, #9df1ff 58%, #54c7df) !important;
+    color:#17335e !important;
+    font-size:.44rem !important;
+    line-height:1 !important;
+    letter-spacing:.04em !important;
+    text-transform:uppercase;
+  }
+
+  body.mobile-pc-compact-mode.compact-mobile-player-open .compact-player-panel,
+  body.mobile-pc-compact-mode.compact-mobile-rival-open .compact-rival-panel{
+    position:fixed;
+    left:max(8px, env(safe-area-inset-left));
+    right:max(8px, env(safe-area-inset-right));
+    top:max(48px, calc(env(safe-area-inset-top) + 48px));
+    bottom:max(8px, env(safe-area-inset-bottom));
+    z-index:210;
+    max-width:none;
+    width:auto;
+    height:auto;
+    padding:8px !important;
+    border-radius:18px;
+    box-shadow:0 18px 44px rgba(7,14,44,.42), 0 0 0 999px rgba(3,8,28,.30);
+  }
+
+  body.mobile-pc-compact-mode.compact-mobile-player-open .compact-player-zones,
+  body.mobile-pc-compact-mode.compact-mobile-rival-open .compact-rival-zones{
+    gap:8px;
+  }
+
+  body.mobile-pc-compact-mode.compact-mobile-player-open .compact-zone-cards,
+  body.mobile-pc-compact-mode.compact-mobile-rival-open .compact-zone-cards{
+    --compact-zone-card-width:44px;
+    --compact-zone-card-height:62px;
+    min-height:62px;
+    overflow:auto;
+  }
+
+  body.mobile-pc-compact-mode.compact-mobile-player-open .compact-mobile-drawer-close,
+  body.mobile-pc-compact-mode.compact-mobile-rival-open .compact-mobile-drawer-close{
+    display:inline-flex !important;
+  }
+
+  body.mobile-pc-compact-mode.compact-mobile-player-open .compact-player-panel .compact-panel-expand-btn,
+  body.mobile-pc-compact-mode.compact-mobile-rival-open .compact-rival-panel .compact-panel-expand-btn{
+    display:none !important;
   }
 }
 
@@ -11778,6 +11981,27 @@ body.story-argos-hack-ui{
     word-break:normal;
   }
 
+  .app.mobile-compact-mode .compact-hand-modify-btn{
+    display:inline-flex;
+    position:static !important;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    min-height:24px !important;
+    padding:3px 10px !important;
+    border-radius:999px !important;
+    font-size:.55rem !important;
+    line-height:1 !important;
+    letter-spacing:.08em !important;
+    text-transform:uppercase;
+    white-space:nowrap;
+    transform:none !important;
+  }
+
+  .app.mobile-compact-mode .compact-hand-modify-btn.compact-action-hidden{
+    display:inline-flex !important;
+  }
+
   .app.mobile-compact-mode .compact-hand-tray{
     --compact-hand-card-width:60px !important;
     --compact-hand-card-height:86px !important;
@@ -12027,10 +12251,78 @@ body.story-argos-hack-ui{
   .app.mobile-compact-mode .compact-readout-strip{
     grid-template-columns:repeat(3, minmax(0, 1fr));
     gap:6px;
+    position:relative;
+    isolation:isolate;
   }
 
   .app.mobile-compact-mode .compact-readout:has(#compactRightStatusText){
     display:none !important;
+  }
+
+  .app.mobile-compact-mode .compact-readout{
+    cursor:pointer;
+    touch-action:manipulation;
+    transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease;
+  }
+
+  .app.mobile-compact-mode .compact-readout .value{
+    justify-content:center;
+    color:#23d8ff !important;
+    font-size:.54rem !important;
+    text-align:center;
+  }
+
+  .app.mobile-compact-mode .compact-readout-help{
+    display:none;
+    color:#203a68;
+    font:800 .58rem/1.08 "Inter", system-ui, sans-serif;
+    text-align:center;
+    letter-spacing:0;
+  }
+
+  .app.mobile-compact-mode .compact-readout.is-readable{
+    position:absolute;
+    left:6px;
+    right:6px;
+    top:42%;
+    z-index:18;
+    min-height:108px;
+    padding:10px 12px 14px !important;
+    display:grid;
+    grid-template-rows:auto auto auto;
+    align-content:center;
+    gap:6px;
+    transform:translateY(-50%) scale(1.02);
+    border-color:rgba(35,216,255,.72) !important;
+    background:linear-gradient(180deg, rgba(247,252,255,.98), rgba(210,232,255,.98) 62%, rgba(185,207,244,.98)) !important;
+    box-shadow:0 18px 34px rgba(5,15,42,.32), 0 0 0 999px rgba(3,8,28,.10), inset 0 1px 0 rgba(255,255,255,.78) !important;
+  }
+
+  .app.mobile-compact-mode .compact-readout.is-readable .tiny-label{
+    min-height:auto;
+    color:#17335e !important;
+    font-size:.72rem;
+    line-height:1;
+    letter-spacing:.08em;
+    border-bottom-color:rgba(23,51,94,.20) !important;
+  }
+
+  .app.mobile-compact-mode .compact-readout.is-readable .value{
+    min-height:auto;
+    overflow:visible;
+    color:#031426 !important;
+    font-size:.92rem !important;
+    font-weight:1000;
+    line-height:1.05;
+    text-shadow:none !important;
+    white-space:normal;
+  }
+
+  .app.mobile-compact-mode .compact-readout.is-readable .compact-readout-help{
+    display:block;
+    max-width:96%;
+    margin:0 auto;
+    line-height:1.15;
   }
 
   .app.mobile-compact-mode .compact-mecha-stage{
@@ -13678,6 +13970,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
           </div>
           <div class="compact-chip-stack">
             <span class="compact-chip" id="compactPlayerStatus">Montaje</span>
+            <button class="compact-panel-expand-btn" data-mobile-drawer="player" type="button">Expandir</button>
             <button class="compact-mobile-drawer-close" data-mobile-drawer-close type="button">Cerrar</button>
           </div>
         </div>
@@ -13784,21 +14077,25 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
         </div>
 
         <div class="compact-readout-strip">
-          <div class="frame compact-readout">
-            <div class="tiny-label">Attack limit</div>
+          <div class="frame compact-readout" data-compact-readout="attack-limit" role="button" tabindex="0" aria-expanded="false">
+            <div class="tiny-label">Límite ataque</div>
             <div class="value" id="compactAttackLimitValue">0</div>
+            <div class="compact-readout-help">Cartas de ataque que puedes usar ahora.</div>
           </div>
-          <div class="frame compact-readout">
+          <div class="frame compact-readout" data-compact-readout="status" role="button" tabindex="0" aria-expanded="false">
             <div class="tiny-label">Status</div>
             <div class="value" id="compactRightStatusText">Idle</div>
+            <div class="compact-readout-help">Estado actual del mecha en combate.</div>
           </div>
-          <div class="frame compact-readout">
-            <div class="tiny-label">Fuel → ♠</div>
+          <div class="frame compact-readout" data-compact-readout="fuel-attack" role="button" tabindex="0" aria-expanded="false">
+            <div class="tiny-label">Fuel a ataque</div>
             <div class="value" id="compactFuelToAttackValue">0 × 2</div>
+            <div class="compact-readout-help">El fuel multiplica el valor para atacar con picas.</div>
           </div>
-          <div class="frame compact-readout">
-            <div class="tiny-label">Projectile</div>
+          <div class="frame compact-readout" data-compact-readout="projectile" role="button" tabindex="0" aria-expanded="false">
+            <div class="tiny-label">Proyectil</div>
             <div class="value" id="compactProjectileStatusText">No</div>
+            <div class="compact-readout-help">Indica si puedes atacar usando el modo proyectil.</div>
           </div>
         </div>
       </section>
@@ -13811,6 +14108,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
           </div>
           <div class="compact-chip-stack">
             <span class="compact-chip compact-chip-danger" id="compactRivalObjective">Jugador 2</span>
+            <button class="compact-panel-expand-btn" data-mobile-drawer="rival" type="button">Expandir</button>
             <button class="compact-mobile-drawer-close" data-mobile-drawer-close type="button">Cerrar</button>
           </div>
         </div>
@@ -13846,7 +14144,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
 
           <section class="compact-zone-card compact-zone-card-rival">
             <div class="compact-zone-head">
-              <span>Combustible</span>
+              <span>Fuel</span>
               <strong id="compactRivalFuelSummary">0</strong>
             </div>
             <div class="compact-zone-cards compact-zone-cards-rival" id="compactRivalFuelCards"></div>
@@ -13908,6 +14206,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
             <span class="compact-hand-chip">Deck <strong id="compactDeckCount">0</strong></span>
             <span class="compact-hand-chip">Discard <strong id="compactDiscardCount">0</strong></span>
             <span class="compact-hand-chip compact-hand-chip-wide" id="compactCapacityText">0 cartas · MAXIMO 18</span>
+            <button class="primary compact-hand-modify-btn" data-source-button="actionAddBtn" id="compactMobileModifyBtn" type="button">Modificar</button>
           </div>
         </div>
 
@@ -13941,7 +14240,6 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
         </div>
         <button class="compact-action-hub-button acciones-btn" id="accionesBtn" type="button" aria-label="Acciones" data-label="Acciones" aria-expanded="false" aria-controls="compactMobileActionGrid"></button>
         <div class="compact-mobile-action-grid" id="compactMobileActionGrid">
-          <button class="primary" data-source-button="actionAddBtn" id="compactMobileModifyBtn" type="button">Modificar</button>
           <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Abrir ataque</button>
           <button class="cyan" data-mobile-drawer="rival" id="compactMobileRivalDrawerBtn" type="button">Ver rival</button>
           <button class="cyan" data-mobile-drawer="player" id="compactMobilePlayerDrawerBtn" type="button">Panel jugador</button>
@@ -14277,6 +14575,7 @@ let compactSuppressCardClickId = null;
 let compactMobileActionHubOpen = false;
 let compactActionHubPointerHandledUntil = 0;
 let compactTutorialExpanded = false;
+let compactActiveReadoutId = '';
 let mobilePanoramaVitalityStage = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -18989,7 +19288,8 @@ function updateCompactActionHubMenuAnchor(){
 function setCompactActionHubOpen(open){
   compactMobileActionHubOpen = !!open;
   const mobileHudActive = document.body?.classList.contains('mobile-compact-mode')
-    || document.body?.classList.contains('mobile-panorama-mode');
+    || document.body?.classList.contains('mobile-panorama-mode')
+    || document.body?.classList.contains('mobile-pc-compact-mode');
   document.body?.classList.toggle('compact-action-hub-open', mobileHudActive && compactMobileActionHubOpen);
   const btn = document.getElementById('accionesBtn') || document.getElementById('compactActionHubButton');
   btn?.setAttribute('aria-expanded', compactMobileActionHubOpen ? 'true' : 'false');
@@ -19003,6 +19303,15 @@ function setCompactTutorialExpanded(expanded){
   panel?.classList.toggle('compact-tutorial-expanded', compactTutorialExpanded);
   toggle?.setAttribute('aria-expanded', compactTutorialExpanded ? 'true' : 'false');
   if(toggle) toggle.textContent = compactTutorialExpanded ? 'Reducir' : 'Abrir guía';
+}
+
+function setCompactActiveReadout(readoutId=''){
+  compactActiveReadoutId = readoutId || '';
+  document.querySelectorAll('[data-compact-readout]').forEach(node => {
+    const active = !!compactActiveReadoutId && node.dataset.compactReadout === compactActiveReadoutId;
+    node.classList.toggle('is-readable', active);
+    node.setAttribute('aria-expanded', active ? 'true' : 'false');
+  });
 }
 
 function isDesktopCompactModeActive(){
@@ -19605,7 +19914,8 @@ function syncDesktopCompactButtons(){
     if(btn.id === 'compactMobilePlayerDrawerBtn'){
       shouldHide = true;
     }else if(btn.id === 'compactMobileModifyBtn'){
-      shouldHide = attackContextOpen || (!hasCompactDraft && !!source.disabled);
+      shouldHide = !btn.classList.contains('compact-hand-modify-btn')
+        && (attackContextOpen || (!hasCompactDraft && !!source.disabled));
     }else if(btn.id === 'compactMobileAttackModeBtn'){
       shouldHide = attackContextOpen || !!source.disabled;
     }else if(btn.id === 'compactMobilePassBtn'){
@@ -20436,6 +20746,7 @@ function renderDesktopCompactHud(){
   if(compactFuelToAttackValue) compactFuelToAttackValue.textContent = sourceText('fuelToAttackValue');
   const compactProjectileStatusText = document.getElementById('compactProjectileStatusText');
   if(compactProjectileStatusText) compactProjectileStatusText.textContent = sourceText('projectileStatusText');
+  setCompactActiveReadout(compactActiveReadoutId);
 
   const compactSelectionSummary = document.getElementById('compactSelectionSummary');
   if(compactSelectionSummary) compactSelectionSummary.textContent = `${state.selected.length} seleccionada${state.selected.length === 1 ? '' : 's'}`;
@@ -23909,6 +24220,15 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
       toggleMobilePanoramaVitalityStage(stageIdx);
       return;
     }
+  }
+  const readout = event.target.closest('[data-compact-readout]');
+  if(readout && document.body?.classList.contains('mobile-compact-mode')){
+    event.preventDefault();
+    const nextId = compactActiveReadoutId === readout.dataset.compactReadout ? '' : readout.dataset.compactReadout;
+    setCompactActiveReadout(nextId);
+    return;
+  }else if(compactActiveReadoutId && document.body?.classList.contains('mobile-compact-mode') && !event.target.closest('.compact-readout-strip')){
+    setCompactActiveReadout('');
   }
   const btn = event.target.closest('button');
   if(!btn) return;
