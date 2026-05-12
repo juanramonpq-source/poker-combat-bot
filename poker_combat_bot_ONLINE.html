@@ -7218,10 +7218,10 @@ body.desktop-compact-mode > footer{
 .acciones-btn.is-pressed{
   background:#f0b72a;
   background-image:none;
-  transform:translateY(2px) scale(.985);
+  transform:scale(.99);
   box-shadow:
-    0 3px 0 rgba(122,70,0,.25),
-    0 9px 18px rgba(5,15,42,.24);
+    0 5px 0 rgba(122,70,0,.24),
+    0 11px 20px rgba(5,15,42,.24);
 }
 
 .desktop-compact-main{
@@ -9586,12 +9586,12 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   .app.mobile-panorama-mode .compact-action-hub-button.is-pressed{
     background:#f0b72a !important;
     background-image:none !important;
-    transform:translate(-50%, calc(-50% + 2px)) scale(.985) !important;
+    transform:translate(-50%, -50%) scale(.99) !important;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,.60),
       inset 0 -2px 0 rgba(92,45,0,.24),
-      0 2px 0 rgba(96,49,0,.34),
-      0 8px 16px rgba(5,15,42,.26) !important;
+      0 4px 0 rgba(96,49,0,.32),
+      0 10px 18px rgba(5,15,42,.26) !important;
   }
 
   body.compact-action-hub-open .app.mobile-panorama-mode .compact-mobile-action-grid{
@@ -10458,10 +10458,10 @@ body.story-argos-hack-ui{
   .app.mobile-panorama-mode .compact-action-hub-button.is-pressed{
     background:#f0b72a !important;
     background-image:none !important;
-    transform:translate(-50%, calc(-50% + 2px)) scale(.985);
+    transform:translate(-50%, -50%) scale(.99);
     box-shadow:
-      0 3px 0 rgba(122,70,0,.25),
-      0 9px 18px rgba(5,15,42,.24) !important;
+      0 5px 0 rgba(122,70,0,.24),
+      0 11px 20px rgba(5,15,42,.24) !important;
   }
 
   .app.mobile-compact-mode .compact-action-hub-button span,
@@ -11159,7 +11159,7 @@ body.story-argos-hack-ui{
 
   .app.mobile-compact-mode .compact-action-hub-button:active,
   .app.mobile-compact-mode .compact-action-hub-button.is-pressed{
-    transform:translate(-50%, calc(-48% + 2px)) scale(.985);
+    transform:translate(-50%, -48%) scale(.99);
   }
 
   .app.mobile-compact-mode .compact-action-hub-button::after{
@@ -11806,12 +11806,12 @@ body.story-argos-hack-ui{
   .app.mobile-panorama-mode .compact-action-hub-button.is-pressed{
     background:#f0b72a !important;
     background-image:none !important;
-    transform:translate(-50%, calc(-50% + 2px)) scale(.985) !important;
+    transform:translate(-50%, -50%) scale(.99) !important;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,.60),
       inset 0 -2px 0 rgba(92,45,0,.24),
-      0 2px 0 rgba(96,49,0,.34),
-      0 8px 16px rgba(5,15,42,.26) !important;
+      0 4px 0 rgba(96,49,0,.32),
+      0 10px 18px rgba(5,15,42,.26) !important;
   }
 }
 
@@ -13540,7 +13540,7 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
             <strong id="compactMobileCapacityText">0/18</strong>
           </div>
         </div>
-        <button class="compact-action-hub-button acciones-btn" id="accionesBtn" type="button" aria-label="Menú de acciones" data-label="Menú de Acciones" aria-expanded="false" aria-controls="compactMobileActionGrid"></button>
+        <button class="compact-action-hub-button acciones-btn" id="accionesBtn" type="button" aria-label="Acciones" data-label="Acciones" aria-expanded="false" aria-controls="compactMobileActionGrid"></button>
         <div class="compact-mobile-action-grid" id="compactMobileActionGrid">
           <button class="primary" data-source-button="actionAddBtn" id="compactMobileModifyBtn" type="button">Modificar</button>
           <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Abrir ataque</button>
@@ -13874,6 +13874,7 @@ let compactPointerDragState = null;
 let compactSuppressCardClickUntil = 0;
 let compactSuppressCardClickId = null;
 let compactMobileActionHubOpen = false;
+let compactActionHubPointerHandledUntil = 0;
 let mobilePanoramaVitalityStage = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -18578,6 +18579,16 @@ function updateCompactActionHubMenuAnchor(){
   grid.style.setProperty('--compact-action-menu-height', `${Math.round(height)}px`);
 }
 
+function setCompactActionHubOpen(open){
+  compactMobileActionHubOpen = !!open;
+  const mobileHudActive = document.body?.classList.contains('mobile-compact-mode')
+    || document.body?.classList.contains('mobile-panorama-mode');
+  document.body?.classList.toggle('compact-action-hub-open', mobileHudActive && compactMobileActionHubOpen);
+  const btn = document.getElementById('accionesBtn') || document.getElementById('compactActionHubButton');
+  btn?.setAttribute('aria-expanded', compactMobileActionHubOpen ? 'true' : 'false');
+  updateCompactActionHubMenuAnchor();
+}
+
 function isDesktopCompactModeActive(){
   const app = document.querySelector('.app');
   return !!app && app.classList.contains('desktop-compact-mode');
@@ -18679,8 +18690,7 @@ function syncDesktopHudAvailability(){
     storyOrientationToastShownForMode = false;
     setCompactMobileDrawer('');
   }
-  document.body.classList.toggle('compact-action-hub-open', (mobilePanoramaActive || mobileCompactActive) && compactMobileActionHubOpen);
-  updateCompactActionHubMenuAnchor();
+  setCompactActionHubOpen((mobilePanoramaActive || mobileCompactActive) && compactMobileActionHubOpen);
   if(!mobilePanoramaActive && !mobileCompactActive) document.body.classList.remove('compact-menu-open');
   const mobilePanoramaOffered = canOfferMobilePanoramaHud();
   const topToggleBtn = document.getElementById('desktopCompactToggleTopBtn');
@@ -23399,13 +23409,33 @@ document.getElementById('mobilePanoramaToggleBtn').addEventListener('click', asy
 });
 const accionesBtn = document.getElementById('accionesBtn') || document.getElementById('compactActionHubButton');
 if(accionesBtn){
-  accionesBtn.addEventListener('pointerdown', () => {
+  accionesBtn.addEventListener('pointerdown', (event) => {
+    if(event.pointerType === 'mouse' && event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
     accionesBtn.classList.add('is-pressed');
+    try{ accionesBtn.setPointerCapture?.(event.pointerId); }catch(_err){}
   });
-  ['pointerup', 'pointercancel', 'pointerleave'].forEach(eventName => {
-    accionesBtn.addEventListener(eventName, () => {
+  accionesBtn.addEventListener('pointerup', (event) => {
+    if(event.pointerType === 'mouse' && event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    accionesBtn.classList.remove('is-pressed');
+    try{ accionesBtn.releasePointerCapture?.(event.pointerId); }catch(_err){}
+    compactActionHubPointerHandledUntil = Date.now() + 350;
+    setCompactActionHubOpen(!compactMobileActionHubOpen);
+  });
+  ['pointercancel', 'pointerleave'].forEach(eventName => {
+    accionesBtn.addEventListener(eventName, (event) => {
       accionesBtn.classList.remove('is-pressed');
+      try{ accionesBtn.releasePointerCapture?.(event.pointerId); }catch(_err){}
     });
+  });
+  accionesBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if(Date.now() < compactActionHubPointerHandledUntil) return;
+    setCompactActionHubOpen(!compactMobileActionHubOpen);
   });
 }
 document.getElementById('desktopCompactShell').addEventListener('contextmenu', (event) => {
@@ -23434,10 +23464,7 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
     return;
   }
   if(btn.id === 'accionesBtn' || btn.id === 'compactActionHubButton'){
-    compactMobileActionHubOpen = !compactMobileActionHubOpen;
-    document.body.classList.toggle('compact-action-hub-open', compactMobileActionHubOpen);
-    btn.setAttribute('aria-expanded', compactMobileActionHubOpen ? 'true' : 'false');
-    updateCompactActionHubMenuAnchor();
+    setCompactActionHubOpen(!compactMobileActionHubOpen);
     return;
   }
   if(btn.id === 'compactReturnBtn' && STORY_EMBED_MODE){
