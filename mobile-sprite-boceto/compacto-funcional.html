@@ -3659,6 +3659,7 @@
   </main>
 
   <script>
+    const EMBEDDED_REAL_GAME = new URLSearchParams(window.location.search).get("embedded") === "1";
     const CARD_ASSET_ROOT = "../assets/cards/hayeah-full/";
     const SAVE_KEY = "pocobot.sprite.compact.functional.v1";
     const INITIAL_HAND_SIZE = 7;
@@ -3747,7 +3748,11 @@
       activeTab: "mecha",
       handOffset: 0,
       log: [],
-      players: []
+      players: [],
+      bridgeDraftPlacements: {},
+      bridgeActions: {},
+      bridgeTutorialText: "",
+      bridgeTutorialMeta: ""
     };
 
     function makeCard(rank, suit, idSuffix = "") {
