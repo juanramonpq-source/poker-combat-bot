@@ -18057,6 +18057,37 @@ body.story-argos-hack-ui .card.selected{
   74%{ filter:hue-rotate(-18deg) saturate(.9) contrast(1.35); transform:translateY(-1px) skewX(1deg); }
 }
 
+.mobile-sprite-bridge-shell{
+  position:fixed;
+  inset:0;
+  z-index:9000;
+  display:none;
+  background:#04162d;
+  overflow:hidden;
+}
+.mobile-sprite-bridge-shell:not([hidden]){
+  display:block;
+}
+.mobile-sprite-bridge-shell iframe{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block;
+  background:#04162d;
+}
+body.mobile-sprite-hud-active{
+  overflow:hidden;
+  touch-action:none;
+}
+body.mobile-sprite-hud-active .app{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+body.mobile-sprite-hud-active .desktop-hud-transition{
+  display:none;
+}
+
 </style>
 </head>
 <body>
@@ -19089,6 +19120,10 @@ body.story-argos-hack-ui .card.selected{
   <div class="footer-note">RETRO COCKPIT INTERFACE · COMBAT READY BUILD</div>
 </div>
 
+<section class="mobile-sprite-bridge-shell" id="mobileSpriteBridgeShell" hidden aria-hidden="true">
+  <iframe id="mobileSpriteBridgeFrame" title="PoCoBOT móvil sprite" loading="eager"></iframe>
+</section>
+
 <div class="attack-special-popup-overlay" id="attackSpecialPopupOverlay" aria-hidden="true">
   <div class="attack-special-popup-shell">
     <div class="attack-special-monitor-head" aria-hidden="true">
@@ -19383,6 +19418,12 @@ let compactTutorialExpanded = false;
 let compactActiveReadoutId = '';
 let compactHandOverviewOpen = false;
 let mobilePanoramaVitalityStage = null;
+let mobileSpriteHudEnabled = true;
+let mobileSpriteHudApi = null;
+let mobileSpriteHudSyncTimer = null;
+let mobileSpriteDraftPlacements = new Map();
+let mobileSpriteDraftOwnerIdx = null;
+let mobileSpriteProjectileOnlyMode = false;
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -19680,6 +19721,7 @@ function returnToMainMenu(){
   state.gameMode = 'local';
   state.onlineFxCue = null;
   desktopHudMode = 'expanded';
+  mobileSpriteHudEnabled = true;
   mobilePanoramaRequested = false;
   releaseOrientationLockBestEffort();
 
@@ -19695,6 +19737,7 @@ function primeOfflineMode(gameMode, difficulty=null){
   state.onlineFxCue = null;
   state.tutorial = false;
   desktopHudMode = 'compact';
+  mobileSpriteHudEnabled = true;
   mobilePanoramaRequested = false;
   releaseOrientationLockBestEffort();
 }
@@ -19706,6 +19749,7 @@ function shouldDefaultNormalCombatToMobileHorizontal(){
 function prepareNormalCombatStartHudMode(){
   if(STORY_EMBED_MODE) return;
   desktopHudMode = 'compact';
+  mobileSpriteHudEnabled = true;
   mobilePanoramaRequested = false;
   releaseOrientationLockBestEffort();
 }
@@ -19724,6 +19768,7 @@ function prepareStoryCombatStartHudMode(){
   }
   const useHorizontal = storyHudMode === 'horizontal';
   setStoryHudMode(useHorizontal ? 'horizontal' : 'compact');
+  mobileSpriteHudEnabled = true;
   desktopHudMode = 'compact';
   mobilePanoramaRequested = useHorizontal;
   if(useHorizontal){
@@ -22572,6 +22617,7 @@ function activateStoryEmbedSpecialMode(){
   if(!STORY_EMBED_MODE) return;
   const useHorizontal = isStoryMobileViewport();
   setStoryHudMode(useHorizontal ? 'horizontal' : 'compact');
+  mobileSpriteHudEnabled = true;
   desktopHudMode = 'compact';
   mobilePanoramaRequested = useHorizontal;
   if(useHorizontal){
@@ -23713,6 +23759,8 @@ function isPendingAttackCard(id){ return state.attackMode && state.selected.some
 function clearSelection(){
   state.selected = [];
   clearCompactDraftPlacements(false);
+  clearMobileSpriteDraftPlacements(false);
+  mobileSpriteProjectileOnlyMode = false;
   render();
 }
 
@@ -24496,6 +24544,7 @@ function syncDesktopHudAvailability(){
     compactReturnBtn.textContent = getStoryReturnButtonLabel();
   }
   syncStoryEmbedNavigationVisibility();
+  syncMobileSpriteHudBridge();
   return available;
 }
 
@@ -24563,6 +24612,7 @@ function switchToProInterface(){
     activateStoryEmbedSpecialMode();
     return;
   }
+  mobileSpriteHudEnabled = true;
   mobilePanoramaRequested = isMobileLandscapeViewport();
   setCompactMobileDrawer('');
   triggerDesktopHudModeTransition('compact');
@@ -24579,6 +24629,499 @@ function getDesktopCompactRivalIndex(playerIdx){
   if(state.players.length < 2) return playerIdx;
   return playerIdx === 0 ? 1 : 0;
 }
+
+function getMobileSpritePlayerIndex(){
+  return getDesktopCompactPlayerIndex();
+}
+
+function normalizeMobileSpriteZone(zone){
+  if(zone === 'pilot') return 'core-pilot';
+  if(zone === 'copilot') return 'core-copilot';
+  if(zone === 'booster') return 'core-booster';
+  return zone;
+}
+
+function denormalizeMobileSpriteZone(zone){
+  if(zone === 'core-pilot') return 'pilot';
+  if(zone === 'core-copilot') return 'copilot';
+  if(zone === 'core-booster') return 'booster';
+  return zone;
+}
+
+function clearMobileSpriteDraftPlacements(renderNow=false){
+  if(mobileSpriteDraftPlacements.size === 0 && mobileSpriteDraftOwnerIdx === null) return;
+  mobileSpriteDraftPlacements.clear();
+  mobileSpriteDraftOwnerIdx = null;
+  if(renderNow) render();
+}
+
+function canUseMobileSpriteHud(){
+  const body = document.body;
+  const mobileSpriteMode = !!body && (
+    body.classList.contains('mobile-compact-mode')
+    || body.classList.contains('mobile-pc-compact-mode')
+  ) && !body.classList.contains('mobile-panorama-mode');
+  const introVisible = !document.getElementById('introScreen')?.classList.contains('hidden');
+  return !!mobileSpriteHudEnabled && !!state.gameStarted && !introVisible && mobileSpriteMode;
+}
+
+function syncMobileSpriteHudBridge(force=false){
+  const shell = document.getElementById('mobileSpriteBridgeShell');
+  const frame = document.getElementById('mobileSpriteBridgeFrame');
+  if(!shell || !frame) return;
+  const active = canUseMobileSpriteHud();
+  shell.hidden = !active;
+  shell.setAttribute('aria-hidden', active ? 'false' : 'true');
+  document.body?.classList.toggle('mobile-sprite-hud-active', active);
+  if(!active){
+    window.clearTimeout(mobileSpriteHudSyncTimer);
+    mobileSpriteHudSyncTimer = null;
+    return;
+  }
+  if(!frame.getAttribute('src')){
+    frame.setAttribute('src', 'mobile-sprite-boceto/compacto-funcional.html?embedded=1');
+  }
+  if(force) sendMobileSpriteSnapshotSoon(0);
+  else sendMobileSpriteSnapshotSoon(60);
+}
+
+function sendMobileSpriteSnapshotSoon(delay=0){
+  window.clearTimeout(mobileSpriteHudSyncTimer);
+  mobileSpriteHudSyncTimer = window.setTimeout(() => {
+    mobileSpriteHudSyncTimer = null;
+    sendMobileSpriteSnapshot();
+  }, delay);
+}
+
+function postMobileSpriteMessage(payload){
+  const frame = document.getElementById('mobileSpriteBridgeFrame');
+  try{
+    frame?.contentWindow?.postMessage(payload, '*');
+  }catch(_err){}
+}
+
+function sendMobileSpriteSnapshot(){
+  if(!canUseMobileSpriteHud()) return;
+  const snapshot = createMobileSpriteSnapshot();
+  try{
+    if(mobileSpriteHudApi && typeof mobileSpriteHudApi.receiveSnapshot === 'function'){
+      mobileSpriteHudApi.receiveSnapshot(snapshot);
+      return;
+    }
+  }catch(_err){}
+  const frame = document.getElementById('mobileSpriteBridgeFrame');
+  try{
+    const api = frame?.contentWindow?.__pocobotSpriteHud;
+    if(api && typeof api.receiveSnapshot === 'function'){
+      mobileSpriteHudApi = api;
+      api.receiveSnapshot(snapshot);
+      return;
+    }
+  }catch(_err){}
+  postMobileSpriteMessage({ source:'pocobot-real-game', type:'snapshot', snapshot });
+}
+
+function cloneMobileSpriteCard(card, zone='', owner=0){
+  if(!card) return null;
+  return {
+    id: card.id,
+    rank: card.rank,
+    suit: card.suit,
+    value: Number.isFinite(card.value) ? card.value : rankValue(card.rank),
+    zone,
+    owner
+  };
+}
+
+function toMobileSpriteAssetPath(src=''){
+  if(!src) return '';
+  if(src.startsWith('http:') || src.startsWith('https:') || src.startsWith('data:') || src.startsWith('blob:') || src.startsWith('//') || src.startsWith('/')) return src;
+  if(src.startsWith('../')) return src;
+  if(src.startsWith('assets/')) return `../${src}`;
+  return src;
+}
+
+function cloneMobileSpritePlayer(realIdx){
+  const player = state.players?.[realIdx];
+  if(!player){
+    return {
+      name:'Jugador',
+      realIndex:realIdx,
+      hand:[],
+      core:{ pilot:null, copilot:null, booster:null },
+      attack:[],
+      defense:[],
+      armor:[],
+      fuel:[],
+      limits:{ attack:2, defense:2, armor:2 },
+      canAttack:false,
+      buildPercent:0,
+      statsCards:0,
+      mechaSrc:''
+    };
+  }
+  const limits = getModuleLimits(player);
+  const build = getBuildStatus(player);
+  return {
+    name: player.name || `Jugador ${realIdx + 1}`,
+    realIndex: realIdx,
+    hand: shouldHideHandForPlayer(realIdx) ? [] : (player.hand || []).map(card => cloneMobileSpriteCard(card, 'hand', realIdx)).filter(Boolean),
+    core: {
+      pilot: cloneMobileSpriteCard(player.core?.pilot, 'pilot', realIdx),
+      copilot: cloneMobileSpriteCard(player.core?.copilot, 'copilot', realIdx),
+      booster: cloneMobileSpriteCard(player.core?.booster, 'booster', realIdx)
+    },
+    attack: (player.attack || []).map(card => cloneMobileSpriteCard(card, 'attack', realIdx)).filter(Boolean),
+    defense: (player.defense || []).map(card => cloneMobileSpriteCard(card, 'defense', realIdx)).filter(Boolean),
+    armor: (player.armor || []).map(card => cloneMobileSpriteCard(card, 'armor', realIdx)).filter(Boolean),
+    fuel: (player.fuel || []).map(card => cloneMobileSpriteCard(card, 'fuel', realIdx)).filter(Boolean),
+    limits,
+    canAttack: canPlayerOpenMainAttack(player, realIdx),
+    buildPercent: getDialBuildPercent(player),
+    statsCards: (player.attack?.length || 0) + (player.defense?.length || 0) + (player.armor?.length || 0),
+    mechaSrc: toMobileSpriteAssetPath(getMechaPhaseImage(player)),
+    flags: {
+      mounted: !!build.mounted,
+      combatReady: !!build.combatReady
+    }
+  };
+}
+
+function getMobileSpritePendingDefense(viewIdx, rivalIdx){
+  if(!state.pendingDefense) return null;
+  const defenderIndex = state.pendingDefense.defenderIndex === viewIdx ? 0 : state.pendingDefense.defenderIndex === rivalIdx ? 1 : state.pendingDefense.defenderIndex;
+  const attackerIndex = state.pendingDefense.attackerIndex === viewIdx ? 0 : state.pendingDefense.attackerIndex === rivalIdx ? 1 : state.pendingDefense.attackerIndex;
+  return { ...state.pendingDefense, defenderIndex, attackerIndex };
+}
+
+function getMobileSpriteDraftMap(viewIdx){
+  const out = {};
+  if(mobileSpriteDraftOwnerIdx !== viewIdx) return out;
+  mobileSpriteDraftPlacements.forEach((zone, cardId) => {
+    out[cardId] = denormalizeMobileSpriteZone(zone);
+  });
+  return out;
+}
+
+function getMobileSpriteActionStates(viewIdx){
+  const player = state.players?.[viewIdx];
+  const playerTurn = canUseInteractiveTurnAction() && getInteractivePlayerIndex() === viewIdx;
+  const defenseTurn = canUseInteractiveDefenseAction() && state.pendingDefense?.defenderIndex === viewIdx;
+  const hasDraft = mobileSpriteDraftOwnerIdx === viewIdx && mobileSpriteDraftPlacements.size > 0;
+  const attackReady = playerTurn && player && canPlayerOpenMainAttack(player, viewIdx);
+  return {
+    modify: playerTurn && (hasDraft || canModifySelection()),
+    draw: playerTurn && canDrawDiamondNow(),
+    figures: playerTurn && hasFigureBurstCondition(player),
+    'attack-mode': !!attackReady,
+    projectile: playerTurn && state.attackMode && state.projectileUnlocked,
+    'projectile-only': playerTurn && canProjectileOnlyNow(),
+    confirm: defenseTurn || (playerTurn && (mobileSpriteProjectileOnlyMode ? state.selected.length > 0 : canConfirmAttackNow())),
+    pass: playerTurn || defenseTurn,
+    defend: defenseTurn,
+    'skip-defense': defenseTurn,
+    clear: playerTurn || defenseTurn || hasDraft || state.selected.length > 0
+  };
+}
+
+function getMobileSpriteGuidanceText(){
+  const tutorialTitle = document.getElementById('compactTutorialBoxTitle')?.textContent?.trim() || '';
+  const tutorialText = document.getElementById('compactTutorialBoxText')?.textContent?.trim() || '';
+  const tutorialMeta = document.getElementById('compactTutorialBoxMeta')?.textContent?.trim() || '';
+  const logLines = (state.log || []).slice(0, 4);
+  if(tutorialSystem.enabled || state.tutorial){
+    return {
+      text: tutorialText || 'Sigue la acción marcada por el tutorial.',
+      meta: tutorialMeta || tutorialTitle
+    };
+  }
+  if(state.pendingDefense){
+    const defender = state.players?.[state.pendingDefense.defenderIndex];
+    const diamonds = defender?.hand?.filter(isNumericDiamondCard) || [];
+    return {
+      text: diamonds.length ? 'Ataque entrante: puedes elegir 1♦ para reducir el daño.' : 'Ataque entrante: sin diamantes, el impacto se resuelve automaticamente.',
+      meta: `Ataque ${state.pendingDefense.totalAttack || 0}`
+    };
+  }
+  return {
+    text: logLines[0] || 'Modo libre activado. La consola solo muestra acciones legales.',
+    meta: logLines.slice(1).join(' · ')
+  };
+}
+
+function createMobileSpriteSnapshot(){
+  const viewIdx = getMobileSpritePlayerIndex();
+  const rivalIdx = getDesktopCompactRivalIndex(viewIdx);
+  const currentPlayer = state.currentPlayer === viewIdx ? 0 : state.currentPlayer === rivalIdx ? 1 : 0;
+  const selectedIds = (state.selected || []).map(card => card.id).filter(Boolean);
+  const attackSelection = state.attackMode ? getAttackSelection() : { fuelValue:0, limit:0 };
+  const guidance = getMobileSpriteGuidanceText();
+  return {
+    players: [cloneMobileSpritePlayer(viewIdx), cloneMobileSpritePlayer(rivalIdx)],
+    currentPlayer,
+    phase: state.phase || '',
+    selectedIds,
+    attackMode: !!state.attackMode,
+    projectileMode: !!state.projectileMode,
+    projectileOnlyMode: !!mobileSpriteProjectileOnlyMode,
+    projectileUnlocked: !!state.projectileUnlocked,
+    tutorial: !!state.tutorial || !!tutorialSystem.enabled,
+    musicOn: !!state.soundOn,
+    pendingDefense: getMobileSpritePendingDefense(viewIdx, rivalIdx),
+    winner: state.winner || null,
+    deckCount: getVisibleDeckCount(viewIdx),
+    discardCount: getVisibleDiscardCount(viewIdx),
+    selectedFuelText: `${attackSelection.fuelValue || 0}×2=${attackSelection.limit || 0}`,
+    bridgeDraftPlacements: getMobileSpriteDraftMap(viewIdx),
+    bridgeActions: getMobileSpriteActionStates(viewIdx),
+    bridgeTutorialText: guidance.text,
+    bridgeTutorialMeta: guidance.meta,
+    log: (state.log || []).slice(0, 20)
+  };
+}
+
+function buildMobileSpriteDraftSimulationPlayer(playerIdx, excludeCardId=null){
+  const player = state.players?.[playerIdx];
+  if(!player) return null;
+  const clone = cloneCompactDraftPlayerState(player);
+  if(mobileSpriteDraftOwnerIdx !== playerIdx) return clone;
+  mobileSpriteDraftPlacements.forEach((zone, cardId) => {
+    if(cardId === excludeCardId) return;
+    const draftCard = clone.hand.find(card => card.id === cardId);
+    if(!draftCard) return;
+    removeById(clone.hand, cardId);
+    const result = placeCardOnBoard(clone, draftCard, zone);
+    if(!result.ok) clone.hand.push(draftCard);
+  });
+  return clone;
+}
+
+function getMobileSpriteDraftLegalZones(cardId){
+  const playerIdx = getMobileSpritePlayerIndex();
+  if(!canUseInteractiveTurnAction() || getInteractivePlayerIndex() !== playerIdx || state.pendingDefense || state.transitionLock || state.winner) return [];
+  const selectable = flattenCollectionsForInteractivePlayer();
+  const draftCard = selectable.find(card => card.id === cardId && card.zone === 'hand');
+  if(!draftCard || draftCard.suit === 'hidden' || !tutorialCanSelectCard(draftCard)) return [];
+  if(mobileSpriteDraftOwnerIdx !== null && mobileSpriteDraftOwnerIdx !== playerIdx) clearMobileSpriteDraftPlacements(false);
+
+  const draftAlreadyExists = mobileSpriteDraftPlacements.has(cardId);
+  const operationBase = state.selected.filter(card => card.zone !== 'hand').length + mobileSpriteDraftPlacements.size - (draftAlreadyExists ? 1 : 0);
+  const operationLimit = state.turnCount === 1 ? 3 : 2;
+  if(operationBase >= operationLimit) return [];
+
+  const basePlayer = buildMobileSpriteDraftSimulationPlayer(playerIdx, cardId);
+  if(!basePlayer) return [];
+  const simulatedCard = basePlayer.hand.find(card => card.id === cardId);
+  if(!simulatedCard) return [];
+
+  const legalZones = [];
+  coreSelectionTargets(simulatedCard, basePlayer).forEach(zone => legalZones.push(denormalizeMobileSpriteZone(zone)));
+  ['attack', 'defense', 'armor', 'fuel'].forEach(zone => {
+    const testPlayer = cloneCompactDraftPlayerState(basePlayer);
+    const testCard = testPlayer.hand.find(card => card.id === cardId);
+    if(!testCard) return;
+    removeById(testPlayer.hand, cardId);
+    const result = placeCardOnBoard(testPlayer, testCard, zone);
+    if(result.ok) legalZones.push(zone);
+  });
+  return legalZones;
+}
+
+function setMobileSpriteDraftPlacement(cardId, zone){
+  const playerIdx = getMobileSpritePlayerIndex();
+  const normalizedZone = normalizeMobileSpriteZone(zone);
+  const legalZones = getMobileSpriteDraftLegalZones(cardId).map(normalizeMobileSpriteZone);
+  if(!legalZones.includes(normalizedZone)){
+    addToast('Ese destino no acepta la carta seleccionada.', 'warn');
+    sendMobileSpriteSnapshotSoon(0);
+    return false;
+  }
+  mobileSpriteDraftOwnerIdx = playerIdx;
+  mobileSpriteDraftPlacements.set(cardId, normalizedZone);
+  state.selected = state.selected.filter(card => card.id !== cardId);
+  const card = state.players?.[playerIdx]?.hand?.find(item => item.id === cardId);
+  if(card) notifySelection(`${cardText(card)} preparado en ${zoneLabel(normalizedZone)}. Pulsa Modificar para confirmar.`);
+  render();
+  sendMobileSpriteSnapshotSoon(0);
+  return true;
+}
+
+function commitMobileSpriteDraftPlacements(){
+  const playerIdx = getMobileSpritePlayerIndex();
+  if(mobileSpriteDraftOwnerIdx !== playerIdx || mobileSpriteDraftPlacements.size === 0) return false;
+  if(_ol.active && _ol.role === 'guest'){
+    const selectable = flattenCollectionsForInteractivePlayer();
+    const byId = new Map(selectable.map(card => [card.id, card]));
+    state.selected = dedupeSelectedCards(Array.from(mobileSpriteDraftPlacements.keys()).map(id => byId.get(id)).filter(Boolean));
+    olSendAction({ type:'modifyMecha', selected: state.selected.slice() });
+    clearMobileSpriteDraftPlacements(false);
+    return true;
+  }
+  if(!canUseInteractiveTurnAction() || getInteractivePlayerIndex() !== playerIdx) return false;
+  const player = state.players[playerIdx];
+  const entries = Array.from(mobileSpriteDraftPlacements.entries()).sort((a, b) => {
+    const ai = player.hand.findIndex(card => card.id === a[0]);
+    const bi = player.hand.findIndex(card => card.id === b[0]);
+    return ai - bi;
+  });
+  for(const [cardId, zone] of entries){
+    const legalZones = getMobileSpriteDraftLegalZones(cardId).map(normalizeMobileSpriteZone);
+    if(!legalZones.includes(zone)){
+      addToast('El montaje preparado ya no es legal.', 'warn');
+      clearMobileSpriteDraftPlacements(false);
+      render();
+      return false;
+    }
+  }
+  entries.forEach(([cardId, zone]) => {
+    const card = removeById(player.hand, cardId);
+    if(!card) return;
+    placeCardOnBoard(player, card, zone);
+  });
+  log(`🔧 ${player.name} confirma ${entries.length} cambio(s) de montaje desde la interfaz móvil.`);
+  syncMilestones(playerIdx);
+  clearMobileSpriteDraftPlacements(false);
+  finishModifyTurn();
+  return true;
+}
+
+function callMobileSpriteHudFx(type, payload={}){
+  try{
+    if(mobileSpriteHudApi && typeof mobileSpriteHudApi[type] === 'function'){
+      mobileSpriteHudApi[type](payload);
+      return;
+    }
+  }catch(_err){}
+  const messageType = type === 'playAttackFx' ? 'attackFx' : type === 'animateModification' ? 'modifyFx' : 'toast';
+  postMobileSpriteMessage({ source:'pocobot-real-game', type:messageType, payload, zone:payload.zone, text:payload.text });
+}
+
+function handleMobileSpriteAction(action){
+  const playerIdx = getMobileSpritePlayerIndex();
+  switch(action){
+    case 'modify':
+      if(commitMobileSpriteDraftPlacements()) return;
+      if(canUseInteractiveTurnAction() && getInteractivePlayerIndex() === playerIdx) modifyMecha();
+      return;
+    case 'draw':
+      if(canUseInteractiveTurnAction()) drawWithDiamond();
+      return;
+    case 'figures':
+      if(canUseInteractiveTurnAction()) drawWithTwoFigures();
+      return;
+    case 'attack-mode':
+      mobileSpriteProjectileOnlyMode = false;
+      if(!canUseInteractiveTurnAction()) return;
+      if(!tutorialValidateAction('attackMode')) return;
+      if(state.pendingDefense || !canPlayerOpenMainAttack(state.players[state.currentPlayer], state.currentPlayer)) return;
+      state.attackMode = !state.attackMode;
+      if(!state.attackMode){
+        state.projectileMode = false;
+        state.selected = [];
+      }
+      render();
+      return;
+    case 'projectile':
+      mobileSpriteProjectileOnlyMode = false;
+      if(!canUseInteractiveTurnAction()) return;
+      if(state.pendingDefense || !state.projectileUnlocked || !state.players[state.currentPlayer].attack.some(isPlayableProjectileCard)) return;
+      state.attackMode = true;
+      state.projectileMode = !state.projectileMode;
+      render();
+      return;
+    case 'projectile-only':
+      if(!canUseInteractiveTurnAction() || !canProjectileOnlyNow()) return;
+      mobileSpriteProjectileOnlyMode = true;
+      state.attackMode = true;
+      state.projectileMode = false;
+      addToast('Selecciona una pica instalada y pulsa Confirmar.', 'ok');
+      render();
+      return;
+    case 'confirm':
+      if(canUseInteractiveDefenseAction()){
+        confirmDefense();
+      }else if(canUseInteractiveTurnAction()){
+        const selection = getAttackSelection();
+        callMobileSpriteHudFx('playAttackFx', {
+          attackerIndex: state.currentPlayer === playerIdx ? 0 : 1,
+          damage: selection.mainValue + selection.projectileValue,
+          projectile: !!selection.projectile || !!mobileSpriteProjectileOnlyMode,
+          full: isCompleteAttackMecha(state.players[state.currentPlayer])
+        });
+        confirmAttack(!!mobileSpriteProjectileOnlyMode);
+        mobileSpriteProjectileOnlyMode = false;
+      }
+      return;
+    case 'pass':
+      if(canUseInteractiveTurnAction()) passTurn();
+      return;
+    case 'defend':
+      if(!canUseInteractiveDefenseAction()) return;
+      if(state.selected.length === 1 && isNumericDiamondCard(state.selected[0])) confirmDefense();
+      else beginInteractiveDefenseSelection();
+      return;
+    case 'skip-defense':
+      if(canUseInteractiveDefenseAction()) skipDefense();
+      return;
+    case 'clear':
+      mobileSpriteProjectileOnlyMode = false;
+      clearMobileSpriteDraftPlacements(false);
+      clearSelection();
+      return;
+    default:
+      return;
+  }
+}
+
+function handleMobileSpriteMenu(action){
+  switch(action){
+    case 'new': requestNewGame(); break;
+    case 'back':
+      if(STORY_EMBED_MODE && (state.storyMission || STORY_MISSION_BOOT)) returnToStoryMap();
+      else returnToMainMenu();
+      break;
+    case 'save': requestSaveGame(); break;
+    case 'load': requestLoadGame(); break;
+    case 'music': document.getElementById('soundToggleBtn')?.click(); break;
+    case 'tutorial': document.getElementById('toggleTutorialBtn')?.click(); break;
+    default: break;
+  }
+}
+
+function handleMobileSpriteBridge(type, payload={}){
+  if(type === 'menu') handleMobileSpriteMenu(payload.action);
+  if(type === 'action') handleMobileSpriteAction(payload.action);
+  if(type === 'select') toggleSelect(payload.cardId);
+  if(type === 'draftDrop') setMobileSpriteDraftPlacement(payload.cardId, payload.zone);
+  if(type === 'view' && payload.mode === 'scroll'){
+    mobileSpriteHudEnabled = false;
+    mobileSpriteProjectileOnlyMode = false;
+    clearMobileSpriteDraftPlacements(false);
+    desktopHudMode = 'expanded';
+    mobilePanoramaRequested = false;
+    setCompactMobileDrawer('');
+    syncDesktopHudAvailability();
+    render();
+    return;
+  }
+  sendMobileSpriteSnapshotSoon(80);
+}
+
+window.__pocobotSpriteMobileBridge = {
+  register(api){
+    mobileSpriteHudApi = api;
+    sendMobileSpriteSnapshotSoon(0);
+    return true;
+  },
+  handle: handleMobileSpriteBridge,
+  getLegalZones: getMobileSpriteDraftLegalZones
+};
+
+window.addEventListener('message', event => {
+  const data = event.data || {};
+  if(data.source !== 'pocobot-sprite-hud') return;
+  if(data.type === 'ready') sendMobileSpriteSnapshotSoon(0);
+});
 
 function getDesktopCompactMechaStatus(player){
   if(!player) return 'Sin datos';
@@ -28858,6 +29401,7 @@ function render(){
 
   // Online multiplayer post-render
   afterRender();
+  sendMobileSpriteSnapshotSoon(0);
 }
 
 
@@ -32562,6 +33106,12 @@ function devSetViewportMode(mode='expanded'){
     ? mode
     : 'expanded';
   devHudModeOverride = normalized === 'expanded' ? 'auto' : normalized;
+  mobileSpriteHudEnabled = normalized === 'mobile-vertical'
+    || normalized === 'mobile-horizontal'
+    || normalized === 'compact'
+    || normalized === 'horizontal'
+    || normalized === 'legacy-mobile'
+    || normalized === 'legacy-compact-horizontal';
   desktopHudMode = normalized === 'expanded' ? 'expanded' : 'compact';
   mobilePanoramaRequested = normalized === 'horizontal'
     || normalized === 'mobile-horizontal'

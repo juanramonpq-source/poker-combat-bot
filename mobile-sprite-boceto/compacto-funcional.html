@@ -1915,6 +1915,20 @@
       outline: 3px solid var(--gold);
     }
 
+    .card.is-draft-origin {
+      opacity: .42;
+      filter: saturate(.7) brightness(.86);
+    }
+
+    .card.is-draft-preview {
+      outline: 2px solid rgba(255, 215, 82, .85);
+      box-shadow:
+        0 0 0 2px rgba(20, 12, 0, .32),
+        0 0 18px rgba(255, 213, 72, .42);
+      opacity: .94;
+      filter: brightness(1.08) saturate(1.08);
+    }
+
     .zone-cards .card {
       width: 38px;
       height: 55px;
@@ -3942,6 +3956,9 @@
     }
 
     function moduleLimit(player, module) {
+      const bridgedLimit = player?.limits?.[module];
+      if (Number.isFinite(bridgedLimit)) return bridgedLimit;
+      if (Number.isFinite(bridgedLimit?.max)) return bridgedLimit.max;
       let limit = 2;
       if (player.core.pilot && SUIT_TO_MODULE[player.core.pilot.suit] === module) limit = Math.max(limit, 3);
       if (player.core.copilot && player.core.copilot.suit !== "diamonds" && SUIT_TO_MODULE[player.core.copilot.suit] === module) limit = Math.max(limit, 3);
@@ -3950,12 +3967,20 @@
     }
 
     function playerCanAttack(player) {
+      if (typeof player?.canAttack === "boolean") return player.canAttack;
       if (!player.core.pilot || player.core.pilot.suit === "diamonds") return false;
       const statsCards = [...player.attack, ...player.defense, ...player.armor];
       return statsCards.length >= 6 && player.attack.length > 0;
     }
 
     function getBuildProgress(player) {
+      if (Number.isFinite(player?.buildPercent)) {
+        return {
+          percent: player.buildPercent,
+          statsCards: player.statsCards || 0,
+          hasPilot: !!player.core?.pilot
+        };
+      }
       if (!player) return { percent: 0, statsCards: 0, hasPilot: false };
       const statsCards = [...player.attack, ...player.defense, ...player.armor].length;
       const hasPilot = !!player.core.pilot && player.core.pilot.suit !== "diamonds";
@@ -4399,6 +4424,9 @@
     }
 
     function placeCard(cardId, zone) {
+      if (EMBEDDED_REAL_GAME && callRealGameBridge("draftDrop", { cardId, zone })) {
+        return true;
+      }
       const found = findCard(cardId);
       const player = state.players[0];
       if (!found || found.player !== player || found.zone !== "hand") {
@@ -4442,6 +4470,13 @@
     }
 
     function canHintBuildTargets(found) {
+      if (EMBEDDED_REAL_GAME) {
+        return !!found
+          && found.player === state.players[0]
+          && found.zone === "hand"
+          && !state.pendingDefense
+          && !state.winner;
+      }
       return found
         && found.player === state.players[0]
         && found.zone === "hand"
@@ -4458,6 +4493,16 @@
       state.activeTab = "mecha";
       shell.classList.add("board-open");
       renderActions();
+      if (EMBEDDED_REAL_GAME) {
+        const legalZones = getRealGameLegalZones(cardId);
+        document.querySelectorAll(".drop-zone").forEach((node) => {
+          if (node.dataset.zone === "reg") return;
+          const isValid = legalZones.includes(node.dataset.zone);
+          node.classList.toggle("is-drop-valid", isValid);
+          node.classList.toggle("is-drop-invalid", !isValid);
+        });
+        return legalZones.length > 0;
+      }
       document.querySelectorAll(".drop-zone").forEach((node) => {
         if (node.dataset.zone === "reg") return;
         const isValid = !validatePlacement(state.players[0], found.card, node.dataset.zone);
@@ -4475,6 +4520,10 @@
     }
 
     function applyBuildChanges() {
+      if (EMBEDDED_REAL_GAME) {
+        callRealGameBridge("action", { action: "modify" });
+        return;
+      }
       if (!state.pendingBuildOps) {
         toast("Arrastra primero una carta al panel.");
         return;
@@ -4528,10 +4577,12 @@
     }
 
     function openClassicScrollMode() {
+      if (EMBEDDED_REAL_GAME && callRealGameBridge("view", { mode: "scroll" })) return;
       window.location.href = new URL("../poker_combat_bot_ONLINE.html", window.location.href).href;
     }
 
     function toggleSelected(cardId) {
+      if (EMBEDDED_REAL_GAME && callRealGameBridge("select", { cardId })) return;
       const found = findCard(cardId);
       if (!found) return;
       if (state.pendingDefense) {
@@ -4568,6 +4619,7 @@
     }
 
     function clearSelection() {
+      if (EMBEDDED_REAL_GAME && callRealGameBridge("action", { action: "clear" })) return;
       state.selected = [];
       state.attackMode = false;
       state.projectileMode = false;
@@ -5030,6 +5082,11 @@
     }
 
     function handleMenu(action) {
+      if (EMBEDDED_REAL_GAME && callRealGameBridge("menu", { action })) {
+        closeActions();
+        closeTopMenu();
+        return;
+      }
       if (action === "new") seedDemoGame();
       if (action === "back") {
         shell.classList.remove("actions-open", "board-open");
@@ -5068,6 +5125,20 @@
     }
 
     function handleAction(action) {
+      if (EMBEDDED_REAL_GAME) {
+        if (["attack-mode", "projectile", "projectile-only", "confirm"].includes(action)) {
+          openBoard("mecha");
+        }
+        callRealGameBridge("action", { action });
+        if (["attack-mode", "projectile", "projectile-only"].includes(action)) {
+          shell.classList.add("actions-open");
+          document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", "true");
+          syncActionFlyouts();
+          return;
+        }
+        closeActions();
+        return;
+      }
       if (action === "defend") {
         if (!state.pendingDefense || state.pendingDefense.defenderIndex !== 0) {
           toast("No hay defensa activa para ti.");
@@ -5150,10 +5221,10 @@
       const s1 = getStats(p1);
       const s2 = getStats(p2);
       const selectedFuel = getAttackSelection(p1);
-      document.querySelector("[data-player-name]").textContent = state.currentPlayer === 0 ? "JUGADOR 1" : "EN ESPERA";
-      document.querySelector("[data-deck-value]").textContent = state.deck.length;
-      document.querySelector("[data-discard-value]").textContent = state.discard.length;
-      document.querySelector("[data-selected-fuel-value]").textContent = `${selectedFuel.fuelValue}→${selectedFuel.limit}`;
+      document.querySelector("[data-player-name]").textContent = p1.name || (state.currentPlayer === 0 ? "JUGADOR 1" : "EN ESPERA");
+      document.querySelector("[data-deck-value]").textContent = Number.isFinite(state.deckCount) ? state.deckCount : state.deck.length;
+      document.querySelector("[data-discard-value]").textContent = Number.isFinite(state.discardCount) ? state.discardCount : state.discard.length;
+      document.querySelector("[data-selected-fuel-value]").textContent = state.selectedFuelText || `${selectedFuel.fuelValue}→${selectedFuel.limit}`;
       setStat("p1", s1);
       setStat("p2", s2);
       setBuildProgress("p1", getBuildProgress(p1));
@@ -5178,6 +5249,7 @@
     }
 
     function getMechaPhaseImage(player) {
+      if (player?.mechaSrc) return player.mechaSrc;
       if (!player || !player.core) return MECHA_IMAGES.base;
       const hasPilot = !!player.core.pilot;
       const hasCopilot = !!player.core.copilot;
@@ -5242,14 +5314,18 @@
       const button = document.createElement("button");
       button.type = "button";
       button.className = "card";
-      button.draggable = context === "hand";
+      button.draggable = context === "hand" && !card.bridgeDraftPreview;
       button.title = cardText(card);
-      if (context === "readonly") {
+      if (card.bridgeDraftPreview) {
+        button.disabled = true;
+        button.classList.add("is-draft-preview");
+      } else if (context === "readonly") {
         button.disabled = true;
         button.classList.add("is-readonly");
       } else {
         button.dataset.cardId = card.id;
         if (state.selected.includes(card.id)) button.classList.add("is-selected");
+        if (state.bridgeDraftPlacements?.[card.id]) button.classList.add("is-draft-origin");
       }
       const img = document.createElement("img");
       img.src = cardAsset(card);
@@ -5354,6 +5430,10 @@
       const overview = document.querySelector("[data-hand-overview-cards]");
       tray.innerHTML = "";
       overview.innerHTML = "";
+      if (!player) {
+        document.querySelector("[data-hand-count]").textContent = `0/${MAX_HAND_SIZE}`;
+        return;
+      }
       const handCards = orderedHandCards(player);
       tray.style.setProperty("--hand-count", handCards.length);
       handCards.forEach((card, index) => {
@@ -5378,6 +5458,22 @@
       }
     }
 
+    function bridgeDraftCardsForZone(zone) {
+      if (!EMBEDDED_REAL_GAME || !state.bridgeDraftPlacements) return [];
+      const player = state.players[0];
+      const normalizedZone = zone === "pilot" || zone === "copilot" || zone === "booster" ? zone : zone;
+      return Object.entries(state.bridgeDraftPlacements)
+        .filter(([, target]) => target === normalizedZone)
+        .map(([cardId]) => player?.hand?.find((card) => card.id === cardId))
+        .filter(Boolean)
+        .map((card) => ({ ...card, bridgeDraftPreview: true }));
+    }
+
+    function mergeBridgeDraftCards(zone, cards) {
+      const previews = bridgeDraftCardsForZone(zone);
+      return previews.length ? [...cards, ...previews] : cards;
+    }
+
     function makeDropZone(zone, title, cards, meta, className = "") {
       const node = document.createElement("article");
       node.className = `drop-zone ${className}`.trim();
@@ -5393,7 +5489,7 @@
         node.classList.toggle("is-attack-muted", !selectable);
       }
       node.innerHTML = `<header class="zone-title"><span>${title}</span><b>${meta}</b></header><div class="zone-cards"></div>`;
-      fillZoneCards(node.querySelector(".zone-cards"), cards);
+      fillZoneCards(node.querySelector(".zone-cards"), mergeBridgeDraftCards(zone, cards));
       return node;
     }
 
@@ -5410,7 +5506,8 @@
       node.className = readonly ? "core-slot panel-zone" : "core-slot drop-zone";
       if (!readonly) node.dataset.zone = zone;
       node.innerHTML = `<header class="zone-title"><span>${title}</span><b>${meta}</b></header><div class="zone-cards"></div>`;
-      fillZoneCards(node.querySelector(".zone-cards"), card ? [card] : [], "Vacio", readonly ? "readonly" : "zone");
+      const slotCards = card ? [card] : bridgeDraftCardsForZone(zone);
+      fillZoneCards(node.querySelector(".zone-cards"), slotCards, "Vacio", readonly ? "readonly" : "zone");
       return node;
     }
 
@@ -5422,6 +5519,7 @@
       shell.classList.toggle("rival-view", isRivalView);
       grid.classList.toggle("is-rival", isRivalView);
       grid.innerHTML = "";
+      if (!player) return;
 
       const core = document.createElement("article");
       core.className = "panel-zone core-panel";
@@ -5522,6 +5620,23 @@
       let tutorialCopy = "";
       let alertTitle = "";
       let alertCopy = "";
+      if (EMBEDDED_REAL_GAME && (state.bridgeTutorialText || state.bridgeTutorialMeta)) {
+        tutorialCopy = state.bridgeTutorialText || "Sistema preparado.";
+        tutorialText.textContent = tutorialCopy;
+        const alert = document.querySelector("[data-alert-message]");
+        if (state.pendingDefense) {
+          alertTitle = "Ataque entrante";
+          alertCopy = state.bridgeTutorialMeta || "Resuelve la defensa desde Acciones.";
+          document.querySelector("[data-alert-title]").textContent = alertTitle;
+          document.querySelector("[data-alert-text]").textContent = alertCopy;
+          document.querySelector("[data-alert-actions]").innerHTML = "";
+          alert.classList.add("show");
+        } else {
+          alert.classList.remove("show");
+        }
+        renderLeftGuidance(tutorialCopy, alertTitle, alertCopy);
+        return;
+      }
       if (state.pendingDefense) {
         const defender = state.players[state.pendingDefense.defenderIndex];
         const diamonds = defender.hand.filter(isNumericDiamond);
@@ -5579,7 +5694,21 @@
       const defenseTurn = !!state.pendingDefense && state.pendingDefense.defenderIndex === 0;
       const player = state.players[0];
       const attackReady = playerTurn && player && playerCanAttack(player);
-      const actionStates = {
+      const actionStates = EMBEDDED_REAL_GAME && state.bridgeActions
+        ? {
+          modify: !!state.bridgeActions.modify,
+          draw: !!state.bridgeActions.draw,
+          figures: !!state.bridgeActions.figures,
+          "attack-mode": !!state.bridgeActions["attack-mode"],
+          projectile: !!state.bridgeActions.projectile,
+          "projectile-only": !!state.bridgeActions["projectile-only"],
+          confirm: !!state.bridgeActions.confirm,
+          pass: !!state.bridgeActions.pass,
+          defend: !!state.bridgeActions.defend,
+          "skip-defense": !!state.bridgeActions["skip-defense"],
+          clear: !!state.bridgeActions.clear
+        }
+        : {
         modify: playerTurn,
         draw: playerTurn,
         figures: playerTurn && canDrawWithTwoFigures(player),
@@ -5752,6 +5881,121 @@
       return candidates[0]?.button || direct;
     }
 
+    function getRealGameBridge() {
+      if (!EMBEDDED_REAL_GAME || window.parent === window) return null;
+      try {
+        return window.parent.__pocobotSpriteMobileBridge || null;
+      } catch (_error) {
+        return null;
+      }
+    }
+
+    function callRealGameBridge(type, payload = {}) {
+      const bridge = getRealGameBridge();
+      if (!bridge || typeof bridge.handle !== "function") return false;
+      try {
+        bridge.handle(type, payload);
+        return true;
+      } catch (error) {
+        toast(error?.message || "No se pudo comunicar con la partida real.");
+        return false;
+      }
+    }
+
+    function getRealGameLegalZones(cardId) {
+      const bridge = getRealGameBridge();
+      if (!bridge || typeof bridge.getLegalZones !== "function") return [];
+      try {
+        const zones = bridge.getLegalZones(cardId);
+        return Array.isArray(zones) ? zones : [];
+      } catch (_error) {
+        return [];
+      }
+    }
+
+    function normalizeBridgeCard(card, fallbackZone = "hand") {
+      if (!card) return null;
+      return {
+        ...card,
+        value: Number.isFinite(card.value) ? card.value : RANK_VALUES[card.rank],
+        zone: card.zone || fallbackZone
+      };
+    }
+
+    function normalizeBridgePlayer(player = {}) {
+      const core = player.core || {};
+      return {
+        name: player.name || "Jugador",
+        realIndex: Number.isInteger(player.realIndex) ? player.realIndex : 0,
+        hand: (player.hand || []).map((card) => normalizeBridgeCard(card, "hand")).filter(Boolean),
+        core: {
+          pilot: normalizeBridgeCard(core.pilot, "pilot"),
+          copilot: normalizeBridgeCard(core.copilot, "copilot"),
+          booster: normalizeBridgeCard(core.booster, "booster")
+        },
+        attack: (player.attack || []).map((card) => normalizeBridgeCard(card, "attack")).filter(Boolean),
+        defense: (player.defense || []).map((card) => normalizeBridgeCard(card, "defense")).filter(Boolean),
+        armor: (player.armor || []).map((card) => normalizeBridgeCard(card, "armor")).filter(Boolean),
+        fuel: (player.fuel || []).map((card) => normalizeBridgeCard(card, "fuel")).filter(Boolean),
+        limits: player.limits || {},
+        canAttack: !!player.canAttack,
+        buildPercent: Number.isFinite(player.buildPercent) ? player.buildPercent : undefined,
+        statsCards: Number.isFinite(player.statsCards) ? player.statsCards : undefined,
+        mechaSrc: player.mechaSrc || "",
+        flags: player.flags || {}
+      };
+    }
+
+    function applyRealGameSnapshot(snapshot = {}) {
+      state.players = (snapshot.players || []).map(normalizeBridgePlayer);
+      state.currentPlayer = Number.isInteger(snapshot.currentPlayer) ? snapshot.currentPlayer : 0;
+      state.phase = snapshot.phase || "Turno";
+      state.selected = Array.isArray(snapshot.selectedIds) ? snapshot.selectedIds.slice() : [];
+      state.attackMode = !!snapshot.attackMode;
+      state.projectileMode = !!snapshot.projectileMode;
+      state.projectileOnlyMode = !!snapshot.projectileOnlyMode;
+      state.projectileUnlocked = !!snapshot.projectileUnlocked;
+      state.tutorial = !!snapshot.tutorial;
+      state.musicOn = !!snapshot.musicOn;
+      state.pendingDefense = snapshot.pendingDefense || null;
+      state.winner = snapshot.winner || null;
+      state.deckCount = Number.isFinite(snapshot.deckCount) ? snapshot.deckCount : 0;
+      state.discardCount = Number.isFinite(snapshot.discardCount) ? snapshot.discardCount : 0;
+      state.selectedFuelText = snapshot.selectedFuelText || "";
+      state.bridgeDraftPlacements = snapshot.bridgeDraftPlacements || {};
+      state.bridgeActions = snapshot.bridgeActions || {};
+      state.bridgeTutorialText = snapshot.bridgeTutorialText || "";
+      state.bridgeTutorialMeta = snapshot.bridgeTutorialMeta || "";
+      state.log = Array.isArray(snapshot.log) ? snapshot.log.slice(0, 60) : [];
+      render();
+    }
+
+    function registerEmbeddedRealGame() {
+      document.documentElement.classList.add("embedded-real-game");
+      shell.classList.add("embedded-real-game");
+      window.__pocobotSpriteHud = {
+        receiveSnapshot: applyRealGameSnapshot,
+        playAttackFx,
+        animateModification,
+        toast
+      };
+      const bridge = getRealGameBridge();
+      if (bridge && typeof bridge.register === "function") {
+        bridge.register(window.__pocobotSpriteHud);
+      } else {
+        window.parent?.postMessage?.({ source: "pocobot-sprite-hud", type: "ready" }, "*");
+      }
+    }
+
+    window.addEventListener("message", (event) => {
+      const data = event.data || {};
+      if (data.source !== "pocobot-real-game") return;
+      if (data.type === "snapshot") applyRealGameSnapshot(data.snapshot || {});
+      if (data.type === "attackFx") playAttackFx(data.payload || {});
+      if (data.type === "modifyFx") animateModification(data.zone || "attack");
+      if (data.type === "toast") toast(data.text || "");
+    });
+
     document.addEventListener("pointerdown", (event) => {
       const button = visibleControlButtonAt(event);
       if (!button || button.disabled) return;
@@ -5878,8 +6122,14 @@
       }
       if (button.dataset.action) handleAction(button.dataset.action);
       if (button.dataset.cardId) toggleSelected(button.dataset.cardId);
-      if (button.dataset.defenseAction === "confirm") confirmDefense();
-      if (button.dataset.defenseAction === "skip") skipDefense();
+      if (button.dataset.defenseAction === "confirm") {
+        if (EMBEDDED_REAL_GAME) handleAction("defend");
+        else confirmDefense();
+      }
+      if (button.dataset.defenseAction === "skip") {
+        if (EMBEDDED_REAL_GAME) handleAction("skip-defense");
+        else skipDefense();
+      }
     });
 
     document.addEventListener("dragstart", (event) => {
@@ -5943,7 +6193,8 @@
       draggedCardId = null;
     });
 
-    seedDemoGame();
+    if (EMBEDDED_REAL_GAME) registerEmbeddedRealGame();
+    else seedDemoGame();
   </script>
 </body>
 </html>
