@@ -536,7 +536,7 @@
         <a class="menu-card is-primary" href="#debug-cabina"><span>01 · Núcleo</span><strong>Cabina real</strong><small>Juego embebido, estado actual y selector de pantalla.</small></a>
         <a class="menu-card" href="#debug-vfx"><span>02 · Combate</span><strong>VFX reales</strong><small>Ataques, proyectiles, impactos, defensa y victoria.</small></a>
         <a class="menu-card" href="#debug-atajos"><span>03 · Flujo</span><strong>Atajos rápidos</strong><small>Cambiar atacante, modificar, reiniciar y estados especiales.</small></a>
-        <a class="menu-card" href="#debug-vistas"><span>04 · Layout</span><strong>Pantallas de vista</strong><small>Normal, compacto, horizontal y móvil horizontal.</small></a>
+        <a class="menu-card" href="#debug-vistas"><span>04 · Layout</span><strong>Pantallas de vista</strong><small>Scroll, PC compacta, móvil vertical, horizontal y museo antiguo.</small></a>
         <a class="menu-card" href="#debug-reglas"><span>05 · Estados</span><strong>Reglas</strong><small>Situaciones legales reproducibles del combate.</small></a>
         <a class="menu-card" href="#debug-tutorial"><span>06 · Guía</span><strong>Tutorial</strong><small>Saltos a pasos concretos del tutorial guiado.</small></a>
         <a class="menu-card" href="#debug-online"><span>07 · Red</span><strong>Online simulado</strong><small>Lobby y partida online sin dos clientes abiertos.</small></a>
@@ -575,13 +575,15 @@
         <div class="viewport-quick-panel" aria-label="Cambiar vista del sandbox">
           <div class="viewport-quick-copy">
             <strong>Vista del sandbox</strong>
-            <span>Cambia aquí directamente entre pantalla normal, compacto, horizontal y horizontal móvil antes de pulsar “Probar ataque”.</span>
+            <span>Cambia aquí directamente entre scroll clásico, PC compacta, móvil vertical y móvil horizontal antes de pulsar “Probar ataque”. Los horizontales antiguos quedan solo para curiosidad técnica.</span>
           </div>
           <div class="viewport-quick-actions">
-            <button class="ui-btn secondary viewport-btn active" type="button" data-viewport-mode="expanded">Normal</button>
-            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="compact">Compacto</button>
-            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="horizontal">Horizontal</button>
-            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="mobile-horizontal">Horizontal móvil</button>
+            <button class="ui-btn secondary viewport-btn active" type="button" data-viewport-mode="expanded">Scroll</button>
+            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="compact">PC compacta</button>
+            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="mobile-vertical">Móvil vertical</button>
+            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="mobile-horizontal">Móvil horizontal</button>
+            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="legacy-compact-horizontal">Horizontal compacto antiguo</button>
+            <button class="ui-btn viewport-btn" type="button" data-viewport-mode="legacy-mobile">Horizontal móvil antiguo</button>
           </div>
         </div>
 
@@ -644,10 +646,12 @@
             <h3>Pantallas de vista</h3>
             <p>El mismo selector también está justo encima de la cabina. Úsalo para cambiar el layout y después dispara el ataque de prueba.</p>
             <div class="control-grid">
-              <button class="control-btn secondary viewport-btn active" type="button" data-viewport-mode="expanded">Normal</button>
-              <button class="control-btn viewport-btn" type="button" data-viewport-mode="compact">Compacto</button>
-              <button class="control-btn viewport-btn" type="button" data-viewport-mode="horizontal">Horizontal</button>
-              <button class="control-btn viewport-btn" type="button" data-viewport-mode="mobile-horizontal">Horizontal móvil</button>
+              <button class="control-btn secondary viewport-btn active" type="button" data-viewport-mode="expanded">Scroll</button>
+              <button class="control-btn viewport-btn" type="button" data-viewport-mode="compact">PC compacta</button>
+              <button class="control-btn viewport-btn" type="button" data-viewport-mode="mobile-vertical">Móvil vertical</button>
+              <button class="control-btn viewport-btn" type="button" data-viewport-mode="mobile-horizontal">Móvil horizontal</button>
+              <button class="control-btn hacked viewport-btn" type="button" data-viewport-mode="legacy-compact-horizontal">Horizontal compacto antiguo</button>
+              <button class="control-btn hacked viewport-btn" type="button" data-viewport-mode="legacy-mobile">Horizontal móvil antiguo</button>
               <button class="control-btn primary" type="button" data-action="attack">Probar ataque</button>
             </div>
           </article>
@@ -816,10 +820,12 @@
     }
 
     function getViewportConfig(mode=labState.viewportMode){
-      if(mode === 'compact') return { width:1280, height:760, minHeight:360, label:'Compacto' };
-      if(mode === 'horizontal') return { width:960, height:540, minHeight:320, label:'Horizontal' };
-      if(mode === 'mobile-horizontal') return { width:844, height:390, minHeight:300, label:'Horizontal móvil' };
-      return { width:1320, height:1110, minHeight:320, label:'Normal' };
+      if(mode === 'compact') return { width:1280, height:760, minHeight:360, label:'PC compacta' };
+      if(mode === 'mobile-vertical') return { width:390, height:844, minHeight:620, label:'Móvil vertical' };
+      if(mode === 'mobile-horizontal') return { width:844, height:390, minHeight:300, label:'Móvil horizontal' };
+      if(mode === 'legacy-compact-horizontal') return { width:960, height:540, minHeight:320, label:'Horizontal compacto antiguo' };
+      if(mode === 'legacy-mobile') return { width:844, height:390, minHeight:300, label:'Horizontal móvil antiguo' };
+      return { width:1320, height:1110, minHeight:320, label:'Scroll' };
     }
 
     function resizeRuntime(){
@@ -1067,7 +1073,13 @@
     }
 
     async function setViewportMode(mode){
-      labState.viewportMode = mode === 'compact' || mode === 'horizontal' || mode === 'mobile-horizontal' ? mode : 'expanded';
+      labState.viewportMode = mode === 'compact'
+        || mode === 'mobile-vertical'
+        || mode === 'mobile-horizontal'
+        || mode === 'legacy-compact-horizontal'
+        || mode === 'legacy-mobile'
+        ? mode
+        : 'expanded';
       resizeRuntime();
       syncViewportButtons();
       const snapshot = await callApi(api => api.setViewportMode(labState.viewportMode));

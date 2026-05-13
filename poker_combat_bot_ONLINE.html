@@ -1393,7 +1393,8 @@ body.victory .winner-banner.show{
   --mobile-fx-danger:#ff5d34;
 }
 body.mobile-compact-mode .mobile-pro-fx-layer.show,
-body.mobile-panorama-mode .mobile-pro-fx-layer.show{
+body.mobile-panorama-mode .mobile-pro-fx-layer.show,
+body.mobile-pc-compact-mode .mobile-pro-fx-layer.show{
   display:block;
   animation:mobileFxLayerFade var(--mobile-fx-dur, 980ms) ease both;
 }
@@ -6160,6 +6161,8 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
   transform:translate(-50%, -50%) scale(1);
 }
 body.mobile-panorama-mode .attack-special-popup-overlay,
+body.mobile-compact-mode .attack-special-popup-overlay,
+body.mobile-pc-compact-mode .attack-special-popup-overlay,
 body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   z-index:1405;
 }
@@ -6395,7 +6398,10 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
 }
 @media(max-width:760px){
   .attack-special-popup-shell{
-    width:clamp(108px, 28vw, 148px);
+    width:clamp(148px, 42vw, 230px);
+  }
+  body.mobile-pc-compact-mode .attack-special-popup-shell{
+    width:clamp(132px, 23vw, 196px);
   }
 }
 
@@ -7526,6 +7532,154 @@ body.desktop-compact-mode > footer{
   animation:compactBuildMechaSync 1s cubic-bezier(.18,.82,.2,1) both;
 }
 
+.compact-evolution-layer{
+  position:absolute;
+  inset:0;
+  z-index:14;
+  pointer-events:none;
+  opacity:0;
+  visibility:hidden;
+  overflow:hidden;
+}
+
+.compact-evolution-layer.show{
+  visibility:visible;
+  opacity:1;
+}
+
+.compact-evolution-node{
+  position:absolute;
+  left:var(--evo-left, 50%);
+  top:var(--evo-top, 50%);
+  width:clamp(158px, 24vw, 260px);
+  aspect-ratio:1 / 1;
+  transform:translate(-50%, -50%);
+  filter:drop-shadow(0 18px 18px rgba(4,12,30,.34));
+}
+
+.compact-evolution-core,
+.compact-evolution-scan,
+.compact-evolution-ring,
+.compact-evolution-img,
+.compact-evolution-label,
+.compact-evolution-progress{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%, -50%);
+}
+
+.compact-evolution-core{
+  width:72%;
+  height:72%;
+  border-radius:50%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.90) 0 8%, rgba(255,214,97,.54) 14%, rgba(116,255,242,.28) 34%, rgba(2,8,24,0) 70%);
+  box-shadow:0 0 44px rgba(116,255,242,.28), 0 0 62px rgba(255,214,97,.24);
+  opacity:0;
+}
+
+.compact-evolution-scan{
+  width:94%;
+  height:94%;
+  border-radius:50%;
+  border:2px solid rgba(116,255,242,.64);
+  background:
+    repeating-conic-gradient(from 0deg, rgba(116,255,242,.28) 0deg 4deg, transparent 4deg 16deg),
+    radial-gradient(circle, transparent 0 50%, rgba(255,214,97,.18) 51% 53%, transparent 54%);
+  mix-blend-mode:screen;
+  opacity:0;
+}
+
+.compact-evolution-ring{
+  width:82%;
+  height:82%;
+  border-radius:50%;
+  border:3px solid rgba(255,214,97,.84);
+  box-shadow:0 0 26px rgba(255,214,97,.32), inset 0 0 18px rgba(116,255,242,.22);
+  opacity:0;
+}
+
+.compact-evolution-img{
+  width:72%;
+  height:86%;
+  object-fit:contain;
+  object-position:center;
+  filter:drop-shadow(0 12px 10px rgba(3,10,26,.32));
+}
+
+.compact-evolution-img.old{
+  opacity:0;
+}
+
+.compact-evolution-img.new{
+  opacity:0;
+}
+
+.compact-evolution-label{
+  top:82%;
+  min-width:118px;
+  padding:6px 12px 5px;
+  border-radius:999px;
+  border:1px solid rgba(255,240,190,.82);
+  background:linear-gradient(180deg, rgba(255,247,220,.98), rgba(255,196,88,.94));
+  color:#6f2500;
+  font:1000 .68rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  text-align:center;
+  box-shadow:0 10px 22px rgba(8,16,42,.24), inset 0 1px 0 rgba(255,255,255,.72);
+  opacity:0;
+  white-space:nowrap;
+}
+
+.compact-evolution-progress{
+  top:18%;
+  padding:4px 9px 3px;
+  border-radius:999px;
+  background:rgba(4,13,35,.82);
+  color:#9df8ff;
+  font:1000 .82rem/1 "Courier New",monospace;
+  box-shadow:0 0 16px rgba(116,255,242,.20), inset 0 0 0 1px rgba(116,255,242,.24);
+  opacity:0;
+}
+
+.compact-evolution-layer.show .compact-evolution-core{
+  animation:compactEvolutionCore 1320ms cubic-bezier(.16,.82,.2,1) both;
+}
+
+.compact-evolution-layer.show .compact-evolution-scan{
+  animation:compactEvolutionScan 1320ms cubic-bezier(.16,.82,.2,1) both;
+}
+
+.compact-evolution-layer.show .compact-evolution-ring{
+  animation:compactEvolutionRing 1320ms cubic-bezier(.16,.82,.2,1) both;
+}
+
+.compact-evolution-layer.show .compact-evolution-img.old{
+  animation:compactEvolutionOld 1320ms cubic-bezier(.18,.82,.2,1) both;
+}
+
+.compact-evolution-layer.show .compact-evolution-img.new{
+  animation:compactEvolutionNew 1320ms cubic-bezier(.18,.82,.2,1) both;
+}
+
+.compact-evolution-layer.show .compact-evolution-label{
+  animation:compactEvolutionLabel 1320ms cubic-bezier(.18,.82,.2,1) both;
+}
+
+.compact-evolution-layer.show .compact-evolution-progress{
+  animation:compactEvolutionProgress 1320ms cubic-bezier(.18,.82,.2,1) both;
+}
+
+body.mobile-compact-mode .compact-evolution-node{
+  width:clamp(150px, 42vw, 216px);
+}
+
+body.mobile-pc-compact-mode .compact-evolution-node{
+  width:clamp(126px, 20vw, 180px);
+}
+
 .desktop-compact-shell.compact-turn-shell-shake{
   animation:cockpitShakeLight .44s ease;
 }
@@ -7925,6 +8079,54 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   0%{ opacity:0; transform:scale(.88); }
   30%{ opacity:.95; transform:scale(1.04); }
   100%{ opacity:0; transform:scale(1.24); }
+}
+
+@keyframes compactEvolutionCore{
+  0%{opacity:0; transform:translate(-50%, -50%) scale(.28)}
+  18%{opacity:1; transform:translate(-50%, -50%) scale(.9)}
+  58%{opacity:.86; transform:translate(-50%, -50%) scale(1.08)}
+  100%{opacity:0; transform:translate(-50%, -50%) scale(1.42)}
+}
+
+@keyframes compactEvolutionScan{
+  0%{opacity:0; transform:translate(-50%, -50%) scale(.35) rotate(-32deg)}
+  16%{opacity:.95}
+  74%{opacity:.42; transform:translate(-50%, -50%) scale(1.05) rotate(190deg)}
+  100%{opacity:0; transform:translate(-50%, -50%) scale(1.28) rotate(278deg)}
+}
+
+@keyframes compactEvolutionRing{
+  0%{opacity:0; transform:translate(-50%, -50%) scale(.52)}
+  20%{opacity:.98}
+  62%{opacity:.6; transform:translate(-50%, -50%) scale(1)}
+  100%{opacity:0; transform:translate(-50%, -50%) scale(1.22)}
+}
+
+@keyframes compactEvolutionOld{
+  0%{opacity:.88; transform:translate(-50%, -50%) scale(.96); filter:brightness(.86) saturate(.78) drop-shadow(0 12px 10px rgba(3,10,26,.32))}
+  34%{opacity:.34; transform:translate(-52%, -50%) scale(.9); filter:brightness(1.1) saturate(1.2) blur(1px)}
+  100%{opacity:0; transform:translate(-58%, -50%) scale(.72); filter:brightness(1.5) blur(5px)}
+}
+
+@keyframes compactEvolutionNew{
+  0%{opacity:0; transform:translate(-42%, -50%) scale(.7); filter:brightness(1.8) saturate(1.4) blur(8px)}
+  30%{opacity:.24}
+  58%{opacity:1; transform:translate(-50%, -50%) scale(1.08); filter:brightness(1.34) saturate(1.18) blur(0)}
+  100%{opacity:1; transform:translate(-50%, -50%) scale(1); filter:brightness(1) saturate(1) blur(0)}
+}
+
+@keyframes compactEvolutionLabel{
+  0%{opacity:0; transform:translate(-50%, -40%) scale(.84)}
+  28%{opacity:1; transform:translate(-50%, -50%) scale(1.06)}
+  68%{opacity:1; transform:translate(-50%, -50%) scale(1)}
+  100%{opacity:0; transform:translate(-50%, -62%) scale(.94)}
+}
+
+@keyframes compactEvolutionProgress{
+  0%{opacity:0; transform:translate(-50%, -38%) scale(.82)}
+  24%{opacity:1; transform:translate(-50%, -50%) scale(1.08)}
+  74%{opacity:1; transform:translate(-50%, -50%) scale(1)}
+  100%{opacity:0; transform:translate(-50%, -58%) scale(.96)}
 }
 
 .compact-mecha-stage-foot{
@@ -8871,14 +9073,17 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
     margin:0 !important;
     padding:18px !important;
   }
-  button.desktop-view-toggle{
+  button.desktop-view-toggle:not(#desktopCompactToggleTopBtn){
     display:none !important;
   }
 }
 
 @media (pointer: coarse), (max-width: 1120px){
-  #desktopCompactToggleTopBtn{
+  #desktopCompactToggleTopBtn[hidden]{
     display:none !important;
+  }
+  #desktopCompactToggleTopBtn:not([hidden]){
+    display:inline-flex !important;
   }
 }
 
@@ -10096,6 +10301,587 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   }
   .app.mobile-compact-mode .compact-defense-warning.show{
     transform:translate(-50%, -50%) scale(1);
+  }
+}
+
+/* === Real mobile sprite integration bridge === */
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse),
+       (orientation: landscape) and (pointer: coarse){
+  .app.mobile-compact-mode .compact-console-brand,
+  .app.mobile-pc-compact-mode .compact-console-brand,
+  .app.mobile-panorama-mode .compact-console-brand{
+    appearance:none;
+    -webkit-appearance:none;
+    cursor:pointer;
+    touch-action:manipulation;
+  }
+
+  .app.mobile-compact-mode .compact-console-brand:active,
+  .app.mobile-pc-compact-mode .compact-console-brand:active,
+  .app.mobile-panorama-mode .compact-console-brand:active,
+  .app.mobile-compact-mode .compact-console-brand.is-pressed,
+  .app.mobile-pc-compact-mode .compact-console-brand.is-pressed,
+  .app.mobile-panorama-mode .compact-console-brand.is-pressed{
+    transform:translateY(1px) scale(.992);
+    filter:brightness(.96);
+  }
+
+  .app.mobile-compact-mode .compact-menu-toggle,
+  .app.mobile-pc-compact-mode .compact-menu-toggle,
+  .app.mobile-panorama-mode .compact-menu-toggle{
+    position:relative;
+    font-size:0 !important;
+    letter-spacing:0 !important;
+  }
+
+  .app.mobile-compact-mode .compact-menu-toggle span,
+  .app.mobile-pc-compact-mode .compact-menu-toggle span,
+  .app.mobile-panorama-mode .compact-menu-toggle span,
+  .app.mobile-compact-mode .compact-menu-toggle::before,
+  .app.mobile-pc-compact-mode .compact-menu-toggle::before,
+  .app.mobile-panorama-mode .compact-menu-toggle::before,
+  .app.mobile-compact-mode .compact-menu-toggle::after,
+  .app.mobile-pc-compact-mode .compact-menu-toggle::after,
+  .app.mobile-panorama-mode .compact-menu-toggle::after{
+    content:"";
+    display:block;
+    width:18px;
+    height:3px;
+    border-radius:999px;
+    background:#392000;
+    box-shadow:0 1px 0 rgba(255,255,255,.34);
+  }
+
+  .app.mobile-compact-mode .compact-menu-toggle span,
+  .app.mobile-pc-compact-mode .compact-menu-toggle span,
+  .app.mobile-panorama-mode .compact-menu-toggle span{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%, -50%);
+  }
+
+  .app.mobile-compact-mode .compact-menu-toggle::before,
+  .app.mobile-pc-compact-mode .compact-menu-toggle::before,
+  .app.mobile-panorama-mode .compact-menu-toggle::before{
+    position:absolute;
+    left:50%;
+    top:calc(50% - 7px);
+    transform:translateX(-50%);
+  }
+
+  .app.mobile-compact-mode .compact-menu-toggle::after,
+  .app.mobile-pc-compact-mode .compact-menu-toggle::after,
+  .app.mobile-panorama-mode .compact-menu-toggle::after{
+    position:absolute;
+    left:50%;
+    top:calc(50% + 4px);
+    transform:translateX(-50%);
+  }
+
+  .app.mobile-compact-mode #compactMobileModifyBtn,
+  .app.mobile-pc-compact-mode #compactMobileModifyBtn,
+  .app.mobile-panorama-mode #compactMobileModifyBtn,
+  .app.mobile-compact-mode .compact-hand-modify-btn,
+  .app.mobile-pc-compact-mode .compact-hand-modify-btn,
+  .app.mobile-panorama-mode .compact-hand-modify-btn{
+    border-color:#053821 !important;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.42), transparent 38%),
+      linear-gradient(180deg, #72f06d, #1f9d4b 64%, #0d5f34) !important;
+    color:#eaffdc !important;
+    text-shadow:0 1px 0 rgba(0,0,0,.36) !important;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.46),
+      inset 0 -3px 0 rgba(0,60,28,.34),
+      0 4px 0 rgba(3,40,23,.72),
+      0 0 12px rgba(64,255,137,.20) !important;
+  }
+
+  .app.mobile-compact-mode .compact-hand-panel,
+  .app.mobile-pc-compact-mode .compact-hand-panel,
+  .app.mobile-panorama-mode .compact-hand-panel{
+    position:relative;
+    overflow:visible;
+  }
+
+  .app.mobile-compact-mode .compact-hand-title-button,
+  .app.mobile-pc-compact-mode .compact-hand-title-button,
+  .app.mobile-panorama-mode .compact-hand-title-button{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    min-width:0;
+    min-height:28px;
+    padding:5px 10px !important;
+    border-radius:12px 12px 12px 0 !important;
+    border:3px solid #041b35 !important;
+    background:linear-gradient(180deg, #0c67b1, #06457e) !important;
+    color:#fff0d3 !important;
+    box-shadow:inset 0 2px 0 rgba(145,219,255,.42), 0 4px 0 #021426 !important;
+    font:1000 .86rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif !important;
+    text-transform:none;
+    white-space:nowrap;
+  }
+
+  .app.mobile-compact-mode .compact-hand-title-button strong,
+  .app.mobile-pc-compact-mode .compact-hand-title-button strong,
+  .app.mobile-panorama-mode .compact-hand-title-button strong{
+    display:block;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .app.mobile-compact-mode .compact-hand-overview,
+  .app.mobile-pc-compact-mode .compact-hand-overview,
+  .app.mobile-panorama-mode .compact-hand-overview{
+    position:absolute;
+    z-index:220;
+    left:8px;
+    right:8px;
+    bottom:calc(100% - 10px);
+    max-height:min(246px, calc(100dvh - 148px));
+    padding:10px;
+    border:3px solid #09254a;
+    border-radius:16px;
+    background:
+      repeating-linear-gradient(135deg, rgba(109,69,26,.08) 0 1px, transparent 1px 8px),
+      linear-gradient(180deg, #fff5d7, #d7b87f);
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.72), 0 16px 30px rgba(0,15,35,.55);
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(14px) scale(.98);
+    pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease, visibility .18s ease;
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+
+  body.compact-hand-overview-open .app.mobile-compact-mode .compact-hand-overview,
+  body.compact-hand-overview-open .app.mobile-pc-compact-mode .compact-hand-overview,
+  body.compact-hand-overview-open .app.mobile-panorama-mode .compact-hand-overview{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0) scale(1);
+    pointer-events:auto;
+  }
+
+  .app.mobile-compact-mode .compact-hand-overview-grid,
+  .app.mobile-pc-compact-mode .compact-hand-overview-grid,
+  .app.mobile-panorama-mode .compact-hand-overview-grid{
+    display:grid;
+    grid-template-columns:repeat(6, minmax(0, 1fr));
+    grid-auto-rows:66px;
+    gap:7px 5px;
+    align-items:center;
+  }
+
+  .app.mobile-compact-mode .compact-hand-overview .card,
+  .app.mobile-pc-compact-mode .compact-hand-overview .card,
+  .app.mobile-panorama-mode .compact-hand-overview .card{
+    width:45px !important;
+    height:66px !important;
+    margin:0 !important;
+    justify-self:center;
+    transform:none !important;
+    flex-basis:auto !important;
+  }
+
+  body.compact-action-hub-open .app.mobile-compact-mode .compact-hand-tray,
+  body.compact-action-hub-open .app.mobile-pc-compact-mode .compact-hand-tray,
+  body.compact-action-hub-open .app.mobile-panorama-mode .compact-hand-tray{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:translateY(8px) scale(.985);
+  }
+
+  body.compact-action-hub-open .app.mobile-compact-mode .compact-hand-overview,
+  body.compact-action-hub-open .app.mobile-pc-compact-mode .compact-hand-overview,
+  body.compact-action-hub-open .app.mobile-panorama-mode .compact-hand-overview{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+}
+
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse){
+  .app.mobile-compact-mode .desktop-compact-shell{
+    grid-template-rows:78px minmax(174px, .56fr) minmax(204px, .82fr) 48px minmax(164px, 178px);
+  }
+
+  .app.mobile-compact-mode .compact-topbar{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr)) 42px;
+    grid-template-rows:36px 30px;
+    gap:5px;
+    padding:5px !important;
+    overflow:visible;
+  }
+
+  .app.mobile-compact-mode .compact-console-brand{
+    display:flex !important;
+    grid-column:1 / 4;
+    grid-row:1;
+    height:36px;
+    min-height:0;
+    align-items:center;
+    justify-content:center;
+    padding:0 4px !important;
+    border-radius:14px;
+    border:2px solid rgba(24,53,100,.22);
+    background:linear-gradient(180deg, #eef7ff, #d9e9ff 56%, #c3d4f7) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.74), 0 3px 0 rgba(17,33,87,.18) !important;
+    overflow:visible;
+  }
+
+  .app.mobile-compact-mode .compact-console-brand img{
+    width:164%;
+    height:164%;
+    max-width:none;
+    object-fit:contain;
+    transform:scale(1.08);
+    filter:drop-shadow(0 2px 0 rgba(255,255,255,.38)) drop-shadow(0 7px 12px rgba(5,18,52,.22));
+  }
+
+  .app.mobile-compact-mode .compact-menu-toggle{
+    grid-column:4;
+    grid-row:1;
+    justify-self:end;
+    align-self:center;
+    width:38px;
+    min-width:38px;
+    height:38px;
+    min-height:38px;
+    padding:0 !important;
+    border-radius:50% !important;
+    border:3px solid rgba(105,69,0,.52) !important;
+    background:linear-gradient(180deg, #fff28a, #ffc42f 62%, #b86600) !important;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.72), inset 0 -3px 0 rgba(116,62,0,.32), 0 4px 0 rgba(75,42,0,.7) !important;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource-fuel{
+    grid-column:1;
+    grid-row:2;
+  }
+
+  .app.mobile-compact-mode .compact-top-status{
+    grid-column:2;
+    grid-row:2;
+    height:30px;
+    padding:3px 6px;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource-core{
+    grid-column:3 / 5;
+    grid-row:2;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource,
+  .app.mobile-compact-mode .compact-top-status{
+    height:30px;
+    min-height:30px;
+    border-radius:10px;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource span,
+  .app.mobile-compact-mode .compact-top-status span{
+    font-size:.38rem;
+    line-height:1;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource strong,
+  .app.mobile-compact-mode .compact-top-status strong{
+    font-size:.64rem;
+    line-height:1;
+  }
+
+  .app.mobile-compact-mode .compact-topbar-actions{
+    top:44px;
+    right:5px;
+    width:min(244px, calc(100vw - 14px));
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:6px;
+  }
+
+  .app.mobile-compact-mode .compact-topbar-actions button{
+    min-height:32px !important;
+    border-color:rgba(137,160,226,.44) !important;
+    background:linear-gradient(180deg, #f6fbff, #dcecff 56%, #9bbced) !important;
+    color:#183564 !important;
+    font-size:.52rem !important;
+  }
+
+  .app.mobile-compact-mode #compactNewGameBtn{
+    border-color:rgba(255,118,96,.62) !important;
+    background:linear-gradient(180deg, #ffdfd7, #ff8d74 56%, #d93227) !important;
+    color:#fff8ee !important;
+    text-shadow:0 1px 0 rgba(0,0,0,.22);
+  }
+
+  .app.mobile-compact-mode .compact-hand-title-button{
+    max-width:108px;
+  }
+
+  .app.mobile-compact-mode .compact-hand-overview-grid{
+    grid-template-rows:repeat(3, 66px);
+  }
+}
+
+@media (orientation: landscape) and (pointer: coarse){
+  .app.mobile-pc-compact-mode .desktop-compact-shell{
+    display:grid !important;
+    grid-template-columns:206px minmax(0, 1fr);
+    grid-template-rows:minmax(0, 1fr) minmax(124px, .40fr);
+    grid-template-areas:
+      "topbar main"
+      "topbar bottom";
+    gap:6px;
+  }
+
+  .app.mobile-pc-compact-mode .compact-topbar{
+    grid-area:topbar;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-template-rows:40px 31px auto minmax(0, 1fr);
+    align-content:start;
+    gap:6px;
+    padding:6px !important;
+    overflow:hidden;
+  }
+
+  .app.mobile-pc-compact-mode .desktop-compact-main{
+    grid-area:main;
+    grid-template-columns:minmax(176px, .62fr) minmax(0, 1.18fr) minmax(158px, .52fr);
+    gap:6px;
+    min-height:0;
+  }
+
+  .app.mobile-pc-compact-mode .desktop-compact-bottom{
+    grid-area:bottom;
+  }
+
+  .app.mobile-pc-compact-mode .compact-console-brand{
+    display:flex !important;
+    grid-column:1 / -1;
+    grid-row:1;
+    height:40px;
+    align-items:center;
+    justify-content:center;
+    padding:0 4px !important;
+    border-radius:14px;
+    border:2px solid rgba(24,53,100,.22);
+    background:linear-gradient(180deg, #eef7ff, #d9e9ff 56%, #c3d4f7) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.74), 0 3px 0 rgba(17,33,87,.18) !important;
+    overflow:visible;
+  }
+
+  .app.mobile-pc-compact-mode .compact-console-brand img{
+    width:160%;
+    height:160%;
+    max-width:none;
+    object-fit:contain;
+    transform:scale(1.05);
+  }
+
+  .app.mobile-pc-compact-mode .compact-menu-toggle{
+    display:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-resource-fuel{
+    grid-column:1;
+    grid-row:2;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-status{
+    grid-column:2;
+    grid-row:2;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-resource-core{
+    grid-column:3;
+    grid-row:2;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-resource,
+  .app.mobile-pc-compact-mode .compact-top-status{
+    height:31px;
+    min-height:31px;
+    padding:3px 5px;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-resource span,
+  .app.mobile-pc-compact-mode .compact-top-status span{
+    font-size:.37rem;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-resource strong,
+  .app.mobile-pc-compact-mode .compact-top-status strong{
+    font-size:.66rem;
+  }
+
+  .app.mobile-pc-compact-mode .compact-topbar-actions{
+    position:static;
+    grid-column:1 / -1;
+    grid-row:3;
+    width:auto;
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:5px;
+    padding:0;
+    border:0;
+    background:transparent;
+    box-shadow:none;
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transform:none;
+  }
+
+  .app.mobile-pc-compact-mode .compact-topbar-actions button{
+    min-height:29px !important;
+    padding:4px 6px !important;
+    border-color:rgba(137,160,226,.44) !important;
+    background:linear-gradient(180deg, #f6fbff, #dcecff 56%, #9bbced) !important;
+    color:#183564 !important;
+    font-size:.48rem !important;
+    line-height:.92 !important;
+  }
+
+  .app.mobile-pc-compact-mode #compactNewGameBtn{
+    border-color:rgba(255,118,96,.62) !important;
+    background:linear-gradient(180deg, #ffdfd7, #ff8d74 56%, #d93227) !important;
+    color:#fff8ee !important;
+    text-shadow:0 1px 0 rgba(0,0,0,.22);
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-panel{
+    display:grid !important;
+    position:fixed;
+    left:max(10px, env(safe-area-inset-left));
+    top:154px;
+    bottom:12px;
+    width:186px;
+    max-height:none;
+    grid-template-rows:auto auto minmax(0, 1fr) auto;
+    padding:8px 10px !important;
+    border-radius:14px;
+    border:2px solid rgba(255,102,88,.62);
+    background:linear-gradient(180deg, rgba(120,18,24,.96), rgba(64,9,18,.98)) !important;
+    color:#fff4ea;
+    box-shadow:0 14px 28px rgba(30,4,10,.34), inset 0 1px 0 rgba(255,255,255,.16);
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    overflow:hidden;
+    z-index:88;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-panel .compact-kicker,
+  .app.mobile-pc-compact-mode .compact-tutorial-panel h2{
+    display:block;
+    color:#fff4ea;
+    text-shadow:0 2px 0 rgba(0,0,0,.22);
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-toggle{
+    display:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-scroll{
+    display:grid !important;
+    min-height:0;
+    max-height:none;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding-right:5px;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-body,
+  .app.mobile-pc-compact-mode .compact-tutorial-meta{
+    color:#fff4ea !important;
+    font-size:.62rem;
+    line-height:1.18;
+    text-shadow:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-hand-overview{
+    left:auto;
+    right:0;
+    bottom:50px;
+    width:min(348px, calc(100vw - 234px));
+    max-height:min(224px, calc(100dvh - 76px));
+    padding:8px;
+  }
+
+  .app.mobile-pc-compact-mode .compact-hand-overview-grid{
+    grid-template-columns:repeat(9, minmax(0, 1fr));
+    grid-auto-rows:58px;
+    gap:5px 4px;
+  }
+
+  .app.mobile-pc-compact-mode .compact-hand-overview .card{
+    width:39px !important;
+    height:58px !important;
+    border-radius:6px;
+  }
+
+  .app.mobile-pc-compact-mode .compact-hand-tray{
+    --compact-hand-card-width:40px !important;
+    --compact-hand-card-height:57px !important;
+    --compact-hand-card-step:40px !important;
+    display:grid !important;
+    grid-template-columns:repeat(9, minmax(0, 40px));
+    grid-template-rows:repeat(2, minmax(0, 57px));
+    align-content:center;
+    justify-content:center;
+    align-items:center;
+    gap:4px;
+    overflow:hidden;
+    padding:4px 8px !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-hand-tray .card,
+  .app.mobile-pc-compact-mode .compact-hand-tray .card.card-detailed{
+    width:40px !important;
+    height:57px !important;
+    min-width:40px !important;
+    margin:0 !important;
+    transform:none !important;
+    justify-self:center;
+  }
+
+  .app.mobile-pc-compact-mode .compact-hand-tray .card.selected{
+    transform:translateY(-3px) scale(1.035) !important;
+  }
+
+  body.compact-action-hub-open .app.mobile-pc-compact-mode .compact-mobile-action-grid{
+    z-index:280 !important;
+  }
+}
+
+@media (orientation: landscape) and (pointer: coarse) and (max-height: 430px){
+  .app.mobile-pc-compact-mode .desktop-compact-shell{
+    grid-template-columns:190px minmax(0, 1fr);
+    grid-template-rows:minmax(0, 1fr) minmax(108px, .36fr);
+    gap:5px;
+  }
+
+  .app.mobile-pc-compact-mode .compact-topbar{
+    grid-template-rows:36px 28px auto minmax(0, 1fr);
+    gap:5px;
+  }
+
+  .app.mobile-pc-compact-mode .compact-topbar-actions button{
+    min-height:25px !important;
+    font-size:.43rem !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-panel{
+    top:140px;
+    width:170px;
   }
 }
 
@@ -11488,7 +12274,7 @@ body.story-argos-hack-ui{
     display:inline-flex;
     position:absolute !important;
     right:130px;
-    top:5px;
+    top:-2px;
     z-index:96;
     align-items:center;
     justify-content:center;
@@ -12076,7 +12862,8 @@ body.story-argos-hack-ui{
 
   .app.mobile-compact-mode .compact-hand-modify-btn{
     display:inline-flex;
-    position:static !important;
+    position:relative !important;
+    top:-5px;
     align-items:center;
     justify-content:center;
     flex:0 0 auto;
@@ -12719,6 +13506,273 @@ body.story-argos-hack-ui{
 
   .app.mobile-panorama-mode #compactMechaStage-1 .compact-mecha-ring img{
     --mecha-float-base:translate(0, 1px);
+  }
+}
+
+/* Final mobile surface lock: keep only vertical and landscape sprite HUDs active. */
+@media (max-width: 820px) and (orientation: portrait) and (pointer: coarse){
+  .app.mobile-compact-mode .desktop-compact-shell{
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) !important;
+    grid-template-rows:78px minmax(174px, .56fr) minmax(204px, .82fr) 48px minmax(164px, 178px) !important;
+    grid-template-areas:
+      "topbar"
+      "arena"
+      "player"
+      "dock"
+      "hand" !important;
+    gap:6px !important;
+  }
+
+  .app.mobile-compact-mode .compact-topbar{
+    grid-area:topbar !important;
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0, 1fr)) 42px !important;
+    grid-template-rows:36px 30px !important;
+    gap:5px !important;
+    height:auto !important;
+    min-height:0 !important;
+    padding:5px !important;
+    overflow:visible !important;
+  }
+
+  .app.mobile-compact-mode #compactClassicModeBtn.compact-console-brand{
+    display:flex !important;
+    grid-column:1 / 4 !important;
+    grid-row:1 !important;
+    height:36px !important;
+    min-height:0 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    padding:0 4px !important;
+    border-radius:14px !important;
+    border:2px solid rgba(24,53,100,.22) !important;
+    background:linear-gradient(180deg, #eef7ff, #d9e9ff 56%, #c3d4f7) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.74), 0 3px 0 rgba(17,33,87,.18) !important;
+    overflow:visible !important;
+  }
+
+  .app.mobile-compact-mode #compactClassicModeBtn.compact-console-brand img{
+    display:block !important;
+    width:164% !important;
+    height:164% !important;
+    max-width:none !important;
+    object-fit:contain !important;
+    transform:scale(1.08) !important;
+  }
+
+  .app.mobile-compact-mode #compactMenuToggleBtn.compact-menu-toggle{
+    display:inline-flex !important;
+    grid-column:4 !important;
+    grid-row:1 !important;
+    justify-self:end !important;
+    align-self:center !important;
+    width:38px !important;
+    min-width:38px !important;
+    height:38px !important;
+    min-height:38px !important;
+    padding:0 !important;
+    border-radius:50% !important;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource-fuel{
+    grid-column:1 !important;
+    grid-row:2 !important;
+  }
+
+  .app.mobile-compact-mode .compact-top-status{
+    grid-column:2 !important;
+    grid-row:2 !important;
+    display:flex !important;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource-core{
+    grid-column:3 / 5 !important;
+    grid-row:2 !important;
+  }
+
+  .app.mobile-compact-mode .compact-top-resource,
+  .app.mobile-compact-mode .compact-top-status{
+    height:30px !important;
+    min-height:30px !important;
+    padding:3px 6px !important;
+  }
+
+  .app.mobile-compact-mode .compact-arena-panel{ grid-area:arena !important; }
+  .app.mobile-compact-mode .compact-player-panel{ grid-area:player !important; }
+  .app.mobile-compact-mode .compact-mobile-actions-panel{ grid-area:dock !important; }
+  .app.mobile-compact-mode .compact-hand-panel{ grid-area:hand !important; }
+}
+
+@media (orientation: landscape) and (pointer: coarse){
+  .app.mobile-pc-compact-mode .desktop-compact-shell{
+    display:grid !important;
+    grid-template-columns:206px minmax(0, 1fr) !important;
+    grid-template-rows:minmax(0, 1fr) minmax(124px, .40fr) !important;
+    grid-template-areas:
+      "topbar main"
+      "topbar bottom" !important;
+    gap:6px !important;
+    height:100% !important;
+    min-height:0 !important;
+  }
+
+  .app.mobile-pc-compact-mode .desktop-compact-main{
+    grid-area:main !important;
+    display:grid !important;
+    grid-template-columns:minmax(176px, .62fr) minmax(0, 1.18fr) minmax(158px, .52fr) !important;
+    grid-template-rows:minmax(0, 1fr) !important;
+    gap:6px !important;
+    min-height:0 !important;
+  }
+
+  .app.mobile-pc-compact-mode .desktop-compact-bottom{
+    grid-area:bottom !important;
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) !important;
+    min-height:0 !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-topbar{
+    grid-area:topbar !important;
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+    grid-template-rows:40px 31px auto minmax(0, 1fr) !important;
+    align-content:start !important;
+    gap:6px !important;
+    padding:6px !important;
+    width:auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    overflow:hidden !important;
+  }
+
+  .app.mobile-pc-compact-mode #compactClassicModeBtn.compact-console-brand{
+    display:flex !important;
+    grid-column:1 / -1 !important;
+    grid-row:1 !important;
+    height:40px !important;
+    min-height:0 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    padding:0 4px !important;
+    border-radius:14px !important;
+    border:2px solid rgba(24,53,100,.22) !important;
+    background:linear-gradient(180deg, #eef7ff, #d9e9ff 56%, #c3d4f7) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.74), 0 3px 0 rgba(17,33,87,.18) !important;
+    overflow:visible !important;
+  }
+
+  .app.mobile-pc-compact-mode #compactClassicModeBtn.compact-console-brand img{
+    display:block !important;
+    width:160% !important;
+    height:160% !important;
+    max-width:none !important;
+    object-fit:contain !important;
+    transform:scale(1.05) !important;
+  }
+
+  .app.mobile-pc-compact-mode #compactMenuToggleBtn.compact-menu-toggle{
+    display:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-resource-fuel{
+    grid-column:1 !important;
+    grid-row:2 !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-status{
+    grid-column:2 !important;
+    grid-row:2 !important;
+    display:flex !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-resource-core{
+    grid-column:3 !important;
+    grid-row:2 !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-top-resource,
+  .app.mobile-pc-compact-mode .compact-top-status{
+    height:31px !important;
+    min-height:31px !important;
+    padding:3px 5px !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-topbar-actions{
+    position:static !important;
+    grid-column:1 / -1 !important;
+    grid-row:3 !important;
+    width:auto !important;
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    gap:5px !important;
+    padding:0 !important;
+    border:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    transform:none !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-player-panel,
+  .app.mobile-pc-compact-mode .compact-arena-panel,
+  .app.mobile-pc-compact-mode .compact-rival-panel{
+    position:relative !important;
+    inset:auto !important;
+    display:grid !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    transform:none !important;
+    min-height:0 !important;
+    height:auto !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-hand-panel{
+    grid-area:auto !important;
+    position:relative !important;
+    display:grid !important;
+    min-height:0 !important;
+    overflow:visible !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-mobile-actions-panel{
+    display:grid !important;
+    z-index:260 !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-panel{
+    display:grid !important;
+    position:fixed !important;
+    left:max(10px, env(safe-area-inset-left)) !important;
+    top:154px !important;
+    bottom:12px !important;
+    width:186px !important;
+    max-height:none !important;
+    grid-template-rows:auto auto minmax(0, 1fr) auto !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    overflow:hidden !important;
+  }
+}
+
+@media (orientation: landscape) and (pointer: coarse) and (max-height: 430px){
+  .app.mobile-pc-compact-mode .desktop-compact-shell{
+    grid-template-columns:190px minmax(0, 1fr) !important;
+    grid-template-rows:minmax(0, 1fr) minmax(108px, .36fr) !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-topbar{
+    grid-template-rows:36px 28px auto minmax(0, 1fr) !important;
+  }
+
+  .app.mobile-pc-compact-mode .compact-tutorial-panel{
+    top:140px !important;
+    width:170px !important;
   }
 }
 
@@ -14024,31 +15078,32 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
 
   <section class="desktop-compact-shell" id="desktopCompactShell" aria-hidden="true">
     <div class="frame compact-topbar">
-      <button class="compact-menu-toggle" id="compactMenuToggleBtn" type="button" aria-expanded="false" aria-controls="compactTopbarMenu">Menú</button>
-      <div class="compact-console-brand" aria-hidden="true">
-        <img src="assets/pocobot_title_blue.png" alt="">
-      </div>
+      <button class="compact-menu-toggle" id="compactMenuToggleBtn" type="button" aria-label="Menú" aria-expanded="false" aria-controls="compactTopbarMenu"><span aria-hidden="true"></span></button>
+      <button class="compact-console-brand" id="compactClassicModeBtn" data-view-mode="expanded" type="button" aria-label="Volver al modo clásico de scroll">
+        <img src="assets/pocobot_title_blue.png" alt="Poker Combat Bot">
+      </button>
       <div class="compact-top-status" aria-label="Estado de combate">
-        <span>Status</span>
-        <strong id="compactTopStatusText">Idle</strong>
+        <span>Descarte</span>
+        <strong id="compactTopStatusText">0</strong>
       </div>
       <div class="compact-turn-dial" aria-label="Turno actual">
         <span id="compactTurnDialPlayer">Turno</span>
         <strong id="compactTurnDialValue">00</strong>
       </div>
       <div class="compact-top-resource compact-top-resource-fuel">
-        <span>Fuel</span>
+        <span>Mazo</span>
         <strong id="compactTopFuelValue">0</strong>
       </div>
       <div class="compact-top-resource compact-top-resource-core">
-        <span>Núcleo</span>
-        <strong id="compactTopCoreValue">0/3</strong>
+        <span>Fuel x2 ♠</span>
+        <strong id="compactTopCoreValue">0 × 2 ♠</strong>
       </div>
       <div class="compact-topbar-actions" id="compactTopbarMenu">
-        <button class="primary" data-source-button="saveGameBtn" id="compactSaveBtn" type="button">Guardar</button>
-        <button class="cyan" data-source-button="loadGameBtn" id="compactLoadBtn" type="button">Cargar partida</button>
         <button data-source-button="newGameBtn" id="compactNewGameBtn" type="button">Nueva partida</button>
         <button data-source-button="returnHomeBtn" id="compactReturnBtn" type="button">Volver</button>
+        <button class="primary" data-source-button="saveGameBtn" id="compactSaveBtn" type="button">Guardar</button>
+        <button class="cyan" data-source-button="loadGameBtn" id="compactLoadBtn" type="button">Cargar partida</button>
+        <button data-source-button="soundToggleBtn" id="compactSoundBtn" type="button">Música ON</button>
         <button data-source-button="toggleTutorialBtn" id="compactTutorialBtn" type="button">Tutorial ON</button>
         <button class="warn" data-view-mode="expanded" id="compactExpandedToggleBtn" type="button">Interfaz expandida</button>
       </div>
@@ -14181,8 +15236,8 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
             <div class="compact-readout-help">Estado actual del mecha en combate.</div>
           </div>
           <div class="frame compact-readout" data-compact-readout="fuel-attack" role="button" tabindex="0" aria-expanded="false">
-            <div class="tiny-label">Fuel a ataque</div>
-            <div class="value" id="compactFuelToAttackValue">0 × 2</div>
+            <div class="tiny-label">Fuel x2 ♠</div>
+            <div class="value" id="compactFuelToAttackValue">0 × 2 ♠</div>
             <div class="compact-readout-help">El fuel multiplica el valor para atacar con picas.</div>
           </div>
           <div class="frame compact-readout" data-compact-readout="projectile" role="button" tabindex="0" aria-expanded="false">
@@ -14293,7 +15348,10 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
         <div class="compact-section-head compact-section-head-tight">
           <div>
             <div class="compact-kicker">Mano activa</div>
-            <h2 id="compactHandOwner">Jugador 1</h2>
+            <button class="compact-hand-title-button" id="compactHandOverviewBtn" type="button" aria-expanded="false" aria-controls="compactHandOverviewPanel">
+              <span aria-hidden="true">▱</span>
+              <strong id="compactHandOwner">Jugador 1</strong>
+            </button>
           </div>
           <div class="compact-hand-metrics">
             <span class="compact-hand-chip">Deck <strong id="compactDeckCount">0</strong></span>
@@ -14303,6 +15361,9 @@ body.story-argos-hack-ui.story-argos-hack-booting #navRadar-1{
           </div>
         </div>
 
+        <div class="compact-hand-overview" id="compactHandOverviewPanel" aria-label="Mano completa" aria-hidden="true">
+          <div class="compact-hand-overview-grid" id="compactHandOverviewCards"></div>
+        </div>
         <div class="compact-hand-tray" id="compactHandCards"></div>
       </section>
 
@@ -14669,6 +15730,7 @@ let compactMobileActionHubOpen = false;
 let compactActionHubPointerHandledUntil = 0;
 let compactTutorialExpanded = false;
 let compactActiveReadoutId = '';
+let compactHandOverviewOpen = false;
 let mobilePanoramaVitalityStage = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -19309,6 +20371,7 @@ async function releaseOrientationLockBestEffort(){
 
 function setCompactMobileDrawer(drawer){
   const activeDrawer = drawer === 'actions' || drawer === 'rival' || drawer === 'player' || drawer === 'log' ? drawer : '';
+  if(activeDrawer) setCompactHandOverviewOpen(false);
   document.body.classList.toggle('compact-mobile-actions-open', activeDrawer === 'actions');
   document.body.classList.toggle('compact-mobile-rival-open', activeDrawer === 'rival');
   document.body.classList.toggle('compact-mobile-player-open', activeDrawer === 'player');
@@ -19316,7 +20379,10 @@ function setCompactMobileDrawer(drawer){
 }
 
 function closeCompactMobileDrawersForCombat(){
-  if(!document.body?.classList.contains('mobile-panorama-mode') && !document.body?.classList.contains('mobile-compact-mode')) return;
+  if(!document.body?.classList.contains('mobile-panorama-mode')
+    && !document.body?.classList.contains('mobile-compact-mode')
+    && !document.body?.classList.contains('mobile-pc-compact-mode')) return;
+  setCompactHandOverviewOpen(false);
   setCompactMobileDrawer('');
 }
 
@@ -19380,6 +20446,7 @@ function updateCompactActionHubMenuAnchor(){
 
 function setCompactActionHubOpen(open){
   compactMobileActionHubOpen = !!open;
+  if(compactMobileActionHubOpen) setCompactHandOverviewOpen(false);
   const mobileHudActive = document.body?.classList.contains('mobile-compact-mode')
     || document.body?.classList.contains('mobile-panorama-mode')
     || document.body?.classList.contains('mobile-pc-compact-mode');
@@ -19398,6 +20465,18 @@ function setCompactTutorialExpanded(expanded){
   if(toggle) toggle.textContent = compactTutorialExpanded ? 'Reducir' : 'Abrir guía';
 }
 
+function setCompactHandOverviewOpen(open){
+  compactHandOverviewOpen = !!open;
+  const mobileHudActive = document.body?.classList.contains('mobile-compact-mode')
+    || document.body?.classList.contains('mobile-panorama-mode')
+    || document.body?.classList.contains('mobile-pc-compact-mode');
+  document.body?.classList.toggle('compact-hand-overview-open', mobileHudActive && compactHandOverviewOpen);
+  const btn = document.getElementById('compactHandOverviewBtn');
+  const panel = document.getElementById('compactHandOverviewPanel');
+  btn?.setAttribute('aria-expanded', compactHandOverviewOpen ? 'true' : 'false');
+  panel?.setAttribute('aria-hidden', compactHandOverviewOpen ? 'false' : 'true');
+}
+
 function setCompactActiveReadout(readoutId=''){
   compactActiveReadoutId = readoutId || '';
   document.querySelectorAll('[data-compact-readout]').forEach(node => {
@@ -19412,8 +20491,20 @@ function isDesktopCompactModeActive(){
   return !!app && app.classList.contains('desktop-compact-mode');
 }
 
-function isDevHorizontalHudOverride(){
-  return devHudModeOverride === 'horizontal' || devHudModeOverride === 'mobile-horizontal';
+function isDevMobileHorizontalHudOverride(){
+  return devHudModeOverride === 'mobile-horizontal';
+}
+
+function isDevLegacyCompactHorizontalHudOverride(){
+  return devHudModeOverride === 'horizontal' || devHudModeOverride === 'legacy-compact-horizontal';
+}
+
+function isDevMobileVerticalHudOverride(){
+  return devHudModeOverride === 'mobile-vertical';
+}
+
+function isDevLegacyMobileHudOverride(){
+  return devHudModeOverride === 'legacy-mobile';
 }
 
 function collectDevMobilePanoramaCss(){
@@ -19430,7 +20521,10 @@ function collectDevMobilePanoramaCss(){
       const innerRules = rule.cssRules ? Array.from(rule.cssRules) : [];
       if(!innerRules.length) return;
       const cssText = innerRules.map(inner => inner.cssText || '').join('\n');
-      if(cssText.includes('mobile-panorama-mode') || cssText.includes('mobile-panorama-toggle')){
+      if(cssText.includes('mobile-compact-mode')
+        || cssText.includes('mobile-pc-compact-mode')
+        || cssText.includes('mobile-panorama-mode')
+        || cssText.includes('mobile-panorama-toggle')){
         chunks.push(cssText);
       }
     });
@@ -19462,12 +20556,15 @@ function syncDesktopHudAvailability(){
   let mobilePanoramaAvailable = canUseMobilePanoramaHud();
   let preservingMobilePanoramaRequest = false;
   syncDevMobilePanoramaEmulation(false);
-  if(devHudModeOverride === 'compact' || isDevHorizontalHudOverride()){
+  const devMobileHorizontal = isDevMobileHorizontalHudOverride();
+  const devLegacyHorizontal = isDevLegacyCompactHorizontalHudOverride() || isDevLegacyMobileHudOverride();
+  if(devHudModeOverride === 'compact' || isDevMobileVerticalHudOverride() || devMobileHorizontal || devLegacyHorizontal){
     desktopAvailable = devHudModeOverride === 'compact';
-    mobileCompactAvailable = false;
-    mobilePanoramaAvailable = isDevHorizontalHudOverride();
+    mobileCompactAvailable = isDevMobileVerticalHudOverride();
+    mobilePanoramaAvailable = devMobileHorizontal || devLegacyHorizontal;
     desktopHudMode = 'compact';
-    mobilePanoramaRequested = isDevHorizontalHudOverride();
+    mobilePanoramaRequested = devMobileHorizontal || devLegacyHorizontal;
+    syncDevMobilePanoramaEmulation(isDevMobileVerticalHudOverride() || devMobileHorizontal || devLegacyHorizontal);
   }
   if(mobilePanoramaAvailable) mobileCompactAvailable = false;
   let available = desktopAvailable || mobileCompactAvailable || mobilePanoramaAvailable;
@@ -19484,8 +20581,13 @@ function syncDesktopHudAvailability(){
     }
   }
   const compactActive = available && desktopHudMode === 'compact';
-  const mobileLandscapeCompactActive = compactActive && mobilePanoramaAvailable && !desktopAvailable;
-  const mobilePanoramaActive = false;
+  const legacyMobilePanoramaActive = compactActive && mobilePanoramaAvailable && !desktopAvailable && devLegacyHorizontal;
+  const mobileLandscapeCompactActive = compactActive && mobilePanoramaAvailable && !desktopAvailable && !legacyMobilePanoramaActive;
+  // Legacy mobile-panorama is intentionally retired. The only active mobile
+  // surfaces are mobile-compact-mode (vertical) and mobile-pc-compact-mode
+  // (landscape), both backed by the same real compact HUD/action wiring. The
+  // old panorama HUD can still be forced from the developer lab as a curiosity.
+  const mobilePanoramaActive = legacyMobilePanoramaActive;
   const mobileCompactActive = compactActive && mobileCompactAvailable && !desktopAvailable && !mobileLandscapeCompactActive;
   if(!compactActive){
     teardownCompactHandDrag();
@@ -19512,20 +20614,20 @@ function syncDesktopHudAvailability(){
     setCompactMobileDrawer('');
   }
   setCompactActionHubOpen((mobileCompactActive || mobileLandscapeCompactActive) && compactMobileActionHubOpen);
+  setCompactHandOverviewOpen((mobileCompactActive || mobileLandscapeCompactActive) && compactHandOverviewOpen);
   if(!mobileLandscapeCompactActive && !mobileCompactActive) document.body.classList.remove('compact-menu-open');
   const mobilePanoramaOffered = canOfferMobilePanoramaHud();
   const topToggleBtn = document.getElementById('desktopCompactToggleTopBtn');
-  const mobileProReturnAvailable = !compactActive && (mobileCompactAvailable || mobilePanoramaAvailable);
   if(topToggleBtn){
-    const desktopProReturnAvailable = !compactActive && desktopAvailable;
-    topToggleBtn.hidden = !desktopProReturnAvailable;
-    topToggleBtn.disabled = !desktopProReturnAvailable;
+    const proReturnAvailable = !compactActive && (desktopAvailable || mobileCompactAvailable || mobilePanoramaAvailable);
+    topToggleBtn.hidden = !proReturnAvailable;
+    topToggleBtn.disabled = !proReturnAvailable;
     topToggleBtn.textContent = 'Modo PRO';
   }
   const mobileToggleBtn = document.getElementById('mobilePanoramaToggleBtn');
   if(mobileToggleBtn){
-    mobileToggleBtn.hidden = !mobileProReturnAvailable;
-    mobileToggleBtn.disabled = !mobileProReturnAvailable;
+    mobileToggleBtn.hidden = true;
+    mobileToggleBtn.disabled = true;
     mobileToggleBtn.textContent = 'Modo PRO';
   }
   const shell = document.getElementById('desktopCompactShell');
@@ -20032,6 +21134,9 @@ function syncDesktopCompactButtons(){
     if(btn.id === 'compactTutorialBtn'){
       btn.textContent = source.textContent;
     }
+    if(btn.id === 'compactSoundBtn'){
+      btn.textContent = source.textContent || (state.soundOn ? 'Música ON' : 'Música OFF');
+    }
     if((btn.id === 'compactActionAddBtn' || btn.id === 'compactMobileModifyBtn') && hasCompactDraft){
       btn.disabled = false;
       btn.classList.add('button-live');
@@ -20470,9 +21575,75 @@ function getCompactMechaAnchor(idx){
   };
 }
 
+function ensureCompactEvolutionLayer(){
+  const surface = getCompactCombatSurface();
+  if(!surface) return null;
+  let layer = document.getElementById('compactEvolutionLayer');
+  if(!layer){
+    layer = document.createElement('div');
+    layer.id = 'compactEvolutionLayer';
+    layer.className = 'compact-evolution-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML = `
+      <div class="compact-evolution-node">
+        <div class="compact-evolution-core"></div>
+        <div class="compact-evolution-scan"></div>
+        <div class="compact-evolution-ring"></div>
+        <img class="compact-evolution-img old" alt="">
+        <img class="compact-evolution-img new" alt="">
+        <div class="compact-evolution-progress"></div>
+        <div class="compact-evolution-label">Mecha actualizado</div>
+      </div>
+    `;
+  }
+  if(layer.parentElement !== surface) surface.appendChild(layer);
+  return layer;
+}
+
+function triggerCompactEvolutionShowcase(playerIdx){
+  if(!isDesktopCompactModeActive() || prefersReducedMotion()) return false;
+  const player = state.players?.[playerIdx];
+  if(!player) return false;
+  const layer = ensureCompactEvolutionLayer();
+  const surface = getCompactCombatSurface();
+  const stage = document.getElementById(`compactMechaStage-${playerIdx}`);
+  const currentImg = document.getElementById(`compactMechaImg-${playerIdx}`);
+  if(!layer || !surface || !stage) return false;
+
+  const nextSrc = getMechaPhaseImage(player);
+  const oldSrc = currentImg?.getAttribute('src') || currentImg?.currentSrc || currentImg?.src || nextSrc;
+  const oldImg = layer.querySelector('.compact-evolution-img.old');
+  const newImg = layer.querySelector('.compact-evolution-img.new');
+  const label = layer.querySelector('.compact-evolution-label');
+  const progress = layer.querySelector('.compact-evolution-progress');
+  const completeBuild = isCompleteAttackMecha(player);
+
+  if(oldImg) oldImg.src = oldSrc;
+  if(newImg) newImg.src = nextSrc;
+  if(label) label.textContent = completeBuild ? 'Mecha completo' : 'Mecha actualizado';
+  if(progress) progress.textContent = `${getDialBuildPercent(player)}%`;
+
+  const surfaceRect = surface.getBoundingClientRect();
+  const stageRect = stage.getBoundingClientRect();
+  const x = Math.max(70, Math.min(stageRect.left + stageRect.width / 2 - surfaceRect.left, surfaceRect.width - 70));
+  const y = Math.max(72, Math.min(stageRect.top + stageRect.height * .48 - surfaceRect.top, surfaceRect.height - 72));
+  layer.style.setProperty('--evo-left', `${x}px`);
+  layer.style.setProperty('--evo-top', `${y}px`);
+  layer.classList.toggle('complete', completeBuild);
+  layer.classList.remove('show');
+  void layer.offsetWidth;
+  layer.classList.add('show');
+  window.clearTimeout(layer._compactEvolutionTimer);
+  layer._compactEvolutionTimer = window.setTimeout(() => {
+    layer.classList.remove('show', 'complete');
+  }, completeBuild ? 1500 : 1320);
+  return true;
+}
+
 function getModifyFeedbackSparkTarget(playerIdx){
   if(isDesktopCompactModeActive()){
-    return document.getElementById('compactActionAddBtn')
+    return document.getElementById('compactMobileModifyBtn')
+      || document.getElementById('compactActionAddBtn')
       || document.getElementById(`compactMechaRing-${playerIdx}`)
       || document.getElementById(`compactMechaStage-${playerIdx}`)
       || getCompactCombatSurface();
@@ -20509,6 +21680,7 @@ function triggerCompactBuildFeedback(playerIdx){
     spawnElementSparks(anchor.target, 34, 'amber');
     spawnUiSparks(anchor.x, anchor.y, 30, 'amber');
   }
+  triggerCompactEvolutionShowcase(playerIdx);
   triggerCompactHudShake(completeBuild ? 'heavy' : 'light');
   if(completeBuild){
     window.setTimeout(() => {
@@ -20680,9 +21852,12 @@ function renderDesktopCompactHud(){
   const compactTurnDialValue = document.getElementById('compactTurnDialValue');
   if(compactTurnDialValue) compactTurnDialValue.textContent = String(Math.max(0, state.turnCount || 0)).padStart(2, '0');
   const compactTopFuelValue = document.getElementById('compactTopFuelValue');
-  if(compactTopFuelValue) compactTopFuelValue.textContent = String(sumCards(player.fuel || []));
+  if(compactTopFuelValue) compactTopFuelValue.textContent = String(getVisibleDeckCount(playerIdx));
   const compactTopCoreValue = document.getElementById('compactTopCoreValue');
-  if(compactTopCoreValue) compactTopCoreValue.textContent = `${createCoreArray(player).length}/3`;
+  if(compactTopCoreValue){
+    const fuelAttackText = sourceText('fuelToAttackValue') || '0 × 2';
+    compactTopCoreValue.textContent = fuelAttackText.includes('♠') ? fuelAttackText : `${fuelAttackText} ♠`;
+  }
   const compactPlayerStatus = document.getElementById('compactPlayerStatus');
   if(compactPlayerStatus) compactPlayerStatus.textContent = playerBuild.combatReady ? 'Combate listo' : playerBuild.mounted ? 'Montado' : 'Montaje';
   const compactCoreSummary = document.getElementById('compactCoreSummary');
@@ -20834,9 +22009,12 @@ function renderDesktopCompactHud(){
   const compactRightStatusText = document.getElementById('compactRightStatusText');
   if(compactRightStatusText) compactRightStatusText.textContent = sourceText('rightStatusText');
   const compactTopStatusText = document.getElementById('compactTopStatusText');
-  if(compactTopStatusText) compactTopStatusText.textContent = sourceText('rightStatusText');
+  if(compactTopStatusText) compactTopStatusText.textContent = String(getVisibleDiscardCount(playerIdx));
   const compactFuelToAttackValue = document.getElementById('compactFuelToAttackValue');
-  if(compactFuelToAttackValue) compactFuelToAttackValue.textContent = sourceText('fuelToAttackValue');
+  if(compactFuelToAttackValue){
+    const fuelAttackText = sourceText('fuelToAttackValue') || '0 × 2';
+    compactFuelToAttackValue.textContent = fuelAttackText.includes('♠') ? fuelAttackText : `${fuelAttackText} ♠`;
+  }
   const compactProjectileStatusText = document.getElementById('compactProjectileStatusText');
   if(compactProjectileStatusText) compactProjectileStatusText.textContent = sourceText('projectileStatusText');
   setCompactActiveReadout(compactActiveReadoutId);
@@ -20867,6 +22045,13 @@ function renderDesktopCompactHud(){
   const compactHandCards = document.getElementById('compactHandCards');
   renderCardsIntoContainer(compactHandCards, player.hand || [], playerIdx, 'hand');
   syncCompactHandTraySizing(compactHandCards, (player.hand || []).length);
+  const compactHandOverviewCards = document.getElementById('compactHandOverviewCards');
+  renderCardsIntoContainer(
+    compactHandOverviewCards,
+    shouldHideHandForPlayer(playerIdx) ? [] : (player.hand || []),
+    playerIdx,
+    'hand'
+  );
   if(isDesktopCompactModeActive()) renderCompactDraftPreview(playerIdx);
 
   const compactLogCount = document.getElementById('compactLogCount');
@@ -20878,19 +22063,20 @@ function renderDesktopCompactHud(){
 
   const compactTutorialBoxTitle = document.getElementById('compactTutorialBoxTitle');
   if(compactTutorialBoxTitle){
-    compactTutorialBoxTitle.textContent = state.tutorial ? (sourceText('tutorialPanelTitle') || 'Tutorial activo') : 'Consejo tactico';
+    compactTutorialBoxTitle.textContent = state.tutorial ? (sourceText('tutorialPanelTitle') || 'Tutorial activo') : 'Registro';
   }
   const compactTutorialBoxText = document.getElementById('compactTutorialBoxText');
   if(compactTutorialBoxText){
+    const recentLogHtml = (state.log || []).slice(-5).reverse().map(entry => `<div class="log-entry">${entry}</div>`).join('');
     compactTutorialBoxText.innerHTML = state.tutorial
       ? (sourceHtml('tutorialPanelText') || sourceHtml('attackHint') || 'La guía táctica aparecerá aquí.')
-      : (sourceHtml('attackHint') || 'La consola compacta mantiene visibles las acciones legales del turno.');
+      : (recentLogHtml || sourceHtml('attackHint') || 'La consola compacta mantiene visibles las acciones legales del turno.');
   }
   const compactTutorialBoxMeta = document.getElementById('compactTutorialBoxMeta');
   if(compactTutorialBoxMeta){
     compactTutorialBoxMeta.textContent = state.tutorial
       ? (sourceText('tutorialPanelObjective') || sourceText('attackSubHint') || 'Sigue el objetivo actual y usa las zonas iluminadas.')
-      : (sourceText('attackSubHint') || 'La lectura rival y tus módulos quedan visibles sin depender del scroll.');
+      : (sourceText('rightStatusText') || sourceText('attackSubHint') || 'La lectura rival y tus módulos quedan visibles sin depender del scroll.');
   }
   const compactTutorialActions = document.getElementById('compactTutorialActions');
   if(compactTutorialActions){
@@ -21071,7 +22257,12 @@ function showAttackSpecialPopup(attackerIdx, options={}){
   positionAttackSpecialPopup(attackerIdx);
   overlay.classList.add('show');
   overlay.setAttribute('aria-hidden', 'false');
-  spawnElementSparks(document.getElementById(`player-panel-${attackerIdx}`) || document.getElementById('tacticalScreen'), 26, 'amber');
+  const sparkTarget = getCompactMechaAnchor(attackerIdx)?.target
+    || document.getElementById(`mechaDial-${attackerIdx}`)
+    || document.getElementById(`player-panel-${attackerIdx}`)
+    || getCompactCombatSurface()
+    || document.getElementById('tacticalScreen');
+  spawnElementSparks(sparkTarget, 26, 'amber');
 
   video.pause();
   try{
@@ -21365,6 +22556,14 @@ function triggerModifyFeedbackSequence(playerIdx, callback){
   triggerScreenRipple('amber');
   pulseVibrate([12, 20, 12]);
   triggerCompactBuildFeedback(playerIdx);
+  if(isMobileProHudActive()){
+    const player = state.players?.[playerIdx];
+    const duration = player && isCompleteAttackMecha(player) ? 1450 : 1220;
+    window.setTimeout(() => {
+      if(callback) callback();
+    }, duration);
+    return;
+  }
   if(document.body?.classList.contains('mobile-panorama-mode')){
     window.setTimeout(() => {
       if(callback) callback();
@@ -24301,9 +25500,22 @@ document.getElementById('desktopCompactShell').addEventListener('pointerdown', (
   event.preventDefault();
   event.stopPropagation();
 }, true);
+document.getElementById('desktopCompactShell').addEventListener('pointerdown', (event) => {
+  if(!document.body?.classList.contains('compact-hand-overview-open')) return;
+  if(event.target.closest('#compactHandOverviewPanel') || event.target.closest('#compactHandOverviewBtn')) return;
+  setCompactHandOverviewOpen(false);
+}, true);
 document.getElementById('desktopCompactShell').addEventListener('click', (event) => {
   if(document.body?.classList.contains('mobile-panorama-mode') && event.target.closest('.compact-tutorial-panel')){
     event.preventDefault();
+    return;
+  }
+  const overviewCard = event.target.closest('#compactHandOverviewCards .card[data-card-id]');
+  if(overviewCard){
+    event.preventDefault();
+    if(isDesktopCompactModeActive() && (canUseInteractiveTurnAction() || canUseInteractiveDefenseAction())){
+      toggleSelect(overviewCard.dataset.cardId);
+    }
     return;
   }
   const mechaStage = event.target.closest('.compact-mecha-stage');
@@ -24327,8 +25539,16 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
   if(!btn) return;
   if(btn.id === 'compactMenuToggleBtn'){
     const open = !document.body.classList.contains('compact-menu-open');
+    setCompactHandOverviewOpen(false);
+    setCompactActionHubOpen(false);
     document.body.classList.toggle('compact-menu-open', open);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    return;
+  }
+  if(btn.id === 'compactHandOverviewBtn'){
+    setCompactActionHubOpen(false);
+    closeCompactTopbarMenu();
+    setCompactHandOverviewOpen(!compactHandOverviewOpen);
     return;
   }
   if(btn.id === 'accionesBtn' || btn.id === 'compactActionHubButton'){
@@ -26434,6 +27654,7 @@ function startAcademyLesson(lessonId){
   academyHideOverlay('academyCertificateOverlay');
   prepareNormalCombatStartHudMode();
   render();
+  startIntroMusic(true);
   scheduleCombatOpeningSequence('academy', 150);
   window.setTimeout(() => {
     scrollToPlayerPanel(0, 'smooth');
@@ -26463,6 +27684,7 @@ function startTutorialMode(){
 
   prepareNormalCombatStartHudMode();
   render();
+  startIntroMusic(true);
   scheduleCombatOpeningSequence('tutorial', 150);
   window.setTimeout(() => {
     scrollToPlayerPanel(0, 'smooth');
@@ -27327,10 +28549,12 @@ function devGetSnapshot(){
       lobbyStatus: onlineStatus && !onlineStatus.classList.contains('ol-hidden') ? onlineStatus.textContent : ''
     },
     viewport: {
-      mode: document.body?.classList.contains('mobile-pc-compact-mode')
+      mode: document.body?.classList.contains('mobile-panorama-mode')
+        ? (devHudModeOverride === 'horizontal' || devHudModeOverride === 'legacy-compact-horizontal' ? 'legacy-compact-horizontal' : 'legacy-mobile')
+        : document.body?.classList.contains('mobile-pc-compact-mode')
         ? 'mobile-horizontal'
-        : document.body?.classList.contains('mobile-panorama-mode')
-        ? (devHudModeOverride === 'mobile-horizontal' ? 'mobile-horizontal' : 'horizontal')
+        : document.body?.classList.contains('mobile-compact-mode')
+        ? 'mobile-vertical'
         : document.body?.classList.contains('desktop-compact-mode')
           ? 'compact'
           : 'expanded',
@@ -27458,10 +28682,20 @@ function devSetAttacker(playerIdx=0){
 
 function devSetViewportMode(mode='expanded'){
   if(!state.players || state.players.length<2) devBootArena();
-  const normalized = mode === 'compact' || mode === 'horizontal' || mode === 'mobile-horizontal' ? mode : 'expanded';
+  const normalized = mode === 'compact'
+    || mode === 'mobile-vertical'
+    || mode === 'horizontal'
+    || mode === 'mobile-horizontal'
+    || mode === 'legacy-mobile'
+    || mode === 'legacy-compact-horizontal'
+    ? mode
+    : 'expanded';
   devHudModeOverride = normalized === 'expanded' ? 'auto' : normalized;
   desktopHudMode = normalized === 'expanded' ? 'expanded' : 'compact';
-  mobilePanoramaRequested = normalized === 'horizontal' || normalized === 'mobile-horizontal';
+  mobilePanoramaRequested = normalized === 'horizontal'
+    || normalized === 'mobile-horizontal'
+    || normalized === 'legacy-mobile'
+    || normalized === 'legacy-compact-horizontal';
   setCompactMobileDrawer('');
   render();
   return devGetSnapshot();
@@ -27757,6 +28991,8 @@ function olStartGame(role) {
 
     olSetupGuestButtons();
     render();
+    startIntroMusic(true);
+    scheduleCombatOpeningSequence('online', 180);
     window.setTimeout(function() {
       olSendAction({ type: 'playerProfile', academyBadge: academyHasPilotLicense() });
     }, 40);

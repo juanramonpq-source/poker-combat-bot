@@ -323,19 +323,19 @@
       position: relative;
       z-index: 2;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: minmax(0, .72fr) minmax(0, .82fr) minmax(0, 1fr) auto;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       margin: 0 2px 6px;
     }
 
     .meter-pill {
-      min-height: 42px;
+      min-height: 40px;
       display: grid;
-      grid-template-columns: 22px minmax(0, 1fr);
+      grid-template-columns: 18px minmax(0, 1fr);
       align-items: center;
-      gap: 5px;
-      padding: 5px 7px;
+      gap: 4px;
+      padding: 4px 5px;
       border: 3px solid #06172a;
       border-radius: 11px;
       background:
@@ -348,7 +348,7 @@
     .meter-pill small {
       display: block;
       color: #ffe8c4;
-      font-size: 11px;
+      font-size: 10px;
       line-height: 1;
       white-space: nowrap;
     }
@@ -356,15 +356,15 @@
     .meter-pill strong {
       display: block;
       color: var(--cyan);
-      font-size: 20px;
+      font-size: 18px;
       line-height: .95;
       text-shadow: 0 0 12px rgba(70, 236, 255, .65);
       white-space: nowrap;
     }
 
     .metric-icon {
-      width: 21px;
-      height: 25px;
+      width: 18px;
+      height: 22px;
       display: grid;
       place-items: center;
       border: 2px solid #e9cfa5;
@@ -372,12 +372,12 @@
       color: #e9cfa5;
       background: rgba(1, 18, 31, .55);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 900;
     }
 
     .fuel-spade-icon {
-      font-size: 17px;
+      font-size: 15px;
       line-height: 1;
     }
 
@@ -1019,6 +1019,7 @@
     .floating-message {
       display: none;
       min-width: 0;
+      max-height: min(210px, 42vh);
       padding: 9px 11px;
       border-radius: 12px;
       border: 2px solid rgba(255, 238, 190, .78);
@@ -1027,6 +1028,9 @@
         linear-gradient(180deg, rgba(15, 37, 78, .96), rgba(5, 14, 33, .96));
       box-shadow: 0 14px 30px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(255,255,255,.08);
       color: #fff6db;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
       pointer-events: auto;
     }
 
@@ -1456,24 +1460,33 @@
       z-index: 24;
     }
 
+    .phone-shell.actions-open .status-strip {
+      z-index: 30;
+    }
+
     .action-hub {
-      position: absolute;
+      position: relative;
       z-index: 18;
-      left: 68%;
-      top: 1px;
-      width: 1px;
-      height: 1px;
-      transform: translateX(-50%);
+      left: auto;
+      top: auto;
+      width: auto;
+      height: auto;
+      transform: none;
       display: grid;
       place-items: center;
+    }
+
+    .status-strip .action-hub {
+      justify-self: end;
+      align-self: center;
     }
 
     .actions-button {
       position: relative;
       z-index: 3;
-      min-width: 124px;
-      min-height: 34px;
-      padding: 6px 16px 5px;
+      min-width: 106px;
+      min-height: 35px;
+      padding: 6px 14px 5px;
       border: 3px solid #5d3900;
       border-radius: 13px;
       color: #221301;
@@ -1485,7 +1498,7 @@
         inset 0 -4px 0 rgba(116, 62, 0, .35),
         0 5px 0 #4b2a00,
         0 0 18px rgba(255,196,47,.22);
-      font-size: 17px;
+      font-size: 14px;
       line-height: 1;
       font-weight: 900;
       text-transform: uppercase;
@@ -1507,6 +1520,14 @@
 
     .actions-button::before { left: 9px; }
     .actions-button::after { right: 9px; }
+
+    .status-strip .action-wheel {
+      left: auto;
+      right: 0;
+      top: 42px;
+      transform: scale(.82);
+      transform-origin: top right;
+    }
 
     .phone-shell.actions-open .actions-button {
       filter: brightness(1.05);
@@ -1542,6 +1563,10 @@
       opacity: 1;
       transform: translateX(-50%) scale(1);
       pointer-events: auto;
+    }
+
+    .phone-shell.actions-open .status-strip .action-wheel {
+      transform: scale(1);
     }
 
     .action-wheel::before {
@@ -1598,6 +1623,20 @@
 
     .wheel-action.defense {
       background: linear-gradient(180deg, #c9fff4, #54dcc3 64%, #15806f);
+    }
+
+    .wheel-action.modify {
+      color: #eaffdc;
+      border-color: #053821;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.42), transparent 38%),
+        linear-gradient(180deg, #72f06d, #1f9d4b 64%, #0d5f34);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.46),
+        inset 0 -2px 0 rgba(0,60,28,.34),
+        0 4px 0 rgba(0,14,30,.52),
+        0 0 12px rgba(64,255,137,.24);
+      text-shadow: 0 1px 0 rgba(0,0,0,.36);
     }
 
     .wheel-action.is-active {
@@ -1681,6 +1720,25 @@
     .hand-modify-button:disabled {
       opacity: .52;
       filter: saturate(.55) brightness(.82);
+    }
+
+    .floating-modify-button {
+      position: absolute;
+      z-index: 18;
+      left: auto;
+      right: 22px;
+      top: 39px;
+      min-width: 124px;
+      min-height: 34px;
+      padding: 6px 14px 5px;
+      border-radius: 13px;
+      transform: none;
+    }
+
+    .phone-shell.actions-open .floating-modify-button {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(4px);
     }
 
     .hand-count-badge {
@@ -1777,6 +1835,17 @@
     .phone-shell.actions-open .cards {
       filter: brightness(.72) saturate(.78);
       pointer-events: none;
+      opacity: 0 !important;
+      visibility: hidden;
+      transform: translateY(10px) scale(.96);
+    }
+
+    .phone-shell.actions-open .hand-count-badge,
+    .phone-shell.actions-open .side-arrow {
+      opacity: 0 !important;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(8px);
     }
 
     .cards.is-shifting-left .card {
@@ -2769,7 +2838,9 @@
       }
 
       .status-strip {
+        position: static;
         grid-area: status;
+        z-index: 70;
         align-self: stretch;
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2777,6 +2848,7 @@
         align-content: start;
         gap: 4px;
         margin: 0;
+        overflow: visible;
       }
 
       .meter-pill {
@@ -2868,7 +2940,8 @@
       .left-guidance-box {
         grid-area: notice;
         min-height: 0;
-        display: block;
+        display: flex;
+        flex-direction: column;
         padding: 9px 10px;
         border: 3px solid #7a130b;
         border-radius: 13px;
@@ -2883,20 +2956,40 @@
       }
 
       .guidance-title {
+        flex: 0 0 auto;
         margin-bottom: 6px;
         font-size: 12px;
       }
 
       .guidance-lines {
+        min-height: 0;
         max-height: calc(100% - 18px);
-        overflow: hidden;
+        padding-right: 4px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 224, 174, .58) rgba(0, 0, 0, .18);
+      }
+
+      .guidance-lines::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      .guidance-lines::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, .16);
+        border-radius: 99px;
+      }
+
+      .guidance-lines::-webkit-scrollbar-thumb {
+        border-radius: 99px;
+        background: rgba(255, 224, 174, .58);
       }
 
       .guidance-line {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        display: block;
+        overflow: visible;
         font-size: 10.5px;
       }
 
@@ -3029,13 +3122,17 @@
       }
 
       .action-hub {
-        top: 38px;
-        right: 8px;
+        position: absolute;
+        z-index: 64;
+        top: 126px;
+        right: 18px;
         left: auto;
         width: auto;
         height: auto;
         transform: none;
         display: block;
+        justify-self: auto;
+        align-self: auto;
       }
 
       .actions-button {
@@ -3047,18 +3144,20 @@
         font-size: 13px;
       }
 
-      .action-wheel {
+      .status-strip .action-wheel {
+        z-index: 64;
         left: auto;
         right: 0;
         top: 36px;
-        width: 270px;
-        height: 125px;
-        transform: scale(.74);
+        width: 300px;
+        height: 118px;
+        transform: none;
         transform-origin: top right;
       }
 
-      .phone-shell.actions-open .action-wheel {
-        transform: scale(.86);
+      .phone-shell.actions-open .status-strip .action-wheel {
+        opacity: 1;
+        transform: none;
         pointer-events: none;
       }
 
@@ -3078,13 +3177,37 @@
         font-size: 9px;
       }
 
+      button:not(:disabled):active,
+      button.is-pressing,
+      .tab-sprite:not(:disabled):active,
+      .tab-sprite.is-pressing,
+      .side-arrow:not(:disabled):active,
+      .side-arrow.is-pressing,
+      .actions-button:not(:disabled):active,
+      .actions-button.is-pressing,
+      .phone-shell.actions-open .actions-button:not(:disabled):active,
+      .phone-shell.actions-open .actions-button.is-pressing,
+      .hand-modify-button:not(:disabled):active,
+      .hand-modify-button.is-pressing,
+      .quick-modify-button:not(:disabled):active,
+      .quick-modify-button.is-pressing,
+      .wheel-action:not(:disabled):active,
+      .wheel-action.is-pressing {
+        translate: 0 0 !important;
+      }
+
       .cards {
-        --hand-card-width: 48px;
-        --hand-card-height: 70px;
+        --hand-card-width: 42px;
+        --hand-card-height: 61px;
+        position: relative;
         height: calc(100% - 4px);
-        padding-top: 62px;
-        align-items: end;
-        justify-content: center;
+        display: block;
+        padding: 0;
+        overflow: visible;
+      }
+
+      .cards .card {
+        position: absolute;
       }
 
       .hand-overview {
@@ -3113,11 +3236,11 @@
 
       .phone-shell.actions-open .cards {
         filter: brightness(.92) saturate(.92);
-        pointer-events: auto;
+        pointer-events: none;
       }
 
       .cards .card + .card {
-        margin-left: calc(var(--fan-overlap) * -1);
+        margin-left: 0;
       }
 
       .side-arrow {
@@ -3299,13 +3422,19 @@
 
       .zone-title {
         gap: 4px;
-        font-size: 10px;
+        font-size: 9.5px;
         line-height: 1.05;
       }
 
+      .zone-title span {
+        overflow-wrap: anywhere;
+      }
+
       .zone-title b {
-        font-size: 10px;
+        font-size: 9px;
         white-space: normal;
+        text-align: right;
+        overflow-wrap: anywhere;
       }
 
       .zone-cards {
@@ -3407,6 +3536,23 @@
         <span class="metric-icon fuel-spade-icon" aria-hidden="true">♠</span>
         <div><small>Fuel x2 ♠</small><strong data-selected-fuel-value>0→0</strong></div>
       </article>
+
+      <div class="action-hub" aria-label="Acciones de partida">
+        <button class="actions-button" type="button" data-action-toggle aria-expanded="false">Acciones</button>
+        <div class="action-wheel" role="menu">
+          <button class="wheel-action" style="--x:-82px;--y:-78px" type="button" data-action="figures">2 Fig.</button>
+          <button class="wheel-action" style="--x:-82px;--y:-45px" type="button" data-action="draw">Robar ♦</button>
+          <button class="wheel-action primary" style="--x:0px;--y:-51px" type="button" data-action="attack-mode">Atacar</button>
+          <button class="wheel-action primary attack-confirm-action" style="--x:89px;--y:-51px" type="button" data-action="confirm">Confirmar</button>
+          <button class="wheel-action modify" style="--x:100px;--y:-8px" type="button" data-action="modify">MODIFICAR</button>
+          <button class="wheel-action" style="--x:78px;--y:32px" type="button" data-action="projectile">Modo Proy.</button>
+          <button class="wheel-action" style="--x:108px;--y:66px" type="button" data-action="projectile-only">Solo Proy.</button>
+          <button class="wheel-action" style="--x:0px;--y:47px" type="button" data-action="pass">Pasar</button>
+          <button class="wheel-action defense" style="--x:-94px;--y:30px" type="button" data-action="defend">Defender</button>
+          <button class="wheel-action defense" style="--x:-112px;--y:-8px" type="button" data-action="skip-defense">No Def.</button>
+          <button class="wheel-action utility" style="--x:0px;--y:0px" type="button" data-action="clear">Limpiar</button>
+        </div>
+      </div>
     </section>
     <section class="left-guidance-box" data-left-guidance aria-label="Indicaciones de tutorial y combate"></section>
     <button class="quick-modify-button" type="button" data-action="modify">Modificar</button>
@@ -3498,25 +3644,9 @@
     <section class="hand-tray" aria-label="Mano">
       <header>
         <button class="hand-title-button" type="button" data-hand-overview-toggle aria-expanded="false">▱ Mano</button>
-        <button class="hand-modify-button" type="button" data-action="modify">Modificar</button>
       </header>
       <strong class="hand-count-badge" data-hand-count>0/18</strong>
-      <div class="action-hub" aria-label="Acciones de partida">
-        <button class="actions-button" type="button" data-action-toggle aria-expanded="false">Acciones</button>
-        <div class="action-wheel" role="menu">
-          <button class="wheel-action" style="--x:-82px;--y:-78px" type="button" data-action="figures">2 Fig.</button>
-          <button class="wheel-action" style="--x:-82px;--y:-45px" type="button" data-action="draw">Robar ♦</button>
-          <button class="wheel-action primary" style="--x:0px;--y:-51px" type="button" data-action="attack-mode">Atacar</button>
-          <button class="wheel-action primary attack-confirm-action" style="--x:89px;--y:-51px" type="button" data-action="confirm">Confirmar</button>
-          <button class="wheel-action" style="--x:100px;--y:-8px" type="button" data-action="modify">MODIFICAR</button>
-          <button class="wheel-action" style="--x:78px;--y:32px" type="button" data-action="projectile">Modo Proy.</button>
-          <button class="wheel-action" style="--x:108px;--y:66px" type="button" data-action="projectile-only">Solo Proy.</button>
-          <button class="wheel-action" style="--x:0px;--y:47px" type="button" data-action="pass">Pasar</button>
-          <button class="wheel-action defense" style="--x:-94px;--y:30px" type="button" data-action="defend">Defender</button>
-          <button class="wheel-action defense" style="--x:-112px;--y:-8px" type="button" data-action="skip-defense">No Def.</button>
-          <button class="wheel-action utility" style="--x:0px;--y:0px" type="button" data-action="clear">Limpiar</button>
-        </div>
-      </div>
+      <button class="hand-modify-button floating-modify-button" type="button" data-action="modify">Modificar</button>
       <div class="hand-overview" data-hand-overview aria-label="Mano completa">
         <div class="hand-overview-grid" data-hand-overview-cards></div>
       </div>
@@ -5157,6 +5287,34 @@
     }
 
     function layoutHandCard(cardNode, index, count, tray) {
+      if (isLandscapeLayout()) {
+        const cardsPerRow = 9;
+        const cardWidth = 42;
+        const cardHeight = 61;
+        const row = Math.floor(index / cardsPerRow);
+        const col = index % cardsPerRow;
+        const rowCount = Math.min(cardsPerRow, count - (row * cardsPerRow));
+        const rows = Math.min(2, Math.ceil(count / cardsPerRow));
+        const usableWidth = Math.max(cardWidth, (tray.clientWidth || 220) - 16);
+        const step = rowCount > 1
+          ? Math.min(cardWidth * .58, Math.max(12, (usableWidth - cardWidth) / (rowCount - 1)))
+          : 0;
+        const totalWidth = cardWidth + step * Math.max(0, rowCount - 1);
+        const left = Math.max(0, (usableWidth - totalWidth) / 2) + col * step + 8;
+        const rowGap = 7;
+        const totalHeight = rows * cardHeight + (rows - 1) * rowGap;
+        const topBase = Math.max(0, ((tray.clientHeight || 150) - totalHeight) * .5);
+        cardNode.style.left = `${left.toFixed(2)}px`;
+        cardNode.style.top = `${(topBase + row * (cardHeight + rowGap)).toFixed(2)}px`;
+        cardNode.style.zIndex = String(10 + col + row * cardsPerRow);
+        tray.style.setProperty("--fan-overlap", "0px");
+        cardNode.style.setProperty("--hand-rotate", "0deg");
+        cardNode.style.setProperty("--hand-rise", "0px");
+        cardNode.style.setProperty("--hand-scale", ".94");
+        cardNode.style.setProperty("--hand-hover-scale", "1");
+        return;
+      }
+
       const cardWidth = window.matchMedia("(orientation: landscape) and (max-height: 520px)").matches
         ? 48
         : window.matchMedia("(max-height: 760px)").matches
@@ -5254,6 +5412,7 @@
     function renderBoard() {
       const isRivalView = state.activeTab === "rival" && !state.attackMode && !state.projectileOnlyMode;
       const player = isRivalView ? state.players[1] : state.players[0];
+      const compactBoard = isLandscapeLayout();
       const grid = document.querySelector("[data-zone-grid]");
       shell.classList.toggle("rival-view", isRivalView);
       grid.classList.toggle("is-rival", isRivalView);
@@ -5261,7 +5420,7 @@
 
       const core = document.createElement("article");
       core.className = "panel-zone core-panel";
-      core.innerHTML = '<header class="zone-title"><span>Nucleo</span><b>Piloto / Copiloto / Boost</b></header><div class="core-slots"></div>';
+      core.innerHTML = `<header class="zone-title"><span>Nucleo</span><b>${compactBoard ? "P / C / B" : "Piloto / Copiloto / Boost"}</b></header><div class="core-slots"></div>`;
       const coreSlots = core.querySelector(".core-slots");
       coreSlots.append(
         makeCoreSlot("pilot", "Piloto", player.core.pilot, "J/Q/K", isRivalView),
@@ -5269,18 +5428,29 @@
         makeCoreSlot("booster", "Boost", player.core.booster, "A", isRivalView)
       );
 
+      const moduleMeta = (zone) => compactBoard
+        ? `${player[zone].length}/${moduleLimit(player, zone)}`
+        : `${player[zone].length}/${moduleLimit(player, zone)} max`;
+      const fullSuitNames = { attack: "Picas", defense: "Corazones", armor: "Treboles" };
+      const moduleTitle = (zone, title, suit, rivalTitle) => {
+        if (compactBoard) return `${title} ${suit}`;
+        return isRivalView ? rivalTitle : `${title} (${fullSuitNames[zone]})`;
+      };
+
       const attackZone = isRivalView
-        ? makePanelZone("Ataque rival (Picas)", player.attack, `${player.attack.length}/${moduleLimit(player, "attack")} max`, "zone-attack")
-        : makeDropZone("attack", "Ataque (Picas)", player.attack, `${player.attack.length}/${moduleLimit(player, "attack")} max`, "zone-attack");
+        ? makePanelZone(moduleTitle("attack", "Ataque", "♠", "Ataque rival (Picas)"), player.attack, moduleMeta("attack"), "zone-attack")
+        : makeDropZone("attack", moduleTitle("attack", "Ataque", "♠"), player.attack, moduleMeta("attack"), "zone-attack");
       const defenseZone = isRivalView
-        ? makePanelZone("Defensa rival (Corazones)", player.defense, `${player.defense.length}/${moduleLimit(player, "defense")} max`, "zone-defense")
-        : makeDropZone("defense", "Defensa (Corazones)", player.defense, `${player.defense.length}/${moduleLimit(player, "defense")} max`, "zone-defense");
+        ? makePanelZone(moduleTitle("defense", "Defensa", "♥", "Defensa rival (Corazones)"), player.defense, moduleMeta("defense"), "zone-defense")
+        : makeDropZone("defense", moduleTitle("defense", "Defensa", "♥"), player.defense, moduleMeta("defense"), "zone-defense");
       const armorZone = isRivalView
-        ? makePanelZone("Armadura rival (Treboles)", player.armor, `${player.armor.length}/${moduleLimit(player, "armor")} max`, "zone-armor")
-        : makeDropZone("armor", "Armadura (Treboles)", player.armor, `${player.armor.length}/${moduleLimit(player, "armor")} max`, "zone-armor");
+        ? makePanelZone(moduleTitle("armor", "Armadura", "♣", "Armadura rival (Treboles)"), player.armor, moduleMeta("armor"), "zone-armor")
+        : makeDropZone("armor", moduleTitle("armor", "Armadura", "♣"), player.armor, moduleMeta("armor"), "zone-armor");
+      const fuelTitle = compactBoard ? "Fuel ♦" : isRivalView ? "Combustible rival (Fuel)" : "Combustible (Fuel)";
+      const fuelMeta = `${player.fuel.length}`;
       const fuelZone = isRivalView
-        ? makePanelZone("Combustible rival (Fuel)", player.fuel, "sin limite", "zone-fuel")
-        : makeDropZone("fuel", "Combustible (Fuel)", player.fuel, "sin limite", "zone-fuel");
+        ? makePanelZone(fuelTitle, player.fuel, fuelMeta, "zone-fuel")
+        : makeDropZone("fuel", fuelTitle, player.fuel, fuelMeta, "zone-fuel");
 
       const reg = document.createElement("article");
       reg.className = "panel-zone zone-reg";
@@ -5533,8 +5703,52 @@
       document.querySelectorAll("button.is-pressing").forEach((button) => button.classList.remove("is-pressing"));
     }
 
+    function effectiveZIndex(node) {
+      let current = node;
+      let z = 0;
+      while (current && current !== document.body) {
+        const value = Number.parseInt(getComputedStyle(current).zIndex, 10);
+        if (Number.isFinite(value)) z = Math.max(z, value);
+        current = current.parentElement;
+      }
+      return z;
+    }
+
+    function pointInsideRect(x, y, rect, padX = 0, padY = 0) {
+      return x >= rect.left - padX
+        && x <= rect.right + padX
+        && y >= rect.top - padY
+        && y <= rect.bottom + padY;
+    }
+
+    function visibleControlButtonAt(event) {
+      const direct = event.target.closest?.("button") || null;
+      if (!isLandscapeLayout() || typeof event.clientX !== "number" || typeof event.clientY !== "number") return direct;
+
+      const x = event.clientX;
+      const y = event.clientY;
+      const candidates = Array.from(document.querySelectorAll("button:not(.card)"))
+        .filter((button) => {
+          if (button.disabled) return false;
+          const style = getComputedStyle(button);
+          if (style.visibility === "hidden" || style.display === "none" || Number(style.opacity) <= 0.02) return false;
+          const rect = button.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0 && pointInsideRect(x, y, rect, 10, 16);
+        })
+        .map((button) => ({ button, rect: button.getBoundingClientRect(), z: effectiveZIndex(button) }))
+        .sort((a, b) => {
+          const strictA = pointInsideRect(x, y, a.rect) ? 1 : 0;
+          const strictB = pointInsideRect(x, y, b.rect) ? 1 : 0;
+          if (strictA !== strictB) return strictB - strictA;
+          if (a.z !== b.z) return b.z - a.z;
+          return (a.rect.width * a.rect.height) - (b.rect.width * b.rect.height);
+        });
+
+      return candidates[0]?.button || direct;
+    }
+
     document.addEventListener("pointerdown", (event) => {
-      const button = event.target.closest("button");
+      const button = visibleControlButtonAt(event);
       if (!button || button.disabled) return;
       button.classList.add("is-pressing");
     }, { passive: true });
@@ -5570,7 +5784,7 @@
     document.addEventListener("blur", clearPressedButtons, true);
 
     document.addEventListener("click", (event) => {
-      const button = event.target.closest("button");
+      const button = visibleControlButtonAt(event);
       const zone = event.target.closest(".drop-zone");
       if (button?.dataset.cardId && Date.now() < suppressCardClickUntil) {
         event.preventDefault();
