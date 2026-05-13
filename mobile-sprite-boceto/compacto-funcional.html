@@ -177,27 +177,91 @@
     }
 
     .top-menu-toggle {
-      display: none;
       position: absolute;
-      z-index: 28;
-      top: 16px;
-      right: 18px;
-      min-width: 58px;
-      min-height: 32px;
-      padding: 4px 9px;
+      z-index: 32;
+      top: 10px;
+      right: 12px;
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      padding: 0;
       border: 3px solid #5d3900;
-      border-radius: 999px;
+      border-radius: 50%;
       color: #211301;
       background:
-        linear-gradient(135deg, rgba(255,255,255,.5), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,.54), transparent 36%),
         linear-gradient(180deg, #fff28a, #ffc42f 62%, #b86600);
       box-shadow:
         inset 0 2px 0 rgba(255,255,255,.68),
-        inset 0 -3px 0 rgba(116,62,0,.35),
-        0 4px 0 #4b2a00;
-      font-size: 12px;
+        inset 0 -4px 0 rgba(116,62,0,.35),
+        0 5px 0 #4b2a00,
+        0 0 16px rgba(255,196,47,.22);
+      font-size: 26px;
+      line-height: 1;
       font-weight: 900;
       text-transform: uppercase;
+    }
+
+    .top-menu-toggle[aria-expanded="true"] {
+      translate: 0 3px;
+      filter: brightness(1.05);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.68),
+        inset 0 6px 12px rgba(116,62,0,.35),
+        0 2px 0 #4b2a00,
+        0 0 20px rgba(255,196,47,.32);
+    }
+
+    .top-menu-toggle i {
+      width: 27px;
+      height: 18px;
+      display: grid;
+      gap: 3px;
+    }
+
+    .top-menu-toggle i::before,
+    .top-menu-toggle i::after,
+    .top-menu-toggle span {
+      content: "";
+      display: block;
+      height: 3px;
+      border-radius: 99px;
+      background: #08233b;
+      box-shadow: 0 1px 0 rgba(255,255,255,.45);
+    }
+
+    .top-menu-toggle span {
+      width: 100%;
+    }
+
+    .top-menu {
+      position: absolute;
+      z-index: 28;
+      top: 73px;
+      right: 12px;
+      width: min(336px, calc(100vw - 24px));
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      margin: 0;
+      padding: 6px;
+      border: 3px solid #704d25;
+      border-radius: 14px;
+      background:
+        repeating-linear-gradient(135deg, rgba(114, 78, 33, .08) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, var(--cream-0), var(--cream-1));
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .7), 0 5px 0 rgba(0, 22, 48, .72);
+      opacity: 0;
+      transform: translateY(-8px) scale(.98);
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease, filter .16s ease;
+    }
+
+    .phone-shell.menu-open .top-menu {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
     }
 
     .brand-plate img {
@@ -225,35 +289,6 @@
     .screw-tr { top: 7px; right: 8px; }
     .screw-bl { bottom: 7px; left: 8px; }
     .screw-br { bottom: 7px; right: 8px; }
-
-    .top-menu {
-      position: relative;
-      z-index: 27;
-      left: auto;
-      right: auto;
-      top: auto;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 4px;
-      margin: 0 4px 5px;
-      padding: 6px;
-      border: 3px solid #704d25;
-      border-radius: 14px;
-      background:
-        repeating-linear-gradient(135deg, rgba(114, 78, 33, .08) 0 1px, transparent 1px 8px),
-        linear-gradient(180deg, var(--cream-0), var(--cream-1));
-      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .7), 0 5px 0 rgba(0, 22, 48, .72);
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-      transition: filter .16s ease;
-    }
-
-    .phone-shell.menu-open .top-menu {
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-    }
 
     .menu-button {
       min-height: 26px;
@@ -288,19 +323,19 @@
       position: relative;
       z-index: 2;
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       align-items: center;
-      gap: 5px;
-      margin-bottom: 5px;
+      gap: 6px;
+      margin: 0 2px 6px;
     }
 
     .meter-pill {
-      min-height: 40px;
+      min-height: 42px;
       display: grid;
-      grid-template-columns: 21px minmax(0, auto) 36px;
+      grid-template-columns: 22px minmax(0, 1fr);
       align-items: center;
-      gap: 4px;
-      padding: 4px 6px;
+      gap: 5px;
+      padding: 5px 7px;
       border: 3px solid #06172a;
       border-radius: 11px;
       background:
@@ -313,16 +348,37 @@
     .meter-pill small {
       display: block;
       color: #ffe8c4;
-      font-size: 12px;
+      font-size: 11px;
       line-height: 1;
+      white-space: nowrap;
     }
 
     .meter-pill strong {
       display: block;
       color: var(--cyan);
-      font-size: 21px;
+      font-size: 20px;
       line-height: .95;
       text-shadow: 0 0 12px rgba(70, 236, 255, .65);
+      white-space: nowrap;
+    }
+
+    .metric-icon {
+      width: 21px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #e9cfa5;
+      border-radius: 7px;
+      color: #e9cfa5;
+      background: rgba(1, 18, 31, .55);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .fuel-spade-icon {
+      font-size: 17px;
+      line-height: 1;
     }
 
     .fuel-icon {
@@ -417,6 +473,40 @@
 
     .quick-modify-button {
       display: none;
+    }
+
+    .left-guidance-box {
+      display: none;
+    }
+
+    .guidance-title {
+      display: block;
+      margin-bottom: 5px;
+      color: #ffe7c8;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 1000;
+      text-transform: uppercase;
+      text-shadow: 0 1px 0 rgba(0,0,0,.42), 0 0 10px rgba(255, 90, 70, .34);
+    }
+
+    .guidance-lines {
+      display: grid;
+      gap: 4px;
+    }
+
+    .guidance-line {
+      color: #fff6e3;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-size: 11px;
+      line-height: 1.15;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .guidance-line + .guidance-line {
+      padding-top: 4px;
+      border-top: 1px solid rgba(255, 214, 187, .14);
     }
 
     .combat-screen {
@@ -592,14 +682,24 @@
     .fighter header {
       position: relative;
       z-index: 2;
-      width: 127px;
+      width: 156px;
+      max-width: 96%;
       padding: 6px 10px;
       border: 2px solid currentColor;
       color: var(--cyan);
       background: rgba(0, 19, 35, .76);
       clip-path: polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
       font-size: 15px;
       font-weight: 900;
+      overflow: hidden;
+    }
+
+    .fighter header span {
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -614,6 +714,17 @@
       color: var(--red);
       text-align: right;
       clip-path: polygon(10% 0, 100% 0, 100% 100%, 10% 100%, 0 50%);
+    }
+
+    .build-percent {
+      flex: 0 0 auto;
+      color: #fff7e7;
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-shadow: 0 0 9px currentColor, 0 2px 0 rgba(0,0,0,.5);
+      white-space: nowrap;
     }
 
     .mecha-blueprint-live {
@@ -759,8 +870,9 @@
     }
 
     .fighter-red .mecha-phase-live {
-      margin-left: -8px;
-      transform: rotate(4deg) translateX(4px);
+      margin-left: auto;
+      margin-right: -12px;
+      transform: rotate(4deg) translateX(14px);
       animation: mechaIdleRed 4.8s ease-in-out infinite;
       animation-delay: .65s;
     }
@@ -805,8 +917,8 @@
       position: relative;
       z-index: 2;
       display: grid;
-      gap: 6px;
-      padding: 7px 7px 9px;
+      gap: 4px;
+      padding: 6px 6px 7px;
       border: 2px solid currentColor;
       color: var(--cyan);
       background: rgba(2, 18, 31, .82);
@@ -821,12 +933,12 @@
     .stats-card p {
       position: relative;
       display: grid;
-      grid-template-columns: 18px minmax(0, 1fr) auto;
+      grid-template-columns: 16px minmax(0, 1fr) auto;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       margin: 0;
-      padding-bottom: 9px;
-      font-size: 12px;
+      padding-bottom: 7px;
+      font-size: 11px;
       font-weight: 900;
       text-transform: uppercase;
       min-width: 0;
@@ -841,16 +953,16 @@
 
     .stats-card strong {
       color: #fff7e7;
-      font-size: 14px;
+      font-size: 13px;
       white-space: nowrap;
     }
 
     .stats-card i {
       position: absolute;
-      left: 23px;
+      left: 20px;
       right: 0;
       bottom: 0;
-      height: 7px;
+      height: 6px;
       border-radius: 99px;
       background: rgba(255, 255, 255, .15);
     }
@@ -872,8 +984,8 @@
     .heart,
     .shield,
     .diamond {
-      width: 17px;
-      height: 17px;
+      width: 16px;
+      height: 16px;
       display: block;
       background: currentColor;
     }
@@ -885,10 +997,10 @@
     .suit-mark {
       display: grid;
       place-items: center;
-      width: 17px;
-      height: 17px;
+      width: 16px;
+      height: 16px;
       color: currentColor;
-      font-size: 20px;
+      font-size: 18px;
       line-height: 1;
       text-shadow: 0 0 9px currentColor;
     }
@@ -968,7 +1080,7 @@
       position: relative;
       z-index: 14;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr)) 42px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 7px;
       margin-top: 8px;
       margin-bottom: 14px;
@@ -1041,8 +1153,8 @@
       z-index: 20;
       left: 14px;
       right: 14px;
-      top: 168px;
-      bottom: 136px;
+      top: 132px;
+      bottom: 118px;
       display: grid;
       grid-template-rows: auto minmax(0, 1fr) auto;
       gap: 7px;
@@ -1118,18 +1230,19 @@
       min-height: 0;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: minmax(94px, auto) minmax(72px, auto) minmax(72px, auto) minmax(92px, auto);
       grid-template-areas:
         "core core"
         "attack defense"
         "armor reg"
         "fuel fuel";
-      grid-auto-rows: minmax(72px, auto);
       gap: 6px;
       overflow: auto;
       padding-right: 2px;
     }
 
     .zone-grid.is-rival {
+      grid-template-rows: minmax(94px, auto) minmax(72px, auto) minmax(92px, auto);
       grid-template-areas:
         "core core"
         "attack defense"
@@ -1149,12 +1262,12 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
     }
 
-    .core-panel { grid-area: core; min-height: 98px; }
+    .core-panel { grid-area: core; min-height: 94px; }
     .zone-attack { grid-area: attack; }
     .zone-defense { grid-area: defense; }
     .zone-armor { grid-area: armor; }
     .zone-reg { grid-area: reg; }
-    .zone-fuel { grid-area: fuel; min-height: 78px; }
+    .zone-fuel { grid-area: fuel; min-height: 92px; }
 
     .core-slots {
       display: grid;
@@ -1210,6 +1323,26 @@
       box-shadow:
         inset 0 0 0 1px rgba(255,255,255,.14),
         0 0 23px rgba(255, 196, 47, .46);
+    }
+
+    .drop-zone.is-attack-selectable {
+      border-color: rgba(255, 196, 47, .74);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 196, 47, .2), transparent 58%),
+        linear-gradient(180deg, rgba(70, 236, 255, .13), rgba(255, 196, 47, .08));
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.1),
+        0 0 18px rgba(255, 196, 47, .24);
+    }
+
+    .drop-zone.is-attack-selectable .empty-zone {
+      border-color: rgba(255, 196, 47, .48);
+      color: #fff3bd;
+    }
+
+    .drop-zone.is-attack-muted {
+      opacity: .52;
+      filter: saturate(.55) brightness(.82);
     }
 
     .drop-zone.zone-modified {
@@ -1306,7 +1439,7 @@
       position: relative;
       z-index: 4;
       margin-top: 4px;
-      padding: 25px 12px 13px;
+      padding: 30px 12px 24px;
       border: 4px solid #09254a;
       border-radius: 20px;
       background:
@@ -1319,10 +1452,14 @@
       z-index: 16;
     }
 
+    .phone-shell.hand-overview-open .hand-tray {
+      z-index: 24;
+    }
+
     .action-hub {
       position: absolute;
       z-index: 18;
-      left: 50%;
+      left: 68%;
       top: 1px;
       width: 1px;
       height: 1px;
@@ -1497,34 +1634,144 @@
       right: 15px;
       top: -19px;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
+      gap: 7px;
       color: #fff0d3;
       font-size: 20px;
       font-weight: 900;
     }
 
-    .hand-tray header span {
+    .hand-title-button {
       min-width: 122px;
       padding: 7px 12px;
       border: 3px solid #041b35;
       border-radius: 12px 12px 12px 0;
+      color: #fff0d3;
       background: linear-gradient(180deg, #0c67b1, #06457e);
       box-shadow: inset 0 2px 0 rgba(145,219,255,.42), 0 4px 0 #021426;
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 900;
+      text-align: left;
+      text-transform: none;
     }
 
-    .hand-tray header strong {
+    .hand-modify-button {
+      min-width: 104px;
+      padding: 7px 10px;
+      border: 3px solid #053821;
+      border-radius: 12px;
+      color: #eaffdc;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.44), transparent 38%),
+        linear-gradient(180deg, #72f06d, #1f9d4b 64%, #0d5f34);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.46),
+        inset 0 -3px 0 rgba(0,60,28,.34),
+        0 4px 0 #032817,
+        0 0 12px rgba(64,255,137,.2);
+      font-size: 15px;
+      line-height: 1;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-shadow: 0 1px 0 rgba(0,0,0,.36);
+    }
+
+    .hand-modify-button:disabled {
+      opacity: .52;
+      filter: saturate(.55) brightness(.82);
+    }
+
+    .hand-count-badge {
+      position: absolute;
+      z-index: 17;
+      top: 39px;
+      left: 22px;
+      right: auto;
+      min-width: 64px;
+      padding: 4px 9px 3px;
+      border: 2px solid rgba(83, 55, 22, .34);
+      border-radius: 11px;
       color: #21170e;
-      font-size: 21px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.48), transparent 42%),
+        linear-gradient(180deg, #fff4d0, #e2b875 74%, #bd7d2c);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.7),
+        inset 0 -2px 0 rgba(110,67,19,.2),
+        0 3px 0 rgba(83,55,22,.35);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 900;
+      text-align: center;
       white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .hand-overview {
+      position: absolute;
+      z-index: 22;
+      left: 8px;
+      right: 8px;
+      bottom: calc(100% - 16px);
+      max-height: 232px;
+      padding: 10px;
+      border: 3px solid #09254a;
+      border-radius: 16px;
+      background:
+        repeating-linear-gradient(135deg, rgba(109, 69, 26, .08) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, #fff5d7, #d7b87f);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.72), 0 14px 26px rgba(0, 15, 35, .55);
+      opacity: 0;
+      transform: translateY(14px) scale(.98);
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .phone-shell.hand-overview-open .hand-overview {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .hand-overview-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-rows: repeat(3, 66px);
+      grid-auto-rows: 66px;
+      gap: 7px 5px;
+      align-items: center;
+    }
+
+    .hand-overview .card {
+      width: 45px;
+      height: 66px;
+      margin: 0;
+      justify-self: center;
+      transform: none;
+      flex-basis: auto;
+    }
+
+    .hand-overview .card.is-selected,
+    .hand-overview .card:hover {
+      transform: translateY(-4px) scale(1.04);
     }
 
     .cards {
-      height: 112px;
+      --hand-card-width: 54px;
+      --hand-card-height: 79px;
+      --fan-overlap: 26px;
+      height: 132px;
       display: flex;
       align-items: end;
       justify-content: center;
-      padding-top: 25px;
+      padding-top: 34px;
+      padding-inline: 12px;
+      min-width: 0;
+      overflow: visible;
     }
 
     .phone-shell.actions-open .cards {
@@ -1551,6 +1798,14 @@
       transition: translate .09s ease, transform .16s ease, filter .16s ease, outline-color .16s ease, box-shadow .16s ease;
       overflow: hidden;
       touch-action: none;
+    }
+
+    .cards .card {
+      width: var(--hand-card-width);
+      height: var(--hand-card-height);
+      flex-basis: var(--hand-card-width);
+      transform-origin: center bottom;
+      transform: translateY(calc(var(--hand-rise, 0px) * -1)) rotate(var(--hand-rotate, 0deg)) scale(var(--hand-scale, 1));
     }
 
     .card img {
@@ -1581,20 +1836,13 @@
       transform: translate(-50%, -50%) scale(1.08);
     }
 
-    .cards .card + .card { margin-left: -22px; }
-    .cards .card:nth-child(1) { transform: rotate(-7deg); }
-    .cards .card:nth-child(2) { transform: translateY(-7px) rotate(-4deg); }
-    .cards .card:nth-child(3) { transform: translateY(-10px) rotate(-1deg); }
-    .cards .card:nth-child(4) { transform: translateY(-12px); }
-    .cards .card:nth-child(5) { transform: translateY(-10px) rotate(2deg); }
-    .cards .card:nth-child(6) { transform: translateY(-7px) rotate(5deg); }
-    .cards .card:nth-child(7) { transform: rotate(8deg); }
+    .cards .card + .card { margin-left: calc(var(--fan-overlap) * -1); }
 
     .cards .card.is-selected,
     .cards .card:hover {
       z-index: 2;
       filter: brightness(1.08);
-      transform: translateY(-19px) scale(1.05);
+      transform: translateY(calc((var(--hand-rise, 0px) + 14px) * -1)) rotate(var(--hand-rotate, 0deg)) scale(var(--hand-hover-scale, 1.05));
       outline: 3px solid var(--gold);
     }
 
@@ -1703,6 +1951,8 @@
     .actions-button.is-pressing,
     .phone-shell.actions-open .actions-button:not(:disabled):active,
     .phone-shell.actions-open .actions-button.is-pressing,
+    .hand-modify-button:not(:disabled):active,
+    .hand-modify-button.is-pressing,
     .quick-modify-button:not(:disabled):active,
     .quick-modify-button.is-pressing {
       translate: 0 3px;
@@ -2275,7 +2525,7 @@
         min-height: 100svh;
         min-height: 100dvh;
         display: grid;
-        grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+        grid-template-rows: auto auto minmax(0, 1fr) auto auto;
         align-content: stretch;
         row-gap: 0;
         border-radius: 0;
@@ -2286,7 +2536,6 @@
       }
 
       .brand-plate,
-      .top-menu,
       .status-strip {
         align-self: start;
       }
@@ -2310,7 +2559,7 @@
       .stats-card {
         align-self: end;
         margin-bottom: 4px;
-        transform: translateY(-34px);
+        transform: translateY(-10px);
       }
 
       .tab-bar,
@@ -2341,8 +2590,9 @@
       }
 
       .top-menu {
-        top: auto;
-        margin-bottom: 4px;
+        top: 68px;
+        right: 10px;
+        margin: 0;
         padding: 5px;
       }
 
@@ -2370,12 +2620,12 @@
 
       .stats-card {
         gap: 4px;
-        padding: 6px 6px 8px;
-        transform: translateY(-54px);
+        padding: 5px 6px 7px;
+        transform: translateY(-20px);
       }
 
       .stats-card p {
-        padding-bottom: 8px;
+        padding-bottom: 6px;
       }
 
       .tab-bar {
@@ -2388,19 +2638,15 @@
       }
 
       .hand-tray {
-        padding-top: 23px;
-        padding-bottom: 10px;
+        padding-top: 25px;
+        padding-bottom: 18px;
       }
 
       .cards {
-        height: 101px;
-        padding-top: 22px;
-      }
-
-      .card {
-        width: 50px;
-        height: 73px;
-        flex-basis: 50px;
+        --hand-card-width: 50px;
+        --hand-card-height: 73px;
+        height: 116px;
+        padding-top: 25px;
       }
 
       .board-drawer {
@@ -2410,9 +2656,20 @@
     }
 
     @media (orientation: landscape) and (max-height: 520px) {
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        padding: 0;
+        place-items: stretch;
+      }
+
       .phone-shell {
-        --land-left: clamp(136px, 20vw, 168px);
-        --land-hand: clamp(204px, 29vw, 252px);
+        --land-left: clamp(208px, 25vw, 238px);
+        --land-hand: clamp(204px, 28vw, 250px);
         width: 100vw;
         height: 100svh;
         height: 100dvh;
@@ -2420,11 +2677,12 @@
         padding: 6px 8px;
         display: grid;
         grid-template-columns: var(--land-left) minmax(0, 1fr) var(--land-hand);
-        grid-template-rows: 54px 88px minmax(0, 1fr);
+        grid-template-rows: 72px 42px minmax(0, 1fr) 98px;
         grid-template-areas:
           "brand combat tabs"
-          "menu combat hand"
-          "status combat hand";
+          "status combat hand"
+          "notice combat hand"
+          "menu combat hand";
         gap: 6px;
         align-content: stretch;
         border-width: 4px;
@@ -2443,15 +2701,15 @@
       .brand-plate {
         grid-area: brand;
         width: 100%;
-        height: 54px;
+        height: 70px;
         margin: 0;
         border-width: 3px;
         border-radius: 15px;
       }
 
       .brand-plate img {
-        top: -31px;
-        width: min(220px, calc(100% + 42px));
+        top: -28px;
+        width: min(248px, calc(100% + 48px));
       }
 
       .screw {
@@ -2465,50 +2723,89 @@
       .screw-br { bottom: 5px; right: 6px; }
 
       .top-menu {
+        position: relative;
+        z-index: 4;
         grid-area: menu;
+        top: auto;
+        right: auto;
+        width: 100%;
+        align-self: start;
         margin: 0;
-        padding: 4px;
-        gap: 3px;
+        padding: 0;
+        gap: 4px;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        border-width: 2px;
-        border-radius: 12px;
-        box-shadow: inset 0 2px 0 rgba(255, 255, 255, .7), 0 3px 0 rgba(0, 22, 48, .72);
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        box-shadow: none;
       }
 
       .menu-button {
-        min-height: 22px;
-        padding: 2px 3px;
+        min-height: 30px;
+        padding: 3px 4px;
         border-width: 2px;
-        border-radius: 7px;
-        font-size: 9px;
+        border-radius: 8px;
+        color: #062344;
+        background:
+          linear-gradient(135deg, rgba(255,255,255,.55), transparent 38%),
+          linear-gradient(180deg, #cae8ff, #83bdf2 62%, #3b78bd);
+        box-shadow: inset 0 2px 0 rgba(255,255,255,.52), inset 0 -2px 0 rgba(0,48,96,.25), 0 3px 0 #14365e;
+        font-size: 10px;
+      }
+
+      .menu-button.on {
+        color: #062344;
+        background:
+          linear-gradient(135deg, rgba(255,255,255,.55), transparent 38%),
+          linear-gradient(180deg, #cae8ff, #83bdf2 62%, #3b78bd);
+        box-shadow: inset 0 2px 0 rgba(255,255,255,.52), inset 0 -2px 0 rgba(0,48,96,.25), 0 3px 0 #14365e;
+      }
+
+      .top-menu-toggle {
+        display: none;
       }
 
       .status-strip {
         grid-area: status;
         align-self: stretch;
         display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto auto;
-        align-content: space-between;
-        gap: 5px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: 1fr;
+        align-content: start;
+        gap: 4px;
         margin: 0;
       }
 
       .meter-pill {
-        min-height: 32px;
-        grid-template-columns: 20px minmax(0, 1fr) 30px;
-        gap: 3px;
-        padding: 3px 5px;
+        min-height: 0;
+        grid-template-columns: 16px minmax(0, 1fr);
+        gap: 2px;
+        padding: 2px 4px;
         border-width: 2px;
-        border-radius: 9px;
+        border-radius: 8px;
       }
 
       .meter-pill small {
-        font-size: 10px;
+        font-size: 8px;
       }
 
       .meter-pill strong {
-        font-size: 18px;
+        font-size: 15px;
+      }
+
+      .metric-icon {
+        width: 16px;
+        height: 20px;
+        border-width: 2px;
+        border-radius: 5px;
+        font-size: 10px;
+      }
+
+      .fuel-spade-icon {
+        font-size: 13px;
       }
 
       .fuel-icon {
@@ -2536,32 +2833,71 @@
       }
 
       .quick-modify-button {
-        min-height: 32px;
+        position: absolute;
+        z-index: 26;
+        right: 14px;
+        bottom: 10px;
+        width: min(154px, calc(var(--land-hand) - 24px));
+        min-height: 38px;
         display: grid;
         place-items: center;
-        width: 100%;
-        padding: 4px 7px;
-        border: 2px solid #5d3900;
+        padding: 3px 7px;
+        border: 2px solid #053821;
         border-radius: 10px;
-        color: #221301;
+        color: #eaffdc;
         background:
-          linear-gradient(135deg, rgba(255,255,255,.5), transparent 38%),
-          linear-gradient(180deg, #fff4a4, #ffc42f 64%, #b86600);
+          linear-gradient(135deg, rgba(255,255,255,.42), transparent 38%),
+          linear-gradient(180deg, #72f06d, #1f9d4b 64%, #0d5f34);
         box-shadow:
-          inset 0 2px 0 rgba(255,255,255,.7),
-          inset 0 -3px 0 rgba(116,62,0,.35),
-          0 4px 0 #4b2a00,
-          0 0 14px rgba(255,196,47,.18);
+          inset 0 2px 0 rgba(255,255,255,.46),
+          inset 0 -3px 0 rgba(0,60,28,.34),
+          0 4px 0 #032817,
+          0 0 14px rgba(64,255,137,.22);
         font-size: 12px;
         line-height: 1;
         font-weight: 900;
         text-transform: uppercase;
-        text-shadow: 0 1px 0 rgba(255,255,255,.42);
+        text-shadow: 0 1px 0 rgba(0,0,0,.36);
       }
 
       .quick-modify-button:disabled {
         opacity: .52;
         filter: saturate(.55) brightness(.85);
+      }
+
+      .left-guidance-box {
+        grid-area: notice;
+        min-height: 0;
+        display: block;
+        padding: 9px 10px;
+        border: 3px solid #7a130b;
+        border-radius: 13px;
+        background:
+          linear-gradient(135deg, rgba(255,255,255,.12), transparent 32%),
+          linear-gradient(180deg, rgba(111, 12, 10, .86), rgba(38, 4, 7, .92));
+        box-shadow:
+          inset 0 2px 0 rgba(255,160,130,.24),
+          inset 0 0 0 1px rgba(255,255,255,.08),
+          0 4px 0 rgba(34, 1, 1, .72);
+        overflow: hidden;
+      }
+
+      .guidance-title {
+        margin-bottom: 6px;
+        font-size: 12px;
+      }
+
+      .guidance-lines {
+        max-height: calc(100% - 18px);
+        overflow: hidden;
+      }
+
+      .guidance-line {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 10.5px;
       }
 
       .combat-screen {
@@ -2580,7 +2916,7 @@
       }
 
       .fighter header {
-        width: 112px;
+        width: 132px;
         padding: 5px 8px;
         font-size: 13px;
       }
@@ -2593,13 +2929,18 @@
       }
 
       .fighter-red .mecha-phase-live {
-        margin-left: -5px;
+        margin-left: auto;
+        margin-right: -10px;
       }
 
       .stats-card {
         gap: 2px;
         padding: 5px 5px 6px;
         margin-bottom: 2px;
+      }
+
+      .build-percent {
+        font-size: 10px;
       }
 
       .stats-card p {
@@ -2627,8 +2968,9 @@
         align-self: start;
         margin: 0;
         display: grid;
-        grid-template-columns: 1fr 1fr 36px;
+        grid-template-columns: 1fr 1fr;
         gap: 5px;
+        padding-right: 0;
       }
 
       .tab-sprite {
@@ -2638,18 +2980,12 @@
         border-radius: 11px 11px 7px 7px;
         gap: 4px;
         font-size: 13px;
+        min-width: 0;
       }
 
       .sprite {
         width: 26px;
         height: 31px;
-      }
-
-      .round-menu {
-        width: 36px;
-        height: 36px;
-        margin: 8px 0 0;
-        font-size: 22px;
       }
 
       .hand-tray {
@@ -2658,52 +2994,71 @@
         min-height: 0;
         height: 100%;
         margin: 0;
-        padding: 38px 10px 10px;
+        padding: 72px 10px 58px;
         border-width: 3px;
         border-radius: 16px;
       }
 
       .hand-tray header {
-        top: -2px;
-        left: 0;
-        right: 8px;
+        top: 6px;
+        left: 7px;
+        right: 7px;
         font-size: 16px;
       }
 
-      .hand-tray header span {
-        min-width: 92px;
+      .hand-title-button {
+        min-width: 84px;
         padding: 5px 9px;
         border-width: 2px;
         border-radius: 10px 10px 10px 0;
+        font-size: 16px;
       }
 
-      .hand-tray header strong {
-        font-size: 18px;
+      .hand-modify-button {
+        display: none;
+      }
+
+      .hand-count-badge {
+        top: 39px;
+        left: 10px;
+        right: auto;
+        min-width: 50px;
+        padding: 3px 7px 2px;
+        border-radius: 9px;
+        font-size: 15px;
       }
 
       .action-hub {
-        top: 13px;
-        left: 58%;
+        top: 38px;
+        right: 8px;
+        left: auto;
+        width: auto;
+        height: auto;
+        transform: none;
+        display: block;
       }
 
       .actions-button {
-        min-width: 105px;
+        min-width: 96px;
         min-height: 30px;
-        padding: 5px 12px;
+        padding: 5px 11px;
         border-width: 2px;
         border-radius: 11px;
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .action-wheel {
-        top: 32px;
+        left: auto;
+        right: 0;
+        top: 36px;
         width: 270px;
         height: 125px;
-        transform: translateX(-50%) scale(.78);
+        transform: scale(.74);
+        transform-origin: top right;
       }
 
       .phone-shell.actions-open .action-wheel {
-        transform: translateX(-50%) scale(.9);
+        transform: scale(.86);
         pointer-events: none;
       }
 
@@ -2724,10 +3079,36 @@
       }
 
       .cards {
+        --hand-card-width: 48px;
+        --hand-card-height: 70px;
         height: calc(100% - 4px);
-        padding-top: 24px;
+        padding-top: 62px;
         align-items: end;
         justify-content: center;
+      }
+
+      .hand-overview {
+        left: auto;
+        right: 0;
+        bottom: 52px;
+        width: min(348px, calc(100vw - var(--land-left) - 18px));
+        max-height: min(224px, calc(100% - 76px));
+        padding: 8px;
+        border-width: 2px;
+        border-radius: 13px;
+      }
+
+      .hand-overview-grid {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-rows: repeat(3, 58px);
+        grid-auto-rows: 58px;
+        gap: 5px 4px;
+      }
+
+      .hand-overview .card {
+        width: 39px;
+        height: 58px;
+        border-radius: 6px;
       }
 
       .phone-shell.actions-open .cards {
@@ -2735,14 +3116,8 @@
         pointer-events: auto;
       }
 
-      .card {
-        width: 48px;
-        height: 70px;
-        flex-basis: 48px;
-      }
-
       .cards .card + .card {
-        margin-left: -28px;
+        margin-left: calc(var(--fan-overlap) * -1);
       }
 
       .side-arrow {
@@ -3007,6 +3382,7 @@
       <i class="screw screw-br"></i>
       <img src="../assets/pocobot_title_blue.png" alt="PoCoBOT Poker Combat Bot">
     </section>
+    <button class="top-menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-label="Abrir menú de partida"><i><span></span></i></button>
     <nav class="top-menu" aria-label="Menú de partida">
       <button class="menu-button danger" type="button" data-menu="new">Nueva</button>
       <button class="menu-button" type="button" data-menu="back">Volver</button>
@@ -3017,24 +3393,23 @@
     </nav>
 
     <section class="status-strip" aria-label="Estado superior">
-      <article class="meter-pill fuel-pill">
-        <span class="fuel-icon" aria-hidden="true"></span>
-        <div><small>Fuel</small><strong data-fuel-value>0</strong></div>
-        <i class="mini-bars" data-fuel-bars></i>
+      <article class="meter-pill deck-pill">
+        <span class="metric-icon" aria-hidden="true">D</span>
+        <div><small>Mazo</small><strong data-deck-value>0</strong></div>
       </article>
 
-      <div class="led-trigger" role="img" aria-label="Indicador de acciones disponibles">
-        <i class="on"></i><i></i><i></i>
-      </div>
+      <article class="meter-pill discard-pill">
+        <span class="metric-icon" aria-hidden="true">X</span>
+        <div><small>Descarte</small><strong data-discard-value>0</strong></div>
+      </article>
 
-      <button class="quick-modify-button" type="button" data-action="modify">Modificar</button>
-
-      <article class="meter-pill core-pill">
-        <i class="core-ring" aria-hidden="true"></i>
-        <div><small>Núcleo</small><strong data-core-value>0/3</strong></div>
-        <i class="mini-bars is-muted" data-core-bars></i>
+      <article class="meter-pill fuel-selected-pill">
+        <span class="metric-icon fuel-spade-icon" aria-hidden="true">♠</span>
+        <div><small>Fuel x2 ♠</small><strong data-selected-fuel-value>0→0</strong></div>
       </article>
     </section>
+    <section class="left-guidance-box" data-left-guidance aria-label="Indicaciones de tutorial y combate"></section>
+    <button class="quick-modify-button" type="button" data-action="modify">Modificar</button>
 
     <section class="combat-screen" aria-label="Combate">
       <div class="scan-grid" aria-hidden="true"></div>
@@ -3060,7 +3435,7 @@
       </div>
 
       <article class="fighter fighter-blue">
-        <header data-player-name>JUGADOR 1</header>
+        <header><span data-player-name>JUGADOR 1</span><strong class="build-percent" data-p1-build>0%</strong></header>
         <img class="mecha-phase-live" data-mecha-img="0" src="../assets/image_10.png" alt="Mecha real de jugador 1">
         <section class="stats-card">
           <p><span class="suit-mark">♠</span><b>Ataque</b><strong data-p1-attack>0</strong><i data-p1-attack-bar style="--w:0%"></i></p>
@@ -3070,7 +3445,7 @@
       </article>
 
       <article class="fighter fighter-red">
-        <header>RIVAL</header>
+        <header><strong class="build-percent" data-p2-build>0%</strong><span>RIVAL</span></header>
         <img class="mecha-phase-live" data-mecha-img="1" src="../assets/image_10.png" alt="Mecha real rival">
         <section class="stats-card">
           <p><span class="suit-mark">♠</span><b>Ataque</b><strong data-p2-attack>0</strong><i data-p2-attack-bar style="--w:0%"></i></p>
@@ -3096,9 +3471,8 @@
     </div>
 
     <nav class="tab-bar" aria-label="Secciones">
-      <button class="tab-sprite is-active" type="button" data-tab="mecha"><span class="sprite icon-mecha"></span><b>Mecha</b></button>
+      <button class="tab-sprite is-active" type="button" data-tab="mecha"><span class="sprite icon-mecha"></span><b>Panel</b></button>
       <button class="tab-sprite" type="button" data-tab="rival"><span class="sprite icon-rival"></span><b>Rival</b></button>
-      <button class="round-menu" type="button" data-board-toggle aria-label="Abrir paneles">≡</button>
     </nav>
 
     <section class="board-drawer" aria-label="Paneles de montaje">
@@ -3122,7 +3496,11 @@
     </section>
 
     <section class="hand-tray" aria-label="Mano">
-      <header><span>▱ Mano</span><strong data-hand-count>0/7</strong></header>
+      <header>
+        <button class="hand-title-button" type="button" data-hand-overview-toggle aria-expanded="false">▱ Mano</button>
+        <button class="hand-modify-button" type="button" data-action="modify">Modificar</button>
+      </header>
+      <strong class="hand-count-badge" data-hand-count>0/18</strong>
       <div class="action-hub" aria-label="Acciones de partida">
         <button class="actions-button" type="button" data-action-toggle aria-expanded="false">Acciones</button>
         <div class="action-wheel" role="menu">
@@ -3131,12 +3509,16 @@
           <button class="wheel-action primary" style="--x:0px;--y:-51px" type="button" data-action="attack-mode">Atacar</button>
           <button class="wheel-action primary attack-confirm-action" style="--x:89px;--y:-51px" type="button" data-action="confirm">Confirmar</button>
           <button class="wheel-action" style="--x:100px;--y:-8px" type="button" data-action="modify">MODIFICAR</button>
-          <button class="wheel-action" style="--x:76px;--y:36px" type="button" data-action="projectile">Proyectil</button>
+          <button class="wheel-action" style="--x:78px;--y:32px" type="button" data-action="projectile">Modo Proy.</button>
+          <button class="wheel-action" style="--x:108px;--y:66px" type="button" data-action="projectile-only">Solo Proy.</button>
           <button class="wheel-action" style="--x:0px;--y:47px" type="button" data-action="pass">Pasar</button>
           <button class="wheel-action defense" style="--x:-94px;--y:30px" type="button" data-action="defend">Defender</button>
           <button class="wheel-action defense" style="--x:-112px;--y:-8px" type="button" data-action="skip-defense">No Def.</button>
           <button class="wheel-action utility" style="--x:0px;--y:0px" type="button" data-action="clear">Limpiar</button>
         </div>
+      </div>
+      <div class="hand-overview" data-hand-overview aria-label="Mano completa">
+        <div class="hand-overview-grid" data-hand-overview-cards></div>
       </div>
       <button class="side-arrow left" type="button" data-hand-shift="-1" aria-label="Cartas anteriores">‹</button>
       <div class="cards" data-hand-cards></div>
@@ -3149,7 +3531,8 @@
   <script>
     const CARD_ASSET_ROOT = "../assets/cards/hayeah-full/";
     const SAVE_KEY = "pocobot.sprite.compact.functional.v1";
-    const MAX_HAND_SIZE = 7;
+    const INITIAL_HAND_SIZE = 7;
+    const MAX_HAND_SIZE = 18;
     const MECHA_IMAGES = {
       base: "../assets/image_10.png",
       piloto: "../assets/image_11.png",
@@ -3224,6 +3607,7 @@
       selected: [],
       attackMode: false,
       projectileMode: false,
+      projectileOnlyMode: false,
       projectileUnlocked: false,
       tutorial: false,
       musicOn: false,
@@ -3299,6 +3683,7 @@
         selected: [],
         attackMode: false,
         projectileMode: false,
+        projectileOnlyMode: false,
         projectileUnlocked: !!data.projectileUnlocked,
         tutorial: data.tutorial === true,
         pendingDefense: null,
@@ -3332,7 +3717,7 @@
       addOpeningCard(player, (card) => isNumeric(card) && card.suit === "hearts");
       addOpeningCard(player, (card) => isNumeric(card) && card.suit === "clubs");
       addOpeningCard(player, (card) => isNumericDiamond(card));
-      while (player.hand.length < MAX_HAND_SIZE && state.deck.length) drawCard(player, false);
+      while (player.hand.length < INITIAL_HAND_SIZE && state.deck.length) drawCard(player, false);
     }
 
     function seedDemoGame() {
@@ -3348,6 +3733,7 @@
         selected: [],
         attackMode: false,
         projectileMode: false,
+        projectileOnlyMode: false,
         projectileUnlocked: false,
         tutorial: false,
         pendingDefense: null,
@@ -3431,13 +3817,25 @@
     function playerCanAttack(player) {
       if (!player.core.pilot || player.core.pilot.suit === "diamonds") return false;
       const statsCards = [...player.attack, ...player.defense, ...player.armor];
-      const pilotSuitCount = statsCards.filter((card) => card.suit === player.core.pilot.suit).length;
-      return statsCards.length >= 3 && player.attack.length > 0 && player.defense.length > 0 && player.armor.length > 0 && pilotSuitCount >= 1;
+      return statsCards.length >= 6 && player.attack.length > 0;
+    }
+
+    function getBuildProgress(player) {
+      if (!player) return { percent: 0, statsCards: 0, hasPilot: false };
+      const statsCards = [...player.attack, ...player.defense, ...player.armor].length;
+      const hasPilot = !!player.core.pilot && player.core.pilot.suit !== "diamonds";
+      const progress = Math.min(6, statsCards) + (hasPilot ? 1 : 0);
+      return {
+        percent: Math.round((progress / 7) * 100),
+        statsCards,
+        hasPilot
+      };
     }
 
     function log(text) {
       state.log.unshift(text);
       state.log = state.log.slice(0, 60);
+      renderLeftGuidance();
     }
 
     function toast(text) {
@@ -3445,6 +3843,10 @@
       toastNode.textContent = text;
       toastNode.classList.add("show");
       toastTimer = window.setTimeout(() => toastNode.classList.remove("show"), 1800);
+    }
+
+    function isLandscapeLayout() {
+      return window.matchMedia("(orientation: landscape) and (max-height: 520px)").matches;
     }
 
     function prefersReducedMotion() {
@@ -3644,8 +4046,13 @@
 
     function getAttackReadiness() {
       const player = state.players[0];
-      if (!player || state.currentPlayer !== 0 || state.pendingDefense || state.winner || !state.attackMode) {
+      if (!player || state.currentPlayer !== 0 || state.pendingDefense || state.winner || (!state.attackMode && !state.projectileOnlyMode)) {
         return { ready: false, full: false, key: "" };
+      }
+      if (state.projectileOnlyMode) {
+        const selected = selectedProjectileOnlyCard(player);
+        const key = selected ? selected.id : "";
+        return { ready: !!selected, full: false, key };
       }
       const selection = getAttackSelection(player);
       const ready = !!selection.fuelCards.length
@@ -3666,6 +4073,17 @@
         attackReadyCueKey = readiness.key;
         showAttackSpecialPopup(0);
       }
+    }
+
+    function selectedProjectileOnlyCard(player) {
+      const selected = state.selected
+        .map((id) => findCard(id))
+        .filter((item) => item && item.player === player && item.zone === "attack" && isPlayableAttack(item.card));
+      return selected.length === 1 ? selected[0].card : null;
+    }
+
+    function canProjectileOnlyNow(player = state.players[state.currentPlayer]) {
+      return !!state.projectileUnlocked && !!player?.attack?.some(isPlayableAttack);
     }
 
     function drawCard(player, announce = true, recycle = true) {
@@ -3835,6 +4253,7 @@
       state.pendingBuildOps = 0;
       state.attackMode = false;
       state.projectileMode = false;
+      state.projectileOnlyMode = false;
       state.activeTab = "mecha";
       shell.classList.add("board-open");
       finishPlayerTurn("modify");
@@ -3929,15 +4348,16 @@
       state.pendingBuildOps = 0;
       state.attackMode = false;
       state.projectileMode = false;
+      state.projectileOnlyMode = false;
       state.selected = [];
-      shell.classList.remove("board-open");
+      if (!isLandscapeLayout()) shell.classList.remove("board-open");
       finishPlayerTurn("modify");
     }
 
     function syncActionFlyouts() {
       shell.classList.toggle(
         "attack-confirm-open",
-        shell.classList.contains("actions-open") && state.attackMode && state.currentPlayer === 0 && !state.pendingDefense && !state.winner
+        shell.classList.contains("actions-open") && (state.attackMode || state.projectileOnlyMode) && state.currentPlayer === 0 && !state.pendingDefense && !state.winner
       );
     }
 
@@ -3962,6 +4382,16 @@
       document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", "false");
     }
 
+    function closeTopMenu() {
+      shell.classList.remove("menu-open");
+      document.querySelector("[data-menu-toggle]")?.setAttribute("aria-expanded", "false");
+    }
+
+    function closeHandOverview() {
+      shell.classList.remove("hand-overview-open");
+      document.querySelector("[data-hand-overview-toggle]")?.setAttribute("aria-expanded", "false");
+    }
+
     function toggleSelected(cardId) {
       const found = findCard(cardId);
       if (!found) return;
@@ -3976,6 +4406,15 @@
       }
       const currentPlayer = state.players[state.currentPlayer];
       if (found.player !== currentPlayer) return;
+      if (state.projectileOnlyMode) {
+        if (found.zone !== "attack" || !isPlayableAttack(found.card)) {
+          toast("Solo proyectil necesita una pica numerica instalada en Ataque.");
+          return;
+        }
+        state.selected = state.selected.includes(cardId) ? [] : [cardId];
+        render();
+        return;
+      }
       if (state.attackMode && !["fuel", "attack", "armor"].includes(found.zone)) {
         toast("Para atacar selecciona fuel, ataque o armadura con As♦.");
         return;
@@ -3993,6 +4432,7 @@
       state.selected = [];
       state.attackMode = false;
       state.projectileMode = false;
+      state.projectileOnlyMode = false;
       render();
     }
 
@@ -4093,11 +4533,33 @@
         toast("El mecha aun no cumple los requisitos de ataque.");
         return;
       }
+      const alreadyAttacking = state.attackMode;
       state.attackMode = true;
       state.projectileMode = false;
-      state.selected = [];
+      state.projectileOnlyMode = false;
+      if (!alreadyAttacking) state.selected = [];
+      closeTopMenu();
+      closeHandOverview();
       openBoard("mecha");
-      toast("Selecciona fuel y cartas de ataque.");
+      toast("Panel abierto: elige fuel y picas.");
+      render();
+    }
+
+    function startProjectileOnlyMode() {
+      const player = state.players[0];
+      if (!canProjectileOnlyNow(player)) {
+        toast("Necesitas proyectiles desbloqueados y una pica numerica en Ataque.");
+        return;
+      }
+      const current = selectedProjectileOnlyCard(player);
+      state.attackMode = false;
+      state.projectileMode = false;
+      state.projectileOnlyMode = true;
+      if (!current) state.selected = [];
+      closeTopMenu();
+      closeHandOverview();
+      openBoard("mecha");
+      toast("Solo proyectil: selecciona 1 pica y confirma.");
       render();
     }
 
@@ -4108,7 +4570,11 @@
       }
       state.projectileMode = !state.projectileMode;
       state.attackMode = true;
+      state.projectileOnlyMode = false;
+      closeTopMenu();
+      closeHandOverview();
       openBoard("mecha");
+      toast(state.projectileMode ? "Modo proyectil: la ultima pica seleccionada sera proyectil." : "Modo proyectil desactivado.");
       render();
     }
 
@@ -4138,6 +4604,10 @@
     function confirmAttack(projectileOnly = false) {
       const attacker = state.players[state.currentPlayer];
       if (state.currentPlayer !== 0) return;
+      if (projectileOnly && !state.projectileUnlocked) {
+        toast("El proyectil aun no esta desbloqueado.");
+        return;
+      }
       if (!state.attackMode && !projectileOnly) {
         startAttackMode();
         return;
@@ -4186,6 +4656,7 @@
       if (!state.projectileUnlocked) state.projectileUnlocked = true;
       state.attackMode = false;
       state.projectileMode = false;
+      state.projectileOnlyMode = false;
       state.selected = [];
       log(`${attacker.name} declara ataque de ${total} punto(s).`);
       shell.classList.add("attack-flash");
@@ -4210,7 +4681,7 @@
         withProjectile
       };
       state.phase = "Defensa activa";
-      shell.classList.remove("board-open");
+      if (!isLandscapeLayout()) shell.classList.remove("board-open");
       if (!diamonds.length) {
         log(`${defender.name} no tiene diamantes para defenderse.`);
         resolveAttackAfterDefense(0);
@@ -4326,6 +4797,7 @@
       state.selected = [];
       state.attackMode = false;
       state.projectileMode = false;
+      state.projectileOnlyMode = false;
       state.currentPlayer = 1;
       state.internalTurn += 1;
       state.phase = "Turno rival";
@@ -4423,6 +4895,7 @@
       if (action === "back") {
         shell.classList.remove("actions-open", "board-open");
         state.attackMode = false;
+        state.projectileOnlyMode = false;
         state.selected = [];
         state.phase = "Menu principal";
         toast("Volver al menu");
@@ -4494,8 +4967,29 @@
           return;
         }
       }
-      if (action === "projectile") toggleProjectileMode();
-      if (action === "confirm") confirmAttack(false);
+      if (action === "projectile") {
+        toggleProjectileMode();
+        if (state.attackMode) {
+          shell.classList.add("actions-open");
+          document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", "true");
+          syncActionFlyouts();
+          return;
+        }
+      }
+      if (action === "projectile-only") {
+        if (!state.projectileOnlyMode) {
+          startProjectileOnlyMode();
+          if (state.projectileOnlyMode) {
+            shell.classList.add("actions-open");
+            document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", "true");
+            syncActionFlyouts();
+            return;
+          }
+        } else {
+          confirmAttack(true);
+        }
+      }
+      if (action === "confirm") confirmAttack(state.projectileOnlyMode);
       if (action === "pass") passTurn();
       if (action === "clear") clearSelection();
       closeActions();
@@ -4516,17 +5010,23 @@
       if (!p1 || !p2) return;
       const s1 = getStats(p1);
       const s2 = getStats(p2);
+      const selectedFuel = getAttackSelection(p1);
       document.querySelector("[data-player-name]").textContent = state.currentPlayer === 0 ? "JUGADOR 1" : "EN ESPERA";
-      document.querySelector("[data-fuel-value]").textContent = sum(p1.fuel);
-      document.querySelector("[data-core-value]").textContent = `${coreCount(p1)}/3`;
-      renderBars(document.querySelector("[data-fuel-bars]"), 6, Math.min(6, p1.fuel.length + 1));
-      renderBars(document.querySelector("[data-core-bars]"), 5, coreCount(p1) + 1);
+      document.querySelector("[data-deck-value]").textContent = state.deck.length;
+      document.querySelector("[data-discard-value]").textContent = state.discard.length;
+      document.querySelector("[data-selected-fuel-value]").textContent = `${selectedFuel.fuelValue}→${selectedFuel.limit}`;
       setStat("p1", s1);
       setStat("p2", s2);
+      setBuildProgress("p1", getBuildProgress(p1));
+      setBuildProgress("p2", getBuildProgress(p2));
       document.querySelector('[data-menu="music"]').textContent = state.musicOn ? "Música ON" : "Música OFF";
       document.querySelector('[data-menu="tutorial"]').textContent = state.tutorial ? "Tutorial ON" : "Tutorial OFF";
       document.querySelector('[data-menu="music"]').classList.toggle("on", state.musicOn);
       document.querySelector('[data-menu="tutorial"]').classList.toggle("on", state.tutorial);
+    }
+
+    function setBuildProgress(prefix, progress) {
+      document.querySelector(`[data-${prefix}-build]`).textContent = `${progress.percent}%`;
     }
 
     function setStat(prefix, stats) {
@@ -4652,12 +5152,51 @@
       renderHand();
     }
 
+    function layoutHandCard(cardNode, index, count, tray) {
+      const cardWidth = window.matchMedia("(orientation: landscape) and (max-height: 520px)").matches
+        ? 48
+        : window.matchMedia("(max-height: 760px)").matches
+          ? 50
+          : 54;
+      const narrow = window.innerWidth <= 430 || (tray.clientWidth || 0) <= 390;
+      const sideSafety = count > 12 ? (narrow ? 104 : 82) : count > 9 ? 68 : 44;
+      const usableWidth = Math.max(cardWidth, (tray.clientWidth || 420) - sideSafety);
+      const targetWidth = usableWidth * (count > 14 ? (narrow ? .74 : .82) : count > 12 ? .86 : count > 9 ? .9 : 1);
+      const naturalOverlap = count > 1
+        ? cardWidth - ((targetWidth - cardWidth) / Math.max(1, count - 1))
+        : 0;
+      const minOverlap = count > 14 ? cardWidth * .72 : count > 12 ? cardWidth * .64 : count > 9 ? cardWidth * .54 : 22;
+      const maxOverlap = count > 14 ? cardWidth - 6 : count > 12 ? cardWidth - 8 : cardWidth - 12;
+      const overlap = count <= 7 ? 22 : Math.max(minOverlap, Math.min(maxOverlap, naturalOverlap));
+      const visibleStep = Math.max(1, cardWidth - overlap);
+      const denseScale = count > 14 ? .8 : count > 12 ? .86 : count > 9 ? .94 : 1;
+      const mid = (count - 1) / 2;
+      const maxAngle = count > 14 ? 5.5 : count > 12 ? 7 : 8;
+      const angle = count > 1 ? -maxAngle + ((maxAngle * 2) * index / (count - 1)) : 0;
+      const rise = Math.max(0, (count > 14 ? 8 : count > 12 ? 10 : 13) - Math.abs(index - mid) * (count > 14 ? .38 : count > 12 ? .65 : 2.15));
+      tray.style.setProperty("--fan-overlap", `${overlap.toFixed(2)}px`);
+      cardNode.style.setProperty("--hand-rotate", `${angle.toFixed(2)}deg`);
+      cardNode.style.setProperty("--hand-rise", `${rise.toFixed(2)}px`);
+      cardNode.style.setProperty("--hand-scale", denseScale.toFixed(3));
+      cardNode.style.setProperty("--hand-hover-scale", Math.min(1.06, denseScale + .06).toFixed(3));
+    }
+
     function renderHand() {
       const player = state.players[0];
       const tray = document.querySelector("[data-hand-cards]");
+      const overview = document.querySelector("[data-hand-overview-cards]");
       tray.innerHTML = "";
-      orderedHandCards(player).forEach((card) => tray.appendChild(makeCardNode(card, "hand")));
+      overview.innerHTML = "";
+      const handCards = orderedHandCards(player);
+      tray.style.setProperty("--hand-count", handCards.length);
+      handCards.forEach((card, index) => {
+        const cardNode = makeCardNode(card, "hand");
+        layoutHandCard(cardNode, index, handCards.length, tray);
+        tray.appendChild(cardNode);
+      });
+      player.hand.forEach((card) => overview.appendChild(makeCardNode(card, "hand")));
       document.querySelector("[data-hand-count]").textContent = `${player.hand.length}/${MAX_HAND_SIZE}`;
+      document.querySelector("[data-hand-overview-toggle]")?.setAttribute("aria-expanded", shell.classList.contains("hand-overview-open") ? "true" : "false");
       document.querySelectorAll("[data-hand-shift]").forEach((button) => {
         button.disabled = player.hand.length <= 1;
       });
@@ -4676,6 +5215,16 @@
       const node = document.createElement("article");
       node.className = `drop-zone ${className}`.trim();
       node.dataset.zone = zone;
+      if (state.projectileOnlyMode) {
+        const selectable = zone === "attack";
+        node.classList.toggle("is-attack-selectable", selectable);
+        node.classList.toggle("is-attack-muted", !selectable);
+      } else if (state.attackMode) {
+        const canUseArmorAsFuel = state.players[state.currentPlayer]?.core?.booster?.suit === "diamonds";
+        const selectable = zone === "attack" || zone === "fuel" || (zone === "armor" && canUseArmorAsFuel);
+        node.classList.toggle("is-attack-selectable", selectable);
+        node.classList.toggle("is-attack-muted", !selectable);
+      }
       node.innerHTML = `<header class="zone-title"><span>${title}</span><b>${meta}</b></header><div class="zone-cards"></div>`;
       fillZoneCards(node.querySelector(".zone-cards"), cards);
       return node;
@@ -4699,7 +5248,7 @@
     }
 
     function renderBoard() {
-      const isRivalView = state.activeTab === "rival" && !state.attackMode;
+      const isRivalView = state.activeTab === "rival" && !state.attackMode && !state.projectileOnlyMode;
       const player = isRivalView ? state.players[1] : state.players[0];
       const grid = document.querySelector("[data-zone-grid]");
       shell.classList.toggle("rival-view", isRivalView);
@@ -4739,7 +5288,10 @@
 
       const title = document.querySelector("[data-drawer-title]");
       const subtitle = document.querySelector("[data-drawer-subtitle]");
-      if (state.attackMode) {
+      if (state.projectileOnlyMode) {
+        title.textContent = "Solo proyectil";
+        subtitle.textContent = "Toca una pica numerica instalada. No necesita fuel.";
+      } else if (state.attackMode) {
         title.textContent = state.projectileMode ? "Ataque con proyectil" : "Seleccion de ataque";
         subtitle.textContent = "Toca fuel y picas. El ataque principal no puede superar fuel x2.";
       } else if (isRivalView) {
@@ -4751,23 +5303,62 @@
       }
     }
 
+    function renderLeftGuidance(tutorialCopy = "", alertTitle = "", alertCopy = "") {
+      const box = document.querySelector("[data-left-guidance]");
+      if (!box) return;
+      box.replaceChildren();
+
+      const title = document.createElement("strong");
+      title.className = "guidance-title";
+      const lines = document.createElement("div");
+      lines.className = "guidance-lines";
+      const addLine = (text) => {
+        const line = document.createElement("p");
+        line.className = "guidance-line";
+        line.textContent = text;
+        lines.appendChild(line);
+      };
+
+      if (state.tutorial && tutorialCopy) {
+        title.textContent = "Tutorial";
+        addLine(tutorialCopy);
+        if (alertTitle && alertCopy) addLine(`${alertTitle}: ${alertCopy}`);
+      } else if (alertTitle && alertCopy) {
+        title.textContent = alertTitle;
+        addLine(alertCopy);
+      } else {
+        title.textContent = "REG";
+        const recent = state.log.slice(0, 4);
+        if (recent.length) recent.forEach(addLine);
+        else addLine("Sin eventos registrados.");
+      }
+
+      box.append(title, lines);
+    }
+
     function renderMessages() {
       const tutorial = document.querySelector("[data-tutorial-message]");
       const tutorialText = document.querySelector("[data-tutorial-text]");
       tutorial.classList.toggle("show", state.tutorial);
+      let tutorialCopy = "";
+      let alertTitle = "";
+      let alertCopy = "";
       if (state.pendingDefense) {
         const defender = state.players[state.pendingDefense.defenderIndex];
         const diamonds = defender.hand.filter(isNumericDiamond);
-        tutorialText.textContent = "Usa Acciones para jugar. MECHA abre tu montaje y RIVAL muestra sus cartas visibles.";
+        tutorialCopy = "Usa Acciones para jugar. MECHA abre tu montaje y RIVAL muestra sus cartas visibles.";
+        tutorialText.textContent = tutorialCopy;
         const alert = document.querySelector("[data-alert-message]");
-        document.querySelector("[data-alert-title]").textContent = state.pendingDefense.defenderIndex === 0 ? "Ataque enemigo previsto" : "Ventana de defensa rival";
-        document.querySelector("[data-alert-text]").textContent = state.pendingDefense.defenderIndex === 0
+        alertTitle = state.pendingDefense.defenderIndex === 0 ? "Ataque enemigo previsto" : "Ventana de defensa rival";
+        alertCopy = state.pendingDefense.defenderIndex === 0
           ? (diamonds.length
             ? `${defender.name} puede reducir ${state.pendingDefense.totalAttack} punto(s) usando 1♦ numerico.`
             : `${defender.name} no tiene 1♦ numerico disponible.`)
           : (diamonds.length
             ? `CPU evalua defensa contra ${state.pendingDefense.totalAttack} punto(s).`
             : "CPU no tiene diamantes numericos y recibira el ataque.");
+        document.querySelector("[data-alert-title]").textContent = alertTitle;
+        document.querySelector("[data-alert-text]").textContent = alertCopy;
         const actions = document.querySelector("[data-alert-actions]");
         actions.innerHTML = "";
         if (state.pendingDefense.defenderIndex === 0 && diamonds.length) {
@@ -4784,20 +5375,26 @@
         alert.classList.add("show");
       } else {
         document.querySelector("[data-alert-message]").classList.remove("show");
-        if (state.attackMode) tutorialText.textContent = "Modo ataque: selecciona fuel y picas en el panel. Confirmar calcula defensa y armadura.";
-        else if (state.phase === "Turno rival") tutorialText.textContent = "El rival actua en el panel central. Si ataca, la alerta aparece aqui debajo.";
-        else tutorialText.textContent = "Arrastra cartas al panel de montaje. El boton amarillo Acciones abre todas las jugadas.";
+        if (state.projectileOnlyMode) tutorialCopy = "Solo proyectil: selecciona una pica instalada. No consume fuel.";
+        else if (state.attackMode) tutorialCopy = "Modo ataque: selecciona fuel y picas en el panel. Confirmar calcula defensa y armadura.";
+        else if (state.phase === "Turno rival") tutorialCopy = "El rival actua en el panel central. Si ataca, la alerta aparece aqui debajo.";
+        else tutorialCopy = "Arrastra cartas al panel de montaje. El boton amarillo Acciones abre todas las jugadas.";
+        tutorialText.textContent = tutorialCopy;
       }
+      renderLeftGuidance(tutorialCopy, alertTitle, alertCopy);
     }
 
     function renderActions() {
       document.querySelectorAll(".tab-sprite").forEach((button) => {
         button.classList.toggle("is-active", button.dataset.tab === state.activeTab);
       });
-      document.querySelector("[data-board-toggle]").classList.toggle("is-active", shell.classList.contains("board-open"));
+      document.querySelector("[data-board-toggle]")?.classList.toggle("is-active", shell.classList.contains("board-open"));
       document.querySelector('[data-action="attack-mode"]').classList.toggle("is-active", state.attackMode);
       document.querySelector('[data-action="projectile"]').classList.toggle("is-active", state.projectileMode);
+      document.querySelector('[data-action="projectile-only"]').classList.toggle("is-active", state.projectileOnlyMode);
       document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", shell.classList.contains("actions-open") ? "true" : "false");
+      document.querySelector("[data-menu-toggle]")?.setAttribute("aria-expanded", shell.classList.contains("menu-open") ? "true" : "false");
+      document.querySelector("[data-hand-overview-toggle]")?.setAttribute("aria-expanded", shell.classList.contains("hand-overview-open") ? "true" : "false");
       syncActionFlyouts();
       const playerTurn = state.currentPlayer === 0 && !state.pendingDefense && !state.winner;
       const defenseTurn = !!state.pendingDefense && state.pendingDefense.defenderIndex === 0;
@@ -4809,7 +5406,8 @@
         figures: playerTurn && canDrawWithTwoFigures(player),
         "attack-mode": attackReady,
         projectile: playerTurn && state.attackMode && state.projectileUnlocked,
-        confirm: (playerTurn && state.attackMode) || defenseTurn,
+        "projectile-only": playerTurn && canProjectileOnlyNow(player),
+        confirm: (playerTurn && (state.attackMode || state.projectileOnlyMode)) || defenseTurn,
         pass: playerTurn || defenseTurn,
         defend: defenseTurn,
         "skip-defense": defenseTurn,
@@ -4937,6 +5535,23 @@
       button.classList.add("is-pressing");
     }, { passive: true });
 
+    document.addEventListener("pointerdown", (event) => {
+      if (
+        shell.classList.contains("menu-open") &&
+        !event.target.closest(".top-menu") &&
+        !event.target.closest("[data-menu-toggle]")
+      ) {
+        closeTopMenu();
+      }
+      if (
+        shell.classList.contains("hand-overview-open") &&
+        !event.target.closest(".hand-overview") &&
+        !event.target.closest("[data-hand-overview-toggle]")
+      ) {
+        closeHandOverview();
+      }
+    }, { passive: true });
+
     document.addEventListener("pointerdown", startTouchCardDrag, { passive: false });
     document.addEventListener("pointermove", updateTouchDrag, { passive: false });
     document.addEventListener("pointerup", (event) => finishTouchCardDrag(event), { passive: false });
@@ -4958,22 +5573,41 @@
         event.stopPropagation();
         return;
       }
+      if (
+        shell.classList.contains("hand-overview-open") &&
+        !event.target.closest(".hand-overview") &&
+        !event.target.closest("[data-hand-overview-toggle]")
+      ) {
+        closeHandOverview();
+      }
+      if (
+        shell.classList.contains("menu-open") &&
+        !event.target.closest(".top-menu") &&
+        !event.target.closest("[data-menu-toggle]")
+      ) {
+        closeTopMenu();
+      }
       if (!button && zone && zone.dataset.zone !== "reg") {
         const selectedHand = state.selected.map((id) => findCard(id)).find((item) => item && item.player === state.players[0] && item.zone === "hand");
         if (selectedHand) placeCard(selectedHand.card.id, zone.dataset.zone);
         return;
       }
       if (!button) {
-        if (!event.target.closest(".top-menu")) {
-          shell.classList.remove("menu-open");
-          document.querySelector("[data-menu-toggle]")?.setAttribute("aria-expanded", "false");
-        }
         if (!event.target.closest(".action-hub")) closeActions();
         return;
       }
       if (button.dataset.menuToggle !== undefined) {
+        closeActions();
+        closeHandOverview();
         shell.classList.toggle("menu-open");
         button.setAttribute("aria-expanded", shell.classList.contains("menu-open") ? "true" : "false");
+        return;
+      }
+      if (button.dataset.handOverviewToggle !== undefined) {
+        closeActions();
+        closeTopMenu();
+        shell.classList.toggle("hand-overview-open");
+        button.setAttribute("aria-expanded", shell.classList.contains("hand-overview-open") ? "true" : "false");
         return;
       }
       if (button.dataset.handShift) {
@@ -4985,9 +5619,13 @@
         shell.classList.remove("menu-open");
         document.querySelector("[data-menu-toggle]")?.setAttribute("aria-expanded", "false");
       }
-      if (button.dataset.actionToggle !== undefined) openActions();
+      if (button.dataset.actionToggle !== undefined) {
+        closeHandOverview();
+        openActions();
+      }
       if (button.dataset.boardToggle !== undefined) {
         closeActions();
+        closeHandOverview();
         shell.classList.toggle("board-open");
         state.activeTab = state.activeTab === "rival" ? "rival" : "mecha";
         render();
@@ -4996,7 +5634,20 @@
       if (button.dataset.applyBuild !== undefined) applyBuildChanges();
       if (button.dataset.tab) {
         closeActions();
-        openBoard(button.dataset.tab);
+        closeHandOverview();
+        if (
+          isLandscapeLayout()
+          && button.dataset.tab === "mecha"
+          && shell.classList.contains("board-open")
+          && state.activeTab === "mecha"
+          && !state.attackMode
+          && !state.projectileOnlyMode
+        ) {
+          closeBoard();
+          render();
+        } else {
+          openBoard(button.dataset.tab);
+        }
       }
       if (button.dataset.action) handleAction(button.dataset.action);
       if (button.dataset.cardId) toggleSelected(button.dataset.cardId);
