@@ -3375,13 +3375,13 @@
     <div class="top-vents vents-left" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="top-vents vents-right" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
 
-    <section class="brand-plate">
+    <button class="brand-plate" type="button" data-classic-scroll aria-label="Ir al modo clasico scroll">
       <i class="screw screw-tl"></i>
       <i class="screw screw-tr"></i>
       <i class="screw screw-bl"></i>
       <i class="screw screw-br"></i>
       <img src="../assets/pocobot_title_blue.png" alt="PoCoBOT Poker Combat Bot">
-    </section>
+    </button>
     <button class="top-menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-label="Abrir menú de partida"><i><span></span></i></button>
     <nav class="top-menu" aria-label="Menú de partida">
       <button class="menu-button danger" type="button" data-menu="new">Nueva</button>
@@ -4390,6 +4390,10 @@
     function closeHandOverview() {
       shell.classList.remove("hand-overview-open");
       document.querySelector("[data-hand-overview-toggle]")?.setAttribute("aria-expanded", "false");
+    }
+
+    function openClassicScrollMode() {
+      window.location.href = new URL("../poker_combat_bot_ONLINE.html", window.location.href).href;
     }
 
     function toggleSelected(cardId) {
@@ -5594,6 +5598,10 @@
       }
       if (!button) {
         if (!event.target.closest(".action-hub")) closeActions();
+        return;
+      }
+      if (button.dataset.classicScroll !== undefined) {
+        openClassicScrollMode();
         return;
       }
       if (button.dataset.menuToggle !== undefined) {
