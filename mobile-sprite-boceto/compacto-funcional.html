@@ -1084,6 +1084,7 @@
 
     .floating-message {
       display: none;
+      flex-direction: column;
       min-width: 0;
       max-height: min(210px, 42vh);
       padding: 9px 11px;
@@ -1094,14 +1095,12 @@
         linear-gradient(180deg, rgba(15, 37, 78, .96), rgba(5, 14, 33, .96));
       box-shadow: 0 14px 30px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(255,255,255,.08);
       color: #fff6db;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
       pointer-events: auto;
     }
 
     .floating-message.show {
-      display: block;
+      display: flex;
       animation: messageIn .18s ease both;
     }
 
@@ -1124,6 +1123,7 @@
     }
 
     .floating-message > strong {
+      flex: 0 0 auto;
       display: block;
       margin-bottom: 3px;
       font-size: 15px;
@@ -1138,12 +1138,20 @@
     }
 
     .floating-message span {
+      flex: 1 1 auto;
+      min-height: 0;
       display: block;
       color: #f6fbff;
       font-family: "Trebuchet MS", "Segoe UI", sans-serif;
       font-size: 12px;
       line-height: 1.28;
       overflow-wrap: anywhere;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: auto;
+      touch-action: pan-y;
+      padding-right: 4px;
     }
 
     .floating-message.tutorial.show {
@@ -1175,6 +1183,7 @@
     }
 
     .floating-message .message-actions {
+      flex: 0 0 auto;
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
@@ -1596,6 +1605,10 @@
       z-index: 16;
     }
 
+    .phone-shell.board-open .hand-tray {
+      z-index: 26;
+    }
+
     .phone-shell.hand-overview-open .hand-tray {
       z-index: 24;
     }
@@ -1622,8 +1635,12 @@
     }
 
     .hand-tray header .action-hub {
+      position: absolute;
+      right: -2px;
+      top: 165px;
       margin-left: 0;
-      align-self: center;
+      align-self: auto;
+      z-index: 34;
     }
 
     .actions-button {
@@ -1675,11 +1692,11 @@
     }
 
     .hand-tray header .action-wheel {
-      left: -106px;
+      left: -240px;
       right: auto;
-      top: 42px;
+      top: -104px;
       transform: scale(.82);
-      transform-origin: top left;
+      transform-origin: bottom right;
     }
 
     .phone-shell.actions-open .actions-button {
@@ -1765,6 +1782,11 @@
       white-space: nowrap;
       transition: opacity .16s ease, transform .16s ease, filter .16s ease;
       transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y)));
+    }
+
+    .wheel-action.projectile-action {
+      width: 108px;
+      font-size: 9.3px;
     }
 
     .wheel-action.primary {
@@ -3457,6 +3479,14 @@
         margin-left: 5px;
       }
 
+      .hand-tray header .action-hub {
+        position: absolute;
+        right: 4px;
+        top: 70px;
+        margin-left: 0;
+        z-index: 64;
+      }
+
       .actions-button {
         min-width: 96px;
         min-height: 30px;
@@ -3514,6 +3544,11 @@
         min-height: 27px;
         padding: 3px 5px;
         font-size: 9px;
+      }
+
+      .wheel-action.projectile-action {
+        width: 96px;
+        font-size: 8px;
       }
 
       button:not(:disabled):active,
@@ -4274,12 +4309,12 @@
           <div class="action-wheel" role="menu">
             <button class="wheel-action" style="--x:-82px;--y:-78px" type="button" data-action="figures">2 Fig.</button>
             <button class="wheel-action" style="--x:-82px;--y:-45px" type="button" data-action="draw">Robar ♦</button>
-            <button class="wheel-action primary" style="--x:0px;--y:-51px" type="button" data-action="attack-mode">Atacar</button>
-            <button class="wheel-action primary attack-confirm-action" style="--x:89px;--y:-51px" type="button" data-action="confirm">Confirmar</button>
-            <button class="wheel-action" style="--x:78px;--y:32px" type="button" data-action="projectile">Modo Proy.</button>
-            <button class="wheel-action" style="--x:108px;--y:66px" type="button" data-action="projectile-only">Solo Proy.</button>
-            <button class="wheel-action" style="--x:0px;--y:47px" type="button" data-action="pass">Pasar</button>
-            <button class="wheel-action defense" style="--x:-94px;--y:30px" type="button" data-action="defend">Defender</button>
+            <button class="wheel-action" style="--x:0px;--y:-51px" type="button" data-action="pass">Pasar</button>
+            <button class="wheel-action projectile-action" style="--x:98px;--y:-28px" type="button" data-action="projectile" title="Modo Proyectil: añade una pica al ataque y la descarta">Modo Proyectil</button>
+            <button class="wheel-action projectile-action" style="--x:98px;--y:7px" type="button" data-action="projectile-only" title="Solo Proyectil: ataca descartando una pica como proyectil">Solo Proyectil</button>
+            <button class="wheel-action primary" style="--x:-44px;--y:47px" type="button" data-action="attack-mode">Atacar</button>
+            <button class="wheel-action primary attack-confirm-action" style="--x:48px;--y:47px" type="button" data-action="confirm">Confirmar</button>
+            <button class="wheel-action defense" style="--x:-102px;--y:30px" type="button" data-action="defend">Defender</button>
             <button class="wheel-action defense" style="--x:-112px;--y:-8px" type="button" data-action="skip-defense">No Def.</button>
             <button class="wheel-action utility" style="--x:0px;--y:0px" type="button" data-action="clear">Limpiar</button>
           </div>
