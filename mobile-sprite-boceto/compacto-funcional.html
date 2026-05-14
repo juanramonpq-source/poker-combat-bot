@@ -323,20 +323,20 @@
       position: relative;
       z-index: 2;
       display: grid;
-      grid-template-columns: minmax(0, .72fr) minmax(0, .82fr) minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1fr) minmax(0, 1.36fr);
       align-items: center;
-      gap: 5px;
+      gap: 7px;
       margin: 0 2px 6px;
     }
 
     .meter-pill {
-      min-height: 40px;
+      min-height: 34px;
       display: grid;
       grid-template-columns: 18px minmax(0, 1fr);
       align-items: center;
       gap: 4px;
-      padding: 4px 5px;
-      border: 3px solid #06172a;
+      padding: 3px 6px;
+      border: 2px solid #06172a;
       border-radius: 11px;
       background:
         linear-gradient(180deg, rgba(255, 255, 255, .12), transparent 42%),
@@ -348,7 +348,7 @@
     .meter-pill small {
       display: block;
       color: #ffe8c4;
-      font-size: 10px;
+      font-size: 9px;
       line-height: 1;
       white-space: nowrap;
     }
@@ -356,7 +356,7 @@
     .meter-pill strong {
       display: block;
       color: var(--cyan);
-      font-size: 18px;
+      font-size: 17px;
       line-height: .95;
       text-shadow: 0 0 12px rgba(70, 236, 255, .65);
       white-space: nowrap;
@@ -913,6 +913,72 @@
       animation: mechaPhaseFlash .46s ease;
     }
 
+    .fighter.evolution-burst {
+      z-index: 6;
+      animation: fighterEvolutionLift 980ms cubic-bezier(.16,.82,.18,1) both;
+    }
+
+    .fighter.evolution-burst::before,
+    .fighter.evolution-burst::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      left: 50%;
+      top: 44%;
+      width: 154px;
+      height: 154px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(.35);
+      pointer-events: none;
+      opacity: 0;
+      mix-blend-mode: screen;
+    }
+
+    .fighter.evolution-burst::before {
+      border: 2px solid currentColor;
+      box-shadow:
+        0 0 22px currentColor,
+        inset 0 0 26px rgba(255,255,255,.16);
+      background:
+        repeating-conic-gradient(from 0deg, currentColor 0deg 2deg, transparent 2deg 13deg),
+        radial-gradient(circle, rgba(255,255,255,.12), transparent 58%);
+      animation: fighterEvolutionRadar 980ms cubic-bezier(.18,.82,.2,1) both;
+    }
+
+    .fighter.evolution-burst::after {
+      width: 118px;
+      height: 260px;
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, transparent, rgba(255,255,255,.72), transparent),
+        linear-gradient(90deg, transparent, currentColor, transparent);
+      filter: blur(.2px);
+      animation: fighterEvolutionScan 920ms ease both;
+    }
+
+    .fighter-red.evolution-burst {
+      color: var(--red);
+    }
+
+    .fighter-blue.evolution-burst {
+      color: var(--cyan);
+    }
+
+    .fighter.evolution-complete::before {
+      color: #ffd65c;
+      box-shadow:
+        0 0 26px rgba(255,214,92,.82),
+        inset 0 0 30px rgba(255,255,255,.2);
+    }
+
+    .fighter-blue.evolution-burst .mecha-phase-live {
+      animation: mechaEvolutionBlue 980ms cubic-bezier(.16,.82,.18,1) both;
+    }
+
+    .fighter-red.evolution-burst .mecha-phase-live {
+      animation: mechaEvolutionRed 980ms cubic-bezier(.16,.82,.18,1) both;
+    }
+
     .stats-card {
       position: relative;
       z-index: 2;
@@ -1044,12 +1110,31 @@
       background: linear-gradient(180deg, rgba(82, 14, 9, .96), rgba(25, 8, 8, .97));
     }
 
-    .floating-message strong {
+    .floating-message.alert.show {
+      border-width: 3px;
+      border-color: rgba(255, 84, 58, .98);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255, 238, 145, .22), transparent 42%),
+        linear-gradient(180deg, rgba(177, 35, 28, .98), rgba(74, 5, 8, .99));
+      box-shadow:
+        0 18px 34px rgba(70, 0, 0, .44),
+        0 0 0 2px rgba(255, 201, 128, .26),
+        inset 0 0 0 1px rgba(255,255,255,.12),
+        inset 0 -12px 22px rgba(0,0,0,.22);
+    }
+
+    .floating-message > strong {
       display: block;
       margin-bottom: 3px;
       font-size: 15px;
       line-height: 1.05;
       text-transform: uppercase;
+    }
+
+    .floating-message.alert > strong {
+      font-size: clamp(18px, 4.8vw, 23px);
+      letter-spacing: .02em;
+      text-shadow: 0 2px 0 rgba(69, 0, 0, .52), 0 0 12px rgba(255, 90, 54, .34);
     }
 
     .floating-message span {
@@ -1059,6 +1144,34 @@
       font-size: 12px;
       line-height: 1.28;
       overflow-wrap: anywhere;
+    }
+
+    .floating-message.tutorial.show {
+      max-height: min(360px, 56vh);
+    }
+
+    .floating-message span strong,
+    .guidance-line strong {
+      display: inline;
+      margin: 0;
+      font-size: inherit;
+      line-height: inherit;
+      text-transform: none;
+    }
+
+    .tutorial-objective,
+    .tutorial-tip,
+    .tutorial-focus,
+    .tutorial-status {
+      margin-top: 8px;
+      padding-top: 7px;
+      border-top: 1px solid rgba(255, 236, 181, .2);
+    }
+
+    .floating-message.alert span {
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.28;
     }
 
     .floating-message .message-actions {
@@ -1078,6 +1191,33 @@
       font-size: 12px;
       font-weight: 900;
       text-transform: uppercase;
+    }
+
+    .message-actions button.secondary {
+      background: linear-gradient(180deg, #dff4ff, #7fc6ff);
+    }
+
+    .guidance-actions {
+      flex: 0 0 auto;
+      margin-top: 8px;
+    }
+
+    .floating-message.alert .message-actions {
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .floating-message.alert .message-actions button {
+      flex: 1 1 130px;
+      min-height: 36px;
+      border: 2px solid rgba(255,255,255,.36);
+      border-radius: 10px;
+      color: #280300;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.52), transparent 38%),
+        linear-gradient(180deg, #fff5bc, #ffb347 58%, #c85c18);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.58), 0 4px 0 rgba(73, 9, 0, .78);
+      font-size: 12px;
     }
 
     .tab-bar {
@@ -1481,6 +1621,11 @@
       align-self: center;
     }
 
+    .hand-tray header .action-hub {
+      margin-left: 0;
+      align-self: center;
+    }
+
     .actions-button {
       position: relative;
       z-index: 3;
@@ -1529,6 +1674,14 @@
       transform-origin: top right;
     }
 
+    .hand-tray header .action-wheel {
+      left: -106px;
+      right: auto;
+      top: 42px;
+      transform: scale(.82);
+      transform-origin: top left;
+    }
+
     .phone-shell.actions-open .actions-button {
       filter: brightness(1.05);
       transform: translateY(3px);
@@ -1566,6 +1719,10 @@
     }
 
     .phone-shell.actions-open .status-strip .action-wheel {
+      transform: scale(1);
+    }
+
+    .phone-shell.actions-open .hand-tray header .action-wheel {
       transform: scale(1);
     }
 
@@ -1727,7 +1884,7 @@
       z-index: 18;
       left: auto;
       right: 22px;
-      top: 39px;
+      top: 10px;
       min-width: 124px;
       min-height: 34px;
       padding: 6px 14px 5px;
@@ -2173,6 +2330,93 @@
       pointer-events: none;
     }
 
+    .fx-evo-ring,
+    .fx-evo-scan,
+    .fx-evo-label,
+    .fx-evo-shard {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      color: var(--evo-color, #77f3ff);
+      z-index: 74;
+    }
+
+    .fx-evo-ring {
+      width: var(--evo-size, 150px);
+      height: var(--evo-size, 150px);
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      background:
+        repeating-conic-gradient(from 0deg, currentColor 0deg 2deg, transparent 2deg 16deg),
+        radial-gradient(circle, rgba(255,255,255,.18), transparent 56%);
+      box-shadow:
+        0 0 22px currentColor,
+        inset 0 0 22px rgba(255,255,255,.14);
+      mix-blend-mode: screen;
+      opacity: 0;
+      animation: evoRingBurst var(--dur, 1080ms) cubic-bezier(.14,.84,.18,1) both;
+    }
+
+    .fx-evo-ring.alt {
+      --evo-size: 112px;
+      animation-delay: 110ms;
+      animation-duration: 920ms;
+      border-style: dashed;
+    }
+
+    .fx-evo-ring.complete {
+      color: #ffd65c;
+      box-shadow:
+        0 0 28px rgba(255,214,92,.78),
+        inset 0 0 26px rgba(255,255,255,.18);
+    }
+
+    .fx-evo-scan {
+      width: 104px;
+      height: 260px;
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(255,255,255,.78) 48%, transparent 100%),
+        linear-gradient(90deg, transparent, currentColor, transparent);
+      filter: blur(.3px) drop-shadow(0 0 14px currentColor);
+      mix-blend-mode: screen;
+      opacity: 0;
+      animation: evoScanColumn 920ms ease both;
+    }
+
+    .fx-evo-label {
+      min-width: 118px;
+      max-width: 178px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,245,203,.82);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.28), transparent 58%),
+        linear-gradient(180deg, rgba(9, 35, 72, .96), rgba(4, 12, 28, .98));
+      color: #fff3c7;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 1000;
+      text-align: center;
+      text-transform: uppercase;
+      box-shadow: 0 10px 24px rgba(0,0,0,.34), 0 0 18px currentColor;
+      opacity: 0;
+      animation: evoLabelRise 1180ms cubic-bezier(.18,.82,.2,1) both;
+    }
+
+    .fx-evo-shard {
+      width: var(--size, 8px);
+      height: calc(var(--size, 8px) * 1.8);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #fff, currentColor);
+      box-shadow: 0 0 10px currentColor;
+      opacity: 0;
+      animation: evoShardFly var(--dur, 760ms) ease-out both;
+    }
+
     .attack-special-popup-overlay {
       position: absolute;
       left: 50%;
@@ -2547,6 +2791,69 @@
       0% { opacity: .62; filter: drop-shadow(0 15px 15px rgba(0, 0, 0, .62)) drop-shadow(0 0 0 rgba(66, 255, 222, 0)) brightness(1.45); }
       52% { opacity: 1; filter: drop-shadow(0 15px 15px rgba(0, 0, 0, .62)) drop-shadow(0 0 22px rgba(66, 255, 222, .55)) brightness(1.18); }
       100% { opacity: 1; }
+    }
+
+    @keyframes fighterEvolutionLift {
+      0%, 100% { filter: none; }
+      26% { filter: drop-shadow(0 0 14px currentColor) brightness(1.1); }
+      58% { filter: drop-shadow(0 0 26px currentColor) brightness(1.18); }
+    }
+
+    @keyframes fighterEvolutionRadar {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.25) rotate(-24deg); }
+      18% { opacity: .86; }
+      68% { opacity: .7; transform: translate(-50%, -50%) scale(1.06) rotate(36deg); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.42) rotate(62deg); }
+    }
+
+    @keyframes fighterEvolutionScan {
+      0% { opacity: 0; transform: translate(-50%, -70%) scaleX(.48); }
+      18% { opacity: .9; }
+      74% { opacity: .56; transform: translate(-50%, -32%) scaleX(1); }
+      100% { opacity: 0; transform: translate(-50%, -18%) scaleX(.72); }
+    }
+
+    @keyframes mechaEvolutionBlue {
+      0% { transform: scaleX(-1) rotate(-4deg) translateX(-3px) translateY(0) scale(1); filter: drop-shadow(0 15px 15px rgba(0,0,0,.62)) saturate(1.08) brightness(1); }
+      16% { transform: scaleX(-1) rotate(-7deg) translateX(-3px) translateY(-7px) scale(1.04); filter: drop-shadow(0 15px 15px rgba(0,0,0,.62)) drop-shadow(0 0 24px rgba(119,243,255,.72)) saturate(1.28) brightness(1.32); }
+      46% { transform: scaleX(-1) rotate(-2deg) translateX(-3px) translateY(-11px) scale(1.1); filter: drop-shadow(0 18px 18px rgba(0,0,0,.56)) drop-shadow(0 0 34px rgba(255,214,92,.62)) saturate(1.35) brightness(1.22); }
+      72% { transform: scaleX(-1) rotate(-5deg) translateX(-3px) translateY(-3px) scale(1.03); }
+      100% { transform: scaleX(-1) rotate(-4deg) translateX(-3px) translateY(0) scale(1); }
+    }
+
+    @keyframes mechaEvolutionRed {
+      0% { transform: rotate(4deg) translateX(14px) translateY(0) scale(1); filter: drop-shadow(0 15px 15px rgba(0,0,0,.62)) saturate(1.08) brightness(1); }
+      16% { transform: rotate(7deg) translateX(14px) translateY(-7px) scale(1.04); filter: drop-shadow(0 15px 15px rgba(0,0,0,.62)) drop-shadow(0 0 24px rgba(255,122,88,.72)) saturate(1.28) brightness(1.32); }
+      46% { transform: rotate(2deg) translateX(14px) translateY(-11px) scale(1.1); filter: drop-shadow(0 18px 18px rgba(0,0,0,.56)) drop-shadow(0 0 34px rgba(255,214,92,.62)) saturate(1.35) brightness(1.22); }
+      72% { transform: rotate(5deg) translateX(14px) translateY(-3px) scale(1.03); }
+      100% { transform: rotate(4deg) translateX(14px) translateY(0) scale(1); }
+    }
+
+    @keyframes evoRingBurst {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.16) rotate(-20deg); }
+      16% { opacity: .92; }
+      62% { opacity: .72; transform: translate(-50%, -50%) scale(1.08) rotate(28deg); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.56) rotate(58deg); }
+    }
+
+    @keyframes evoScanColumn {
+      0% { opacity: 0; transform: translate(-50%, -74%) scaleX(.34); }
+      14% { opacity: .9; }
+      64% { opacity: .72; transform: translate(-50%, -38%) scaleX(1); }
+      100% { opacity: 0; transform: translate(-50%, -14%) scaleX(.55); }
+    }
+
+    @keyframes evoLabelRise {
+      0% { opacity: 0; transform: translate(-50%, 8px) scale(.82); }
+      18% { opacity: 1; transform: translate(-50%, -56px) scale(1); }
+      68% { opacity: 1; transform: translate(-50%, -64px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -78px) scale(.96); }
+    }
+
+    @keyframes evoShardFly {
+      0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(.35); }
+      15% { opacity: 1; }
+      100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(calc(var(--rot, 0deg) + 180deg)) scale(.92); }
     }
 
     @keyframes shellShake {
@@ -3136,17 +3443,18 @@
       }
 
       .action-hub {
-        position: absolute;
+        position: relative;
         z-index: 64;
-        top: 126px;
-        right: 18px;
+        top: auto;
+        right: auto;
         left: auto;
         width: auto;
         height: auto;
         transform: none;
-        display: block;
+        display: grid;
         justify-self: auto;
-        align-self: auto;
+        align-self: center;
+        margin-left: 5px;
       }
 
       .actions-button {
@@ -3169,7 +3477,24 @@
         transform-origin: top right;
       }
 
+      .hand-tray header .action-wheel {
+        z-index: 64;
+        left: auto;
+        right: 0;
+        top: 36px;
+        width: 300px;
+        height: 118px;
+        transform: none;
+        transform-origin: top right;
+      }
+
       .phone-shell.actions-open .status-strip .action-wheel {
+        opacity: 1;
+        transform: none;
+        pointer-events: none;
+      }
+
+      .phone-shell.actions-open .hand-tray header .action-wheel {
         opacity: 1;
         transform: none;
         pointer-events: none;
@@ -3494,7 +3819,7 @@
         padding: 7px 9px;
       }
 
-      .floating-message strong {
+      .floating-message > strong {
         font-size: 13px;
       }
 
@@ -3510,6 +3835,308 @@
         padding: 7px 12px;
         font-size: 12px;
       }
+    }
+    .phone-shell.hack-mode {
+      --blue-0: #3d6f32;
+      --blue-1: #244b28;
+      --blue-2: #280d16;
+      --blue-3: #090d09;
+      --cyan: #65ff8d;
+      --red: #ff3448;
+      --gold: #dfff63;
+      background:
+        radial-gradient(circle at 16% 10%, rgba(255, 52, 72, .40), transparent 19%),
+        radial-gradient(circle at 88% 4%, rgba(101, 255, 141, .28), transparent 22%),
+        repeating-linear-gradient(90deg, rgba(101, 255, 141, .08) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, #7a3442 0%, #402331 43%, #12371f 100%);
+      box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, .20),
+        inset 0 -10px 0 rgba(31, 4, 11, .58),
+        inset 0 0 0 2px rgba(101, 255, 141, .38),
+        0 0 0 2px rgba(255, 52, 72, .34),
+        0 24px 70px rgba(0, 0, 0, .72);
+      animation: hackShellJitter 6.4s steps(1, end) infinite;
+    }
+
+    .phone-shell.hack-mode::before {
+      border-color: rgba(15, 48, 20, .88);
+      box-shadow:
+        inset 0 0 0 1px rgba(101, 255, 141, .38),
+        0 0 26px rgba(255, 52, 72, .22);
+    }
+
+    .phone-shell.hack-mode::after {
+      opacity: .34;
+      background-image:
+        linear-gradient(180deg, transparent 0 44%, rgba(255, 52, 72, .30) 48%, rgba(101, 255, 141, .20) 52%, transparent 58%),
+        repeating-linear-gradient(180deg, rgba(101, 255, 141, .14) 0 1px, transparent 1px 5px),
+        radial-gradient(circle, rgba(255, 255, 255, .9) 0 1px, transparent 1.4px);
+      background-size: auto, auto, 31px 37px;
+      mix-blend-mode: screen;
+      animation: hackScanLines 2.8s linear infinite, hackLayerTwitch 7.4s steps(1, end) infinite;
+    }
+
+    .phone-shell.hack-mode .brand-plate,
+    .phone-shell.hack-mode .meter-pill,
+    .phone-shell.hack-mode .combat-screen,
+    .phone-shell.hack-mode .tab-sprite,
+    .phone-shell.hack-mode .hand-panel,
+    .phone-shell.hack-mode .board-drawer,
+    .phone-shell.hack-mode .actions-button,
+    .phone-shell.hack-mode .quick-modify-button,
+    .phone-shell.hack-mode .floating-message {
+      border-color: rgba(101, 255, 141, .58);
+      filter: saturate(1.18) contrast(1.05);
+      box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, .18),
+        inset 0 0 24px rgba(101, 255, 141, .08),
+        0 0 0 1px rgba(255, 52, 72, .24),
+        0 0 20px rgba(101, 255, 141, .13);
+    }
+
+    .phone-shell.hack-mode .brand-plate,
+    .phone-shell.hack-mode .meter-pill,
+    .phone-shell.hack-mode .tab-sprite,
+    .phone-shell.hack-mode .hand-panel,
+    .phone-shell.hack-mode .board-drawer {
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, .13), transparent 36%),
+        repeating-linear-gradient(90deg, rgba(101, 255, 141, .06) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, rgba(89, 18, 31, .96), rgba(15, 45, 23, .97));
+    }
+
+    .phone-shell.hack-mode .combat-screen {
+      background:
+        linear-gradient(103deg, rgba(101, 255, 141, .18) 0 47%, rgba(0, 0, 0, .34) 47.4% 52.6%, rgba(255, 52, 72, .24) 53% 100%),
+        linear-gradient(rgba(101, 255, 141, .10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 52, 72, .08) 1px, transparent 1px),
+        radial-gradient(circle at 28% 38%, rgba(101, 255, 141, .14), transparent 38%),
+        radial-gradient(circle at 76% 42%, rgba(255, 52, 72, .18), transparent 36%),
+        #101a12;
+      background-size: auto, 24px 24px, 24px 24px, auto, auto, auto;
+      animation: hackPanelPulse 4.8s steps(1, end) infinite;
+    }
+
+    .phone-shell.hack-mode .combat-screen::after {
+      content: "ARGOS // FUEL LOCK // ERROR 0x4B";
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 10px;
+      z-index: 6;
+      padding: 5px 8px;
+      border: 1px solid rgba(101, 255, 141, .44);
+      border-radius: 8px;
+      color: #dfff63;
+      background: rgba(17, 4, 8, .72);
+      font: 900 10px/1 "Courier New", monospace;
+      letter-spacing: .08em;
+      text-align: center;
+      box-shadow: 0 0 16px rgba(255, 52, 72, .18), inset 0 0 12px rgba(101, 255, 141, .08);
+      pointer-events: none;
+    }
+
+    .phone-shell.hack-mode .fighter-red header,
+    .phone-shell.hack-mode .fighter-blue header,
+    .phone-shell.hack-mode .drawer-title,
+    .phone-shell.hack-mode .tab-sprite.is-active {
+      text-shadow:
+        2px 0 0 rgba(101, 255, 141, .34),
+        -2px 0 0 rgba(255, 52, 72, .30),
+        0 0 12px rgba(255, 52, 72, .22);
+    }
+
+    .phone-shell.hack-mode .fighter-red img,
+    .phone-shell.hack-mode .fighter-blue img {
+      filter: drop-shadow(0 0 16px rgba(101, 255, 141, .18)) drop-shadow(0 0 18px rgba(255, 52, 72, .18)) saturate(1.1);
+      animation: hackMechaGlitch 5.2s steps(1, end) infinite;
+    }
+
+    .phone-shell.hack-mode .fighter-red .stats-card,
+    .phone-shell.hack-mode .fighter-blue .stats-card {
+      background: linear-gradient(180deg, rgba(32, 5, 12, .88), rgba(3, 20, 9, .92));
+      border-color: rgba(101, 255, 141, .36);
+    }
+
+    .hack-intrusion {
+      position: absolute;
+      z-index: 120;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255, 52, 72, .34), transparent 35%),
+        radial-gradient(circle at 50% 52%, rgba(101, 255, 141, .16), transparent 46%),
+        repeating-linear-gradient(180deg, rgba(101, 255, 141, .10) 0 1px, transparent 1px 6px),
+        rgba(20, 4, 10, .70);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .16s ease, visibility .16s ease;
+    }
+
+    .phone-shell.hack-gated .hack-intrusion {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .hack-card {
+      position: relative;
+      width: min(340px, 92%);
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      padding: 24px 18px 20px;
+      border: 3px solid rgba(101, 255, 141, .72);
+      border-radius: 18px;
+      color: #f4fff5;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, .10), transparent 36%),
+        repeating-linear-gradient(90deg, rgba(101, 255, 141, .08) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, rgba(95, 15, 27, .98), rgba(14, 38, 18, .98));
+      box-shadow:
+        0 22px 48px rgba(0, 0, 0, .55),
+        0 0 34px rgba(255, 52, 72, .28),
+        inset 0 0 26px rgba(101, 255, 141, .10);
+      text-align: center;
+      overflow: hidden;
+      animation: hackGateCard .72s cubic-bezier(.18,.82,.2,1) both, hackGateVibrate 2.2s steps(1, end) infinite .8s;
+    }
+
+    .hack-card::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background:
+        linear-gradient(180deg, transparent 0 42%, rgba(255, 52, 72, .24) 48%, rgba(101, 255, 141, .18) 52%, transparent 60%),
+        repeating-linear-gradient(180deg, rgba(255,255,255,.06) 0 1px, transparent 1px 5px);
+      animation: hackScanLines 1.45s linear infinite;
+      pointer-events: none;
+    }
+
+    .hack-skull,
+    .hack-kicker,
+    .hack-title,
+    .hack-subtitle,
+    .hack-copy,
+    .hack-card button {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hack-skull {
+      display: grid;
+      place-items: center;
+      width: 72px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 89, 105, .78);
+      color: #27050b;
+      background: radial-gradient(circle, #fff2f3, #ff6575 54%, #5c111e 82%);
+      font-size: 42px;
+      box-shadow: 0 0 24px rgba(255, 52, 72, .32), 0 0 24px rgba(101, 255, 141, .16);
+    }
+
+    .hack-kicker {
+      color: #82ff9f;
+      font-size: 12px;
+      font-weight: 1000;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .hack-title {
+      margin: 0;
+      color: #fff7f8;
+      font: 1000 clamp(32px, 9vw, 50px)/.9 Impact, "Arial Black", sans-serif;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      text-shadow: 3px 0 0 rgba(101, 255, 141, .28), -3px 0 0 rgba(255, 52, 72, .30);
+    }
+
+    .hack-subtitle,
+    .hack-copy {
+      margin: 0;
+      color: #dffff0;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .hack-subtitle {
+      color: #ffb9c1;
+      letter-spacing: .08em;
+    }
+
+    .hack-copy {
+      font-size: 12px;
+      line-height: 1.32;
+      text-transform: none;
+    }
+
+    .hack-card button {
+      min-height: 40px;
+      padding: 7px 12px;
+      border: 2px solid rgba(101, 255, 141, .78);
+      border-radius: 999px;
+      color: #06180c;
+      background: linear-gradient(180deg, #b4ffb8, #37dd66 56%, #11692e);
+      font-size: 12px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.42), 0 5px 0 rgba(3, 34, 16, .78), 0 0 18px rgba(101, 255, 141, .20);
+    }
+
+    @keyframes hackShellJitter {
+      0%, 76%, 81%, 100% { transform: translate(0, 0); }
+      77% { transform: translate(2px, -1px); }
+      78% { transform: translate(-3px, 1px); }
+      79% { transform: translate(1px, 2px); }
+      80% { transform: translate(0, -1px); }
+      92% { transform: translate(-2px, 0); }
+      93% { transform: translate(2px, 1px); }
+    }
+
+    @keyframes hackScanLines {
+      0% { transform: translateY(-56%); opacity: .20; }
+      18% { opacity: .84; }
+      100% { transform: translateY(56%); opacity: .22; }
+    }
+
+    @keyframes hackLayerTwitch {
+      0%, 72%, 76%, 100% { transform: translate(0, 0); filter: none; }
+      73% { transform: translate(4px, -2px); filter: contrast(1.25) saturate(1.4); }
+      74% { transform: translate(-5px, 2px); filter: hue-rotate(22deg) saturate(.8); }
+      75% { transform: translate(2px, 1px); filter: none; }
+    }
+
+    @keyframes hackPanelPulse {
+      0%, 82%, 86%, 100% { filter: none; }
+      83% { filter: brightness(1.18) saturate(1.4); }
+      84% { filter: hue-rotate(24deg) contrast(1.22); }
+      85% { filter: none; }
+    }
+
+    @keyframes hackMechaGlitch {
+      0%, 70%, 75%, 100% { transform: translate(0, 0) scale(1); }
+      71% { transform: translate(3px, -2px) scale(1.015); filter: hue-rotate(30deg) saturate(1.5); }
+      72% { transform: translate(-4px, 2px) scale(.99); filter: hue-rotate(-20deg) contrast(1.25); }
+      73% { transform: translate(2px, 1px) scale(1.01); }
+    }
+
+    @keyframes hackGateCard {
+      0% { opacity: 0; transform: translateY(18px) scale(.92) skewX(-3deg); filter: blur(8px) saturate(.6); }
+      28% { opacity: 1; transform: translateY(-5px) scale(1.04) skewX(2deg); filter: blur(0) saturate(1.6); }
+      54% { transform: translateY(3px) scale(.98) skewX(-1deg); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: none; }
+    }
+
+    @keyframes hackGateVibrate {
+      0%, 84%, 89%, 100% { transform: translate(0, 0); }
+      85% { transform: translate(3px, -2px); }
+      86% { transform: translate(-3px, 2px); }
+      87% { transform: translate(2px, 1px); }
     }
   </style>
 </head>
@@ -3550,23 +4177,6 @@
         <span class="metric-icon fuel-spade-icon" aria-hidden="true">♠</span>
         <div><small>Fuel x2 ♠</small><strong data-selected-fuel-value>0→0</strong></div>
       </article>
-
-      <div class="action-hub" aria-label="Acciones de partida">
-        <button class="actions-button" type="button" data-action-toggle aria-expanded="false">Acciones</button>
-        <div class="action-wheel" role="menu">
-          <button class="wheel-action" style="--x:-82px;--y:-78px" type="button" data-action="figures">2 Fig.</button>
-          <button class="wheel-action" style="--x:-82px;--y:-45px" type="button" data-action="draw">Robar ♦</button>
-          <button class="wheel-action primary" style="--x:0px;--y:-51px" type="button" data-action="attack-mode">Atacar</button>
-          <button class="wheel-action primary attack-confirm-action" style="--x:89px;--y:-51px" type="button" data-action="confirm">Confirmar</button>
-          <button class="wheel-action modify" style="--x:100px;--y:-8px" type="button" data-action="modify">MODIFICAR</button>
-          <button class="wheel-action" style="--x:78px;--y:32px" type="button" data-action="projectile">Modo Proy.</button>
-          <button class="wheel-action" style="--x:108px;--y:66px" type="button" data-action="projectile-only">Solo Proy.</button>
-          <button class="wheel-action" style="--x:0px;--y:47px" type="button" data-action="pass">Pasar</button>
-          <button class="wheel-action defense" style="--x:-94px;--y:30px" type="button" data-action="defend">Defender</button>
-          <button class="wheel-action defense" style="--x:-112px;--y:-8px" type="button" data-action="skip-defense">No Def.</button>
-          <button class="wheel-action utility" style="--x:0px;--y:0px" type="button" data-action="clear">Limpiar</button>
-        </div>
-      </div>
     </section>
     <section class="left-guidance-box" data-left-guidance aria-label="Indicaciones de tutorial y combate"></section>
     <button class="quick-modify-button" type="button" data-action="modify">Modificar</button>
@@ -3584,8 +4194,9 @@
 
       <div class="message-stack">
         <article class="floating-message tutorial" data-tutorial-message>
-          <strong>Tutorial activo</strong>
+          <strong data-tutorial-title>Tutorial activo</strong>
           <span data-tutorial-text></span>
+          <div class="message-actions" data-tutorial-actions></div>
         </article>
         <article class="floating-message alert" data-alert-message>
           <strong data-alert-title></strong>
@@ -3658,6 +4269,21 @@
     <section class="hand-tray" aria-label="Mano">
       <header>
         <button class="hand-title-button" type="button" data-hand-overview-toggle aria-expanded="false">▱ Mano</button>
+        <div class="action-hub" aria-label="Acciones de partida">
+          <button class="actions-button" type="button" data-action-toggle aria-expanded="false">Acciones</button>
+          <div class="action-wheel" role="menu">
+            <button class="wheel-action" style="--x:-82px;--y:-78px" type="button" data-action="figures">2 Fig.</button>
+            <button class="wheel-action" style="--x:-82px;--y:-45px" type="button" data-action="draw">Robar ♦</button>
+            <button class="wheel-action primary" style="--x:0px;--y:-51px" type="button" data-action="attack-mode">Atacar</button>
+            <button class="wheel-action primary attack-confirm-action" style="--x:89px;--y:-51px" type="button" data-action="confirm">Confirmar</button>
+            <button class="wheel-action" style="--x:78px;--y:32px" type="button" data-action="projectile">Modo Proy.</button>
+            <button class="wheel-action" style="--x:108px;--y:66px" type="button" data-action="projectile-only">Solo Proy.</button>
+            <button class="wheel-action" style="--x:0px;--y:47px" type="button" data-action="pass">Pasar</button>
+            <button class="wheel-action defense" style="--x:-94px;--y:30px" type="button" data-action="defend">Defender</button>
+            <button class="wheel-action defense" style="--x:-112px;--y:-8px" type="button" data-action="skip-defense">No Def.</button>
+            <button class="wheel-action utility" style="--x:0px;--y:0px" type="button" data-action="clear">Limpiar</button>
+          </div>
+        </div>
       </header>
       <strong class="hand-count-badge" data-hand-count>0/18</strong>
       <button class="hand-modify-button floating-modify-button" type="button" data-action="modify">Modificar</button>
@@ -3667,6 +4293,17 @@
       <button class="side-arrow left" type="button" data-hand-shift="-1" aria-label="Cartas anteriores">‹</button>
       <div class="cards" data-hand-cards></div>
       <button class="side-arrow right" type="button" data-hand-shift="1" aria-label="Cartas siguientes">›</button>
+    </section>
+
+    <section class="hack-intrusion" data-hack-intrusion aria-hidden="true">
+      <article class="hack-card">
+        <div class="hack-skull" aria-hidden="true">!</div>
+        <div class="hack-kicker" data-hack-kicker>Intrusion de Argos</div>
+        <h2 class="hack-title" data-hack-title>HAS SIDO HACKEADO</h2>
+        <p class="hack-subtitle" data-hack-subtitle>Combustible normal bloqueado</p>
+        <p class="hack-copy" data-hack-copy>Confirma la contraorden para recuperar el control tactico.</p>
+        <button type="button" data-hack-continue>Tengo un As bajo la manga</button>
+      </article>
     </section>
 
     <div class="toast" data-toast></div>
@@ -3727,6 +4364,14 @@
     const attackLabel = document.querySelector("[data-attack-label]");
     const attackSpecialOverlay = document.querySelector("[data-attack-special-overlay]");
     const attackSpecialVideo = document.querySelector("[data-attack-special-video]");
+    const hackIntrusion = document.querySelector("[data-hack-intrusion]");
+    const hackTitle = document.querySelector("[data-hack-title]");
+    const hackSubtitle = document.querySelector("[data-hack-subtitle]");
+    const hackCopy = document.querySelector("[data-hack-copy]");
+    const hackContinue = document.querySelector("[data-hack-continue]");
+    const mechaBuildSignatures = new Map();
+    const mechaEvolutionTimers = new Map();
+    const mechaEvolutionLastAt = new Map();
     const audio = new Audio("../assets/audio_menu_cyberpunk_city.mp3");
     audio.loop = true;
     audio.volume = 0.22;
@@ -3765,8 +4410,12 @@
       players: [],
       bridgeDraftPlacements: {},
       bridgeActions: {},
+      bridgeTutorialTitle: "",
       bridgeTutorialText: "",
-      bridgeTutorialMeta: ""
+      bridgeTutorialHtml: "",
+      bridgeTutorialMeta: "",
+      bridgeTutorialActions: [],
+      argosHack: null
     };
 
     function makeCard(rank, suit, idSuffix = "") {
@@ -4062,6 +4711,83 @@
       }
     }
 
+    function hapticPulse(pattern = [10, 18, 10]) {
+      try {
+        if (navigator.vibrate && !prefersReducedMotion()) navigator.vibrate(pattern);
+      } catch (_error) {}
+    }
+
+    function getMechaEvolutionPoint(index = 0) {
+      const target = mechaNode(index) || fighterNode(index);
+      const host = shell.getBoundingClientRect();
+      if (!target) return { x: host.width / 2, y: host.height * .36, target: shell };
+      const rect = target.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width * .5 - host.left,
+        y: rect.top + rect.height * .46 - host.top,
+        target
+      };
+    }
+
+    function appendEvolutionNode(className, x, y, color, extra = {}) {
+      if (!fxLayer) return null;
+      const node = document.createElement("div");
+      node.className = className;
+      node.style.setProperty("--x", `${x}px`);
+      node.style.setProperty("--y", `${y}px`);
+      node.style.setProperty("--evo-color", color);
+      Object.entries(extra).forEach(([key, value]) => node.style.setProperty(key, value));
+      fxLayer.appendChild(node);
+      node.addEventListener("animationend", () => node.remove(), { once: true });
+      return node;
+    }
+
+    function spawnEvolutionFx(index = 0, { complete = false, label = "" } = {}) {
+      if (!fxLayer || prefersReducedMotion()) return;
+      const { x, y, target } = getMechaEvolutionPoint(index);
+      const color = complete ? "#ffd65c" : (index === 0 ? "#77f3ff" : "#ff7a58");
+      const host = shell.getBoundingClientRect();
+      const size = Math.max(112, Math.min(176, Math.min(host.width, host.height) * (host.width > host.height ? .34 : .42)));
+      appendEvolutionNode(`fx-evo-ring${complete ? " complete" : ""}`, x, y, color, { "--evo-size": `${size}px` });
+      appendEvolutionNode(`fx-evo-ring alt${complete ? " complete" : ""}`, x, y, color, { "--evo-size": `${Math.round(size * .72)}px` });
+      appendEvolutionNode("fx-evo-scan", x, y, color);
+      const badge = appendEvolutionNode("fx-evo-label", x, y, color);
+      if (badge) badge.textContent = label || (complete ? "Mecha completo" : "Evolucionando");
+      for (let i = 0; i < (complete ? 24 : 16); i += 1) {
+        const angle = (Math.PI * 2 * i / (complete ? 24 : 16)) + Math.random() * .34;
+        const distance = 44 + Math.random() * (complete ? 78 : 54);
+        appendEvolutionNode("fx-evo-shard", x, y, color, {
+          "--dx": `${Math.cos(angle) * distance}px`,
+          "--dy": `${Math.sin(angle) * distance}px`,
+          "--rot": `${Math.round(angle * 180 / Math.PI)}deg`,
+          "--size": `${5 + Math.random() * 6}px`,
+          "--dur": `${620 + Math.random() * 340}ms`
+        });
+      }
+      spawnSparksFromElement(target, complete ? "amber" : (index === 0 ? "cyan" : "red"), complete ? 28 : 20);
+    }
+
+    function playMechaEvolutionFx(index = 0, options = {}) {
+      const fighter = fighterNode(index);
+      const player = state.players[index];
+      const complete = !!options.complete || (player && playerCanAttack(player));
+      const label = options.label || (complete ? "Mecha completo" : "Mecha actualizado");
+      mechaEvolutionLastAt.set(index, Date.now());
+      if (fighter) {
+        fighter.classList.remove("evolution-burst", "evolution-complete");
+        void fighter.offsetWidth;
+        fighter.classList.add("evolution-burst");
+        fighter.classList.toggle("evolution-complete", complete);
+        window.clearTimeout(mechaEvolutionTimers.get(index));
+        mechaEvolutionTimers.set(index, window.setTimeout(() => {
+          fighter.classList.remove("evolution-burst", "evolution-complete");
+        }, complete ? 1180 : 1020));
+      }
+      spawnEvolutionFx(index, { complete, label });
+      pulseClass(shell, complete ? "screen-shake" : "shake", complete ? 760 : 420);
+      hapticPulse(complete ? [18, 24, 18, 36] : [10, 18, 10]);
+    }
+
     function showDamagePop(value, defenderIndex = 1, label = "") {
       if (!fxLayer || prefersReducedMotion()) return;
       const target = mechaNode(defenderIndex) || fighterNode(defenderIndex);
@@ -4181,7 +4907,12 @@
       runCompactAttackFx({ attackerIndex, damage, projectile });
     }
 
-    function animateModification(zone) {
+    function animateModification(zoneOrOptions = "attack") {
+      const options = typeof zoneOrOptions === "object" && zoneOrOptions
+        ? zoneOrOptions
+        : { zone: zoneOrOptions };
+      const zone = options.zone || "attack";
+      const playerIndex = Number.isInteger(options.playerIndex) ? options.playerIndex : 0;
       const zoneNode = document.querySelector(`[data-zone="${zone}"]`);
       const statMap = {
         attack: "[data-p1-attack]",
@@ -4201,7 +4932,11 @@
         statNode.classList.add("stat-pulse");
         window.setTimeout(() => statNode.classList.remove("stat-pulse"), 650);
       }
-      spawnSparksFromElement(zoneNode || mechaNode(0), zone === "fuel" ? "amber" : "green", 18);
+      spawnSparksFromElement(zoneNode || mechaNode(playerIndex), zone === "fuel" ? "amber" : "green", 18);
+      playMechaEvolutionFx(playerIndex, {
+        complete: !!options.complete,
+        label: options.text || (options.complete ? "Mecha listo" : "Montaje aplicado")
+      });
     }
 
     function getAttackReadiness() {
@@ -4231,7 +4966,7 @@
       }
       if (readiness.full && readiness.key && attackReadyCueKey !== readiness.key) {
         attackReadyCueKey = readiness.key;
-        showAttackSpecialPopup(0);
+        toast("Ataque completo listo. Pulsa Confirmar para ejecutarlo.");
       }
     }
 
@@ -4522,6 +5257,7 @@
     function applyBuildChanges() {
       if (EMBEDDED_REAL_GAME) {
         callRealGameBridge("action", { action: "modify" });
+        closePanelsForCombatFx();
         return;
       }
       if (!state.pendingBuildOps) {
@@ -4576,6 +5312,13 @@
       document.querySelector("[data-hand-overview-toggle]")?.setAttribute("aria-expanded", "false");
     }
 
+    function closePanelsForCombatFx() {
+      closeActions();
+      closeHandOverview();
+      closeBoard();
+      clearDropHints();
+    }
+
     function openClassicScrollMode() {
       if (EMBEDDED_REAL_GAME && callRealGameBridge("view", { mode: "scroll" })) return;
       window.location.href = new URL("../poker_combat_bot_ONLINE.html", window.location.href).href;
@@ -4590,7 +5333,7 @@
           toast("La defensa solo acepta 1 diamante numerico de la mano.");
           return;
         }
-        state.selected = [cardId];
+        state.selected = state.selected.includes(cardId) ? [] : [cardId];
         render();
         return;
       }
@@ -5130,6 +5873,10 @@
           openBoard("mecha");
         }
         callRealGameBridge("action", { action });
+        if (["modify", "confirm", "defend", "skip-defense"].includes(action)) {
+          closePanelsForCombatFx();
+          return;
+        }
         if (["attack-mode", "projectile", "projectile-only"].includes(action)) {
           shell.classList.add("actions-open");
           document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", "true");
@@ -5283,6 +6030,16 @@
       return MECHA_IMAGES.base;
     }
 
+    function getMechaBuildSignature(player, nextSrc) {
+      if (!player) return "";
+      const coreIds = ["pilot", "copilot", "booster"].map((slot) => player.core?.[slot]?.id || "-").join("|");
+      const moduleIds = ["attack", "defense", "armor", "fuel"]
+        .map((zone) => (player[zone] || []).map((card) => card.id).join(","))
+        .join("|");
+      const build = getBuildProgress(player);
+      return `${nextSrc}|${coreIds}|${moduleIds}|${build.percent}|${playerCanAttack(player) ? "ready" : "build"}`;
+    }
+
     function renderMechaBuild(player, index) {
       const node = document.querySelector(`[data-mecha-img="${index}"]`);
       const miniNodes = [...document.querySelectorAll(`[data-mecha-mini-img="${index}"]`)];
@@ -5290,8 +6047,14 @@
       const nextSrc = getMechaPhaseImage(player);
       const fighter = node?.closest(".fighter");
       const ready = playerCanAttack(player);
+      const nextSignature = getMechaBuildSignature(player, nextSrc);
+      const previousSignature = mechaBuildSignatures.get(index);
+      const shouldEvolve = !!previousSignature && previousSignature !== nextSignature;
+      mechaBuildSignatures.set(index, nextSignature);
+      let imageChanged = false;
       [node, ...miniNodes].filter(Boolean).forEach((image) => {
         if (image.getAttribute("src") !== nextSrc) {
+          imageChanged = true;
           image.setAttribute("src", nextSrc);
           image.classList.remove("is-evolving");
           void image.offsetWidth;
@@ -5299,7 +6062,14 @@
         }
         image.classList.toggle("ready", ready);
       });
-      if (node?.classList.contains("is-evolving")) {
+      const recentManualFx = Date.now() - (mechaEvolutionLastAt.get(index) || 0) < 1600;
+      if (shouldEvolve && !recentManualFx) {
+        const progress = getBuildProgress(player);
+        playMechaEvolutionFx(index, {
+          complete: ready,
+          label: ready ? "Mecha listo" : `${progress.percent}% construcción`
+        });
+      } else if (imageChanged && node) {
         spawnSparksFromElement(node, index === 0 ? "cyan" : "red", 12);
       }
       fighter?.classList.toggle("is-ready", ready);
@@ -5580,7 +6350,43 @@
       }
     }
 
-    function renderLeftGuidance(tutorialCopy = "", alertTitle = "", alertCopy = "") {
+    function getTutorialActionList() {
+      return Array.isArray(state.bridgeTutorialActions) ? state.bridgeTutorialActions : [];
+    }
+
+    function renderTutorialActionButtons(container, actions = getTutorialActionList()) {
+      if (!container) return;
+      container.innerHTML = "";
+      actions.forEach((action) => {
+        if (!action || !action.id) return;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = action.label || "Entendido";
+        button.dataset.tutorialAction = action.id;
+        if (action.kind === "secondary") button.classList.add("secondary");
+        container.appendChild(button);
+      });
+      container.hidden = container.children.length === 0;
+    }
+
+    function setTutorialBody(node, text = "", html = "") {
+      if (!node) return;
+      if (html) node.innerHTML = html;
+      else node.textContent = text;
+    }
+
+    function handleTutorialAction(action) {
+      if (!action) return;
+      if (EMBEDDED_REAL_GAME) {
+        callRealGameBridge("tutorialAction", { action });
+        return;
+      }
+      if (action === "academy-definition-ack") {
+        showToast("Fase entendida.");
+      }
+    }
+
+    function renderLeftGuidance(tutorialCopy = "", alertTitle = "", alertCopy = "", tutorialHtml = "") {
       const box = document.querySelector("[data-left-guidance]");
       if (!box) return;
       box.replaceChildren();
@@ -5595,10 +6401,17 @@
         line.textContent = text;
         lines.appendChild(line);
       };
+      const addHtmlLine = (html) => {
+        const line = document.createElement("p");
+        line.className = "guidance-line";
+        line.innerHTML = html;
+        lines.appendChild(line);
+      };
 
       if (state.tutorial && tutorialCopy) {
-        title.textContent = "Tutorial";
-        addLine(tutorialCopy);
+        title.textContent = state.bridgeTutorialMeta || "Tutorial";
+        if (tutorialHtml) addHtmlLine(tutorialHtml);
+        else addLine(tutorialCopy);
         if (alertTitle && alertCopy) addLine(`${alertTitle}: ${alertCopy}`);
       } else if (alertTitle && alertCopy) {
         title.textContent = alertTitle;
@@ -5611,32 +6424,63 @@
       }
 
       box.append(title, lines);
+      if (state.tutorial && getTutorialActionList().length) {
+        const actions = document.createElement("div");
+        actions.className = "guidance-actions message-actions";
+        renderTutorialActionButtons(actions);
+        box.appendChild(actions);
+      }
     }
 
     function renderMessages() {
       const tutorial = document.querySelector("[data-tutorial-message]");
       const tutorialText = document.querySelector("[data-tutorial-text]");
-      tutorial.classList.toggle("show", state.tutorial);
+      const tutorialTitle = document.querySelector("[data-tutorial-title]");
+      const tutorialActions = document.querySelector("[data-tutorial-actions]");
+      const landscape = isLandscapeLayout();
+      tutorial.classList.toggle("show", state.tutorial && !landscape);
       let tutorialCopy = "";
+      let tutorialHtml = "";
       let alertTitle = "";
       let alertCopy = "";
       if (EMBEDDED_REAL_GAME && (state.bridgeTutorialText || state.bridgeTutorialMeta)) {
         tutorialCopy = state.bridgeTutorialText || "Sistema preparado.";
-        tutorialText.textContent = tutorialCopy;
+        tutorialHtml = state.bridgeTutorialHtml || "";
+        if (tutorialTitle) tutorialTitle.textContent = state.bridgeTutorialTitle || state.bridgeTutorialMeta || "Tutorial activo";
+        setTutorialBody(tutorialText, tutorialCopy, tutorialHtml);
+        renderTutorialActionButtons(tutorialActions);
         const alert = document.querySelector("[data-alert-message]");
         if (state.pendingDefense) {
-          alertTitle = "Ataque entrante";
-          alertCopy = state.bridgeTutorialMeta || "Resuelve la defensa desde Acciones.";
+          const defender = state.players[state.pendingDefense.defenderIndex] || state.players[0];
+          const diamonds = defender?.hand?.filter(isNumericDiamond) || [];
+          alertTitle = state.pendingDefense.defenderIndex === 0 ? "Ataque enemigo previsto" : "Ventana de defensa rival";
+          alertCopy = state.pendingDefense.defenderIndex === 0
+            ? `¡ESQUÍVALO con tus diamantes en mano! Ataque ${state.pendingDefense.totalAttack || 0}. Elige 1♦ numérico o pulsa “No defender”.`
+            : `El rival evalua defensa contra ataque ${state.pendingDefense.totalAttack || 0}.`;
           document.querySelector("[data-alert-title]").textContent = alertTitle;
           document.querySelector("[data-alert-text]").textContent = alertCopy;
-          document.querySelector("[data-alert-actions]").innerHTML = "";
-          alert.classList.add("show");
+          const actions = document.querySelector("[data-alert-actions]");
+          actions.innerHTML = "";
+          if (state.pendingDefense.defenderIndex === 0 && diamonds.length) {
+            const defend = document.createElement("button");
+            defend.type = "button";
+            defend.textContent = "Seleccionar diamantes";
+            defend.dataset.defenseAction = "confirm";
+            const skip = document.createElement("button");
+            skip.type = "button";
+            skip.textContent = "No defender";
+            skip.dataset.defenseAction = "skip";
+            actions.append(defend, skip);
+          }
+          alert.classList.toggle("show", !landscape);
         } else {
           alert.classList.remove("show");
         }
-        renderLeftGuidance(tutorialCopy, alertTitle, alertCopy);
+        renderLeftGuidance(tutorialCopy, alertTitle, alertCopy, tutorialHtml);
         return;
       }
+      if (tutorialTitle) tutorialTitle.textContent = "Tutorial activo";
+      renderTutorialActionButtons(tutorialActions, []);
       if (state.pendingDefense) {
         const defender = state.players[state.pendingDefense.defenderIndex];
         const diamonds = defender.hand.filter(isNumericDiamond);
@@ -5658,7 +6502,7 @@
         if (state.pendingDefense.defenderIndex === 0 && diamonds.length) {
           const defend = document.createElement("button");
           defend.type = "button";
-          defend.textContent = "Defender";
+          defend.textContent = "Seleccionar diamantes";
           defend.dataset.defenseAction = "confirm";
           const skip = document.createElement("button");
           skip.type = "button";
@@ -5666,7 +6510,7 @@
           skip.dataset.defenseAction = "skip";
           actions.append(defend, skip);
         }
-        alert.classList.add("show");
+        alert.classList.toggle("show", !landscape);
       } else {
         document.querySelector("[data-alert-message]").classList.remove("show");
         if (state.projectileOnlyMode) tutorialCopy = "Solo proyectil: selecciona una pica instalada. No consume fuel.";
@@ -5678,7 +6522,7 @@
       renderLeftGuidance(tutorialCopy, alertTitle, alertCopy);
     }
 
-    function renderActions() {
+	    function renderActions() {
       document.querySelectorAll(".tab-sprite").forEach((button) => {
         button.classList.toggle("is-active", button.dataset.tab === state.activeTab);
       });
@@ -5726,17 +6570,32 @@
           button.disabled = !enabled;
         });
       });
-      syncAttackReadiness();
+	      syncAttackReadiness();
+	    }
+
+    function renderHackMode() {
+      const hack = state.argosHack && state.argosHack.active ? state.argosHack : null;
+      shell.classList.toggle("hack-mode", !!hack);
+      shell.classList.toggle("hack-gated", !!hack?.gated);
+      if (hackIntrusion) {
+        hackIntrusion.hidden = !hack?.gated;
+        hackIntrusion.setAttribute("aria-hidden", hack?.gated ? "false" : "true");
+      }
+      if (!hack) return;
+      if (hackTitle) hackTitle.textContent = hack.title || "HAS SIDO HACKEADO";
+      if (hackSubtitle) hackSubtitle.textContent = hack.subtitle || "Combustible normal bloqueado";
+      if (hackCopy) hackCopy.textContent = hack.message || "Argos ha tomado el panel tactico.";
     }
 
-    function render() {
-      renderStats();
-      renderMechas();
-      renderHand();
-      renderBoard();
-      renderMessages();
-      renderActions();
-    }
+	    function render() {
+	      renderStats();
+	      renderMechas();
+	      renderHand();
+	      renderBoard();
+	      renderMessages();
+	      renderActions();
+      renderHackMode();
+	    }
 
     function isTouchPointer(event) {
       return event.pointerType === "touch"
@@ -5857,6 +6716,7 @@
 
     function visibleControlButtonAt(event) {
       const direct = event.target.closest?.("button") || null;
+      if (direct?.classList?.contains("card")) return direct;
       if (!isLandscapeLayout() || typeof event.clientX !== "number" || typeof event.clientY !== "number") return direct;
 
       const x = event.clientX;
@@ -5964,8 +6824,12 @@
       state.selectedFuelText = snapshot.selectedFuelText || "";
       state.bridgeDraftPlacements = snapshot.bridgeDraftPlacements || {};
       state.bridgeActions = snapshot.bridgeActions || {};
+      state.bridgeTutorialTitle = snapshot.bridgeTutorialTitle || "";
       state.bridgeTutorialText = snapshot.bridgeTutorialText || "";
+      state.bridgeTutorialHtml = snapshot.bridgeTutorialHtml || "";
       state.bridgeTutorialMeta = snapshot.bridgeTutorialMeta || "";
+      state.bridgeTutorialActions = Array.isArray(snapshot.bridgeTutorialActions) ? snapshot.bridgeTutorialActions : [];
+      state.argosHack = snapshot.argosHack && snapshot.argosHack.active ? snapshot.argosHack : null;
       state.log = Array.isArray(snapshot.log) ? snapshot.log.slice(0, 60) : [];
       render();
     }
@@ -5992,7 +6856,7 @@
       if (data.source !== "pocobot-real-game") return;
       if (data.type === "snapshot") applyRealGameSnapshot(data.snapshot || {});
       if (data.type === "attackFx") playAttackFx(data.payload || {});
-      if (data.type === "modifyFx") animateModification(data.zone || "attack");
+      if (data.type === "modifyFx") animateModification(data.payload || data.zone || "attack");
       if (data.type === "toast") toast(data.text || "");
     });
 
@@ -6035,6 +6899,14 @@
     document.addEventListener("click", (event) => {
       const button = visibleControlButtonAt(event);
       const zone = event.target.closest(".drop-zone");
+      const overviewCard = event.target.closest(".hand-overview .card[data-card-id]");
+      if (overviewCard && shell.classList.contains("hand-overview-open")) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeActions();
+        toggleSelected(overviewCard.dataset.cardId);
+        return;
+      }
       if (button?.dataset.cardId && Date.now() < suppressCardClickUntil) {
         event.preventDefault();
         event.stopPropagation();
@@ -6061,6 +6933,13 @@
       }
       if (!button) {
         if (!event.target.closest(".action-hub")) closeActions();
+        return;
+      }
+      if (button.dataset.hackContinue !== undefined) {
+        hapticPulse([18, 24, 18]);
+        callRealGameBridge("hackGate", { action: "resolve" });
+        if (state.argosHack) state.argosHack = { ...state.argosHack, gated: false };
+        render();
         return;
       }
       if (button.dataset.classicScroll !== undefined) {
@@ -6130,6 +7009,7 @@
         if (EMBEDDED_REAL_GAME) handleAction("skip-defense");
         else skipDefense();
       }
+      if (button.dataset.tutorialAction) handleTutorialAction(button.dataset.tutorialAction);
     });
 
     document.addEventListener("dragstart", (event) => {

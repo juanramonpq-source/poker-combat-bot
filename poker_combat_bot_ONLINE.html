@@ -3559,10 +3559,10 @@ body.victory .frame{
 }
 .pro-turn-splash.player-1 .pro-turn-kicker{ color:#ffb49e; }
 @keyframes proTurnSplash{
-  0%{opacity:0; transform:translate(-50%, -44%) scale(.74); filter:blur(8px)}
-  18%{opacity:1; transform:translate(-50%, -50%) scale(1.06); filter:blur(0)}
-  42%,70%{opacity:1; transform:translate(-50%, -50%) scale(1)}
-  100%{opacity:0; transform:translate(-50%, -58%) scale(.94); filter:blur(3px)}
+  0%{opacity:0; transform:translate(-50%, -44%) scale(.74); filter:none}
+  18%{opacity:1; transform:translate(-50%, -50%) scale(1.06); filter:none}
+  42%,70%{opacity:1; transform:translate(-50%, -50%) scale(1); filter:none}
+  100%{opacity:0; transform:translate(-50%, -58%) scale(.94); filter:none}
 }
 @keyframes proTurnSweep{
   0%{opacity:0; transform:skewX(-20deg) translateX(-72%)}
@@ -8646,6 +8646,10 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   overflow:hidden;
 }
 
+.compact-hand-overview{
+  display:none;
+}
+
 .compact-tutorial-panel{
   display:grid;
   grid-template-rows:auto auto minmax(0, 1fr) auto;
@@ -10612,6 +10616,7 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   .app.mobile-compact-mode .compact-hand-overview,
   .app.mobile-pc-compact-mode .compact-hand-overview,
   .app.mobile-panorama-mode .compact-hand-overview{
+    display:block;
     position:absolute;
     z-index:220;
     left:8px;
@@ -15097,6 +15102,7 @@ body.story-argos-hack-ui{
   }
 
   body.mobile-compact-mode .compact-hand-overview{
+    display:block !important;
     position:absolute !important;
     z-index:70 !important;
     left:8px !important;
@@ -15649,6 +15655,7 @@ body.story-argos-hack-ui{
   }
 
   body.mobile-pc-compact-mode .compact-hand-overview{
+    display:block !important;
     position:absolute !important;
     z-index:90 !important;
     right:0 !important;
@@ -16993,6 +17000,11 @@ body.story-argos-hack-gated{
   display:none !important;
 }
 
+body.mobile-sprite-hud-active .story-argos-hack-gate{
+  display:none !important;
+  pointer-events:none !important;
+}
+
 .story-argos-hack-gate-card{
   position:relative;
   width:min(760px, 94vw);
@@ -17124,6 +17136,42 @@ body.story-argos-hack-gated{
     white-space:normal !important;
     line-height:1.12 !important;
     padding:10px 18px !important;
+  }
+}
+
+@media (max-height: 480px) and (orientation: landscape){
+  .story-argos-hack-gate{
+    padding:8px 14px;
+  }
+  .story-argos-hack-gate-card{
+    width:min(720px, 88vw);
+    max-height:calc(100vh - 16px);
+    gap:7px;
+    padding:14px 20px 16px;
+    border-radius:18px;
+  }
+  .story-argos-hack-skull{
+    width:clamp(58px, 9vw, 78px);
+    font-size:clamp(2.4rem, 7vw, 3.7rem);
+  }
+  .story-argos-hack-gate-kicker{
+    font-size:.62rem;
+    letter-spacing:.18em;
+  }
+  .story-argos-hack-gate-card h2{
+    font-size:clamp(2rem, 7vw, 3.75rem);
+    line-height:.88;
+  }
+  .story-argos-hack-gate-card p{
+    font-size:clamp(.92rem, 3vw, 1.28rem);
+    letter-spacing:.06em;
+  }
+  .story-argos-hack-gate-btn{
+    min-height:42px;
+    margin-top:4px;
+    padding:7px 18px !important;
+    font-size:clamp(.72rem, 2.1vw, .92rem) !important;
+    line-height:1.05 !important;
   }
 }
 
@@ -18144,7 +18192,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   <div class="story-argos-hack-gate-card">
     <div class="story-argos-hack-skull" aria-hidden="true">☠</div>
     <div class="story-argos-hack-gate-kicker">Intrusión de Argós</div>
-    <h2 id="storyArgosHackGateTitle">¡Has sido hackeado!</h2>
+    <h2 id="storyArgosHackGateTitle">HAS SIDO HACKEADO</h2>
     <p id="storyArgosHackGateText">No puedes usar combustible</p>
     <button class="story-argos-hack-gate-btn" id="storyArgosHackGateBtn" type="button">Tengo un As de Diamantes bajo la manga</button>
   </div>
@@ -19484,6 +19532,7 @@ function replayOnlineAttackFx(cue){
   if(!Number.isFinite(attackerIdx) || !Number.isFinite(defenderIdx)) return;
 
   const completeAttack = shouldPlayCompleteAttackSpecial(attackerIdx, typeof cue.completeAttack === 'boolean' ? cue.completeAttack : undefined);
+  playMobileSpriteAttackSequence(attackerIdx, withProjectile, { completeAttack, attackPoints });
   const specialShown = completeAttack ? showAttackSpecialPopup(attackerIdx, { force:true }) : false;
   if(specialShown){
     triggerCompleteAttackChargeFeedback(attackerIdx);
@@ -20113,6 +20162,7 @@ function showStoryArgosHackGate(profile=null){
   prepareStoryArgosHackScrollMode();
   window.scrollTo({ top:0, left:0, behavior:'auto' });
   triggerStoryArgosHackInterfaceBoot();
+  sendMobileSpriteSnapshotSoon(0);
   const gate = document.getElementById('storyArgosHackGate');
   if(gate){
     gate.hidden = false;
@@ -23736,6 +23786,14 @@ function toggleSelect(id){
       addToast('Carta no valida para defender', 'warn');
       return notifySelection('En defensa activa solo se pueden usar diamantes numéricos (2-10♦).');
     }
+    if(state.selected.some(card => card.id === id)){
+      state.selected = [];
+      state.defenseSelectionMode = false;
+      render();
+      triggerCardSelectionFeedback(found, false);
+      notifySelection(`${cardText(found)} retirado de la defensa.`);
+      return;
+    }
     state.selected = [];
     state.selected.push(found);
     state.defenseSelectionMode = true;
@@ -24824,7 +24882,90 @@ function getMobileSpriteActionStates(viewIdx){
   };
 }
 
+function mobileSpriteTextFromHtml(html=''){
+  const box = document.createElement('div');
+  box.innerHTML = String(html || '');
+  return box.textContent.replace(/\s+/g, ' ').trim();
+}
+
+function mobileSpriteEscapeHtml(text=''){
+  const box = document.createElement('div');
+  box.textContent = String(text || '');
+  return box.innerHTML;
+}
+
+function getMobileSpriteTutorialActions(step){
+  if(!tutorialSystem.enabled || !step) return [];
+  const actions = [];
+  if(tutorialSystem.mode === 'academy' && step.id === 'academy-definition' && !tutorialSystem.validation.academyDefinitionAck){
+    actions.push({
+      id: 'academy-definition-ack',
+      label: 'Entendido',
+      kind: 'primary'
+    });
+    return actions;
+  }
+  getResolvedTutorialPanelActions(step).forEach((action, index) => {
+    if(action?.label){
+      actions.push({
+        id: `panel:${index}`,
+        label: action.label,
+        kind: action.kind || 'primary'
+      });
+    }
+  });
+  if(tutorialSystem.mode === 'academy' && step.id === 'academy-summary'){
+    const lesson = academyGetLessonById(academySystem.lastCompletedLessonId || tutorialSystem.lessonId);
+    if(lesson){
+      actions.push({
+        id: academyAllLessonsCompleted() ? 'academy-show-certificate' : 'academy-next-lesson',
+        label: academyAllLessonsCompleted() ? 'Ver carnet' : 'Seguir a Siguiente Lección',
+        kind: 'primary'
+      });
+    }
+  }
+  return actions;
+}
+
+function getMobileSpriteTutorialPayload(){
+  if(!tutorialSystem.enabled) return null;
+  const step = tutorialGetCurrentStep();
+  if(!step) return {
+    title: 'Tutorial guiado',
+    html: 'Preparando escenario guiado.',
+    text: 'Preparando escenario guiado.',
+    meta: 'Instructor en acción',
+    actions: []
+  };
+  const script = getActiveTutorialScript();
+  const stepNumber = Math.min(tutorialSystem.stepIndex + 1, script.length);
+  const lesson = tutorialSystem.mode === 'academy' ? academyGetLessonById(tutorialSystem.lessonId) : null;
+  const title = step.title || (tutorialSystem.mode === 'academy' ? 'Carnet PoCoBOT' : 'Tutorial guiado');
+  const bodyHtml = step.body || 'Sigue la acción marcada por el tutorial.';
+  const objectiveHtml = step.objective ? `<div class="tutorial-objective"><strong>Objetivo actual:</strong> ${step.objective}</div>` : '';
+  const tipHtml = step.tip ? `<div class="tutorial-tip"><strong>Pista:</strong> ${step.tip}</div>` : '';
+  const focusText = tutorialBuildFocusText(step);
+  const statusText = tutorialSystem.completed
+    ? 'La guía ha soltado las restricciones. Puedes seguir jugando o reiniciar cuando quieras.'
+    : (tutorialSystem.statusText || step.tip || 'Solo se habilitan las acciones relevantes para el paso actual.');
+  const focusHtml = focusText ? `<div class="tutorial-focus"><strong>Foco visual:</strong> ${mobileSpriteEscapeHtml(focusText)}</div>` : '';
+  const statusHtml = statusText ? `<div class="tutorial-status"><strong>Estado:</strong> ${mobileSpriteEscapeHtml(statusText)}</div>` : '';
+  const html = [bodyHtml, objectiveHtml, tipHtml, focusHtml, statusHtml].filter(Boolean).join('');
+  const modeLabel = tutorialSystem.mode === 'academy'
+    ? `Carnet PoCoBOT${lesson ? ` · Fase ${lesson.phase}/${ACADEMY_LESSONS.length}` : ''}`
+    : 'Tutorial compacto';
+  return {
+    title,
+    html,
+    text: mobileSpriteTextFromHtml(html),
+    meta: `${modeLabel} · Paso ${stepNumber}/${script.length}`,
+    actions: getMobileSpriteTutorialActions(step)
+  };
+}
+
 function getMobileSpriteGuidanceText(){
+  const guidedTutorial = getMobileSpriteTutorialPayload();
+  if(guidedTutorial) return guidedTutorial;
   const tutorialTitle = document.getElementById('compactTutorialBoxTitle')?.textContent?.trim() || '';
   const tutorialText = document.getElementById('compactTutorialBoxText')?.textContent?.trim() || '';
   const tutorialMeta = document.getElementById('compactTutorialBoxMeta')?.textContent?.trim() || '';
@@ -24832,7 +24973,10 @@ function getMobileSpriteGuidanceText(){
   if(tutorialSystem.enabled || state.tutorial){
     return {
       text: tutorialText || 'Sigue la acción marcada por el tutorial.',
-      meta: tutorialMeta || tutorialTitle
+      meta: tutorialMeta || tutorialTitle,
+      title: tutorialTitle || 'Tutorial activo',
+      html: '',
+      actions: []
     };
   }
   if(state.pendingDefense){
@@ -24840,12 +24984,18 @@ function getMobileSpriteGuidanceText(){
     const diamonds = defender?.hand?.filter(isNumericDiamondCard) || [];
     return {
       text: diamonds.length ? 'Ataque entrante: puedes elegir 1♦ para reducir el daño.' : 'Ataque entrante: sin diamantes, el impacto se resuelve automaticamente.',
-      meta: `Ataque ${state.pendingDefense.totalAttack || 0}`
+      meta: `Ataque ${state.pendingDefense.totalAttack || 0}`,
+      title: 'Defensa activa',
+      html: '',
+      actions: []
     };
   }
   return {
     text: logLines[0] || 'Modo libre activado. La consola solo muestra acciones legales.',
-    meta: logLines.slice(1).join(' · ')
+    meta: logLines.slice(1).join(' · '),
+    title: 'Registro',
+    html: '',
+    actions: []
   };
 }
 
@@ -24874,8 +25024,21 @@ function createMobileSpriteSnapshot(){
     selectedFuelText: `${attackSelection.fuelValue || 0}×2=${attackSelection.limit || 0}`,
     bridgeDraftPlacements: getMobileSpriteDraftMap(viewIdx),
     bridgeActions: getMobileSpriteActionStates(viewIdx),
+    bridgeTutorialTitle: guidance.title || '',
     bridgeTutorialText: guidance.text,
+    bridgeTutorialHtml: guidance.html || '',
     bridgeTutorialMeta: guidance.meta,
+    bridgeTutorialActions: guidance.actions || [],
+    argosHack: isStoryArgosHackCombat(state.storyMission || STORY_MISSION_BOOT) ? {
+      active: true,
+      gated: !!storyArgosHackGateActive,
+      title: 'HAS SIDO HACKEADO',
+      subtitle: 'Combustible normal bloqueado',
+      message: storyArgosHackGateActive
+        ? 'Argos ha tomado el panel. Confirma la contraorden para recuperar el control tactico.'
+        : 'Interfaz corrupta: usa el As de emergencia, armadura como energia o proyectiles sueltos.',
+      fuelLocked: !hasDiamondBoosterArmorFuel(state.players?.[0])
+    } : null,
     log: (state.log || []).slice(0, 20)
   };
 }
@@ -24996,6 +25159,29 @@ function callMobileSpriteHudFx(type, payload={}){
   postMobileSpriteMessage({ source:'pocobot-real-game', type:messageType, payload, zone:payload.zone, text:payload.text });
 }
 
+function isMobileSpriteHudActive(){
+  return !!document.body?.classList.contains('mobile-sprite-hud-active');
+}
+
+function getMobileSpriteRelativePlayerIndex(playerIdx){
+  const viewIdx = getMobileSpritePlayerIndex();
+  const rivalIdx = getDesktopCompactRivalIndex(viewIdx);
+  if(playerIdx === viewIdx) return 0;
+  if(playerIdx === rivalIdx) return 1;
+  return playerIdx;
+}
+
+function playMobileSpriteAttackSequence(attackerIdx, withProjectile=false, options={}){
+  if(!isMobileSpriteHudActive()) return false;
+  callMobileSpriteHudFx('playAttackFx', {
+    attackerIndex: getMobileSpriteRelativePlayerIndex(attackerIdx),
+    damage: Number(options.attackPoints) || 0,
+    projectile: !!withProjectile,
+    full: !!options.completeAttack
+  });
+  return true;
+}
+
 function handleMobileSpriteAction(action){
   const playerIdx = getMobileSpritePlayerIndex();
   switch(action){
@@ -25041,13 +25227,6 @@ function handleMobileSpriteAction(action){
       if(canUseInteractiveDefenseAction()){
         confirmDefense();
       }else if(canUseInteractiveTurnAction()){
-        const selection = getAttackSelection();
-        callMobileSpriteHudFx('playAttackFx', {
-          attackerIndex: state.currentPlayer === playerIdx ? 0 : 1,
-          damage: selection.mainValue + selection.projectileValue,
-          projectile: !!selection.projectile || !!mobileSpriteProjectileOnlyMode,
-          full: isCompleteAttackMecha(state.players[state.currentPlayer])
-        });
         confirmAttack(!!mobileSpriteProjectileOnlyMode);
         mobileSpriteProjectileOnlyMode = false;
       }
@@ -25088,9 +25267,38 @@ function handleMobileSpriteMenu(action){
   }
 }
 
+function handleMobileSpriteTutorialAction(action){
+  if(!tutorialSystem.enabled) return;
+  if(action === 'academy-definition-ack'){
+    academyAcknowledgeDefinitionStep();
+    return;
+  }
+  if(action === 'academy-next-lesson'){
+    const lesson = academyGetLessonById(academySystem.lastCompletedLessonId || tutorialSystem.lessonId);
+    const nextLessonId = lesson ? academyGetNextLessonId(lesson.id) : null;
+    academyHideOverlay('academyLessonOverlay');
+    if(nextLessonId) startAcademyLesson(nextLessonId);
+    else academyReturnToMenu();
+    return;
+  }
+  if(action === 'academy-show-certificate'){
+    showAcademyCertificate();
+    return;
+  }
+  if(typeof action === 'string' && action.startsWith('panel:')){
+    const actionIndex = Number(action.slice('panel:'.length));
+    const step = tutorialGetCurrentStep();
+    const panelActions = getResolvedTutorialPanelActions(step);
+    const panelAction = panelActions[actionIndex];
+    if(panelAction && typeof panelAction.onClick === 'function') panelAction.onClick();
+  }
+}
+
 function handleMobileSpriteBridge(type, payload={}){
   if(type === 'menu') handleMobileSpriteMenu(payload.action);
   if(type === 'action') handleMobileSpriteAction(payload.action);
+  if(type === 'tutorialAction') handleMobileSpriteTutorialAction(payload.action);
+  if(type === 'hackGate' && payload.action === 'resolve') resolveStoryArgosHackGate();
   if(type === 'select') toggleSelect(payload.cardId);
   if(type === 'draftDrop') setMobileSpriteDraftPlacement(payload.cardId, payload.zone);
   if(type === 'view' && payload.mode === 'scroll'){
@@ -26077,7 +26285,6 @@ function triggerCompactBuildFeedback(playerIdx){
     spawnElementSparks(anchor.target, 34, 'amber');
     spawnUiSparks(anchor.x, anchor.y, 30, 'amber');
   }
-  triggerCompactEvolutionShowcase(playerIdx);
   triggerCompactHudShake(completeBuild ? 'heavy' : 'light');
   if(completeBuild){
     window.setTimeout(() => {
@@ -26184,8 +26391,6 @@ function triggerCompactTurnFeedback(previousPlayerIdx, nextPlayerIdx, options = 
 
   const outgoingIsRival = previousPlayerIdx !== interactiveIdx;
   const palette = outgoingIsRival ? 'amber' : 'cyan';
-  const showcaseDelay = outgoingIsRival ? 140 : 80;
-
   if(compactTurnFeedbackTimer){
     window.clearTimeout(compactTurnFeedbackTimer);
     compactTurnFeedbackTimer = null;
@@ -26203,11 +26408,6 @@ function triggerCompactTurnFeedback(previousPlayerIdx, nextPlayerIdx, options = 
   const sparkTarget = document.getElementById(`compactMechaRing-${previousPlayerIdx}`) || document.getElementById(`compactMechaStage-${previousPlayerIdx}`);
   if(sparkTarget) spawnElementSparks(sparkTarget, outgoingIsRival ? 22 : 14, palette);
 
-  if(Date.now() < compactTurnShowcaseSuppressUntil) return true;
-  compactTurnFeedbackTimer = window.setTimeout(() => {
-    compactTurnFeedbackTimer = null;
-    showMechaUpdateShowcase(previousPlayerIdx);
-  }, showcaseDelay);
   return true;
 }
 
@@ -26953,6 +27153,15 @@ function triggerModifyFeedbackSequence(playerIdx, callback){
   triggerScreenRipple('amber');
   pulseVibrate([12, 20, 12]);
   triggerCompactBuildFeedback(playerIdx);
+  if(isMobileSpriteHudActive()){
+    const player = state.players?.[playerIdx];
+    const completeBuild = !!player && isCompleteAttackMecha(player);
+    callMobileSpriteHudFx('animateModification', {
+      playerIndex: getMobileSpriteRelativePlayerIndex(playerIdx),
+      complete: completeBuild,
+      text: completeBuild ? 'Mecha listo' : 'Montaje aplicado'
+    });
+  }
   if(isMobileProHudActive()){
     const player = state.players?.[playerIdx];
     const duration = player && isCompleteAttackMecha(player) ? 1450 : 1220;
@@ -26965,6 +27174,14 @@ function triggerModifyFeedbackSequence(playerIdx, callback){
     window.setTimeout(() => {
       if(callback) callback();
     }, 760);
+    return;
+  }
+  if(isDesktopCompactModeActive()){
+    const player = state.players?.[playerIdx];
+    const duration = player && isCompleteAttackMecha(player) ? 1220 : 940;
+    window.setTimeout(() => {
+      if(callback) callback();
+    }, duration);
     return;
   }
   showMechaUpdateShowcase(playerIdx, callback);
@@ -27352,7 +27569,7 @@ function maybeCueDefenseActiveUi(){
   spawnElementSparks(defenderPanel || document.getElementById('tacticalScreen'), 18, 'cyan');
 }
 
-function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
+function runHeaderAttackSequence(attackerIdx, withProjectile, callback, options={}){
   state.transitionLock = true;
   if(!state.firstAttackTriggered){
     switchToBattleMusic();
@@ -27362,6 +27579,10 @@ function runHeaderAttackSequence(attackerIdx, withProjectile, callback){
   window.setTimeout(() => scrollToTopArea('auto'), 80);
   window.setTimeout(() => scrollToTopArea('auto'), 320);
   const completeAttack = shouldPlayCompleteAttackSpecial(attackerIdx);
+  playMobileSpriteAttackSequence(attackerIdx, withProjectile, {
+    completeAttack,
+    attackPoints: Number(options.attackPoints) || 0
+  });
   const specialShown = completeAttack ? showAttackSpecialPopup(attackerIdx, { force:true }) : false;
   if(specialShown){
     triggerCompleteAttackChargeFeedback(attackerIdx);
@@ -27613,7 +27834,7 @@ function resolveAttackAfterDefense(defenseCard){
       render();
       window.setTimeout(() => scrollToWinnerCup('smooth'), 180);
     }
-  });
+  }, { attackPoints: totalAttack });
 }
 
 function confirmDefense(){
@@ -28176,7 +28397,7 @@ function getResolvedTutorialPanelActions(step){
   const actions = Array.isArray(step?.panelActions) ? [...step.panelActions] : [];
   if(step?.id === 'academy-definition' && !actions.length && !tutorialSystem.validation.academyDefinitionAck){
     actions.push({
-      label: 'Fase entendida',
+      label: 'Entendido',
       kind: 'primary',
       onClick: academyAcknowledgeDefinitionStep
     });
@@ -31493,7 +31714,7 @@ const ACADEMY_LESSONS = [
         id: 'academy-definition',
         title: 'Fase 1 · Qué es un mecha',
         body: 'Un <strong>mecha PoCoBOT</strong> es un robot modular de combate. Para que exista de verdad en mesa necesita <strong>núcleo</strong> y al menos <strong>6 cartas de estadísticas</strong> repartidas entre <strong>Ataque</strong>, <strong>Defensa</strong> y <strong>Armadura</strong>, con <strong>1 piloto</strong> que le dé forma.<br><br><strong>Mapa rápido:</strong> ♠ ataque, ♥ defensa, ♣ armadura y ♦ combustible, defensa activa o robo.',
-        objective: 'Lee la definición y, cuando te cuadre, pulsa <strong>Fase entendida</strong>.',
+        objective: 'Lee la definición y, cuando te cuadre, pulsa <strong>Entendido</strong>.',
         tip: 'Este primer paso es intencionalmente corto: fija el vocabulario antes de tocar botones.',
         allowedButtons: ['clearSelectionBtn'],
         allowedCardIds: [],
@@ -31502,7 +31723,7 @@ const ACADEMY_LESSONS = [
         expectedAction: 'academy-readonly',
         panelActions: [
           {
-            label: 'Fase entendida',
+            label: 'Entendido',
             kind: 'primary',
             onClick: academyAcknowledgeDefinitionStep
           }
@@ -32000,7 +32221,7 @@ function showAcademyLessonOverlay(lesson){
   kicker.textContent = academyAllLessonsCompleted() ? 'Carnet completado' : `Fase ${lesson.phase} superada`;
   title.textContent = lesson.title;
   body.textContent = lesson.successText;
-  nextBtn.textContent = academyAllLessonsCompleted() ? 'Ver carnet' : 'Siguiente fase';
+  nextBtn.textContent = academyAllLessonsCompleted() ? 'Ver carnet' : 'Seguir a Siguiente Lección';
   nextBtn.onclick = () => {
     overlay.hidden = true;
     if(academyAllLessonsCompleted()){
@@ -33028,12 +33249,14 @@ function devLoadStoryCombatMission(mission='tower_argos_hack'){
   if(isStoryArgosHackCombat(mission)){
     prepareStoryArgosHackScrollMode();
     triggerStoryArgosHackInterfaceBoot();
-    startStoryCombatMusicAtStart(true);
   }else{
     prepareStoryTowerCombatHudMode(mission);
     startStoryCombatMusicAtStart(false);
   }
   render();
+  if(isStoryArgosHackCombat(mission)){
+    window.requestAnimationFrame(() => showStoryArgosHackGate(profile));
+  }
   addToast(`Sistema cargado: ${profile.title || profile.enemyName}`, isStoryArgosHackCombat(mission) ? 'warn' : 'ok');
   log(`🧪 Dev sandbox: combate historia cargado · ${profile.title || mission}`);
   return devGetSnapshot();
