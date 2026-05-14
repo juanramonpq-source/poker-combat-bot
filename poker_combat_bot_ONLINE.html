@@ -145,7 +145,7 @@ body.story-embed-mode .story-mission-brief-bar{
   position:fixed;
   left:max(12px, env(safe-area-inset-left));
   right:max(12px, env(safe-area-inset-right));
-  top:max(10px, env(safe-area-inset-top));
+  top:var(--story-mission-brief-top, max(10px, env(safe-area-inset-top)));
   z-index:121;
   display:grid;
   grid-template-columns:minmax(0,1fr) auto;
@@ -18132,6 +18132,9 @@ body.mobile-sprite-hud-active .app{
   visibility:hidden;
   pointer-events:none;
 }
+body.mobile-sprite-hud-active .toast-stack{
+  display:none;
+}
 body.mobile-sprite-hud-active .desktop-hud-transition{
   display:none;
 }
@@ -22431,9 +22434,26 @@ function getStoryMissionBrief(){
   return STORY_MISSION_BRIEFS[state.storyMission || STORY_MISSION_BOOT] || null;
 }
 
+function updateStoryMissionBriefPlacement(bar = document.getElementById('storyMissionBriefBar')){
+  if(!bar) return;
+  const body = document.body;
+  const compactDesktop = body?.classList.contains('desktop-compact-mode')
+    && !body.classList.contains('mobile-compact-mode')
+    && !body.classList.contains('mobile-pc-compact-mode')
+    && !body.classList.contains('mobile-panorama-mode');
+  const topbar = compactDesktop ? document.querySelector('.app.desktop-compact-mode .compact-topbar') : null;
+  const topbarBottom = topbar?.getBoundingClientRect?.().bottom || 0;
+  if(topbarBottom > 0){
+    bar.style.setProperty('--story-mission-brief-top', `${Math.ceil(topbarBottom + 8)}px`);
+  }else{
+    bar.style.removeProperty('--story-mission-brief-top');
+  }
+}
+
 function syncStoryMissionBriefBar(){
   const bar = document.getElementById('storyMissionBriefBar');
   if(!bar) return;
+  updateStoryMissionBriefPlacement(bar);
   const brief = getStoryMissionBrief();
   const mobileBocetoHudActive = STORY_EMBED_MODE && isStoryMobileViewport() && storyHudMode !== 'scroll';
   const shouldShow = !mobileBocetoHudActive && STORY_BRIEF_MODE !== 'off' && STORY_EMBED_MODE && !!brief && state.gameStarted && !state.storyMissionAnnounced;
@@ -25004,7 +25024,7 @@ function createMobileSpriteSnapshot(){
   const rivalIdx = getDesktopCompactRivalIndex(viewIdx);
   const currentPlayer = state.currentPlayer === viewIdx ? 0 : state.currentPlayer === rivalIdx ? 1 : 0;
   const selectedIds = (state.selected || []).map(card => card.id).filter(Boolean);
-  const attackSelection = state.attackMode ? getAttackSelection() : { fuelValue:0, limit:0 };
+  const attackSelection = getAttackSelection();
   const guidance = getMobileSpriteGuidanceText();
   return {
     players: [cloneMobileSpritePlayer(viewIdx), cloneMobileSpritePlayer(rivalIdx)],
@@ -30308,6 +30328,7 @@ document.addEventListener('fullscreenchange', () => {
 window.addEventListener('resize', () => {
   syncDesktopHudAvailability();
   renderDesktopCompactHud();
+  syncStoryMissionBriefBar();
 });
 
 document.addEventListener('click', (event) => {

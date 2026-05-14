@@ -1229,6 +1229,109 @@
       font-size: 12px;
     }
 
+    .defense-popup {
+      position: absolute;
+      z-index: 132;
+      left: 18px;
+      right: 18px;
+      top: 50%;
+      display: none;
+      transform: translateY(-50%);
+      padding: 13px 14px 14px;
+      border: 3px solid rgba(255, 238, 190, .9);
+      border-radius: 16px;
+      color: #fff8df;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255, 239, 168, .32), transparent 42%),
+        linear-gradient(180deg, rgba(190, 42, 31, .98), rgba(74, 5, 8, .99));
+      box-shadow:
+        0 24px 50px rgba(55, 0, 0, .58),
+        0 0 0 2px rgba(255, 84, 58, .36),
+        inset 0 0 0 1px rgba(255,255,255,.16),
+        inset 0 -16px 28px rgba(0,0,0,.24);
+      pointer-events: auto;
+    }
+
+    .defense-popup.show {
+      display: grid;
+      gap: 8px;
+      animation: messageIn .18s ease both;
+    }
+
+    .defense-popup::before {
+      content: "";
+      position: absolute;
+      inset: -10px;
+      z-index: -1;
+      border-radius: 20px;
+      background: rgba(1, 8, 18, .54);
+      box-shadow: 0 0 0 999px rgba(1, 8, 18, .18);
+    }
+
+    .defense-popup-kicker {
+      color: #ffe9a8;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .defense-popup-title {
+      font-size: clamp(22px, 6vw, 30px);
+      line-height: .95;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-shadow: 0 2px 0 rgba(69, 0, 0, .58), 0 0 16px rgba(255, 90, 54, .42);
+    }
+
+    .defense-popup-body {
+      color: #fffefa;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-size: 13px;
+      line-height: 1.24;
+      font-weight: 800;
+    }
+
+    .defense-popup-body strong {
+      color: #fff0a6;
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    .defense-popup-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .defense-popup-actions button {
+      min-height: 38px;
+      padding: 5px 8px;
+      border: 2px solid rgba(255,255,255,.36);
+      border-radius: 11px;
+      color: #240400;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.52), transparent 38%),
+        linear-gradient(180deg, #fff7c2, #ffb347 58%, #c85c18);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.58), 0 4px 0 rgba(73, 9, 0, .78);
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .defense-popup-actions button.secondary {
+      color: #eff9ff;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.26), transparent 38%),
+        linear-gradient(180deg, #2368a6, #073a70 64%, #052548);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.3), 0 4px 0 rgba(1, 15, 34, .82);
+    }
+
+    .defense-popup-actions button:only-child {
+      grid-column: 1 / -1;
+    }
+
     .tab-bar {
       position: relative;
       z-index: 14;
@@ -1306,8 +1409,8 @@
       z-index: 20;
       left: 14px;
       right: 14px;
-      top: 132px;
-      bottom: 118px;
+      top: clamp(104px, 13vh, 116px);
+      bottom: clamp(194px, 25vh, 210px);
       display: grid;
       grid-template-rows: auto minmax(0, 1fr) auto;
       gap: 7px;
@@ -1517,6 +1620,24 @@
     .zone-title span {
       min-width: 0;
       white-space: normal;
+    }
+
+    .zone-suit {
+      display: inline-block;
+      margin-right: 4px;
+      color: #74fff2;
+      font-style: normal;
+      text-shadow: 0 0 8px rgba(116, 255, 242, .42);
+    }
+
+    .zone-suit.suit-defense {
+      color: #ff6c62;
+      text-shadow: 0 0 8px rgba(255, 108, 98, .44);
+    }
+
+    .zone-suit.suit-fuel {
+      color: #fff2bd;
+      text-shadow: 0 0 8px rgba(255, 242, 189, .5);
     }
 
     .zone-title b {
@@ -3061,13 +3182,9 @@
         padding-top: 25px;
       }
 
-      .board-drawer {
-        top: 150px;
-        bottom: 122px;
-      }
     }
 
-    @media (orientation: landscape) and (max-height: 520px) {
+    @media (orientation: landscape) and (max-height: 620px) {
       html,
       body {
         height: 100%;
@@ -3080,22 +3197,22 @@
       }
 
       .phone-shell {
-        --land-left: clamp(208px, 25vw, 238px);
+        --land-left: clamp(188px, 22vw, 210px);
         --land-hand: clamp(204px, 28vw, 250px);
         width: 100vw;
         height: 100svh;
         height: 100dvh;
         min-height: 0;
-        padding: 6px 8px;
+        padding: 5px 6px;
         display: grid;
         grid-template-columns: var(--land-left) minmax(0, 1fr) var(--land-hand);
-        grid-template-rows: 72px 42px minmax(0, 1fr) 98px;
+        grid-template-rows: 58px 58px minmax(0, 1fr) 78px;
         grid-template-areas:
           "brand combat tabs"
           "status combat hand"
           "notice combat hand"
           "menu combat hand";
-        gap: 6px;
+        gap: 5px;
         align-content: stretch;
         border-width: 4px;
         border-radius: 0;
@@ -3113,15 +3230,15 @@
       .brand-plate {
         grid-area: brand;
         width: 100%;
-        height: 70px;
+        height: 56px;
         margin: 0;
         border-width: 3px;
         border-radius: 15px;
       }
 
       .brand-plate img {
-        top: -28px;
-        width: min(248px, calc(100% + 48px));
+        top: -30px;
+        width: min(224px, calc(100% + 38px));
       }
 
       .screw {
@@ -3144,7 +3261,7 @@
         align-self: start;
         margin: 0;
         padding: 0;
-        gap: 4px;
+        gap: 3px;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         border: 0;
         border-radius: 0;
@@ -3156,8 +3273,8 @@
       }
 
       .menu-button {
-        min-height: 30px;
-        padding: 3px 4px;
+        min-height: 23px;
+        padding: 2px 3px;
         border-width: 2px;
         border-radius: 8px;
         color: #062344;
@@ -3165,7 +3282,7 @@
           linear-gradient(135deg, rgba(255,255,255,.55), transparent 38%),
           linear-gradient(180deg, #cae8ff, #83bdf2 62%, #3b78bd);
         box-shadow: inset 0 2px 0 rgba(255,255,255,.52), inset 0 -2px 0 rgba(0,48,96,.25), 0 3px 0 #14365e;
-        font-size: 10px;
+        font-size: 9px;
       }
 
       .menu-button.on {
@@ -3186,34 +3303,43 @@
         z-index: 70;
         align-self: stretch;
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        grid-template-rows: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: 24px 29px;
         align-content: start;
-        gap: 4px;
+        gap: 3px;
         margin: 0;
         overflow: visible;
       }
 
       .meter-pill {
         min-height: 0;
-        grid-template-columns: 16px minmax(0, 1fr);
+        grid-template-columns: 15px minmax(0, 1fr);
         gap: 2px;
-        padding: 2px 4px;
+        padding: 2px 3px;
         border-width: 2px;
         border-radius: 8px;
       }
 
+      .fuel-selected-pill {
+        grid-column: 1 / -1;
+      }
+
       .meter-pill small {
-        font-size: 8px;
+        font-size: 7.5px;
       }
 
       .meter-pill strong {
-        font-size: 15px;
+        font-size: 14px;
+      }
+
+      .fuel-selected-pill strong {
+        font-size: clamp(13px, 2.1vw, 16px);
+        letter-spacing: 0;
       }
 
       .metric-icon {
-        width: 16px;
-        height: 20px;
+        width: 15px;
+        height: 19px;
         border-width: 2px;
         border-radius: 5px;
         font-size: 10px;
@@ -3286,8 +3412,8 @@
         min-height: 0;
         display: flex;
         flex-direction: column;
-        padding: 9px 10px;
-        border: 3px solid #7a130b;
+        padding: 7px 8px;
+        border: 2px solid #7a130b;
         border-radius: 13px;
         background:
           linear-gradient(135deg, rgba(255,255,255,.12), transparent 32%),
@@ -3301,8 +3427,8 @@
 
       .guidance-title {
         flex: 0 0 auto;
-        margin-bottom: 6px;
-        font-size: 12px;
+        margin-bottom: 4px;
+        font-size: 11px;
       }
 
       .guidance-lines {
@@ -3334,7 +3460,67 @@
       .guidance-line {
         display: block;
         overflow: visible;
-        font-size: 10.5px;
+        font-size: 9.5px;
+      }
+
+      .defense-popup {
+        left: calc(var(--land-left) + 16px);
+        right: calc(var(--land-hand) + 16px);
+        top: 40px;
+        transform: none;
+        min-height: 45px;
+        max-height: 56px;
+        padding: 6px 8px;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 6px;
+        border-width: 2px;
+        border-radius: 12px;
+        box-shadow:
+          0 8px 14px rgba(55, 0, 0, .38),
+          0 0 0 2px rgba(255, 84, 58, .26),
+          inset 0 0 0 1px rgba(255,255,255,.14),
+          inset 0 -10px 18px rgba(0,0,0,.22);
+      }
+
+      .defense-popup.show {
+        display: grid;
+      }
+
+      .defense-popup::before {
+        inset: -3px;
+        border-radius: 14px;
+        background: rgba(1, 8, 18, .34);
+        box-shadow: none;
+      }
+
+      .defense-popup-kicker {
+        display: none;
+      }
+
+      .defense-popup-title {
+        font-size: 15px;
+        line-height: .95;
+        white-space: nowrap;
+      }
+
+      .defense-popup-body {
+        min-width: 0;
+        font-size: 9.5px;
+        line-height: 1.05;
+      }
+
+      .defense-popup-actions {
+        grid-template-columns: repeat(2, minmax(0, 62px));
+        gap: 4px;
+      }
+
+      .defense-popup-actions button {
+        min-height: 27px;
+        padding: 3px 5px;
+        border-width: 1px;
+        border-radius: 8px;
+        font-size: 8px;
       }
 
       .combat-screen {
@@ -3431,7 +3617,7 @@
         min-height: 0;
         height: 100%;
         margin: 0;
-        padding: 72px 10px 58px;
+        padding: 48px 10px 52px;
         border-width: 3px;
         border-radius: 16px;
       }
@@ -3483,18 +3669,18 @@
       .hand-tray header .action-hub {
         position: absolute;
         right: 4px;
-        top: 70px;
+        top: 0;
         margin-left: 0;
-        z-index: 64;
+        z-index: 96;
       }
 
       .actions-button {
-        min-width: 96px;
+        min-width: 92px;
         min-height: 30px;
         padding: 5px 11px;
         border-width: 2px;
         border-radius: 11px;
-        font-size: 13px;
+        font-size: 12px;
       }
 
       .status-strip .action-wheel {
@@ -3509,12 +3695,12 @@
       }
 
       .hand-tray header .action-wheel {
-        z-index: 64;
+        z-index: 96;
         left: auto;
         right: 0;
-        top: 36px;
-        width: 300px;
-        height: 118px;
+        top: 38px;
+        width: 292px;
+        height: 88px;
         transform: none;
         transform-origin: top right;
       }
@@ -3536,21 +3722,32 @@
       }
 
       .action-wheel::before {
-        width: 210px;
-        height: 92px;
+        width: 204px;
+        height: 72px;
       }
 
       .wheel-action {
-        width: 72px;
-        min-height: 27px;
+        width: 70px;
+        min-height: 24px;
         padding: 3px 5px;
-        font-size: 9px;
+        font-size: 8.5px;
       }
 
       .wheel-action.projectile-action {
-        width: 96px;
-        font-size: 8px;
+        width: 92px;
+        font-size: 7.7px;
       }
+
+      .wheel-action[data-action="figures"] { --x: -86px !important; --y: -28px !important; }
+      .wheel-action[data-action="draw"] { --x: -86px !important; --y: 0px !important; }
+      .wheel-action[data-action="pass"] { --x: 0px !important; --y: -28px !important; }
+      .wheel-action[data-action="projectile"] { --x: 92px !important; --y: -22px !important; }
+      .wheel-action[data-action="projectile-only"] { --x: 92px !important; --y: 6px !important; }
+      .wheel-action[data-action="attack-mode"] { --x: -44px !important; --y: 28px !important; }
+      .wheel-action[data-action="confirm"] { --x: 48px !important; --y: 28px !important; }
+      .wheel-action[data-action="defend"] { --x: -108px !important; --y: 20px !important; }
+      .wheel-action[data-action="skip-defense"] { --x: -108px !important; --y: -8px !important; }
+      .wheel-action[data-action="clear"] { --x: 0px !important; --y: 0px !important; }
 
       button:not(:disabled):active,
       button.is-pressing,
@@ -3629,13 +3826,13 @@
       .side-arrow.right { right: -10px; }
 
       .board-drawer {
-        top: 8px;
-        bottom: 8px;
-        left: calc(var(--land-left) + 14px);
-        right: calc(var(--land-hand) + 14px);
-        grid-template-rows: 74px minmax(0, 1fr) auto;
+        top: 5px;
+        bottom: 5px;
+        left: calc(var(--land-left) + 10px);
+        right: calc(var(--land-hand) + 10px);
+        grid-template-rows: 58px minmax(0, 1fr) auto;
         gap: 5px;
-        padding: 7px;
+        padding: 6px;
         border-width: 3px;
         border-radius: 14px;
       }
@@ -3646,8 +3843,8 @@
         display: grid;
         grid-template-columns: minmax(0, 1fr) 46px minmax(0, 1fr);
         align-items: center;
-        gap: 6px;
-        padding: 4px 42px 4px 12px;
+        gap: 5px;
+        padding: 3px 36px 3px 10px;
         border: 2px solid rgba(70, 236, 255, .24);
         border-radius: 12px;
         background:
@@ -3687,8 +3884,8 @@
       .landscape-mecha-strip img {
         position: relative;
         z-index: 1;
-        width: 112px;
-        height: 72px;
+        width: 90px;
+        height: 58px;
         max-width: 100%;
         object-fit: contain;
         filter: drop-shadow(0 10px 9px rgba(0, 0, 0, .62)) saturate(1.08);
@@ -3707,15 +3904,15 @@
       .landscape-mecha-strip b {
         position: relative;
         z-index: 1;
-        width: 42px;
-        height: 42px;
+        width: 34px;
+        height: 34px;
         display: grid;
         place-items: center;
         border: 2px solid rgba(255, 242, 189, .52);
         border-radius: 50%;
         color: #fff3be;
         background: radial-gradient(circle, rgba(1, 23, 38, .9), rgba(1, 11, 21, .44));
-        font-size: 17px;
+        font-size: 15px;
         font-weight: 900;
         text-shadow: 0 0 10px #46ecff, 0 0 10px #ff533d;
       }
@@ -3752,21 +3949,21 @@
 
       .zone-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        grid-template-rows: minmax(64px, .9fr) minmax(52px, 1fr) minmax(52px, 1fr);
+        grid-template-rows: minmax(86px, .95fr) minmax(76px, .82fr) minmax(112px, 1.18fr);
         grid-template-areas:
           "core core core"
-          "attack defense fuel"
-          "armor reg fuel";
+          "attack defense armor"
+          "fuel fuel fuel";
         grid-auto-rows: auto;
-        gap: 5px;
+        gap: 6px;
         overflow: hidden;
       }
 
       .zone-grid.is-rival {
         grid-template-areas:
           "core core core"
-          "attack defense fuel"
-          "armor armor fuel";
+          "attack defense armor"
+          "fuel fuel fuel";
       }
 
       .panel-zone,
@@ -3795,6 +3992,10 @@
         min-height: 0;
       }
 
+      .zone-reg {
+        display: none;
+      }
+
       .zone-title {
         gap: 4px;
         font-size: 9.5px;
@@ -3813,14 +4014,21 @@
       }
 
       .zone-cards {
-        min-height: 28px;
-        gap: 2px;
+        min-height: 34px;
+        gap: 3px;
       }
 
       .zone-cards .card {
         width: 30px;
         height: 44px;
         flex-basis: 30px;
+      }
+
+      .zone-fuel .zone-cards {
+        align-content: flex-start;
+        align-items: flex-start;
+        overflow-y: auto;
+        overscroll-behavior: contain;
       }
 
       .empty-zone {
@@ -3840,7 +4048,7 @@
       }
 
       .drawer-foot button {
-        min-height: 32px;
+        min-height: 28px;
         font-size: 10px;
       }
 
@@ -4216,6 +4424,12 @@
     </section>
     <section class="left-guidance-box" data-left-guidance aria-label="Indicaciones de tutorial y combate"></section>
     <button class="quick-modify-button" type="button" data-action="modify">Modificar</button>
+    <section class="defense-popup" data-defense-popup aria-live="assertive" aria-hidden="true">
+      <div class="defense-popup-kicker">Defensa activa</div>
+      <div class="defense-popup-title" data-defense-popup-title>Ataque enemigo</div>
+      <div class="defense-popup-body" data-defense-popup-body>Usa 1♦ numérico para reducir el ataque.</div>
+      <div class="defense-popup-actions" data-defense-popup-actions></div>
+    </section>
 
     <section class="combat-screen" aria-label="Combate">
       <div class="scan-grid" aria-hidden="true"></div>
@@ -4421,6 +4635,7 @@
     let handShiftTimer = null;
     let touchDrag = null;
     let suppressCardClickUntil = 0;
+    let defensePopupSuppressedKey = "";
 
     const state = {
       gameStarted: false,
@@ -4691,7 +4906,7 @@
     }
 
     function isLandscapeLayout() {
-      return window.matchMedia("(orientation: landscape) and (max-height: 520px)").matches;
+      return window.matchMedia("(orientation: landscape) and (max-height: 620px)").matches;
     }
 
     function prefersReducedMotion() {
@@ -6202,7 +6417,7 @@
         return;
       }
 
-      const cardWidth = window.matchMedia("(orientation: landscape) and (max-height: 520px)").matches
+      const cardWidth = window.matchMedia("(orientation: landscape) and (max-height: 620px)").matches
         ? 48
         : window.matchMedia("(max-height: 760px)").matches
           ? 50
@@ -6340,22 +6555,22 @@
       const moduleMeta = (zone) => compactBoard
         ? `${player[zone].length}/${moduleLimit(player, zone)}`
         : `${player[zone].length}/${moduleLimit(player, zone)} max`;
-      const fullSuitNames = { attack: "Picas", defense: "Corazones", armor: "Treboles" };
+      const suitTitle = (zone, icon, title) => `<i class="zone-suit suit-${zone}" aria-hidden="true">${icon}</i>${title}`;
       const moduleTitle = (zone, title, suit, rivalTitle) => {
-        if (compactBoard) return `${title} ${suit}`;
-        return isRivalView ? rivalTitle : `${title} (${fullSuitNames[zone]})`;
+        const label = isRivalView ? rivalTitle : title;
+        return suitTitle(zone, suit, label);
       };
 
       const attackZone = isRivalView
-        ? makePanelZone(moduleTitle("attack", "Ataque", "♠", "Ataque rival (Picas)"), player.attack, moduleMeta("attack"), "zone-attack")
+        ? makePanelZone(moduleTitle("attack", "Ataque", "♠", "Ataque rival"), player.attack, moduleMeta("attack"), "zone-attack")
         : makeDropZone("attack", moduleTitle("attack", "Ataque", "♠"), player.attack, moduleMeta("attack"), "zone-attack");
       const defenseZone = isRivalView
-        ? makePanelZone(moduleTitle("defense", "Defensa", "♥", "Defensa rival (Corazones)"), player.defense, moduleMeta("defense"), "zone-defense")
+        ? makePanelZone(moduleTitle("defense", "Defensa", "♥", "Defensa rival"), player.defense, moduleMeta("defense"), "zone-defense")
         : makeDropZone("defense", moduleTitle("defense", "Defensa", "♥"), player.defense, moduleMeta("defense"), "zone-defense");
       const armorZone = isRivalView
-        ? makePanelZone(moduleTitle("armor", "Armadura", "♣", "Armadura rival (Treboles)"), player.armor, moduleMeta("armor"), "zone-armor")
+        ? makePanelZone(moduleTitle("armor", "Armadura", "♣", "Armadura rival"), player.armor, moduleMeta("armor"), "zone-armor")
         : makeDropZone("armor", moduleTitle("armor", "Armadura", "♣"), player.armor, moduleMeta("armor"), "zone-armor");
-      const fuelTitle = compactBoard ? "Fuel ♦" : isRivalView ? "Combustible rival (Fuel)" : "Combustible (Fuel)";
+      const fuelTitle = suitTitle("fuel", "♦", isRivalView ? "Combustible rival" : "Combustible");
       const fuelMeta = `${player.fuel.length}`;
       const fuelZone = isRivalView
         ? makePanelZone(fuelTitle, player.fuel, fuelMeta, "zone-fuel")
@@ -6366,7 +6581,7 @@
       reg.innerHTML = `<header class="zone-title"><span>REG</span><b>${state.log.length}</b></header><div class="zone-cards"><div class="empty-zone">${state.log.slice(0, 6).join("<br>") || "Sin eventos"}</div></div>`;
 
       grid.append(core, attackZone, defenseZone, armorZone);
-      if (!isRivalView) grid.append(reg);
+      if (!isRivalView && !compactBoard) grid.append(reg);
       grid.append(fuelZone);
 
       const title = document.querySelector("[data-drawer-title]");
@@ -6468,6 +6683,67 @@
       }
     }
 
+    function selectedDefenseDiamond(defender) {
+      return state.selected
+        .map((id) => findCard(id))
+        .find((item) => item && item.player === defender && item.zone === "hand" && isNumericDiamond(item.card))?.card || null;
+    }
+
+    function defensePopupKey(pending = state.pendingDefense) {
+      if (!pending) return "";
+      return `${pending.attackerIndex}:${pending.defenderIndex}:${pending.totalAttack}:${pending.withProjectile ? 1 : 0}`;
+    }
+
+    function renderDefensePopup() {
+      const popup = document.querySelector("[data-defense-popup]");
+      if (!popup) return;
+      const pending = state.pendingDefense;
+      const defender = pending ? state.players[pending.defenderIndex] : null;
+      const diamonds = defender?.hand?.filter(isNumericDiamond) || [];
+      const isPlayerDefense = !!pending && pending.defenderIndex === 0;
+      const selected = selectedDefenseDiamond(defender);
+      const key = defensePopupKey(pending);
+      if (!pending) defensePopupSuppressedKey = "";
+      const shouldShow = isPlayerDefense && (defensePopupSuppressedKey !== key || !!selected);
+      popup.classList.toggle("show", shouldShow);
+      popup.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+      if (!shouldShow) return;
+
+      const title = document.querySelector("[data-defense-popup-title]");
+      const body = document.querySelector("[data-defense-popup-body]");
+      const actions = document.querySelector("[data-defense-popup-actions]");
+      if (title) title.textContent = "Ataque enemigo";
+      if (body) {
+        const compact = isLandscapeLayout();
+        body.innerHTML = selected
+          ? (compact
+            ? `<strong>${cardText(selected)}</strong> reduce ${selected.value}. Ataque ${pending.totalAttack || 0}.`
+            : `Defensa lista con <strong>${cardText(selected)}</strong>. Reducirá ${selected.value} punto(s) del ataque ${pending.totalAttack || 0}.`)
+          : (diamonds.length
+            ? (compact
+              ? `Elige <strong>1♦ numérico</strong> para reducir ataque ${pending.totalAttack || 0}.`
+              : `Puedes defenderte ahora: elige <strong>1♦ numérico</strong> de tu mano para reducir el ataque ${pending.totalAttack || 0}, o acepta el impacto.`)
+            : (compact
+              ? `Ataque ${pending.totalAttack || 0}: sin <strong>1♦ numérico</strong> en mano.`
+              : `Ataque ${pending.totalAttack || 0}: no tienes <strong>1♦ numérico</strong> en la mano para defenderte.`));
+      }
+      if (!actions) return;
+      actions.innerHTML = "";
+      if (diamonds.length) {
+        const defend = document.createElement("button");
+        defend.type = "button";
+        defend.textContent = selected ? "Confirmar defensa" : "Elegir 1♦";
+        defend.dataset.defenseAction = "confirm";
+        actions.appendChild(defend);
+      }
+      const skip = document.createElement("button");
+      skip.type = "button";
+      skip.className = "secondary";
+      skip.textContent = "No defender";
+      skip.dataset.defenseAction = "skip";
+      actions.appendChild(skip);
+    }
+
     function renderMessages() {
       const tutorial = document.querySelector("[data-tutorial-message]");
       const tutorialText = document.querySelector("[data-tutorial-text]");
@@ -6486,9 +6762,11 @@
         setTutorialBody(tutorialText, tutorialCopy, tutorialHtml);
         renderTutorialActionButtons(tutorialActions);
         const alert = document.querySelector("[data-alert-message]");
+        const embeddedPlayerDefensePopup = state.pendingDefense?.defenderIndex === 0;
         if (state.pendingDefense) {
           const defender = state.players[state.pendingDefense.defenderIndex] || state.players[0];
           const diamonds = defender?.hand?.filter(isNumericDiamond) || [];
+          const playerDefensePopup = state.pendingDefense.defenderIndex === 0;
           alertTitle = state.pendingDefense.defenderIndex === 0 ? "Ataque enemigo previsto" : "Ventana de defensa rival";
           alertCopy = state.pendingDefense.defenderIndex === 0
             ? `¡ESQUÍVALO con tus diamantes en mano! Ataque ${state.pendingDefense.totalAttack || 0}. Elige 1♦ numérico o pulsa “No defender”.`
@@ -6508,11 +6786,14 @@
             skip.dataset.defenseAction = "skip";
             actions.append(defend, skip);
           }
-          alert.classList.toggle("show", !landscape);
+          alert.classList.toggle("show", !landscape && !playerDefensePopup);
         } else {
           alert.classList.remove("show");
         }
-        renderLeftGuidance(tutorialCopy, alertTitle, alertCopy, tutorialHtml);
+        const guidanceAlertTitle = embeddedPlayerDefensePopup ? "" : alertTitle;
+        const guidanceAlertCopy = embeddedPlayerDefensePopup ? "" : alertCopy;
+        renderLeftGuidance(tutorialCopy, guidanceAlertTitle, guidanceAlertCopy, tutorialHtml);
+        renderDefensePopup();
         return;
       }
       if (tutorialTitle) tutorialTitle.textContent = "Tutorial activo";
@@ -6520,6 +6801,7 @@
       if (state.pendingDefense) {
         const defender = state.players[state.pendingDefense.defenderIndex];
         const diamonds = defender.hand.filter(isNumericDiamond);
+        const playerDefensePopup = state.pendingDefense.defenderIndex === 0;
         tutorialCopy = "Usa Acciones para jugar. MECHA abre tu montaje y RIVAL muestra sus cartas visibles.";
         tutorialText.textContent = tutorialCopy;
         const alert = document.querySelector("[data-alert-message]");
@@ -6543,10 +6825,10 @@
           const skip = document.createElement("button");
           skip.type = "button";
           skip.textContent = "No defender";
-          skip.dataset.defenseAction = "skip";
-          actions.append(defend, skip);
-        }
-        alert.classList.toggle("show", !landscape);
+            skip.dataset.defenseAction = "skip";
+            actions.append(defend, skip);
+          }
+        alert.classList.toggle("show", !landscape && !playerDefensePopup);
       } else {
         document.querySelector("[data-alert-message]").classList.remove("show");
         if (state.projectileOnlyMode) tutorialCopy = "Solo proyectil: selecciona una pica instalada. No consume fuel.";
@@ -6555,7 +6837,9 @@
         else tutorialCopy = "Arrastra cartas al panel de montaje. El boton amarillo Acciones abre todas las jugadas.";
         tutorialText.textContent = tutorialCopy;
       }
-      renderLeftGuidance(tutorialCopy, alertTitle, alertCopy);
+      const playerDefensePopup = state.pendingDefense?.defenderIndex === 0;
+      renderLeftGuidance(tutorialCopy, playerDefensePopup ? "" : alertTitle, playerDefensePopup ? "" : alertCopy);
+      renderDefensePopup();
     }
 
 	    function renderActions() {
@@ -7038,8 +7322,14 @@
       if (button.dataset.action) handleAction(button.dataset.action);
       if (button.dataset.cardId) toggleSelected(button.dataset.cardId);
       if (button.dataset.defenseAction === "confirm") {
+        defensePopupSuppressedKey = defensePopupKey();
+        closeBoard();
+        closeActions();
+        shell.classList.add("hand-overview-open");
+        document.querySelector("[data-hand-overview-toggle]")?.setAttribute("aria-expanded", "true");
         if (EMBEDDED_REAL_GAME) handleAction("defend");
         else confirmDefense();
+        renderDefensePopup();
       }
       if (button.dataset.defenseAction === "skip") {
         if (EMBEDDED_REAL_GAME) handleAction("skip-defense");
