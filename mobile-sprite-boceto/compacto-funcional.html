@@ -3844,24 +3844,18 @@
       .hand-tray header .action-wheel {
         z-index: 96;
         left: auto;
-        right: 0;
-        top: 38px;
-        width: 216px;
-        height: auto;
+        right: -2px;
+        top: 37px;
+        width: 326px;
+        height: 142px;
         min-height: 0;
-        padding: 8px;
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 7px;
-        border: 2px solid #09254a;
-        border-radius: 13px;
-        background:
-          linear-gradient(180deg, rgba(8, 24, 42, .96), rgba(5, 16, 32, .92)),
-          radial-gradient(circle at top right, rgba(255, 196, 47, .14), transparent 44%);
-        box-shadow:
-          inset 0 1px 0 rgba(255,255,255,.08),
-          0 10px 22px rgba(0, 10, 24, .42);
-        transform: none;
+        padding: 0;
+        display: block;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        transform: translateY(8px) scale(.82);
         transform-origin: top right;
       }
 
@@ -3873,7 +3867,7 @@
 
       .phone-shell.actions-open .hand-tray header .action-wheel {
         opacity: 1;
-        transform: none;
+        transform: translateY(0) scale(.92);
         pointer-events: auto;
       }
 
@@ -3882,22 +3876,22 @@
       }
 
       .hand-tray header .action-wheel::before {
-        display: none;
+        display: block;
       }
 
       .hand-tray header .wheel-action {
-        position: static;
-        left: auto;
-        top: auto;
-        width: 100%;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 82px;
         min-height: 31px;
         padding: 4px 6px;
         font-size: 8.8px;
-        transform: none !important;
+        transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) !important;
       }
 
       .hand-tray header .wheel-action.projectile-action {
-        width: 100%;
+        width: 108px;
         font-size: 8px;
       }
 
@@ -4100,47 +4094,45 @@
       }
 
       .zone-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        grid-template-rows: minmax(86px, .95fr) minmax(76px, .82fr) minmax(112px, 1.18fr);
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-rows: minmax(78px, .82fr) minmax(94px, 1fr) minmax(82px, .86fr);
         grid-template-areas:
-          "core core core"
-          "attack defense armor"
-          "fuel fuel fuel";
+          "core core core defense defense defense"
+          "attack attack attack armor armor armor"
+          "fuel fuel fuel fuel fuel fuel";
         grid-auto-rows: auto;
         gap: 6px;
         overflow: hidden;
       }
 
       .zone-grid.is-rival {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        grid-template-rows: minmax(66px, .58fr) minmax(122px, 1.28fr) minmax(112px, 1fr);
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-rows: minmax(78px, .82fr) minmax(94px, 1fr) minmax(82px, .86fr);
         grid-template-areas:
-          "core core core defense"
-          "attack attack armor armor"
-          "fuel fuel fuel fuel";
+          "core core core defense defense defense"
+          "attack attack attack armor armor armor"
+          "fuel fuel fuel fuel fuel fuel";
       }
 
-      .zone-grid.is-rival .core-slots {
+      .zone-grid .core-slots {
         gap: 4px;
       }
 
-      .zone-grid.is-rival .core-slot {
+      .zone-grid .core-slot {
         min-height: 36px;
         padding: 3px;
       }
 
-      .zone-grid.is-rival .core-slot .zone-title {
+      .zone-grid .core-slot .zone-title {
         font-size: 8px;
       }
 
-      .zone-grid.is-rival .zone-defense .zone-cards {
-        align-content: flex-start;
-        align-items: flex-start;
-      }
-
-      .zone-grid.is-rival .zone-attack .zone-cards,
-      .zone-grid.is-rival .zone-armor .zone-cards {
-        min-height: 82px;
+      .zone-grid .zone-defense .zone-cards,
+      .zone-grid .zone-attack .zone-cards,
+      .zone-grid .zone-armor .zone-cards {
+        min-height: 52px;
+        align-content: center;
+        align-items: center;
       }
 
       .panel-zone,
