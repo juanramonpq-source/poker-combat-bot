@@ -1159,7 +1159,23 @@
     }
 
     .floating-message.tutorial.show {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
       max-height: min(360px, 56vh);
+    }
+
+    .floating-message.tutorial .message-actions {
+      align-self: end;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 236, 181, .24);
+      background: linear-gradient(180deg, rgba(9, 23, 50, .12), rgba(5, 14, 33, .94));
+    }
+
+    .floating-message.tutorial .message-actions button {
+      flex: 1 1 132px;
+      min-height: 34px;
+      border-width: 2px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.58), 0 4px 0 rgba(73, 43, 0, .72);
     }
 
     .floating-message span strong,
@@ -4096,10 +4112,35 @@
       }
 
       .zone-grid.is-rival {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-rows: minmax(66px, .58fr) minmax(122px, 1.28fr) minmax(112px, 1fr);
         grid-template-areas:
-          "core core core"
-          "attack defense armor"
-          "fuel fuel fuel";
+          "core core core defense"
+          "attack attack armor armor"
+          "fuel fuel fuel fuel";
+      }
+
+      .zone-grid.is-rival .core-slots {
+        gap: 4px;
+      }
+
+      .zone-grid.is-rival .core-slot {
+        min-height: 36px;
+        padding: 3px;
+      }
+
+      .zone-grid.is-rival .core-slot .zone-title {
+        font-size: 8px;
+      }
+
+      .zone-grid.is-rival .zone-defense .zone-cards {
+        align-content: flex-start;
+        align-items: flex-start;
+      }
+
+      .zone-grid.is-rival .zone-attack .zone-cards,
+      .zone-grid.is-rival .zone-armor .zone-cards {
+        min-height: 82px;
       }
 
       .panel-zone,
