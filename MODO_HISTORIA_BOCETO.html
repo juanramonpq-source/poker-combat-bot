@@ -4875,23 +4875,29 @@
       .story-market-stage .market-grid{
         display:grid;
         flex-direction:initial;
-        grid-template-columns:repeat(2, minmax(0, 1fr));
+        grid-template-columns:1fr;
+        grid-auto-rows:auto;
         height:100%;
         overflow-y:auto;
+        overflow-x:hidden;
+        align-content:start;
         padding-right:6px;
+        overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y;
       }
       .story-market-stage .market-item-card{
-        grid-template-columns:48px minmax(0, 1fr);
-        gap:7px;
-        padding:7px;
+        grid-template-columns:58px minmax(0, 1fr);
+        gap:8px;
+        padding:8px;
         border-radius:12px;
       }
       .story-market-stage .market-card-art{
-        min-height:68px;
+        min-height:76px;
       }
       .story-market-stage .market-card-art img{
-        width:38px;
-        max-height:62px;
+        width:44px;
+        max-height:70px;
       }
       .story-market-stage .market-item-type,
       .story-market-stage .market-cost{
@@ -4922,6 +4928,77 @@
         min-height:30px;
         padding:0 12px;
         font-size:.52rem;
+      }
+    }
+    @media (max-height:760px) and (orientation:landscape){
+      .story-market-stage .market-shell{
+        display:grid;
+        grid-template-rows:auto minmax(0, 1fr) auto;
+        width:calc(100vw - max(12px, env(safe-area-inset-left)) - max(12px, env(safe-area-inset-right)));
+        height:100dvh;
+        gap:8px;
+        overflow:hidden;
+        padding:
+          max(8px, env(safe-area-inset-top))
+          0
+          max(8px, env(safe-area-inset-bottom));
+      }
+      .story-market-stage .market-layout{
+        display:grid;
+        grid-template-columns:minmax(178px, .58fr) minmax(0, 1.42fr);
+        grid-template-rows:minmax(0, .56fr) minmax(0, .44fr);
+        grid-template-areas:
+          "vendor store"
+          "inventory store";
+        gap:8px;
+        height:100%;
+        min-height:0;
+        overflow:hidden;
+        align-items:stretch;
+      }
+      .story-market-stage .market-vendor-panel,
+      .story-market-stage .inventory-panel{
+        height:100%;
+        min-height:0;
+        overflow-y:auto;
+        overflow-x:hidden;
+        overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y;
+      }
+      .story-market-stage .market-store-panel{
+        height:100%;
+        min-height:0;
+        overflow:hidden;
+      }
+      .story-market-stage .market-store-panel .market-intro{
+        display:none;
+      }
+      .story-market-stage .market-grid{
+        display:grid;
+        grid-template-columns:1fr;
+        grid-auto-rows:auto;
+        height:100%;
+        min-height:0;
+        overflow-y:auto;
+        overflow-x:hidden;
+        align-content:start;
+        padding-right:6px;
+        overscroll-behavior:contain;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y;
+      }
+      .story-market-stage .market-item-card{
+        grid-template-columns:58px minmax(0, 1fr);
+        gap:8px;
+        padding:8px;
+        min-height:224px;
+        height:auto;
+        overflow:visible;
+      }
+      .story-market-stage .market-item-content{
+        min-height:auto;
+        overflow:visible;
       }
     }
     @keyframes stormFlashA{

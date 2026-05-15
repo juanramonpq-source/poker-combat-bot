@@ -475,6 +475,10 @@
       display: none;
     }
 
+    .quick-figures-button {
+      display: none;
+    }
+
     .left-guidance-box {
       display: none;
     }
@@ -2017,7 +2021,35 @@
       text-shadow: 0 1px 0 rgba(0,0,0,.36);
     }
 
+    .hand-figures-button {
+      min-width: 132px;
+      padding: 7px 10px;
+      border: 3px solid #5d3900;
+      border-radius: 12px;
+      color: #221301;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.5), transparent 36%),
+        linear-gradient(180deg, #fff28a, #ffc42f 62%, #b86600);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.75),
+        inset 0 -3px 0 rgba(116, 62, 0, .35),
+        0 4px 0 #4b2a00,
+        0 0 12px rgba(255,196,47,.22);
+      font-size: 12px;
+      line-height: .95;
+      font-weight: 900;
+      text-transform: none;
+      white-space: normal;
+      text-align: center;
+      text-shadow: 0 1px 0 rgba(255,255,255,.42);
+    }
+
     .hand-modify-button:disabled {
+      opacity: .52;
+      filter: saturate(.55) brightness(.82);
+    }
+
+    .hand-figures-button:disabled {
       opacity: .52;
       filter: saturate(.55) brightness(.82);
     }
@@ -2035,7 +2067,21 @@
       transform: none;
     }
 
-    .phone-shell.actions-open .floating-modify-button {
+    .floating-figures-button {
+      position: absolute;
+      z-index: 18;
+      left: auto;
+      right: 22px;
+      top: 50px;
+      min-width: 124px;
+      min-height: 34px;
+      padding: 6px 14px 5px;
+      border-radius: 13px;
+      transform: none;
+    }
+
+    .phone-shell.actions-open .floating-modify-button,
+    .phone-shell.actions-open .floating-figures-button {
       opacity: 0;
       pointer-events: none;
       transform: translateY(4px);
@@ -2095,6 +2141,14 @@
       pointer-events: auto;
     }
 
+    .phone-shell.hand-overview-open .cards,
+    .phone-shell.hand-overview-open .side-arrow,
+    .phone-shell.hand-overview-open .hand-count-badge {
+      opacity: 0 !important;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
     .hand-overview-grid {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -2116,6 +2170,11 @@
     .hand-overview .card.is-selected,
     .hand-overview .card:hover {
       transform: translateY(-4px) scale(1.04);
+      filter: brightness(1.08) saturate(1.08);
+      box-shadow:
+        0 0 0 2px rgba(255, 214, 86, .95),
+        0 0 0 5px rgba(11, 39, 78, .78),
+        0 10px 18px rgba(26, 16, 6, .36);
     }
 
     .cards {
@@ -2161,12 +2220,25 @@
       height: 79px;
       flex: 0 0 54px;
       display: block;
+      position: relative;
       border-radius: 8px;
       background: #fff4d8;
       box-shadow: 0 8px 12px rgba(51, 34, 15, .34);
       transition: translate .09s ease, transform .16s ease, filter .16s ease, outline-color .16s ease, box-shadow .16s ease;
       overflow: hidden;
       touch-action: none;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 2px solid transparent;
+      box-shadow: inset 0 0 0 0 rgba(255, 226, 125, 0), 0 0 0 0 rgba(82, 197, 255, 0);
+      pointer-events: none;
+      transition: border-color .16s ease, box-shadow .16s ease, opacity .16s ease;
+      opacity: 0;
     }
 
     .cards .card {
@@ -2213,6 +2285,15 @@
       filter: brightness(1.08);
       transform: translateY(calc((var(--hand-rise, 0px) + 14px) * -1)) rotate(var(--hand-rotate, 0deg)) scale(var(--hand-hover-scale, 1.05));
       outline: 3px solid var(--gold);
+    }
+
+    .card.is-selected::after {
+      border-color: rgba(255, 222, 120, .98);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 245, 210, .92),
+        0 0 0 3px rgba(10, 34, 66, .82),
+        0 0 18px rgba(255, 210, 58, .58);
+      opacity: 1;
     }
 
     .card.is-draft-origin {
@@ -3402,9 +3483,54 @@
         pointer-events: auto;
       }
 
+      .quick-figures-button {
+        position: absolute;
+        z-index: 76;
+        right: 14px;
+        bottom: 56px;
+        width: min(176px, calc(var(--land-hand) - 24px));
+        min-height: 40px;
+        display: grid;
+        place-items: center;
+        padding: 3px 7px;
+        border: 2px solid #5d3900;
+        border-radius: 10px;
+        color: #221301;
+        background:
+          linear-gradient(135deg, rgba(255,255,255,.5), transparent 36%),
+          linear-gradient(180deg, #fff28a, #ffc42f 62%, #b86600);
+        box-shadow:
+          inset 0 2px 0 rgba(255,255,255,.75),
+          inset 0 -3px 0 rgba(116, 62, 0, .35),
+          0 4px 0 #4b2a00,
+          0 0 14px rgba(255,196,47,.22);
+        font-size: 11px;
+        line-height: .95;
+        font-weight: 900;
+        text-transform: none;
+        white-space: normal;
+        text-align: center;
+        text-shadow: 0 1px 0 rgba(255,255,255,.42);
+        pointer-events: auto;
+      }
+
       .quick-modify-button:disabled {
         opacity: .52;
         filter: saturate(.55) brightness(.85);
+      }
+
+      .quick-figures-button:disabled {
+        opacity: .52;
+        filter: saturate(.55) brightness(.85);
+      }
+
+      .phone-shell.actions-open .quick-modify-button,
+      .phone-shell.actions-open .quick-figures-button,
+      .phone-shell.hand-overview-open .quick-modify-button,
+      .phone-shell.hand-overview-open .quick-figures-button {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(4px);
       }
 
       .left-guidance-box {
@@ -3466,21 +3592,21 @@
       .defense-popup {
         left: calc(var(--land-left) + 16px);
         right: calc(var(--land-hand) + 16px);
-        top: 40px;
+        top: 18px;
         transform: none;
-        min-height: 45px;
-        max-height: 56px;
-        padding: 6px 8px;
-        grid-template-columns: auto minmax(0, 1fr) auto;
+        min-height: 76px;
+        max-height: 98px;
+        padding: 8px 10px;
+        grid-template-columns: minmax(136px, auto) minmax(0, 1fr) auto;
         align-items: center;
-        gap: 6px;
+        gap: 10px;
         border-width: 2px;
-        border-radius: 12px;
+        border-radius: 14px;
         box-shadow:
-          0 8px 14px rgba(55, 0, 0, .38),
+          0 10px 18px rgba(55, 0, 0, .42),
           0 0 0 2px rgba(255, 84, 58, .26),
           inset 0 0 0 1px rgba(255,255,255,.14),
-          inset 0 -10px 18px rgba(0,0,0,.22);
+          inset 0 -12px 22px rgba(0,0,0,.24);
       }
 
       .defense-popup.show {
@@ -3499,28 +3625,29 @@
       }
 
       .defense-popup-title {
-        font-size: 15px;
+        font-size: clamp(15px, 2.2vw, 21px);
         line-height: .95;
         white-space: nowrap;
       }
 
       .defense-popup-body {
         min-width: 0;
-        font-size: 9.5px;
-        line-height: 1.05;
+        max-width: 30ch;
+        font-size: clamp(10px, 1.5vw, 13px);
+        line-height: 1.12;
       }
 
       .defense-popup-actions {
-        grid-template-columns: repeat(2, minmax(0, 62px));
-        gap: 4px;
+        grid-template-columns: repeat(2, minmax(74px, 1fr));
+        gap: 6px;
       }
 
       .defense-popup-actions button {
-        min-height: 27px;
-        padding: 3px 5px;
+        min-height: 38px;
+        padding: 4px 7px;
         border-width: 1px;
-        border-radius: 8px;
-        font-size: 8px;
+        border-radius: 9px;
+        font-size: 9px;
       }
 
       .combat-screen {
@@ -3641,6 +3768,10 @@
         display: none;
       }
 
+      .hand-figures-button {
+        display: none;
+      }
+
       .hand-count-badge {
         top: 39px;
         left: 10px;
@@ -3699,8 +3830,21 @@
         left: auto;
         right: 0;
         top: 38px;
-        width: 292px;
-        height: 88px;
+        width: 216px;
+        height: auto;
+        min-height: 0;
+        padding: 8px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+        border: 2px solid #09254a;
+        border-radius: 13px;
+        background:
+          linear-gradient(180deg, rgba(8, 24, 42, .96), rgba(5, 16, 32, .92)),
+          radial-gradient(circle at top right, rgba(255, 196, 47, .14), transparent 44%);
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,.08),
+          0 10px 22px rgba(0, 10, 24, .42);
         transform: none;
         transform-origin: top right;
       }
@@ -3714,40 +3858,32 @@
       .phone-shell.actions-open .hand-tray header .action-wheel {
         opacity: 1;
         transform: none;
-        pointer-events: none;
+        pointer-events: auto;
       }
 
       .phone-shell.actions-open .wheel-action {
         pointer-events: auto;
       }
 
-      .action-wheel::before {
-        width: 204px;
-        height: 72px;
+      .hand-tray header .action-wheel::before {
+        display: none;
       }
 
-      .wheel-action {
-        width: 70px;
-        min-height: 24px;
-        padding: 3px 5px;
-        font-size: 8.5px;
+      .hand-tray header .wheel-action {
+        position: static;
+        left: auto;
+        top: auto;
+        width: 100%;
+        min-height: 31px;
+        padding: 4px 6px;
+        font-size: 8.8px;
+        transform: none !important;
       }
 
-      .wheel-action.projectile-action {
-        width: 92px;
-        font-size: 7.7px;
+      .hand-tray header .wheel-action.projectile-action {
+        width: 100%;
+        font-size: 8px;
       }
-
-      .wheel-action[data-action="figures"] { --x: -86px !important; --y: -28px !important; }
-      .wheel-action[data-action="draw"] { --x: -86px !important; --y: 0px !important; }
-      .wheel-action[data-action="pass"] { --x: 0px !important; --y: -28px !important; }
-      .wheel-action[data-action="projectile"] { --x: 92px !important; --y: -22px !important; }
-      .wheel-action[data-action="projectile-only"] { --x: 92px !important; --y: 6px !important; }
-      .wheel-action[data-action="attack-mode"] { --x: -44px !important; --y: 28px !important; }
-      .wheel-action[data-action="confirm"] { --x: 48px !important; --y: 28px !important; }
-      .wheel-action[data-action="defend"] { --x: -108px !important; --y: 20px !important; }
-      .wheel-action[data-action="skip-defense"] { --x: -108px !important; --y: -8px !important; }
-      .wheel-action[data-action="clear"] { --x: 0px !important; --y: 0px !important; }
 
       button:not(:disabled):active,
       button.is-pressing,
@@ -4423,6 +4559,7 @@
       </article>
     </section>
     <section class="left-guidance-box" data-left-guidance aria-label="Indicaciones de tutorial y combate"></section>
+    <button class="quick-figures-button" type="button" data-action="figures" data-figures-quick hidden>2 Figuras → 4 Cartas</button>
     <button class="quick-modify-button" type="button" data-action="modify">Modificar</button>
     <section class="defense-popup" data-defense-popup aria-live="assertive" aria-hidden="true">
       <div class="defense-popup-kicker">Defensa activa</div>
@@ -4522,7 +4659,6 @@
         <div class="action-hub" aria-label="Acciones de partida">
           <button class="actions-button" type="button" data-action-toggle aria-expanded="false">Acciones</button>
           <div class="action-wheel" role="menu">
-            <button class="wheel-action" style="--x:-82px;--y:-78px" type="button" data-action="figures">2 Fig.</button>
             <button class="wheel-action" style="--x:-82px;--y:-45px" type="button" data-action="draw">Robar ♦</button>
             <button class="wheel-action" style="--x:0px;--y:-51px" type="button" data-action="pass">Pasar</button>
             <button class="wheel-action projectile-action" style="--x:98px;--y:-28px" type="button" data-action="projectile" title="Modo Proyectil: añade una pica al ataque y la descarta">Modo Proyectil</button>
@@ -4536,6 +4672,7 @@
         </div>
       </header>
       <strong class="hand-count-badge" data-hand-count>0/18</strong>
+      <button class="hand-figures-button floating-figures-button" type="button" data-action="figures" data-figures-hand hidden>2 Figuras → 4 Cartas</button>
       <button class="hand-modify-button floating-modify-button" type="button" data-action="modify">Modificar</button>
       <div class="hand-overview" data-hand-overview aria-label="Mano completa">
         <div class="hand-overview-grid" data-hand-overview-cards></div>
@@ -6337,6 +6474,7 @@
       button.className = "card";
       button.draggable = context === "hand" && !card.bridgeDraftPreview;
       button.title = cardText(card);
+      button.setAttribute("aria-pressed", state.selected.includes(card.id) ? "true" : "false");
       if (card.bridgeDraftPreview) {
         button.disabled = true;
         button.classList.add("is-draft-preview");
@@ -6422,20 +6560,45 @@
         : window.matchMedia("(max-height: 760px)").matches
           ? 50
           : 54;
-      const narrow = window.innerWidth <= 430 || (tray.clientWidth || 0) <= 390;
-      const sideSafety = count > 12 ? (narrow ? 104 : 82) : count > 9 ? 68 : 44;
-      const usableWidth = Math.max(cardWidth, (tray.clientWidth || 420) - sideSafety);
-      const targetWidth = usableWidth * (count > 14 ? (narrow ? .74 : .82) : count > 12 ? .86 : count > 9 ? .9 : 1);
+      const trayWidth = tray.clientWidth || 420;
+      const narrow = window.innerWidth <= 430 || trayWidth <= 390;
+      const sideSafety = count > 14
+        ? (narrow ? 72 : 62)
+        : count > 12
+          ? (narrow ? 88 : 72)
+          : count > 9
+            ? 60
+            : 44;
+      const usableWidth = Math.max(cardWidth, trayWidth - sideSafety);
+      const targetWidth = usableWidth * (
+        count > 16
+          ? (narrow ? .96 : .94)
+          : count > 14
+            ? (narrow ? .92 : .9)
+            : count > 12
+              ? (narrow ? .9 : .88)
+              : count > 9
+                ? .92
+                : 1
+      );
       const naturalOverlap = count > 1
         ? cardWidth - ((targetWidth - cardWidth) / Math.max(1, count - 1))
         : 0;
-      const minOverlap = count > 14 ? cardWidth * .72 : count > 12 ? cardWidth * .64 : count > 9 ? cardWidth * .54 : 22;
+      const minOverlap = count > 16
+        ? cardWidth * .64
+        : count > 14
+          ? cardWidth * .67
+          : count > 12
+            ? cardWidth * .61
+            : count > 9
+              ? cardWidth * .54
+              : 22;
       const maxOverlap = count > 14 ? cardWidth - 6 : count > 12 ? cardWidth - 8 : cardWidth - 12;
       const overlap = count <= 7 ? 22 : Math.max(minOverlap, Math.min(maxOverlap, naturalOverlap));
       const visibleStep = Math.max(1, cardWidth - overlap);
-      const denseScale = count > 14 ? .8 : count > 12 ? .86 : count > 9 ? .94 : 1;
+      const denseScale = count > 16 ? .76 : count > 14 ? .79 : count > 12 ? .86 : count > 9 ? .94 : 1;
       const mid = (count - 1) / 2;
-      const maxAngle = count > 14 ? 5.5 : count > 12 ? 7 : 8;
+      const maxAngle = count > 16 ? 4.2 : count > 14 ? 5.1 : count > 12 ? 6.6 : 8;
       const angle = count > 1 ? -maxAngle + ((maxAngle * 2) * index / (count - 1)) : 0;
       const rise = Math.max(0, (count > 14 ? 8 : count > 12 ? 10 : 13) - Math.abs(index - mid) * (count > 14 ? .38 : count > 12 ? .65 : 2.15));
       tray.style.setProperty("--fan-overlap", `${overlap.toFixed(2)}px`);
@@ -6858,7 +7021,7 @@
       const defenseTurn = !!state.pendingDefense && state.pendingDefense.defenderIndex === 0;
       const player = state.players[0];
       const attackReady = playerTurn && player && playerCanAttack(player);
-      const actionStates = EMBEDDED_REAL_GAME && state.bridgeActions
+	      const actionStates = EMBEDDED_REAL_GAME && state.bridgeActions
         ? {
           modify: !!state.bridgeActions.modify,
           draw: !!state.bridgeActions.draw,
@@ -6885,11 +7048,28 @@
         "skip-defense": defenseTurn,
         clear: playerTurn || defenseTurn
       };
-      Object.entries(actionStates).forEach(([action, enabled]) => {
-        document.querySelectorAll(`[data-action="${action}"]`).forEach((button) => {
-          button.disabled = !enabled;
+	      Object.entries(actionStates).forEach(([action, enabled]) => {
+	        document.querySelectorAll(`[data-action="${action}"]`).forEach((button) => {
+	          button.disabled = !enabled;
+	        });
+	      });
+        const figuresEnabled = !!actionStates.figures;
+        document.querySelectorAll("[data-figures-quick], [data-figures-hand]").forEach((button) => {
+          button.hidden = !figuresEnabled;
+          button.disabled = !figuresEnabled;
         });
-      });
+        const contextualVisibility = {
+          defend: !!actionStates.defend,
+          "skip-defense": !!actionStates["skip-defense"],
+          confirm: !!actionStates.confirm,
+          projectile: !!actionStates.projectile || state.attackMode,
+          "projectile-only": !!actionStates["projectile-only"] || state.projectileOnlyMode
+        };
+        Object.entries(contextualVisibility).forEach(([action, visible]) => {
+          document.querySelectorAll(`.action-wheel [data-action="${action}"]`).forEach((button) => {
+            button.hidden = !visible;
+          });
+        });
 	      syncAttackReadiness();
 	    }
 
@@ -6993,7 +7173,18 @@
       if (!touchDrag || event.pointerId !== touchDrag.pointerId) return;
       const drag = touchDrag;
       touchDrag = null;
-      if (!drag.active) return;
+      if (!drag.active) {
+        const tappedHandCard = !cancelled
+          && drag.source
+          && drag.source.closest("[data-hand-cards]")
+          && drag.cardId;
+        if (tappedHandCard) {
+          suppressCardClickUntil = Date.now() + 250;
+          closeActions();
+          toggleSelected(drag.cardId);
+        }
+        return;
+      }
       event.preventDefault();
       suppressCardClickUntil = Date.now() + 500;
       const dropZone = cancelled
