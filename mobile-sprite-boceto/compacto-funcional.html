@@ -2280,7 +2280,7 @@
 
     .touch-drag-ghost {
       position: fixed;
-      z-index: 80;
+      z-index: 2147483000;
       width: 58px;
       height: 86px;
       border-radius: 9px;
@@ -2291,6 +2291,7 @@
       opacity: .98;
       pointer-events: none;
       transform: translate(-50%, -50%) scale(1.08);
+      contain: layout paint;
     }
 
     .cards .card + .card { margin-left: calc(var(--fan-overlap) * -1); }
@@ -4124,7 +4125,26 @@
       }
 
       .zone-grid .core-slot .zone-title {
-        font-size: 8px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 1px;
+        font-size: 7.4px;
+        line-height: .98;
+        letter-spacing: 0;
+        overflow: visible;
+      }
+
+      .zone-grid .core-slot .zone-title span,
+      .zone-grid .core-slot .zone-title b {
+        white-space: nowrap;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .zone-grid .core-slot .zone-title b {
+        font-size: 8.2px;
+        text-align: right;
       }
 
       .zone-grid .zone-defense .zone-cards,
@@ -7143,6 +7163,7 @@
       ghost.classList.remove("is-selected", "is-touch-dragging");
       ghost.removeAttribute("draggable");
       ghost.setAttribute("aria-hidden", "true");
+      ghost.style.zIndex = "2147483000";
       document.body.appendChild(ghost);
       return ghost;
     }
