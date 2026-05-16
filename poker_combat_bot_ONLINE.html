@@ -6852,6 +6852,30 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   z-index: 1000;
   font-weight: 500;
   letter-spacing: 0.02em;
+  transition:background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
+}
+
+#olStatusBar.ol-status-my-turn {
+  background: linear-gradient(90deg, rgba(56, 214, 166, 0.22), rgba(35, 216, 255, 0.14));
+  border-bottom-color: rgba(138,255,203,.55);
+  box-shadow: 0 0 18px rgba(138,255,203,.12);
+}
+
+#olStatusBar.ol-status-rival-turn,
+#olStatusBar.ol-status-reconnecting {
+  background: linear-gradient(90deg, rgba(255, 166, 62, 0.2), rgba(255, 93, 52, 0.12));
+  border-bottom-color: rgba(255,178,46,.45);
+}
+
+#olStatusBar.ol-status-defense {
+  background: linear-gradient(90deg, rgba(255, 109, 109, 0.22), rgba(255, 166, 62, 0.12));
+  border-bottom-color: rgba(255,109,109,.55);
+}
+
+#olStatusBar.ol-status-victory {
+  background: linear-gradient(90deg, rgba(255, 214, 92, 0.24), rgba(35, 216, 255, 0.14));
+  border-bottom-color: rgba(255,214,92,.65);
+  color: #fff6cb;
 }
 
 #olLobbyScreen {
@@ -7018,8 +7042,9 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 998;
-  backdrop-filter: blur(2px);
+  z-index: 9600;
+  backdrop-filter: blur(8px);
+  padding: max(22px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
 }
 
 .ol-waiting-spinner {
@@ -7046,6 +7071,8 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
 .ol-waiting-opponent {
   font-size: 0.9rem;
   color: var(--muted);
+  text-align: center;
+  max-width: min(440px, calc(100vw - 48px));
 }
 
 .ol-waiting-intel {
@@ -7152,6 +7179,110 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   cursor: not-allowed;
   opacity: 0.55;
   box-shadow: none;
+}
+
+body.online-waiting-turn .desktop-compact-shell {
+  filter: saturate(0.92) brightness(0.84);
+}
+
+body.online-waiting-turn.mobile-compact-mode .desktop-compact-shell,
+body.online-waiting-turn.mobile-panorama-mode .desktop-compact-shell,
+body.online-waiting-turn.mobile-pc-compact-mode .desktop-compact-shell {
+  transform: scale(0.995);
+}
+
+body.mobile-compact-mode #olWaitingVeil,
+body.mobile-panorama-mode #olWaitingVeil,
+body.mobile-pc-compact-mode #olWaitingVeil {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(35,216,255,.16), transparent 28%),
+    radial-gradient(circle at 50% 80%, rgba(255,178,46,.14), transparent 24%),
+    linear-gradient(180deg, rgba(4,10,18,.96), rgba(5,8,13,.965));
+}
+
+body.mobile-compact-mode .ol-waiting-spinner,
+body.mobile-panorama-mode .ol-waiting-spinner,
+body.mobile-pc-compact-mode .ol-waiting-spinner {
+  width: 62px;
+  height: 62px;
+  border-width: 4px;
+  margin-bottom: 18px;
+  box-shadow: 0 0 24px rgba(35,216,255,.14);
+}
+
+body.mobile-compact-mode #olWaitingText,
+body.mobile-panorama-mode #olWaitingText,
+body.mobile-pc-compact-mode #olWaitingText {
+  font-size: clamp(1.2rem, 4.8vw, 1.65rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #f4fbff;
+  text-shadow: 0 0 18px rgba(35,216,255,.18);
+}
+
+body.mobile-compact-mode .ol-waiting-opponent,
+body.mobile-panorama-mode .ol-waiting-opponent,
+body.mobile-pc-compact-mode .ol-waiting-opponent {
+  font-size: clamp(0.9rem, 3.1vw, 1rem);
+  color: rgba(226,236,255,.82);
+  line-height: 1.45;
+}
+
+body.mobile-compact-mode .ol-waiting-intel,
+body.mobile-panorama-mode .ol-waiting-intel,
+body.mobile-pc-compact-mode .ol-waiting-intel {
+  width: min(460px, calc(100vw - 28px));
+  margin-top: 20px;
+  padding: 18px 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(116,166,255,.22);
+  background:
+    linear-gradient(180deg, rgba(12,24,44,.92), rgba(6,12,26,.95));
+  box-shadow:
+    0 18px 48px rgba(0,0,0,.44),
+    0 0 0 1px rgba(255,255,255,.03) inset;
+}
+
+body.mobile-compact-mode .ol-waiting-intel-grid,
+body.mobile-panorama-mode .ol-waiting-intel-grid,
+body.mobile-pc-compact-mode .ol-waiting-intel-grid {
+  gap: 8px;
+}
+
+body.mobile-compact-mode .ol-waiting-intel-card,
+body.mobile-panorama-mode .ol-waiting-intel-card,
+body.mobile-pc-compact-mode .ol-waiting-intel-card {
+  min-height: 82px;
+  padding: 11px 10px 9px;
+  border-radius: 16px;
+}
+
+body.mobile-compact-mode .ol-waiting-intel-value,
+body.mobile-panorama-mode .ol-waiting-intel-value,
+body.mobile-pc-compact-mode .ol-waiting-intel-value {
+  font-size: clamp(1.45rem, 5vw, 1.85rem);
+}
+
+body.mobile-compact-mode .ol-waiting-actions,
+body.mobile-panorama-mode .ol-waiting-actions,
+body.mobile-pc-compact-mode .ol-waiting-actions {
+  width: min(460px, calc(100vw - 28px));
+}
+
+body.mobile-compact-mode .ol-waiting-actions .ol-button,
+body.mobile-panorama-mode .ol-waiting-actions .ol-button,
+body.mobile-pc-compact-mode .ol-waiting-actions .ol-button {
+  width: 100%;
+  min-width: 0;
+}
+
+body.mobile-compact-mode .ol-waiting-save-note,
+body.mobile-panorama-mode .ol-waiting-save-note,
+body.mobile-pc-compact-mode .ol-waiting-save-note {
+  width: min(460px, calc(100vw - 28px));
+  font-size: 0.82rem;
 }
 
 .ol-card-face-down {
@@ -11133,6 +11264,26 @@ body.story-argos-hack-ui{
 .compact-log-panel,
 .compact-mode-tabs{
   display:none;
+}
+
+.compact-top-status.turn-self{
+  border-color:rgba(138,255,203,.48) !important;
+  box-shadow:0 0 18px rgba(138,255,203,.12), inset 0 0 18px rgba(138,255,203,.08) !important;
+}
+
+.compact-top-status.turn-rival{
+  border-color:rgba(255,178,46,.42) !important;
+  box-shadow:0 0 18px rgba(255,178,46,.10), inset 0 0 18px rgba(255,178,46,.06) !important;
+}
+
+.compact-top-status.turn-defense{
+  border-color:rgba(255,109,109,.52) !important;
+  box-shadow:0 0 20px rgba(255,109,109,.14), inset 0 0 18px rgba(255,109,109,.08) !important;
+}
+
+.compact-top-status.turn-victory{
+  border-color:rgba(255,214,92,.55) !important;
+  box-shadow:0 0 22px rgba(255,214,92,.16), inset 0 0 18px rgba(255,214,92,.08) !important;
 }
 
 @media (max-width: 820px) and (orientation: portrait) and (pointer: coarse),
@@ -19705,9 +19856,149 @@ var _ol = {
   roomCode: '',
   socket: null,
   sendTimer: null,
+  sessionId: '',
+  reconnecting: false,
+  opponentConnectionState: 'connected',
   pendingLoadCode: '',
   pendingLoadMeta: null
 };
+
+const ONLINE_SESSION_STORAGE_KEY = 'pocobot-online-session-id';
+
+function olCreateSessionId(){
+  if(window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return `ol-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function olEnsureSessionId(forceNew=false){
+  if(forceNew) _ol.sessionId = '';
+  if(_ol.sessionId) return _ol.sessionId;
+  try{
+    if(!forceNew){
+      const stored = window.sessionStorage.getItem(ONLINE_SESSION_STORAGE_KEY);
+      if(stored){
+        _ol.sessionId = stored;
+        return _ol.sessionId;
+      }
+    }
+  }catch(_err){}
+  _ol.sessionId = olCreateSessionId();
+  try{
+    window.sessionStorage.setItem(ONLINE_SESSION_STORAGE_KEY, _ol.sessionId);
+  }catch(_err){}
+  return _ol.sessionId;
+}
+
+function olGetStatusSnapshot(){
+  if(!_ol.active){
+    return {
+      text:'🌐 Sin conexión online activa',
+      tone:'rival-turn'
+    };
+  }
+  if(state.winner){
+    return {
+      text:`🌐 Sala ${_ol.roomCode || '----'} · 🏆 ${state.winner} gana la partida`,
+      tone:'victory'
+    };
+  }
+  if(_ol.reconnecting){
+    return {
+      text:`🌐 Sala ${_ol.roomCode || '----'} · Reconectando con el servidor...`,
+      tone:'reconnecting'
+    };
+  }
+  if(_ol.opponentConnectionState === 'reconnecting'){
+    return {
+      text:`🌐 Sala ${_ol.roomCode || '----'} · ${_ol.opponentNick || 'Tu rival'} está reconectando...`,
+      tone:'reconnecting'
+    };
+  }
+  if(state.pendingDefense){
+    const defenderIdx = state.pendingDefense.defenderIndex;
+    const defenderName = state.players?.[defenderIdx]?.name || 'Defensor';
+    if(defenderIdx === _ol.myIndex){
+      return {
+        text:`🌐 Sala ${_ol.roomCode || '----'} · DEFIENDE AHORA · ${defenderName}`,
+        tone:'defense'
+      };
+    }
+    return {
+      text:`🌐 Sala ${_ol.roomCode || '----'} · ${defenderName} está defendiendo`,
+      tone:'rival-turn'
+    };
+  }
+  const currentName = state.players?.[state.currentPlayer]?.name || 'Turno';
+  if(state.currentPlayer === _ol.myIndex){
+    return {
+      text:`🌐 Sala ${_ol.roomCode || '----'} · TU TURNO · ${currentName}`,
+      tone:'my-turn'
+    };
+  }
+  return {
+    text:`🌐 Sala ${_ol.roomCode || '----'} · Turno de ${currentName}`,
+    tone:'rival-turn'
+  };
+}
+
+function olRenderStatusBar(){
+  const bar = document.getElementById('olStatusBar');
+  if(!bar) return;
+  if(!_ol.active){
+    bar.classList.add('ol-hidden');
+    return;
+  }
+  const snapshot = olGetStatusSnapshot();
+  bar.textContent = snapshot.text;
+  bar.className = `ol-status-${snapshot.tone}`;
+  bar.classList.remove('ol-hidden');
+}
+
+function olGetCompactTurnIndicator(){
+  if(state.winner){
+    return {
+      label:'Victoria',
+      value:`🏆 ${state.winner}`,
+      tone:'turn-victory'
+    };
+  }
+  if(_ol.active){
+    if(_ol.reconnecting){
+      return {
+        label:'Red',
+        value:'Reconectando',
+        tone:'turn-rival'
+      };
+    }
+    if(_ol.opponentConnectionState === 'reconnecting'){
+      return {
+        label:'Rival',
+        value:'Reconecta',
+        tone:'turn-rival'
+      };
+    }
+    if(state.pendingDefense){
+      return state.pendingDefense.defenderIndex === _ol.myIndex
+        ? { label:'Defiende', value:'Ahora', tone:'turn-defense' }
+        : { label:'Defensa', value:state.players?.[state.pendingDefense.defenderIndex]?.name || 'Rival', tone:'turn-rival' };
+    }
+    return state.currentPlayer === _ol.myIndex
+      ? { label:'Tu turno', value:'Actua', tone:'turn-self' }
+      : { label:'Turno rival', value:state.players?.[state.currentPlayer]?.name || 'Rival', tone:'turn-rival' };
+  }
+  if(state.pendingDefense){
+    return {
+      label:'Defensa',
+      value:state.players?.[state.pendingDefense.defenderIndex]?.name || 'Activa',
+      tone:'turn-defense'
+    };
+  }
+  return {
+    label:'Turno',
+    value:state.players?.[state.currentPlayer]?.name || String(Math.max(0, state.turnCount || 0)).padStart(2, '0'),
+    tone:''
+  };
+}
 
 let defenseUiCueKey = '';
 let defenseAlertTimer = null;
@@ -20008,6 +20299,8 @@ function stopOnlineModeUi(){
   _ol.nickname = '';
   _ol.roomCode = '';
   _ol.opponentNick = '';
+  _ol.reconnecting = false;
+  _ol.opponentConnectionState = 'connected';
   _ol.pendingLoadCode = '';
   _ol.pendingLoadMeta = null;
   olLastFxCueId = null;
@@ -20016,6 +20309,7 @@ function stopOnlineModeUi(){
     window.clearTimeout(olWaitingRevealTimer);
     olWaitingRevealTimer = null;
   }
+  olRenderStatusBar();
 }
 function returnToMainMenu(){
   const leavingOnline = _ol.active || !!_ol.socket || state.gameMode === 'online';
@@ -23504,9 +23798,10 @@ async function requestOnlineLobbyLoadGame(){
       phase: payload.ph || 'Turno',
       turn: Number(payload.tc) || 0
     };
+    olEnsureSessionId();
     olSetStatus('Conectando y preparando sala desde código...');
     olConnect();
-    _ol.socket.emit('create_room', { nickname: nick });
+    _ol.socket.emit('create_room', { nickname: nick, sessionId: _ol.sessionId });
   }catch(err){
     _ol.pendingLoadCode = '';
     _ol.pendingLoadMeta = null;
@@ -26739,13 +27034,14 @@ function renderDesktopCompactHud(){
     const node = document.getElementById(id);
     return node ? node.innerHTML : '';
   };
+  const compactTurnIndicator = olGetCompactTurnIndicator();
 
   const compactPlayerName = document.getElementById('compactPlayerName');
   if(compactPlayerName) compactPlayerName.textContent = player.name;
   const compactTurnDialPlayer = document.getElementById('compactTurnDialPlayer');
-  if(compactTurnDialPlayer) compactTurnDialPlayer.textContent = 'Turno';
+  if(compactTurnDialPlayer) compactTurnDialPlayer.textContent = compactTurnIndicator.label;
   const compactTurnDialValue = document.getElementById('compactTurnDialValue');
-  if(compactTurnDialValue) compactTurnDialValue.textContent = String(Math.max(0, state.turnCount || 0)).padStart(2, '0');
+  if(compactTurnDialValue) compactTurnDialValue.textContent = compactTurnIndicator.value;
   const compactTopFuelValue = document.getElementById('compactTopFuelValue');
   if(compactTopFuelValue) compactTopFuelValue.textContent = String(getVisibleDeckCount(playerIdx));
   const compactTopCoreValue = document.getElementById('compactTopCoreValue');
@@ -26754,7 +27050,19 @@ function renderDesktopCompactHud(){
     compactTopCoreValue.textContent = fuelAttackText.includes('♠') ? fuelAttackText : `${fuelAttackText} ♠`;
   }
   const compactPlayerStatus = document.getElementById('compactPlayerStatus');
-  if(compactPlayerStatus) compactPlayerStatus.textContent = playerBuild.combatReady ? 'Combate listo' : playerBuild.mounted ? 'Montado' : 'Montaje';
+  if(compactPlayerStatus){
+    compactPlayerStatus.textContent = state.winner
+      ? (winnerIdx === playerIdx ? 'Ganador' : 'Derrota')
+      : state.pendingDefense && getInteractivePlayerIndex() === playerIdx
+        ? 'Defensa'
+        : focusIdx === playerIdx
+          ? 'Turno'
+          : playerBuild.combatReady
+            ? 'Combate listo'
+            : playerBuild.mounted
+              ? 'Montado'
+              : 'Montaje';
+  }
   const compactCoreSummary = document.getElementById('compactCoreSummary');
   if(compactCoreSummary) compactCoreSummary.textContent = `${createCoreArray(player).length}/3`;
   const compactAttackSummary = document.getElementById('compactAttackSummary');
@@ -26823,11 +27131,22 @@ function renderDesktopCompactHud(){
   syncCompactZoneCardSizing(compactRivalFuelCards, (rival.fuel || []).length, { fuel:true, rival:true });
 
   const compactTopStatus = document.getElementById('compactTopStatus');
-  if(compactTopStatus) compactTopStatus.textContent = sourceText('mechaStatusBanner') || sourceText('rightStatusText') || 'Lectura tactica lista.';
+  if(compactTopStatus){
+    const compactTopbarUsesTurnSignal = document.body?.classList.contains('mobile-compact-mode')
+      || document.body?.classList.contains('mobile-panorama-mode')
+      || document.body?.classList.contains('mobile-pc-compact-mode');
+    compactTopStatus.textContent = compactTopbarUsesTurnSignal
+      ? compactTurnIndicator.label
+      : (sourceText('mechaStatusBanner') || sourceText('rightStatusText') || 'Lectura tactica lista.');
+    compactTopStatus.classList.remove('turn-self', 'turn-rival', 'turn-defense', 'turn-victory');
+    if(compactTopbarUsesTurnSignal && compactTurnIndicator.tone){
+      compactTopStatus.classList.add(compactTurnIndicator.tone);
+    }
+  }
   const compactWinnerBanner = document.getElementById('compactWinnerBanner');
   const compactWinnerBannerName = document.getElementById('compactWinnerBannerName');
   if(compactWinnerBanner && compactWinnerBannerName){
-    compactWinnerBannerName.textContent = state.winner || '';
+    compactWinnerBannerName.textContent = state.winner ? `🏆 ${state.winner}` : '';
     compactWinnerBanner.classList.toggle('show', !!state.winner);
   }
   const compactDefenseWarning = document.getElementById('compactDefenseWarning');
@@ -26904,7 +27223,14 @@ function renderDesktopCompactHud(){
   const compactRightStatusText = document.getElementById('compactRightStatusText');
   if(compactRightStatusText) compactRightStatusText.textContent = sourceText('rightStatusText');
   const compactTopStatusText = document.getElementById('compactTopStatusText');
-  if(compactTopStatusText) compactTopStatusText.textContent = String(getVisibleDiscardCount(playerIdx));
+  if(compactTopStatusText){
+    const compactTopbarUsesTurnSignal = document.body?.classList.contains('mobile-compact-mode')
+      || document.body?.classList.contains('mobile-panorama-mode')
+      || document.body?.classList.contains('mobile-pc-compact-mode');
+    compactTopStatusText.textContent = compactTopbarUsesTurnSignal
+      ? compactTurnIndicator.value
+      : String(getVisibleDiscardCount(playerIdx));
+  }
   const compactFuelToAttackValue = document.getElementById('compactFuelToAttackValue');
   if(compactFuelToAttackValue){
     const fuelAttackText = sourceText('fuelToAttackValue') || '0 × 2';
@@ -29271,7 +29597,7 @@ function renderRadarMecha(){
   if(focusPlayer && mainBanner){
     const focusBuild = getBuildStatus(focusPlayer);
     const focusReq = getPilotCombatRequirement(focusPlayer);
-    if(state.winner) mainBanner.textContent = `${state.winner} · Victoria confirmada`;
+    if(state.winner) mainBanner.textContent = `🏆 ${state.winner} · Victoria confirmada`;
     else if(focusBuild.combatReady) mainBanner.textContent = `${focusPlayer.name} · Combate listo`;
     else if(focusBuild.mounted && !focusReq.ready) mainBanner.textContent = `${focusPlayer.name} · Bloqueado por piloto`;
     else if(focusBuild.mounted) mainBanner.textContent = `${focusPlayer.name} · Mecha montado`;
@@ -29282,7 +29608,7 @@ function renderRadarMecha(){
   const winnerBanner = document.getElementById('winnerBanner');
   const winnerBannerName = document.getElementById('winnerBannerName');
   if(winnerBanner && winnerBannerName){
-    winnerBannerName.textContent = state.winner || '';
+    winnerBannerName.textContent = state.winner ? `🏆 ${state.winner}` : '';
     winnerBanner.classList.toggle('show', !!state.winner);
   }
 }
@@ -29868,6 +30194,7 @@ function render(){
     : state.pendingDefense
       ? 'Esquiva con ♦'
       : state.phase;
+  olRenderStatusBar();
   document.getElementById('deckCount').textContent = getVisibleDeckCount();
   document.getElementById('discardCount').textContent = getVisibleDiscardCount();
 
@@ -33794,10 +34121,49 @@ console.log('[DEBUG] window.io:', window.io);
 
 function olConnect() {
   if (_ol.socket) return;
-  _ol.socket = io();
+  _ol.socket = io({
+    reconnection: true,
+    reconnectionAttempts: 12,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    timeout: 20000
+  });
 
-  _ol.socket.on('room_created', ({ code }) => {
+  _ol.socket.on('connect', () => {
+    const shouldRejoin = _ol.active && _ol.role && _ol.roomCode && _ol.sessionId;
+    if(shouldRejoin && _ol.reconnecting){
+      _ol.socket.emit('rejoin_room', {
+        code: _ol.roomCode,
+        role: _ol.role,
+        sessionId: _ol.sessionId,
+        nickname: _ol.nickname
+      });
+      return;
+    }
+    _ol.reconnecting = false;
+    olRenderStatusBar();
+  });
+
+  _ol.socket.on('disconnect', (reason) => {
+    if(reason === 'io client disconnect') return;
+    if(_ol.active){
+      _ol.reconnecting = true;
+      olSetStatus('Reconectando con el servidor...', true);
+      olRenderStatusBar();
+    }
+  });
+
+  _ol.socket.on('connect_error', () => {
+    if(_ol.active){
+      _ol.reconnecting = true;
+      olSetStatus('Problema de red. Intentando reconectar...', true);
+      olRenderStatusBar();
+    }
+  });
+
+  _ol.socket.on('room_created', ({ code, sessionId }) => {
     _ol.roomCode = code;
+    if(sessionId) _ol.sessionId = sessionId;
     document.getElementById('olRoomCodeSpan').textContent = code;
     document.getElementById('olRoomCodeDisplay').classList.remove('ol-hidden');
     if(_ol.pendingLoadCode){
@@ -33806,22 +34172,43 @@ function olConnect() {
     } else {
       olSetStatus('Sala creada. Comparte el código con tu rival.');
     }
+    olRenderStatusBar();
   });
 
   _ol.socket.on('guest_joined', ({ opponentNick }) => {
     _ol.opponentNick = opponentNick;
+    _ol.opponentConnectionState = 'connected';
     olStartGame('host');
   });
 
-  _ol.socket.on('room_joined', ({ code, opponentNick }) => {
+  _ol.socket.on('room_joined', ({ code, opponentNick, sessionId }) => {
     _ol.roomCode = code;
     _ol.opponentNick = opponentNick;
+    if(sessionId) _ol.sessionId = sessionId;
+    _ol.opponentConnectionState = 'connected';
     console.log('[ONLINE] Guest received room_joined with code:', code);
     olStartGame('guest');
   });
 
+  _ol.socket.on('room_rejoined', ({ code, role, opponentNick }) => {
+    _ol.roomCode = code || _ol.roomCode;
+    _ol.role = role || _ol.role;
+    _ol.opponentNick = opponentNick || _ol.opponentNick;
+    _ol.reconnecting = false;
+    _ol.opponentConnectionState = 'connected';
+    olSetStatus('Conexion recuperada.', false);
+    olRenderStatusBar();
+    if(_ol.role === 'host'){
+      window.setTimeout(() => {
+        olSendState();
+      }, 60);
+    }
+    olUpdateWaitingUI();
+  });
+
   _ol.socket.on('room_error', (msg) => {
     olSetStatus(msg, true);
+    olRenderStatusBar();
   });
 
   _ol.socket.on('state_update', (data) => {
@@ -33842,8 +34229,27 @@ function olConnect() {
     }
   });
 
+  _ol.socket.on('opponent_connection_state', ({ status, nickname }) => {
+    _ol.opponentConnectionState = status === 'reconnecting' ? 'reconnecting' : 'connected';
+    if(nickname) _ol.opponentNick = nickname;
+    if(status === 'reconnecting'){
+      addToast(`${_ol.opponentNick || 'Tu rival'} está reconectando...`, 'warn');
+    }else if(status === 'reconnected'){
+      addToast(`${_ol.opponentNick || 'Tu rival'} ha vuelto a la sala.`, 'ok');
+      if(_ol.role === 'host'){
+        window.setTimeout(() => {
+          olSendState();
+        }, 60);
+      }
+    }
+    olRenderStatusBar();
+    olUpdateWaitingUI();
+  });
+
   _ol.socket.on('opponent_disconnected', () => {
-    alert('⚠️ Tu rival se ha desconectado. La partida ha terminado.');
+    _ol.opponentConnectionState = 'disconnected';
+    olRenderStatusBar();
+    alert('⚠️ Tu rival no pudo reconectarse a tiempo. La sala se ha cerrado.');
     window.location.reload();
   });
 }
@@ -33857,6 +34263,8 @@ function olStartGame(role) {
   _ol.role = role;
   _ol.myIndex = role === 'host' ? 0 : 1;
   _ol.active = true;
+  _ol.reconnecting = false;
+  _ol.opponentConnectionState = 'connected';
   prepareNormalCombatStartHudMode();
 
   document.getElementById('olLobbyScreen').classList.add('ol-hidden');
@@ -33960,6 +34368,7 @@ function olStartGame(role) {
   }
 
   olUpdateWaitingUI();
+  olRenderStatusBar();
 }
 
 function olApplyState(data) {
@@ -34261,11 +34670,16 @@ function olUpdateWaitingUI() {
   if (!_ol.active) return;
   var veil = document.getElementById('olWaitingVeil');
   if (!veil) return;
+  var mobileHudActive = document.body?.classList.contains('mobile-compact-mode')
+    || document.body?.classList.contains('mobile-panorama-mode')
+    || document.body?.classList.contains('mobile-pc-compact-mode');
   var myTurn = olIsMyTurn();
+  olRenderStatusBar();
   olUpdateWaitingIntel();
   syncOnlineWaitingSaveUi();
   if(Date.now() < olWaitingRevealBlockedUntil){
     veil.classList.add('ol-hidden');
+    document.body?.classList.remove('online-waiting-turn');
     return;
   }
   // Show waiting veil if NOT my turn AND no winner
@@ -34273,12 +34687,16 @@ function olUpdateWaitingUI() {
   if (!myTurn && !state.winner) {
     var name = _ol.opponentNick || 'Rival';
     var txt = document.getElementById('olWaitingText');
-    if (txt) txt.textContent = 'Turno de ' + name + '…';
+    if (txt) txt.textContent = mobileHudActive ? 'Esperando rival…' : 'Turno de ' + name + '…';
     var opp = document.getElementById('olWaitingOpponent');
-    if (opp) opp.textContent = 'Mientras esperas, puedes leer sus módulos y calcular el siguiente cruce.';
+    if (opp) opp.textContent = mobileHudActive
+      ? `${name} está jugando. Mientras esperas, puedes leer sus módulos y preparar tu siguiente cruce.`
+      : 'Mientras esperas, puedes leer sus módulos y calcular el siguiente cruce.';
     veil.classList.remove('ol-hidden');
+    document.body?.classList.add('online-waiting-turn');
   } else {
     veil.classList.add('ol-hidden');
+    document.body?.classList.remove('online-waiting-turn');
   }
 }
 
@@ -34412,12 +34830,13 @@ document.getElementById('olCreateRoomBtn').addEventListener('click', function() 
     return;
   }
   _ol.nickname = nick;
+  olEnsureSessionId();
   _ol.pendingLoadCode = '';
   _ol.pendingLoadMeta = null;
   olSetStatus('Conectando al servidor...');
   try {
     olConnect();
-    _ol.socket.emit('create_room', { nickname: nick });
+    _ol.socket.emit('create_room', { nickname: nick, sessionId: _ol.sessionId });
   } catch(e) {
     olSetStatus('No se pudo conectar al servidor. ¿Está el servidor corriendo?', true);
   }
@@ -34436,10 +34855,11 @@ document.getElementById('olJoinRoomBtn').addEventListener('click', function() {
     return;
   }
   _ol.nickname = nick;
+  olEnsureSessionId();
   olSetStatus('Conectando al servidor...');
   try {
     olConnect();
-    _ol.socket.emit('join_room', { code: code, nickname: nick });
+    _ol.socket.emit('join_room', { code: code, nickname: nick, sessionId: _ol.sessionId });
   } catch(e) {
     olSetStatus('No se pudo conectar al servidor. ¿Está el servidor corriendo?', true);
   }
