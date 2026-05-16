@@ -3612,16 +3612,16 @@
       }
 
       .defense-popup {
-        left: calc(var(--land-left) + 16px);
-        right: calc(var(--land-hand) + 16px);
-        top: 18px;
+        left: 10px;
+        right: calc(var(--land-hand) + 10px);
+        top: 10px;
         transform: none;
-        min-height: 76px;
-        max-height: 98px;
-        padding: 8px 10px;
-        grid-template-columns: minmax(136px, auto) minmax(0, 1fr) auto;
+        min-height: 82px;
+        max-height: 116px;
+        padding: 10px 12px;
+        grid-template-columns: minmax(190px, auto) minmax(250px, 1fr) minmax(220px, auto);
         align-items: center;
-        gap: 10px;
+        gap: 14px;
         border-width: 2px;
         border-radius: 14px;
         box-shadow:
@@ -3647,29 +3647,29 @@
       }
 
       .defense-popup-title {
-        font-size: clamp(15px, 2.2vw, 21px);
+        font-size: clamp(18px, 2.7vw, 25px);
         line-height: .95;
         white-space: nowrap;
       }
 
       .defense-popup-body {
         min-width: 0;
-        max-width: 30ch;
-        font-size: clamp(10px, 1.5vw, 13px);
-        line-height: 1.12;
+        max-width: none;
+        font-size: clamp(13px, 1.75vw, 16px);
+        line-height: 1.2;
       }
 
       .defense-popup-actions {
-        grid-template-columns: repeat(2, minmax(74px, 1fr));
-        gap: 6px;
+        grid-template-columns: repeat(2, minmax(106px, 1fr));
+        gap: 8px;
       }
 
       .defense-popup-actions button {
-        min-height: 38px;
-        padding: 4px 7px;
+        min-height: 44px;
+        padding: 6px 10px;
         border-width: 1px;
-        border-radius: 9px;
-        font-size: 9px;
+        border-radius: 10px;
+        font-size: 10.5px;
       }
 
       .combat-screen {
@@ -4848,6 +4848,8 @@
     let touchDrag = null;
     let suppressCardClickUntil = 0;
     let defensePopupSuppressedKey = "";
+    let tutorialHiddenUntil = 0;
+    let tutorialResumeTimer = null;
 
     const state = {
       gameStarted: false,
@@ -5356,6 +5358,7 @@
     }
 
     function playAttackFx({ attackerIndex = 0, damage = 0, projectile = false, full = false } = {}) {
+      temporarilyHideTutorialOverlay(full ? 3600 : 1900);
       if (full) {
         let played = false;
         const playBoard = () => {
@@ -5371,6 +5374,7 @@
     }
 
     function animateModification(zoneOrOptions = "attack") {
+      temporarilyHideTutorialOverlay(2400);
       const options = typeof zoneOrOptions === "object" && zoneOrOptions
         ? zoneOrOptions
         : { zone: zoneOrOptions };
@@ -5719,6 +5723,7 @@
 
     function applyBuildChanges() {
       if (EMBEDDED_REAL_GAME) {
+        hideTutorialForGameAction("modify");
         callRealGameBridge("action", { action: "modify" });
         closePanelsForCombatFx();
         return;
@@ -6335,6 +6340,7 @@
         if (["attack-mode", "projectile", "projectile-only", "confirm"].includes(action)) {
           openBoard("mecha");
         }
+        hideTutorialForGameAction(action);
         callRealGameBridge("action", { action });
         if (["modify", "confirm", "defend", "skip-defense"].includes(action)) {
           closePanelsForCombatFx();
@@ -6989,7 +6995,8 @@
       const tutorialTitle = document.querySelector("[data-tutorial-title]");
       const tutorialActions = document.querySelector("[data-tutorial-actions]");
       const landscape = isLandscapeLayout();
-      tutorial.classList.toggle("show", state.tutorial && !landscape);
+      const tutorialSuppressed = isTutorialOverlaySuppressed();
+      tutorial.classList.toggle("show", state.tutorial && !landscape && !tutorialSuppressed);
       let tutorialCopy = "";
       let tutorialHtml = "";
       let alertTitle = "";
@@ -7031,7 +7038,7 @@
         }
         const guidanceAlertTitle = embeddedPlayerDefensePopup ? "" : alertTitle;
         const guidanceAlertCopy = embeddedPlayerDefensePopup ? "" : alertCopy;
-        renderLeftGuidance(tutorialCopy, guidanceAlertTitle, guidanceAlertCopy, tutorialHtml);
+        renderLeftGuidance(tutorialSuppressed ? "" : tutorialCopy, guidanceAlertTitle, guidanceAlertCopy, tutorialSuppressed ? "" : tutorialHtml);
         renderDefensePopup();
         return;
       }
@@ -7077,7 +7084,7 @@
         tutorialText.textContent = tutorialCopy;
       }
       const playerDefensePopup = state.pendingDefense?.defenderIndex === 0;
-      renderLeftGuidance(tutorialCopy, playerDefensePopup ? "" : alertTitle, playerDefensePopup ? "" : alertCopy);
+      renderLeftGuidance(tutorialSuppressed ? "" : tutorialCopy, playerDefensePopup ? "" : alertTitle, playerDefensePopup ? "" : alertCopy);
       renderDefensePopup();
     }
 
@@ -7348,6 +7355,36 @@
         toast(error?.message || "No se pudo comunicar con la partida real.");
         return false;
       }
+    }
+
+    function isTutorialOverlaySuppressed() {
+      return state.tutorial && Date.now() < tutorialHiddenUntil;
+    }
+
+    function temporarilyHideTutorialOverlay(duration = 2200) {
+      if (!state.tutorial) return;
+      tutorialHiddenUntil = Math.max(tutorialHiddenUntil, Date.now() + duration);
+      window.clearTimeout(tutorialResumeTimer);
+      renderMessages();
+      tutorialResumeTimer = window.setTimeout(() => {
+        tutorialResumeTimer = null;
+        tutorialHiddenUntil = 0;
+        render();
+      }, duration);
+    }
+
+    function hideTutorialForGameAction(action) {
+      if (!state.tutorial) return;
+      const durations = {
+        modify: 2500,
+        draw: 1900,
+        figures: 2100,
+        confirm: 3000,
+        pass: 1700,
+        defend: 1900,
+        "skip-defense": 1900
+      };
+      if (durations[action]) temporarilyHideTutorialOverlay(durations[action]);
     }
 
     function getRealGameLegalZones(cardId) {
