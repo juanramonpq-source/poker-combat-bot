@@ -1081,8 +1081,10 @@
       left: 15px;
       right: 15px;
       top: 74px;
+      bottom: 10px;
       display: grid;
       gap: 7px;
+      align-content: start;
       pointer-events: none;
     }
 
@@ -1161,7 +1163,7 @@
     .floating-message.tutorial.show {
       display: grid;
       grid-template-rows: auto minmax(0, 1fr) auto;
-      max-height: min(360px, 56vh);
+      max-height: 100%;
     }
 
     .floating-message.tutorial .message-actions {
@@ -1169,6 +1171,11 @@
       padding-top: 8px;
       border-top: 1px solid rgba(255, 236, 181, .24);
       background: linear-gradient(180deg, rgba(9, 23, 50, .12), rgba(5, 14, 33, .94));
+    }
+
+    .floating-message.tutorial span {
+      min-height: 0;
+      max-height: 100%;
     }
 
     .floating-message.tutorial .message-actions button {
@@ -3542,9 +3549,7 @@
       }
 
       .phone-shell.actions-open .quick-modify-button,
-      .phone-shell.actions-open .quick-figures-button,
-      .phone-shell.hand-overview-open .quick-modify-button,
-      .phone-shell.hand-overview-open .quick-figures-button {
+      .phone-shell.actions-open .quick-figures-button {
         opacity: 0;
         pointer-events: none;
         transform: translateY(4px);
@@ -3932,12 +3937,28 @@
       .hand-overview {
         left: auto;
         right: 0;
-        bottom: 52px;
+        bottom: 96px;
         width: min(348px, calc(100vw - var(--land-left) - 18px));
-        max-height: min(224px, calc(100% - 76px));
+        max-height: min(172px, calc(100% - 120px));
         padding: 8px;
         border-width: 2px;
         border-radius: 13px;
+      }
+
+      .phone-shell.hand-overview-open .quick-modify-button,
+      .phone-shell.hand-overview-open .quick-figures-button {
+        z-index: 180;
+        opacity: 1;
+        pointer-events: auto;
+        transform: none;
+      }
+
+      .phone-shell.hand-overview-open .action-hub {
+        z-index: 140;
+      }
+
+      .phone-shell.hand-overview-open .hand-tray header .action-wheel {
+        z-index: 160;
       }
 
       .hand-overview-grid {
@@ -4243,6 +4264,7 @@
 
       .message-stack {
         top: 44px;
+        bottom: 8px;
         left: 8px;
         right: 8px;
         gap: 5px;
@@ -6742,9 +6764,10 @@
       const node = document.createElement("section");
       node.className = readonly ? "core-slot panel-zone" : "core-slot drop-zone";
       if (!readonly) node.dataset.zone = zone;
-      node.innerHTML = `<header class="zone-title"><span>${title}</span><b>${meta}</b></header><div class="zone-cards"></div>`;
+      const ruleText = meta && meta !== "J/Q/K" ? `<b>${meta}</b>` : "";
+      node.innerHTML = `<header class="zone-title"><span>${title}</span>${ruleText}</header><div class="zone-cards"></div>`;
       const slotCards = card ? [card] : bridgeDraftCardsForZone(zone);
-      fillZoneCards(node.querySelector(".zone-cards"), slotCards, "Vacio", readonly ? "readonly" : "zone");
+      fillZoneCards(node.querySelector(".zone-cards"), slotCards, title, readonly ? "readonly" : "zone");
       return node;
     }
 
@@ -6760,7 +6783,7 @@
 
       const core = document.createElement("article");
       core.className = "panel-zone core-panel";
-      core.innerHTML = `<header class="zone-title"><span>Nucleo</span><b>${compactBoard ? "P / C / B" : "Piloto / Copiloto / Boost"}</b></header><div class="core-slots"></div>`;
+      core.innerHTML = `<header class="zone-title"><span>Núcleo</span><b>${compactBoard ? "" : "Piloto / Copiloto / Boost"}</b></header><div class="core-slots"></div>`;
       const coreSlots = core.querySelector(".core-slots");
       coreSlots.append(
         makeCoreSlot("pilot", "Piloto", player.core.pilot, "J/Q/K", isRivalView),
@@ -7442,7 +7465,8 @@
       if (
         shell.classList.contains("hand-overview-open") &&
         !event.target.closest(".hand-overview") &&
-        !event.target.closest("[data-hand-overview-toggle]")
+        !event.target.closest("[data-hand-overview-toggle]") &&
+        !event.target.closest(".action-hub")
       ) {
         closeHandOverview();
       }
@@ -7480,7 +7504,8 @@
       if (
         shell.classList.contains("hand-overview-open") &&
         !event.target.closest(".hand-overview") &&
-        !event.target.closest("[data-hand-overview-toggle]")
+        !event.target.closest("[data-hand-overview-toggle]") &&
+        !event.target.closest(".action-hub")
       ) {
         closeHandOverview();
       }
@@ -7535,7 +7560,7 @@
         document.querySelector("[data-menu-toggle]")?.setAttribute("aria-expanded", "false");
       }
       if (button.dataset.actionToggle !== undefined) {
-        closeHandOverview();
+        if (!isLandscapeLayout()) closeHandOverview();
         openActions();
       }
       if (button.dataset.boardToggle !== undefined) {

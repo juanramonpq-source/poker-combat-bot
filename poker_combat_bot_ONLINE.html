@@ -25212,8 +25212,13 @@ function getMobileSpriteTutorialPayload(){
   const statusText = tutorialSystem.completed
     ? 'La guía ha soltado las restricciones. Puedes seguir jugando o reiniciar cuando quieras.'
     : (tutorialSystem.statusText || step.tip || 'Solo se habilitan las acciones relevantes para el paso actual.');
-  const focusHtml = focusText ? `<div class="tutorial-focus"><strong>Foco visual:</strong> ${mobileSpriteEscapeHtml(focusText)}</div>` : '';
-  const statusHtml = statusText ? `<div class="tutorial-status"><strong>Estado:</strong> ${mobileSpriteEscapeHtml(statusText)}</div>` : '';
+  const focusHtml = focusText && !(tutorialSystem.mode === 'academy' && step.id === 'academy-definition')
+    ? `<div class="tutorial-focus"><strong>Foco visual:</strong> ${mobileSpriteEscapeHtml(focusText)}</div>`
+    : '';
+  const normalizeTutorialLine = (value='') => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const statusHtml = statusText && normalizeTutorialLine(statusText) !== normalizeTutorialLine(step.tip)
+    ? `<div class="tutorial-status"><strong>Estado:</strong> ${mobileSpriteEscapeHtml(statusText)}</div>`
+    : '';
   const html = [bodyHtml, objectiveHtml, tipHtml, focusHtml, statusHtml].filter(Boolean).join('');
   const modeLabel = tutorialSystem.mode === 'academy'
     ? `Carnet PoCoBOT${lesson ? ` · Fase ${lesson.phase}/${ACADEMY_LESSONS.length}` : ''}`
