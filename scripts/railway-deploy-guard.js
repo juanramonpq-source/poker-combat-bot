@@ -99,6 +99,15 @@ function warn(condition, message) {
   if (!condition) warnings.push(message);
 }
 
+function httpHealthy(url) {
+  try {
+    run('curl', ['-fsSIL', '--max-time', '20', url]);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 function getProductionService(status) {
   const environments = status.environments?.edges || [];
   const production = environments.map((edge) => edge.node).find((environment) => environment.id === EXPECTED.environmentId);
@@ -293,6 +302,7 @@ const domainData = railwayGraphql(
 const productionEnvironment = domainData.project.environments.edges.map((edge) => edge.node).find((environment) => environment.id === EXPECTED.environmentId);
 const domainServiceInstance = productionEnvironment?.serviceInstances.edges.map((edge) => edge.node).find((instance) => instance.serviceId === EXPECTED.serviceId);
 const customDomain = domainServiceInstance?.domains.customDomains.find((domain) => domain.domain === EXPECTED.customDomain);
+const customDomainHealthy = httpHealthy(`https://${EXPECTED.customDomain}/`);
 warn(Boolean(customDomain), `Custom domain "${EXPECTED.customDomain}" is not registered on the Railway service.`);
 if (customDomain) {
   warn(customDomain.syncStatus === 'ACTIVE', `Custom domain "${EXPECTED.customDomain}" sync status is "${customDomain.syncStatus}".`);
@@ -303,10 +313,16 @@ if (customDomain) {
   );
 
   const staleDnsRecords = (customDomain.status?.dnsRecords || []).filter((record) => record.status !== 'DNS_RECORD_STATUS_VALID');
-  warn(
-    staleDnsRecords.length === 0,
-    `Custom domain "${EXPECTED.customDomain}" DNS requires update:\n${staleDnsRecords.map((record) => `  - ${record.fqdn} ${record.recordType.replace('DNS_RECORD_TYPE_', '')} should point to ${record.requiredValue}; current value: ${record.currentValue || '(empty)'}`).join('\n')}`
-  );
+  if (!customDomainHealthy && staleDnsRecords.length) {
+    warn(
+      false,
+      `Custom domain "${EXPECTED.customDomain}" DNS requires update:\n${staleDnsRecords.map((record) => `  - ${record.fqdn} ${record.recordType.replace('DNS_RECORD_TYPE_', '')} should point to ${record.requiredValue}; current value: ${record.currentValue || '(empty)'}`).join('\n')}`
+    );
+  } else if (!customDomainHealthy) {
+    warn(false, `Custom domain "${EXPECTED.customDomain}" is not responding over HTTPS.`);
+  } else if (staleDnsRecords.length) {
+    console.log(`Custom domain "${EXPECTED.customDomain}" is reachable, so stale Railway DNS metadata is treated as informational.`);
+  }
 }
 
 let projects = [];

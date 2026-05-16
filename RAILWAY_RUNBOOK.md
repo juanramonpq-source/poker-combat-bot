@@ -82,7 +82,7 @@ The service start command still downloads and executes `railway_bootstrap.sh` fr
 3. Check logs with `npx -y @railway/cli logs --service poker-combat-bot --environment production --latest --lines 200 --json`.
 4. Check app health with `curl -L https://pocobot.up.railway.app/`.
 5. If the newest deploy failed with "number of concurrent builds", do not create a new project and do not run `railway up`. Run `npm run railway:bootstrap-refresh` from the clean release folder to restart the known-good bootstrap deployment.
-6. If the app is alive on the Railway domain but not `pocobot.online`, treat it as domain/DNS/TLS, not an app deploy problem. Railway currently expects the apex domain traffic record to point at `3u23ystj.up.railway.app`.
+6. If the app is alive on the Railway domain but not `pocobot.online`, treat it as domain/DNS/TLS, not an app deploy problem. The live HTTPS response on `pocobot.online` is the source of truth, even if Railway's internal DNS metadata briefly lags.
 
 ## Heavy Files Policy
 
