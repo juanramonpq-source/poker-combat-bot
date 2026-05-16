@@ -5297,8 +5297,27 @@ body.story-argos-hack-ui .pro-turn-kicker{
   font-size:.9rem;
   line-height:1.34;
 }
+.academy-certificate-note{
+  margin:16px auto 0;
+  max-width:640px;
+  border:1px solid rgba(255,207,104,.18);
+  border-radius:16px;
+  background:rgba(255,207,104,.07);
+  padding:12px 14px;
+  color:#ffefb1;
+  text-align:center;
+  font-size:.86rem;
+  line-height:1.42;
+  position:relative;
+  z-index:1;
+}
+.academy-certificate-note strong{
+  color:#42ffde;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
 .academy-certificate-foot{
-  margin-top:18px;
+  margin-top:14px;
   color:#8ddff0;
   text-align:center;
   font-size:.84rem;
@@ -5322,6 +5341,7 @@ body.story-argos-hack-ui .pro-turn-kicker{
   .academy-certificate-title{ font-size:1.7rem; }
   .academy-certificate-name{ font-size:1.5rem; }
   .academy-certificate-grid{ grid-template-columns:1fr; }
+  .academy-certificate-note{ font-size:.78rem; padding:10px 12px; }
   .academy-certificate-badge{ position:static; margin:0 auto 10px; display:inline-flex; }
   .academy-certificate-logo{ width:140px; right:14px; bottom:14px; }
   .academy-certificate-mecha{ width:112px; left:10px; bottom:10px; }
@@ -18659,6 +18679,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
         <span id="academyCertificateReward">Emblema PB + Carnet oficial</span>
       </div>
     </div>
+    <div class="academy-certificate-note" id="academyCertificateNote"><strong>Nota de cabina:</strong> para consultar la configuración del mecha en cualquier fase, abre el panel del jugador. Ahí verás piloto, copiloto, módulos, combustible, defensa, armadura y estado de montaje.</div>
     <div class="academy-certificate-foot" id="academyCertificateFoot">Carnet generado localmente dentro del juego principal. El progreso se guarda en este navegador.</div>
     <div class="academy-overlay-actions">
       <button class="intro-enter" id="academyDownloadBtn" type="button">Descargar PNG</button>
@@ -31416,6 +31437,10 @@ function academyBuildCertificateRewardText(){
   return academyAllLessonsCompleted() ? 'Emblema PB + Carnet oficial' : 'Pendiente de licencia';
 }
 
+function academyBuildCertificateNoteText(){
+  return 'Nota de cabina: para consultar la configuración del mecha en cualquier fase, abre el panel del jugador. Ahí verás piloto, copiloto, módulos, combustible, defensa, armadura y estado de montaje.';
+}
+
 function academyBuildCertificateFootText(){
   const base = 'Carnet generado localmente dentro del juego principal.';
   const save = 'Progreso guardado en este navegador.';
@@ -31472,6 +31497,7 @@ function academyBuildCertificatePayload(){
     status: `${academyGetCompletedCount()}/${ACADEMY_LESSONS.length} fases completadas`,
     date: academyFormatIssueDate(),
     reward: academyBuildCertificateRewardText(),
+    note: academyBuildCertificateNoteText(),
     foot: academyBuildCertificateFootText()
   };
 }
@@ -31632,12 +31658,23 @@ async function downloadAcademyCertificatePng(){
     academyWrapCanvasText(ctx, chip[1], x + chipWidth / 2, y + 74, chipWidth - 36, 30);
   });
 
+  ctx.fillStyle = 'rgba(255,207,104,0.08)';
+  ctx.beginPath();
+  ctx.roundRect(470, 812, 860, 112, 28);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,207,104,0.22)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = '#ffefb1';
+  ctx.font = '24px Arial, sans-serif';
+  academyWrapCanvasText(ctx, payload.note, 900, 852, 760, 31);
+
   ctx.fillStyle = '#8ddff0';
   ctx.font = '26px Arial, sans-serif';
-  academyWrapCanvasText(ctx, payload.foot, 900, 846, 1080, 34);
+  academyWrapCanvasText(ctx, payload.foot, 900, 974, 1080, 34);
   ctx.fillStyle = '#dffcff';
   ctx.font = '22px Arial, sans-serif';
-  ctx.fillText('Nombre heredado del cadete y progreso local listo para imprimir o compartir.', 900, 962);
+  ctx.fillText('Nombre heredado del cadete y progreso local listo para imprimir o compartir.', 900, 1040);
 
   return new Promise(resolve => {
     canvas.toBlob(blob => {
@@ -32509,11 +32546,13 @@ function renderAcademyCertificate(){
   const dateEl = document.getElementById('academyCertificateDate');
   const statusEl = document.getElementById('academyCertificateStatus');
   const rewardEl = document.getElementById('academyCertificateReward');
+  const noteEl = document.getElementById('academyCertificateNote');
   const footEl = document.getElementById('academyCertificateFoot');
-    if(nameEl) nameEl.textContent = academyGetCandidateName('Cadete PoCoBOT');
+  if(nameEl) nameEl.textContent = academyGetCandidateName('Cadete PoCoBOT');
   if(dateEl) dateEl.textContent = academyFormatIssueDate();
   if(statusEl) statusEl.textContent = `${academyGetCompletedCount()}/${ACADEMY_LESSONS.length} fases completadas`;
   if(rewardEl) rewardEl.textContent = academyBuildCertificateRewardText();
+  if(noteEl) noteEl.innerHTML = `<strong>Nota de cabina:</strong> ${academyBuildCertificateNoteText().replace(/^Nota de cabina:\s*/i, '')}`;
   if(footEl) footEl.textContent = academyBuildCertificateFootText();
 }
 
