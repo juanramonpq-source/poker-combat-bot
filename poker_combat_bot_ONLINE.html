@@ -16502,11 +16502,11 @@ body.story-argos-hack-ui{
 
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #accionesBtn{
     position:absolute !important;
-    top:102px !important;
+    top:86px !important;
     right:17px !important;
     left:auto !important;
-    width:98px !important;
-    height:32px !important;
+    width:112px !important;
+    height:38px !important;
     transform:none !important;
     background:
       radial-gradient(circle at 17% 50%, #17120a 0 4px, transparent 5px),
@@ -16523,7 +16523,7 @@ body.story-argos-hack-ui{
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #accionesBtn::after{
     content:"Acciones" !important;
     display:block !important;
-    font-size:12px !important;
+    font-size:13px !important;
   }
 }
 
@@ -17803,6 +17803,7 @@ body.story-argos-hack-ui .argos-hack-layer{
     0 0 28px rgba(100,255,145,.16),
     inset 0 0 18px rgba(100,255,145,.08);
   animation:argosConsoleBoot .86s cubic-bezier(.2,.85,.2,1) both, argosConsoleFault 5.8s steps(1, end) infinite 1.2s;
+  pointer-events:auto;
 }
 .argos-hack-console::before{
   content:"";
@@ -17818,12 +17819,63 @@ body.story-argos-hack-ui .argos-hack-layer{
   animation:argosConsoleScan 2.8s linear infinite;
 }
 .argos-hack-kicker,
+.argos-hack-controls,
 .argos-hack-title,
 .argos-hack-message,
 .argos-hack-readouts,
 .argos-hack-ticker{
   position:relative;
   z-index:1;
+}
+.argos-hack-header{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) auto;
+  gap:8px;
+  align-items:start;
+}
+.argos-hack-controls{
+  display:flex;
+  gap:5px;
+}
+.argos-hack-control{
+  min-height:24px;
+  padding:4px 7px;
+  border:1px solid rgba(100,255,145,.50);
+  border-radius:8px;
+  background:rgba(2,17,8,.72);
+  color:#dffff0;
+  font:900 .58rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+.argos-hack-control:hover,
+.argos-hack-control:focus-visible{
+  border-color:rgba(255,244,210,.80);
+  color:#fff4d2;
+}
+.argos-hack-layer.argos-hack-panel-collapsed .argos-hack-console{
+  width:min(248px, calc(100vw - 28px));
+  gap:5px;
+  padding:8px 9px;
+}
+.argos-hack-layer.argos-hack-panel-collapsed .argos-hack-message,
+.argos-hack-layer.argos-hack-panel-collapsed .argos-hack-readouts,
+.argos-hack-layer.argos-hack-panel-collapsed .argos-hack-bars,
+.argos-hack-layer.argos-hack-panel-collapsed .argos-hack-ticker{
+  display:none;
+}
+.argos-hack-layer.argos-hack-panel-collapsed .argos-hack-title{
+  font-size:.76rem;
+  line-height:1.05;
+}
+.argos-hack-layer.argos-hack-panel-collapsed .argos-hack-kicker{
+  font-size:.48rem;
+}
+.argos-hack-layer.argos-hack-panel-hidden .argos-hack-console{
+  display:none;
 }
 .argos-hack-kicker{
   color:#83ffad;
@@ -17974,6 +18026,17 @@ body.story-argos-hack-ui .card.selected{
   }
   .argos-hack-title{
     font-size:1rem;
+  }
+  .argos-hack-header{
+    gap:6px;
+  }
+  .argos-hack-controls{
+    gap:4px;
+  }
+  .argos-hack-control{
+    min-height:22px;
+    padding:4px 6px;
+    font-size:.5rem;
   }
   .argos-hack-message{
     min-height:0;
@@ -18438,10 +18501,10 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode .compact-mobile-action-grid{
     position:absolute !important;
     z-index:105 !important;
-    top:130px !important;
+    top:120px !important;
     left:8px !important;
     right:8px !important;
-    height:116px !important;
+    height:146px !important;
     display:block !important;
     padding:0 !important;
     border:0 !important;
@@ -18463,10 +18526,10 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
 
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode .compact-mobile-action-grid button{
     position:absolute !important;
-    width:86px !important;
-    height:32px !important;
-    min-height:32px !important;
-    padding:4px 7px !important;
+    width:98px !important;
+    height:38px !important;
+    min-height:38px !important;
+    padding:5px 8px !important;
     border:3px solid #092b57 !important;
     border-radius:13px !important;
     color:#061d38 !important;
@@ -18478,8 +18541,8 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
       inset 0 -3px 0 rgba(0,44,91,.30),
       0 4px 0 #082853,
       0 10px 16px rgba(0,0,0,.28) !important;
-    font-size:9px !important;
-    line-height:1.02 !important;
+    font-size:10.5px !important;
+    line-height:1.04 !important;
     opacity:1 !important;
     visibility:visible !important;
     pointer-events:auto !important;
@@ -18497,7 +18560,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
 
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #compactMobilePlayerDrawerBtn{
     left:50% !important;
-    top:-14px !important;
+    top:-18px !important;
     transform:translateX(-50%) !important;
   }
 
@@ -18508,7 +18571,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
 
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #compactMobilePassBtn{
     left:50% !important;
-    top:36px !important;
+    top:48px !important;
     transform:translateX(-50%) !important;
   }
 
@@ -18516,7 +18579,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #compactMobileCancelAttackBtn,
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #compactMobileConfirmDefenseBtn,
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #compactMobileSkipDefenseBtn{
-    top:74px !important;
+    top:94px !important;
   }
 
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #compactMobileConfirmAttackBtn,
@@ -18534,7 +18597,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #compactMobileDrawDiamondBtn,
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #compactMobileFigureBurstBtn,
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode #compactMobileClearBtn{
-    top:74px !important;
+    top:94px !important;
     left:50% !important;
     transform:translateX(-50%) !important;
   }
@@ -18554,6 +18617,43 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     border-color:#6f170d !important;
     background:linear-gradient(180deg, #ff7a5e, #cf3329 64%, #8a1815) !important;
     box-shadow:inset 0 2px 0 rgba(255,210,190,.46), inset 0 -3px 0 rgba(70,0,0,.28), 0 4px 0 #4f0704, 0 10px 16px rgba(0,0,0,.28) !important;
+  }
+}
+
+@media (pointer: coarse){
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-card.compact-pilot-gated,
+  body.mobile-pc-compact-mode .app.mobile-pc-compact-mode .compact-zone-card.compact-pilot-gated{
+    border-color:#d51f17 !important;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.18), transparent 34%),
+      linear-gradient(180deg, #ffe3d8, #ffb7a3 58%, #f57d67) !important;
+    color:#76140d !important;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.50),
+      inset 0 -4px 0 rgba(110,12,6,.14),
+      0 0 0 3px rgba(213,31,23,.24),
+      0 0 18px rgba(213,31,23,.42) !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-card.compact-pilot-gated .compact-zone-head span,
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-card.compact-pilot-gated .compact-zone-head strong,
+  body.mobile-pc-compact-mode .app.mobile-pc-compact-mode .compact-zone-card.compact-pilot-gated .compact-zone-head span,
+  body.mobile-pc-compact-mode .app.mobile-pc-compact-mode .compact-zone-card.compact-pilot-gated .compact-zone-head strong{
+    color:#7b140c !important;
+    text-shadow:0 1px 0 rgba(255,255,255,.32) !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-card.compact-pilot-ready,
+  body.mobile-pc-compact-mode .app.mobile-pc-compact-mode .compact-zone-card.compact-pilot-ready{
+    border-color:#25c88a !important;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.20), transparent 34%),
+      linear-gradient(180deg, #e2fff1, #9ef2c8 62%, #54c995) !important;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.50),
+      inset 0 -4px 0 rgba(7,90,56,.12),
+      0 0 0 3px rgba(37,200,138,.20),
+      0 0 14px rgba(37,200,138,.34) !important;
   }
 }
 
@@ -18622,7 +18722,13 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   <div class="argos-hack-corner argos-hack-corner-top" aria-hidden="true"></div>
   <div class="argos-hack-corner argos-hack-corner-bottom" aria-hidden="true"></div>
   <div class="argos-hack-console">
-    <div class="argos-hack-kicker">Panel de control corrupto</div>
+    <div class="argos-hack-header">
+      <div class="argos-hack-kicker">Panel de control corrupto</div>
+      <div class="argos-hack-controls" aria-label="Controles del panel de Argos">
+        <button class="argos-hack-control" id="storyArgosHackCollapseBtn" type="button" aria-controls="storyArgosHackLayer" aria-expanded="true">Reducir</button>
+        <button class="argos-hack-control" id="storyArgosHackHideBtn" type="button" aria-controls="storyArgosHackLayer">Ocultar</button>
+      </div>
+    </div>
     <div class="argos-hack-title" id="storyArgosHackStatus">Argos intercepta el combate</div>
     <div class="argos-hack-message" id="storyArgosHackMessage">Combustible normal bloqueado. Busca una ruta alternativa de energia.</div>
     <div class="argos-hack-readouts">
@@ -18915,7 +19021,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     </div>
   </div>
   <div class="ol-waiting-actions" id="olWaitingActions">
-    <button id="olWaitingSaveBtn" class="ol-button" type="button">Salvar partida</button>
+    <button id="olWaitingSaveBtn" class="ol-button" type="button">Guardar partida</button>
   </div>
   <div class="ol-waiting-save-note" id="olWaitingSaveNote">Solo el host puede salvar una partida online porque conserva el estado completo de la sala.</div>
 </div>
@@ -20039,6 +20145,7 @@ let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
 let storyArgosHackGateProfile = null;
+let storyArgosHackPanelMode = 'open';
 
 function buildOnlineFxCue(type, playerIdx, extra={}){
   return {
@@ -20641,6 +20748,26 @@ function clearStoryArgosHackGate(){
   }
 }
 
+function syncStoryArgosHackPanelMode(){
+  const layer = document.getElementById('storyArgosHackLayer');
+  if(!layer) return;
+  const collapsed = storyArgosHackPanelMode === 'collapsed';
+  const hidden = storyArgosHackPanelMode === 'hidden';
+  layer.classList.toggle('argos-hack-panel-collapsed', collapsed);
+  layer.classList.toggle('argos-hack-panel-hidden', hidden);
+
+  const collapseBtn = document.getElementById('storyArgosHackCollapseBtn');
+  if(collapseBtn){
+    collapseBtn.textContent = collapsed ? 'Abrir' : 'Reducir';
+    collapseBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  }
+}
+
+function setStoryArgosHackPanelMode(mode){
+  storyArgosHackPanelMode = ['open', 'collapsed', 'hidden'].includes(mode) ? mode : 'open';
+  syncStoryArgosHackPanelMode();
+}
+
 function syncStoryArgosHackLayer(active){
   const layer = document.getElementById('storyArgosHackLayer');
   if(!layer) return;
@@ -20648,7 +20775,11 @@ function syncStoryArgosHackLayer(active){
   layer.setAttribute('aria-hidden', active ? 'false' : 'true');
   document.body?.classList.toggle('story-argos-hack-defense', active && !!state.pendingDefense);
   document.body?.classList.toggle('story-argos-hack-critical', active && (!!state.pendingDefense || !!state.winner || storyArgosHackGateActive));
-  if(!active) return;
+  if(!active){
+    setStoryArgosHackPanelMode('open');
+    return;
+  }
+  syncStoryArgosHackPanelMode();
 
   const player = state.players?.[0] || null;
   const rival = state.players?.[1] || null;
@@ -27398,6 +27529,9 @@ function positionAttackSpecialPopup(attackerIdx){
   if(!overlay) return;
   const vw = window.innerWidth || document.documentElement.clientWidth;
   const vh = window.innerHeight || document.documentElement.clientHeight;
+  const mobilePortraitCompact = document.body?.classList.contains('mobile-compact-mode')
+    && !document.body?.classList.contains('mobile-pc-compact-mode')
+    && (!window.matchMedia || window.matchMedia('(orientation: portrait)').matches);
   let left = vw / 2;
   let top = vh * .38;
   const compactTarget = isDesktopCompactModeActive()
@@ -27412,6 +27546,10 @@ function positionAttackSpecialPopup(attackerIdx){
     const rect = target.getBoundingClientRect();
     left = rect.left + rect.width * (attackerIdx === 0 ? .68 : .32);
     top = rect.top + rect.height * (isDesktopCompactModeActive() ? .42 : .46);
+  }
+  if(mobilePortraitCompact){
+    left = vw / 2;
+    top = Math.max(88, Math.min(vh * .18, 148));
   }
 
   left = Math.max(70, Math.min(left, vw - 70));
@@ -30698,6 +30836,12 @@ document.getElementById('skipDefenseBtn').addEventListener('click', () => {
   skipDefense();
 });
 document.getElementById('storyArgosHackGateBtn')?.addEventListener('click', resolveStoryArgosHackGate);
+document.getElementById('storyArgosHackCollapseBtn')?.addEventListener('click', () => {
+  setStoryArgosHackPanelMode(storyArgosHackPanelMode === 'collapsed' ? 'open' : 'collapsed');
+});
+document.getElementById('storyArgosHackHideBtn')?.addEventListener('click', () => {
+  setStoryArgosHackPanelMode('hidden');
+});
 document.getElementById('desktopCompactToggleTopBtn').addEventListener('click', () => {
   switchToProInterface();
 });
@@ -34647,7 +34791,7 @@ function syncOnlineWaitingSaveUi() {
 
   if (!_ol.active) {
     btn.disabled = true;
-    btn.textContent = 'Salvar partida';
+    btn.textContent = 'Guardar partida';
     actions.classList.add('ol-hidden');
     note.classList.add('ol-hidden');
     return;
@@ -34657,7 +34801,7 @@ function syncOnlineWaitingSaveUi() {
   var canSaveOnline = _ol.role === 'host' && support.allowed;
 
   if (_ol.role === 'host') {
-    btn.textContent = 'Salvar partida';
+    btn.textContent = 'Guardar partida';
     btn.disabled = !canSaveOnline;
     actions.classList.remove('ol-hidden');
     note.classList.remove('ol-hidden');
