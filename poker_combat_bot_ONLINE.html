@@ -20006,6 +20006,7 @@ let attackSpecialPopupTimer = null;
 const ATTACK_LAUNCH_DELAY_MS = 360;
 const ATTACK_SPECIAL_POPUP_DURATION_MS = 3200;
 const ATTACK_RESOLVE_AFTER_LAUNCH_MS = 1500;
+const ATTACK_POST_IMPACT_HOLD_MS = 1650;
 let olLastFxCueId = null;
 let olWaitingRevealBlockedUntil = 0;
 let olWaitingRevealTimer = null;
@@ -28444,6 +28445,7 @@ function resolveAttackAfterDefense(defenseCard){
   });
 
   runHeaderAttackSequence(pending.attackerIndex, !!pending.withProjectile, () => {
+    state.transitionLock = true;
     const result = applyAttack(defenderIdx, totalAttack);
     clearOnlineFxCue(attackFxCueId);
     log(result.summary);
@@ -28452,10 +28454,16 @@ function resolveAttackAfterDefense(defenseCard){
     if(!state.winner && tutorialGuaranteeProjectileFinish(defenderIdx)){
       checkWinner();
     }
+    render();
     if(!state.winner){
-      advanceTurn();
+      window.setTimeout(() => {
+        if(!state.winner){
+          state.transitionLock = false;
+          advanceTurn();
+        }
+      }, ATTACK_POST_IMPACT_HOLD_MS);
     }else{
-      render();
+      state.transitionLock = false;
       window.setTimeout(() => scrollToWinnerCup('smooth'), 180);
     }
   }, { attackPoints: totalAttack });
