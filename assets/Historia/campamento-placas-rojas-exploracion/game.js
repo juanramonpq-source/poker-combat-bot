@@ -245,6 +245,18 @@ function damp(current, target, rate, dt) {
   return current + (target - current) * (1 - Math.exp(-rate * dt));
 }
 
+function smoothstep(value) {
+  const t = clamp(value, 0, 1);
+  return t * t * (3 - 2 * t);
+}
+
+function getCampPerspectiveScale(subject = player) {
+  const nearY = 760;
+  const farY = 170;
+  const depth = smoothstep((nearY - subject.y) / (nearY - farY));
+  return 1 - depth * 0.34;
+}
+
 function getCameraZoom() {
   return desktopCameraMedia.matches ? DESKTOP_CAMERA_ZOOM : 1;
 }
@@ -399,6 +411,7 @@ function createPlayerVisual() {
     clamp,
     damp,
     drawSoftShadow,
+    getVisualScale: getCampPerspectiveScale,
     baseSize: player.spriteWidth,
     sideFrameVerticalOffsets: playerVisualFrameSources.sideFrameVerticalOffsets,
   });
@@ -864,6 +877,11 @@ function drawSoftShadow(x, y, radiusX, radiusY, alpha = 0.35) {
 
 function drawFallbackPlayer() {
   const bobY = Math.sin(player.bob) * 4;
+  const visualScale = getCampPerspectiveScale(player);
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  ctx.scale(visualScale, visualScale);
+  ctx.translate(-player.x, -player.y);
   drawSoftShadow(player.x, player.y + 28, 58, 22, 0.3);
   ctx.save();
   ctx.translate(player.x, player.y + bobY);
@@ -877,6 +895,7 @@ function drawFallbackPlayer() {
   ctx.stroke();
   ctx.fillStyle = "#ffb15c";
   ctx.fillRect(-20, -8, 40, 12);
+  ctx.restore();
   ctx.restore();
 }
 

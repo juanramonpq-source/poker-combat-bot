@@ -167,6 +167,9 @@
     const sceneDamp = options.damp || damp;
     const sceneClamp = options.clamp || clamp;
     const drawSoftShadow = options.drawSoftShadow || drawDefaultShadow;
+    const getVisualScale = typeof options.getVisualScale === "function"
+      ? options.getVisualScale
+      : () => 1;
     const sideFrameVerticalOffsets = options.sideFrameVerticalOffsets || SIDE_FRAME_VERTICAL_OFFSETS;
     const rearThrusters = [
       { side: -39 * scale, rear: 42 * scale, width: 16 * scale, phase: 0.1 },
@@ -555,7 +558,12 @@
       const sideOffset = player.leanSide * (3 * scale + sidePose * 3.5 * scale);
       const flightStretch = 1 + speedRatio * 0.025;
       const sideBank = goingSide ? -(0.05 + player.leanAmount * 0.11 + speedRatio * 0.04) : 0;
+      const visualScale = sceneClamp(Number(getVisualScale(player)) || 1, 0.35, 1.35);
 
+      ctx.save();
+      ctx.translate(player.x, player.y);
+      ctx.scale(visualScale, visualScale);
+      ctx.translate(-player.x, -player.y);
       drawShadow();
       drawExhaustParticles();
       if (!idleHover) {
@@ -586,6 +594,7 @@
         drawFrontLeanSprite(frontSize);
       }
 
+      ctx.restore();
       ctx.restore();
     }
 

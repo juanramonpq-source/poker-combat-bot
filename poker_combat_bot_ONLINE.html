@@ -15309,12 +15309,12 @@ body.story-argos-hack-ui{
   body.mobile-compact-mode .compact-action-hub-button{
     position:absolute !important;
     z-index:76 !important;
-    top:97px !important;
+    top:64px !important;
     right:18px !important;
     display:grid !important;
     place-items:center !important;
-    width:116px !important;
-    height:38px !important;
+    width:132px !important;
+    height:46px !important;
     min-width:0 !important;
     min-height:0 !important;
     padding:4px 13px !important;
@@ -15332,7 +15332,7 @@ body.story-argos-hack-ui{
 
   body.mobile-compact-mode .compact-action-hub-button::after{
     content:"Acciones" !important;
-    font-size:15px !important;
+    font-size:17px !important;
     text-shadow:0 1px 0 rgba(255,255,255,.45) !important;
   }
 
@@ -15341,13 +15341,13 @@ body.story-argos-hack-ui{
     z-index:95 !important;
     left:18px !important;
     right:18px !important;
-    bottom:24px !important;
-    height:152px !important;
+    bottom:34px !important;
+    height:194px !important;
     display:grid !important;
     grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
-    grid-auto-rows:43px !important;
-    gap:8px !important;
-    padding:8px !important;
+    grid-auto-rows:55px !important;
+    gap:10px !important;
+    padding:10px !important;
     border:4px solid #05284f !important;
     border-radius:18px !important;
     background:linear-gradient(180deg, rgba(7,46,92,.98), rgba(2,22,48,.98)) !important;
@@ -15368,7 +15368,7 @@ body.story-argos-hack-ui{
 
   body.mobile-compact-mode .compact-mobile-action-grid button{
     min-height:0 !important;
-    padding:3px 5px !important;
+    padding:6px 8px !important;
     border:3px solid #092b57 !important;
     border-radius:12px !important;
     color:#061d38 !important;
@@ -15376,8 +15376,8 @@ body.story-argos-hack-ui{
       linear-gradient(135deg, rgba(255,255,255,.48), transparent 36%),
       linear-gradient(180deg, #c7e7ff, #75b7eb 62%, #2a6eae) !important;
     box-shadow:inset 0 2px 0 rgba(255,255,255,.46), inset 0 -3px 0 rgba(0,44,91,.3), 0 3px 0 #082853 !important;
-    font-size:10px !important;
-    line-height:1.05 !important;
+    font-size:12.5px !important;
+    line-height:1.08 !important;
   }
 
   body.mobile-compact-mode .compact-mobile-action-grid #compactMobileConfirmAttackBtn,
@@ -16219,11 +16219,11 @@ body.story-argos-hack-ui{
 
   body.mobile-compact-mode .app.mobile-compact-mode #accionesBtn{
     position:absolute !important;
-    top:97px !important;
+    top:64px !important;
     right:8px !important;
     left:auto !important;
-    width:116px !important;
-    height:38px !important;
+    width:132px !important;
+    height:46px !important;
     transform:none !important;
     background:
       radial-gradient(circle at 17% 50%, #17120a 0 5px, transparent 6px),
@@ -16241,16 +16241,16 @@ body.story-argos-hack-ui{
   body.mobile-compact-mode .app.mobile-compact-mode #accionesBtn::after{
     content:"Acciones" !important;
     display:block !important;
-    font-size:15px !important;
+    font-size:17px !important;
   }
 
   body.mobile-compact-mode .app.mobile-compact-mode .compact-mobile-action-grid{
     position:absolute !important;
     left:18px !important;
     right:18px !important;
-    bottom:24px !important;
+    bottom:34px !important;
     top:auto !important;
-    height:152px !important;
+    height:194px !important;
     transform:translateY(18px) scale(.96) !important;
   }
 
@@ -16602,12 +16602,12 @@ body.story-argos-hack-ui{
   }
 
   body.mobile-compact-mode .app.mobile-compact-mode #accionesBtn{
-    top:88px !important;
+    top:64px !important;
     right:8px !important;
-    width:106px !important;
-    height:35px !important;
-    border-width:3px !important;
-    border-radius:13px !important;
+    width:132px !important;
+    height:46px !important;
+    border-width:4px !important;
+    border-radius:15px !important;
   }
 
   body.mobile-compact-mode .app.mobile-compact-mode .compact-arena-panel{
@@ -24964,11 +24964,16 @@ function isDesktopCompactLikelyFullscreen(){
 
 function isMobileLandscapeViewport(){
   try{
-    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-    const compactViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
-    const landscapeQuery = !!window.matchMedia && window.matchMedia('(max-height: 820px) and (orientation: landscape) and (pointer: coarse)').matches;
+    const hasCoarsePointer = !!window.matchMedia && (
+      window.matchMedia('(pointer: coarse)').matches
+      || window.matchMedia('(any-pointer: coarse)').matches
+    );
+    const shortSide = Math.min(window.innerWidth || 0, window.innerHeight || 0);
+    const longSide = Math.max(window.innerWidth || 0, window.innerHeight || 0);
+    const tabletOrPhoneViewport = shortSide <= 1180 && longSide <= 1500;
+    const landscapeQuery = !!window.matchMedia && window.matchMedia('(orientation: landscape)').matches;
     const landscapeGeometry = (window.innerWidth || 0) > (window.innerHeight || 0);
-    return hasCoarsePointer && compactViewport && (landscapeQuery || landscapeGeometry);
+    return hasCoarsePointer && tabletOrPhoneViewport && (landscapeQuery || landscapeGeometry);
   }catch(_err){
     return false;
   }
@@ -24990,8 +24995,16 @@ function canOfferMobilePanoramaHud(){
   const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
   try{
-    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-    const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820;
+    const hasCoarsePointer = !!window.matchMedia && (
+      window.matchMedia('(pointer: coarse)').matches
+      || window.matchMedia('(any-pointer: coarse)').matches
+    );
+    const landscapeGeometry = (window.innerWidth || 0) > (window.innerHeight || 0);
+    const shortSide = Math.min(window.innerWidth || 0, window.innerHeight || 0);
+    const longSide = Math.max(window.innerWidth || 0, window.innerHeight || 0);
+    const compactMobileViewport = landscapeGeometry
+      ? (shortSide <= 1180 && longSide <= 1500)
+      : shortSide <= 820;
     return !!state.gameStarted && introHidden && lobbyHidden && hasCoarsePointer && compactMobileViewport;
   }catch(_err){
     return false;
@@ -25003,10 +25016,14 @@ function canOfferMobileCompactHud(){
   const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
   try{
-    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const hasCoarsePointer = !!window.matchMedia && (
+      window.matchMedia('(pointer: coarse)').matches
+      || window.matchMedia('(any-pointer: coarse)').matches
+    );
     const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 920;
     const portrait = !!window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
-    return !!state.gameStarted && introHidden && lobbyHidden && hasCoarsePointer && compactMobileViewport && portrait;
+    const landscapeGeometry = (window.innerWidth || 0) > (window.innerHeight || 0);
+    return !!state.gameStarted && introHidden && lobbyHidden && hasCoarsePointer && compactMobileViewport && portrait && !landscapeGeometry;
   }catch(_err){
     return false;
   }
@@ -25263,10 +25280,6 @@ function syncDesktopHudAvailability(){
   const compactActive = available && desktopHudMode === 'compact';
   const legacyMobilePanoramaActive = compactActive && mobilePanoramaAvailable && !desktopAvailable && devLegacyHorizontal;
   const mobileLandscapeCompactActive = compactActive && mobilePanoramaAvailable && !desktopAvailable && !legacyMobilePanoramaActive;
-  // Legacy mobile-panorama is intentionally retired. The only active mobile
-  // surfaces are mobile-compact-mode (vertical) and mobile-pc-compact-mode
-  // (landscape), both backed by the same real compact HUD/action wiring. The
-  // old panorama HUD can still be forced from the developer lab as a curiosity.
   const mobilePanoramaActive = legacyMobilePanoramaActive;
   const mobileCompactActive = compactActive && mobileCompactAvailable && !desktopAvailable && !mobileLandscapeCompactActive;
   if(!compactActive){
