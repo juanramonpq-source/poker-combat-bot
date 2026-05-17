@@ -1632,6 +1632,31 @@
       animation: zoneInstall .82s ease;
     }
 
+    .drop-zone.pilot-gated {
+      border-color: rgba(255, 68, 54, .92);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 68, 54, .28), transparent 58%),
+        linear-gradient(180deg, rgba(92, 9, 7, .42), rgba(255, 68, 54, .08));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 232, 220, .12),
+        inset 0 0 18px rgba(255, 68, 54, .16),
+        0 0 18px rgba(255, 68, 54, .34);
+    }
+
+    .drop-zone.pilot-gated .zone-title span,
+    .drop-zone.pilot-gated .zone-title b {
+      color: #ffd4ca;
+      text-shadow: 0 0 10px rgba(255, 68, 54, .58);
+    }
+
+    .drop-zone.pilot-ready {
+      border-color: rgba(66, 255, 222, .72);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .10),
+        inset 0 0 16px rgba(66, 255, 222, .12),
+        0 0 14px rgba(66, 255, 222, .18);
+    }
+
     .zone-title {
       display: flex;
       justify-content: space-between;
@@ -2340,6 +2365,20 @@
       flex-basis: 38px;
       border-radius: 6px;
       box-shadow: 0 4px 7px rgba(0,0,0,.28);
+    }
+
+    .zone-cards[data-card-count="4"] {
+      gap: 3px;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .zone-cards[data-card-count="4"] .card {
+      width: 31px;
+      height: 45px;
+      flex: 0 0 31px;
+      border-radius: 5px;
     }
 
     .zone-cards .card.is-selected {
@@ -4234,6 +4273,17 @@
         flex-basis: 30px;
       }
 
+      .zone-cards[data-card-count="4"] {
+        gap: 2px;
+        flex-wrap: nowrap;
+      }
+
+      .zone-cards[data-card-count="4"] .card {
+        width: 26px;
+        height: 38px;
+        flex: 0 0 26px;
+      }
+
       .zone-fuel .zone-cards {
         align-content: flex-start;
         align-items: flex-start;
@@ -5264,6 +5314,20 @@
       if (player.core.copilot && player.core.copilot.suit !== "diamonds" && SUIT_TO_MODULE[player.core.copilot.suit] === module) limit = Math.max(limit, 3);
       if (player.core.booster && player.core.booster.suit !== "diamonds" && SUIT_TO_MODULE[player.core.booster.suit] === module) limit = Math.max(limit, 4);
       return limit;
+    }
+
+    function getPilotCombatRequirement(player) {
+      const fallback = { module: null, current: 0, required: 3, ready: false };
+      if (!player?.core?.pilot || player.core.pilot.suit === "diamonds") return fallback;
+      const module = SUIT_TO_MODULE[player.core.pilot.suit] || null;
+      if (!module) return fallback;
+      const current = player[module]?.length || 0;
+      return {
+        module,
+        current,
+        required: 3,
+        ready: current >= 3
+      };
     }
 
     function playerCanAttack(player) {
@@ -6909,6 +6973,7 @@
 
     function fillZoneCards(container, cards, emptyText = "Arrastra aqui", context = "zone") {
       container.innerHTML = "";
+      container.dataset.cardCount = String(cards.length || 0);
       if (cards.length) {
         cards.forEach((card) => container.appendChild(makeCardNode(card, context)));
       } else {
@@ -6936,6 +7001,13 @@
       const node = document.createElement("article");
       node.className = `drop-zone ${className}`.trim();
       node.dataset.zone = zone;
+      const pilotReq = getPilotCombatRequirement(state.players[0]);
+      const pilotZone = pilotReq.module === zone;
+      node.classList.toggle("pilot-gated", pilotZone && !pilotReq.ready);
+      node.classList.toggle("pilot-ready", pilotZone && pilotReq.ready);
+      if (pilotZone) {
+        node.title = `${SUIT_LABELS[state.players[0]?.core?.pilot?.suit] || ""} ${MODULE_LABELS[zone]}: ${pilotReq.current}/${pilotReq.required}`;
+      }
       if (state.projectileOnlyMode) {
         const selectable = zone === "attack";
         node.classList.toggle("is-attack-selectable", selectable);
