@@ -4296,19 +4296,19 @@
       .phone-shell {
         --land-left: clamp(260px, 27vw, 360px);
         --land-hand: clamp(282px, 28vw, 380px);
-        grid-template-rows: 76px 72px minmax(0, 1fr) 96px;
+        grid-template-rows: 88px 72px minmax(0, 1fr) 96px;
         gap: 7px;
         padding: 7px 8px;
       }
 
       .brand-plate {
-        height: 74px;
+        height: 86px;
         border-radius: 18px;
       }
 
       .brand-plate img {
-        top: -42px;
-        width: min(330px, calc(100% + 46px));
+        top: -36px;
+        width: min(346px, calc(100% + 34px));
       }
 
       .status-strip {
@@ -4365,18 +4365,18 @@
       }
 
       .fighter header {
-        width: clamp(210px, 24vw, 320px);
-        padding: 7px 11px;
-        font-size: 18px;
+        width: clamp(178px, 20vw, 242px);
+        padding: 7px 10px;
+        font-size: 16px;
       }
 
       .build-percent {
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .mecha-phase-live {
-        width: clamp(185px, 19vw, 265px);
-        height: clamp(220px, 42vh, 330px);
+        width: clamp(178px, 18vw, 248px);
+        height: clamp(212px, 40vh, 310px);
         margin: -6px 0 -10px clamp(-36px, -2.2vw, -22px);
         filter:
           drop-shadow(0 20px 18px rgba(0, 0, 0, .68))
@@ -4385,8 +4385,8 @@
       }
 
       .fighter-red .mecha-phase-live {
-        margin-right: clamp(6px, 1.2vw, 16px);
-        transform: rotate(4deg) translateX(-18px);
+        width: clamp(168px, 16.8vw, 232px);
+        margin-right: clamp(34px, 4vw, 58px);
         filter:
           drop-shadow(0 20px 18px rgba(0, 0, 0, .68))
           drop-shadow(0 0 18px rgba(255, 83, 61, .16))
@@ -4397,6 +4397,10 @@
         gap: 4px;
         padding: 7px 8px 9px;
         margin-bottom: 4px;
+      }
+
+      .fighter-red .stats-card {
+        margin-right: clamp(10px, 1.4vw, 20px);
       }
 
       .stats-card p {
@@ -5303,6 +5307,10 @@
 
     function isLandscapeLayout() {
       return window.matchMedia("(orientation: landscape) and (max-height: 900px)").matches;
+    }
+
+    function isTabletLandscapeLayout() {
+      return window.matchMedia("(orientation: landscape) and (min-height: 621px) and (max-height: 900px)").matches;
     }
 
     function prefersReducedMotion() {
@@ -6792,20 +6800,22 @@
 
     function layoutHandCard(cardNode, index, count, tray) {
       if (isLandscapeLayout()) {
-        const cardsPerRow = 9;
-        const cardWidth = 42;
-        const cardHeight = 61;
+        const tabletLandscape = isTabletLandscapeLayout();
+        const cardsPerRow = tabletLandscape ? 6 : 9;
+        const cardWidth = tabletLandscape ? 54 : 42;
+        const cardHeight = tabletLandscape ? 79 : 61;
         const row = Math.floor(index / cardsPerRow);
         const col = index % cardsPerRow;
         const rowCount = Math.min(cardsPerRow, count - (row * cardsPerRow));
-        const rows = Math.min(2, Math.ceil(count / cardsPerRow));
-        const usableWidth = Math.max(cardWidth, (tray.clientWidth || 220) - 16);
+        const rows = Math.min(tabletLandscape ? 3 : 2, Math.ceil(count / cardsPerRow));
+        const usableWidth = Math.max(cardWidth, (tray.clientWidth || 220) - (tabletLandscape ? 24 : 16));
         const step = rowCount > 1
-          ? Math.min(cardWidth * .58, Math.max(12, (usableWidth - cardWidth) / (rowCount - 1)))
+          ? Math.max(tabletLandscape ? cardWidth * .82 : 12, Math.min(tabletLandscape ? cardWidth * 1.08 : cardWidth * .58, (usableWidth - cardWidth) / (rowCount - 1)))
           : 0;
         const totalWidth = cardWidth + step * Math.max(0, rowCount - 1);
-        const left = Math.max(0, (usableWidth - totalWidth) / 2) + col * step + 8;
-        const rowGap = 7;
+        const leftInset = tabletLandscape ? 12 : 8;
+        const left = Math.max(0, (usableWidth - totalWidth) / 2) + col * step + leftInset;
+        const rowGap = tabletLandscape ? 14 : 7;
         const totalHeight = rows * cardHeight + (rows - 1) * rowGap;
         const topBase = Math.max(0, ((tray.clientHeight || 150) - totalHeight) * .5);
         cardNode.style.left = `${left.toFixed(2)}px`;
@@ -6814,8 +6824,8 @@
         tray.style.setProperty("--fan-overlap", "0px");
         cardNode.style.setProperty("--hand-rotate", "0deg");
         cardNode.style.setProperty("--hand-rise", "0px");
-        cardNode.style.setProperty("--hand-scale", ".94");
-        cardNode.style.setProperty("--hand-hover-scale", "1");
+        cardNode.style.setProperty("--hand-scale", tabletLandscape ? "1" : ".94");
+        cardNode.style.setProperty("--hand-hover-scale", tabletLandscape ? "1.04" : "1");
         return;
       }
 
