@@ -28,6 +28,7 @@ git sparse-checkout set --no-cone \
   '/assets/*.mp3' \
   '/assets/cards/**' \
   '/assets/sfx/**' \
+  '/assets/pentonui-games/**' \
   '/assets/videos/Ataque1.mp4' \
   '/assets/Historia/**' \
   '/mobile-sprite-boceto/**'
