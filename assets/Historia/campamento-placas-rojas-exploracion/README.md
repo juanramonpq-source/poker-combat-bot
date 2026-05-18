@@ -9,7 +9,7 @@ Placas Rojas como un mapa grande de exploracion isometrica.
 - `game.js`: runtime canvas con movimiento, camara, colisiones basicas y audio.
 - `style.css`: presentacion responsive y aviso de orientacion horizontal en movil.
 - `assets/campamento-placas-rojas-map.webp`: fondo WebP optimizado para juego.
-- `assets/lago-norte-map.webp`: segundo escenario jugable del Lago Norte.
+- `assets/lago-norte-map.png`: segundo escenario jugable del Lago Norte.
 - `assets/characters/*.png`: Corvo, Nara, Damaso, Iria, Nix, piloto de
   resistencia y dron del lago para conversacion y presencia en mapa.
 - `assets/characters/exploration/*.png`: sprites realistas de exploracion,
@@ -33,7 +33,8 @@ Placas Rojas como un mapa grande de exploracion isometrica.
 - Fallback local de escenas: si el nivel se abre directamente fuera del modo
   historia, los triggers abren paneles jugables de dialogo/progreso en la misma
   pagina en vez de quedarse esperando `postMessage`.
-- Musica de exploracion con `../Silencio de Acero.mp3`.
+- Musica de exploracion: campamento con `../Campamento de placas rojas.mp3`
+  y lago con `../Lake.mp3`.
 - Boton flotante para volver al mapa en modo independiente.
 - Mensajes `postMessage` preparados para integracion con el modo historia.
 

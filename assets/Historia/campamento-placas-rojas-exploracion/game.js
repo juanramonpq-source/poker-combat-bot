@@ -11,6 +11,8 @@ const storyEmbedMode = storyParams.get("story_embed") === "1";
 const storyReturnUrl = storyParams.get("story_return") || "";
 const storyAudioMode = storyParams.get("story_audio") || "internal";
 const storyCampScene = storyParams.get("story_camp_scene") === "lake" ? "lake" : "camp";
+const storyCampMusicPath = storyCampScene === "lake" ? "../Lake.mp3" : "../Campamento de placas rojas.mp3";
+const storyCampMusicUrl = new URL(storyCampMusicPath, window.location.href).href;
 
 const CAMP_PROGRESS_KEY = "pocobot-story-camp-red-plates-progress-v1";
 
@@ -109,79 +111,478 @@ const npcImageSources = {
 };
 
 const campCollisionZones = [
-  { type: "rect", x: 0, y: -80, width: 1536, height: 120 },
-  { type: "rect", x: 0, y: 984, width: 1536, height: 120 },
-  { type: "rect", x: -80, y: 0, width: 120, height: 1024 },
-  { type: "rect", x: 1496, y: 0, width: 120, height: 1024 },
-  { type: "ellipse", x: 498.004987531172, y: 703.1785609912912, width: 265, height: 270 },
-  { type: "ellipse", x: 689, y: 814, width: 199, height: 207 },
-  { type: "ellipse", x: 1254, y: 626, width: 246, height: 277 },
-  { type: "ellipse", x: 1148.7755610972567, y: 680.6725699924017, width: 167, height: 115 },
-  { type: "ellipse", x: 1361, y: 590, width: 127, height: 102 },
-  { type: "ellipse", x: 1111, y: 22, width: 236, height: 284 },
-  { type: "ellipse", x: 954, y: 173, width: 190, height: 104 },
-  { type: "ellipse", x: 1280, y: 384, width: 220, height: 75 },
-  { type: "ellipse", x: 1329, y: 186, width: 177, height: 149 },
-  { type: "ellipse", x: 678, y: 32, width: 163, height: 128 },
-  { type: "ellipse", x: 826, y: 104, width: 102, height: 72 },
-  { type: "ellipse", x: 742, y: 121, width: 104, height: 55 },
-  { type: "ellipse", x: 613, y: 93, width: 113, height: 76 },
-  { type: "ellipse", x: 546, y: 58, width: 79, height: 64 },
-  { type: "ellipse", x: 477, y: 104, width: 115, height: 74 },
-  { type: "ellipse", x: 412, y: 133, width: 97, height: 65 },
-  { type: "ellipse", x: 604, y: 198, width: 71, height: 53 },
-  { type: "ellipse", x: 667, y: 201, width: 19, height: 46 },
-  { type: "ellipse", x: 681, y: 214, width: 33, height: 31 },
-  { type: "ellipse", x: 708, y: 226, width: 29, height: 23 },
-  { type: "ellipse", x: 753, y: 296, width: 53, height: 77 },
-  { type: "ellipse", x: 794, y: 328, width: 53, height: 59 },
-  { type: "ellipse", x: 852, y: 359, width: 45, height: 46 },
-  { type: "ellipse", x: 898, y: 353, width: 41, height: 75 },
-  { type: "ellipse", x: 947, y: 389, width: 47, height: 67 },
-  { type: "ellipse", x: 1001, y: 432, width: 90, height: 78 },
-  { type: "ellipse", x: 907, y: 466, width: 131, height: 85 },
-  { type: "ellipse", x: 870, y: 506, width: 66, height: 77 },
-  { type: "ellipse", x: 806, y: 560, width: 80, height: 65 },
-  { type: "ellipse", x: 690, y: 326, width: 60, height: 41 },
-  { type: "ellipse", x: 640, y: 318, width: 37, height: 52 },
-  { type: "ellipse", x: 636, y: 291, width: 25, height: 31 },
-  { type: "ellipse", x: 649, y: 337, width: 59, height: 34 },
-  { type: "ellipse", x: 591, y: 330, width: 43, height: 49 },
-  { type: "ellipse", x: 603, y: 340, width: 48, height: 41 },
-  { type: "ellipse", x: 575, y: 321, width: 25, height: 43 },
-  { type: "ellipse", x: 395, y: 406, width: 103, height: 61 },
-  { type: "ellipse", x: 483, y: 495, width: 76, height: 57 },
-  { type: "ellipse", x: 406, y: 590, width: 53, height: 72 },
-  { type: "ellipse", x: 344, y: 581, width: 60, height: 60 },
-  { type: "ellipse", x: 323, y: 550, width: 70, height: 52 },
-  { type: "ellipse", x: 364, y: 577, width: 70, height: 36 },
-  { type: "ellipse", x: 377, y: 557, width: 34, height: 31 },
-  { type: "ellipse", x: 311, y: 524, width: 55, height: 46 },
-  { type: "ellipse", x: 175, y: 642, width: 263, height: 101 },
-  { type: "ellipse", x: 223, y: 588, width: 113, height: 85 },
-  { type: "ellipse", x: 71, y: 524, width: 74, height: 168 },
-  { type: "ellipse", x: 114, y: 600, width: 141, height: 112 },
-  { type: "ellipse", x: 56, y: 697, width: 235, height: 131 },
-  { type: "ellipse", x: 24, y: 758, width: 168, height: 138 },
-  { type: "ellipse", x: 16, y: 629, width: 138, height: 139 },
-  { type: "ellipse", x: 129, y: 131, width: 216, height: 249 },
-  { type: "ellipse", x: 340, y: 228, width: 149, height: 92 },
-  { type: "ellipse", x: 22, y: 132, width: 320, height: 140 },
-  { type: "ellipse", x: 0, y: 242, width: 182, height: 124 },
-  { type: "ellipse", x: 1018, y: 656, width: 239, height: 91 }
+  {
+    type: "rect",
+    x: 0,
+    y: -80,
+    width: 1536,
+    height: 120
+  },
+  {
+    type: "rect",
+    x: 0,
+    y: 984,
+    width: 1536,
+    height: 120
+  },
+  {
+    type: "rect",
+    x: -80,
+    y: 0,
+    width: 120,
+    height: 1024
+  },
+  {
+    type: "rect",
+    x: 1496,
+    y: 0,
+    width: 120,
+    height: 1024
+  },
+  {
+    type: "ellipse",
+    x: 515.503740648379,
+    y: 734.690396867146,
+    width: 265,
+    height: 270
+  },
+  {
+    type: "ellipse",
+    x: 689,
+    y: 814,
+    width: 199,
+    height: 207
+  },
+  {
+    type: "ellipse",
+    x: 1254,
+    y: 626,
+    width: 246,
+    height: 277
+  },
+  {
+    type: "ellipse",
+    x: 1148.7755610972567,
+    y: 680.6725699924017,
+    width: 167,
+    height: 115
+  },
+  {
+    type: "ellipse",
+    x: 1361,
+    y: 590,
+    width: 127,
+    height: 102
+  },
+  {
+    type: "ellipse",
+    x: 1111,
+    y: 22,
+    width: 236,
+    height: 284
+  },
+  {
+    type: "ellipse",
+    x: 1280,
+    y: 384,
+    width: 220,
+    height: 75
+  },
+  {
+    type: "ellipse",
+    x: 1329,
+    y: 186,
+    width: 177,
+    height: 149
+  },
+  {
+    type: "ellipse",
+    x: 678,
+    y: 32,
+    width: 163,
+    height: 128
+  },
+  {
+    type: "ellipse",
+    x: 826,
+    y: 104,
+    width: 102,
+    height: 72
+  },
+  {
+    type: "ellipse",
+    x: 742,
+    y: 121,
+    width: 104,
+    height: 55
+  },
+  {
+    type: "ellipse",
+    x: 613,
+    y: 93,
+    width: 113,
+    height: 76
+  },
+  {
+    type: "ellipse",
+    x: 546,
+    y: 58,
+    width: 79,
+    height: 64
+  },
+  {
+    type: "ellipse",
+    x: 477,
+    y: 104,
+    width: 115,
+    height: 74
+  },
+  {
+    type: "ellipse",
+    x: 681,
+    y: 214,
+    width: 33,
+    height: 31
+  },
+  {
+    type: "ellipse",
+    x: 753,
+    y: 296,
+    width: 53,
+    height: 77
+  },
+  {
+    type: "ellipse",
+    x: 794,
+    y: 328,
+    width: 53,
+    height: 59
+  },
+  {
+    type: "ellipse",
+    x: 852,
+    y: 359,
+    width: 45,
+    height: 46
+  },
+  {
+    type: "ellipse",
+    x: 898,
+    y: 353,
+    width: 41,
+    height: 75
+  },
+  {
+    type: "ellipse",
+    x: 947,
+    y: 389,
+    width: 47,
+    height: 67
+  },
+  {
+    type: "ellipse",
+    x: 1001,
+    y: 432,
+    width: 90,
+    height: 78
+  },
+  {
+    type: "ellipse",
+    x: 918.0872817955112,
+    y: 450.08697176924426,
+    width: 131,
+    height: 85
+  },
+  {
+    type: "ellipse",
+    x: 870,
+    y: 506,
+    width: 66,
+    height: 77
+  },
+  {
+    type: "ellipse",
+    x: 821.4339152119701,
+    y: 539.7178093401134,
+    width: 80,
+    height: 65
+  },
+  {
+    type: "ellipse",
+    x: 690,
+    y: 326,
+    width: 60,
+    height: 41
+  },
+  {
+    type: "ellipse",
+    x: 640,
+    y: 318,
+    width: 37,
+    height: 52
+  },
+  {
+    type: "ellipse",
+    x: 649,
+    y: 337,
+    width: 59,
+    height: 34
+  },
+  {
+    type: "ellipse",
+    x: 591,
+    y: 330,
+    width: 43,
+    height: 49
+  },
+  {
+    type: "ellipse",
+    x: 603,
+    y: 340,
+    width: 48,
+    height: 41
+  },
+  {
+    type: "ellipse",
+    x: 406,
+    y: 590,
+    width: 53,
+    height: 72
+  },
+  {
+    type: "ellipse",
+    x: 344,
+    y: 581,
+    width: 60,
+    height: 60
+  },
+  {
+    type: "ellipse",
+    x: 323,
+    y: 550,
+    width: 70,
+    height: 52
+  },
+  {
+    type: "ellipse",
+    x: 364,
+    y: 577,
+    width: 70,
+    height: 36
+  },
+  {
+    type: "ellipse",
+    x: 377,
+    y: 557,
+    width: 34,
+    height: 31
+  },
+  {
+    type: "ellipse",
+    x: 311,
+    y: 524,
+    width: 55,
+    height: 46
+  },
+  {
+    type: "ellipse",
+    x: 144.83541147132166,
+    y: 634.189374013677,
+    width: 263,
+    height: 101
+  },
+  {
+    type: "ellipse",
+    x: 223,
+    y: 588,
+    width: 113,
+    height: 85
+  },
+  {
+    type: "ellipse",
+    x: 71,
+    y: 524,
+    width: 74,
+    height: 168
+  },
+  {
+    type: "ellipse",
+    x: 114,
+    y: 600,
+    width: 141,
+    height: 112
+  },
+  {
+    type: "ellipse",
+    x: 56,
+    y: 697,
+    width: 235,
+    height: 131
+  },
+  {
+    type: "ellipse",
+    x: 24,
+    y: 758,
+    width: 168,
+    height: 138
+  },
+  {
+    type: "ellipse",
+    x: 16,
+    y: 629,
+    width: 138,
+    height: 139
+  },
+  {
+    type: "ellipse",
+    x: 129,
+    y: 131,
+    width: 216,
+    height: 249
+  },
+  {
+    type: "ellipse",
+    x: 22,
+    y: 132,
+    width: 320,
+    height: 140
+  },
+  {
+    type: "ellipse",
+    x: 0,
+    y: 242,
+    width: 182,
+    height: 124
+  },
+  {
+    type: "ellipse",
+    x: 1018,
+    y: 656,
+    width: 239,
+    height: 91
+  },
+  {
+    type: "rect",
+    x: 607,
+    y: 207,
+    width: 63,
+    height: 27
+  },
+  {
+    type: "ellipse",
+    x: 347,
+    y: 238,
+    width: 89,
+    height: 60
+  },
+  {
+    type: "ellipse",
+    x: 441,
+    y: 137,
+    width: 69,
+    height: 42
+  },
+  {
+    type: "ellipse",
+    x: 399,
+    y: 261,
+    width: 78,
+    height: 34
+  },
+  {
+    type: "ellipse",
+    x: 122,
+    y: 499,
+    width: 60,
+    height: 35
+  },
+  {
+    type: "ellipse",
+    x: 1002,
+    y: 199,
+    width: 124,
+    height: 56
+  },
+  {
+    type: "ellipse",
+    x: 420,
+    y: 421,
+    width: 50,
+    height: 16
+  }
 ];
 
 const lakeCollisionZones = [
-  { type: "rect", x: 0, y: -80, width: 1536, height: 120 },
-  { type: "rect", x: 0, y: 984, width: 1536, height: 120 },
-  { type: "rect", x: -80, y: 0, width: 120, height: 1024 },
-  { type: "rect", x: 1496, y: 0, width: 120, height: 1024 },
-  { type: "ellipse", x: 238, y: 45, width: 1060, height: 615 },
-  { type: "rect", x: 610, y: 46, width: 318, height: 58 },
-  { type: "ellipse", x: 126, y: 38, width: 212, height: 592 },
-  { type: "ellipse", x: 1198, y: 34, width: 222, height: 610 },
-  { type: "ellipse", x: 56, y: 660, width: 460, height: 260 },
-  { type: "ellipse", x: 1022, y: 650, width: 456, height: 260 },
+  {
+    type: "rect",
+    x: 0,
+    y: -80,
+    width: 1536,
+    height: 120
+  },
+  {
+    type: "rect",
+    x: 0,
+    y: 984,
+    width: 1536,
+    height: 120
+  },
+  {
+    type: "rect",
+    x: -80,
+    y: 0,
+    width: 120,
+    height: 1024
+  },
+  {
+    type: "rect",
+    x: 1496,
+    y: 0,
+    width: 120,
+    height: 1024
+  },
+  {
+    type: "ellipse",
+    x: 231.74563591022456,
+    y: 7.353381261324444,
+    width: 1060,
+    height: 615
+  },
+  {
+    type: "rect",
+    x: 610,
+    y: 46,
+    width: 318,
+    height: 58
+  },
+  {
+    type: "ellipse",
+    x: 51.710723192019955,
+    y: -150.10590917061205,
+    width: 212,
+    height: 592
+  },
+  {
+    type: "ellipse",
+    x: 1253.0399002493766,
+    y: -155.01116371500416,
+    width: 222,
+    height: 610
+  },
+  {
+    type: "ellipse",
+    x: -155.0997506234412,
+    y: 710.080776199661,
+    width: 460,
+    height: 260
+  },
+  {
+    type: "ellipse",
+    x: 1317.8478802992518,
+    y: 736.6351043310539,
+    width: 456,
+    height: 260
+  }
 ];
 
 const collisionZones = storyCampScene === "lake" ? lakeCollisionZones : campCollisionZones;
@@ -209,112 +610,123 @@ let campProgress = readCampProgress();
 const campInteractables = [
   {
     id: "corvo",
-    x: 562,
-    y: 506,
+    x: 1128.1695760598504,
+    y: 825.3378923373658,
     radius: 118,
     label: "Corvo Vanta",
     hint: "Hablar",
     message: "Corvo observa tus manos antes que tu cara.",
+    scale: 1
   },
   {
     id: "radio_xavor",
-    x: 688,
-    y: 550,
-    radius: 94,
+    x: 760,
+    y: 425,
+    radius: 60,
     label: "Radio de Xavor",
     hint: "Contactar",
     message: "La radio de Xavor puede romper la desconfianza de Corvo.",
+    scale: 0.5
   },
   {
     id: "medic",
-    x: 405,
-    y: 672,
+    x: 232.4812967581047,
+    y: 933.2370097609445,
     radius: 98,
     label: "Nara, sanitaria",
     hint: "Encargo",
     message: "Nara necesita filtros limpios para contener la fiebre del agua.",
-    role: "medic",
+    scale: 1,
+    role: "medic"
   },
   {
     id: "quartermaster",
-    x: 976,
-    y: 612,
+    x: 1441.0074812967582,
+    y: 537.9412005377287,
     radius: 104,
     label: "Damaso, intendencia",
     hint: "Intercambio",
     message: "Damaso guarda filtros, pero pide una placa roja sellada.",
-    role: "quartermaster",
+    scale: 1,
+    role: "quartermaster"
   },
   {
     id: "mechanic",
-    x: 1038,
-    y: 424,
-    radius: 96,
+    x: 443,
+    y: 458,
+    radius: 70,
     label: "Iria, mecanica",
     hint: "Intercambio",
     message: "Iria puede abrir el armario de placas si alguien le trae un fusible.",
-    role: "mechanic",
+    scale: 1,
+    role: "mechanic"
   },
   {
     id: "deck_pirate",
-    x: 707,
-    y: 344,
-    radius: 100,
+    x: 387,
+    y: 145,
+    radius: 70,
     label: "Nix Corsario",
     hint: "Piratear mazo",
     message: "Nix puede limpiar hasta tres cartas añadidas del mazo antes del hackeo del agua.",
-    role: "deck_pirate",
+    scale: 0.51,
+    role: "deck_pirate"
   },
   {
     id: "sparring",
-    x: 862,
-    y: 728,
+    x: 106.78553615960111,
+    y: 474.0723595768308,
     radius: 106,
     label: "PoCoBOT de resistencia",
     hint: "Combate controlado",
     message: "Un PoCoBOT veterano acepta un duelo de calibracion, al estilo de Viajero.",
-    role: "resistance_bot",
+    scale: 1,
+    role: "resistance_bot"
   },
   {
     id: "water_pc",
-    x: 1190,
-    y: 310,
-    radius: 116,
+    x: 1212,
+    y: 327,
+    radius: 70,
     label: "PC del flujo de agua",
     hint: "Hackear",
     message: "El PC controla el flujo del agua. Xavor puede entrar desde la radio.",
+    scale: 1
   },
   {
     id: "north_exit",
-    x: 768,
-    y: 74,
-    radius: 132,
+    x: 1024.7556109725685,
+    y: 115.82471213980936,
+    radius: 70,
     label: "Paso norte",
     hint: "Ir al lago",
     message: "El paso norte lleva al lago de captacion.",
-  },
+    scale: 0.71
+  }
 ];
 
 const lakeInteractables = [
   {
     id: "lake_drone",
-    x: 778,
-    y: 430,
+    x: 761.4962593516209,
+    y: 581.8583201823601,
     radius: 160,
     label: "Dron del lago",
     hint: "Combate",
     message: "El dron esta ensuciando el lago con sedimentos de Argos.",
-    role: "lake_drone",
+    scale: 1,
+    role: "lake_drone"
   },
   {
     id: "return_camp",
-    x: 768,
-    y: 908,
-    radius: 130,
+    x: 769,
+    y: 977,
+    radius: 70,
     label: "Volver al campamento",
     hint: "Regresar",
     message: "El sendero sur vuelve al campamento.",
-  },
+    scale: 1
+  }
 ];
 
 const interactables = storyCampScene === "lake" ? lakeInteractables : campInteractables;
@@ -603,7 +1015,7 @@ function createPlayerVisual() {
 
 async function loadAssets() {
   const mapSource = storyCampScene === "lake"
-    ? "./assets/lago-norte-map.webp"
+    ? "./assets/lago-norte-map.png"
     : "./assets/campamento-placas-rojas-map.webp";
   const [mapImage, corvoImage, firstBotFrame] = await Promise.all([
     loadImage(mapSource).catch((error) => {
@@ -674,6 +1086,15 @@ function fadeCampMusic(targetVolume, duration = 700, onComplete = null) {
   campMusicFadeFrame = window.requestAnimationFrame(step);
 }
 
+function syncCampMusicSource() {
+  if (!campMusic) return;
+  if (campMusic.src === storyCampMusicUrl) return;
+  campMusic.src = storyCampMusicUrl;
+  campMusic.load();
+}
+
+syncCampMusicSource();
+
 function primeParentCampMusic() {
   if (!storyEmbedMode || window.parent === window) return;
 
@@ -681,7 +1102,7 @@ function primeParentCampMusic() {
     const parentMusic = window.parent.document?.getElementById("storyMapMusic");
     if (!parentMusic) return;
 
-    const targetSource = new URL("../Silencio de Acero.mp3", window.location.href).href;
+    const targetSource = storyCampMusicUrl;
     const sourceElement = parentMusic.querySelector("source");
     const currentSource = parentMusic.currentSrc
       || (sourceElement?.getAttribute("src")
@@ -704,6 +1125,7 @@ function primeParentCampMusic() {
 
 async function startCampMusic() {
   if (!campMusic || !campMusicShouldPlay) return;
+  syncCampMusicSource();
 
   if (storyAudioMode === "external") {
     campMusicStarted = true;
