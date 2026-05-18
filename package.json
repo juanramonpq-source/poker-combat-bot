@@ -24,7 +24,7 @@
     "combat",
     "mecha"
   ],
-  "author": "Juan Ramón Pérez Quintanar",
+  "author": "Pentonúi Games",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",

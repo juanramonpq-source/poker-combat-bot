@@ -4087,6 +4087,49 @@ body.story-argos-hack-ui .pro-turn-kicker{
   color:#fff4c2;
   border-bottom-color:rgba(255,244,194,.7);
 }
+.intro-studio-signature{
+  position:relative;
+  z-index:1;
+  display:grid;
+  justify-items:center;
+  gap:5px;
+  width:max-content;
+  max-width:72vw;
+  margin:8px auto 0;
+  color:rgba(223,252,255,.72);
+  text-align:center;
+}
+.intro-studio-signature span{
+  font-size:.52rem;
+  font-weight:900;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.intro-studio-lockup{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:5px 11px 5px 7px;
+  border:1px solid rgba(143,244,255,.18);
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(8,18,34,.62), rgba(3,8,16,.74));
+  box-shadow:0 10px 24px rgba(0,0,0,.20), inset 0 0 0 1px rgba(255,255,255,.035);
+}
+.intro-studio-lockup img{
+  width:28px;
+  height:28px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 10px rgba(66,214,255,.22));
+}
+.intro-studio-lockup strong{
+  color:#edf8ff;
+  font-size:.7rem;
+  line-height:1;
+  letter-spacing:.04em;
+  text-shadow:0 0 10px rgba(66,214,255,.16);
+  white-space:nowrap;
+}
 .intro-install-tip{
   margin:8px auto 0;
   max-width:560px;
@@ -18903,9 +18946,12 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
       </div>
     </div>
     <div class="intro-note"><a href="MANUAL_USUARIO.html" target="_blank">📖 Abrir Manual</a> • <a href="mailto:autores@factordual.com">Contacta</a></div>
-    <div class="pg-studio-badge pg-studio-badge--intro" aria-label="Creado por Pentonúi Games">
-      <img src="assets/pentonui-games/svg/pentonui-games-mark-transparent.svg" alt="" aria-hidden="true">
-      <span><small>Creado por</small><strong>Pentonúi Games</strong></span>
+    <div class="intro-studio-signature" aria-label="Creado por Pentonúi Games">
+      <span>Creado por</span>
+      <div class="intro-studio-lockup">
+        <img src="assets/pentonui-games/icons/pentonui-games-icon-transparent-512.png" alt="" aria-hidden="true">
+        <strong>Pentonúi Games</strong>
+      </div>
     </div>
     <div class="intro-install-tip" aria-label="Consejo para instalar la web app">
       <div class="intro-install-icon" aria-hidden="true">
@@ -35094,8 +35140,12 @@ console.log('[DEBUG] ========== CÓDIGO ONLINE CARGADO COMPLETAMENTE =========='
 
 </script>
 
-  <footer style="margin:18px auto 8px; text-align:center; color:#dffcff; font-size:.9rem; font-weight:700; letter-spacing:.02em; opacity:.92;">
-    Poker Combat-bot: Juego creado por Juan Ramón Pérez Quintanar · <a href="mailto:autores@factordual.com" style="color:#ffcf68; text-decoration:none; border-bottom:1px dotted rgba(255,207,104,.45);">Contacta con el autor</a>
+  <footer style="margin:18px auto 8px; text-align:center; display:grid; justify-items:center; gap:8px;">
+    <div class="pg-studio-badge pg-studio-badge--intro" aria-label="Poker Combat Bot por Pentonúi Games">
+      <img src="assets/pentonui-games/svg/pentonui-games-mark-transparent.svg" alt="" aria-hidden="true">
+      <span><small>Poker Combat Bot</small><strong>Pentonúi Games</strong></span>
+    </div>
+    <a href="mailto:autores@factordual.com" style="color:#ffcf68; text-decoration:none; border-bottom:1px dotted rgba(255,207,104,.45); font-size:.86rem; font-weight:800;">Contacta con el estudio</a>
   </footer>
 </body>
 </html>
