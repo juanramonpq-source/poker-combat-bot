@@ -10,6 +10,9 @@ const storyParams = new URLSearchParams(window.location.search);
 const storyEmbedMode = storyParams.get("story_embed") === "1";
 const storyReturnUrl = storyParams.get("story_return") || "";
 const storyAudioMode = storyParams.get("story_audio") || "internal";
+const storyCampScene = storyParams.get("story_camp_scene") === "lake" ? "lake" : "camp";
+
+const CAMP_PROGRESS_KEY = "pocobot-story-camp-red-plates-progress-v1";
 
 if (storyEmbedMode) {
   document.body.classList.add("story-embed-mode");
@@ -44,8 +47,8 @@ const input = {
 };
 
 const player = {
-  x: 746,
-  y: 618,
+  x: storyCampScene === "lake" ? 770 : 746,
+  y: storyCampScene === "lake" ? 810 : 618,
   radius: 26,
   vx: 0,
   vy: 0,
@@ -80,12 +83,23 @@ const desktopCameraMedia = window.matchMedia("(pointer: fine) and (hover: hover)
 
 const assets = {
   map: new Image(),
+  corvo: new Image(),
+  npcs: {},
   botFrames: [],
   frontFrames: [],
   sideFrames: [],
   hoverFrames: [],
   backFrame: null,
   ready: false,
+};
+
+const npcImageSources = {
+  medic: "./assets/characters/nara-sanitaria-dialogue.png",
+  quartermaster: "./assets/characters/damaso-intendencia-dialogue.png",
+  mechanic: "./assets/characters/iria-mecanica-dialogue.png",
+  deck_pirate: "./assets/characters/nix-corsario-dialogue.png",
+  resistance_bot: "./assets/characters/piloto-resistencia-dialogue.png",
+  lake_drone: "./assets/characters/dron-lago-dialogue.png",
 };
 
 const collisionZones = [
@@ -153,7 +167,137 @@ const collisionZones = [
 
 window.PoCoBOTStoryCollisionEditor?.applySceneZones("campamento-placas-rojas", collisionZones);
 
-const interactables = [];
+function readCampProgress() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CAMP_PROGRESS_KEY) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function writeCampProgress(patch = {}) {
+  const next = { ...readCampProgress(), ...patch, updatedAt: Date.now() };
+  try {
+    localStorage.setItem(CAMP_PROGRESS_KEY, JSON.stringify(next));
+  } catch (error) {}
+  return next;
+}
+
+let campProgress = readCampProgress();
+
+const campInteractables = [
+  {
+    id: "corvo",
+    x: 562,
+    y: 506,
+    radius: 118,
+    label: "Corvo Vanta",
+    hint: "Hablar",
+    message: "Corvo observa tus manos antes que tu cara.",
+  },
+  {
+    id: "radio_xavor",
+    x: 688,
+    y: 550,
+    radius: 94,
+    label: "Radio de Xavor",
+    hint: "Contactar",
+    message: "La radio de Xavor puede romper la desconfianza de Corvo.",
+  },
+  {
+    id: "medic",
+    x: 405,
+    y: 672,
+    radius: 98,
+    label: "Nara, sanitaria",
+    hint: "Encargo",
+    message: "Nara necesita filtros limpios para contener la fiebre del agua.",
+    role: "medic",
+  },
+  {
+    id: "quartermaster",
+    x: 976,
+    y: 612,
+    radius: 104,
+    label: "Damaso, intendencia",
+    hint: "Intercambio",
+    message: "Damaso guarda filtros, pero pide una placa roja sellada.",
+    role: "quartermaster",
+  },
+  {
+    id: "mechanic",
+    x: 1038,
+    y: 424,
+    radius: 96,
+    label: "Iria, mecanica",
+    hint: "Intercambio",
+    message: "Iria puede abrir el armario de placas si alguien le trae un fusible.",
+    role: "mechanic",
+  },
+  {
+    id: "deck_pirate",
+    x: 707,
+    y: 344,
+    radius: 100,
+    label: "Nix Corsario",
+    hint: "Piratear mazo",
+    message: "Nix puede limpiar hasta tres cartas añadidas del mazo antes del hackeo del agua.",
+    role: "deck_pirate",
+  },
+  {
+    id: "sparring",
+    x: 862,
+    y: 728,
+    radius: 106,
+    label: "PoCoBOT de resistencia",
+    hint: "Combate controlado",
+    message: "Un PoCoBOT veterano acepta un duelo de calibracion, al estilo de Viajero.",
+    role: "resistance_bot",
+  },
+  {
+    id: "water_pc",
+    x: 1190,
+    y: 310,
+    radius: 116,
+    label: "PC del flujo de agua",
+    hint: "Hackear",
+    message: "El PC controla el flujo del agua. Xavor puede entrar desde la radio.",
+  },
+  {
+    id: "north_exit",
+    x: 768,
+    y: 74,
+    radius: 132,
+    label: "Paso norte",
+    hint: "Ir al lago",
+    message: "El paso norte lleva al lago de captacion.",
+  },
+];
+
+const lakeInteractables = [
+  {
+    id: "lake_drone",
+    x: 778,
+    y: 430,
+    radius: 160,
+    label: "Dron del lago",
+    hint: "Combate",
+    message: "El dron esta ensuciando el lago con sedimentos de Argos.",
+    role: "lake_drone",
+  },
+  {
+    id: "return_camp",
+    x: 768,
+    y: 908,
+    radius: 130,
+    label: "Volver al campamento",
+    hint: "Regresar",
+    message: "El sendero sur vuelve al campamento.",
+  },
+];
+
+const interactables = storyCampScene === "lake" ? lakeInteractables : campInteractables;
 window.PoCoBOTStoryCollisionEditor?.applySceneInteractionPoints("campamento-placas-rojas", interactables);
 
 const interactionState = {
@@ -255,6 +399,15 @@ function getCampPerspectiveScale(subject = player) {
   const farY = 170;
   const depth = smoothstep((nearY - subject.y) / (nearY - farY));
   return 1 - depth * 0.34;
+}
+
+function withCampPerspective(subject, draw) {
+  const visualScale = getCampPerspectiveScale(subject);
+  ctx.save();
+  ctx.translate(subject.x, subject.y);
+  ctx.scale(visualScale, visualScale);
+  draw(visualScale);
+  ctx.restore();
 }
 
 function getCameraZoom() {
@@ -363,6 +516,12 @@ function loadImage(source) {
   });
 }
 
+function loadOptionalImage(source, assign) {
+  loadImage(source)
+    .then(assign)
+    .catch((error) => console.warn(error));
+}
+
 function createFallbackCanvas(width, height, draw) {
   const fallback = document.createElement("canvas");
   fallback.width = width;
@@ -418,10 +577,14 @@ function createPlayerVisual() {
 }
 
 async function loadAssets() {
-  const [mapImage, firstBotFrame] = await Promise.all([
+  const [mapImage, corvoImage, firstBotFrame] = await Promise.all([
     loadImage("./assets/campamento-placas-rojas-map.webp").catch((error) => {
       console.warn(error);
       return createFallbackCampMap();
+    }),
+    loadImage("./assets/characters/corvo-vanta-topdown.png").catch((error) => {
+      console.warn(error);
+      return null;
     }),
     loadImage(leanFrameSources[0]).catch((error) => {
       console.warn(error);
@@ -430,8 +593,14 @@ async function loadAssets() {
   ]);
 
   assets.map = mapImage;
+  assets.corvo = corvoImage;
   assets.botFrames = [firstBotFrame];
   assets.frontFrames = assets.botFrames;
+  Object.entries(npcImageSources).forEach(([key, source]) => {
+    loadOptionalImage(source, (image) => {
+      assets.npcs[key] = image;
+    });
+  });
 
   if (playerVisualFrameSources) {
     Promise.all([
@@ -563,6 +732,66 @@ function postStoryCampAction(action, payload = {}) {
   if (action === "return-map" && storyReturnUrl && window.parent === window) {
     window.location.href = storyReturnUrl;
   }
+}
+
+function completeLocalCampStep(interactionId) {
+  if (interactionId === "radio_xavor") {
+    campProgress = writeCampProgress({ corvoTrusted: true, xavorVerified: true });
+  } else if (interactionId === "medic") {
+    campProgress = writeCampProgress({ medicRequest: true });
+  } else if (interactionId === "quartermaster" && campProgress.medicRequest) {
+    campProgress = writeCampProgress({ filtersReady: true });
+  } else if (interactionId === "mechanic" && campProgress.filtersReady) {
+    campProgress = writeCampProgress({ valveFuse: true });
+  } else if (interactionId === "deck_pirate" && campProgress.valveFuse) {
+    campProgress = writeCampProgress({ deckPirateMet: true });
+  } else if (interactionId === "water_pc" && campProgress.corvoTrusted && campProgress.valveFuse && campProgress.deckPurged && campProgress.trialCleared) {
+    campProgress = writeCampProgress({ waterFixed: true });
+  } else if (interactionId === "lake_drone") {
+    campProgress = writeCampProgress({ lakeDroneSeen: true });
+  }
+}
+
+function getInteractionAction(interaction) {
+  if (!interaction) return "";
+  if (interaction.id === "return_camp") return "return-camp";
+  if (interaction.id === "north_exit") return campProgress.waterFixed ? "open-lake" : "north-locked";
+  if (interaction.id === "water_pc") return campProgress.corvoTrusted && campProgress.valveFuse && campProgress.deckPurged && campProgress.trialCleared ? "hack-pc" : "pc-locked";
+  if (interaction.id === "deck_pirate") return campProgress.valveFuse ? "deck-pirate" : "deck-pirate-locked";
+  if (interaction.id === "sparring") return "camp-trial";
+  if (interaction.id === "lake_drone") return campProgress.lakeClean ? "lake-cleared" : "lake-drone";
+  return interaction.id.replaceAll("_", "-");
+}
+
+function handleInteraction(interaction) {
+  if (!interaction) return;
+  const action = getInteractionAction(interaction);
+
+  if (action === "north-locked") {
+    setInteractionMessage("El paso norte sigue cerrado: falta restaurar el agua del campamento.", 3.2);
+    return;
+  }
+  if (action === "pc-locked") {
+    setInteractionMessage("El PC exige confianza de Corvo, calibración superada, fusible de Iria, mazo limpio por Nix y enlace de Xavor.", 3.2);
+    return;
+  }
+  if (action === "deck-pirate-locked") {
+    setInteractionMessage("Nix ni levanta la vista: primero consigue el fusible de Iria.", 3.0);
+    return;
+  }
+  if (action === "lake-cleared") {
+    setInteractionMessage("El lago vuelve a correr limpio. Corvo ya no aparta la mirada.", 3.2);
+    return;
+  }
+
+  completeLocalCampStep(interaction.id);
+  setInteractionMessage(interaction.message, 2.4);
+  postStoryCampAction(action, {
+    interactionId: interaction.id,
+    scene: storyCampScene,
+    playerPosition: { x: Math.round(player.x), y: Math.round(player.y) },
+    progress: campProgress,
+  });
 }
 
 function setInteractionMessage(text, duration = 2.8) {
@@ -775,6 +1004,16 @@ updateLandscapePrompt();
 
 function findActiveInteraction() {
   interactionState.active = null;
+  let best = null;
+  let bestDistance = Infinity;
+  interactables.forEach((item) => {
+    const distance = Math.hypot(player.x - item.x, player.y - item.y);
+    if (distance <= item.radius && distance < bestDistance) {
+      best = item;
+      bestDistance = distance;
+    }
+  });
+  interactionState.active = best;
 }
 
 function update(dt) {
@@ -859,6 +1098,9 @@ function update(dt) {
   }
 
   findActiveInteraction();
+  if (input.interactQueued && interactionState.active) {
+    handleInteraction(interactionState.active);
+  }
   input.interactQueued = false;
 }
 
@@ -910,6 +1152,478 @@ function drawMap() {
   ctx.ellipse(768, 520, 300, 170, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
+
+  if (storyCampScene === "lake") {
+    drawLakeOverlay(pulse);
+  }
+}
+
+function drawLakeOverlay(pulse) {
+  ctx.save();
+  ctx.fillStyle = "rgba(6, 20, 24, 0.72)";
+  ctx.fillRect(0, 0, world.width, world.height);
+  const water = ctx.createRadialGradient(768, 430, 60, 768, 430, 430);
+  water.addColorStop(0, campProgress.lakeClean ? "rgba(74, 220, 220, 0.82)" : "rgba(72, 116, 105, 0.78)");
+  water.addColorStop(0.62, campProgress.lakeClean ? "rgba(20, 112, 122, 0.72)" : "rgba(72, 67, 52, 0.72)");
+  water.addColorStop(1, "rgba(9, 18, 22, 0.1)");
+  ctx.fillStyle = water;
+  ctx.beginPath();
+  ctx.ellipse(768, 430, 470, 285, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = campProgress.lakeClean ? "rgba(140, 236, 255, 0.44)" : "rgba(255, 177, 92, 0.42)";
+  ctx.lineWidth = 10;
+  ctx.stroke();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.fillStyle = `rgba(140, 236, 255, ${0.04 + pulse * 0.05})`;
+  ctx.beginPath();
+  ctx.ellipse(768, 430, 390, 210, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function getInteractionDistance(interactable) {
+  return Math.hypot(player.x - interactable.x, player.y - interactable.y);
+}
+
+function drawWorldLabel(x, y, title, subtitle, options = {}) {
+  const active = !!options.active;
+  const perspective = options.perspectiveScale || 1;
+  const scale = (active ? 1 : 0.86) * perspective;
+  const alpha = active ? 0.96 : 0.72;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+  ctx.font = "800 14px Trebuchet MS, Segoe UI, sans-serif";
+  const titleWidth = ctx.measureText(title).width;
+  ctx.font = "700 11px Trebuchet MS, Segoe UI, sans-serif";
+  const subtitleWidth = ctx.measureText(subtitle).width;
+  const width = Math.min(210, Math.max(titleWidth, subtitleWidth) + 30);
+  const height = active ? 44 : 32;
+  const yOffset = active ? -62 : -48;
+
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = "rgba(17, 10, 9, 0.86)";
+  ctx.strokeStyle = active ? "rgba(140, 236, 255, 0.5)" : "rgba(255, 177, 92, 0.36)";
+  ctx.lineWidth = 1.4;
+  ctx.beginPath();
+  ctx.roundRect(-width / 2, yOffset, width, height, 8);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = active ? "#8cecff" : "#ffb15c";
+  ctx.fillRect(-width / 2 + 10, yOffset + 8, 5, height - 16);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#fff3e6";
+  ctx.font = "900 13px Trebuchet MS, Segoe UI, sans-serif";
+  ctx.fillText(title, 4, yOffset + (active ? 16 : 16), width - 26);
+  if (active) {
+    ctx.fillStyle = "rgba(180, 244, 255, 0.84)";
+    ctx.font = "800 10px Trebuchet MS, Segoe UI, sans-serif";
+    ctx.fillText(subtitle, 4, yOffset + 32, width - 26);
+  }
+  ctx.restore();
+}
+
+function drawInteractionPlate(item, options = {}) {
+  const active = interactionState.active?.id === item.id;
+  const pulse = 0.5 + Math.sin(performance.now() / 300) * 0.5;
+  const perspective = getCampPerspectiveScale(item);
+  const radiusX = (options.radiusX || (active ? 56 + pulse * 8 : 42)) * perspective;
+  const radiusY = (options.radiusY || (active ? 30 + pulse * 4 : 22)) * perspective;
+  ctx.save();
+  ctx.translate(item.x, item.y);
+  ctx.globalCompositeOperation = "lighter";
+  ctx.strokeStyle = active ? "rgba(140, 236, 255, 0.92)" : "rgba(255, 177, 92, 0.46)";
+  ctx.fillStyle = active ? "rgba(140, 236, 255, 0.08)" : "rgba(195, 50, 36, 0.08)";
+  ctx.lineWidth = active ? 4 : 2;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, radiusX, radiusY, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.globalCompositeOperation = "source-over";
+  ctx.restore();
+
+  const distance = getInteractionDistance(item);
+  if (active || distance < item.radius * 1.45 || options.alwaysLabel) {
+    const labelLift = (options.labelLift || 56) * perspective;
+    const labelY = options.labelDirection === "below" ? item.y + labelLift : item.y - labelLift;
+    drawWorldLabel(item.x, labelY, item.label, item.hint, { active, perspectiveScale: perspective });
+  }
+}
+
+function getNpcPalette(item) {
+  if (item.role === "medic") return { body: "#f2eadc", trim: "#d64a43", visor: "#8cecff" };
+  if (item.role === "quartermaster") return { body: "#5d4631", trim: "#ffb15c", visor: "#ffe2a6" };
+  if (item.role === "mechanic") return { body: "#25323b", trim: "#8cecff", visor: "#ffb15c" };
+  if (item.role === "deck_pirate") return { body: "#17111f", trim: "#d64a43", visor: "#66ffe4" };
+  if (item.role === "resistance_bot") return { body: "#1a2028", trim: "#c33224", visor: "#8cecff" };
+  if (item.role === "lake_drone") return { body: "#16232a", trim: "#66d0bf", visor: "#ff5b3f" };
+  return { body: "#241712", trim: "#ffb15c", visor: "#8cecff" };
+}
+
+function drawNpcImage(item, options = {}) {
+  const image = assets.npcs[item.role];
+  if (!image) return false;
+  const width = options.width || 76;
+  const height = options.height || 168;
+  const lift = options.lift ?? 22;
+  const shadowWidth = options.shadowWidth || Math.max(52, width * 0.72);
+  const shadowHeight = options.shadowHeight || Math.max(16, width * 0.22);
+  withCampPerspective(item, () => {
+    drawSoftShadow(0, 18, shadowWidth, shadowHeight, options.shadowAlpha ?? 0.28);
+    ctx.save();
+    if (options.bob) ctx.translate(0, options.bob);
+    if (options.rotate) ctx.rotate(options.rotate);
+    ctx.drawImage(image, -width / 2, -height + lift, width, height);
+    ctx.restore();
+  });
+  return true;
+}
+
+function drawHumanNpc(item) {
+  const spriteSizes = {
+    medic: { width: 72, height: 164, lift: 24 },
+    quartermaster: { width: 74, height: 168, lift: 24 },
+    mechanic: { width: 72, height: 164, lift: 24 },
+    deck_pirate: { width: 76, height: 170, lift: 24 },
+  };
+  if (drawNpcImage(item, spriteSizes[item.role])) return;
+
+  const palette = getNpcPalette(item);
+  withCampPerspective(item, () => {
+    drawSoftShadow(0, 26, 42, 14, 0.32);
+    ctx.fillStyle = palette.body;
+    ctx.strokeStyle = palette.trim;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.roundRect(-18, -30, 36, 58, 14);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = palette.visor;
+    ctx.beginPath();
+    ctx.arc(0, -42, 15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(8, 8, 10, 0.7)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.fillStyle = palette.trim;
+    ctx.fillRect(-22, -8, 44, 8);
+  });
+}
+
+function drawResistanceBotNpc(item) {
+  if (drawNpcImage(item, {
+    width: 112,
+    height: 184,
+    lift: 28,
+    shadowWidth: 78,
+    shadowHeight: 22,
+    shadowAlpha: 0.3,
+  })) return;
+
+  const palette = getNpcPalette(item);
+  withCampPerspective(item, () => {
+    drawSoftShadow(0, 34, 58, 18, 0.34);
+    ctx.fillStyle = palette.body;
+    ctx.strokeStyle = palette.trim;
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.roundRect(-30, -42, 60, 84, 18);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = palette.visor;
+    ctx.fillRect(-20, -10, 40, 12);
+    ctx.fillStyle = "rgba(195, 50, 36, 0.92)";
+    ctx.fillRect(-36, 12, 72, 10);
+  });
+}
+
+function drawLakeDroneNpc(item) {
+  const hover = Math.sin(performance.now() / 260) * 5;
+  if (drawNpcImage(item, {
+    width: 210,
+    height: 140,
+    lift: 72,
+    bob: hover,
+    rotate: Math.sin(performance.now() / 520) * 0.018,
+    shadowWidth: 86,
+    shadowHeight: 24,
+    shadowAlpha: 0.34,
+  })) return;
+
+  const palette = getNpcPalette(item);
+  withCampPerspective(item, () => {
+    ctx.translate(0, hover);
+    drawSoftShadow(0, 48 - hover, 68, 20, 0.32);
+    ctx.fillStyle = palette.body;
+    ctx.strokeStyle = palette.trim;
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 48, 34, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = palette.visor;
+    ctx.beginPath();
+    ctx.arc(0, 0, 13, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 91, 63, 0.65)";
+    ctx.beginPath();
+    ctx.arc(0, 0, 64, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+}
+
+function drawRadioTerminal(item) {
+  const pulse = 0.5 + Math.sin(performance.now() / 360) * 0.5;
+  withCampPerspective(item, () => {
+    drawSoftShadow(0, 30, 54, 16, 0.3);
+    ctx.fillStyle = "rgba(40, 23, 18, 0.96)";
+    ctx.strokeStyle = "rgba(255, 177, 92, 0.5)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.roundRect(-42, -20, 84, 44, 10);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "rgba(15, 22, 26, 0.96)";
+    ctx.strokeStyle = "rgba(140, 236, 255, 0.46)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(-22, -52, 44, 42, 8);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = `rgba(140, 236, 255, ${0.56 + pulse * 0.28})`;
+    ctx.fillRect(-13, -39, 26, 8);
+    ctx.strokeStyle = "rgba(255, 177, 92, 0.72)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(20, -47);
+    ctx.lineTo(42, -74);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(195, 50, 36, 0.92)";
+    ctx.beginPath();
+    ctx.arc(42, -74, 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function drawWaterPc(item) {
+  const pulse = 0.5 + Math.sin(performance.now() / 420) * 0.5;
+  withCampPerspective(item, () => {
+    drawSoftShadow(0, 38, 74, 20, 0.34);
+    ctx.fillStyle = "rgba(22, 22, 24, 0.95)";
+    ctx.strokeStyle = "rgba(255, 177, 92, 0.42)";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.roundRect(-56, -28, 112, 64, 12);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "rgba(4, 18, 24, 0.98)";
+    ctx.strokeStyle = "rgba(140, 236, 255, 0.54)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.roundRect(-44, -82, 88, 58, 10);
+    ctx.fill();
+    ctx.stroke();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = campProgress.waterFixed
+      ? `rgba(102, 255, 228, ${0.28 + pulse * 0.2})`
+      : `rgba(255, 91, 63, ${0.22 + pulse * 0.18})`;
+    ctx.fillRect(-32, -68, 64, 18);
+    ctx.fillRect(-28, -43, 56, 6);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = "rgba(102, 255, 228, 0.25)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-52, 12);
+    ctx.bezierCurveTo(-82, 24, -86, 44, -112, 48);
+    ctx.moveTo(52, 12);
+    ctx.bezierCurveTo(78, 22, 84, 42, 108, 48);
+    ctx.stroke();
+  });
+}
+
+function drawNorthGate(item) {
+  const open = !!campProgress.waterFixed;
+  withCampPerspective(item, () => {
+    drawSoftShadow(0, 38, 92, 22, 0.26);
+    ctx.strokeStyle = open ? "rgba(140, 236, 255, 0.62)" : "rgba(195, 50, 36, 0.72)";
+    ctx.fillStyle = "rgba(20, 12, 10, 0.9)";
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    ctx.moveTo(-70, 36);
+    ctx.lineTo(-70, -46);
+    ctx.moveTo(70, 36);
+    ctx.lineTo(70, -46);
+    ctx.stroke();
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(-70, -46);
+    ctx.quadraticCurveTo(0, -82, 70, -46);
+    ctx.stroke();
+    ctx.fillStyle = open ? "rgba(12, 45, 48, 0.82)" : "rgba(48, 17, 13, 0.88)";
+    ctx.strokeStyle = "rgba(255, 177, 92, 0.5)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(-42, -32, 84, 34, 8);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = open ? "#8cecff" : "#ffb15c";
+    ctx.font = "900 13px Trebuchet MS, Segoe UI, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(open ? "LAGO NORTE" : "CERRADO", 0, -15);
+  });
+}
+
+function drawReturnCampSign(item) {
+  withCampPerspective(item, () => {
+    drawSoftShadow(0, 22, 58, 16, 0.26);
+    ctx.strokeStyle = "rgba(255, 177, 92, 0.62)";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(-32, 26);
+    ctx.lineTo(-32, -42);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(34, 20, 14, 0.92)";
+    ctx.strokeStyle = "rgba(140, 236, 255, 0.42)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(-32, -60, 104, 38, 8);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#8cecff";
+    ctx.font = "900 12px Trebuchet MS, Segoe UI, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("CAMPAMENTO", 20, -41);
+    ctx.fillStyle = "#ffb15c";
+    ctx.beginPath();
+    ctx.moveTo(-48, -41);
+    ctx.lineTo(-30, -52);
+    ctx.lineTo(-30, -46);
+    ctx.lineTo(-12, -46);
+    ctx.lineTo(-12, -36);
+    ctx.lineTo(-30, -36);
+    ctx.lineTo(-30, -30);
+    ctx.closePath();
+    ctx.fill();
+  });
+}
+
+function drawObjectInteractable(item) {
+  if (item.id === "radio_xavor") {
+    drawRadioTerminal(item);
+    return true;
+  }
+  if (item.id === "water_pc") {
+    drawWaterPc(item);
+    return true;
+  }
+  if (item.id === "north_exit") {
+    drawNorthGate(item);
+    return true;
+  }
+  if (item.id === "return_camp") {
+    drawReturnCampSign(item);
+    return true;
+  }
+  return false;
+}
+
+function drawNpcMarker(item) {
+  const objectDrawn = drawObjectInteractable(item);
+  if (item.role === "resistance_bot") {
+    drawResistanceBotNpc(item);
+  } else if (item.role === "lake_drone") {
+    drawLakeDroneNpc(item);
+  } else if (item.role) {
+    drawHumanNpc(item);
+  }
+  const isObject = objectDrawn || item.id === "north_exit" || item.id === "return_camp";
+  const labelConfig = {
+    radio_xavor: { labelLift: 94 },
+    water_pc: { labelLift: 92 },
+    north_exit: { labelLift: 118, labelDirection: "below" },
+    return_camp: { labelLift: 82 },
+  }[item.id] || {};
+  drawInteractionPlate(item, {
+    radiusX: item.role === "lake_drone" ? 108 : isObject ? 62 : 42,
+    radiusY: item.role === "lake_drone" ? 46 : isObject ? 27 : 23,
+    labelLift: labelConfig.labelLift ?? (item.role === "lake_drone" ? 102 : isObject ? 82 : 66),
+    labelDirection: labelConfig.labelDirection,
+    alwaysLabel: true,
+  });
+}
+
+function drawCorvo() {
+  const x = 562;
+  const y = 506;
+  const corvoSubject = { x, y };
+  withCampPerspective(corvoSubject, () => {
+    if (assets.corvo) {
+      drawSoftShadow(0, 26, 54, 18, 0.36);
+      ctx.fillStyle = "rgba(10, 8, 7, 0.22)";
+      ctx.beginPath();
+      ctx.ellipse(0, -8, 40, 34, -0.08, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.drawImage(assets.corvo, -54, -106, 108, 142);
+    } else {
+      drawSoftShadow(0, 24, 50, 16, 0.34);
+      ctx.fillStyle = "#14161b";
+      ctx.strokeStyle = "#c33224";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.roundRect(-34, -40, 68, 78, 20);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#ffb15c";
+      ctx.fillRect(-22, -8, 44, 12);
+    }
+  });
+  const corvoInteraction = campInteractables.find((item) => item.id === "corvo");
+  if (corvoInteraction) {
+    drawInteractionPlate(corvoInteraction, {
+      radiusX: 48,
+      radiusY: 24,
+      labelLift: 78,
+      alwaysLabel: true,
+    });
+  }
+}
+
+function drawCampActors() {
+  if (storyCampScene === "camp") {
+    drawCorvo();
+  }
+  interactables.forEach((item) => {
+    if (item.id === "corvo") return;
+    drawNpcMarker(item);
+  });
+}
+
+function drawPlayerActor() {
+  if (playerVisual) {
+    playerVisual.draw();
+  } else {
+    drawFallbackPlayer();
+  }
+}
+
+function drawWorldActors() {
+  const actors = interactables
+    .filter((item) => item.id !== "corvo")
+    .map((item) => ({
+      y: item.y,
+      draw: () => drawNpcMarker(item),
+    }));
+
+  if (storyCampScene === "camp") {
+    actors.push({ y: 506, draw: drawCorvo });
+  }
+
+  actors.push({ y: player.y, draw: drawPlayerActor });
+  actors.sort((a, b) => a.y - b.y);
+  actors.forEach((actor) => actor.draw());
 }
 
 function drawHudHelp() {
@@ -942,7 +1656,25 @@ function drawHudHelp() {
     ctx.font = "700 14px Trebuchet MS, Segoe UI, sans-serif";
     ctx.fillText("WASD / flechas: mover PoCoBOT", boxX + 18, boxY + 26);
     ctx.fillText("Raton / tactil: mantener y arrastrar", boxX + 18, boxY + 52);
-    ctx.fillText("E / Enter: listo para futuros puntos", boxX + 18, boxY + 78);
+    ctx.fillText("E / Enter: interactuar con Corvo, PNJ y terminales", boxX + 18, boxY + 78);
+  }
+
+  if (interactionState.active) {
+    const label = interactionState.active.label;
+    const hint = interactionState.active.hint;
+    ctx.fillStyle = "rgba(12, 8, 7, 0.84)";
+    ctx.strokeStyle = "rgba(140, 236, 255, 0.34)";
+    ctx.beginPath();
+    ctx.roundRect(292, viewport.height - 132, 376, 48, 17);
+    ctx.fill();
+    ctx.stroke();
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#8cecff";
+    ctx.font = "900 14px Trebuchet MS, Segoe UI, sans-serif";
+    ctx.fillText(`${label} · ${hint}`, viewport.width / 2, viewport.height - 112);
+    ctx.fillStyle = "rgba(255, 243, 230, 0.82)";
+    ctx.font = "700 12px Trebuchet MS, Segoe UI, sans-serif";
+    ctx.fillText("Pulsa E / Enter o toca para interactuar", viewport.width / 2, viewport.height - 94);
   }
 
   if (interactionState.message && interactionState.messageTimer > 0) {
@@ -978,11 +1710,7 @@ function draw() {
   ctx.scale(zoom, zoom);
   ctx.translate(-camera.x, -camera.y);
   drawMap();
-  if (playerVisual) {
-    playerVisual.draw();
-  } else {
-    drawFallbackPlayer();
-  }
+  drawWorldActors();
   ctx.restore();
 
   ctx.save();

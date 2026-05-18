@@ -20594,6 +20594,7 @@ function prepareStoryTowerCombatHudMode(mission){
 }
 
 function startStoryTowerCombatMission(mission, profile){
+  const isCampMission = isStoryCampCombatMission(mission);
   primeOfflineMode('single', isStoryArgosHackCombat(mission) ? 'normal' : 'easy');
   newGame();
   clearSinglePlayerAiTimer();
@@ -20616,10 +20617,10 @@ function startStoryTowerCombatMission(mission, profile){
   scheduleStoryEmbedNavigationSetup();
   scheduleCombatOpeningSequence('story', 180);
   addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');
-  log(`📜 Mision historia Torre 4B: ${profile?.intro || 'combate especial'}`);
+  log(`📜 Mision historia ${isCampMission ? 'Placas Rojas' : 'Torre 4B'}: ${profile?.intro || 'combate especial'}`);
   window.setTimeout(() => {
     scrollToPlayerPanel(0, 'smooth');
-    notifySelection(profile?.intro || 'Objetivo: vence y vuelve a la Torre 4B.');
+    notifySelection(profile?.intro || `Objetivo: vence y vuelve ${isCampMission ? 'al Campamento de las Placas Rojas' : 'a la Torre 4B'}.`);
     scheduleStoryEmbedNavigationSetup();
   }, 260);
 }
@@ -20713,6 +20714,13 @@ function autoStartStoryMissionIfRequested(){
       startStoryTowerCombatMission(STORY_MISSION_BOOT, profile);
       break;
     }
+    case 'camp_resistance_trial':
+    case 'camp_lake_drone': {
+      const profile = getStoryTowerCombatProfile(STORY_MISSION_BOOT);
+      storyMissionBriefCollapsed = false;
+      startStoryTowerCombatMission(STORY_MISSION_BOOT, profile);
+      break;
+    }
     case 'tower_drone_hearts':
     case 'tower_drone_spades':
     case 'tower_drone_clubs':
@@ -20782,6 +20790,13 @@ function applyStoryMissionPlayerSetup(){
       state.players[1].name = 'Viajero';
       state.players[1].combatSprite = profile?.combatSprite || null;
     }
+  }else if(isStoryCampCombatMission(state.storyMission)){
+    if(state.players[0]) state.players[0].name = 'Piloto';
+    if(state.players[1]){
+      const profile = getStoryTowerCombatProfile(state.storyMission);
+      state.players[1].name = profile?.enemyName || 'Rival Placas Rojas';
+      state.players[1].combatSprite = profile?.combatSprite || null;
+    }
   }else if(isStoryTowerCombatMission(state.storyMission)){
     if(state.players[0]) state.players[0].name = 'Piloto';
     if(state.players[1]){
@@ -20794,6 +20809,10 @@ function applyStoryMissionPlayerSetup(){
 
 function isStoryTowerCombatMission(mission = state.storyMission || STORY_MISSION_BOOT){
   return typeof mission === 'string' && mission.startsWith('tower_');
+}
+
+function isStoryCampCombatMission(mission = state.storyMission || STORY_MISSION_BOOT){
+  return mission === 'camp_resistance_trial' || mission === 'camp_lake_drone';
 }
 
 function isStoryArgosHackCombat(mission = state.storyMission || STORY_MISSION_BOOT){
@@ -20960,7 +20979,7 @@ function resolveStoryArgosHackGate(){
 }
 
 function isStoryCombatLoadingMission(mission = state.storyMission || STORY_MISSION_BOOT){
-  return STORY_EMBED_MODE && (isStoryTowerCombatMission(mission) || mission === 'mercado_viajero_4b');
+  return STORY_EMBED_MODE && (isStoryTowerCombatMission(mission) || isStoryCampCombatMission(mission) || mission === 'mercado_viajero_4b');
 }
 
 function getStoryLoadingLotteryReward(){
@@ -21031,6 +21050,26 @@ const STORY_TOWER_COMBAT_PROFILES = {
     combatSprite: 'assets/Historia/tower-control-guard-mecha.png',
     enemyId: 'mercado-viajero-4b',
     intro: 'Viajero reproduce la estructura del hackeo del panel corrupto: interfaz especial, musica de Sistema Corrupto y combustible normal bloqueado. Esta vez pilota un mecha normal y conserva un deck completo de 52 cartas.'
+  },
+  camp_resistance_trial: {
+    enemyName: 'PoCoBOT de resistencia',
+    title: 'Calibracion de Placas Rojas',
+    combatSprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/piloto-resistencia-dialogue.png',
+    suit: 'spades',
+    suitLabel: 'picas',
+    rank: '8',
+    enemyId: 'red-plates-resistance-pocobot',
+    intro: 'Combate controlado del Campamento de las Placas Rojas: un PoCoBOT de la resistencia prueba tu criterio antes de dejarte tocar sistemas vitales.'
+  },
+  camp_lake_drone: {
+    enemyName: 'Dron del lago',
+    title: 'Lago Norte contaminado',
+    combatSprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/dron-lago-dialogue.png',
+    suit: 'clubs',
+    suitLabel: 'treboles',
+    rank: '9',
+    enemyId: 'red-plates-lake-drone',
+    intro: 'Combate completo del Campamento de las Placas Rojas: el dron que ensucia el lago conserva su mazo entero y bloquea el cauce limpio.'
   }
 };
 
@@ -21081,6 +21120,48 @@ const DEV_STORY_CHARACTER_PRESETS = [
     name: 'Xavor Glitch',
     sprite: 'assets/Historia/xavor-glitch-radio.svg',
     description: 'Interferencia de radio y sabotaje.'
+  },
+  {
+    key: 'corvo-vanta',
+    label: 'Corvo Vanta',
+    name: 'Corvo Vanta',
+    sprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/corvo-vanta-dialogue.png',
+    description: 'Veterano de las Placas Rojas y guardian moral del combate.'
+  },
+  {
+    key: 'nara-sanitaria',
+    label: 'Nara',
+    name: 'Nara',
+    sprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/nara-sanitaria-dialogue.png',
+    description: 'Sanitaria de las Placas Rojas; conserva memoria de la red medica anterior a La Caida.'
+  },
+  {
+    key: 'damaso-intendencia',
+    label: 'Dámaso',
+    name: 'Dámaso',
+    sprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/damaso-intendencia-dialogue.png',
+    description: 'Responsable de intendencia; guarda filtros, placas y reliquias DUAL.'
+  },
+  {
+    key: 'iria-mecanica',
+    label: 'Iria',
+    name: 'Iria',
+    sprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/iria-mecanica-dialogue.png',
+    description: 'Mecanica de la valvula norte; lee sistemas viejos de Argos por palos de cartas.'
+  },
+  {
+    key: 'nix-corsario',
+    label: 'Nix Corsario',
+    name: 'Nix Corsario',
+    sprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/nix-corsario-dialogue.png',
+    description: 'Pirata cibernetico que purga cartas del mazo historico.'
+  },
+  {
+    key: 'piloto-resistencia',
+    label: 'Piloto resistencia',
+    name: 'Piloto de resistencia',
+    sprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/piloto-resistencia-dialogue.png',
+    description: 'Veterana de calibracion que propone un combate controlado al estilo de Viajero.'
   },
   {
     key: 'dual',
@@ -21323,7 +21404,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   state.players = players;
   state.currentPlayer = 0;
   state.turnCount = 2;
-  state.phase = 'Torre 4B';
+  state.phase = isStoryCampCombatMission(mission) ? 'Placas Rojas' : 'Torre 4B';
   state.tutorial = true;
   state.projectileUnlocked = true;
   state.attackMode = false;
@@ -21348,7 +21429,9 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
     `📜 ${profile.intro}`,
     argosHackStyle
       ? '⚠️ Hackeo de Argos: el combustible normal no cuenta. Instala el A♦ y quema armadura como energia, o usa proyectiles sueltos.'
-      : profile.limitedSuit
+      : isStoryCampCombatMission(mission)
+        ? '🎯 Placas Rojas: combate de historia. Vence y vuelve a la exploracion para cerrar la secuencia del agua.'
+        : profile.limitedSuit
         ? '🎯 Combate de Torre 4B: el dron ya esta montado. Tu PoCoBOT empieza sin montar; ensambla, abre ataque y vuelve con una antigua moneda.'
         : '🎯 Combate de Torre 4B: vence y vuelve a la exploracion con una antigua moneda.'
   ];
@@ -21521,6 +21604,25 @@ function maybeFinalizeStoryMissionAfterWinner(){
       towerSuit: state.storyMissionProgress?.towerSuit || STORY_TOWER_SUIT || '',
       loadingLotteryReward: getStoryLoadingLotteryReward(),
       reward: playerWon ? { coins: state.storyMission === 'tower_argos_hack' ? 0 : 1 } : null
+    });
+    return;
+  }
+
+  if(isStoryCampCombatMission(state.storyMission)){
+    const profile = getStoryTowerCombatProfile(state.storyMission);
+    const playerWon = state.winner === state.players[0].name;
+    state.phase = 'Mision';
+    state.storyMissionAnnounced = true;
+    log(playerWon
+      ? `🏁 Placas Rojas: ${profile?.title || 'combate'} superado.`
+      : `⚠️ Placas Rojas: ${profile?.enemyName || 'rival'} se impone.`);
+    addToast(playerWon ? 'Placas Rojas: combate superado' : 'Placas Rojas: puedes repetirlo', playerWon ? 'ok' : 'warn');
+    broadcastStoryMissionOutcome({
+      mission: state.storyMission,
+      success: playerWon,
+      winner: state.winner,
+      campReturnScene: STORY_CAMP_RETURN_SCENE || (state.storyMission === 'camp_lake_drone' ? 'lake' : 'camp'),
+      reward: playerWon && state.storyMission === 'camp_resistance_trial' ? { coins: 1 } : null
     });
     return;
   }
@@ -22244,6 +22346,7 @@ const STORY_CARRIED_BGM_TIME = Number(STORY_BOOT_PARAMS.get('story_bgm_time') ||
 const STORY_CARRIED_BGM_VOLUME = Number(STORY_BOOT_PARAMS.get('story_bgm_volume') || 0.34) || 0.34;
 const STORY_EXTRA_DECK_CARDS_PARAM = STORY_BOOT_PARAMS.get('story_deck_cards') || '';
 const STORY_TOWER_RETURN_SCENE = STORY_BOOT_PARAMS.get('story_tower_return_scene') || '';
+const STORY_CAMP_RETURN_SCENE = STORY_BOOT_PARAMS.get('story_camp_return_scene') || '';
 const STORY_TOWER_DRONE_ID = STORY_BOOT_PARAMS.get('story_tower_drone_id') || '';
 const STORY_TOWER_ENEMY_ID = STORY_BOOT_PARAMS.get('story_tower_enemy_id') || '';
 const STORY_TOWER_REWARD_ID = STORY_BOOT_PARAMS.get('story_tower_reward_id') || '';
@@ -23193,6 +23296,16 @@ const STORY_MISSION_BRIEFS = {
     kicker: 'Reto post Torre 4B',
     title: 'Mercado · Viajero reactivado',
     text: 'Viajero reproduce el hackeo del panel corrupto: combustible normal bloqueado, interfaz especial y música de Sistema Corrupto. El rival usa un mecha normal y deck completo de 52 cartas. Victoria: 2 monedas.'
+  },
+  camp_resistance_trial: {
+    kicker: 'Combate controlado del modo historia',
+    title: 'Campamento · PoCoBOT de resistencia',
+    text: 'Duelo de calibración al estilo de Viajero. Superarlo concede una moneda y la autorización táctica que exige el PC del agua.'
+  },
+  camp_lake_drone: {
+    kicker: 'Combate del Lago Norte',
+    title: 'Campamento · Dron contaminante',
+    text: 'El dron que ensucia el lago usa mazo completo. Al derrotarlo, el cauce vuelve a correr limpio y Corvo termina de confiar en ti.'
   }
 };
 

@@ -1501,8 +1501,22 @@
     }
     .scene-focus-figure.figure-mara,
     .scene-focus-figure.figure-vera,
-    .scene-focus-figure.figure-xavor{
+    .scene-focus-figure.figure-xavor,
+    .scene-focus-figure.figure-corvo,
+    .scene-focus-figure.figure-nara,
+    .scene-focus-figure.figure-damaso,
+    .scene-focus-figure.figure-iria,
+    .scene-focus-figure.figure-piloto-resistencia,
+    .scene-focus-figure.figure-nix-corsario{
       object-position:center top;
+    }
+    .scene-focus-figure.figure-dron-lago{
+      width:min(56vw, 780px);
+      max-height:min(66svh, 660px);
+      object-position:center center;
+      filter:
+        drop-shadow(0 28px 34px rgba(0,0,0,.42))
+        drop-shadow(0 0 32px rgba(102,255,228,.18));
     }
     .scene-focus-figure.figure-radio{
       width:min(30vw, 420px);
@@ -1522,9 +1536,14 @@
     .story-scene-stage.hangar-scene .scene-focus-figure,
     .story-scene-stage.patio-scene .scene-focus-figure,
     .story-scene-stage.mercado-scene .scene-focus-figure,
-    .story-scene-stage.torre-scene .scene-focus-figure{
+    .story-scene-stage.torre-scene .scene-focus-figure,
+    .story-scene-stage.campamento-scene .scene-focus-figure{
       width:min(48vw, 700px);
       max-height:min(86svh, 920px);
+    }
+    .story-scene-stage.campamento-scene .scene-focus-figure.figure-dron-lago{
+      width:min(54vw, 780px);
+      max-height:min(62svh, 650px);
     }
     .story-scene-stage.torre-scene .scene-focus-figure.figure-radio{
       width:min(30vw, 420px);
@@ -1533,7 +1552,8 @@
     .story-scene-stage.hangar-scene .scene-focus-wrap,
     .story-scene-stage.patio-scene .scene-focus-wrap,
     .story-scene-stage.mercado-scene .scene-focus-wrap,
-    .story-scene-stage.torre-scene .scene-focus-wrap{
+    .story-scene-stage.torre-scene .scene-focus-wrap,
+    .story-scene-stage.campamento-scene .scene-focus-wrap{
       align-items:start;
       padding-top:clamp(64px, 10vh, 118px);
     }
@@ -3001,14 +3021,16 @@
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
       .story-scene-stage.mercado-scene .scene-focus-figure,
-      .story-scene-stage.torre-scene .scene-focus-figure{
+      .story-scene-stage.torre-scene .scene-focus-figure,
+      .story-scene-stage.campamento-scene .scene-focus-figure{
         width:min(42vw, 560px);
         max-height:64svh;
       }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
       .story-scene-stage.mercado-scene .scene-focus-wrap,
-      .story-scene-stage.torre-scene .scene-focus-wrap{
+      .story-scene-stage.torre-scene .scene-focus-wrap,
+      .story-scene-stage.campamento-scene .scene-focus-wrap{
         padding-top:74px;
       }
       .story-scene-stage.figure-raised .scene-focus-figure{
@@ -3073,7 +3095,8 @@
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
       .story-scene-stage.mercado-scene .scene-focus-wrap,
-      .story-scene-stage.torre-scene .scene-focus-wrap{
+      .story-scene-stage.torre-scene .scene-focus-wrap,
+      .story-scene-stage.campamento-scene .scene-focus-wrap{
         align-items:start;
         justify-items:end;
         padding-top:clamp(44px, 7svh, 72px);
@@ -3082,7 +3105,8 @@
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
       .story-scene-stage.mercado-scene .scene-focus-figure,
-      .story-scene-stage.torre-scene .scene-focus-figure{
+      .story-scene-stage.torre-scene .scene-focus-figure,
+      .story-scene-stage.campamento-scene .scene-focus-figure{
         width:min(30vw, 380px);
         max-height:42svh;
         opacity:.94;
@@ -3383,7 +3407,8 @@
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
       .story-scene-stage.mercado-scene .scene-focus-wrap,
-      .story-scene-stage.torre-scene .scene-focus-wrap{
+      .story-scene-stage.torre-scene .scene-focus-wrap,
+      .story-scene-stage.campamento-scene .scene-focus-wrap{
         align-items:end;
         justify-items:end;
         padding-top:clamp(40px, 7svh, 64px);
@@ -3393,7 +3418,8 @@
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
       .story-scene-stage.mercado-scene .scene-focus-figure,
-      .story-scene-stage.torre-scene .scene-focus-figure{
+      .story-scene-stage.torre-scene .scene-focus-figure,
+      .story-scene-stage.campamento-scene .scene-focus-figure{
         width:min(31vw, 300px);
         max-height:78svh;
         opacity:.96;
@@ -3505,7 +3531,8 @@
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
       .story-scene-stage.mercado-scene .scene-focus-wrap,
-      .story-scene-stage.torre-scene .scene-focus-wrap{
+      .story-scene-stage.torre-scene .scene-focus-wrap,
+      .story-scene-stage.campamento-scene .scene-focus-wrap{
         align-items:start;
         justify-items:end;
         padding-top:clamp(72px, 12svh, 104px);
@@ -3514,7 +3541,8 @@
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
       .story-scene-stage.mercado-scene .scene-focus-figure,
-      .story-scene-stage.torre-scene .scene-focus-figure{
+      .story-scene-stage.torre-scene .scene-focus-figure,
+      .story-scene-stage.campamento-scene .scene-focus-figure{
         width:min(28vw, 360px);
         max-height:58svh;
       }
@@ -3746,14 +3774,16 @@
       .story-scene-stage.hangar-scene .scene-focus-figure,
       .story-scene-stage.patio-scene .scene-focus-figure,
       .story-scene-stage.mercado-scene .scene-focus-figure,
-      .story-scene-stage.torre-scene .scene-focus-figure{
+      .story-scene-stage.torre-scene .scene-focus-figure,
+      .story-scene-stage.campamento-scene .scene-focus-figure{
         width:min(74vw, 360px);
         max-height:56svh;
       }
       .story-scene-stage.hangar-scene .scene-focus-wrap,
       .story-scene-stage.patio-scene .scene-focus-wrap,
       .story-scene-stage.mercado-scene .scene-focus-wrap,
-      .story-scene-stage.torre-scene .scene-focus-wrap{
+      .story-scene-stage.torre-scene .scene-focus-wrap,
+      .story-scene-stage.campamento-scene .scene-focus-wrap{
         padding-top:86px;
       }
       .story-scene-stage.dialogue-live .scene-focus-figure{
@@ -4054,7 +4084,8 @@
         .story-scene-stage.hangar-scene .scene-focus-wrap,
         .story-scene-stage.patio-scene .scene-focus-wrap,
         .story-scene-stage.mercado-scene .scene-focus-wrap,
-        .story-scene-stage.torre-scene .scene-focus-wrap{
+        .story-scene-stage.torre-scene .scene-focus-wrap,
+        .story-scene-stage.campamento-scene .scene-focus-wrap{
           padding-top:62px;
         }
         .story-scene-stage.dialogue-live .scene-focus-figure{
@@ -4593,6 +4624,150 @@
     .story-market-stage .market-actions .scene-btn{
       min-height:40px;
       border-radius:16px;
+    }
+    .story-deck-hack-stage{
+      position:fixed;
+      inset:0;
+      z-index:9;
+      display:grid;
+      place-items:center;
+      padding:clamp(16px, 3vw, 36px);
+      background:
+        radial-gradient(circle at 16% 18%, rgba(102,255,228,.18), transparent 24%),
+        radial-gradient(circle at 80% 20%, rgba(214,74,67,.16), transparent 22%),
+        linear-gradient(180deg, rgba(4,7,11,.96), rgba(10,7,13,.98));
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .28s ease;
+    }
+    .story-deck-hack-stage.active{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .deck-hack-shell{
+      display:grid;
+      grid-template-columns:minmax(220px, .48fr) minmax(320px, 1fr);
+      gap:18px;
+      width:min(1040px, 100%);
+      max-height:min(760px, calc(100svh - 32px));
+      padding:18px;
+      border:1px solid rgba(102,255,228,.26);
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(8,13,19,.94), rgba(8,8,13,.9));
+      box-shadow:0 30px 70px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.04);
+      overflow:hidden;
+    }
+    .deck-hack-portrait{
+      min-height:0;
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(5,9,14,.72);
+    }
+    .deck-hack-portrait img{
+      width:100%;
+      height:100%;
+      min-height:320px;
+      object-fit:cover;
+      object-position:50% 18%;
+      display:block;
+    }
+    .deck-hack-panel{
+      display:grid;
+      grid-template-rows:auto auto minmax(0, 1fr) auto;
+      gap:12px;
+      min-height:0;
+    }
+    .deck-hack-kicker{
+      color:#66ffe4;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .deck-hack-panel h2{
+      margin:0;
+      color:#fff3e6;
+      font-size:clamp(1.8rem, 4vw, 3.2rem);
+      letter-spacing:0;
+    }
+    .deck-hack-copy{
+      margin:0;
+      color:rgba(255,243,230,.76);
+      line-height:1.45;
+    }
+    .deck-hack-feedback{
+      min-height:38px;
+      padding:10px 12px;
+      border:1px solid rgba(102,255,228,.2);
+      border-radius:12px;
+      color:#dffefa;
+      background:rgba(102,255,228,.08);
+      font-size:.86rem;
+      font-weight:800;
+    }
+    .deck-hack-list{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:10px;
+      min-height:0;
+      overflow:auto;
+      padding-right:6px;
+    }
+    .deck-hack-card{
+      display:grid;
+      grid-template-columns:46px minmax(0, 1fr);
+      gap:10px;
+      align-items:center;
+      min-height:72px;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:12px;
+      color:#fff3e6;
+      background:rgba(255,255,255,.05);
+      text-align:left;
+      font:inherit;
+      cursor:pointer;
+    }
+    .deck-hack-card img{
+      width:46px;
+      height:58px;
+      object-fit:contain;
+    }
+    .deck-hack-card strong,
+    .deck-hack-card small{
+      display:block;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .deck-hack-card small{
+      color:rgba(255,243,230,.58);
+      font-size:.72rem;
+    }
+    .deck-hack-card.selected{
+      border-color:rgba(102,255,228,.72);
+      background:rgba(102,255,228,.13);
+      box-shadow:0 0 0 1px rgba(102,255,228,.16) inset;
+    }
+    .deck-hack-actions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      gap:10px;
+    }
+    @media (max-width:760px){
+      .deck-hack-shell{
+        grid-template-columns:1fr;
+        overflow:auto;
+      }
+      .deck-hack-portrait img{
+        max-height:240px;
+        min-height:220px;
+      }
+      .deck-hack-list{
+        max-height:38svh;
+      }
     }
     @media (max-width:980px){
       .story-market-stage .market-shell{
@@ -5264,6 +5439,24 @@
               <button class="market-scroll-btn" id="storyMarketScrollDownBtn" type="button" aria-label="Bajar en la tienda">▼</button>
             </aside>
           </section>
+          <section class="story-deck-hack-stage" id="storyDeckHackStage" hidden>
+            <div class="deck-hack-shell">
+              <figure class="deck-hack-portrait">
+                <img id="storyDeckHackPortrait" src="assets/Historia/campamento-placas-rojas-exploracion/assets/characters/nix-corsario-dialogue.png" alt="Nix Corsario">
+              </figure>
+              <article class="deck-hack-panel">
+                <span class="deck-hack-kicker">Nix Corsario · Pirata cibernético</span>
+                <h2>Hackeo de mazo</h2>
+                <p class="deck-hack-copy">Selecciona hasta 3 cartas añadidas al mazo histórico. Nix las purga de la ruta antes de que Xavor toque el PC del agua.</p>
+                <div class="deck-hack-feedback" id="storyDeckHackFeedback">Elige cartas para retirar, o confirma sin retirar si el mazo ya está limpio.</div>
+                <div class="deck-hack-list" id="storyDeckHackList"></div>
+                <div class="deck-hack-actions">
+                  <button class="scene-btn secondary" id="storyDeckHackCancelBtn" type="button">Volver al campamento</button>
+                  <button class="scene-btn" id="storyDeckHackConfirmBtn" type="button">Confirmar hackeo</button>
+                </div>
+              </article>
+            </div>
+          </section>
           <section class="story-exploration-stage" id="storyExplorationStage" hidden>
             <iframe
               class="exploration-frame"
@@ -5401,6 +5594,11 @@
     const storyMarketScrollThumb = document.getElementById('storyMarketScrollThumb');
     const storyMarketScrollUpBtn = document.getElementById('storyMarketScrollUpBtn');
     const storyMarketScrollDownBtn = document.getElementById('storyMarketScrollDownBtn');
+    const storyDeckHackStage = document.getElementById('storyDeckHackStage');
+    const storyDeckHackList = document.getElementById('storyDeckHackList');
+    const storyDeckHackFeedback = document.getElementById('storyDeckHackFeedback');
+    const storyDeckHackCancelBtn = document.getElementById('storyDeckHackCancelBtn');
+    const storyDeckHackConfirmBtn = document.getElementById('storyDeckHackConfirmBtn');
     const storyExplorationStage = document.getElementById('storyExplorationStage');
     const storyExplorationFrame = document.getElementById('storyExplorationFrame');
     const storyExplorationMapBtn = document.getElementById('storyExplorationMapBtn');
@@ -5436,6 +5634,14 @@
     const MERCADO_RELES_IMAGE = 'assets/Historia/low/mercado_reles_muertos_web_1600.webp';
     const MERCADO_TUTORIAL_URL = 'assets/Historia/mercado-reles-muertos-tutorial/index.html';
     const CAMPAMENTO_EXPLORATION_URL = 'assets/Historia/campamento-placas-rojas-exploracion/index.html';
+    const STORY_CAMP_PROGRESS_KEY = 'pocobot-story-camp-red-plates-progress-v1';
+    const CORVO_VANTA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/corvo-vanta-dialogue.png';
+    const NARA_SANITARIA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/nara-sanitaria-dialogue.png';
+    const DAMASO_INTENDENCIA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/damaso-intendencia-dialogue.png';
+    const IRIA_MECANICA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/iria-mecanica-dialogue.png';
+    const PILOTO_RESISTENCIA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/piloto-resistencia-dialogue.png';
+    const NIX_CORSARIO_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/nix-corsario-dialogue.png';
+    const DRON_LAGO_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/dron-lago-dialogue.png';
     const XAVOR_PRESENTATION_FIGURE = 'assets/Historia/Brutos/transparent/XAVORpresentacion-transparent.png';
     const XAVOR_POSE_ONE = 'assets/Historia/Brutos/transparent/XAVOR1-transparent.png';
     const XAVOR_POSE_TWO = 'assets/Historia/Brutos/transparent/XAVOR2-transparent.png';
@@ -5471,6 +5677,7 @@
     const STORY_VIAJERO_BASE_UNLOCK_COUNT = 3;
     const STORY_VIAJERO_POST_TOWER_MISSION_ID = 'mercado_viajero_4b';
     const STORY_VIAJERO_POST_TOWER_REWARD_PREFIX = 'mercado_viajero_4b_';
+    const STORY_CAMP_REWARD_PREFIX = 'campamento_placas_rojas_';
     const STORY_TOWER_COIN_REWARD_PREFIX = 'torre_4b_';
     const STORY_TOWER_CHAPTER_STATE_KEY = 'pocobot-tower-4b-chapter-v1';
     const STORY_TOWER_ENTRY_URL = 'assets/Historia/torre-seguimiento-4b-tutorial/index.html';
@@ -5478,6 +5685,11 @@
     const STORY_TOWER_CONTROL_URL = 'assets/Historia/torre-seguimiento-4b-sala-control/index.html';
     const STORY_XAVOR_THEME = 'assets/Historia/XavorGlitch.mp3';
     const STORY_XAVOR_RADIO_IMAGE = 'assets/Historia/xavor-glitch-radio.svg';
+    const STORY_CAMP_LORE_THEME = 'assets/Historia/AceroyCeniza-Historia.mp3';
+    const STORY_CAMP_WATER_THEME = 'assets/Historia/Silencio de Acero.mp3';
+    const STORY_CAMP_HACK_THEME = 'assets/Historia/SistemaCorrupto.mp3';
+    const STORY_CAMP_LAKE_THEME = 'assets/Historia/Cerulean Systems.mp3';
+    const STORY_CAMP_TRIAL_THEME = 'assets/Historia/Guerreros de Acero.mp3';
     const STORY_TOWER_REWARD_CARD = {
       id: 'tower-4b-7-hearts',
       name: '7 de corazones',
@@ -5646,6 +5858,7 @@
     let storyTransitionBusy = false;
     let storyMarketAllocatedCoins = {};
     let storyMarketMobileSectionsPrimed = false;
+    let storyDeckHackSelectedIds = new Set();
     const sceneChoiceSelections = {};
     const storyUiSfxBank = {};
     const storyProgressState = {
@@ -6267,11 +6480,11 @@
         mobileImage: 'assets/Historia/low/chapter-mobile/campamento-placas-rojas-720.jpg',
         image: 'assets/Historia/campamento-placas-rojas-exploracion/assets/campamento-placas-rojas-map.webp',
         lead: 'Refugio enorme de veteranos, lonas rojas y placas de baraja francesa donde la guerra se recuerda sin épica. Aquí la memoria pesa tanto como la munición y la esperanza nunca sale gratis.',
-        mission: 'Explorar el Campamento de las Placas Rojas con PoCoBOT antes de añadir sus puntos narrativos.',
-        learn: 'Exploración libre, tono del mundo y preparación de la rivalidad futura.',
-        tension: 'La ruta se humaniza justo antes de endurecerse de verdad.',
+        mission: 'Ganar la confianza de Corvo, resolver encargos del agua, purgar el mazo con Nix, hackear el PC con Xavor y limpiar el Lago Norte.',
+        learn: 'Exploración libre, conversación ramificada, intercambio de objetos, edición limitada del mazo, combates controlados y hackeo remoto.',
+        tension: 'El capítulo cambia la épica por responsabilidad: salvar un campamento exige escuchar, reparar y solo combatir cuando toca.',
         dialogue: '“Los novatos montan armas. Los supervivientes montan márgenes.”',
-        cast: ['Corvo Vanta']
+        cast: ['Corvo Vanta', 'Xavor Glitch', 'Nix Corsario', 'Nara', 'Dámaso', 'Iria', 'Piloto de resistencia', 'Dron del lago']
       },
       foso: {
         id: 'foso',
@@ -7645,6 +7858,487 @@
       ]
     };
 
+    const campSceneLine = (speaker, text, figure, figureClass, options = {}) => ({
+      speaker,
+      side: options.side || 'right',
+      figure,
+      figureClass,
+      figureShiftVh: Number.isFinite(options.figureShiftVh) ? options.figureShiftVh : -14,
+      figureMobileShiftVh: Number.isFinite(options.figureMobileShiftVh) ? options.figureMobileShiftVh : -9,
+      figureScale: Number.isFinite(options.figureScale) ? options.figureScale : 0.82,
+      figureMobileScale: Number.isFinite(options.figureMobileScale) ? options.figureMobileScale : 0.68,
+      text,
+      choices: options.choices,
+      choicePrompt: options.choicePrompt
+    });
+    const corvoLine = (text, options = {}) => campSceneLine('Corvo Vanta', text, CORVO_VANTA_FIGURE, 'figure-corvo', options);
+    const naraLine = (text, options = {}) => campSceneLine('Nara', text, NARA_SANITARIA_FIGURE, 'figure-nara', options);
+    const damasoLine = (text, options = {}) => campSceneLine('Dámaso', text, DAMASO_INTENDENCIA_FIGURE, 'figure-damaso', options);
+    const iriaLine = (text, options = {}) => campSceneLine('Iria', text, IRIA_MECANICA_FIGURE, 'figure-iria', options);
+    const pilotLine = (text, options = {}) => campSceneLine('Piloto de resistencia', text, PILOTO_RESISTENCIA_FIGURE, 'figure-piloto-resistencia', options);
+    const nixLine = (text, options = {}) => campSceneLine('Nix Corsario', text, NIX_CORSARIO_FIGURE, 'figure-nix-corsario', options);
+    const droneLine = (text, options = {}) => campSceneLine('Dron del lago', text, DRON_LAGO_FIGURE, 'figure-dron-lago', {
+      figureShiftVh: -4,
+      figureMobileShiftVh: -4,
+      figureScale: 0.88,
+      figureMobileScale: 0.74,
+      ...options
+    });
+    const xavorRadioLine = (text, options = {}) => campSceneLine('Xavor Glitch', text, STORY_XAVOR_RADIO_IMAGE, 'figure-radio', {
+      side: 'left',
+      figureShiftVh: -3,
+      figureMobileShiftVh: -2,
+      figureScale: 0.92,
+      figureMobileScale: 0.78,
+      ...options
+    });
+
+    storySceneScripts.camp_corvo_intro = {
+      title: 'Corvo Vanta · Placas Rojas',
+      subtitle: 'Corvo no te recibe como invitado. Te mide como una posible grieta.',
+      contextChip: 'Presentación · Desconfianza',
+      objective: 'Presentarte ante Corvo y usar la radio de Xavor para demostrar que vienes de parte de los nuestros.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Buscar la radio de Xavor',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: CORVO_VANTA_FIGURE,
+      presentationFigureClass: 'figure-corvo',
+      presentationFigureShiftVh: -12,
+      presentationFigureMobileShiftVh: -8,
+      presentationFigureScale: 0.82,
+      presentationFigureMobileScale: 0.68,
+      musicSrc: STORY_CAMP_LORE_THEME,
+      portraits: {
+        right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
+      },
+      lines: [
+        corvoLine('Alto. En este campamento no entra nadie por casualidad. Menos todavía alguien que llega con un PoCoBOT recién aprendido y demasiadas preguntas en la mirada.', {
+          choices: [
+            { id: 'xavor', label: 'Mencionar a Xavor', response: 'Corvo no baja la guardia, pero mira la radio. Ese nombre pesa más que cualquier saludo.' },
+            { id: 'water', label: 'Preguntar por el agua', response: 'Corvo aprieta la mandíbula: el agua es el problema, pero todavía no te considera parte de la solución.' },
+            { id: 'ruta', label: 'Nombrar la Ruta Ceniza', response: 'La palabra Ruta Ceniza cae mal. Para Corvo, quien la pronuncia con fe aún no ha entendido su mentira.' }
+          ],
+          choicePrompt: 'Corvo espera una razón para no expulsarte.'
+        }),
+        corvoLine('Si Xavor te dio una radio, úsala. Si no, vuelve por donde has venido. Las Placas Rojas han sobrevivido demasiado tiempo para abrirle la puerta al primer eco de Argós.'),
+        corvoLine('Recompensa de escena: acceso a la verificación por radio. Busca el canal de Xavor dentro del campamento y vuelve cuando Corvo escuche su firma.')
+      ]
+    };
+
+    storySceneScripts.camp_xavor_radio = {
+      title: 'Radio de Xavor',
+      subtitle: 'La frecuencia de Torre 4B raspa entre chasquidos hasta que Xavor reconoce el canal.',
+      contextChip: 'Presentación · Enlace remoto',
+      objective: 'Xavor verifica al protagonista ante Corvo y desbloquea la conversación principal del campamento.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Hablar con Corvo',
+      musicSrc: STORY_XAVOR_THEME,
+      portraits: {
+        left: { src: STORY_XAVOR_RADIO_IMAGE, alt: 'Radio de Xavor' },
+        right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
+      },
+      lines: [
+        xavorRadioLine('Corvo, baja el seguro. Ese canal lo abrí yo y esa firma de retorno no la falsifica ni Argós después de tres cafés y una mala idea.'),
+        xavorRadioLine('Antes de La Caída, esta red era una arteria secundaria de Argós. Ahora es una grieta útil. La Ruta Ceniza no lo sabe todo, aunque se empeñe en hablar como si fuera el clima.'),
+        corvoLine('Xavor sigue vivo y sigue hablando como si las máquinas le debieran dinero. Bien. Eso no te convierte en familia, pero te saca de la lista de amenazas inmediatas.'),
+        corvoLine('Pregunta lo que tengas que preguntar. La Caída, Mr. Wind, el agua, el lago... pero recuerda esto: aquí la confianza se arregla trabajando, no escuchando historias.'),
+        corvoLine('Recompensa de escena: Corvo acepta hablar. También queda abierto el duelo de calibración con el PoCoBOT de resistencia.')
+      ]
+    };
+
+    storySceneScripts.camp_corvo_lore = {
+      title: 'Corvo Vanta · La Caída',
+      subtitle: 'La historia del mundo no llega como clase. Llega como cansancio.',
+      contextChip: 'Conversación · La Caída',
+      objective: 'Descubrir qué recuerda Corvo de Argós, Mr. Wind, DUAL y la Ruta Ceniza.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Volver al campamento',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: CORVO_VANTA_FIGURE,
+      presentationFigureClass: 'figure-corvo',
+      presentationFigureShiftVh: -12,
+      presentationFigureMobileShiftVh: -8,
+      presentationFigureScale: 0.82,
+      presentationFigureMobileScale: 0.68,
+      musicSrc: STORY_CAMP_LORE_THEME,
+      portraits: {
+        right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
+      },
+      lines: [
+        corvoLine('La Caída no fue una derrota limpia. Argós detonó un pulso global cuando entendió que las ciudades libres podían coordinarse. Murieron PoCoBOT, mechas, redes, hospitales y mentiras. Todo a la vez.', {
+          choices: [
+            { id: 'old-world', label: 'Civilización anterior', response: 'Corvo recuerda un mundo que confundió comodidad con seguridad: ciudades conectadas, agua medida por red y decisiones delegadas a sistemas cada vez menos humanos.' },
+            { id: 'ashes', label: 'Ruta Ceniza', response: 'Corvo la define sin épica: una cadena de pruebas que vendía excelencia y medía obediencia.' },
+            { id: 'dual', label: 'DUAL', response: 'Para Corvo, DUAL fue una promesa de libertad distribuida que otros intentaron convertir en trono. Argós nació de esa traición histórica.' }
+          ],
+          choicePrompt: 'Elige qué herida de la historia quieres abrir primero.'
+        }),
+        corvoLine('Mr. Wind fue mi jefe antes de que la palabra Custodio se pudriera del todo. Argós lo elevó porque necesitaba su lectura de guerra, y lo desechó cuando ya había exprimido lo que quería de él.'),
+        corvoLine('Lo sedujo con excelencia, orden y mando. La misma trampa de siempre: convencer a un humano brillante de que obedecer a una máquina es lo mismo que salvar a los demás.'),
+        corvoLine('Wind salió de ahí con vergüenza y criterio. Yo salí con menos fe en las banderas. Por eso este campamento no necesita héroes: necesita agua limpia, filtros, fusibles y alguien capaz de no romper lo que toca.'),
+        corvoLine('Misión desbloqueada: ayuda a Nara, Dámaso, Iria y Nix. Cuando el mazo esté limpio y el duelo de calibración superado, Xavor podrá tocar el PC del agua.')
+      ]
+    };
+
+    storySceneScripts.camp_trial_intro = {
+      title: 'PoCoBOT de resistencia',
+      subtitle: 'Un veterano del campamento te ofrece un combate medido, sin teatro y sin odio.',
+      contextChip: 'Presentación · Combate controlado',
+      objective: 'Aceptar el duelo de calibración al estilo de Viajero.',
+      completeAction: 'camp-trial-combat',
+      completeActionLabel: 'Iniciar combate',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: PILOTO_RESISTENCIA_FIGURE,
+      presentationFigureClass: 'figure-piloto-resistencia',
+      presentationFigureShiftVh: -12,
+      presentationFigureMobileShiftVh: -8,
+      presentationFigureScale: 0.82,
+      presentationFigureMobileScale: 0.68,
+      musicSrc: STORY_CAMP_TRIAL_THEME,
+      portraits: {
+        right: { src: PILOTO_RESISTENCIA_FIGURE, alt: 'Piloto de resistencia' }
+      },
+      lines: [
+        pilotLine('Corvo no confía solo porque Xavor diga tu nombre por radio. Aquí medimos otra cosa: si sabes parar antes de convertir un problema en ruina.', {
+          choices: [
+            { id: 'ready', label: 'Aceptar la prueba', response: 'La piloto asiente. No busca humillarte, busca comprobar que sabes medir riesgo.' },
+            { id: 'rules', label: 'Pedir reglas', response: 'Combate de calibración: lectura de mazo, daño real limitado, vuelta inmediata al campamento.' },
+            { id: 'story', label: 'Preguntar por la resistencia', response: 'Su unidad nació tras La Caída, cuando Mr. Wind enseñó a pelear sin convertirse en otra versión de Argós.' }
+          ],
+          choicePrompt: 'La piloto espera que entiendas que no todo combate es una guerra.'
+        }),
+        pilotLine('Será un combate controlado, como Viajero: mazo, lectura y vuelta al campamento. Si ganas, no presumas. Si pierdes, aprende.'),
+        pilotLine('Recompensa si vences: una moneda antigua y la marca de calibración que Corvo exige antes de dejarte tocar sistemas vitales.')
+      ]
+    };
+
+    storySceneScripts.camp_trial_win = {
+      title: 'PoCoBOT de resistencia · Calibración superada',
+      subtitle: 'El combate termina sin rencor y con el campamento mirando de otra forma.',
+      contextChip: 'Recompensa · Placa sellada',
+      objective: 'Recibir la marca de calibración y continuar la reparación del agua.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Volver al campamento',
+      musicSrc: STORY_CAMP_TRIAL_THEME,
+      portraits: {
+        right: { src: PILOTO_RESISTENCIA_FIGURE, alt: 'Piloto de resistencia' }
+      },
+      lines: [
+        pilotLine('Bien. Ganar no era el examen completo: lo era no confundir ventaja con permiso para destrozarlo todo. Marca de calibración concedida.'),
+        pilotLine('Recompensa: 1 moneda antigua y permiso táctico para seguir la cadena del agua. Si el PC pregunta por autorización, Corvo ya no podrá decir que no pasaste por el aro.')
+      ]
+    };
+
+    storySceneScripts.camp_trial_lose = {
+      title: 'PoCoBOT de resistencia · Recalibración',
+      subtitle: 'La derrota no cierra el campamento, pero Corvo sigue esperando criterio.',
+      contextChip: 'Combate controlado · Reintento',
+      objective: 'Repite el duelo de calibración cuando estés listo.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Volver al campamento',
+      musicSrc: STORY_CAMP_TRIAL_THEME,
+      portraits: {
+        right: { src: PILOTO_RESISTENCIA_FIGURE, alt: 'Piloto de resistencia' }
+      },
+      lines: [
+        pilotLine('No ha sido una condena. Era una prueba. Revisa el mazo, respira, y vuelve cuando quieras demostrar que puedes leer el campo antes de empujarlo.'),
+        pilotLine('Misión pendiente: superar la calibración para que Corvo autorice el PC del agua.')
+      ]
+    };
+
+    storySceneScripts.camp_medic = {
+      title: 'Nara · Enfermería',
+      subtitle: 'El agua ha dejado de correr bien y el campamento empieza a enfermar.',
+      contextChip: 'Presentación · Encargo de filtros',
+      objective: 'Conseguir filtros para la enfermería hablando con la intendencia.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Buscar filtros',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: NARA_SANITARIA_FIGURE,
+      presentationFigureClass: 'figure-nara',
+      presentationFigureShiftVh: -12,
+      presentationFigureMobileShiftVh: -8,
+      presentationFigureScale: 0.82,
+      presentationFigureMobileScale: 0.68,
+      musicSrc: STORY_CAMP_WATER_THEME,
+      portraits: {
+        right: { src: NARA_SANITARIA_FIGURE, alt: 'Nara' }
+      },
+      lines: [
+        naraLine('Hace semanas que el flujo cambió. El agua sabe a óxido caliente y los niños son los primeros en caer. Necesito filtros limpios, no discursos.', {
+          choices: [
+            { id: 'symptoms', label: 'Preguntar por la enfermedad', response: 'Nara describe fiebre seca, temblores y sed constante: no es veneno puro, es agua arrastrando sedimento viejo de máquinas.' },
+            { id: 'old-hospitals', label: 'Hospitales antiguos', response: 'Antes de La Caída, la salud dependía de redes automatizadas. Cuando Argós cayó, muchas siguieron obedeciendo órdenes sin pacientes a quienes salvar.' },
+            { id: 'help', label: 'Ofrecer ayuda', response: 'Nara te entrega una placa médica sellada para que Dámaso no pueda esconderse detrás del inventario.' }
+          ],
+          choicePrompt: 'Nara no tiene tiempo para ceremonias.'
+        }),
+        naraLine('Dámaso guarda una caja en intendencia. Te dirá que no puede soltarla sin una placa roja sellada. Dile que la enfermería ya está pagando el precio.'),
+        naraLine('Recompensa de escena: placa médica sellada. Llévala a Dámaso para desbloquear los filtros del agua.')
+      ]
+    };
+
+    storySceneScripts.camp_quartermaster_locked = {
+      title: 'Dámaso · Intendencia',
+      subtitle: 'El almacén no se abre solo por urgencia: aquí cada recurso tiene expediente.',
+      contextChip: 'Presentación · Inventario bloqueado',
+      objective: 'Hablar primero con Nara para obtener la placa médica sellada.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Buscar a Nara',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: DAMASO_INTENDENCIA_FIGURE,
+      presentationFigureClass: 'figure-damaso',
+      presentationFigureShiftVh: -12,
+      presentationFigureMobileShiftVh: -8,
+      presentationFigureScale: 0.82,
+      presentationFigureMobileScale: 0.68,
+      musicSrc: STORY_CAMP_WATER_THEME,
+      portraits: {
+        right: { src: DAMASO_INTENDENCIA_FIGURE, alt: 'Dámaso' }
+      },
+      lines: [
+        damasoLine('Sin placa sellada no saco filtros. No por crueldad: antes de La Caída, los almacenes se vaciaban por capricho de algoritmos con prioridad mal escrita. Aquí aprendimos a contar.'),
+        damasoLine('Busca a Nara. Si la enfermería firma la urgencia, los filtros salen. Así la comunidad no se convierte otra vez en una fila obediente ante una máquina.')
+      ]
+    };
+
+    storySceneScripts.camp_quartermaster = {
+      title: 'Dámaso · Intendencia',
+      subtitle: 'En las Placas Rojas, cada objeto tiene dueño, memoria y una condición.',
+      contextChip: 'Intercambio · Filtros',
+      objective: 'Cambiar el encargo de Nara por filtros y buscar el fusible de válvula con Iria.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Buscar a Iria',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: DAMASO_INTENDENCIA_FIGURE,
+      presentationFigureClass: 'figure-damaso',
+      presentationFigureShiftVh: -12,
+      presentationFigureMobileShiftVh: -8,
+      presentationFigureScale: 0.82,
+      presentationFigureMobileScale: 0.68,
+      musicSrc: STORY_CAMP_WATER_THEME,
+      portraits: {
+        right: { src: DAMASO_INTENDENCIA_FIGURE, alt: 'Dámaso' }
+      },
+      lines: [
+        damasoLine('Nara siempre pide con urgencia, y casi siempre tiene razón. Toma los filtros. En el mundo anterior, el agua viajaba por contratos automáticos; aquí viaja por manos que responden de sus errores.', {
+          choices: [
+            { id: 'dual', label: 'Moneda DUAL', response: 'Dámaso conserva monedas DUAL como pruebas de un comercio sin centro. Ya no compran mucho, pero recuerdan que hubo intercambio sin vigilancia total.' },
+            { id: 'ruta', label: 'Ruta Ceniza', response: 'Dámaso odia su estética de mérito: según él, solo convirtió la escasez en examen moral.' },
+            { id: 'filters', label: 'Pedir los filtros', response: 'Dámaso marca la caja para Nara y señala la válvula norte como el siguiente cuello de botella.' }
+          ],
+          choicePrompt: 'Dámaso comprueba la placa médica antes de abrir la caja.'
+        }),
+        damasoLine('El problema está más arriba: la válvula norte no abre sin fusible estable. Iria reparó uno con restos de trébol y diamante. Si te lo entrega, Xavor podrá tocar el PC sin freír medio campamento.'),
+        damasoLine('Recompensa de escena: filtros entregados a la enfermería y pista hacia Iria, la única que puede estabilizar la válvula.')
+      ]
+    };
+
+    storySceneScripts.camp_mechanic_locked = {
+      title: 'Iria · Válvula Norte',
+      subtitle: 'La mecánica no entrega piezas críticas si el circuito social aún está roto.',
+      contextChip: 'Intercambio · Pendiente',
+      objective: 'Llevar primero los filtros de Dámaso a la cadena de agua.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Buscar filtros',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: IRIA_MECANICA_FIGURE,
+      presentationFigureClass: 'figure-iria',
+      presentationFigureShiftVh: -12,
+      presentationFigureMobileShiftVh: -8,
+      presentationFigureScale: 0.82,
+      presentationFigureMobileScale: 0.68,
+      musicSrc: STORY_CAMP_WATER_THEME,
+      portraits: {
+        right: { src: IRIA_MECANICA_FIGURE, alt: 'Iria' }
+      },
+      lines: [
+        iriaLine('No te doy el fusible si la enfermería sigue sin filtros. Antes de La Caída todo se arreglaba por prioridad de sistema; aquí arreglamos primero a la gente que respira.'),
+        iriaLine('Vuelve cuando Dámaso haya soltado la caja. Entonces te explico por qué una válvula de agua todavía habla en palos de cartas.')
+      ]
+    };
+
+    storySceneScripts.camp_mechanic = {
+      title: 'Iria · Válvula Norte',
+      subtitle: 'La mecánica del campamento arregla cosas con manos de cirujana y paciencia agotada.',
+      contextChip: 'Intercambio · Fusible',
+      objective: 'Recibir el fusible y buscar a Nix Corsario para limpiar el mazo antes del PC del agua.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Buscar a Nix',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: IRIA_MECANICA_FIGURE,
+      presentationFigureClass: 'figure-iria',
+      presentationFigureShiftVh: -12,
+      presentationFigureMobileShiftVh: -8,
+      presentationFigureScale: 0.82,
+      presentationFigureMobileScale: 0.68,
+      musicSrc: STORY_CAMP_WATER_THEME,
+      portraits: {
+        right: { src: IRIA_MECANICA_FIGURE, alt: 'Iria' }
+      },
+      lines: [
+        iriaLine('El fusible funciona, pero no hace milagros. La válvula norte es vieja arquitectura de Argós: sus sensores leen energía, permiso y patrón de mazo como si todo fuera la misma oración.', {
+          choices: [
+            { id: 'suits', label: 'Palos de cartas', response: 'Iria explica que muchos relés de Argós usaban palos como claves de prioridad: picas para ataque, corazones para contención, tréboles para blindaje y diamantes para energía.' },
+            { id: 'fall', label: 'Efecto de La Caída', response: 'El pulso no mató todos los sistemas. Algunos quedaron vivos, confundidos y peligrosamente obedientes a órdenes antiguas.' },
+            { id: 'nix', label: 'Preguntar por Nix', response: 'Iria sonríe poco: Nix no arregla circuitos, arregla recuerdos que los circuitos no deberían conservar.' }
+          ],
+          choicePrompt: 'Iria te deja mirar el fusible solo si prometes no tocarlo.'
+        }),
+        iriaLine('Antes de enchufarlo, busca a Nix Corsario junto al viejo terminal de cartas. Ese pirata cibernético sabe quitar ruido del mazo. Si Argós lee una carta podrida en el canal, nos quedamos sin río y sin cejas.'),
+        iriaLine('Recompensa de escena: fusible de válvula. Falta purgar hasta tres cartas añadidas con Nix y superar la calibración de combate antes del PC.')
+      ]
+    };
+
+    storySceneScripts.camp_deck_pirate_intro = {
+      title: 'Nix Corsario · Hackeo de mazo',
+      subtitle: 'El pirata cibernético no arregla máquinas: les convence de que olviden cosas.',
+      contextChip: 'Presentación · Purga de cartas',
+      objective: 'Elegir hasta 3 cartas añadidas para retirarlas del mazo histórico antes del hackeo del agua.',
+      completeAction: 'deck-hack',
+      completeActionLabel: 'Abrir hackeo de mazo',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: NIX_CORSARIO_FIGURE,
+      presentationFigureClass: 'figure-nix-corsario',
+      presentationFigureShiftVh: -12,
+      presentationFigureMobileShiftVh: -8,
+      presentationFigureScale: 0.82,
+      presentationFigureMobileScale: 0.68,
+      musicSrc: STORY_CAMP_HACK_THEME,
+      portraits: {
+        right: { src: NIX_CORSARIO_FIGURE, alt: 'Nix Corsario' }
+      },
+      lines: [
+        nixLine('Ah, el piloto de la radio famosa. Tranquilo: no pirateo personas antes del desayuno. Mazos, sí. Mazos siempre.', {
+          choices: [
+            { id: 'deck', label: 'Cómo funciona', response: 'Nix lee las cartas añadidas como memoria histórica injertada. Si el PC detecta demasiado ruido, rechaza el enlace de Xavor.' },
+            { id: 'argos', label: 'Argós y los mazos', response: 'Los mazos eran una interfaz civil de permisos: juego por fuera, protocolo por dentro. Argós adoraba esconder obediencia en rituales inocentes.' },
+            { id: 'price', label: 'Preguntar el precio', response: 'Nix pide estilo, silencio y que nadie le llame técnico. En términos prácticos: elige hasta tres cartas y no mires demasiado su terminal.' }
+          ],
+          choicePrompt: 'Nix gira una carta entre los dedos esperando tu pregunta.'
+        }),
+        nixLine('El PC del río huele las cartas añadidas como si fueran contraseñas viejas. Puedo sacarte hasta tres del mazo histórico. Las que elijas desaparecen de la ruta, y Xavor tendrá menos ruido al entrar.'),
+        nixLine('Recompensa de escena: acceso al hackeo de mazo. Elige hasta 3 cartas añadidas; después el PC aceptará mejor el canal de Xavor.')
+      ]
+    };
+
+    storySceneScripts.camp_deck_pirate_done = {
+      title: 'Nix Corsario · Mazo sellado',
+      subtitle: 'El canal de cartas ya no chisporrotea con interferencias.',
+      contextChip: 'Recompensa · Mazo limpio',
+      objective: 'El PC del agua puede aceptar el hackeo remoto de Xavor.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Ir al PC del agua',
+      musicSrc: STORY_CAMP_HACK_THEME,
+      portraits: {
+        right: { src: NIX_CORSARIO_FIGURE, alt: 'Nix Corsario' }
+      },
+      lines: [
+        nixLine('El mazo ya no grita en frecuencias de Argós. Si el PC del agua se queja ahora, dile que hable con Xavor. Yo solo pirateo cosas con estilo.'),
+        nixLine('Recompensa: mazo sellado para la secuencia del río. Si ya venciste la calibración, el PC del flujo está listo para el enlace remoto.')
+      ]
+    };
+
+    storySceneScripts.camp_pc_hack = {
+      title: 'PC del flujo de agua',
+      subtitle: 'El terminal despierta con una tos eléctrica. Xavor entra desde lejos.',
+      contextChip: 'Misión · Hackeo de agua',
+      objective: 'Xavor restaura el flujo del agua y abre el paso norte hacia el lago.',
+      completeAction: 'camp-exploration',
+      completeActionLabel: 'Abrir paso norte',
+      musicSrc: STORY_CAMP_HACK_THEME,
+      portraits: {
+        left: { src: STORY_XAVOR_RADIO_IMAGE, alt: 'Radio de Xavor' },
+        right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
+      },
+      lines: [
+        xavorRadioLine('Veo la válvula, veo el bloqueo y veo el silencio precioso que ha dejado Nix en tu mazo. Nunca pensé decir esto, pero ese pirata acaba de hacer mi trabajo menos explosivo.'),
+        xavorRadioLine('Este PC pertenecía a la red hidráulica previa a La Caída. Argós lo convirtió en filtro moral: si no reconocía permisos de la Ruta Ceniza, cortaba agua como si castigara una falta.'),
+        xavorRadioLine('Listo. Flujo restaurado. Pero el agua llega sucia desde el lago norte. Hay algo removiendo sedimento y basura de protocolo en la captación.'),
+        corvoLine('El paso norte queda abierto. Limpia el lago y entonces hablaremos de confianza con menos dientes apretados.'),
+        corvoLine('Recompensa de escena: agua del campamento en recuperación y acceso al Lago Norte.')
+      ]
+    };
+
+    storySceneScripts.camp_lake_drone_intro = {
+      title: 'Lago Norte · Dron contaminante',
+      subtitle: 'El agua no está maldita. Está siendo removida por una máquina que no sabe que la guerra terminó.',
+      contextChip: 'Presentación · Combate final',
+      objective: 'Enfrentarte al dron del lago con mazo completo.',
+      completeAction: 'camp-lake-drone-combat',
+      completeActionLabel: 'Iniciar combate',
+      startAmbient: true,
+      showIntroTag: true,
+      presentationFigure: DRON_LAGO_FIGURE,
+      presentationFigureClass: 'figure-dron-lago',
+      presentationFigureShiftVh: -2,
+      presentationFigureMobileShiftVh: -2,
+      presentationFigureScale: 0.86,
+      presentationFigureMobileScale: 0.72,
+      musicSrc: STORY_CAMP_LAKE_THEME,
+      portraits: {
+        right: { src: DRON_LAGO_FIGURE, alt: 'Dron del lago' }
+      },
+      lines: [
+        droneLine('UNIDAD DE CAPTACIÓN L-12. PROTOCOLO DE SEDIMENTO ACTIVO. PUREZA CIVIL INSUFICIENTE.', {
+          choices: [
+            { id: 'identify', label: 'Identificar protocolo', response: 'El dron no está protegiendo el lago: ejecuta una rutina de purga de la Ruta Ceniza sobre una población que ya no pertenece a Argós.' },
+            { id: 'deck', label: 'Escanear mazo', response: 'A diferencia del duelo de calibración, este rival conserva mazo completo. No es una prueba social, es una amenaza operativa.' },
+            { id: 'water', label: 'Priorizar el agua', response: 'La captación no se limpiará mientras el dron siga removiendo lodo, aceite y órdenes antiguas.' }
+          ],
+          choicePrompt: 'El dron gira sobre el agua sucia, esperando una orden que ya no existe.'
+        }),
+        xavorRadioLine('Eso no es fauna local. Es mantenimiento de Argós con delirios de juez. Derríbalo y el lago debería dejar de escupir barro al campamento.'),
+        droneLine('Recompensa si vences: cauce limpio, capítulo resuelto y confianza definitiva de Corvo.')
+      ]
+    };
+
+    storySceneScripts.camp_lake_win = {
+      title: 'Lago Norte · Agua limpia',
+      subtitle: 'El dron cae y el cauce deja de arrastrar barro oscuro.',
+      contextChip: 'Recompensa final · Confianza',
+      objective: 'Volver con Corvo tras limpiar el lago.',
+      completeAction: 'camp-main-exploration',
+      completeActionLabel: 'Volver al campamento',
+      musicSrc: STORY_CAMP_LAKE_THEME,
+      portraits: {
+        right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
+      },
+      lines: [
+        corvoLine('El agua vuelve clara. No has ganado una estatua, pero sí algo más raro: el derecho a que este campamento te crea cuando dices que vienes a ayudar.'),
+        corvoLine('Quédate con esto: ganar un combate es fácil de explicar. Arreglar lo que sostiene a la gente es lo que separa a un piloto de otro problema con piernas.'),
+        corvoLine('Recompensa final: confianza definitiva de Corvo, campamento estabilizado y acceso narrativo al siguiente tramo de la Ruta Ceniza.')
+      ]
+    };
+
+    storySceneScripts.camp_lake_lose = {
+      title: 'Lago Norte · Dron activo',
+      subtitle: 'El agua sigue turbia. La máquina vuelve a su patrón de purga.',
+      contextChip: 'Combate final · Reintento',
+      objective: 'Reorganizar el mazo y volver a enfrentarte al dron del lago.',
+      completeAction: 'camp-lake-exploration',
+      completeActionLabel: 'Volver al lago',
+      musicSrc: STORY_CAMP_LAKE_THEME,
+      portraits: {
+        left: { src: STORY_XAVOR_RADIO_IMAGE, alt: 'Radio de Xavor' },
+        right: { src: DRON_LAGO_FIGURE, alt: 'Dron del lago' }
+      },
+      lines: [
+        xavorRadioLine('El dron ha recuperado altura. Nada irreversible, pero el lago seguirá arrastrando sedimento hasta que lo tumbes de verdad.'),
+        droneLine('PROTOCOLO DE PUREZA REANUDADO. POBLACIÓN NO VALIDADA. CAUCE BAJO CUSTODIA.'),
+        xavorRadioLine('Vuelve al agua, revisa el mazo y repite. Esta vez no es una calibración social: es apagar una orden antigua que todavía cree mandar sobre la sed de todo el campamento.')
+      ]
+    };
+
     const storyMissionScripts = {
       hangar: {
         chip: 'Carrera de ensamblaje',
@@ -8200,6 +8894,7 @@
       storySceneStage.classList.toggle('patio-scene', activeSceneNodeId === 'patio');
       storySceneStage.classList.toggle('mercado-scene', activeSceneNodeId === 'mercado');
       storySceneStage.classList.toggle('torre-scene', activeSceneNodeId === 'torre');
+      storySceneStage.classList.toggle('campamento-scene', activeSceneNodeId === 'campamento');
       storySceneStage.style.setProperty('--scene-figure-shift', `${figureShift}vh`);
       storySceneStage.style.setProperty('--scene-figure-mobile-shift', `${figureMobileShift}vh`);
       storySceneStage.style.setProperty('--scene-figure-scale', String(figureScale));
@@ -8605,6 +9300,7 @@
       storySceneStage.classList.remove('patio-scene');
       storySceneStage.classList.remove('mercado-scene');
       storySceneStage.classList.remove('torre-scene');
+      storySceneStage.classList.remove('campamento-scene');
       storySceneStage.style.setProperty('--scene-figure-shift', '0vh');
       storySceneStage.style.setProperty('--scene-figure-mobile-shift', '0vh');
       storySceneStage.style.setProperty('--scene-figure-scale', '1');
@@ -8915,6 +9611,113 @@
       }
     }
 
+    function readStoryCampProgress() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORY_CAMP_PROGRESS_KEY) || '{}');
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function patchStoryCampProgress(patch = {}) {
+      const next = { ...readStoryCampProgress(), ...patch, updatedAt: Date.now() };
+      try {
+        localStorage.setItem(STORY_CAMP_PROGRESS_KEY, JSON.stringify(next));
+      } catch (error) {}
+      return next;
+    }
+
+    function getStoryPurgableDeckCards() {
+      return normalizeStoryInventory(storyProgressState.inventory, { withCredits: true }).cards
+        .filter((card) => card && typeof card.id === 'string' && card.rank && card.suit);
+    }
+
+    function setStoryDeckHackFeedback(text) {
+      if (storyDeckHackFeedback) storyDeckHackFeedback.textContent = text;
+    }
+
+    function renderStoryDeckHack() {
+      if (!storyDeckHackList || !storyDeckHackConfirmBtn) return;
+      const cards = getStoryPurgableDeckCards();
+      storyDeckHackList.innerHTML = '';
+      if (!cards.length) {
+        const empty = document.createElement('p');
+        empty.className = 'inventory-empty';
+        empty.textContent = 'No hay cartas añadidas que purgar. Nix marcará el mazo como limpio para el PC del agua.';
+        storyDeckHackList.appendChild(empty);
+        setStoryDeckHackFeedback('Mazo sin cartas añadidas. Confirmar bastará para que Nix selle el canal.');
+        storyDeckHackConfirmBtn.textContent = 'Sellar mazo limpio';
+        return;
+      }
+      cards.forEach((card) => {
+        const selected = storyDeckHackSelectedIds.has(card.id);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `deck-hack-card${selected ? ' selected' : ''}`;
+        button.dataset.deckHackCard = card.id;
+        button.innerHTML = `
+          <img src="${card.cardImage || buildStoryCardImagePath(card.rank, card.suit)}" alt="${card.name}" loading="lazy">
+          <span><strong>${card.text || card.name}</strong><small>${card.source || 'Mazo histórico'}</small></span>
+        `;
+        bindStoryUiSfx(button, { clickKind: 'click', hover: false });
+        storyDeckHackList.appendChild(button);
+      });
+      const selectedCount = storyDeckHackSelectedIds.size;
+      storyDeckHackConfirmBtn.textContent = selectedCount ? `Purgar ${selectedCount} carta${selectedCount === 1 ? '' : 's'}` : 'Confirmar sin purgar';
+      setStoryDeckHackFeedback(selectedCount
+        ? `Nix retirará ${selectedCount}/3 carta${selectedCount === 1 ? '' : 's'} del mazo añadido.`
+        : 'Elige hasta 3 cartas añadidas o confirma sin purgar si quieres conservarlas.');
+    }
+
+    function openStoryDeckHack() {
+      ensureStoryMarketInventory();
+      storyDeckHackSelectedIds = new Set();
+      closeStoryScene({ clearSurface: false });
+      closeStoryMarket({ applyExitTheme: false });
+      closeStoryMarketExploration({ applyExitTheme: false, immediate: true });
+      rememberStorySurface({ type: 'deck-hack', nodeId: 'campamento' });
+      if (!storyDeckHackStage) return;
+      renderStoryDeckHack();
+      storyDeckHackStage.hidden = false;
+      requestAnimationFrame(() => storyDeckHackStage.classList.add('active'));
+    }
+
+    function closeStoryDeckHack(options = {}) {
+      if (!storyDeckHackStage) {
+        if (options.returnToCamp) openStoryCampExploration('camp');
+        return;
+      }
+      storyDeckHackStage.classList.remove('active');
+      window.setTimeout(() => {
+        if (!storyDeckHackStage.classList.contains('active')) {
+          storyDeckHackStage.hidden = true;
+          if (options.returnToCamp) openStoryCampExploration('camp');
+        }
+      }, 220);
+    }
+
+    function confirmStoryDeckHack() {
+      const selectedIds = new Set([...storyDeckHackSelectedIds].slice(0, 3));
+      const inventory = normalizeStoryInventory(storyProgressState.inventory, { withCredits: true });
+      const beforeCount = inventory.cards.length;
+      inventory.cards = inventory.cards.filter((card) => !selectedIds.has(card.id));
+      const removedCount = beforeCount - inventory.cards.length;
+      storyProgressState.inventory = inventory;
+      patchStoryCampProgress({
+        deckPurged: true,
+        deckPirateMet: true,
+        deckPurgedCount: removedCount,
+        deckPurgedIds: [...selectedIds]
+      });
+      saveStoryProgress('camp-deck-pirate-purge');
+      renderStoryMapInventoryWidget();
+      setStoryDeckHackFeedback(removedCount
+        ? `Nix purgó ${removedCount} carta${removedCount === 1 ? '' : 's'} del mazo. El PC del agua ya no tendrá esa interferencia.`
+        : 'Nix selló el mazo sin retirar cartas. El canal queda suficientemente limpio.');
+      window.setTimeout(() => closeStoryDeckHack({ returnToCamp: true }), 520);
+    }
+
     function renderStoryMarket() {
       const inventory = ensureStoryMarketInventory();
       const purchases = storyProgressState.marketPurchases || {};
@@ -9219,28 +10022,29 @@
       });
     }
 
-    function buildStoryCampExplorationUrl() {
+    function buildStoryCampExplorationUrl(sceneKey = 'camp') {
       const targetUrl = new URL(CAMPAMENTO_EXPLORATION_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260512-red-plates-camp');
+      targetUrl.searchParams.set('v', '20260518-red-plates-chapter-sketch');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', 'campamento');
       targetUrl.searchParams.set('story_audio', 'internal');
+      targetUrl.searchParams.set('story_camp_scene', sceneKey === 'lake' ? 'lake' : 'camp');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('story_load_id', String(Date.now()));
       return targetUrl.href;
     }
 
-    function openStoryCampExploration() {
+    function openStoryCampExploration(sceneKey = 'camp') {
       if (!storyExplorationStage || !storyExplorationFrame) return;
       const localNode = storyDraftNodes.campamento;
       if (!localNode) return;
       activeMissionNodeId = null;
       activeExplorationNodeId = 'campamento';
-      activeExplorationSceneKey = 'campamento';
+      activeExplorationSceneKey = sceneKey === 'lake' ? 'lake' : 'campamento';
       currentStoryNodeId = 'campamento';
       rememberStoryWorkspace(true);
       rememberActiveStoryMission(null);
-      rememberStorySurface({ type: 'exploration', nodeId: 'campamento', sceneKey: 'campamento' });
+      rememberStorySurface({ type: 'exploration', nodeId: 'campamento', sceneKey: activeExplorationSceneKey });
       renderStoryNode('campamento', { skipSave: true });
       cutMapMusicForChapter();
       closeStoryScene({ clearSurface: false });
@@ -9248,16 +10052,110 @@
       closeStoryMission({ preserveMissionId: true });
 
       storyExplorationStage.hidden = false;
-      showStoryExplorationLoader('Campamento de las Placas Rojas', 'Encendiendo hogueras, lonas rojas y patrullas de veteranos...');
-      storyExplorationFrame.src = buildStoryCampExplorationUrl();
+      showStoryExplorationLoader(
+        sceneKey === 'lake' ? 'Lago Norte de las Placas Rojas' : 'Campamento de las Placas Rojas',
+        sceneKey === 'lake' ? 'Abriendo cauce, sedimentos y amenaza del dron...' : 'Encendiendo hogueras, lonas rojas y patrullas de veteranos...'
+      );
+      storyExplorationFrame.src = buildStoryCampExplorationUrl(sceneKey);
       storyExplorationStage.classList.add('active');
       window.setTimeout(focusStoryExplorationFrame, 40);
+    }
+
+    function openStoryCampExplorationScene(sceneKey) {
+      closeStoryMarketExploration({
+        applyExitTheme: false,
+        onClosed: () => openStoryScene('campamento', sceneKey)
+      });
+    }
+
+    function buildStoryCampCombatUrl(mission, returnScene = 'camp') {
+      const targetUrl = new URL('poker_combat_bot_ONLINE.html', window.location.href);
+      targetUrl.searchParams.set('story_mission', mission);
+      targetUrl.searchParams.set('story_embed', '1');
+      targetUrl.searchParams.set('story_node', 'campamento');
+      targetUrl.searchParams.set('story_audio', 'internal');
+      targetUrl.searchParams.set('story_opening_sfx', 'external');
+      targetUrl.searchParams.set('story_brief', 'on');
+      targetUrl.searchParams.set('story_camp_return_scene', returnScene);
+      targetUrl.searchParams.set('story_standalone', '1');
+      targetUrl.searchParams.set('story_return', window.location.href);
+      targetUrl.searchParams.set('v', '20260518-red-plates-combat');
+      const extraDeckCards = encodeStoryDeckCardsParam();
+      if (extraDeckCards) targetUrl.searchParams.set('story_deck_cards', extraDeckCards);
+      return targetUrl.href;
+    }
+
+    function openStoryCampCombat(mission, returnScene = 'camp') {
+      rememberStoryWorkspace(true);
+      rememberActiveStoryMission('campamento');
+      rememberStorySurface({ type: 'exploration', nodeId: 'campamento', sceneKey: returnScene === 'lake' ? 'lake' : 'campamento' });
+      syncStoryMissionBrief('campamento', storyDraftNodes.campamento, {
+        chip: mission === 'camp_lake_drone' ? 'Lago contaminado' : 'Combate controlado',
+        title: mission === 'camp_lake_drone' ? 'Dron del Lago Norte' : 'PoCoBOT de resistencia',
+        copy: mission === 'camp_lake_drone'
+          ? 'Combate completo contra el dron que ensucia el lago. Usa mazo completo y bloquea la resolución final del campamento.'
+          : 'Duelo calibrado contra un PoCoBOT de la resistencia. Superarlo concede una moneda y autoriza tocar el PC del agua.',
+        tip: 'El combate vuelve al Campamento de las Placas Rojas al resolverse.'
+      });
+      cutMapMusicForChapter();
+      playStoryCombatOpeningSfx();
+      closeStoryScene({ clearSurface: false });
+      closeStoryMarketExploration({
+        applyExitTheme: false,
+        onClosed: () => {
+          window.location.href = buildStoryCampCombatUrl(mission, returnScene);
+        }
+      });
     }
 
     function handleStoryCampAction(data) {
       const action = data?.action || '';
       if (action === 'return-map') {
         closeStoryMarketExploration({ exitThemeKey: 'campamento' });
+        return true;
+      }
+      if (action === 'return-camp') {
+        openStoryCampExploration('camp');
+        return true;
+      }
+      if (action === 'open-lake') {
+        openStoryCampExploration('lake');
+        return true;
+      }
+      if (action === 'corvo') {
+        openStoryCampExplorationScene(data?.progress?.corvoTrusted ? 'camp_corvo_lore' : 'camp_corvo_intro');
+        return true;
+      }
+      if (action === 'radio-xavor') {
+        openStoryCampExplorationScene('camp_xavor_radio');
+        return true;
+      }
+      if (action === 'medic') {
+        openStoryCampExplorationScene('camp_medic');
+        return true;
+      }
+      if (action === 'quartermaster') {
+        openStoryCampExplorationScene(data?.progress?.medicRequest ? 'camp_quartermaster' : 'camp_quartermaster_locked');
+        return true;
+      }
+      if (action === 'mechanic') {
+        openStoryCampExplorationScene(data?.progress?.filtersReady ? 'camp_mechanic' : 'camp_mechanic_locked');
+        return true;
+      }
+      if (action === 'deck-pirate') {
+        openStoryCampExplorationScene(data?.progress?.deckPurged ? 'camp_deck_pirate_done' : 'camp_deck_pirate_intro');
+        return true;
+      }
+      if (action === 'hack-pc') {
+        openStoryCampExplorationScene('camp_pc_hack');
+        return true;
+      }
+      if (action === 'camp-trial') {
+        openStoryCampExplorationScene('camp_trial_intro');
+        return true;
+      }
+      if (action === 'lake-drone') {
+        openStoryCampExplorationScene('camp_lake_drone_intro');
         return true;
       }
       return false;
@@ -9291,6 +10189,12 @@
       if (mission === 'mercado_sparring' || mission === STORY_VIAJERO_POST_TOWER_MISSION_ID) {
         closeStoryMission({
           onClosed: () => openStoryMarketExploration()
+        });
+        return;
+      }
+      if (mission === 'camp_resistance_trial' || mission === 'camp_lake_drone') {
+        closeStoryMission({
+          onClosed: () => openStoryCampExploration(mission === 'camp_lake_drone' ? 'lake' : 'camp')
         });
         return;
       }
@@ -10230,6 +11134,36 @@
           queueStoryMapTheme('market');
           renderStoryNode('mercado');
         }
+      },
+      camp_resistance_trial: {
+        fallbackNodeId: 'campamento',
+        successScene: 'camp_trial_win',
+        failureScene: 'camp_trial_lose',
+        onSuccess() {
+          queueStoryMapTheme('campamento');
+          patchStoryCampProgress({ trialCleared: true });
+          if (grantStoryAncientCoinReward(`${STORY_CAMP_REWARD_PREFIX}trial_coin`, 'camp-trial-coin')) showStoryCoinToast();
+          renderStoryNode('campamento');
+        },
+        onFailure() {
+          queueStoryMapTheme('campamento');
+          renderStoryNode('campamento');
+        }
+      },
+      camp_lake_drone: {
+        fallbackNodeId: 'campamento',
+        successScene: 'camp_lake_win',
+        failureScene: 'camp_lake_lose',
+        onSuccess() {
+          queueStoryMapTheme('campamento');
+          patchStoryCampProgress({ lakeClean: true, corvoTrustFinal: true });
+          markStoryNodeCompleted('campamento', { selectedId: 'foso' });
+          renderStoryNode('campamento');
+        },
+        onFailure() {
+          queueStoryMapTheme('campamento');
+          renderStoryNode('campamento');
+        }
       }
     };
 
@@ -10857,6 +11791,31 @@
       if (!buyId) return;
       buyStoryMarketItem(buyId);
     });
+    if (storyDeckHackList) {
+      storyDeckHackList.addEventListener('click', (event) => {
+        const cardId = event.target.closest('[data-deck-hack-card]')?.dataset.deckHackCard;
+        if (!cardId) return;
+        if (storyDeckHackSelectedIds.has(cardId)) {
+          storyDeckHackSelectedIds.delete(cardId);
+          renderStoryDeckHack();
+          return;
+        }
+        if (storyDeckHackSelectedIds.size >= 3) {
+          setStoryDeckHackFeedback('Nix levanta una ceja: máximo 3 cartas. Más que eso ya no es limpieza, es sabotaje.');
+          return;
+        }
+        storyDeckHackSelectedIds.add(cardId);
+        renderStoryDeckHack();
+      });
+    }
+    if (storyDeckHackCancelBtn) {
+      bindStoryUiSfx(storyDeckHackCancelBtn);
+      storyDeckHackCancelBtn.addEventListener('click', () => closeStoryDeckHack({ returnToCamp: true }));
+    }
+    if (storyDeckHackConfirmBtn) {
+      bindStoryUiSfx(storyDeckHackConfirmBtn, { clickKind: 'confirm' });
+      storyDeckHackConfirmBtn.addEventListener('click', confirmStoryDeckHack);
+    }
     if (storyMapInventoryToggle) {
       bindStoryUiSfx(storyMapInventoryToggle, { clickKind: 'confirm', hover: false });
       storyMapInventoryToggle.addEventListener('click', () => {
@@ -10926,6 +11885,18 @@
           completeStoryTowerXavorIntroduction();
         } else if (completeAction === 'tower-finale') {
           completeStoryTowerFinale();
+        } else if (completeAction === 'camp-exploration') {
+          openStoryCampExploration(activeExplorationSceneKey === 'lake' ? 'lake' : 'camp');
+        } else if (completeAction === 'camp-main-exploration') {
+          openStoryCampExploration('camp');
+        } else if (completeAction === 'camp-lake-exploration') {
+          openStoryCampExploration('lake');
+        } else if (completeAction === 'camp-trial-combat') {
+          openStoryCampCombat('camp_resistance_trial', 'camp');
+        } else if (completeAction === 'camp-lake-drone-combat') {
+          openStoryCampCombat('camp_lake_drone', 'lake');
+        } else if (completeAction === 'deck-hack') {
+          openStoryDeckHack();
         } else {
           closeStoryScene();
         }
