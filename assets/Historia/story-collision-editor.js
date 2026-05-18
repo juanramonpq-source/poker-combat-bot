@@ -68,12 +68,16 @@
 
   function normalizeInteractionPoint(point){
     if (!point || typeof point !== "object" || !point.id) return null;
-    return {
+    const scale = toFiniteNumber(point.scale, 1);
+    const normalized = {
       id: String(point.id),
       x: toFiniteNumber(point.x),
       y: toFiniteNumber(point.y),
       radius: Math.max(1, toFiniteNumber(point.radius, 1)),
     };
+    if (point.label) normalized.label = String(point.label);
+    normalized.scale = Math.max(0.2, Math.min(3, scale));
+    return normalized;
   }
 
   function normalizeInteractionPoints(points){
@@ -168,6 +172,8 @@
       point.x = override.x;
       point.y = override.y;
       point.radius = override.radius;
+      if (override.label) point.label = override.label;
+      if (Number.isFinite(override.scale)) point.scale = override.scale;
     });
     return targetPoints;
   }

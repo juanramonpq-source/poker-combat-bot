@@ -539,7 +539,7 @@
 
       <article class="panel collision-panel">
         <div class="panel-head">
-          <h2>Editor de colisiones</h2>
+          <h2>Editor de fisica y entidades</h2>
           <span class="kicker" id="collisionCountChip">0 zonas</span>
         </div>
         <div class="panel-body">
@@ -557,23 +557,25 @@
               <select id="collisionSceneSelect" aria-label="Escenario editable"></select>
               <div class="collision-tool-grid" role="group" aria-label="Capa editable">
                 <button class="active" data-collision-layer="zones" type="button">Colisiones</button>
-                <button data-collision-layer="interactions" type="button">Interacciones</button>
+                <button data-collision-layer="interactions" type="button">Personajes / objetos</button>
               </div>
               <div class="collision-tool-grid" role="group" aria-label="Herramientas de colision">
                 <button class="active" data-collision-mode="draw" type="button">Dibujar</button>
                 <button data-collision-mode="erase" type="button">Borrar</button>
                 <button data-collision-mode="move" type="button">Mover</button>
                 <button data-collision-mode="resize" type="button">Radio</button>
+                <button data-collision-mode="scale" type="button">Tamaño</button>
               </div>
+              <select id="collisionInteractionSelect" aria-label="Personaje u objeto editable"></select>
               <div class="collision-tool-grid" role="group" aria-label="Forma de zona nueva">
                 <button class="active" data-collision-shape="rect" type="button">Rectangulo</button>
                 <button data-collision-shape="ellipse" type="button">Ovalo</button>
               </div>
               <div class="collision-meta">
-                <label class="collision-field">X<input id="collisionZoneX" type="number" step="1"></label>
-                <label class="collision-field">Y<input id="collisionZoneY" type="number" step="1"></label>
-                <label class="collision-field">Ancho / radio<input id="collisionZoneW" type="number" step="1"></label>
-                <label class="collision-field">Alto / radio<input id="collisionZoneH" type="number" step="1"></label>
+                <label class="collision-field"><span id="collisionFieldXLabel">X</span><input id="collisionZoneX" type="number" step="1"></label>
+                <label class="collision-field"><span id="collisionFieldYLabel">Y</span><input id="collisionZoneY" type="number" step="1"></label>
+                <label class="collision-field"><span id="collisionFieldWLabel">Ancho / radio</span><input id="collisionZoneW" type="number" step="1"></label>
+                <label class="collision-field"><span id="collisionFieldHLabel">Alto / escala</span><input id="collisionZoneH" type="number" step="0.01"></label>
               </div>
               <textarea id="collisionJson" class="collision-json" spellcheck="false" aria-label="JSON de colisiones"></textarea>
               <textarea id="interactionJson" class="collision-json" spellcheck="false" aria-label="JSON fisico de puntos de interaccion"></textarea>
@@ -585,7 +587,7 @@
                 <button id="copyCollisionJsonBtn" type="button">Copiar JSON</button>
                 <button class="warn" id="copyUnifiedPhysicsJsonBtn" type="button">Copiar JSON completo</button>
               </div>
-              <div class="status" id="collisionStatusBox">Dibuja rectangulos u ovalos rojos sobre el mapa, borra zonas y pulsa actualizar colisiones.</div>
+              <div class="status" id="collisionStatusBox">Dibuja colisiones o ajusta personajes, objetos, radio y PC con posicion, radio y escala.</div>
             </div>
           </div>
         </div>
@@ -593,7 +595,7 @@
     </section>
   </main>
 
-  <script src="assets/Historia/story-collision-editor.js?v=20260511-physical-editor"></script>
+  <script src="assets/Historia/story-collision-editor.js?v=20260518-entities-editor"></script>
   <script>
     const STORY_PAGE = 'MODO_HISTORIA_BOCETO.html';
     const STORY_PROGRESS_SAVE_KEY = 'pocobot_story_progress_v1';
@@ -765,7 +767,48 @@
           { type:"ellipse", x:0, y:242, width:182, height:124 },
           { type:"ellipse", x:1018, y:656, width:239, height:91 }
         ],
-        interactions:[]
+        interactions:[
+          { id:'corvo', x:562, y:506, radius:118, scale:1, label:'Corvo Vanta' },
+          { id:'radio_xavor', x:688, y:550, radius:94, scale:1, label:'Radio de Xavor' },
+          { id:'medic', x:405, y:672, radius:98, scale:1, label:'Nara, sanitaria' },
+          { id:'quartermaster', x:976, y:612, radius:104, scale:1, label:'Damaso, intendencia' },
+          { id:'mechanic', x:1038, y:424, radius:96, scale:1, label:'Iria, mecanica' },
+          { id:'deck_pirate', x:707, y:344, radius:100, scale:1, label:'Nix Corsario' },
+          { id:'sparring', x:862, y:728, radius:106, scale:1, label:'PoCoBOT de resistencia' },
+          { id:'water_pc', x:1190, y:310, radius:116, scale:1, label:'PC del flujo de agua' },
+          { id:'north_exit', x:768, y:74, radius:132, scale:1, label:'Paso norte' }
+        ]
+      },
+      {
+        id:'campamento-placas-rojas-lago',
+        label:'Campamento de las Placas Rojas · Lago norte',
+        map:'assets/Historia/campamento-placas-rojas-exploracion/assets/lago-norte-map.webp',
+        openUrl:() => {
+          const url = new URL(STORY_CAMP_EXPLORATION_PAGE, window.location.href);
+          url.searchParams.set('story_embed', '1');
+          url.searchParams.set('story_node', 'campamento');
+          url.searchParams.set('story_audio', 'internal');
+          url.searchParams.set('story_camp_scene', 'lake');
+          url.searchParams.set('story_return', new URL(STORY_PAGE, window.location.href).href);
+          url.searchParams.set('story_load_id', String(Date.now()));
+          return url.href;
+        },
+        zones:[
+          { type:"rect", x:0, y:-80, width:1536, height:120 },
+          { type:"rect", x:0, y:984, width:1536, height:120 },
+          { type:"rect", x:-80, y:0, width:120, height:1024 },
+          { type:"rect", x:1496, y:0, width:120, height:1024 },
+          { type:"ellipse", x:238, y:45, width:1060, height:615 },
+          { type:"rect", x:610, y:46, width:318, height:58 },
+          { type:"ellipse", x:126, y:38, width:212, height:592 },
+          { type:"ellipse", x:1198, y:34, width:222, height:610 },
+          { type:"ellipse", x:56, y:660, width:460, height:260 },
+          { type:"ellipse", x:1022, y:650, width:456, height:260 }
+        ],
+        interactions:[
+          { id:'lake_drone', x:778, y:430, radius:160, scale:1, label:'Dron del lago' },
+          { id:'return_camp', x:768, y:908, radius:130, scale:1, label:'Volver al campamento' }
+        ]
       },
       {
         id:'tower-exterior',
@@ -897,6 +940,7 @@
     const collisionCanvas = document.getElementById('collisionCanvas');
     const collisionCtx = collisionCanvas.getContext('2d');
     const collisionSceneSelect = document.getElementById('collisionSceneSelect');
+    const collisionInteractionSelect = document.getElementById('collisionInteractionSelect');
     const collisionCountChip = document.getElementById('collisionCountChip');
     const collisionStatusBox = document.getElementById('collisionStatusBox');
     const collisionJson = document.getElementById('collisionJson');
@@ -906,6 +950,12 @@
       y:document.getElementById('collisionZoneY'),
       w:document.getElementById('collisionZoneW'),
       h:document.getElementById('collisionZoneH')
+    };
+    const collisionZoneInputLabels = {
+      x:document.getElementById('collisionFieldXLabel'),
+      y:document.getElementById('collisionFieldYLabel'),
+      w:document.getElementById('collisionFieldWLabel'),
+      h:document.getElementById('collisionFieldHLabel')
     };
 
     function setStatus(text){
@@ -955,6 +1005,11 @@
         : cloneInteractionPoints(points || []);
     }
 
+    function getInteractionScale(point){
+      const scale = Number(point?.scale ?? 1);
+      return Number.isFinite(scale) ? Math.max(0.2, Math.min(3, scale)) : 1;
+    }
+
     function mergeInteractionPhysicalPoints(defaultPoints, physicalPoints){
       const next = getDefaultInteractionPoints({ interactions:defaultPoints });
       const byId = new Map(normalizeInteractionPoints(physicalPoints).map(point => [point.id, point]));
@@ -964,6 +1019,7 @@
         point.x = physical.x;
         point.y = physical.y;
         point.radius = physical.radius;
+        point.scale = getInteractionScale(physical);
       });
       return next;
     }
@@ -1092,6 +1148,17 @@
       point.radius = Math.max(1, Math.round(Number(radius) || point.radius || 1));
     }
 
+    function setInteractionPointScale(point, scale){
+      point.scale = Math.round(Math.max(0.2, Math.min(3, Number(scale) || getInteractionScale(point))) * 100) / 100;
+    }
+
+    function readCollisionInputNumber(input){
+      const raw = String(input?.value ?? '').trim();
+      if(!raw) return NaN;
+      const value = Number(raw);
+      return Number.isFinite(value) ? value : NaN;
+    }
+
     function drawCollisionZone(zone, index){
       collisionCtx.beginPath();
       if(zone.type === 'circle'){
@@ -1118,7 +1185,19 @@
 
     function drawInteractionPoint(point, index){
       const selected = collisionEditor.layer === 'interactions' && index === collisionEditor.selectedInteractionIndex;
+      const visualScale = getInteractionScale(point);
+      const spriteWidth = Math.max(22, 58 * visualScale);
+      const spriteHeight = Math.max(28, 104 * visualScale);
       collisionCtx.save();
+      collisionCtx.beginPath();
+      collisionCtx.roundRect(point.x - spriteWidth / 2, point.y - spriteHeight, spriteWidth, spriteHeight, 10);
+      collisionCtx.fillStyle = selected ? 'rgba(255, 216, 100, 0.12)' : 'rgba(255, 177, 92, 0.08)';
+      collisionCtx.strokeStyle = selected ? 'rgba(255, 216, 100, 0.72)' : 'rgba(255, 177, 92, 0.42)';
+      collisionCtx.lineWidth = selected ? 3 : 2;
+      collisionCtx.setLineDash([12, 8]);
+      collisionCtx.fill();
+      collisionCtx.stroke();
+      collisionCtx.setLineDash([]);
       collisionCtx.beginPath();
       collisionCtx.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
       collisionCtx.fillStyle = selected ? 'rgba(255, 216, 100, 0.18)' : 'rgba(66, 238, 255, 0.12)';
@@ -1140,13 +1219,20 @@
         collisionCtx.lineWidth = 3;
         collisionCtx.fill();
         collisionCtx.stroke();
+        collisionCtx.beginPath();
+        collisionCtx.arc(point.x + spriteWidth / 2, point.y - spriteHeight, 9, 0, Math.PI * 2);
+        collisionCtx.fillStyle = 'rgba(255, 177, 92, 0.96)';
+        collisionCtx.strokeStyle = 'rgba(0, 0, 0, 0.72)';
+        collisionCtx.lineWidth = 3;
+        collisionCtx.fill();
+        collisionCtx.stroke();
       }
       collisionCtx.font = '800 20px Trebuchet MS';
       collisionCtx.textAlign = 'center';
       collisionCtx.fillStyle = 'rgba(236, 252, 255, 0.95)';
       collisionCtx.strokeStyle = 'rgba(0, 0, 0, 0.78)';
       collisionCtx.lineWidth = 4;
-      const label = point.label || point.id;
+      const label = `${point.label || point.id} · x${visualScale.toFixed(2)}`;
       collisionCtx.strokeText(label, point.x, point.y - point.radius - 10);
       collisionCtx.fillText(label, point.x, point.y - point.radius - 10);
       collisionCtx.restore();
@@ -1184,6 +1270,26 @@
       }
     }
 
+    function syncInteractionPicker(){
+      if(!collisionInteractionSelect) return;
+      const selectedPoint = collisionEditor.interactions[collisionEditor.selectedInteractionIndex];
+      collisionInteractionSelect.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = collisionEditor.layer === 'interactions'
+        ? 'Selecciona personaje u objeto'
+        : 'Activa Personajes / objetos';
+      collisionInteractionSelect.appendChild(placeholder);
+      collisionEditor.interactions.forEach((point) => {
+        const option = document.createElement('option');
+        option.value = point.id;
+        option.textContent = `${point.label || point.id} · x${getInteractionScale(point).toFixed(2)}`;
+        collisionInteractionSelect.appendChild(option);
+      });
+      collisionInteractionSelect.disabled = collisionEditor.layer !== 'interactions' || !collisionEditor.interactions.length;
+      collisionInteractionSelect.value = selectedPoint?.id || '';
+    }
+
     function syncCollisionMeta(){
       collisionCountChip.textContent = `${collisionEditor.zones.length} zonas · ${collisionEditor.interactions.length} puntos`;
       collisionJson.value = JSON.stringify(collisionEditor.zones, null, 2);
@@ -1192,21 +1298,40 @@
         label:point.label,
         x:point.x,
         y:point.y,
-        radius:point.radius
+        radius:point.radius,
+        scale:getInteractionScale(point)
       })), null, 2);
       const fields = Object.values(collisionZoneInputs);
       fields.forEach(input => { input.disabled = true; input.value = ''; });
+      syncInteractionPicker();
 
       if(collisionEditor.layer === 'interactions'){
         const point = collisionEditor.interactions[collisionEditor.selectedInteractionIndex];
+        collisionZoneInputLabels.x.textContent = 'X';
+        collisionZoneInputLabels.y.textContent = 'Y';
+        collisionZoneInputLabels.w.textContent = 'Radio interaccion';
+        collisionZoneInputLabels.h.textContent = 'Escala sprite';
+        collisionZoneInputs.w.step = '1';
+        collisionZoneInputs.h.step = '0.01';
+        collisionZoneInputs.h.min = '0.2';
+        collisionZoneInputs.h.max = '3';
         fields.forEach(input => { input.disabled = !point; });
         if(!point) return;
         collisionZoneInputs.x.value = Math.round(point.x);
         collisionZoneInputs.y.value = Math.round(point.y);
         collisionZoneInputs.w.value = Math.round(point.radius);
-        collisionZoneInputs.h.value = Math.round(point.radius);
+        collisionZoneInputs.h.value = getInteractionScale(point).toFixed(2);
         return;
       }
+
+      collisionZoneInputLabels.x.textContent = 'X';
+      collisionZoneInputLabels.y.textContent = 'Y';
+      collisionZoneInputLabels.w.textContent = 'Ancho / radio';
+      collisionZoneInputLabels.h.textContent = 'Alto / radio';
+      collisionZoneInputs.w.step = '1';
+      collisionZoneInputs.h.step = '1';
+      collisionZoneInputs.h.removeAttribute('min');
+      collisionZoneInputs.h.removeAttribute('max');
 
       const zone = collisionEditor.zones[collisionEditor.selectedIndex];
       fields.forEach(input => { input.disabled = !zone; });
@@ -1274,7 +1399,7 @@
     function setCollisionMode(mode){
       const nextMode = collisionEditor.layer === 'interactions' && mode === 'draw'
         ? 'move'
-        : collisionEditor.layer === 'zones' && mode === 'resize'
+        : collisionEditor.layer === 'zones' && (mode === 'resize' || mode === 'scale')
           ? 'move'
           : mode;
       collisionEditor.mode = nextMode;
@@ -1282,7 +1407,7 @@
         button.classList.toggle('active', button.dataset.collisionMode === nextMode);
         button.disabled =
           (collisionEditor.layer === 'interactions' && button.dataset.collisionMode === 'draw') ||
-          (collisionEditor.layer === 'zones' && button.dataset.collisionMode === 'resize');
+          (collisionEditor.layer === 'zones' && (button.dataset.collisionMode === 'resize' || button.dataset.collisionMode === 'scale'));
       });
       collisionCanvas.style.cursor = nextMode === 'erase'
         ? 'not-allowed'
@@ -1290,6 +1415,8 @@
           ? 'grab'
           : nextMode === 'resize'
             ? 'ew-resize'
+            : nextMode === 'scale'
+              ? 'nwse-resize'
             : 'crosshair';
     }
 
@@ -1307,9 +1434,9 @@
       });
       if(collisionEditor.layer === 'interactions'){
         if(collisionEditor.mode === 'draw') collisionEditor.mode = 'move';
-        setCollisionStatus('Interacciones: usa Mover para desplazar, Radio para redimensionar arrastrando, o cambia X/Y/radio en los campos.');
+        setCollisionStatus('Personajes y objetos: usa Mover para desplazar, Radio para el trigger, Tamaño para la escala visual, o edita los campos.');
       }else{
-        if(collisionEditor.mode === 'resize') collisionEditor.mode = 'move';
+        if(collisionEditor.mode === 'resize' || collisionEditor.mode === 'scale') collisionEditor.mode = 'move';
         setCollisionStatus('Colisiones: dibuja rectangulos u ovalos rojos, mueve o borra zonas fisicas.');
       }
       setCollisionMode(collisionEditor.mode);
@@ -1321,6 +1448,16 @@
       document.querySelectorAll('[data-collision-shape]').forEach((button) => {
         button.classList.toggle('active', button.dataset.collisionShape === collisionEditor.shape);
       });
+    }
+
+    function selectInteractionPointById(interactionId){
+      const index = collisionEditor.interactions.findIndex(point => point.id === interactionId);
+      collisionEditor.selectedInteractionIndex = index;
+      collisionEditor.selectedIndex = -1;
+      if(index >= 0){
+        setCollisionStatus(`Entidad seleccionada: ${collisionEditor.interactions[index].label || interactionId}.`);
+      }
+      refreshCollisionEditor();
     }
 
     function normalizeDraftZone(start, end){
@@ -1340,9 +1477,11 @@
         collisions:normalizeCollisionZones(collisionEditor.zones),
         interactions:normalizeInteractionPoints(collisionEditor.interactions).map(point => ({
           id:point.id,
+          label:point.label,
           x:point.x,
           y:point.y,
-          radius:point.radius
+          radius:point.radius,
+          scale:getInteractionScale(point)
         }))
       }, null, 2);
     }
@@ -1373,33 +1512,33 @@
       collisionEditor.selectedIndex = Math.min(collisionEditor.selectedIndex, normalized.length - 1);
       collisionEditor.selectedInteractionIndex = Math.min(collisionEditor.selectedInteractionIndex, collisionEditor.interactions.length - 1);
       refreshCollisionEditor();
-      setCollisionStatus('Fisica actualizada: solo colisiones y puntos de interaccion. La secuencia de juego queda intacta.');
+      setCollisionStatus('Fisica actualizada: colisiones, posicion de entidades, radio de interaccion y escala visual guardados.');
     }
 
     function updateSelectedCollisionFromInputs(){
       if(collisionEditor.layer === 'interactions'){
         const point = collisionEditor.interactions[collisionEditor.selectedInteractionIndex];
         if(!point) return;
-        const nextX = Number(collisionZoneInputs.x.value);
-        const nextY = Number(collisionZoneInputs.y.value);
-        const nextW = Number(collisionZoneInputs.w.value);
-        const nextH = Number(collisionZoneInputs.h.value);
+        const nextX = readCollisionInputNumber(collisionZoneInputs.x);
+        const nextY = readCollisionInputNumber(collisionZoneInputs.y);
+        const nextW = readCollisionInputNumber(collisionZoneInputs.w);
+        const nextH = readCollisionInputNumber(collisionZoneInputs.h);
         if(!Number.isFinite(nextX) || !Number.isFinite(nextY)) return;
         pushCollisionHistory();
         point.x = nextX;
         point.y = nextY;
-        const nextRadius = Number.isFinite(nextW) ? nextW : nextH;
-        if(Number.isFinite(nextRadius)) point.radius = Math.max(1, nextRadius);
+        if(Number.isFinite(nextW)) point.radius = Math.max(1, nextW);
+        if(Number.isFinite(nextH)) setInteractionPointScale(point, nextH);
         refreshCollisionEditor();
         return;
       }
 
       const zone = collisionEditor.zones[collisionEditor.selectedIndex];
       if(!zone) return;
-      const nextX = Number(collisionZoneInputs.x.value);
-      const nextY = Number(collisionZoneInputs.y.value);
-      const nextW = Number(collisionZoneInputs.w.value);
-      const nextH = Number(collisionZoneInputs.h.value);
+      const nextX = readCollisionInputNumber(collisionZoneInputs.x);
+      const nextY = readCollisionInputNumber(collisionZoneInputs.y);
+      const nextW = readCollisionInputNumber(collisionZoneInputs.w);
+      const nextH = readCollisionInputNumber(collisionZoneInputs.h);
       if(!Number.isFinite(nextX) || !Number.isFinite(nextY)) return;
       pushCollisionHistory();
 
@@ -1428,6 +1567,10 @@
       });
 
       collisionSceneSelect.addEventListener('change', () => selectCollisionScene(collisionSceneSelect.value));
+      collisionInteractionSelect?.addEventListener('change', () => {
+        if(collisionEditor.layer !== 'interactions') setCollisionLayer('interactions');
+        selectInteractionPointById(collisionInteractionSelect.value);
+      });
       document.querySelectorAll('[data-collision-mode]').forEach((button) => {
         button.addEventListener('click', () => setCollisionMode(button.dataset.collisionMode));
       });
@@ -1468,6 +1611,15 @@
                 initialRadius:selectedPoint.radius || 1
               };
               collisionCanvas.style.cursor = 'ew-resize';
+            }else if(collisionEditor.mode === 'scale'){
+              collisionEditor.drag = {
+                type:'interaction-scale',
+                index,
+                center:{ x:selectedPoint.x, y:selectedPoint.y },
+                initialDistance:Math.max(24, Math.hypot(point.x - selectedPoint.x, point.y - selectedPoint.y)),
+                initialScale:getInteractionScale(selectedPoint)
+              };
+              collisionCanvas.style.cursor = 'nwse-resize';
             }else{
               collisionEditor.drag = { type:'interaction', index, last:point };
               collisionCanvas.style.cursor = 'grabbing';
@@ -1539,6 +1691,13 @@
               collisionEditor.interactions[collisionEditor.drag.index],
               Math.hypot(point.x - center.x, point.y - center.y),
             );
+          }else if(collisionEditor.drag.type === 'interaction-scale'){
+            const center = collisionEditor.drag.center;
+            const distance = Math.max(8, Math.hypot(point.x - center.x, point.y - center.y));
+            setInteractionPointScale(
+              collisionEditor.interactions[collisionEditor.drag.index],
+              collisionEditor.drag.initialScale * (distance / collisionEditor.drag.initialDistance),
+            );
           }else{
             const dx = point.x - collisionEditor.drag.last.x;
             const dy = point.y - collisionEditor.drag.last.y;
@@ -1561,10 +1720,13 @@
         if(collisionEditor.drag){
           const movedInteraction = collisionEditor.drag.type === 'interaction';
           const resizedInteraction = collisionEditor.drag.type === 'interaction-radius';
+          const scaledInteraction = collisionEditor.drag.type === 'interaction-scale';
           collisionEditor.drag = null;
           setCollisionMode(collisionEditor.mode);
           setCollisionStatus(resizedInteraction
             ? 'Radio de interaccion ajustado. Pulsa actualizar fisica para guardar el cambio.'
+            : scaledInteraction
+              ? 'Tamaño visual ajustado. Pulsa actualizar fisica para guardar el cambio.'
             : movedInteraction
               ? 'Punto de interaccion movido. Pulsa actualizar fisica para guardar el cambio.'
               : 'Zona movida. Pulsa actualizar fisica para guardar el cambio.');

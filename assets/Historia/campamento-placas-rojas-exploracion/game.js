@@ -421,8 +421,13 @@ function getCampPerspectiveScale(subject = player) {
   return 1 - depth * 0.34;
 }
 
+function getEntityVisualScale(subject = {}) {
+  const scale = Number(subject.scale ?? subject.spriteScale ?? 1);
+  return Number.isFinite(scale) ? clamp(scale, 0.2, 3) : 1;
+}
+
 function withCampPerspective(subject, draw) {
-  const visualScale = getCampPerspectiveScale(subject);
+  const visualScale = getCampPerspectiveScale(subject) * getEntityVisualScale(subject);
   ctx.save();
   ctx.translate(subject.x, subject.y);
   ctx.scale(visualScale, visualScale);
@@ -1875,11 +1880,20 @@ function drawNpcMarker(item) {
   });
 }
 
+function getCorvoInteractable() {
+  return campInteractables.find((item) => item.id === "corvo") || {
+    id: "corvo",
+    x: 562,
+    y: 506,
+    radius: 118,
+    label: "Corvo Vanta",
+    hint: "Hablar",
+  };
+}
+
 function drawCorvo() {
-  const x = 562;
-  const y = 506;
-  const corvoSubject = { x, y };
-  withCampPerspective(corvoSubject, () => {
+  const corvoInteraction = getCorvoInteractable();
+  withCampPerspective(corvoInteraction, () => {
     if (assets.corvo) {
       drawSoftShadow(0, 26, 54, 18, 0.36);
       ctx.fillStyle = "rgba(10, 8, 7, 0.22)";
@@ -1900,15 +1914,12 @@ function drawCorvo() {
       ctx.fillRect(-22, -8, 44, 12);
     }
   });
-  const corvoInteraction = campInteractables.find((item) => item.id === "corvo");
-  if (corvoInteraction) {
-    drawInteractionPlate(corvoInteraction, {
-      radiusX: 48,
-      radiusY: 24,
-      labelLift: 78,
-      alwaysLabel: true,
-    });
-  }
+  drawInteractionPlate(corvoInteraction, {
+    radiusX: 48,
+    radiusY: 24,
+    labelLift: 78,
+    alwaysLabel: true,
+  });
 }
 
 function drawCampActors() {
@@ -1938,7 +1949,7 @@ function drawWorldActors() {
     }));
 
   if (storyCampScene === "camp") {
-    actors.push({ y: 506, draw: drawCorvo });
+    actors.push({ y: getCorvoInteractable().y, draw: drawCorvo });
   }
 
   actors.push({ y: player.y, draw: drawPlayerActor });
