@@ -2697,6 +2697,26 @@ button:disabled{
 .toast.danger{border-color:rgba(255,106,123,.42); color:#ffc4cb}
 @keyframes toastIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes toastOut{to{opacity:0;transform:translateY(-8px)}}
+@media (pointer: coarse){
+  .toast-stack{
+    top:max(8px, env(safe-area-inset-top));
+    right:auto;
+    bottom:auto;
+    left:50%;
+    width:min(360px, calc(100vw - 18px));
+    align-items:center;
+    transform:translateX(-50%);
+  }
+  .toast{
+    min-width:0;
+    width:100%;
+    max-width:100%;
+    padding:7px 9px;
+    font-size:.68rem;
+    line-height:1.2;
+    text-align:center;
+  }
+}
 .app.debug-off .log-panel{display:none}
 .app.debug-off .bottom-strip{grid-template-columns:1fr}
 .app.debug-off .selection-panel{min-height:88px}
@@ -20137,6 +20157,7 @@ let compactSuppressCardClickId = null;
 let compactMobileActionHubOpen = false;
 let compactActionHubPointerHandledUntil = 0;
 let compactTutorialExpanded = false;
+let compactTutorialUserCollapsed = false;
 let compactActiveReadoutId = '';
 let compactHandOverviewOpen = false;
 let mobilePanoramaVitalityStage = null;
@@ -25158,13 +25179,28 @@ function setCompactActionHubOpen(open){
   updateCompactActionHubMenuAnchor();
 }
 
-function setCompactTutorialExpanded(expanded){
+function setCompactTutorialExpanded(expanded, userInitiated=false){
   compactTutorialExpanded = !!expanded;
+  if(userInitiated) compactTutorialUserCollapsed = !compactTutorialExpanded;
   const panel = document.querySelector('.compact-tutorial-panel');
   const toggle = document.getElementById('compactTutorialToggleBtn');
   panel?.classList.toggle('compact-tutorial-expanded', compactTutorialExpanded);
   toggle?.setAttribute('aria-expanded', compactTutorialExpanded ? 'true' : 'false');
   if(toggle) toggle.textContent = compactTutorialExpanded ? 'Reducir' : 'Abrir guía';
+}
+
+function isCompactMobileHudActive(){
+  return document.body?.classList.contains('mobile-compact-mode')
+    || document.body?.classList.contains('mobile-panorama-mode')
+    || document.body?.classList.contains('mobile-pc-compact-mode');
+}
+
+function revealCompactTutorialForMobile(force=false){
+  if(!isCompactMobileHudActive()) return;
+  if(force) compactTutorialUserCollapsed = false;
+  if(force || (!compactTutorialExpanded && !compactTutorialUserCollapsed)){
+    setCompactTutorialExpanded(true);
+  }
 }
 
 function setCompactHandOverviewOpen(open){
@@ -25303,6 +25339,9 @@ function syncDesktopHudAvailability(){
   document.body.classList.toggle('mobile-panorama-mode', mobilePanoramaActive);
   document.body.classList.toggle('mobile-pc-compact-mode', mobileLandscapeCompactActive);
   document.body.classList.toggle('compact-tutorial-popup-active', (mobileLandscapeCompactActive || mobileCompactActive) && (state.tutorial || tutorialSystem.enabled));
+  if((mobileLandscapeCompactActive || mobileCompactActive) && (state.tutorial || tutorialSystem.enabled)){
+    revealCompactTutorialForMobile(false);
+  }
   if(mobileLandscapeCompactActive && STORY_EMBED_MODE && !storyOrientationToastShownForMode){
     storyOrientationToastShownForMode = true;
     window.setTimeout(showStoryOrientationLockToast, 160);
@@ -30749,6 +30788,12 @@ document.getElementById('toggleTutorialBtn').addEventListener('click', () => {
     return;
   }
   state.tutorial = !state.tutorial;
+  if(state.tutorial){
+    revealCompactTutorialForMobile(true);
+  }else{
+    compactTutorialUserCollapsed = false;
+    setCompactTutorialExpanded(false);
+  }
   render();
 });
 document.getElementById('debugToggleBtn').addEventListener('click', () => {
@@ -30900,13 +30945,13 @@ if(accionesBtn){
 document.getElementById('compactTutorialToggleBtn')?.addEventListener('click', (event) => {
   event.preventDefault();
   event.stopPropagation();
-  setCompactTutorialExpanded(!compactTutorialExpanded);
+  setCompactTutorialExpanded(!compactTutorialExpanded, true);
 });
 document.querySelector('.compact-tutorial-panel')?.addEventListener('click', (event) => {
   if(!document.body?.classList.contains('mobile-compact-mode')) return;
   if(compactTutorialExpanded) return;
   if(event.target.closest('button')) return;
-  setCompactTutorialExpanded(true);
+  setCompactTutorialExpanded(true, true);
 });
 document.getElementById('desktopCompactShell').addEventListener('contextmenu', (event) => {
   if(!document.body?.classList.contains('mobile-panorama-mode')) return;
@@ -33102,8 +33147,10 @@ function startAcademyLesson(lessonId){
   hideIntroScreen();
   academyHideOverlay('academyLessonOverlay');
   academyHideOverlay('academyCertificateOverlay');
+  compactTutorialUserCollapsed = false;
   prepareNormalCombatStartHudMode();
   render();
+  revealCompactTutorialForMobile(true);
   startIntroMusic(true);
   scheduleCombatOpeningSequence('academy', 150);
   window.setTimeout(() => {
@@ -33132,8 +33179,10 @@ function startTutorialMode(){
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.add('hidden');
 
+  compactTutorialUserCollapsed = false;
   prepareNormalCombatStartHudMode();
   render();
+  revealCompactTutorialForMobile(true);
   startIntroMusic(true);
   scheduleCombatOpeningSequence('tutorial', 150);
   window.setTimeout(() => {
@@ -33157,6 +33206,8 @@ function closeTutorialMode(){
   }
   resetTutorialSession();
   state.tutorial = false;
+  compactTutorialUserCollapsed = false;
+  setCompactTutorialExpanded(false);
   render();
 }
 
