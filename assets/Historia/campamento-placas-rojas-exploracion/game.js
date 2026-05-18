@@ -80,6 +80,12 @@ const camera = {
 
 const DESKTOP_CAMERA_ZOOM = 0.86;
 const desktopCameraMedia = window.matchMedia("(pointer: fine) and (hover: hover)");
+const campSceneKey = storyCampScene === "lake" ? "campamento-placas-rojas-lago" : "campamento-placas-rojas";
+const campPageUrl = new URL(window.location.href);
+const sceneActionCooldown = {
+  northExit: 0,
+  returnCamp: 0,
+};
 
 const assets = {
   map: new Image(),
@@ -94,15 +100,15 @@ const assets = {
 };
 
 const npcImageSources = {
-  medic: "./assets/characters/nara-sanitaria-dialogue.png",
-  quartermaster: "./assets/characters/damaso-intendencia-dialogue.png",
-  mechanic: "./assets/characters/iria-mecanica-dialogue.png",
-  deck_pirate: "./assets/characters/nix-corsario-dialogue.png",
-  resistance_bot: "./assets/characters/piloto-resistencia-dialogue.png",
-  lake_drone: "./assets/characters/dron-lago-dialogue.png",
+  medic: "./assets/characters/exploration/nara-sanitaria-sprite.png",
+  quartermaster: "./assets/characters/exploration/damaso-intendencia-sprite.png",
+  mechanic: "./assets/characters/exploration/iria-mecanica-sprite.png",
+  deck_pirate: "./assets/characters/exploration/nix-corsario-sprite.png",
+  resistance_bot: "./assets/characters/exploration/piloto-resistencia-sprite.png",
+  lake_drone: "./assets/characters/exploration/dron-lago-sprite.png",
 };
 
-const collisionZones = [
+const campCollisionZones = [
   { type: "rect", x: 0, y: -80, width: 1536, height: 120 },
   { type: "rect", x: 0, y: 984, width: 1536, height: 120 },
   { type: "rect", x: -80, y: 0, width: 120, height: 1024 },
@@ -165,7 +171,21 @@ const collisionZones = [
   { type: "ellipse", x: 1018, y: 656, width: 239, height: 91 }
 ];
 
-window.PoCoBOTStoryCollisionEditor?.applySceneZones("campamento-placas-rojas", collisionZones);
+const lakeCollisionZones = [
+  { type: "rect", x: 0, y: -80, width: 1536, height: 120 },
+  { type: "rect", x: 0, y: 984, width: 1536, height: 120 },
+  { type: "rect", x: -80, y: 0, width: 120, height: 1024 },
+  { type: "rect", x: 1496, y: 0, width: 120, height: 1024 },
+  { type: "ellipse", x: 238, y: 45, width: 1060, height: 615 },
+  { type: "rect", x: 610, y: 46, width: 318, height: 58 },
+  { type: "ellipse", x: 126, y: 38, width: 212, height: 592 },
+  { type: "ellipse", x: 1198, y: 34, width: 222, height: 610 },
+  { type: "ellipse", x: 56, y: 660, width: 460, height: 260 },
+  { type: "ellipse", x: 1022, y: 650, width: 456, height: 260 },
+];
+
+const collisionZones = storyCampScene === "lake" ? lakeCollisionZones : campCollisionZones;
+window.PoCoBOTStoryCollisionEditor?.applySceneZones(campSceneKey, collisionZones);
 
 function readCampProgress() {
   try {
@@ -298,7 +318,7 @@ const lakeInteractables = [
 ];
 
 const interactables = storyCampScene === "lake" ? lakeInteractables : campInteractables;
-window.PoCoBOTStoryCollisionEditor?.applySceneInteractionPoints("campamento-placas-rojas", interactables);
+window.PoCoBOTStoryCollisionEditor?.applySceneInteractionPoints(campSceneKey, interactables);
 
 const interactionState = {
   active: null,
@@ -577,12 +597,15 @@ function createPlayerVisual() {
 }
 
 async function loadAssets() {
+  const mapSource = storyCampScene === "lake"
+    ? "./assets/lago-norte-map.webp"
+    : "./assets/campamento-placas-rojas-map.webp";
   const [mapImage, corvoImage, firstBotFrame] = await Promise.all([
-    loadImage("./assets/campamento-placas-rojas-map.webp").catch((error) => {
+    loadImage(mapSource).catch((error) => {
       console.warn(error);
       return createFallbackCampMap();
     }),
-    loadImage("./assets/characters/corvo-vanta-topdown.png").catch((error) => {
+    loadImage("./assets/characters/exploration/corvo-vanta-seated-sprite.png").catch((error) => {
       console.warn(error);
       return null;
     }),
@@ -722,15 +745,22 @@ function postStoryCampAction(action, payload = {}) {
     ...payload,
   };
 
+  let posted = false;
   [window.parent !== window ? window.parent : null, window.opener].forEach((targetWindow) => {
     if (!targetWindow) return;
     try {
       targetWindow.postMessage(message, "*");
+      posted = true;
     } catch (error) {}
   });
 
   if (action === "return-map" && storyReturnUrl && window.parent === window) {
     window.location.href = storyReturnUrl;
+    return;
+  }
+
+  if (!posted) {
+    handleStandaloneCampAction(action, payload);
   }
 }
 
@@ -797,6 +827,277 @@ function handleInteraction(interaction) {
 function setInteractionMessage(text, duration = 2.8) {
   interactionState.message = text;
   interactionState.messageTimer = duration;
+}
+
+function navigateStandaloneScene(scene) {
+  const target = new URL(window.location.href);
+  target.searchParams.set("story_camp_scene", scene);
+  target.searchParams.set("story_audio", storyAudioMode);
+  window.location.href = target.href;
+}
+
+function buildStandaloneCombatUrl(mission, returnScene = "camp") {
+  const target = new URL("../../../poker_combat_bot_ONLINE.html", window.location.href);
+  target.searchParams.set("story_mission", mission);
+  target.searchParams.set("story_embed", "1");
+  target.searchParams.set("story_node", "campamento");
+  target.searchParams.set("story_audio", "internal");
+  target.searchParams.set("story_brief", "on");
+  target.searchParams.set("story_standalone", "1");
+  target.searchParams.set("story_camp_return_scene", returnScene);
+  target.searchParams.set("story_return", window.location.href);
+  return target.href;
+}
+
+const standaloneSceneCopy = {
+  corvo_intro: {
+    kicker: "Corvo Vanta",
+    title: "La desconfianza de las Placas Rojas",
+    text: "Corvo no aparta la mano de la placa roja. Te deja claro que el campamento no entrega sus sistemas vitales a nadie que no haya demostrado de qué lado está.",
+    actions: [{ label: "Buscar la radio de Xavor", action: "close" }],
+  },
+  corvo_lore: {
+    kicker: "Corvo Vanta",
+    title: "La Caída y Mr. Wind",
+    text: "Corvo habla de una civilización que confundió excelencia con obediencia. Mr. Wind fue su jefe y acabó seducido por Argós hasta convertirse en Custodio. Si quieres tocar el PC del agua, tendrás que ayudar antes a su gente.",
+    actions: [{ label: "Ayudar al campamento", action: "close" }],
+  },
+  xavor_radio: {
+    kicker: "Radio de Xavor",
+    title: "Señal verificada",
+    text: "Xavor entra por la radio con su voz rota y confirma que vienes de los nuestros. Corvo no sonríe, pero deja de tratarte como una amenaza inmediata.",
+    actions: [{ label: "Hablar con Corvo", action: "close" }],
+  },
+  medic: {
+    kicker: "Nara · Enfermería",
+    title: "Fiebre de agua",
+    text: "Nara necesita filtros. El agua sabe a óxido caliente y la gente empieza a enfermar. Te entrega una placa médica para que Dámaso abra intendencia.",
+    actions: [{ label: "Ir a intendencia", action: "close" }],
+  },
+  quartermaster_locked: {
+    kicker: "Dámaso · Intendencia",
+    title: "Falta una placa médica",
+    text: "Dámaso no libera filtros sin una petición sellada. Primero habla con Nara, porque en este campamento cada recurso tiene memoria y responsable.",
+    actions: [{ label: "Buscar a Nara", action: "close" }],
+  },
+  quartermaster: {
+    kicker: "Dámaso · Intendencia",
+    title: "Filtros entregados",
+    text: "Dámaso entrega los filtros y habla de la escasez posterior a La Caída. La válvula norte aún necesita un fusible estable: Iria puede tenerlo.",
+    actions: [{ label: "Buscar a Iria", action: "close" }],
+  },
+  mechanic_locked: {
+    kicker: "Iria · Válvula norte",
+    title: "Cadena incompleta",
+    text: "Iria no entrega el fusible si la enfermería sigue sin filtros. Primero resuelve el encargo de Nara y Dámaso.",
+    actions: [{ label: "Volver al campamento", action: "close" }],
+  },
+  mechanic: {
+    kicker: "Iria · Válvula norte",
+    title: "Fusible de válvula",
+    text: "Iria te entrega el fusible y advierte que los sensores viejos de Argós leen permisos, energía y mazo como un mismo protocolo. Falta limpiar el ruido con Nix.",
+    actions: [{ label: "Buscar a Nix", action: "close" }],
+  },
+  deck_pirate_locked: {
+    kicker: "Nix Corsario",
+    title: "Aún no hay nada que piratear",
+    text: "Nix ni levanta la vista. Primero consigue el fusible de Iria para que el hackeo del mazo tenga sentido.",
+    actions: [{ label: "Buscar el fusible", action: "close" }],
+  },
+  deck_pirate: {
+    kicker: "Nix Corsario",
+    title: "Piratear el mazo",
+    text: "Nix puede retirar hasta tres cartas añadidas del mazo histórico. En este boceto directo sellará el canal para que el PC del agua acepte mejor a Xavor.",
+    actions: [
+      { label: "Sellar mazo", action: "deck-purge" },
+      { label: "Cerrar", action: "close" },
+    ],
+  },
+  deck_pirate_done: {
+    kicker: "Nix Corsario",
+    title: "Mazo sellado",
+    text: "El canal de cartas ya no chisporrotea con ruido de Argós. Si ya superaste la calibración, el PC del agua está listo.",
+    actions: [{ label: "Ir al PC del agua", action: "close" }],
+  },
+  trial: {
+    kicker: "PoCoBOT de resistencia",
+    title: "Combate controlado",
+    text: "La piloto propone una prueba al estilo de Viajero: demostrar criterio antes de tocar sistemas vitales. En modo historia se abre el combate; aquí puedes lanzarlo o marcar el boceto como superado.",
+    actions: [
+      { label: "Iniciar combate", action: "combat-trial" },
+      { label: "Marcar victoria", action: "trial-win" },
+    ],
+  },
+  trial_win: {
+    kicker: "Calibración",
+    title: "Prueba superada",
+    text: "La resistencia concede la marca de calibración. Corvo ya no puede usar el PC como excusa para bloquear la reparación.",
+    actions: [{ label: "Seguir reparación", action: "close" }],
+  },
+  pc_hack: {
+    kicker: "PC del flujo de agua",
+    title: "Xavor entra en la red",
+    text: "Con fusible, mazo limpio y autorización, Xavor restaura el flujo. El agua vuelve a correr, pero llega sucia desde el Lago Norte. El paso norte queda abierto.",
+    actions: [
+      { label: "Ir al Lago Norte", action: "go-lake" },
+      { label: "Cerrar", action: "close" },
+    ],
+  },
+  lake_drone: {
+    kicker: "Lago Norte",
+    title: "Dron contaminante",
+    text: "El dron ejecuta una purga antigua de Argós y remueve sedimentos del lago. Usa mazo completo: al caer, el cauce volverá limpio al campamento.",
+    actions: [
+      { label: "Iniciar combate", action: "combat-drone" },
+      { label: "Marcar victoria", action: "drone-win" },
+    ],
+  },
+  lake_win: {
+    kicker: "Lago Norte",
+    title: "Agua limpia",
+    text: "El dron cae. El lago deja de arrastrar barro oscuro y Corvo concede su confianza definitiva.",
+    actions: [{ label: "Volver al campamento", action: "go-camp" }],
+  },
+};
+
+let standaloneSceneOverlay = null;
+
+function ensureStandaloneSceneOverlay() {
+  if (standaloneSceneOverlay) return standaloneSceneOverlay;
+  const overlay = document.createElement("section");
+  overlay.className = "camp-local-scene";
+  overlay.hidden = true;
+  overlay.innerHTML = `
+    <article class="camp-local-card">
+      <button class="camp-local-close" type="button" aria-label="Cerrar escena">Cerrar</button>
+      <p class="camp-local-kicker"></p>
+      <h2></h2>
+      <p class="camp-local-text"></p>
+      <div class="camp-local-actions"></div>
+    </article>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector(".camp-local-close").addEventListener("click", closeStandaloneScene);
+  standaloneSceneOverlay = overlay;
+  return overlay;
+}
+
+function openStandaloneScene(key) {
+  const scene = standaloneSceneCopy[key];
+  if (!scene) return;
+  const overlay = ensureStandaloneSceneOverlay();
+  overlay.querySelector(".camp-local-kicker").textContent = scene.kicker;
+  overlay.querySelector("h2").textContent = scene.title;
+  overlay.querySelector(".camp-local-text").textContent = scene.text;
+  const actions = overlay.querySelector(".camp-local-actions");
+  actions.innerHTML = "";
+  scene.actions.forEach((entry) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = entry.label;
+    button.addEventListener("click", () => handleStandaloneSceneAction(entry.action));
+    actions.appendChild(button);
+  });
+  overlay.hidden = false;
+  window.requestAnimationFrame(() => overlay.classList.add("active"));
+}
+
+function closeStandaloneScene() {
+  if (!standaloneSceneOverlay) return;
+  standaloneSceneOverlay.classList.remove("active");
+  window.setTimeout(() => {
+    if (!standaloneSceneOverlay.classList.contains("active")) standaloneSceneOverlay.hidden = true;
+  }, 180);
+  focusExplorationInput();
+}
+
+function handleStandaloneSceneAction(action) {
+  if (action === "close") {
+    closeStandaloneScene();
+    return;
+  }
+  if (action === "go-lake") {
+    closeStandaloneScene();
+    navigateStandaloneScene("lake");
+    return;
+  }
+  if (action === "go-camp") {
+    closeStandaloneScene();
+    navigateStandaloneScene("camp");
+    return;
+  }
+  if (action === "deck-purge") {
+    campProgress = writeCampProgress({ deckPurged: true, deckPirateMet: true, deckPurgedCount: 0, deckPurgedIds: [] });
+    openStandaloneScene("deck_pirate_done");
+    return;
+  }
+  if (action === "trial-win") {
+    campProgress = writeCampProgress({ trialCleared: true });
+    openStandaloneScene("trial_win");
+    return;
+  }
+  if (action === "drone-win") {
+    campProgress = writeCampProgress({ lakeClean: true, corvoTrustFinal: true });
+    openStandaloneScene("lake_win");
+    return;
+  }
+  if (action === "combat-trial") {
+    window.location.href = buildStandaloneCombatUrl("camp_resistance_trial", "camp");
+    return;
+  }
+  if (action === "combat-drone") {
+    window.location.href = buildStandaloneCombatUrl("camp_lake_drone", "lake");
+  }
+}
+
+function handleStandaloneCampAction(action, payload = {}) {
+  if (action === "return-camp") {
+    navigateStandaloneScene("camp");
+    return;
+  }
+  if (action === "open-lake") {
+    navigateStandaloneScene("lake");
+    return;
+  }
+  if (action === "return-map") {
+    setInteractionMessage("Abre el modo historia para volver al mapa de la Ruta Ceniza.", 3.2);
+    return;
+  }
+  if (action === "corvo") {
+    openStandaloneScene((payload.progress || campProgress).corvoTrusted ? "corvo_lore" : "corvo_intro");
+    return;
+  }
+  if (action === "radio-xavor") {
+    openStandaloneScene("xavor_radio");
+    return;
+  }
+  if (action === "medic") {
+    openStandaloneScene("medic");
+    return;
+  }
+  if (action === "quartermaster") {
+    openStandaloneScene((payload.progress || campProgress).medicRequest ? "quartermaster" : "quartermaster_locked");
+    return;
+  }
+  if (action === "mechanic") {
+    openStandaloneScene((payload.progress || campProgress).filtersReady ? "mechanic" : "mechanic_locked");
+    return;
+  }
+  if (action === "deck-pirate") {
+    openStandaloneScene((payload.progress || campProgress).deckPurged ? "deck_pirate_done" : "deck_pirate");
+    return;
+  }
+  if (action === "camp-trial") {
+    openStandaloneScene("trial");
+    return;
+  }
+  if (action === "hack-pc") {
+    openStandaloneScene("pc_hack");
+    return;
+  }
+  if (action === "lake-drone") {
+    openStandaloneScene((payload.progress || campProgress).lakeClean ? "lake_win" : "lake_drone");
+  }
 }
 
 function isStoryInteractKey(key) {
@@ -1016,8 +1317,26 @@ function findActiveInteraction() {
   interactionState.active = best;
 }
 
+function maybeAutoUseSceneExit(now) {
+  if (storyCampScene === "camp" && campProgress.waterFixed && player.y <= 110 && player.x > 650 && player.x < 886) {
+    if (now - sceneActionCooldown.northExit > 1400) {
+      sceneActionCooldown.northExit = now;
+      const exit = campInteractables.find((item) => item.id === "north_exit");
+      if (exit) handleInteraction(exit);
+    }
+  }
+  if (storyCampScene === "lake" && player.y >= 892 && player.x > 620 && player.x < 916) {
+    if (now - sceneActionCooldown.returnCamp > 1400) {
+      sceneActionCooldown.returnCamp = now;
+      const exit = lakeInteractables.find((item) => item.id === "return_camp");
+      if (exit) handleInteraction(exit);
+    }
+  }
+}
+
 function update(dt) {
   if (!assets.ready) return;
+  const now = performance.now();
 
   if (hudHelp.expanded && hudHelp.autoCollapse) {
     hudHelp.elapsed += dt;
@@ -1101,6 +1420,7 @@ function update(dt) {
   if (input.interactQueued && interactionState.active) {
     handleInteraction(interactionState.active);
   }
+  maybeAutoUseSceneExit(now);
   input.interactQueued = false;
 }
 
@@ -1145,6 +1465,11 @@ function drawMap() {
   ctx.drawImage(assets.map, 0, 0, world.width, world.height);
 
   const pulse = 0.5 + Math.sin(performance.now() / 420) * 0.5;
+  if (storyCampScene === "lake") {
+    drawLakeOverlay(pulse);
+    return;
+  }
+
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
   ctx.fillStyle = `rgba(255, 109, 56, ${0.02 + pulse * 0.025})`;
@@ -1153,30 +1478,25 @@ function drawMap() {
   ctx.fill();
   ctx.restore();
 
-  if (storyCampScene === "lake") {
-    drawLakeOverlay(pulse);
-  }
 }
 
 function drawLakeOverlay(pulse) {
   ctx.save();
-  ctx.fillStyle = "rgba(6, 20, 24, 0.72)";
-  ctx.fillRect(0, 0, world.width, world.height);
-  const water = ctx.createRadialGradient(768, 430, 60, 768, 430, 430);
-  water.addColorStop(0, campProgress.lakeClean ? "rgba(74, 220, 220, 0.82)" : "rgba(72, 116, 105, 0.78)");
-  water.addColorStop(0.62, campProgress.lakeClean ? "rgba(20, 112, 122, 0.72)" : "rgba(72, 67, 52, 0.72)");
-  water.addColorStop(1, "rgba(9, 18, 22, 0.1)");
-  ctx.fillStyle = water;
-  ctx.beginPath();
-  ctx.ellipse(768, 430, 470, 285, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = campProgress.lakeClean ? "rgba(140, 236, 255, 0.44)" : "rgba(255, 177, 92, 0.42)";
-  ctx.lineWidth = 10;
-  ctx.stroke();
   ctx.globalCompositeOperation = "lighter";
-  ctx.fillStyle = `rgba(140, 236, 255, ${0.04 + pulse * 0.05})`;
+  ctx.strokeStyle = campProgress.lakeClean
+    ? `rgba(140, 236, 255, ${0.14 + pulse * 0.08})`
+    : `rgba(255, 91, 63, ${0.1 + pulse * 0.08})`;
+  ctx.lineWidth = 5;
+  for (let i = 0; i < 3; i += 1) {
+    ctx.beginPath();
+    ctx.ellipse(768, 392 + i * 22, 260 + i * 78, 92 + i * 34, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.fillStyle = campProgress.lakeClean
+    ? `rgba(140, 236, 255, ${0.025 + pulse * 0.035})`
+    : `rgba(95, 62, 43, ${0.075 + pulse * 0.045})`;
   ctx.beginPath();
-  ctx.ellipse(768, 430, 390, 210, 0, 0, Math.PI * 2);
+  ctx.ellipse(768, 380, 390, 205, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 }
@@ -1282,10 +1602,10 @@ function drawNpcImage(item, options = {}) {
 
 function drawHumanNpc(item) {
   const spriteSizes = {
-    medic: { width: 72, height: 164, lift: 24 },
-    quartermaster: { width: 74, height: 168, lift: 24 },
-    mechanic: { width: 72, height: 164, lift: 24 },
-    deck_pirate: { width: 76, height: 170, lift: 24 },
+    medic: { width: 96, height: 168, lift: 24, shadowWidth: 54, shadowHeight: 16 },
+    quartermaster: { width: 98, height: 172, lift: 24, shadowWidth: 56, shadowHeight: 17 },
+    mechanic: { width: 96, height: 170, lift: 24, shadowWidth: 54, shadowHeight: 16 },
+    deck_pirate: { width: 100, height: 170, lift: 24, shadowWidth: 58, shadowHeight: 17 },
   };
   if (drawNpcImage(item, spriteSizes[item.role])) return;
 
@@ -1313,10 +1633,10 @@ function drawHumanNpc(item) {
 
 function drawResistanceBotNpc(item) {
   if (drawNpcImage(item, {
-    width: 112,
-    height: 184,
+    width: 104,
+    height: 182,
     lift: 28,
-    shadowWidth: 78,
+    shadowWidth: 62,
     shadowHeight: 22,
     shadowAlpha: 0.3,
   })) return;
@@ -1566,7 +1886,7 @@ function drawCorvo() {
       ctx.beginPath();
       ctx.ellipse(0, -8, 40, 34, -0.08, 0, Math.PI * 2);
       ctx.fill();
-      ctx.drawImage(assets.corvo, -54, -106, 108, 142);
+      ctx.drawImage(assets.corvo, -88, -86, 176, 114);
     } else {
       drawSoftShadow(0, 24, 50, 16, 0.34);
       ctx.fillStyle = "#14161b";
