@@ -1,0 +1,18 @@
+{
+  "name": "Pentonúi Games",
+  "concept": "Abstract blue mechanical flower with three separated triangular elemental gems.",
+  "colors": {
+    "navy": "#071A33",
+    "royalBlue": "#0756D9",
+    "cyan": "#42D6FF",
+    "iceBlue": "#26C8FF",
+    "fireRed": "#FF3030",
+    "plantGreen": "#20D466",
+    "white": "#FFFFFF"
+  },
+  "usage": {
+    "primarySvg": "svg/pentonui-games-logo-transparent.svg",
+    "markSvg": "svg/pentonui-games-mark-transparent.svg",
+    "faviconSvg": "svg/pentonui-games-favicon.svg"
+  }
+}

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Pentonúi Games logo</title>
+  <desc id="desc">Eight-petal blue mechanical flower with separated red, green, and blue triangular gems above the Pentonúi Games wordmark.</desc>
+  
+    <style>
+      :root {
+        --outline: #071A33;
+        --petal-line: #A7ECFF;
+        --joint-fill: #071A33;
+        --seed-glow: #C9F7FF;
+        --gem-line: #04101F;
+        --word: #071A33;
+        --games: #0756D9;
+        --decor: #1287FF;
+      }
+      .brand {
+        font-family: "Avenir Next", "Montserrat", "Inter", "Trebuchet MS", Arial, sans-serif;
+        font-size: 132px;
+        font-weight: 760;
+        letter-spacing: 4px;
+        fill: var(--word);
+      }
+      .games {
+        font-family: "Avenir Next", "Montserrat", "Inter", "Trebuchet MS", Arial, sans-serif;
+        font-size: 54px;
+        font-weight: 650;
+        letter-spacing: 18px;
+        fill: var(--games);
+      }
+    </style>
+  
+  <g transform="translate(800 390) scale(1.08)">
+    
+    <g class="flower-mark">
+      <defs>
+        <mask id="center-cut">
+          <rect x="-330" y="-330" width="660" height="660" fill="white"/>
+          <circle cx="0" cy="0" r="58" fill="black"/>
+        </mask>
+      </defs>
+      <g mask="url(#center-cut)">
+        
+      <g transform="rotate(0)">
+        <path d="M0,-256 C46,-224 72,-173 58,-128 C46,-88 18,-56 0,-34 C-18,-56 -46,-88 -58,-128 C-72,-173 -46,-224 0,-256Z" fill="#1287FF" stroke="var(--outline)" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M0,-212 C24,-190 39,-153 31,-122 C24,-96 9,-74 0,-61 C-9,-74 -24,-96 -31,-122 C-39,-153 -24,-190 0,-212Z" fill="#DDF8FF" opacity="0.28"/>
+        <path d="M0,-219 L0,-103" fill="none" stroke="var(--petal-line)" stroke-width="6" stroke-linecap="round" opacity="0.58"/>
+        <circle cx="0" cy="-82" r="11" fill="var(--joint-fill)" stroke="var(--petal-line)" stroke-width="4"/>
+      </g>
+      <g transform="rotate(45)">
+        <path d="M0,-256 C46,-224 72,-173 58,-128 C46,-88 18,-56 0,-34 C-18,-56 -46,-88 -58,-128 C-72,-173 -46,-224 0,-256Z" fill="#0756D9" stroke="var(--outline)" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M0,-212 C24,-190 39,-153 31,-122 C24,-96 9,-74 0,-61 C-9,-74 -24,-96 -31,-122 C-39,-153 -24,-190 0,-212Z" fill="#42D6FF" opacity="0.28"/>
+        <path d="M0,-219 L0,-103" fill="none" stroke="var(--petal-line)" stroke-width="6" stroke-linecap="round" opacity="0.58"/>
+        <circle cx="0" cy="-82" r="11" fill="var(--joint-fill)" stroke="var(--petal-line)" stroke-width="4"/>
+      </g>
+      <g transform="rotate(90)">
+        <path d="M0,-256 C46,-224 72,-173 58,-128 C46,-88 18,-56 0,-34 C-18,-56 -46,-88 -58,-128 C-72,-173 -46,-224 0,-256Z" fill="#42D6FF" stroke="var(--outline)" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M0,-212 C24,-190 39,-153 31,-122 C24,-96 9,-74 0,-61 C-9,-74 -24,-96 -31,-122 C-39,-153 -24,-190 0,-212Z" fill="#DDF8FF" opacity="0.28"/>
+        <path d="M0,-219 L0,-103" fill="none" stroke="var(--petal-line)" stroke-width="6" stroke-linecap="round" opacity="0.58"/>
+        <circle cx="0" cy="-82" r="11" fill="var(--joint-fill)" stroke="var(--petal-line)" stroke-width="4"/>
+      </g>
+      <g transform="rotate(135)">
+        <path d="M0,-256 C46,-224 72,-173 58,-128 C46,-88 18,-56 0,-34 C-18,-56 -46,-88 -58,-128 C-72,-173 -46,-224 0,-256Z" fill="#032C7E" stroke="var(--outline)" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M0,-212 C24,-190 39,-153 31,-122 C24,-96 9,-74 0,-61 C-9,-74 -24,-96 -31,-122 C-39,-153 -24,-190 0,-212Z" fill="#42D6FF" opacity="0.28"/>
+        <path d="M0,-219 L0,-103" fill="none" stroke="var(--petal-line)" stroke-width="6" stroke-linecap="round" opacity="0.58"/>
+        <circle cx="0" cy="-82" r="11" fill="var(--joint-fill)" stroke="var(--petal-line)" stroke-width="4"/>
+      </g>
+      <g transform="rotate(180)">
+        <path d="M0,-256 C46,-224 72,-173 58,-128 C46,-88 18,-56 0,-34 C-18,-56 -46,-88 -58,-128 C-72,-173 -46,-224 0,-256Z" fill="#1287FF" stroke="var(--outline)" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M0,-212 C24,-190 39,-153 31,-122 C24,-96 9,-74 0,-61 C-9,-74 -24,-96 -31,-122 C-39,-153 -24,-190 0,-212Z" fill="#DDF8FF" opacity="0.28"/>
+        <path d="M0,-219 L0,-103" fill="none" stroke="var(--petal-line)" stroke-width="6" stroke-linecap="round" opacity="0.58"/>
+        <circle cx="0" cy="-82" r="11" fill="var(--joint-fill)" stroke="var(--petal-line)" stroke-width="4"/>
+      </g>
+      <g transform="rotate(225)">
+        <path d="M0,-256 C46,-224 72,-173 58,-128 C46,-88 18,-56 0,-34 C-18,-56 -46,-88 -58,-128 C-72,-173 -46,-224 0,-256Z" fill="#0756D9" stroke="var(--outline)" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M0,-212 C24,-190 39,-153 31,-122 C24,-96 9,-74 0,-61 C-9,-74 -24,-96 -31,-122 C-39,-153 -24,-190 0,-212Z" fill="#42D6FF" opacity="0.28"/>
+        <path d="M0,-219 L0,-103" fill="none" stroke="var(--petal-line)" stroke-width="6" stroke-linecap="round" opacity="0.58"/>
+        <circle cx="0" cy="-82" r="11" fill="var(--joint-fill)" stroke="var(--petal-line)" stroke-width="4"/>
+      </g>
+      <g transform="rotate(270)">
+        <path d="M0,-256 C46,-224 72,-173 58,-128 C46,-88 18,-56 0,-34 C-18,-56 -46,-88 -58,-128 C-72,-173 -46,-224 0,-256Z" fill="#42D6FF" stroke="var(--outline)" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M0,-212 C24,-190 39,-153 31,-122 C24,-96 9,-74 0,-61 C-9,-74 -24,-96 -31,-122 C-39,-153 -24,-190 0,-212Z" fill="#DDF8FF" opacity="0.28"/>
+        <path d="M0,-219 L0,-103" fill="none" stroke="var(--petal-line)" stroke-width="6" stroke-linecap="round" opacity="0.58"/>
+        <circle cx="0" cy="-82" r="11" fill="var(--joint-fill)" stroke="var(--petal-line)" stroke-width="4"/>
+      </g>
+      <g transform="rotate(315)">
+        <path d="M0,-256 C46,-224 72,-173 58,-128 C46,-88 18,-56 0,-34 C-18,-56 -46,-88 -58,-128 C-72,-173 -46,-224 0,-256Z" fill="#032C7E" stroke="var(--outline)" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M0,-212 C24,-190 39,-153 31,-122 C24,-96 9,-74 0,-61 C-9,-74 -24,-96 -31,-122 C-39,-153 -24,-190 0,-212Z" fill="#42D6FF" opacity="0.28"/>
+        <path d="M0,-219 L0,-103" fill="none" stroke="var(--petal-line)" stroke-width="6" stroke-linecap="round" opacity="0.58"/>
+        <circle cx="0" cy="-82" r="11" fill="var(--joint-fill)" stroke="var(--petal-line)" stroke-width="4"/>
+      </g>
+      </g>
+      <circle cx="0" cy="0" r="114" fill="none" stroke="var(--petal-line)" stroke-width="7" opacity="0.7"/>
+      <circle cx="0" cy="0" r="84" fill="none" stroke="var(--outline)" stroke-width="13"/>
+      
+    <g transform="translate(0 -126) rotate(0)" aria-label="blue ice triangular gem">
+      <polygon points="0,-34 33,25 -33,25" fill="#26C8FF" stroke="var(--outline)" stroke-width="8" stroke-linejoin="round"/>
+      <polygon points="0,-21 13,11 -13,11" fill="#C6F8FF" opacity="0.72"/>
+      <path d="M0 -30 L0 21 M-27 23 L0 -30 L27 23" fill="none" stroke="var(--gem-line)" stroke-width="3" stroke-linecap="round" opacity="0.42"/>
+    </g>
+      
+    <g transform="translate(-106 82) rotate(-132)" aria-label="red fire triangular gem">
+      <polygon points="0,-34 33,25 -33,25" fill="#FF3030" stroke="var(--outline)" stroke-width="8" stroke-linejoin="round"/>
+      <polygon points="0,-21 13,11 -13,11" fill="#FF7A52" opacity="0.72"/>
+      <path d="M0 -30 L0 21 M-27 23 L0 -30 L27 23" fill="none" stroke="var(--gem-line)" stroke-width="3" stroke-linecap="round" opacity="0.42"/>
+    </g>
+      
+    <g transform="translate(106 82) rotate(132)" aria-label="green plant triangular gem">
+      <polygon points="0,-34 33,25 -33,25" fill="#20D466" stroke="var(--outline)" stroke-width="8" stroke-linejoin="round"/>
+      <polygon points="0,-21 13,11 -13,11" fill="#88FFAE" opacity="0.72"/>
+      <path d="M0 -30 L0 21 M-27 23 L0 -30 L27 23" fill="none" stroke="var(--gem-line)" stroke-width="3" stroke-linecap="round" opacity="0.42"/>
+    </g>
+      <circle cx="0" cy="0" r="49" fill="none" stroke="var(--petal-line)" stroke-width="10"/>
+      <circle cx="0" cy="0" r="25" fill="none" stroke="var(--outline)" stroke-width="9"/>
+      <path d="M-15,-4 C-7,-18 7,-18 15,-4 C6,6 -6,6 -15,-4Z" fill="var(--seed-glow)" opacity="0.9"/>
+    </g>
+  </g>
+  <text x="800" y="840" text-anchor="middle" class="brand">Pentonúi</text>
+  <g aria-hidden="true" stroke="var(--decor)" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.88">
+    <path d="M488 895 H612"/>
+    <path d="M988 895 H1112"/>
+    <path d="M626 895 l15 -11 l15 11 l-15 11 Z" fill="var(--decor)" stroke="none"/>
+    <path d="M959 895 l15 -11 l15 11 l-15 11 Z" fill="var(--decor)" stroke="none"/>
+  </g>
+  <text x="800" y="914" text-anchor="middle" class="games">Games</text>
+</svg>
