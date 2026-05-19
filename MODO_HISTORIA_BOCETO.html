@@ -229,6 +229,21 @@
       opacity:1;
       transform:translateY(0) scale(1);
     }
+    .story-transition-veil.conversation-fade{
+      background:rgba(3,5,8,.96);
+      filter:none;
+      transform:none;
+      transition:opacity .42s ease;
+    }
+    .story-transition-veil.conversation-fade::before,
+    .story-transition-veil.conversation-fade::after{
+      opacity:0;
+      transform:none;
+    }
+    .story-transition-veil.conversation-fade.active{
+      filter:none;
+      transform:none;
+    }
     .story-transition-veil.mission-spiral{
       background:
         repeating-conic-gradient(from 0deg, rgba(143,244,255,.0) 0deg, rgba(143,244,255,.2) 18deg, rgba(255,185,109,.34) 34deg, rgba(7,11,17,.98) 56deg, rgba(7,11,17,.98) 72deg),
@@ -5634,6 +5649,7 @@
     const MERCADO_RELES_IMAGE = 'assets/Historia/low/mercado_reles_muertos_web_1600.webp';
     const MERCADO_TUTORIAL_URL = 'assets/Historia/mercado-reles-muertos-tutorial/index.html';
     const CAMPAMENTO_EXPLORATION_URL = 'assets/Historia/campamento-placas-rojas-exploracion/index.html';
+    const CAMPAMENTO_CONVERSATION_BACKDROP = 'assets/Historia/campamento-placas-rojas-exploracion/assets/campamento_placas_rojas_web_1280.webp';
     const STORY_CAMP_PROGRESS_KEY = 'pocobot-story-camp-red-plates-progress-v1';
     const CORVO_VANTA_POSE_ONE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-dialogue-pose-1.png';
     const CORVO_VANTA_POSE_TWO = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-dialogue-pose-2.png';
@@ -6153,7 +6169,7 @@
 
     function clearStoryTransitionState() {
       if (storyTransitionVeil) {
-        storyTransitionVeil.classList.remove('active', 'mission-spiral', 'combat-opening');
+        storyTransitionVeil.classList.remove('active', 'mission-spiral', 'combat-opening', 'conversation-fade');
       }
       storyTransitionBusy = false;
     }
@@ -8475,6 +8491,13 @@
       ]
     };
 
+    Object.entries(storySceneScripts).forEach(([sceneKey, scene]) => {
+      if (!sceneKey.startsWith('camp_') || !scene) return;
+      scene.lowImage = CAMPAMENTO_CONVERSATION_BACKDROP;
+      scene.image = CAMPAMENTO_CONVERSATION_BACKDROP;
+      scene.backdropImage = CAMPAMENTO_CONVERSATION_BACKDROP;
+    });
+
     const storyMissionScripts = {
       hangar: {
         chip: 'Carrera de ensamblaje',
@@ -9402,7 +9425,9 @@
         sceneLineIndex = 0;
         sceneAmbientMode = !!scene.startAmbient;
         sceneAmbientStep = sceneAmbientMode ? 0 : 2;
-        setSceneBackdropArtwork(localNode.lowImage || localNode.image, localNode.image);
+        const sceneLowImage = scene.lowImage || scene.backdropImage || scene.image || localNode.lowImage || localNode.image;
+        const sceneHighImage = scene.image || scene.backdropImage || scene.lowImage || localNode.image || localNode.lowImage;
+        setSceneBackdropArtwork(sceneLowImage, sceneHighImage);
         syncSceneStageMode(scene);
         if (!sceneAmbientMode) {
           updateAmbientHint();
@@ -9419,7 +9444,7 @@
         storySceneStage.hidden = false;
         startStorySceneMusic(scene.musicSrc || '');
         requestAnimationFrame(() => storySceneStage.classList.add('active'));
-      });
+      }, { variant: 'conversation' });
     }
 
     function closeStoryScene(options = {}) {
@@ -10361,7 +10386,9 @@
       currentStoryNodeId = nodeId;
       rememberStoryWorkspace(true);
       rememberActiveStoryMission(null);
-      setSceneBackdropArtwork(localNode.lowImage || localNode.image, localNode.image);
+      const sceneLowImage = scene.lowImage || scene.backdropImage || scene.image || localNode.lowImage || localNode.image;
+      const sceneHighImage = scene.image || scene.backdropImage || scene.lowImage || localNode.image || localNode.lowImage;
+      setSceneBackdropArtwork(sceneLowImage, sceneHighImage);
       syncSceneStageMode(scene);
       if (sceneAmbientMode) {
         if (sceneAmbientStep === 1) {
@@ -11414,22 +11441,31 @@
       }, '*');
     }
 
-    function runStoryTransition(onMidpoint) {
+    function runStoryTransition(onMidpoint, options = {}) {
       if (!storyTransitionVeil) {
         onMidpoint();
         return;
       }
       if (storyTransitionBusy) return;
       storyTransitionBusy = true;
-      storyTransitionVeil.classList.remove('mission-spiral', 'combat-opening');
+      const isConversationFade = options?.variant === 'conversation';
+      storyTransitionVeil.classList.remove('mission-spiral', 'combat-opening', 'conversation-fade');
+      if (isConversationFade) storyTransitionVeil.classList.add('conversation-fade');
       storyTransitionVeil.classList.add('active');
       window.setTimeout(() => {
         onMidpoint();
-      }, 250);
+      }, isConversationFade ? 210 : 250);
       window.setTimeout(() => {
         storyTransitionVeil.classList.remove('active');
         storyTransitionBusy = false;
-      }, 760);
+        if (isConversationFade) {
+          window.setTimeout(() => {
+            if (!storyTransitionVeil.classList.contains('active')) {
+              storyTransitionVeil.classList.remove('conversation-fade');
+            }
+          }, 440);
+        }
+      }, isConversationFade ? 640 : 760);
     }
 
     function fadeTitleMusicVolume(target, duration = 900) {
