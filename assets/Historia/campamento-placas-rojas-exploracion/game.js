@@ -1179,8 +1179,18 @@ function stopCampMusic(immediate = false) {
   fadeCampMusic(0, 260, () => campMusic.pause());
 }
 
+function silenceParentStoryMapMusic() {
+  if (!storyEmbedMode || window.parent === window) return;
+  try {
+    const parentMusic = window.parent.document?.getElementById("storyMapMusic");
+    if (!parentMusic) return;
+    parentMusic.pause();
+  } catch (error) {}
+}
+
 function postStoryCampAction(action, payload = {}) {
   stopCampMusic(true);
+  silenceParentStoryMapMusic();
 
   const message = {
     type: "pocobot-story-camp-action",
