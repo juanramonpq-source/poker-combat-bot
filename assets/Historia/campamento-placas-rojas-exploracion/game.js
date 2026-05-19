@@ -1182,6 +1182,11 @@ function stopCampMusic(immediate = false) {
 function silenceParentStoryMapMusic() {
   if (!storyEmbedMode || window.parent === window) return;
   try {
+    window.parent.document?.querySelectorAll("audio,video").forEach((media) => {
+      try {
+        media.pause();
+      } catch (error) {}
+    });
     const parentMusic = window.parent.document?.getElementById("storyMapMusic");
     if (!parentMusic) return;
     parentMusic.pause();
