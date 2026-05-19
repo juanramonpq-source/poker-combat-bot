@@ -1274,7 +1274,7 @@ function handleInteraction(interaction) {
     setInteractionMessage("El lago vuelve a correr limpio. Corvo ya no aparta la mirada.", 3.2);
     return;
   }
-  if (interaction.id === "radio_xavor" && !campProgress.corvoIntroSeen && !campProgress.corvoTrusted) {
+  if (interaction.id === "radio_xavor" && !campProgress.corvoIntroSeen) {
     setInteractionMessage("Es la radio que te dio Xavor, la dejo aquí por si tengo que contactar con él en algún momento", 4.2);
     return;
   }

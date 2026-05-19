@@ -10187,7 +10187,7 @@
 
     function buildStoryCampExplorationUrl(sceneKey = 'camp') {
       const targetUrl = new URL(CAMPAMENTO_EXPLORATION_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260519-radio-audio-guard');
+      targetUrl.searchParams.set('v', '20260519-camp-tower-audio-parity');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', 'campamento');
       targetUrl.searchParams.set('story_audio', 'internal');
@@ -10201,12 +10201,12 @@
       if (!storyExplorationStage || !storyExplorationFrame) return;
       const localNode = storyDraftNodes.campamento;
       if (!localNode) return;
-      activeMissionNodeId = null;
+      activeMissionNodeId = 'campamento';
       activeExplorationNodeId = 'campamento';
       activeExplorationSceneKey = sceneKey === 'lake' ? 'lake' : 'campamento';
       currentStoryNodeId = 'campamento';
       rememberStoryWorkspace(true);
-      rememberActiveStoryMission(null);
+      rememberActiveStoryMission('campamento');
       rememberStorySurface({ type: 'exploration', nodeId: 'campamento', sceneKey: activeExplorationSceneKey });
       renderStoryNode('campamento', { skipSave: true });
       cutMapMusicForChapter();
@@ -10277,6 +10277,8 @@
     function handleStoryCampAction(data) {
       const action = data?.action || '';
       if (action === 'return-map') {
+        activeMissionNodeId = null;
+        rememberActiveStoryMission(null);
         closeStoryMarketExploration({ exitThemeKey: 'campamento' });
         return true;
       }
