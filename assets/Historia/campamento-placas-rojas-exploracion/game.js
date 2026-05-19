@@ -15,6 +15,7 @@ const storyCampMusicPath = storyCampScene === "lake" ? "../Lake.mp3" : "../Campa
 const storyCampMusicUrl = new URL(storyCampMusicPath, window.location.href).href;
 
 const CAMP_PROGRESS_KEY = "pocobot-story-camp-red-plates-progress-v1";
+const CAMP_AUDIO_TIME_KEY = `${CAMP_PROGRESS_KEY}:audio-time:${storyCampScene}`;
 
 if (storyEmbedMode) {
   document.body.classList.add("story-embed-mode");
@@ -240,6 +241,13 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
+    x: 801.2369077306734,
+    y: 84.5332865743176,
+    width: 102,
+    height: 72
+  },
+  {
+    type: "ellipse",
     x: 742,
     y: 121,
     width: 104,
@@ -247,22 +255,15 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
-    x: 613,
-    y: 93,
-    width: 113,
-    height: 76
-  },
-  {
-    type: "ellipse",
-    x: 546,
-    y: 58,
+    x: 583.3316708229427,
+    y: 59.750657548658594,
     width: 79,
     height: 64
   },
   {
     type: "ellipse",
-    x: 477,
-    y: 104,
+    x: 467.5286783042394,
+    y: 90.9374013677012,
     width: 115,
     height: 74
   },
@@ -324,13 +325,6 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
-    x: 806,
-    y: 560,
-    width: 80,
-    height: 65
-  },
-  {
-    type: "ellipse",
     x: 690,
     y: 326,
     width: 60,
@@ -373,20 +367,6 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
-    x: 395,
-    y: 406,
-    width: 103,
-    height: 61
-  },
-  {
-    type: "ellipse",
-    x: 483,
-    y: 495,
-    width: 76,
-    height: 57
-  },
-  {
-    type: "ellipse",
     x: 406,
     y: 590,
     width: 53,
@@ -426,13 +406,6 @@ const campCollisionZones = [
     y: 524,
     width: 55,
     height: 46
-  },
-  {
-    type: "ellipse",
-    x: 175,
-    y: 642,
-    width: 263,
-    height: 101
   },
   {
     type: "ellipse",
@@ -485,6 +458,13 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
+    x: 246.9102244389028,
+    y: 228.4414051084225,
+    width: 149,
+    height: 92
+  },
+  {
+    type: "ellipse",
     x: 22,
     y: 132,
     width: 320,
@@ -506,10 +486,17 @@ const campCollisionZones = [
   },
   {
     type: "rect",
-    x: 295,
-    y: 249,
-    width: 106,
-    height: 57
+    x: 535,
+    y: 500,
+    width: 27,
+    height: 8
+  },
+  {
+    type: "rect",
+    x: 426,
+    y: 434,
+    width: 22,
+    height: 6
   }
 ];
 
@@ -631,8 +618,8 @@ const campInteractables = [
   },
   {
     id: "medic",
-    x: 232.4812967581047,
-    y: 933.2370097609445,
+    x: 247.33915211970066,
+    y: 886.6725115436319,
     radius: 98,
     label: "Nara, sanitaria",
     hint: "Encargo",
@@ -642,46 +629,46 @@ const campInteractables = [
   },
   {
     id: "quartermaster",
-    x: 1441.0074812967582,
-    y: 537.9412005377287,
+    x: 1353.4837905236907,
+    y: 489.3855865334034,
     radius: 104,
     label: "Damaso, intendencia",
     hint: "Intercambio",
     message: "Damaso guarda filtros, pero pide una placa roja sellada.",
-    scale: 1,
+    scale: 0.85,
     role: "quartermaster"
   },
   {
     id: "mechanic",
-    x: 443,
-    y: 458,
+    x: 448.1695760598504,
+    y: 491.8310830557017,
     radius: 70,
     label: "Iria, mecanica",
     hint: "Intercambio",
     message: "Iria puede abrir el armario de placas si alguien le trae un fusible.",
-    scale: 1,
+    scale: 0.9,
     role: "mechanic"
   },
   {
     id: "deck_pirate",
     x: 387,
-    y: 145,
+    y: 144,
     radius: 70,
     label: "Nix Corsario",
     hint: "Piratear mazo",
     message: "Nix puede limpiar hasta tres cartas añadidas del mazo antes del hackeo del agua.",
-    scale: 0.51,
+    scale: 0.6,
     role: "deck_pirate"
   },
   {
     id: "sparring",
-    x: 106.78553615960111,
-    y: 474.0723595768308,
+    x: 132.41147132169576,
+    y: 468.3688701852826,
     radius: 106,
     label: "PoCoBOT de resistencia",
     hint: "Combate controlado",
     message: "Un PoCoBOT veterano acepta un duelo de calibracion, al estilo de Viajero.",
-    scale: 1,
+    scale: 0.8,
     role: "resistance_bot"
   },
   {
@@ -771,6 +758,9 @@ let lastTime = performance.now();
 let campMusicStarted = false;
 let campMusicShouldPlay = true;
 let campMusicFadeFrame = null;
+let campMusicPausedForVisibility = false;
+let campMusicRestoreAttempted = false;
+let lastCampMusicSaveAt = 0;
 
 function installExplorationGestureGuard() {
   const guardOptions = { passive: false, capture: true };
@@ -1104,13 +1094,60 @@ function fadeCampMusic(targetVolume, duration = 700, onComplete = null) {
 }
 
 function syncCampMusicSource() {
-  if (!campMusic) return;
-  if (campMusic.src === storyCampMusicUrl) return;
+  if (!campMusic) return false;
+  if (campMusic.dataset.storyCampMusicSrc === storyCampMusicUrl) return false;
+  const declaredSource = campMusic.getAttribute("src") || "";
+  const resolvedDeclaredSource = declaredSource ? new URL(declaredSource, window.location.href).href : "";
+  if ((campMusic.currentSrc || campMusic.src || resolvedDeclaredSource) === storyCampMusicUrl || resolvedDeclaredSource === storyCampMusicUrl) {
+    campMusic.dataset.storyCampMusicSrc = storyCampMusicUrl;
+    return false;
+  }
   campMusic.src = storyCampMusicUrl;
+  campMusic.dataset.storyCampMusicSrc = storyCampMusicUrl;
   campMusic.load();
+  return true;
 }
 
 syncCampMusicSource();
+
+function readStoredCampMusicTime() {
+  try {
+    const storedTime = Number(sessionStorage.getItem(CAMP_AUDIO_TIME_KEY));
+    return Number.isFinite(storedTime) && storedTime > 0 ? storedTime : 0;
+  } catch (error) {
+    return 0;
+  }
+}
+
+function rememberCampMusicTime(force = false) {
+  if (!campMusic || !Number.isFinite(campMusic.currentTime) || campMusic.currentTime <= 0) return;
+  const now = performance.now();
+  if (!force && now - lastCampMusicSaveAt < 1200) return;
+  lastCampMusicSaveAt = now;
+  try {
+    sessionStorage.setItem(CAMP_AUDIO_TIME_KEY, String(campMusic.currentTime));
+  } catch (error) {}
+}
+
+function restoreCampMusicTimeOnce() {
+  if (!campMusic || campMusicRestoreAttempted) return;
+  campMusicRestoreAttempted = true;
+  const resumeAt = readStoredCampMusicTime();
+  if (resumeAt <= 0 || campMusic.currentTime > 0.25) return;
+
+  const applyStoredTime = () => {
+    try {
+      const duration = Number(campMusic.duration);
+      campMusic.currentTime = Number.isFinite(duration) && duration > 1 ? resumeAt % duration : resumeAt;
+    } catch (error) {}
+  };
+
+  if (campMusic.readyState >= 1) {
+    applyStoredTime();
+  } else {
+    campMusic.addEventListener("loadedmetadata", applyStoredTime, { once: true });
+  }
+}
 
 function primeParentCampMusic() {
   if (!storyEmbedMode || window.parent === window) return;
@@ -1142,11 +1179,21 @@ function primeParentCampMusic() {
 
 async function startCampMusic() {
   if (!campMusic || !campMusicShouldPlay) return;
-  syncCampMusicSource();
+  const sourceChanged = syncCampMusicSource();
+  restoreCampMusicTimeOnce();
+  const alreadyPlaying = !sourceChanged && !campMusic.paused && !campMusic.ended;
 
   if (storyAudioMode === "external") {
     campMusicStarted = true;
     primeParentCampMusic();
+    return;
+  }
+
+  if (alreadyPlaying) {
+    campMusicStarted = true;
+    if (campMusic.volume < 0.33) {
+      fadeCampMusic(0.34, 420);
+    }
     return;
   }
 
@@ -1166,7 +1213,9 @@ async function startCampMusic() {
 
 function stopCampMusic(immediate = false) {
   if (!campMusic) return;
+  rememberCampMusicTime(true);
   campMusicShouldPlay = false;
+  campMusicPausedForVisibility = false;
   if (campMusicFadeFrame) {
     window.cancelAnimationFrame(campMusicFadeFrame);
     campMusicFadeFrame = null;
@@ -1711,14 +1760,23 @@ storyMapButton?.addEventListener("click", () => {
   window.addEventListener(eventName, () => startCampMusic(), { passive: true });
 });
 
+campMusic?.addEventListener("timeupdate", () => rememberCampMusicTime());
+
 document.addEventListener("visibilitychange", () => {
   if (!campMusic) return;
   if (document.hidden) {
+    rememberCampMusicTime(true);
+    campMusicPausedForVisibility = campMusicShouldPlay && !campMusic.paused;
     campMusic.pause();
     return;
   }
-  startCampMusic();
+  if (campMusicPausedForVisibility || campMusicShouldPlay) {
+    startCampMusic();
+  }
+  campMusicPausedForVisibility = false;
 });
+
+window.addEventListener("pagehide", () => rememberCampMusicTime(true));
 
 const portraitMedia = window.matchMedia("(orientation: portrait)");
 const coarsePointerMedia = window.matchMedia("(pointer: coarse)");

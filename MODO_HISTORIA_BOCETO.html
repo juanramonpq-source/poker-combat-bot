@@ -10187,7 +10187,7 @@
 
     function buildStoryCampExplorationUrl(sceneKey = 'camp') {
       const targetUrl = new URL(CAMPAMENTO_EXPLORATION_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260519-camp-hud-message-wrap');
+      targetUrl.searchParams.set('v', '20260520-camp-json-update');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', 'campamento');
       targetUrl.searchParams.set('story_audio', 'internal');
@@ -10425,8 +10425,12 @@
         return true;
       }
       if (surface.type === 'exploration') {
+        if (hasActiveStoryStage(storyExplorationStage) && storyExplorationFrame && storyExplorationFrame.src && storyExplorationFrame.src !== 'about:blank') {
+          focusStoryExplorationFrame();
+          return true;
+        }
         if (surface.nodeId === 'torre') openStoryTowerScene(surface.sceneKey || 'exterior');
-        else if (surface.nodeId === 'campamento') openStoryCampExploration();
+        else if (surface.nodeId === 'campamento') openStoryCampExploration(surface.sceneKey === 'lake' ? 'lake' : 'camp');
         else openStoryMarketExploration();
         return true;
       }
