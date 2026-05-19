@@ -505,6 +505,51 @@ body.story-embed-mode .story-orientation-toast-icon{
     transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(0,var(--mecha-float-rise, -5px),0) rotate(var(--mecha-float-rot-mid, .35deg));
   }
 }
+@keyframes lakeDroneIrregularFlight{
+  0%,100%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(0,0,0) rotate(-.25deg) scale(1);
+  }
+  9%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(3px,-6px,0) rotate(.42deg) scale(1.006);
+  }
+  18%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(-2px,-3px,0) rotate(-.58deg) scale(1.002);
+  }
+  28%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(4px,-9px,0) rotate(.18deg) scale(1.008);
+  }
+  31%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(1px,-7px,0) rotate(-.34deg) scale(1.006);
+  }
+  34%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(5px,-8px,0) rotate(.52deg) scale(1.008);
+  }
+  47%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(-4px,-1px,0) rotate(-.12deg) scale(1);
+  }
+  58%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(2px,-5px,0) rotate(.36deg) scale(1.005);
+  }
+  62%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(-2px,-4px,0) rotate(-.48deg) scale(1.003);
+  }
+  65%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(3px,-6px,0) rotate(.30deg) scale(1.005);
+  }
+  78%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(-3px,1px,0) rotate(-.30deg) scale(.998);
+  }
+  90%{
+    transform:var(--mecha-float-base, translate3d(0,0,0)) translate3d(1px,-2px,0) rotate(.16deg) scale(1.001);
+  }
+}
+@keyframes lakeDroneAuraPulse{
+  0%,100%{opacity:.88; filter:blur(0)}
+  27%{opacity:.74; filter:blur(.4px)}
+  31%{opacity:.96; filter:blur(0)}
+  63%{opacity:.80; filter:blur(.35px)}
+  66%{opacity:.98; filter:blur(0)}
+}
 /* Dial specific scaling */
 .dual-mecha-stage{
   position:absolute;
@@ -1735,6 +1780,11 @@ body.mobile-pc-compact-mode .mobile-pro-fx-layer.show{
 }
 .nav-disc.has-story-combat-sprite .story-radar-sprite{display:flex}
 .nav-disc.has-story-combat-sprite .radar-core{opacity:.44}
+.nav-disc.has-lake-drone-sprite .story-radar-sprite img{
+  --mecha-float-base:translateY(2px);
+  transform-origin:center center;
+  animation:lakeDroneIrregularFlight 7.2s ease-in-out infinite;
+}
 .radar-fire,
 .radar-projectile,
 .radar-shock,
@@ -8313,6 +8363,47 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   will-change:transform;
 }
 
+.compact-mecha-ring img.compact-story-combat-sprite{
+  height:auto;
+  width:132%;
+  max-width:132%;
+  max-height:108%;
+  --mecha-float-base:translateY(-3px);
+  --mecha-float-rise:-3px;
+  filter:drop-shadow(0 18px 18px rgba(0,0,0,.34)) drop-shadow(0 0 18px rgba(255,92,72,.12));
+}
+
+.compact-mecha-ring img.compact-lake-drone-sprite{
+  width:172%;
+  max-width:172%;
+  max-height:122%;
+  --mecha-float-base:translate(1%, 10px);
+  --mecha-float-rise:-2px;
+  transform-origin:center center;
+  filter:drop-shadow(0 22px 22px rgba(0,0,0,.48)) drop-shadow(0 0 20px rgba(255,86,63,.14));
+  animation:lakeDroneIrregularFlight 7.2s ease-in-out infinite;
+}
+
+.compact-mecha-stage.has-lake-drone-sprite .compact-mecha-ring::before{
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(2,6,12,.54) 0 42%, rgba(2,6,12,.34) 58%, transparent 74%),
+    radial-gradient(circle at 50% 44%, rgba(48,12,10,.24), transparent 58%);
+  box-shadow:inset 0 0 36px rgba(2,6,12,.48), 0 0 22px rgba(0,0,0,.20);
+  animation:lakeDroneAuraPulse 5.8s ease-in-out infinite;
+}
+
+.compact-mecha-stage.has-lake-drone-sprite .compact-mecha-ring::after{
+  inset:-18px;
+  border:0;
+  background:radial-gradient(ellipse at 50% 54%, rgba(0,0,0,.42) 0 46%, rgba(0,0,0,.20) 58%, transparent 76%);
+  box-shadow:none;
+  animation:none;
+}
+
+.compact-mecha-stage.has-lake-drone-sprite .compact-mecha-ring-fill{
+  opacity:.34;
+}
+
 #compactMechaImg-1{
   animation-delay:.72s;
 }
@@ -9456,14 +9547,23 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
 }
 
 @media (max-width: 1120px){
-  .desktop-compact-shell{
+  body:not(.story-embed-mode) .desktop-compact-shell{
     display:none !important;
   }
-  .app.desktop-compact-mode .cockpit-grid,
-  .app.desktop-compact-mode .board,
-  .app.desktop-compact-mode .bottom-strip,
-  .app.desktop-compact-mode .footer-note{
+  body:not(.story-embed-mode) .app.desktop-compact-mode .cockpit-grid,
+  body:not(.story-embed-mode) .app.desktop-compact-mode .board,
+  body:not(.story-embed-mode) .app.desktop-compact-mode .bottom-strip,
+  body:not(.story-embed-mode) .app.desktop-compact-mode .footer-note{
     display:block !important;
+  }
+  body.story-embed-mode .app.desktop-compact-mode .desktop-compact-shell{
+    display:grid !important;
+  }
+  body.story-embed-mode .app.desktop-compact-mode .cockpit-grid,
+  body.story-embed-mode .app.desktop-compact-mode .board,
+  body.story-embed-mode .app.desktop-compact-mode .bottom-strip,
+  body.story-embed-mode .app.desktop-compact-mode .footer-note{
+    display:none !important;
   }
   .app.desktop-compact-mode{
     max-width:100% !important;
@@ -19108,7 +19208,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
           <div class="scan-overlay"></div>
           <div class="dual-mecha-stage">
             <div class="mecha-dial" id="mechaDial-0">
-              <div class="dial-head">Jugador 1</div>
+              <div class="dial-head" id="dialHead-0">Jugador 1</div>
               <div class="dial-ring-wrap">
                 <svg class="dial-ring" viewBox="0 0 120 120" aria-hidden="true">
                   <circle class="dial-track" cx="60" cy="60" r="48" pathLength="100"></circle>
@@ -19124,7 +19224,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
             </div>
 
             <div class="mecha-dial" id="mechaDial-1">
-              <div class="dial-head">Jugador 2</div>
+              <div class="dial-head" id="dialHead-1">Jugador 2</div>
               <div class="dial-ring-wrap">
                 <svg class="dial-ring" viewBox="0 0 120 120" aria-hidden="true">
                   <circle class="dial-track" cx="60" cy="60" r="48" pathLength="100"></circle>
@@ -19228,7 +19328,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
           </div>
           <div class="nav-content">
             <div class="nav-unit">
-              <div class="nav-unit-label">Jugador 1</div>
+              <div class="nav-unit-label" id="navUnitLabel-0">Jugador 1</div>
                 <div class="nav-disc" id="navRadar-0">
                   <div class="radar-grid"></div>
                   <div class="radar-sweep"></div>
@@ -19259,7 +19359,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
               </div>
             </div>
             <div class="nav-unit">
-              <div class="nav-unit-label">Jugador 2</div>
+              <div class="nav-unit-label" id="navUnitLabel-1">Jugador 2</div>
                 <div class="nav-disc" id="navRadar-1">
                   <div class="radar-grid"></div>
                   <div class="radar-sweep"></div>
@@ -21054,7 +21154,6 @@ const STORY_TOWER_COMBAT_PROFILES = {
   camp_resistance_trial: {
     enemyName: 'PoCoBOT de resistencia',
     title: 'Calibracion de Placas Rojas',
-    combatSprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/piloto-resistencia-dialogue.png',
     suit: 'spades',
     suitLabel: 'picas',
     rank: '8',
@@ -21064,12 +21163,12 @@ const STORY_TOWER_COMBAT_PROFILES = {
   camp_lake_drone: {
     enemyName: 'Dron del lago',
     title: 'Lago Norte contaminado',
-    combatSprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/dron-lago-dialogue.png',
+    combatSprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/dron-lago-combat-silhouette.png',
     suit: 'clubs',
     suitLabel: 'treboles',
     rank: '9',
     enemyId: 'red-plates-lake-drone',
-    intro: 'Combate completo del Campamento de las Placas Rojas: el dron que ensucia el lago conserva su mazo entero y bloquea el cauce limpio.'
+    intro: 'Combate completo del Campamento de las Placas Rojas: el dron del lago conserva su mazo entero y mantiene activa una rutina de captacion contaminada.'
   }
 };
 
@@ -21125,7 +21224,7 @@ const DEV_STORY_CHARACTER_PRESETS = [
     key: 'corvo-vanta',
     label: 'Corvo Vanta',
     name: 'Corvo Vanta',
-    sprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/corvo-vanta-dialogue.png',
+    sprite: 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-dialogue-pose-1.png',
     description: 'Veterano de las Placas Rojas y guardian moral del combate.'
   },
   {
@@ -21239,6 +21338,7 @@ function buildStoryTowerArgosHackEnemyDeck(owner = 1){
 }
 
 function setupStoryTowerPlayerBase(player, playerDeck, options = {}){
+  const owner = Number.isInteger(options.owner) ? options.owner : 0;
   player.name = 'Piloto';
   player.core.pilot = null;
   player.core.copilot = null;
@@ -21249,25 +21349,33 @@ function setupStoryTowerPlayerBase(player, playerDeck, options = {}){
   player.fuel = [];
   player.hand = options.withSpadeBooster
     ? [
-        takeStoryTowerAvailableCard(playerDeck, { rank:'K', suit:'spades' }, `${options.prefix || 'tower'}-hand-pilot`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'J', suit:'hearts' }, `${options.prefix || 'tower'}-hand-copilot`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'A', suit:'spades' }, `${options.prefix || 'tower'}-hand-as-spades`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'10', suit:'spades' }, `${options.prefix || 'tower'}-hand-projectile`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'8', suit:'clubs' }, `${options.prefix || 'tower'}-hand-armor-8`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'6', suit:'clubs' }, `${options.prefix || 'tower'}-hand-armor-6`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'8', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-draw-diamond`, 0)
+        takeStoryTowerAvailableCard(playerDeck, { rank:'K', suit:'spades' }, `${options.prefix || 'tower'}-hand-pilot`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'J', suit:'hearts' }, `${options.prefix || 'tower'}-hand-copilot`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'A', suit:'spades' }, `${options.prefix || 'tower'}-hand-as-spades`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'10', suit:'spades' }, `${options.prefix || 'tower'}-hand-projectile`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'8', suit:'clubs' }, `${options.prefix || 'tower'}-hand-armor-8`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'6', suit:'clubs' }, `${options.prefix || 'tower'}-hand-armor-6`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'8', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-draw-diamond`, owner)
       ]
     : [
-        takeStoryTowerAvailableCard(playerDeck, { rank:'K', suit:'spades' }, `${options.prefix || 'tower'}-hand-pilot`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'J', suit:'hearts' }, `${options.prefix || 'tower'}-hand-copilot`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'A', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-booster`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'10', suit:'spades' }, `${options.prefix || 'tower'}-hand-attack-10`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'8', suit:'spades' }, `${options.prefix || 'tower'}-hand-attack-8`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'9', suit:'hearts' }, `${options.prefix || 'tower'}-hand-defense`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'9', suit:'clubs' }, `${options.prefix || 'tower'}-hand-armor`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'7', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-fuel`, 0),
-        takeStoryTowerAvailableCard(playerDeck, { rank:'4', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-draw`, 0)
+        takeStoryTowerAvailableCard(playerDeck, { rank:'K', suit:'spades' }, `${options.prefix || 'tower'}-hand-pilot`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'J', suit:'hearts' }, `${options.prefix || 'tower'}-hand-copilot`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'A', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-booster`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'10', suit:'spades' }, `${options.prefix || 'tower'}-hand-attack-10`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'8', suit:'spades' }, `${options.prefix || 'tower'}-hand-attack-8`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'9', suit:'hearts' }, `${options.prefix || 'tower'}-hand-defense`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'9', suit:'clubs' }, `${options.prefix || 'tower'}-hand-armor`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'7', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-fuel`, owner),
+        takeStoryTowerAvailableCard(playerDeck, { rank:'4', suit:'diamonds' }, `${options.prefix || 'tower'}-hand-draw`, owner)
       ];
+}
+
+function setupStoryCampResistancePocobotEnemy(enemy, enemyDeck, profile){
+  setupStoryTowerPlayerBase(enemy, enemyDeck, {
+    prefix: profile?.enemyId || 'camp-resistance-pocobot',
+    owner: 1
+  });
+  enemy.name = profile?.enemyName || 'PoCoBOT de resistencia';
 }
 
 function setupStoryTowerDroneEnemy(enemy, enemyDeck, profile){
@@ -21390,6 +21498,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   });
   if(mission === 'tower_argos_hack') setupStoryTowerArgosHackEnemy(enemy);
   else if(mission === 'mercado_viajero_4b') setupStoryMarketViajeroHackEnemy(enemy);
+  else if(mission === 'camp_resistance_trial') setupStoryCampResistancePocobotEnemy(enemy, enemyDeck, profile);
   else if(mission === 'tower_control_guard') setupStoryTowerControlGuardEnemy(enemy, enemyDeck);
   else setupStoryTowerDroneEnemy(enemy, enemyDeck, profile);
   enemy.combatSprite = profile.combatSprite || null;
@@ -21430,7 +21539,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
     argosHackStyle
       ? '⚠️ Hackeo de Argos: el combustible normal no cuenta. Instala el A♦ y quema armadura como energia, o usa proyectiles sueltos.'
       : isStoryCampCombatMission(mission)
-        ? '🎯 Placas Rojas: combate de historia. Vence y vuelve a la exploracion para cerrar la secuencia del agua.'
+        ? '🎯 Placas Rojas: combate de historia. Vence y vuelve a la exploracion.'
         : profile.limitedSuit
         ? '🎯 Combate de Torre 4B: el dron ya esta montado. Tu PoCoBOT empieza sin montar; ensambla, abre ataque y vuelve con una antigua moneda.'
         : '🎯 Combate de Torre 4B: vence y vuelve a la exploracion con una antigua moneda.'
@@ -22331,6 +22440,7 @@ const AUDIO_BGM_1_URI = "assets/audio_01.mp3";
 const AUDIO_BGM_2_URI = "assets/audio_02.mp3";
 const AUDIO_BGM_MENU_URI = "assets/GravitSilence.mp3";
 const STORY_ARGOS_HACK_BGM_URI = "assets/Historia/SistemaCorrupto.mp3";
+const STORY_LAKE_DRONE_BGM_URI = "assets/Historia/Gravedad de la Aventura.mp3";
 const STORY_AUDIO_PRIORITY_KEY = "pocobot_story_audio_priority";
 const STORY_BOOT_PARAMS = new URLSearchParams(window.location.search);
 const STORY_MISSION_BOOT = STORY_BOOT_PARAMS.get('story_mission') || '';
@@ -22402,10 +22512,32 @@ function isStoryMissionCarriedAudio(){
   return STORY_EMBED_MODE && STORY_AUDIO_MODE === 'carry' && !!STORY_CARRIED_BGM_SRC;
 }
 
-function isStoryArgosHackCombatMusicLocked(){
-  return isStoryArgosHackCombat(STORY_MISSION_BOOT)
+function isStoryArgosHackCombatMusicLocked(mission = STORY_MISSION_BOOT){
+  return isStoryArgosHackCombat(mission)
     && !isStoryMissionExternalAudio()
     && !isStoryMissionCarriedAudio();
+}
+
+function isStoryLakeDroneCombatMusicLocked(mission = STORY_MISSION_BOOT){
+  return mission === 'camp_lake_drone'
+    && !isStoryMissionExternalAudio()
+    && !isStoryMissionCarriedAudio();
+}
+
+function isStorySingleTrackCombatMusicLocked(){
+  return isStoryArgosHackCombatMusicLocked() || isStoryLakeDroneCombatMusicLocked();
+}
+
+function getStoryLockedCombatMusicUri(){
+  if(isStoryArgosHackCombatMusicLocked()) return STORY_ARGOS_HACK_BGM_URI;
+  if(isStoryLakeDroneCombatMusicLocked()) return STORY_LAKE_DRONE_BGM_URI;
+  return '';
+}
+
+function getStoryLockedCombatMusicVolume(){
+  if(isStoryArgosHackCombatMusicLocked()) return 0.38;
+  if(isStoryLakeDroneCombatMusicLocked()) return 0.36;
+  return 0.30;
 }
 
 function resolveAudioUri(uri){
@@ -22463,8 +22595,10 @@ function playImpactExplosion(heavy=false){
 }
 
 function ensureMusicElements(){
-  const introMusicUri = isStoryArgosHackCombatMusicLocked() ? STORY_ARGOS_HACK_BGM_URI : AUDIO_BGM_1_URI;
-  const battleMusicUri = isStoryArgosHackCombatMusicLocked() ? STORY_ARGOS_HACK_BGM_URI : AUDIO_BGM_2_URI;
+  const lockedCombatMusicUri = getStoryLockedCombatMusicUri();
+  const lockedCombatMusicVolume = getStoryLockedCombatMusicVolume();
+  const introMusicUri = lockedCombatMusicUri || AUDIO_BGM_1_URI;
+  const battleMusicUri = lockedCombatMusicUri || AUDIO_BGM_2_URI;
   if(!state.bgmMenu){
     state.bgmMenu = new Audio(AUDIO_BGM_MENU_URI);
     state.bgmMenu.loop = true;
@@ -22472,8 +22606,8 @@ function ensureMusicElements(){
     state.bgmMenu.volume = 0.28;
     state.bgmMenu._baseVolume = 0.28;
   }
-  ensureManagedMusicElement('bgm1', introMusicUri, isStoryArgosHackCombatMusicLocked() ? 0.38 : 0.30);
-  ensureManagedMusicElement('bgm2', battleMusicUri, isStoryArgosHackCombatMusicLocked() ? 0.38 : 0.30);
+  ensureManagedMusicElement('bgm1', introMusicUri, lockedCombatMusicUri ? lockedCombatMusicVolume : 0.30);
+  ensureManagedMusicElement('bgm2', battleMusicUri, lockedCombatMusicUri ? lockedCombatMusicVolume : 0.30);
 }
 function ensureStoryCarriedMusic(){
   if(!isStoryMissionCarriedAudio()) return null;
@@ -22688,7 +22822,7 @@ function switchToBattleMusic(){
     return;
   }
   ensureMusicElements();
-  if(isStoryArgosHackCombatMusicLocked()){
+  if(isStorySingleTrackCombatMusicLocked()){
     state.firstAttackTriggered = true;
     state.musicPhase = 'intro';
     pauseMusic(state.bgmMenu, true);
@@ -22729,7 +22863,7 @@ function syncMusicToState(){
     pauseMusic(state.bgm2, false);
     return;
   }
-  if(isStoryArgosHackCombatMusicLocked()){
+  if(isStorySingleTrackCombatMusicLocked()){
     pauseMusic(state.bgmMenu, false);
     pauseMusic(state.bgm2, false);
     if(!state.gameStarted || state.winner){
@@ -23300,12 +23434,12 @@ const STORY_MISSION_BRIEFS = {
   camp_resistance_trial: {
     kicker: 'Combate controlado del modo historia',
     title: 'Campamento · PoCoBOT de resistencia',
-    text: 'Duelo de calibración al estilo de Viajero. Superarlo concede una moneda y la autorización táctica que exige el PC del agua.'
+    text: 'Duelo de calibración al estilo de Viajero contra un PoCoBOT que evoluciona con las mismas reglas de montaje.'
   },
   camp_lake_drone: {
     kicker: 'Combate del Lago Norte',
     title: 'Campamento · Dron contaminante',
-    text: 'El dron que ensucia el lago usa mazo completo. Al derrotarlo, el cauce vuelve a correr limpio y Corvo termina de confiar en ti.'
+    text: 'El dron del lago usa mazo completo y mantiene activa una rutina antigua sobre la captación.'
   }
 };
 
@@ -27544,12 +27678,16 @@ function renderDesktopCompactHud(){
     const pilot = state.players[idx];
     if(!pilot) return;
     const stage = document.getElementById(`compactMechaStage-${idx}`);
+    const hasStoryCombatSprite = !!pilot.combatSprite;
+    const isLakeDroneSprite = hasStoryCombatSprite && idx === 1 && state.storyMission === 'camp_lake_drone';
     if(stage){
       stage.classList.toggle('is-focus', idx === focusIdx);
       stage.classList.toggle('is-ready', getBuildStatus(pilot).combatReady);
       stage.classList.toggle('is-winner', !!state.winner && idx === winnerIdx);
       stage.classList.toggle('is-loser', !!state.winner && idx !== winnerIdx);
       stage.classList.toggle('compact-defense-warning-target', compactDefenseVisible && idx === playerIdx);
+      stage.classList.toggle('has-story-combat-sprite', hasStoryCombatSprite);
+      stage.classList.toggle('has-lake-drone-sprite', isLakeDroneSprite);
     }
     const mechaName = document.getElementById(`compactMechaName-${idx}`);
     if(mechaName) mechaName.textContent = pilot.name;
@@ -27559,6 +27697,9 @@ function renderDesktopCompactHud(){
     if(mechaImg){
       const newSrc = getMechaPhaseImage(pilot);
       if(mechaImg.getAttribute('src') !== newSrc) mechaImg.src = newSrc;
+      mechaImg.classList.toggle('compact-story-combat-sprite', hasStoryCombatSprite);
+      mechaImg.classList.toggle('compact-lake-drone-sprite', isLakeDroneSprite);
+      mechaImg.alt = `Mecha de ${pilot.name || `Jugador ${idx + 1}`}`;
     }
     const mechaStatus = document.getElementById(`compactMechaStatus-${idx}`);
     if(mechaStatus) mechaStatus.textContent = getDesktopCompactMechaStatus(pilot);
@@ -29877,12 +30018,20 @@ function renderRadarMecha(){
     const armorValue = sumCards(player.armor || []);
     const defenseCount = (player.defense || []).length;
     const armorCount = (player.armor || []).length;
+    const playerLabel = player?.name || `Jugador ${idx + 1}`;
+
+    const dialHead = document.getElementById(`dialHead-${idx}`);
+    if(dialHead) dialHead.textContent = playerLabel;
+
+    const navUnitLabel = document.getElementById(`navUnitLabel-${idx}`);
+    if(navUnitLabel) navUnitLabel.textContent = playerLabel;
 
     // Update mecha image
     const img = document.getElementById(`mechaImg-${idx}`);
     if(img){
       const newSrc = getMechaPhaseImage(player);
       if(img.getAttribute('src') !== newSrc) img.src = newSrc;
+      img.alt = `Mecha de ${playerLabel}`;
     }
 
     const radar = document.getElementById(`navRadar-${idx}`);
@@ -29890,16 +30039,21 @@ function renderRadarMecha(){
     const radarSpriteImg = radarSprite?.querySelector('img');
     if(radar && radarSprite && radarSpriteImg){
       const spriteSrc = player.combatSprite || '';
+      const isLakeDroneSprite = !!spriteSrc && idx === 1 && state.storyMission === 'camp_lake_drone';
       if(spriteSrc){
         if(radarSpriteImg.getAttribute('src') !== spriteSrc) radarSpriteImg.src = spriteSrc;
-        radarSpriteImg.alt = player.name ? `${player.name} en radar` : 'Objetivo en radar';
+        radarSpriteImg.alt = `${playerLabel} en radar`;
         radarSprite.hidden = false;
         radar.classList.add('has-story-combat-sprite');
+        radar.classList.toggle('has-lake-drone-sprite', isLakeDroneSprite);
+        radarSpriteImg.classList.toggle('lake-drone-radar-sprite', isLakeDroneSprite);
       }else{
         radarSprite.hidden = true;
         radarSpriteImg.removeAttribute('src');
         radarSpriteImg.alt = '';
         radar.classList.remove('has-story-combat-sprite');
+        radar.classList.remove('has-lake-drone-sprite');
+        radarSpriteImg.classList.remove('lake-drone-radar-sprite');
       }
     }
 

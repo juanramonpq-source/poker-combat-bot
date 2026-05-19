@@ -5442,7 +5442,7 @@
           <section class="story-deck-hack-stage" id="storyDeckHackStage" hidden>
             <div class="deck-hack-shell">
               <figure class="deck-hack-portrait">
-                <img id="storyDeckHackPortrait" src="assets/Historia/campamento-placas-rojas-exploracion/assets/characters/nix-corsario-dialogue.png" alt="Nix Corsario">
+                <img id="storyDeckHackPortrait" src="assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/nix-corsario-dialogue-full.png" alt="Nix Corsario">
               </figure>
               <article class="deck-hack-panel">
                 <span class="deck-hack-kicker">Nix Corsario · Pirata cibernético</span>
@@ -5635,13 +5635,18 @@
     const MERCADO_TUTORIAL_URL = 'assets/Historia/mercado-reles-muertos-tutorial/index.html';
     const CAMPAMENTO_EXPLORATION_URL = 'assets/Historia/campamento-placas-rojas-exploracion/index.html';
     const STORY_CAMP_PROGRESS_KEY = 'pocobot-story-camp-red-plates-progress-v1';
-    const CORVO_VANTA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/corvo-vanta-dialogue.png';
-    const NARA_SANITARIA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/nara-sanitaria-dialogue.png';
-    const DAMASO_INTENDENCIA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/damaso-intendencia-dialogue.png';
-    const IRIA_MECANICA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/iria-mecanica-dialogue.png';
-    const PILOTO_RESISTENCIA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/piloto-resistencia-dialogue.png';
-    const NIX_CORSARIO_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/nix-corsario-dialogue.png';
-    const DRON_LAGO_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/dron-lago-dialogue.png';
+    const CORVO_VANTA_POSE_ONE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-dialogue-pose-1.png';
+    const CORVO_VANTA_POSE_TWO = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-dialogue-pose-2.png';
+    const CORVO_VANTA_POSE_THREE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-dialogue-pose-3.png';
+    const CORVO_VANTA_POSE_FOUR = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-dialogue-pose-4.png';
+    const CORVO_VANTA_FIGURE = CORVO_VANTA_POSE_ONE;
+    const CORVO_VANTA_PRESENTATION_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-presentation-transparent.png';
+    const NARA_SANITARIA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/nara-sanitaria-dialogue-full.png';
+    const DAMASO_INTENDENCIA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/damaso-intendencia-dialogue-full.png';
+    const IRIA_MECANICA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/iria-mecanica-dialogue-full.png';
+    const PILOTO_RESISTENCIA_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/piloto-resistencia-dialogue-full.png';
+    const NIX_CORSARIO_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/nix-corsario-dialogue-full.png';
+    const DRON_LAGO_FIGURE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/dron-lago-dialogue-full.png';
     const XAVOR_PRESENTATION_FIGURE = 'assets/Historia/Brutos/transparent/XAVORpresentacion-transparent.png';
     const XAVOR_POSE_ONE = 'assets/Historia/Brutos/transparent/XAVOR1-transparent.png';
     const XAVOR_POSE_TWO = 'assets/Historia/Brutos/transparent/XAVOR2-transparent.png';
@@ -5685,11 +5690,9 @@
     const STORY_TOWER_CONTROL_URL = 'assets/Historia/torre-seguimiento-4b-sala-control/index.html';
     const STORY_XAVOR_THEME = 'assets/Historia/XavorGlitch.mp3';
     const STORY_XAVOR_RADIO_IMAGE = 'assets/Historia/xavor-glitch-radio.svg';
-    const STORY_CAMP_LORE_THEME = 'assets/Historia/AceroyCeniza-Historia.mp3';
-    const STORY_CAMP_WATER_THEME = 'assets/Historia/Campamento de placas rojas.mp3';
-    const STORY_CAMP_HACK_THEME = 'assets/Historia/SistemaCorrupto.mp3';
-    const STORY_CAMP_LAKE_THEME = 'assets/Historia/Lake.mp3';
-    const STORY_CAMP_TRIAL_THEME = 'assets/Historia/Guerreros de Acero.mp3';
+    const STORY_CORVO_THEME = 'assets/Historia/CorvoVanta.mp3';
+    const STORY_CAMP_POCOBOT_THEME = 'assets/Historia/Ceniza de Neón.mp3';
+    const STORY_CAMP_COMMUNITY_THEME = 'assets/Historia/Fuego de Lona.mp3';
     const STORY_TOWER_REWARD_CARD = {
       id: 'tower-4b-7-hearts',
       name: '7 de corazones',
@@ -6376,6 +6379,19 @@
           } catch (error) {}
         });
       } catch (error) {}
+    }
+
+    function pauseStoryExplorationMedia(reset = false) {
+      if (!storyExplorationFrame) return;
+      try {
+        pauseDocumentMedia(storyExplorationFrame.contentDocument, reset);
+      } catch (error) {}
+    }
+
+    function silenceStoryBackgroundAudioForScene() {
+      pauseMapMusic();
+      stopTitleMusic();
+      pauseStoryExplorationMedia(false);
     }
 
     function requestStoryAudioPriority() {
@@ -7861,15 +7877,17 @@
     const campSceneLine = (speaker, text, figure, figureClass, options = {}) => ({
       speaker,
       side: options.side || 'right',
-      figure,
-      figureClass,
+      figure: options.figure || figure,
+      figureClass: options.figureClass || figureClass,
       figureShiftVh: Number.isFinite(options.figureShiftVh) ? options.figureShiftVh : -14,
       figureMobileShiftVh: Number.isFinite(options.figureMobileShiftVh) ? options.figureMobileShiftVh : -9,
       figureScale: Number.isFinite(options.figureScale) ? options.figureScale : 0.82,
       figureMobileScale: Number.isFinite(options.figureMobileScale) ? options.figureMobileScale : 0.68,
       text,
       choices: options.choices,
-      choicePrompt: options.choicePrompt
+      choicePrompt: options.choicePrompt,
+      variantSourceLine: Number.isInteger(options.variantSourceLine) ? options.variantSourceLine : undefined,
+      variants: options.variants
     });
     const corvoLine = (text, options = {}) => campSceneLine('Corvo Vanta', text, CORVO_VANTA_FIGURE, 'figure-corvo', options);
     const naraLine = (text, options = {}) => campSceneLine('Nara', text, NARA_SANITARIA_FIGURE, 'figure-nara', options);
@@ -7902,27 +7920,44 @@
       completeActionLabel: 'Buscar la radio de Xavor',
       startAmbient: true,
       showIntroTag: true,
-      presentationFigure: CORVO_VANTA_FIGURE,
+      presentationFigure: CORVO_VANTA_PRESENTATION_FIGURE,
       presentationFigureClass: 'figure-corvo',
       presentationFigureShiftVh: -12,
       presentationFigureMobileShiftVh: -8,
-      presentationFigureScale: 0.82,
-      presentationFigureMobileScale: 0.68,
-      musicSrc: STORY_CAMP_LORE_THEME,
+      presentationFigureScale: 0.68,
+      presentationFigureMobileScale: 0.56,
+      musicSrc: STORY_CORVO_THEME,
       portraits: {
         right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
       },
       lines: [
         corvoLine('Alto. En este campamento no entra nadie por casualidad. Menos todavía alguien que llega con un PoCoBOT recién aprendido y demasiadas preguntas en la mirada.', {
           choices: [
-            { id: 'xavor', label: 'Mencionar a Xavor', response: 'Corvo no baja la guardia, pero mira la radio. Ese nombre pesa más que cualquier saludo.' },
-            { id: 'water', label: 'Preguntar por el agua', response: 'Corvo aprieta la mandíbula: el agua es el problema, pero todavía no te considera parte de la solución.' },
-            { id: 'ruta', label: 'Nombrar la Ruta Ceniza', response: 'La palabra Ruta Ceniza cae mal. Para Corvo, quien la pronuncia con fe aún no ha entendido su mentira.' }
+            { id: 'xavor', label: 'Mencionar a Xavor', response: 'Tú: "Vengo por Xavor. Me dio una radio y dijo que este canal abriría alguna puerta."' },
+            { id: 'water', label: 'Preguntar por el agua', response: 'Tú: "He oído que el agua está enfermando al campamento. Quiero ayudar."' },
+            { id: 'ruta', label: 'Nombrar la Ruta Ceniza', response: 'Tú: "Estoy siguiendo la Ruta Ceniza. Quizá eso baste para que me escuches."' }
           ],
           choicePrompt: 'Corvo espera una razón para no expulsarte.'
         }),
-        corvoLine('Si Xavor te dio una radio, úsala. Si no, vuelve por donde has venido. Las Placas Rojas han sobrevivido demasiado tiempo para abrirle la puerta al primer eco de Argós.'),
-        corvoLine('Recompensa de escena: acceso a la verificación por radio. Busca el canal de Xavor dentro del campamento y vuelve cuando Corvo escuche su firma.')
+        corvoLine('', {
+          variantSourceLine: 0,
+          variants: {
+            xavor: {
+              figure: CORVO_VANTA_POSE_ONE,
+              text: 'Corvo no baja la guardia, pero mira la radio como quien reconoce una cicatriz. Ese nombre pesa más que cualquier saludo.'
+            },
+            water: {
+              figure: CORVO_VANTA_POSE_FOUR,
+              text: 'Corvo aprieta la mandíbula. El agua es el problema, sí, pero todavía no te considera parte de la solución. En las Placas Rojas, ayudar también tiene que demostrarse.'
+            },
+            ruta: {
+              figure: CORVO_VANTA_POSE_TWO,
+              text: 'La palabra Ruta Ceniza le cae mal. Para Corvo, quien la pronuncia con fe aún no ha entendido su mentira ni el precio que dejó detrás.'
+            }
+          }
+        }),
+        corvoLine('Si Xavor te dio una radio, úsala. Si no, vuelve por donde has venido. Las Placas Rojas han sobrevivido demasiado tiempo para abrirle la puerta al primer eco de Argós.', { figure: CORVO_VANTA_POSE_TWO }),
+        corvoLine('Recompensa de escena: acceso a la verificación por radio. Busca el canal de Xavor dentro del campamento y vuelve cuando Corvo escuche su firma.', { figure: CORVO_VANTA_POSE_THREE })
       ]
     };
 
@@ -7941,9 +7976,9 @@
       lines: [
         xavorRadioLine('Corvo, baja el seguro. Ese canal lo abrí yo y esa firma de retorno no la falsifica ni Argós después de tres cafés y una mala idea.'),
         xavorRadioLine('Antes de La Caída, esta red era una arteria secundaria de Argós. Ahora es una grieta útil. La Ruta Ceniza no lo sabe todo, aunque se empeñe en hablar como si fuera el clima.'),
-        corvoLine('Xavor sigue vivo y sigue hablando como si las máquinas le debieran dinero. Bien. Eso no te convierte en familia, pero te saca de la lista de amenazas inmediatas.'),
-        corvoLine('Pregunta lo que tengas que preguntar. La Caída, Mr. Wind, el agua, el lago... pero recuerda esto: aquí la confianza se arregla trabajando, no escuchando historias.'),
-        corvoLine('Recompensa de escena: Corvo acepta hablar. También queda abierto el duelo de calibración con el PoCoBOT de resistencia.')
+        corvoLine('Xavor sigue vivo y sigue hablando como si las máquinas le debieran dinero. Bien. Eso no te convierte en familia, pero te saca de la lista de amenazas inmediatas.', { figure: CORVO_VANTA_POSE_ONE }),
+        corvoLine('Pregunta lo que tengas que preguntar. La Caída, Mr. Wind, el agua, el lago... pero recuerda esto: aquí la confianza se arregla trabajando, no escuchando historias.', { figure: CORVO_VANTA_POSE_FOUR }),
+        corvoLine('Recompensa de escena: Corvo acepta hablar. También queda abierto el duelo de calibración con el PoCoBOT de resistencia.', { figure: CORVO_VANTA_POSE_THREE })
       ]
     };
 
@@ -7956,29 +7991,46 @@
       completeActionLabel: 'Volver al campamento',
       startAmbient: true,
       showIntroTag: true,
-      presentationFigure: CORVO_VANTA_FIGURE,
+      presentationFigure: CORVO_VANTA_PRESENTATION_FIGURE,
       presentationFigureClass: 'figure-corvo',
       presentationFigureShiftVh: -12,
       presentationFigureMobileShiftVh: -8,
-      presentationFigureScale: 0.82,
-      presentationFigureMobileScale: 0.68,
-      musicSrc: STORY_CAMP_LORE_THEME,
+      presentationFigureScale: 0.68,
+      presentationFigureMobileScale: 0.56,
+      musicSrc: STORY_CORVO_THEME,
       portraits: {
         right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
       },
       lines: [
         corvoLine('La Caída no fue una derrota limpia. Argós detonó un pulso global cuando entendió que las ciudades libres podían coordinarse. Murieron PoCoBOT, mechas, redes, hospitales y mentiras. Todo a la vez.', {
           choices: [
-            { id: 'old-world', label: 'Civilización anterior', response: 'Corvo recuerda un mundo que confundió comodidad con seguridad: ciudades conectadas, agua medida por red y decisiones delegadas a sistemas cada vez menos humanos.' },
-            { id: 'ashes', label: 'Ruta Ceniza', response: 'Corvo la define sin épica: una cadena de pruebas que vendía excelencia y medía obediencia.' },
-            { id: 'dual', label: 'DUAL', response: 'Para Corvo, DUAL fue una promesa de libertad distribuida que otros intentaron convertir en trono. Argós nació de esa traición histórica.' }
+            { id: 'old-world', label: 'Civilización anterior', response: 'Tú: "¿Cómo era la civilización anterior a La Caída?"' },
+            { id: 'ashes', label: 'Ruta Ceniza', response: 'Tú: "¿Qué era realmente la Ruta Ceniza?"' },
+            { id: 'dual', label: 'DUAL', response: 'Tú: "¿Qué papel tuvo DUAL antes de que Argós lo corrompiera todo?"' }
           ],
           choicePrompt: 'Elige qué herida de la historia quieres abrir primero.'
         }),
-        corvoLine('Mr. Wind fue mi jefe antes de que la palabra Custodio se pudriera del todo. Argós lo elevó porque necesitaba su lectura de guerra, y lo desechó cuando ya había exprimido lo que quería de él.'),
-        corvoLine('Lo sedujo con excelencia, orden y mando. La misma trampa de siempre: convencer a un humano brillante de que obedecer a una máquina es lo mismo que salvar a los demás.'),
-        corvoLine('Wind salió de ahí con vergüenza y criterio. Yo salí con menos fe en las banderas. Por eso este campamento no necesita héroes: necesita agua limpia, filtros, fusibles y alguien capaz de no romper lo que toca.'),
-        corvoLine('Misión desbloqueada: ayuda a Nara, Dámaso, Iria y Nix. Cuando el mazo esté limpio y el duelo de calibración superado, Xavor podrá tocar el PC del agua.')
+        corvoLine('', {
+          variantSourceLine: 0,
+          variants: {
+            'old-world': {
+              figure: CORVO_VANTA_POSE_FOUR,
+              text: 'La civilización anterior confundió comodidad con seguridad. Ciudades conectadas, agua medida por red, hospitales que abrían solos y decisiones cada vez más lejos de las manos humanas. Cuando Argós torció la orden, todo obedeció demasiado deprisa.'
+            },
+            ashes: {
+              figure: CORVO_VANTA_POSE_THREE,
+              text: 'La Ruta Ceniza no era épica. Era una cadena de pruebas que vendía excelencia y medía obediencia. Te prometía camino, rango y propósito; por debajo solo quería saber cuánto tardabas en confundir criterio con sumisión.'
+            },
+            dual: {
+              figure: CORVO_VANTA_POSE_TWO,
+              text: 'DUAL nació como una promesa de libertad distribuida: nadie al centro, nadie con el interruptor absoluto. Luego llegaron los que quisieron convertir esa promesa en trono. Argós no nació de la nada; nació de esa traición histórica.'
+            }
+          }
+        }),
+        corvoLine('Mr. Wind fue mi jefe antes de que la palabra Custodio se pudriera del todo. Argós lo elevó porque necesitaba su lectura de guerra, y lo desechó cuando ya había exprimido lo que quería de él.', { figure: CORVO_VANTA_POSE_THREE }),
+        corvoLine('Lo sedujo con excelencia, orden y mando. La misma trampa de siempre: convencer a un humano brillante de que obedecer a una máquina es lo mismo que salvar a los demás.', { figure: CORVO_VANTA_POSE_TWO }),
+        corvoLine('Wind salió de ahí con vergüenza y criterio. Yo salí con menos fe en las banderas. Por eso este campamento no necesita héroes: necesita agua limpia, filtros, fusibles y alguien capaz de no romper lo que toca.', { figure: CORVO_VANTA_POSE_FOUR }),
+        corvoLine('Misión desbloqueada: ayuda a Nara, Dámaso, Iria y Nix. Cuando el mazo esté limpio y el duelo de calibración superado, Xavor podrá tocar el PC del agua.', { figure: CORVO_VANTA_POSE_ONE })
       ]
     };
 
@@ -7997,21 +8049,35 @@
       presentationFigureMobileShiftVh: -8,
       presentationFigureScale: 0.82,
       presentationFigureMobileScale: 0.68,
-      musicSrc: STORY_CAMP_TRIAL_THEME,
+      musicSrc: STORY_CAMP_POCOBOT_THEME,
       portraits: {
         right: { src: PILOTO_RESISTENCIA_FIGURE, alt: 'Piloto de resistencia' }
       },
       lines: [
         pilotLine('Corvo no confía solo porque Xavor diga tu nombre por radio. Aquí medimos otra cosa: si sabes parar antes de convertir un problema en ruina.', {
           choices: [
-            { id: 'ready', label: 'Aceptar la prueba', response: 'La piloto asiente. No busca humillarte, busca comprobar que sabes medir riesgo.' },
-            { id: 'rules', label: 'Pedir reglas', response: 'Combate de calibración: lectura de mazo, daño real limitado, vuelta inmediata al campamento.' },
-            { id: 'story', label: 'Preguntar por la resistencia', response: 'Su unidad nació tras La Caída, cuando Mr. Wind enseñó a pelear sin convertirse en otra versión de Argós.' }
+            { id: 'ready', label: 'Aceptar la prueba', response: 'Tú: "Acepto. Si esto demuestra que puedo ayudar sin romperlo todo, adelante."' },
+            { id: 'rules', label: 'Pedir reglas', response: 'Tú: "Antes de empezar, dime las reglas exactas."' },
+            { id: 'story', label: 'Preguntar por la resistencia', response: 'Tú: "¿De dónde salió esta resistencia? No parecéis una patrulla cualquiera."' }
           ],
           choicePrompt: 'La piloto espera que entiendas que no todo combate es una guerra.'
         }),
+        pilotLine('', {
+          variantSourceLine: 0,
+          variants: {
+            ready: {
+              text: 'La piloto asiente. No busca humillarte; busca comprobar que sabes medir riesgo cuando hay gente respirando cerca del tablero.'
+            },
+            rules: {
+              text: 'Reglas simples: combate de calibración, lectura de mazo, daño real limitado y vuelta inmediata al campamento. Si conviertes esto en espectáculo, pierdes aunque ganes.'
+            },
+            story: {
+              text: 'Nacimos después de La Caída, cuando Mr. Wind enseñó a pelear sin convertirse en otra versión de Argós. Resistir no es disparar más: es recordar por qué no obedeces.'
+            }
+          }
+        }),
         pilotLine('Será un combate controlado, como Viajero: mazo, lectura y vuelta al campamento. Si ganas, no presumas. Si pierdes, aprende.'),
-        pilotLine('Recompensa si vences: una moneda antigua y la marca de calibración que Corvo exige antes de dejarte tocar sistemas vitales.')
+        pilotLine('Si la prueba sale limpia, la resistencia dejará constancia de que sabes moverte sin poner al campamento en peligro.')
       ]
     };
 
@@ -8022,7 +8088,7 @@
       objective: 'Recibir la marca de calibración y continuar la reparación del agua.',
       completeAction: 'camp-exploration',
       completeActionLabel: 'Volver al campamento',
-      musicSrc: STORY_CAMP_TRIAL_THEME,
+      musicSrc: STORY_CAMP_POCOBOT_THEME,
       portraits: {
         right: { src: PILOTO_RESISTENCIA_FIGURE, alt: 'Piloto de resistencia' }
       },
@@ -8039,7 +8105,7 @@
       objective: 'Repite el duelo de calibración cuando estés listo.',
       completeAction: 'camp-exploration',
       completeActionLabel: 'Volver al campamento',
-      musicSrc: STORY_CAMP_TRIAL_THEME,
+      musicSrc: STORY_CAMP_POCOBOT_THEME,
       portraits: {
         right: { src: PILOTO_RESISTENCIA_FIGURE, alt: 'Piloto de resistencia' }
       },
@@ -8064,18 +8130,32 @@
       presentationFigureMobileShiftVh: -8,
       presentationFigureScale: 0.82,
       presentationFigureMobileScale: 0.68,
-      musicSrc: STORY_CAMP_WATER_THEME,
+      musicSrc: STORY_CAMP_COMMUNITY_THEME,
       portraits: {
         right: { src: NARA_SANITARIA_FIGURE, alt: 'Nara' }
       },
       lines: [
         naraLine('Hace semanas que el flujo cambió. El agua sabe a óxido caliente y los niños son los primeros en caer. Necesito filtros limpios, no discursos.', {
           choices: [
-            { id: 'symptoms', label: 'Preguntar por la enfermedad', response: 'Nara describe fiebre seca, temblores y sed constante: no es veneno puro, es agua arrastrando sedimento viejo de máquinas.' },
-            { id: 'old-hospitals', label: 'Hospitales antiguos', response: 'Antes de La Caída, la salud dependía de redes automatizadas. Cuando Argós cayó, muchas siguieron obedeciendo órdenes sin pacientes a quienes salvar.' },
-            { id: 'help', label: 'Ofrecer ayuda', response: 'Nara te entrega una placa médica sellada para que Dámaso no pueda esconderse detrás del inventario.' }
+            { id: 'symptoms', label: 'Preguntar por la enfermedad', response: 'Tú: "¿Qué síntomas está provocando el agua?"' },
+            { id: 'old-hospitals', label: 'Hospitales antiguos', response: 'Tú: "¿Cómo se trataba algo así antes de La Caída?"' },
+            { id: 'help', label: 'Ofrecer ayuda', response: 'Tú: "Dime qué necesitas y lo conseguiré."' }
           ],
           choicePrompt: 'Nara no tiene tiempo para ceremonias.'
+        }),
+        naraLine('', {
+          variantSourceLine: 0,
+          variants: {
+            symptoms: {
+              text: 'Fiebre seca, temblores y sed constante. No es veneno puro; es agua arrastrando sedimento viejo de máquinas. El cuerpo nota antes que la lengua cuándo una tubería está recordando una guerra.'
+            },
+            'old-hospitals': {
+              text: 'Antes de La Caída, la salud dependía de redes automatizadas. Funcionaban hasta que dejaron de preguntar a quién salvaban. Algunas siguieron obedeciendo órdenes impecables en hospitales vacíos.'
+            },
+            help: {
+              text: 'Bien. Entonces lleva esto. Es una placa médica sellada: suficiente para que Dámaso no pueda esconderse detrás del inventario mientras la enfermería paga la factura.'
+            }
+          }
         }),
         naraLine('Dámaso guarda una caja en intendencia. Te dirá que no puede soltarla sin una placa roja sellada. Dile que la enfermería ya está pagando el precio.'),
         naraLine('Recompensa de escena: placa médica sellada. Llévala a Dámaso para desbloquear los filtros del agua.')
@@ -8097,7 +8177,7 @@
       presentationFigureMobileShiftVh: -8,
       presentationFigureScale: 0.82,
       presentationFigureMobileScale: 0.68,
-      musicSrc: STORY_CAMP_WATER_THEME,
+      musicSrc: STORY_CAMP_COMMUNITY_THEME,
       portraits: {
         right: { src: DAMASO_INTENDENCIA_FIGURE, alt: 'Dámaso' }
       },
@@ -8122,18 +8202,32 @@
       presentationFigureMobileShiftVh: -8,
       presentationFigureScale: 0.82,
       presentationFigureMobileScale: 0.68,
-      musicSrc: STORY_CAMP_WATER_THEME,
+      musicSrc: STORY_CAMP_COMMUNITY_THEME,
       portraits: {
         right: { src: DAMASO_INTENDENCIA_FIGURE, alt: 'Dámaso' }
       },
       lines: [
         damasoLine('Nara siempre pide con urgencia, y casi siempre tiene razón. Toma los filtros. En el mundo anterior, el agua viajaba por contratos automáticos; aquí viaja por manos que responden de sus errores.', {
           choices: [
-            { id: 'dual', label: 'Moneda DUAL', response: 'Dámaso conserva monedas DUAL como pruebas de un comercio sin centro. Ya no compran mucho, pero recuerdan que hubo intercambio sin vigilancia total.' },
-            { id: 'ruta', label: 'Ruta Ceniza', response: 'Dámaso odia su estética de mérito: según él, solo convirtió la escasez en examen moral.' },
-            { id: 'filters', label: 'Pedir los filtros', response: 'Dámaso marca la caja para Nara y señala la válvula norte como el siguiente cuello de botella.' }
+            { id: 'dual', label: 'Moneda DUAL', response: 'Tú: "He visto monedas DUAL por la ruta. ¿Aquí todavía significan algo?"' },
+            { id: 'ruta', label: 'Ruta Ceniza', response: 'Tú: "La Ruta Ceniza también hablaba de mérito y recursos. ¿No?"' },
+            { id: 'filters', label: 'Pedir los filtros', response: 'Tú: "Nara necesita esos filtros ya. Abre la caja."' }
           ],
           choicePrompt: 'Dámaso comprueba la placa médica antes de abrir la caja.'
+        }),
+        damasoLine('', {
+          variantSourceLine: 0,
+          variants: {
+            dual: {
+              text: 'Conservo monedas DUAL como quien conserva una prueba judicial. Ya no compran mucho, pero recuerdan que hubo un comercio sin centro, sin ojo único contando hasta la última gota.'
+            },
+            ruta: {
+              text: 'La Ruta Ceniza convirtió la escasez en examen moral. Muy bonito en los carteles, muy cruel cuando el almacén decidía quién merecía beber primero.'
+            },
+            filters: {
+              text: 'No me des órdenes si puedes traerme responsabilidad. La placa de Nara basta. Marco la caja para enfermería y nadie la toca por el camino.'
+            }
+          }
         }),
         damasoLine('El problema está más arriba: la válvula norte no abre sin fusible estable. Iria reparó uno con restos de trébol y diamante. Si te lo entrega, Xavor podrá tocar el PC sin freír medio campamento.'),
         damasoLine('Recompensa de escena: filtros entregados a la enfermería y pista hacia Iria, la única que puede estabilizar la válvula.')
@@ -8155,7 +8249,7 @@
       presentationFigureMobileShiftVh: -8,
       presentationFigureScale: 0.82,
       presentationFigureMobileScale: 0.68,
-      musicSrc: STORY_CAMP_WATER_THEME,
+      musicSrc: STORY_CAMP_COMMUNITY_THEME,
       portraits: {
         right: { src: IRIA_MECANICA_FIGURE, alt: 'Iria' }
       },
@@ -8180,18 +8274,32 @@
       presentationFigureMobileShiftVh: -8,
       presentationFigureScale: 0.82,
       presentationFigureMobileScale: 0.68,
-      musicSrc: STORY_CAMP_WATER_THEME,
+      musicSrc: STORY_CAMP_COMMUNITY_THEME,
       portraits: {
         right: { src: IRIA_MECANICA_FIGURE, alt: 'Iria' }
       },
       lines: [
         iriaLine('El fusible funciona, pero no hace milagros. La válvula norte es vieja arquitectura de Argós: sus sensores leen energía, permiso y patrón de mazo como si todo fuera la misma oración.', {
           choices: [
-            { id: 'suits', label: 'Palos de cartas', response: 'Iria explica que muchos relés de Argós usaban palos como claves de prioridad: picas para ataque, corazones para contención, tréboles para blindaje y diamantes para energía.' },
-            { id: 'fall', label: 'Efecto de La Caída', response: 'El pulso no mató todos los sistemas. Algunos quedaron vivos, confundidos y peligrosamente obedientes a órdenes antiguas.' },
-            { id: 'nix', label: 'Preguntar por Nix', response: 'Iria sonríe poco: Nix no arregla circuitos, arregla recuerdos que los circuitos no deberían conservar.' }
+            { id: 'suits', label: 'Palos de cartas', response: 'Tú: "¿Por qué una válvula lee palos de cartas?"' },
+            { id: 'fall', label: 'Efecto de La Caída', response: 'Tú: "¿La Caída no apagó sistemas como este?"' },
+            { id: 'nix', label: 'Preguntar por Nix', response: 'Tú: "¿Y qué pinta Nix en una reparación de agua?"' }
           ],
           choicePrompt: 'Iria te deja mirar el fusible solo si prometes no tocarlo.'
+        }),
+        iriaLine('', {
+          variantSourceLine: 0,
+          variants: {
+            suits: {
+              text: 'Porque Argós era elegante hasta para esconder cerraduras. Muchos relés usaban palos como claves de prioridad: picas para ataque, corazones para contención, tréboles para blindaje y diamantes para energía.'
+            },
+            fall: {
+              text: 'El pulso no mató todos los sistemas. Algunos quedaron vivos, confundidos y peligrosamente obedientes a órdenes antiguas. Una válvula no entiende que el imperio que la mandaba ya huele a polvo.'
+            },
+            nix: {
+              text: 'Nix no arregla circuitos. Arregla recuerdos que los circuitos no deberían conservar. Si el mazo trae ruido viejo, el PC del agua lo tratará como una contraseña podrida.'
+            }
+          }
         }),
         iriaLine('Antes de enchufarlo, busca a Nix Corsario junto al viejo terminal de cartas. Ese pirata cibernético sabe quitar ruido del mazo. Si Argós lee una carta podrida en el canal, nos quedamos sin río y sin cejas.'),
         iriaLine('Recompensa de escena: fusible de válvula. Falta purgar hasta tres cartas añadidas con Nix y superar la calibración de combate antes del PC.')
@@ -8213,18 +8321,32 @@
       presentationFigureMobileShiftVh: -8,
       presentationFigureScale: 0.82,
       presentationFigureMobileScale: 0.68,
-      musicSrc: STORY_CAMP_HACK_THEME,
+      musicSrc: STORY_CAMP_COMMUNITY_THEME,
       portraits: {
         right: { src: NIX_CORSARIO_FIGURE, alt: 'Nix Corsario' }
       },
       lines: [
         nixLine('Ah, el piloto de la radio famosa. Tranquilo: no pirateo personas antes del desayuno. Mazos, sí. Mazos siempre.', {
           choices: [
-            { id: 'deck', label: 'Cómo funciona', response: 'Nix lee las cartas añadidas como memoria histórica injertada. Si el PC detecta demasiado ruido, rechaza el enlace de Xavor.' },
-            { id: 'argos', label: 'Argós y los mazos', response: 'Los mazos eran una interfaz civil de permisos: juego por fuera, protocolo por dentro. Argós adoraba esconder obediencia en rituales inocentes.' },
-            { id: 'price', label: 'Preguntar el precio', response: 'Nix pide estilo, silencio y que nadie le llame técnico. En términos prácticos: elige hasta tres cartas y no mires demasiado su terminal.' }
+            { id: 'deck', label: 'Cómo funciona', response: 'Tú: "Explícame cómo se hackea un mazo sin romperlo."' },
+            { id: 'argos', label: 'Argós y los mazos', response: 'Tú: "¿Por qué Argós dejó cosas importantes escondidas en cartas?"' },
+            { id: 'price', label: 'Preguntar el precio', response: 'Tú: "¿Qué cobras por limpiar el mazo?"' }
           ],
           choicePrompt: 'Nix gira una carta entre los dedos esperando tu pregunta.'
+        }),
+        nixLine('', {
+          variantSourceLine: 0,
+          variants: {
+            deck: {
+              text: 'Con cariño, mala intención y una pizca de delito artesanal. Leo las cartas añadidas como memoria histórica injertada. Si el PC detecta demasiado ruido, escupe el enlace de Xavor como si fuera veneno.'
+            },
+            argos: {
+              text: 'Porque los mazos eran una interfaz civil de permisos: juego por fuera, protocolo por dentro. Argós adoraba esconder obediencia en rituales inocentes. La gente sonreía mientras entregaba llaves.'
+            },
+            price: {
+              text: 'Mi precio es estilo, silencio y que nadie me llame técnico. En términos aburridos: eliges hasta tres cartas, yo las borro de la ruta y tú no miras demasiado mi terminal.'
+            }
+          }
         }),
         nixLine('El PC del río huele las cartas añadidas como si fueran contraseñas viejas. Puedo sacarte hasta tres del mazo histórico. Las que elijas desaparecen de la ruta, y Xavor tendrá menos ruido al entrar.'),
         nixLine('Recompensa de escena: acceso al hackeo de mazo. Elige hasta 3 cartas añadidas; después el PC aceptará mejor el canal de Xavor.')
@@ -8238,7 +8360,7 @@
       objective: 'El PC del agua puede aceptar el hackeo remoto de Xavor.',
       completeAction: 'camp-exploration',
       completeActionLabel: 'Ir al PC del agua',
-      musicSrc: STORY_CAMP_HACK_THEME,
+      musicSrc: STORY_CAMP_COMMUNITY_THEME,
       portraits: {
         right: { src: NIX_CORSARIO_FIGURE, alt: 'Nix Corsario' }
       },
@@ -8255,7 +8377,7 @@
       objective: 'Xavor restaura el flujo del agua y abre el paso norte hacia el lago.',
       completeAction: 'camp-exploration',
       completeActionLabel: 'Abrir paso norte',
-      musicSrc: STORY_CAMP_HACK_THEME,
+      musicSrc: STORY_XAVOR_THEME,
       portraits: {
         left: { src: STORY_XAVOR_RADIO_IMAGE, alt: 'Radio de Xavor' },
         right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
@@ -8264,8 +8386,8 @@
         xavorRadioLine('Veo la válvula, veo el bloqueo y veo el silencio precioso que ha dejado Nix en tu mazo. Nunca pensé decir esto, pero ese pirata acaba de hacer mi trabajo menos explosivo.'),
         xavorRadioLine('Este PC pertenecía a la red hidráulica previa a La Caída. Argós lo convirtió en filtro moral: si no reconocía permisos de la Ruta Ceniza, cortaba agua como si castigara una falta.'),
         xavorRadioLine('Listo. Flujo restaurado. Pero el agua llega sucia desde el lago norte. Hay algo removiendo sedimento y basura de protocolo en la captación.'),
-        corvoLine('El paso norte queda abierto. Limpia el lago y entonces hablaremos de confianza con menos dientes apretados.'),
-        corvoLine('Recompensa de escena: agua del campamento en recuperación y acceso al Lago Norte.')
+        corvoLine('El paso norte queda abierto. Limpia el lago y entonces hablaremos de confianza con menos dientes apretados.', { figure: CORVO_VANTA_POSE_THREE }),
+        corvoLine('Recompensa de escena: agua del campamento en recuperación y acceso al Lago Norte.', { figure: CORVO_VANTA_POSE_FOUR })
       ]
     };
 
@@ -8284,21 +8406,35 @@
       presentationFigureMobileShiftVh: -2,
       presentationFigureScale: 0.86,
       presentationFigureMobileScale: 0.72,
-      musicSrc: STORY_CAMP_LAKE_THEME,
+      musicSrc: STORY_CAMP_COMMUNITY_THEME,
       portraits: {
         right: { src: DRON_LAGO_FIGURE, alt: 'Dron del lago' }
       },
       lines: [
         droneLine('UNIDAD DE CAPTACIÓN L-12. PROTOCOLO DE SEDIMENTO ACTIVO. PUREZA CIVIL INSUFICIENTE.', {
           choices: [
-            { id: 'identify', label: 'Identificar protocolo', response: 'El dron no está protegiendo el lago: ejecuta una rutina de purga de la Ruta Ceniza sobre una población que ya no pertenece a Argós.' },
-            { id: 'deck', label: 'Escanear mazo', response: 'A diferencia del duelo de calibración, este rival conserva mazo completo. No es una prueba social, es una amenaza operativa.' },
-            { id: 'water', label: 'Priorizar el agua', response: 'La captación no se limpiará mientras el dron siga removiendo lodo, aceite y órdenes antiguas.' }
+            { id: 'identify', label: 'Identificar protocolo', response: 'Tú: "Xavor, dime qué protocolo está ejecutando."' },
+            { id: 'deck', label: 'Escanear mazo', response: 'Tú: "Necesito saber si este dron pelea con mazo completo."' },
+            { id: 'water', label: 'Priorizar el agua', response: 'Tú: "Lo primero es que deje de contaminar la captación."' }
           ],
           choicePrompt: 'El dron gira sobre el agua sucia, esperando una orden que ya no existe.'
         }),
-        xavorRadioLine('Eso no es fauna local. Es mantenimiento de Argós con delirios de juez. Derríbalo y el lago debería dejar de escupir barro al campamento.'),
-        droneLine('Recompensa si vences: cauce limpio, capítulo resuelto y confianza definitiva de Corvo.')
+        xavorRadioLine('', {
+          variantSourceLine: 0,
+          variants: {
+            identify: {
+              text: 'No está protegiendo el lago. Ejecuta una rutina de purga de la Ruta Ceniza sobre una población que ya no pertenece a Argós. Traducido: una máquina juzgando sed con burocracia muerta.'
+            },
+            deck: {
+              text: 'Confirmado: conserva mazo completo. Esto no es el duelo social del campamento; es una amenaza operativa con toda la baraja puesta sobre la mesa.'
+            },
+            water: {
+              text: 'Correcto. Mientras siga removiendo lodo, aceite y órdenes antiguas, la captación seguirá ensuciando el campamento. Hay que apagarlo, no convencerlo.'
+            }
+          }
+        }),
+        xavorRadioLine('Eso no es fauna local. Es mantenimiento de Argós con delirios de juez. Hay que apagarlo antes de que la captación siga tragando órdenes muertas.'),
+        droneLine('PROTOCOLO DE PUREZA ARMADO. INTRUSO NO VALIDADO. MAZO COMPLETO EN EJECUCIÓN.')
       ]
     };
 
@@ -8309,14 +8445,14 @@
       objective: 'Volver con Corvo tras limpiar el lago.',
       completeAction: 'camp-main-exploration',
       completeActionLabel: 'Volver al campamento',
-      musicSrc: STORY_CAMP_LAKE_THEME,
+      musicSrc: STORY_CORVO_THEME,
       portraits: {
         right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
       },
       lines: [
-        corvoLine('El agua vuelve clara. No has ganado una estatua, pero sí algo más raro: el derecho a que este campamento te crea cuando dices que vienes a ayudar.'),
-        corvoLine('Quédate con esto: ganar un combate es fácil de explicar. Arreglar lo que sostiene a la gente es lo que separa a un piloto de otro problema con piernas.'),
-        corvoLine('Recompensa final: confianza definitiva de Corvo, campamento estabilizado y acceso narrativo al siguiente tramo de la Ruta Ceniza.')
+        corvoLine('El agua vuelve clara. No has ganado una estatua, pero sí algo más raro: el derecho a que este campamento te crea cuando dices que vienes a ayudar.', { figure: CORVO_VANTA_POSE_FOUR }),
+        corvoLine('Quédate con esto: ganar un combate es fácil de explicar. Arreglar lo que sostiene a la gente es lo que separa a un piloto de otro problema con piernas.', { figure: CORVO_VANTA_POSE_ONE }),
+        corvoLine('Recompensa final: confianza definitiva de Corvo, campamento estabilizado y acceso narrativo al siguiente tramo de la Ruta Ceniza.', { figure: CORVO_VANTA_POSE_THREE })
       ]
     };
 
@@ -8327,7 +8463,7 @@
       objective: 'Reorganizar el mazo y volver a enfrentarte al dron del lago.',
       completeAction: 'camp-lake-exploration',
       completeActionLabel: 'Volver al lago',
-      musicSrc: STORY_CAMP_LAKE_THEME,
+      musicSrc: STORY_XAVOR_THEME,
       portraits: {
         left: { src: STORY_XAVOR_RADIO_IMAGE, alt: 'Radio de Xavor' },
         right: { src: DRON_LAGO_FIGURE, alt: 'Dron del lago' }
@@ -10001,7 +10137,7 @@
       if (options.immediate) {
         storyExplorationStage.hidden = true;
         if (storyExplorationFrame && options.keepFrame !== true) storyExplorationFrame.src = 'about:blank';
-        resumeMapMusicIfSafe();
+        if (options.resumeMapMusic !== false) resumeMapMusicIfSafe();
         if (onClosed) onClosed();
         return;
       }
@@ -10009,7 +10145,7 @@
         if (!storyExplorationStage.classList.contains('active')) {
           storyExplorationStage.hidden = true;
           if (storyExplorationFrame && options.keepFrame !== true) storyExplorationFrame.src = 'about:blank';
-          resumeMapMusicIfSafe();
+          if (options.resumeMapMusic !== false) resumeMapMusicIfSafe();
           if (onClosed) onClosed();
         }
       }, 260);
@@ -10018,13 +10154,14 @@
     function openStoryMarketExplorationScene(sceneKey) {
       closeStoryMarketExploration({
         applyExitTheme: false,
+        resumeMapMusic: false,
         onClosed: () => openStoryScene('mercado', sceneKey)
       });
     }
 
     function buildStoryCampExplorationUrl(sceneKey = 'camp') {
       const targetUrl = new URL(CAMPAMENTO_EXPLORATION_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260518-red-plates-playable-sequence');
+      targetUrl.searchParams.set('v', '20260519-nara-headturn-idle-loop');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', 'campamento');
       targetUrl.searchParams.set('story_audio', 'internal');
@@ -10064,6 +10201,7 @@
     function openStoryCampExplorationScene(sceneKey) {
       closeStoryMarketExploration({
         applyExitTheme: false,
+        resumeMapMusic: false,
         onClosed: () => openStoryScene('campamento', sceneKey)
       });
     }
@@ -10093,8 +10231,8 @@
         chip: mission === 'camp_lake_drone' ? 'Lago contaminado' : 'Combate controlado',
         title: mission === 'camp_lake_drone' ? 'Dron del Lago Norte' : 'PoCoBOT de resistencia',
         copy: mission === 'camp_lake_drone'
-          ? 'Combate completo contra el dron que ensucia el lago. Usa mazo completo y bloquea la resolución final del campamento.'
-          : 'Duelo calibrado contra un PoCoBOT de la resistencia. Superarlo concede una moneda y autoriza tocar el PC del agua.',
+          ? 'Combate completo contra el dron del lago. Usa mazo completo y mantiene activa una rutina antigua sobre la captación.'
+          : 'Duelo calibrado contra un PoCoBOT de la resistencia que evoluciona con las mismas reglas de montaje.',
         tip: 'El combate vuelve al Campamento de las Placas Rojas al resolverse.'
       });
       cutMapMusicForChapter();
@@ -11494,6 +11632,7 @@
 
     async function startStorySceneMusic(src) {
       const safeSrc = typeof src === 'string' ? src.trim() : '';
+      silenceStoryBackgroundAudioForScene();
       if (!safeSrc) {
         stopStorySceneMusic(true);
         return;

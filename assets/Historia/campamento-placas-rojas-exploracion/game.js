@@ -93,6 +93,8 @@ const assets = {
   map: new Image(),
   corvo: new Image(),
   npcs: {},
+  npcAnimations: {},
+  objects: {},
   botFrames: [],
   frontFrames: [],
   sideFrames: [],
@@ -108,6 +110,33 @@ const npcImageSources = {
   deck_pirate: "./assets/characters/exploration/nix-corsario-sprite.png",
   resistance_bot: "./assets/characters/exploration/piloto-resistencia-sprite.png",
   lake_drone: "./assets/characters/exploration/dron-lago-sprite.png",
+};
+
+const npcAnimationSources = {
+  medic: [
+    "./assets/characters/exploration/animation/nara-sanitaria-headturn-smooth-00.png",
+    "./assets/characters/exploration/animation/nara-sanitaria-headturn-smooth-01.png",
+    "./assets/characters/exploration/animation/nara-sanitaria-headturn-smooth-02.png",
+    "./assets/characters/exploration/animation/nara-sanitaria-headturn-smooth-03.png",
+    "./assets/characters/exploration/animation/nara-sanitaria-headturn-smooth-04.png",
+  ],
+};
+
+const npcAnimationTimelines = {
+  medic: [
+    { frame: 0, duration: 3000 },
+    { frame: 1, duration: 160 },
+    { frame: 2, duration: 160 },
+    { frame: 3, duration: 160 },
+    { frame: 4, duration: 3000 },
+    { frame: 3, duration: 160 },
+    { frame: 2, duration: 160 },
+    { frame: 1, duration: 160 },
+  ],
+};
+
+const objectImageSources = {
+  water_pc: "./assets/objects/water-pc-terminal-sprite-mirror.png",
 };
 
 const campCollisionZones = [
@@ -141,8 +170,8 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
-    x: 515.503740648379,
-    y: 734.690396867146,
+    x: 498.004987531172,
+    y: 703.1785609912912,
     width: 265,
     height: 270
   },
@@ -183,6 +212,13 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
+    x: 954,
+    y: 173,
+    width: 190,
+    height: 104
+  },
+  {
+    type: "ellipse",
     x: 1280,
     y: 384,
     width: 220,
@@ -201,13 +237,6 @@ const campCollisionZones = [
     y: 32,
     width: 163,
     height: 128
-  },
-  {
-    type: "ellipse",
-    x: 826,
-    y: 104,
-    width: 102,
-    height: 72
   },
   {
     type: "ellipse",
@@ -236,13 +265,6 @@ const campCollisionZones = [
     y: 104,
     width: 115,
     height: 74
-  },
-  {
-    type: "ellipse",
-    x: 681,
-    y: 214,
-    width: 33,
-    height: 31
   },
   {
     type: "ellipse",
@@ -288,8 +310,8 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
-    x: 918.0872817955112,
-    y: 450.08697176924426,
+    x: 907,
+    y: 466,
     width: 131,
     height: 85
   },
@@ -302,8 +324,8 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
-    x: 821.4339152119701,
-    y: 539.7178093401134,
+    x: 806,
+    y: 560,
     width: 80,
     height: 65
   },
@@ -341,6 +363,27 @@ const campCollisionZones = [
     y: 340,
     width: 48,
     height: 41
+  },
+  {
+    type: "ellipse",
+    x: 575,
+    y: 321,
+    width: 25,
+    height: 43
+  },
+  {
+    type: "ellipse",
+    x: 395,
+    y: 406,
+    width: 103,
+    height: 61
+  },
+  {
+    type: "ellipse",
+    x: 483,
+    y: 495,
+    width: 76,
+    height: 57
   },
   {
     type: "ellipse",
@@ -386,8 +429,8 @@ const campCollisionZones = [
   },
   {
     type: "ellipse",
-    x: 144.83541147132166,
-    y: 634.189374013677,
+    x: 175,
+    y: 642,
     width: 263,
     height: 101
   },
@@ -463,52 +506,10 @@ const campCollisionZones = [
   },
   {
     type: "rect",
-    x: 607,
-    y: 207,
-    width: 63,
-    height: 27
-  },
-  {
-    type: "ellipse",
-    x: 347,
-    y: 238,
-    width: 89,
-    height: 60
-  },
-  {
-    type: "ellipse",
-    x: 441,
-    y: 137,
-    width: 69,
-    height: 42
-  },
-  {
-    type: "ellipse",
-    x: 399,
-    y: 261,
-    width: 78,
-    height: 34
-  },
-  {
-    type: "ellipse",
-    x: 122,
-    y: 499,
-    width: 60,
-    height: 35
-  },
-  {
-    type: "ellipse",
-    x: 1002,
-    y: 199,
-    width: 124,
-    height: 56
-  },
-  {
-    type: "ellipse",
-    x: 420,
-    y: 421,
-    width: 50,
-    height: 16
+    x: 295,
+    y: 249,
+    width: 106,
+    height: 57
   }
 ];
 
@@ -959,6 +960,12 @@ function loadOptionalImage(source, assign) {
     .catch((error) => console.warn(error));
 }
 
+function loadOptionalAnimation(sources, assign) {
+  Promise.all(sources.map((source) => loadImage(source)))
+    .then(assign)
+    .catch((error) => console.warn(error));
+}
+
 function createFallbackCanvas(width, height, draw) {
   const fallback = document.createElement("canvas");
   fallback.width = width;
@@ -1039,6 +1046,16 @@ async function loadAssets() {
   Object.entries(npcImageSources).forEach(([key, source]) => {
     loadOptionalImage(source, (image) => {
       assets.npcs[key] = image;
+    });
+  });
+  Object.entries(npcAnimationSources).forEach(([key, sources]) => {
+    loadOptionalAnimation(sources, (frames) => {
+      assets.npcAnimations[key] = frames;
+    });
+  });
+  Object.entries(objectImageSources).forEach(([key, source]) => {
+    loadOptionalImage(source, (image) => {
+      assets.objects[key] = image;
     });
   });
 
@@ -1225,11 +1242,11 @@ function handleInteraction(interaction) {
   const action = getInteractionAction(interaction);
 
   if (action === "north-locked") {
-    setInteractionMessage("El paso norte sigue cerrado: falta restaurar el agua del campamento.", 3.2);
+    setInteractionMessage("El paso norte está cerrado.", 3.0);
     return;
   }
   if (action === "pc-locked") {
-    setInteractionMessage("El PC exige confianza de Corvo, calibración superada, fusible de Iria, mazo limpio por Nix y enlace de Xavor.", 3.2);
+    setInteractionMessage("No tienes acceso a este PC.", 3.0);
     return;
   }
   if (action === "deck-pirate-locked") {
@@ -1373,10 +1390,9 @@ const standaloneSceneCopy = {
   lake_drone: {
     kicker: "Lago Norte",
     title: "Dron contaminante",
-    text: "El dron ejecuta una purga antigua de Argós y remueve sedimentos del lago. Usa mazo completo: al caer, el cauce volverá limpio al campamento.",
+    text: "El dron ejecuta una purga antigua de Argós y remueve sedimentos del lago. Usa mazo completo y no responde a negociación.",
     actions: [
       { label: "Iniciar combate", action: "combat-drone" },
-      { label: "Marcar victoria", action: "drone-win" },
     ],
   },
   lake_win: {
@@ -1461,11 +1477,6 @@ function handleStandaloneSceneAction(action) {
   if (action === "trial-win") {
     campProgress = writeCampProgress({ trialCleared: true });
     openStandaloneScene("trial_win");
-    return;
-  }
-  if (action === "drone-win") {
-    campProgress = writeCampProgress({ lakeClean: true, corvoTrustFinal: true });
-    openStandaloneScene("lake_win");
     return;
   }
   if (action === "combat-trial") {
@@ -1973,16 +1984,24 @@ function drawWorldLabel(x, y, title, subtitle, options = {}) {
 
 function drawInteractionPlate(item, options = {}) {
   const active = interactionState.active?.id === item.id;
+  const distance = getInteractionDistance(item);
+  const revealDistance = Number.isFinite(options.revealDistance)
+    ? options.revealDistance
+    : item.radius * 1.04;
+  const shouldReveal = active || distance <= revealDistance || options.alwaysLabel;
+  if (!shouldReveal) return;
+
   const pulse = 0.5 + Math.sin(performance.now() / 300) * 0.5;
   const perspective = getCampPerspectiveScale(item);
   const radiusX = (options.radiusX || (active ? 56 + pulse * 8 : 42)) * perspective;
   const radiusY = (options.radiusY || (active ? 30 + pulse * 4 : 22)) * perspective;
+  const plateAlpha = active ? 1 : clamp(1 - distance / revealDistance, 0.18, 0.46);
   ctx.save();
   ctx.translate(item.x, item.y);
   ctx.globalCompositeOperation = "lighter";
-  ctx.strokeStyle = active ? "rgba(140, 236, 255, 0.92)" : "rgba(255, 177, 92, 0.46)";
-  ctx.fillStyle = active ? "rgba(140, 236, 255, 0.08)" : "rgba(195, 50, 36, 0.08)";
-  ctx.lineWidth = active ? 4 : 2;
+  ctx.strokeStyle = `rgba(140, 236, 255, ${active ? 0.88 : 0.2 * plateAlpha})`;
+  ctx.fillStyle = `rgba(140, 236, 255, ${active ? 0.075 : 0.018 * plateAlpha})`;
+  ctx.lineWidth = active ? 3.2 : 1.4;
   ctx.beginPath();
   ctx.ellipse(0, 0, radiusX, radiusY, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -1990,8 +2009,7 @@ function drawInteractionPlate(item, options = {}) {
   ctx.globalCompositeOperation = "source-over";
   ctx.restore();
 
-  const distance = getInteractionDistance(item);
-  if (active || distance < item.radius * 1.45 || options.alwaysLabel) {
+  if (active || options.alwaysLabel) {
     const labelLift = (options.labelLift || 56) * perspective;
     const labelY = options.labelDirection === "below" ? item.y + labelLift : item.y - labelLift;
     drawWorldLabel(item.x, labelY, item.label, item.hint, { active, perspectiveScale: perspective });
@@ -2008,8 +2026,29 @@ function getNpcPalette(item) {
   return { body: "#241712", trim: "#ffb15c", visor: "#8cecff" };
 }
 
+function getNpcAnimationImage(item, options = {}) {
+  const animationFrames = assets.npcAnimations[item.role];
+  if (!animationFrames?.length) return assets.npcs[item.role];
+
+  const timeline = npcAnimationTimelines[item.role];
+  if (!timeline?.length) {
+    const frameMs = options.frameMs || 260;
+    return animationFrames[Math.floor(performance.now() / frameMs) % animationFrames.length];
+  }
+
+  const totalDuration = timeline.reduce((total, step) => total + step.duration, 0);
+  let elapsed = performance.now() % totalDuration;
+  for (const step of timeline) {
+    if (elapsed < step.duration) {
+      return animationFrames[step.frame] || animationFrames[0];
+    }
+    elapsed -= step.duration;
+  }
+  return animationFrames[0];
+}
+
 function drawNpcImage(item, options = {}) {
-  const image = assets.npcs[item.role];
+  const image = getNpcAnimationImage(item, options);
   if (!image) return false;
   const width = options.width || 76;
   const height = options.height || 168;
@@ -2155,6 +2194,25 @@ function drawRadioTerminal(item) {
 
 function drawWaterPc(item) {
   const pulse = 0.5 + Math.sin(performance.now() / 420) * 0.5;
+  const sprite = assets.objects.water_pc;
+  if (sprite) {
+    withCampPerspective(item, () => {
+      const width = 156;
+      const height = 196;
+      drawSoftShadow(0, 40, 78, 22, 0.32);
+      ctx.drawImage(sprite, -width / 2, -height + 50, width, height);
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = campProgress.waterFixed
+        ? `rgba(102, 255, 228, ${0.12 + pulse * 0.08})`
+        : `rgba(255, 91, 63, ${0.09 + pulse * 0.07})`;
+      ctx.beginPath();
+      ctx.ellipse(10, -82, 36, 16, -0.1, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+    });
+    return;
+  }
+
   withCampPerspective(item, () => {
     drawSoftShadow(0, 38, 74, 20, 0.34);
     ctx.fillStyle = "rgba(22, 22, 24, 0.95)";
@@ -2278,15 +2336,10 @@ function drawObjectInteractable(item) {
 }
 
 function drawNpcMarker(item) {
-  const objectDrawn = drawObjectInteractable(item);
-  if (item.role === "resistance_bot") {
-    drawResistanceBotNpc(item);
-  } else if (item.role === "lake_drone") {
-    drawLakeDroneNpc(item);
-  } else if (item.role) {
-    drawHumanNpc(item);
-  }
-  const isObject = objectDrawn || item.id === "north_exit" || item.id === "return_camp";
+  const isObject = item.id === "radio_xavor"
+    || item.id === "water_pc"
+    || item.id === "north_exit"
+    || item.id === "return_camp";
   const labelConfig = {
     radio_xavor: { labelLift: 94 },
     water_pc: { labelLift: 92 },
@@ -2298,8 +2351,16 @@ function drawNpcMarker(item) {
     radiusY: item.role === "lake_drone" ? 46 : isObject ? 27 : 23,
     labelLift: labelConfig.labelLift ?? (item.role === "lake_drone" ? 102 : isObject ? 82 : 66),
     labelDirection: labelConfig.labelDirection,
-    alwaysLabel: true,
   });
+
+  drawObjectInteractable(item);
+  if (item.role === "resistance_bot") {
+    drawResistanceBotNpc(item);
+  } else if (item.role === "lake_drone") {
+    drawLakeDroneNpc(item);
+  } else if (item.role) {
+    drawHumanNpc(item);
+  }
 }
 
 function getCorvoInteractable() {
@@ -2340,7 +2401,6 @@ function drawCorvo() {
     radiusX: 48,
     radiusY: 24,
     labelLift: 78,
-    alwaysLabel: true,
   });
 }
 
