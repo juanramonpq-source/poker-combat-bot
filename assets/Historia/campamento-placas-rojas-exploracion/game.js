@@ -1219,7 +1219,9 @@ function postStoryCampAction(action, payload = {}) {
 }
 
 function completeLocalCampStep(interactionId) {
-  if (interactionId === "radio_xavor") {
+  if (interactionId === "corvo") {
+    campProgress = writeCampProgress({ corvoIntroSeen: true });
+  } else if (interactionId === "radio_xavor") {
     campProgress = writeCampProgress({ corvoTrusted: true, xavorVerified: true });
   } else if (interactionId === "medic") {
     campProgress = writeCampProgress({ medicRequest: true });
@@ -1265,6 +1267,10 @@ function handleInteraction(interaction) {
   }
   if (action === "lake-cleared") {
     setInteractionMessage("El lago vuelve a correr limpio. Corvo ya no aparta la mirada.", 3.2);
+    return;
+  }
+  if (interaction.id === "radio_xavor" && !campProgress.corvoIntroSeen && !campProgress.corvoTrusted) {
+    setInteractionMessage("Es la radio que te dio Xavor, la dejo aquí por si tengo que contactar con él en algún momento", 4.2);
     return;
   }
 
