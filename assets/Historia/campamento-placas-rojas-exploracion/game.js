@@ -2512,18 +2512,48 @@ function drawHudHelp() {
   }
 
   if (interactionState.message && interactionState.messageTimer > 0) {
+    ctx.font = "800 15px Trebuchet MS, Segoe UI, sans-serif";
+    const messageLines = wrapCanvasText(interactionState.message, Math.min(viewport.width - 136, 680));
+    const messageLineHeight = 20;
+    const messageBoxWidth = Math.min(viewport.width - 96, 740);
+    const messageBoxHeight = Math.max(48, 28 + messageLines.length * messageLineHeight);
+    const messageBoxX = (viewport.width - messageBoxWidth) / 2;
+    const messageBoxY = viewport.height - messageBoxHeight - 12;
     ctx.fillStyle = "rgba(12, 8, 7, 0.8)";
     ctx.strokeStyle = "rgba(140, 236, 255, 0.3)";
     ctx.beginPath();
-    ctx.roundRect(230, viewport.height - 72, 500, 46, 18);
+    ctx.roundRect(messageBoxX, messageBoxY, messageBoxWidth, messageBoxHeight, 18);
     ctx.fill();
     ctx.stroke();
     ctx.fillStyle = "#fff3e6";
-    ctx.font = "800 15px Trebuchet MS, Segoe UI, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(interactionState.message, viewport.width / 2, viewport.height - 49);
+    ctx.textBaseline = "middle";
+    const firstLineY = messageBoxY + messageBoxHeight / 2 - ((messageLines.length - 1) * messageLineHeight) / 2;
+    messageLines.forEach((line, index) => {
+      ctx.fillText(line, viewport.width / 2, firstLineY + index * messageLineHeight);
+    });
   }
   ctx.restore();
+}
+
+function wrapCanvasText(text, maxWidth) {
+  const words = String(text || "").split(/\s+/).filter(Boolean);
+  if (!words.length) return [""];
+  const lines = [];
+  let currentLine = "";
+
+  words.forEach((word) => {
+    const candidate = currentLine ? `${currentLine} ${word}` : word;
+    if (!currentLine || ctx.measureText(candidate).width <= maxWidth) {
+      currentLine = candidate;
+      return;
+    }
+    lines.push(currentLine);
+    currentLine = word;
+  });
+
+  if (currentLine) lines.push(currentLine);
+  return lines;
 }
 
 function draw() {
