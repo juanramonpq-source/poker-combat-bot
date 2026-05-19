@@ -21515,7 +21515,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   state.turnCount = 2;
   state.phase = isStoryCampCombatMission(mission) ? 'Placas Rojas' : 'Torre 4B';
   state.tutorial = false;
-  state.projectileUnlocked = true;
+  state.projectileUnlocked = mission === 'camp_resistance_trial' ? false : true;
   state.attackMode = false;
   state.projectileMode = false;
   state.pendingDefense = null;
@@ -26285,7 +26285,7 @@ function handleMobileSpriteAction(action){
     case 'projectile':
       mobileSpriteProjectileOnlyMode = false;
       if(!canUseInteractiveTurnAction()) return;
-      if(state.pendingDefense || !state.projectileUnlocked || !state.players[state.currentPlayer].attack.some(isPlayableProjectileCard)) return;
+      if(state.pendingDefense || !canPlayerOpenMainAttack(state.players[state.currentPlayer], state.currentPlayer) || !state.projectileUnlocked || !state.players[state.currentPlayer].attack.some(isPlayableProjectileCard)) return;
       state.attackMode = true;
       state.projectileMode = !state.projectileMode;
       render();
@@ -28539,6 +28539,15 @@ function canPlayerOpenMainAttack(player, playerIdx = state.currentPlayer){
   const hasFuel = player.fuel.length > 0 || (hasDiamondBoosterArmorFuel(player) && player.armor.length > 0);
   return hasFuel && player.attack.some(isPlayableProjectileCard);
 }
+function storyMissionAllowsLooseProjectile(playerIdx = state.currentPlayer){
+  return storyMissionAllowsIrregularAttack(playerIdx) || isStoryArgosHackCombat(state.storyMission);
+}
+function canPlayerFireProjectileOnly(player, playerIdx = state.currentPlayer){
+  if(!state.projectileUnlocked || !player) return false;
+  if(!player.attack.some(isPlayableProjectileCard)) return false;
+  if(playerCanAttack(player)) return true;
+  return storyMissionAllowsLooseProjectile(playerIdx);
+}
 function refreshProjectileUnlock(){
   // This function is called after attacks to check if projectiles should be unlocked
   // Projectiles are unlocked only after the FIRST complete attack
@@ -28799,11 +28808,13 @@ function confirmAttack(projectileOnly=false){
   if(state.transitionLock) return;
   if(state.pendingDefense) return;
   closeCompactMobileDrawersForCombat();
-  if(projectileOnly && !state.projectileUnlocked){
-    return notifySelection('El ataque por proyectil se desbloquea cuando el primer mecha queda completamente operativo.');
-  }
   const attacker = state.players[state.currentPlayer];
   const attackerIdx = state.currentPlayer;
+  if(projectileOnly && !canPlayerFireProjectileOnly(attacker, attackerIdx)){
+    return notifySelection(state.projectileUnlocked
+      ? 'Necesitas un mecha operativo antes de disparar proyectiles.'
+      : 'El ataque por proyectil se desbloquea cuando el primer mecha realiza un ataque válido.');
+  }
   if(!canPlayerOpenMainAttack(attacker, attackerIdx) && !projectileOnly){
     return notifySelection('Tu mecha aún no puede realizar un ataque principal.');
   }
@@ -30001,7 +30012,7 @@ function getMechaPhaseImage(player){
   if(a) return MECHA_IMAGES.base_ataque;
   return MECHA_IMAGES.base;
 }
-function maybeQueueProjectilePrompt(){if(!state.projectileUnlocked||state.pendingDefense||state.winner)return;const player=state.players[state.currentPlayer];if(!player)return;if(player.attack&&player.attack.some(isPlayableProjectileCard)&&state.projectilePromptPlayer!==state.currentPlayer)state.projectilePromptPlayer=state.currentPlayer;}
+function maybeQueueProjectilePrompt(){if(!state.projectileUnlocked||state.pendingDefense||state.winner)return;const player=state.players[state.currentPlayer];if(!player)return;const hasProjectileAttack=player.attack&&player.attack.some(isPlayableProjectileCard);const canUseProjectile=canPlayerOpenMainAttack(player,state.currentPlayer)||canPlayerFireProjectileOnly(player,state.currentPlayer);if(hasProjectileAttack&&canUseProjectile&&state.projectilePromptPlayer!==state.currentPlayer)state.projectilePromptPlayer=state.currentPlayer;}
 
 function renderRadarMecha(){
   if(!state.players || state.players.length === 0) return;
@@ -30219,10 +30230,11 @@ function aiEstimateThreatPotential(player){
     ? Math.max(...playableAttackCards.map(card => card.value))
     : 0;
   const playerIdx = state.players.indexOf(player);
+  const canFireLooseProjectile = canPlayerFireProjectileOnly(player, playerIdx);
   const mainThreat = canPlayerOpenMainAttack(player, playerIdx)
     ? Math.min(sumCards(playableAttackCards), sumCards(player.fuel) * 2)
     : 0;
-  return Math.max(mainThreat, bestProjectile);
+  return Math.max(mainThreat, canFireLooseProjectile ? bestProjectile : 0);
 }
 function aiEstimateDurability(player){
   if(!player) return 0;
@@ -30463,7 +30475,7 @@ function aiChooseBestAttackPlan(player, difficulty){
     });
   }
 
-  if(state.projectileUnlocked){
+  if(canPlayerFireProjectileOnly(player, state.currentPlayer)){
     selectableAttack.forEach(projectileCard => {
       const outcome = aiSimulateAttackOutcome(defender, projectileCard.value);
       plans.push({
@@ -30529,7 +30541,7 @@ function aiShouldUseFigureBurst(player, difficulty, modifyPlan, attackPlan){
 }
 function aiCanExecuteAttackPlan(player, attackPlan){
   if(!player || !attackPlan) return false;
-  if(attackPlan.projectileOnly) return !!state.projectileUnlocked;
+  if(attackPlan.projectileOnly) return canPlayerFireProjectileOnly(player, state.currentPlayer);
   return canPlayerOpenMainAttack(player, state.currentPlayer);
 }
 function aiTryAttackPlan(player, attackPlan){
@@ -30847,9 +30859,8 @@ function canConfirmAttackNow(){
 function canProjectileOnlyNow(){
   if(state.transitionLock) return false;
   if(state.pendingDefense || state.winner) return false;
-  if(!state.projectileUnlocked) return false;
   const player = state.players[state.currentPlayer];
-  return player.attack.some(isPlayableProjectileCard);
+  return canPlayerFireProjectileOnly(player, state.currentPlayer);
 }
 function markButtonEnabled(id, enabled, hot=false){
   const btn = document.getElementById(id);
@@ -30867,7 +30878,7 @@ function updateButtons(){
   const saveSupport = getSaveSupportState();
   const player = state.players[state.currentPlayer] || { hand:[], attack:[] };
   const canAttackMain = canPlayerOpenMainAttack(player, state.currentPlayer);
-  const canAnyProjectile = state.projectileUnlocked && player.attack.some(isPlayableProjectileCard);
+  const canAnyProjectile = canAttackMain && state.projectileUnlocked && player.attack.some(isPlayableProjectileCard);
   const tutorialModifyEnabled = tutorialAllowsButton('actionAddBtn') && canModifySelection();
   const hasDraftSelection = hasActiveDraftPlacement();
 
@@ -31166,7 +31177,7 @@ document.getElementById('cancelAttackBtn').addEventListener('click', () => {
 });
 document.getElementById('toggleProjectileBtn').addEventListener('click', () => {
   if(!canUseInteractiveTurnAction()) return;
-  if(state.pendingDefense || !state.projectileUnlocked || !state.players[state.currentPlayer].attack.some(isPlayableProjectileCard)) return;
+  if(state.pendingDefense || !canPlayerOpenMainAttack(state.players[state.currentPlayer], state.currentPlayer) || !state.projectileUnlocked || !state.players[state.currentPlayer].attack.some(isPlayableProjectileCard)) return;
   state.projectileMode = !state.projectileMode;
   render();
 });
