@@ -10245,7 +10245,7 @@
       targetUrl.searchParams.set('story_camp_return_scene', returnScene);
       targetUrl.searchParams.set('story_standalone', '1');
       targetUrl.searchParams.set('story_return', window.location.href);
-      targetUrl.searchParams.set('v', '20260518-red-plates-combat');
+      targetUrl.searchParams.set('v', '20260519-story-combat-tutorial-optional');
       const extraDeckCards = encodeStoryDeckCardsParam();
       if (extraDeckCards) targetUrl.searchParams.set('story_deck_cards', extraDeckCards);
       return targetUrl.href;
@@ -10772,7 +10772,7 @@
       targetUrl.searchParams.set('story_opening_sfx', 'external');
       targetUrl.searchParams.set('story_brief', 'on');
       targetUrl.searchParams.set('story_tower_return_scene', payload.returnScene || STORY_TOWER_COMBAT_RETURN_SCENES[mission] || 'exterior');
-      targetUrl.searchParams.set('v', '20260507-argos-hack-gate-scroll');
+      targetUrl.searchParams.set('v', '20260519-story-combat-tutorial-optional');
       if (options.standalone) {
         targetUrl.searchParams.set('story_standalone', '1');
         targetUrl.searchParams.set('story_return', window.location.href);
