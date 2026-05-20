@@ -77,6 +77,15 @@
     };
     if (point.label) normalized.label = String(point.label);
     normalized.scale = Math.max(0.2, Math.min(3, scale));
+    if (Array.isArray(point.path)) {
+      const path = point.path
+        .map((pathPoint) => ({
+          x: toFiniteNumber(pathPoint?.x),
+          y: toFiniteNumber(pathPoint?.y),
+        }))
+        .filter((pathPoint) => Number.isFinite(pathPoint.x) && Number.isFinite(pathPoint.y));
+      if (path.length) normalized.path = path;
+    }
     return normalized;
   }
 
@@ -174,6 +183,7 @@
       point.radius = override.radius;
       if (override.label) point.label = override.label;
       if (Number.isFinite(override.scale)) point.scale = override.scale;
+      if (Array.isArray(override.path)) point.path = clone(override.path);
     });
     return targetPoints;
   }

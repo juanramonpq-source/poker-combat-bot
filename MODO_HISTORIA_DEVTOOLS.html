@@ -102,6 +102,17 @@
     .music-panel{
       margin-bottom:16px;
     }
+    .text-tool-panel{
+      margin-bottom:16px;
+    }
+    .text-tool-frame{
+      width:100%;
+      min-height:min(78vh, 860px);
+      border:1px solid rgba(143,244,255,.18);
+      border-radius:18px;
+      background:#101315;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
+    }
     .panel{
       border:1px solid var(--line);
       border-radius:24px;
@@ -599,6 +610,26 @@
       </div>
     </article>
 
+    <article class="panel text-tool-panel">
+      <div class="panel-head">
+        <h2>Editor de textos de capítulos</h2>
+        <span class="kicker">JSON de cambios</span>
+      </div>
+      <div class="panel-body">
+        <div class="status">Formulario de autoría para editar conversaciones y exploración. Genera un JSON con solo los textos modificados para aplicarlos después en el juego.</div>
+        <div class="actions">
+          <button class="primary" id="openChapterTextEditorBtn" type="button">Abrir editor en pestaña</button>
+          <button id="reloadChapterTextEditorBtn" type="button">Recargar editor</button>
+        </div>
+        <iframe
+          id="chapterTextEditorFrame"
+          class="text-tool-frame"
+          title="Editor de textos de capítulos"
+          src="editor_textos_capitulos.html"
+          loading="lazy"></iframe>
+      </div>
+    </article>
+
     <section class="grid">
       <article class="panel">
         <div class="panel-head">
@@ -727,6 +758,7 @@
                 <button data-collision-mode="move" type="button">Mover</button>
                 <button data-collision-mode="resize" type="button">Radio</button>
                 <button data-collision-mode="scale" type="button">Tamaño</button>
+                <button data-collision-mode="route" type="button">Ruta</button>
               </div>
               <select id="collisionInteractionSelect" aria-label="Personaje u objeto editable"></select>
               <div class="collision-tool-grid" role="group" aria-label="Forma de zona nueva">
@@ -757,7 +789,7 @@
     </section>
   </main>
 
-  <script src="assets/Historia/story-collision-editor.js?v=20260518-entities-editor"></script>
+  <script src="assets/Historia/story-collision-editor.js?v=20260520-route-editor"></script>
   <script>
     const STORY_PAGE = 'MODO_HISTORIA_BOCETO.html';
     const STORY_PROGRESS_SAVE_KEY = 'pocobot_story_progress_v1';
@@ -826,6 +858,7 @@
       { label:'Historia - Cleo PoCoBOT', src:'assets/Historia/CleoPoCoBOT.mp3' },
       { label:'Historia - Cleo PoCoBOT 2', src:'assets/Historia/CleoPoCoBOT 2.mp3' },
       { label:'Historia - Coloso Final', src:'assets/Historia/Coloso Final_ Ascenso de los Mechas.mp3' },
+      { label:'Historia - Camp', src:'assets/Historia/Camp.mp3' },
       { label:'Historia - Campamento de placas rojas', src:'assets/Historia/Campamento de placas rojas.mp3' },
       { label:'Historia - Corvo Vanta', src:'assets/Historia/CorvoVanta.mp3' },
       { label:'Historia - Engranes de Titanio exploracion', src:'assets/Historia/EngranesdeTitanio(Exploración).mp3' },
@@ -846,6 +879,7 @@
       { label:'Historia - Sistema Corrupto', src:'assets/Historia/SistemaCorrupto.mp3' },
       { label:'Historia - Titanium Gears', src:'assets/Historia/Titanium Gears.mp3' },
       { label:'Historia - Xavor Glitch', src:'assets/Historia/XavorGlitch.mp3' },
+      { label:'SFX - Radio Roger Beep', src:'assets/Historia/sfx/walkie_roger_beep_cc0.mp3' },
       { label:'Ambiente - Mercado muchedumbre', src:'assets/Historia/mercado-reles-muertos-tutorial/assets/market-crowd-ambience-unstuntedsfx.mp3' }
     ];
 
@@ -1655,6 +1689,7 @@
         point.y = physical.y;
         point.radius = physical.radius;
         point.scale = getInteractionScale(physical);
+        if(Array.isArray(physical.path)) point.path = cloneInteractionPoints(physical.path);
       });
       return next;
     }
@@ -1777,6 +1812,9 @@
     function translateInteractionPoint(point, dx, dy){
       point.x += dx;
       point.y += dy;
+      if(Array.isArray(point.path) && point.path.length){
+        point.path[0] = { x:point.x, y:point.y };
+      }
     }
 
     function setInteractionPointRadius(point, radius){
@@ -1785,6 +1823,31 @@
 
     function setInteractionPointScale(point, scale){
       point.scale = Math.round(Math.max(0.2, Math.min(3, Number(scale) || getInteractionScale(point))) * 100) / 100;
+    }
+
+    function cloneInteractionPath(path){
+      return Array.isArray(path)
+        ? path.map(point => ({ x:Number(point.x) || 0, y:Number(point.y) || 0 }))
+        : [];
+    }
+
+    function ensureInteractionPath(point){
+      if(!point) return [];
+      if(!Array.isArray(point.path) || !point.path.length){
+        point.path = [{ x:point.x, y:point.y }];
+      }else{
+        point.path[0] = { x:point.x, y:point.y };
+      }
+      return point.path;
+    }
+
+    function nearestInteractionPathPoint(point, interaction){
+      if(!Array.isArray(interaction?.path)) return -1;
+      return interaction.path.findIndex(pathPoint => {
+        const dx = point.x - pathPoint.x;
+        const dy = point.y - pathPoint.y;
+        return dx * dx + dy * dy <= 16 * 16;
+      });
     }
 
     function readCollisionInputNumber(input){
@@ -1824,6 +1887,28 @@
       const spriteWidth = Math.max(22, 58 * visualScale);
       const spriteHeight = Math.max(28, 104 * visualScale);
       collisionCtx.save();
+      const path = cloneInteractionPath(point.path);
+      if(path.length > 1){
+        collisionCtx.strokeStyle = selected ? 'rgba(255, 216, 100, 0.96)' : 'rgba(126, 255, 196, 0.76)';
+        collisionCtx.lineWidth = selected ? 5 : 3;
+        collisionCtx.setLineDash([14, 10]);
+        collisionCtx.beginPath();
+        path.forEach((pathPoint, pathIndex) => {
+          if(pathIndex === 0) collisionCtx.moveTo(pathPoint.x, pathPoint.y);
+          else collisionCtx.lineTo(pathPoint.x, pathPoint.y);
+        });
+        collisionCtx.stroke();
+        collisionCtx.setLineDash([]);
+        path.forEach((pathPoint, pathIndex) => {
+          collisionCtx.beginPath();
+          collisionCtx.arc(pathPoint.x, pathPoint.y, pathIndex === 0 ? 9 : 7, 0, Math.PI * 2);
+          collisionCtx.fillStyle = pathIndex === 0 ? 'rgba(255, 122, 138, 0.96)' : 'rgba(126, 255, 196, 0.94)';
+          collisionCtx.strokeStyle = 'rgba(0, 0, 0, 0.72)';
+          collisionCtx.lineWidth = 2;
+          collisionCtx.fill();
+          collisionCtx.stroke();
+        });
+      }
       collisionCtx.beginPath();
       collisionCtx.roundRect(point.x - spriteWidth / 2, point.y - spriteHeight, spriteWidth, spriteHeight, 10);
       collisionCtx.fillStyle = selected ? 'rgba(255, 216, 100, 0.12)' : 'rgba(255, 177, 92, 0.08)';
@@ -1870,6 +1955,11 @@
       const label = `${point.label || point.id} · x${visualScale.toFixed(2)}`;
       collisionCtx.strokeText(label, point.x, point.y - point.radius - 10);
       collisionCtx.fillText(label, point.x, point.y - point.radius - 10);
+      if(selected && path.length > 1){
+        collisionCtx.font = '800 15px Trebuchet MS';
+        collisionCtx.strokeText(`${path.length} puntos de ruta`, point.x, point.y - point.radius - 32);
+        collisionCtx.fillText(`${path.length} puntos de ruta`, point.x, point.y - point.radius - 32);
+      }
       collisionCtx.restore();
     }
 
@@ -1934,7 +2024,8 @@
         x:point.x,
         y:point.y,
         radius:point.radius,
-        scale:getInteractionScale(point)
+        scale:getInteractionScale(point),
+        path:cloneInteractionPath(point.path)
       })), null, 2);
       const fields = Object.values(collisionZoneInputs);
       fields.forEach(input => { input.disabled = true; input.value = ''; });
@@ -2034,7 +2125,7 @@
     function setCollisionMode(mode){
       const nextMode = collisionEditor.layer === 'interactions' && mode === 'draw'
         ? 'move'
-        : collisionEditor.layer === 'zones' && (mode === 'resize' || mode === 'scale')
+        : collisionEditor.layer === 'zones' && (mode === 'resize' || mode === 'scale' || mode === 'route')
           ? 'move'
           : mode;
       collisionEditor.mode = nextMode;
@@ -2042,7 +2133,7 @@
         button.classList.toggle('active', button.dataset.collisionMode === nextMode);
         button.disabled =
           (collisionEditor.layer === 'interactions' && button.dataset.collisionMode === 'draw') ||
-          (collisionEditor.layer === 'zones' && (button.dataset.collisionMode === 'resize' || button.dataset.collisionMode === 'scale'));
+          (collisionEditor.layer === 'zones' && (button.dataset.collisionMode === 'resize' || button.dataset.collisionMode === 'scale' || button.dataset.collisionMode === 'route'));
       });
       collisionCanvas.style.cursor = nextMode === 'erase'
         ? 'not-allowed'
@@ -2052,6 +2143,8 @@
             ? 'ew-resize'
             : nextMode === 'scale'
               ? 'nwse-resize'
+              : nextMode === 'route'
+                ? 'copy'
             : 'crosshair';
     }
 
@@ -2069,9 +2162,9 @@
       });
       if(collisionEditor.layer === 'interactions'){
         if(collisionEditor.mode === 'draw') collisionEditor.mode = 'move';
-        setCollisionStatus('Personajes y objetos: usa Mover para desplazar, Radio para el trigger, Tamaño para la escala visual, o edita los campos.');
+        setCollisionStatus('Personajes y objetos: usa Mover, Radio, Tamaño o Ruta para programar patrullas punto a punto.');
       }else{
-        if(collisionEditor.mode === 'resize' || collisionEditor.mode === 'scale') collisionEditor.mode = 'move';
+        if(collisionEditor.mode === 'resize' || collisionEditor.mode === 'scale' || collisionEditor.mode === 'route') collisionEditor.mode = 'move';
         setCollisionStatus('Colisiones: dibuja rectangulos u ovalos rojos, mueve o borra zonas fisicas.');
       }
       setCollisionMode(collisionEditor.mode);
@@ -2116,7 +2209,8 @@
           x:point.x,
           y:point.y,
           radius:point.radius,
-          scale:getInteractionScale(point)
+          scale:getInteractionScale(point),
+          path:cloneInteractionPath(point.path)
         }))
       }, null, 2);
     }
@@ -2160,8 +2254,15 @@
         const nextH = readCollisionInputNumber(collisionZoneInputs.h);
         if(!Number.isFinite(nextX) || !Number.isFinite(nextY)) return;
         pushCollisionHistory();
+        const dx = nextX - point.x;
+        const dy = nextY - point.y;
         point.x = nextX;
         point.y = nextY;
+        if(Array.isArray(point.path) && point.path.length){
+          point.path = point.path.map((pathPoint, index) => index === 0
+            ? { x:point.x, y:point.y }
+            : { x:pathPoint.x + dx, y:pathPoint.y + dy });
+        }
         if(Number.isFinite(nextW)) point.radius = Math.max(1, nextW);
         if(Number.isFinite(nextH)) setInteractionPointScale(point, nextH);
         refreshCollisionEditor();
@@ -2228,10 +2329,33 @@
           if(collisionEditor.mode === 'erase'){
             if(index >= 0){
               pushCollisionHistory();
-              collisionEditor.interactions.splice(index, 1);
-              collisionEditor.selectedInteractionIndex = -1;
+              const selectedPoint = collisionEditor.interactions[index];
+              const pathPointIndex = nearestInteractionPathPoint(point, selectedPoint);
+              if(Array.isArray(selectedPoint?.path) && selectedPoint.path.length > 1 && pathPointIndex > 0){
+                selectedPoint.path.splice(pathPointIndex, 1);
+                collisionEditor.selectedInteractionIndex = index;
+                setCollisionStatus('Punto de ruta borrado. Pulsa actualizar fisica para guardar el cambio.');
+              }else{
+                collisionEditor.interactions.splice(index, 1);
+                collisionEditor.selectedInteractionIndex = -1;
+                setCollisionStatus('Punto de interaccion borrado. Pulsa actualizar fisica para guardar el cambio.');
+              }
               refreshCollisionEditor();
-              setCollisionStatus('Punto de interaccion borrado. Pulsa actualizar fisica para guardar el cambio.');
+            }
+            return;
+          }
+          if(collisionEditor.mode === 'route'){
+            const routeIndex = index >= 0 ? index : collisionEditor.selectedInteractionIndex;
+            const selectedPoint = collisionEditor.interactions[routeIndex];
+            if(selectedPoint){
+              pushCollisionHistory();
+              const path = ensureInteractionPath(selectedPoint);
+              path.push({ x:Math.round(point.x), y:Math.round(point.y) });
+              collisionEditor.selectedInteractionIndex = routeIndex;
+              refreshCollisionEditor();
+              setCollisionStatus(`Ruta de ${selectedPoint.label || selectedPoint.id}: ${path.length} puntos. Pulsa actualizar fisica para guardar.`);
+            }else{
+              setCollisionStatus('Selecciona un personaje u objeto antes de añadir puntos de ruta.');
             }
             return;
           }
@@ -3064,6 +3188,16 @@
 
     document.getElementById('reloadBtn').addEventListener('click', () => {
       window.location.reload();
+    });
+
+    document.getElementById('openChapterTextEditorBtn').addEventListener('click', () => {
+      window.open('editor_textos_capitulos.html', '_blank', 'noopener');
+    });
+
+    document.getElementById('reloadChapterTextEditorBtn').addEventListener('click', () => {
+      const frame = document.getElementById('chapterTextEditorFrame');
+      if(frame) frame.src = `editor_textos_capitulos.html?v=${Date.now()}`;
+      setStatus('Editor de textos recargado.');
     });
 
     toggleSkipCombatsBtn.addEventListener('click', () => {

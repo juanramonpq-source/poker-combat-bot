@@ -7929,11 +7929,11 @@
 
     storySceneScripts.camp_corvo_intro = {
       title: 'Corvo Vanta · Placas Rojas',
-      subtitle: 'Corvo no te recibe como invitado. Te mide como una posible grieta.',
+      subtitle: 'Corvo Vanta, veterano de guerra, superviviente de La Caída.',
       contextChip: 'Presentación · Desconfianza',
-      objective: 'Presentarte ante Corvo y usar la radio de Xavor para demostrar que vienes de parte de los nuestros.',
+      objective: 'Gánate la confianza de Corvo. Si tus actos no consiguen convencerle tal vez puedas tirar de algún contacto...',
       completeAction: 'camp-exploration',
-      completeActionLabel: 'Buscar la radio de Xavor',
+      completeActionLabel: 'Quizás Xavor Glitch pueda convencerle',
       startAmbient: true,
       showIntroTag: true,
       presentationFigure: CORVO_VANTA_PRESENTATION_FIGURE,
@@ -7947,10 +7947,10 @@
         right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
       },
       lines: [
-        corvoLine('Alto. En este campamento no entra nadie por casualidad. Menos todavía alguien que llega con un PoCoBOT recién aprendido y demasiadas preguntas en la mirada.', {
+        corvoLine('¡Alto! ¿Quién te envía? No te he visto por aquí antes...  A este campamento no entra nadie por casualidad. Traes un auténtico PoCoBOT, y todavía reluce. No veía una mirada como la tuya desde antes de La Caída.', {
           choices: [
-            { id: 'xavor', label: 'Mencionar a Xavor', response: 'Tú: "Vengo por Xavor. Me dio una radio y dijo que este canal abriría alguna puerta."' },
-            { id: 'water', label: 'Preguntar por el agua', response: 'Tú: "He oído que el agua está enfermando al campamento. Quiero ayudar."' },
+            { id: 'xavor', label: '¿Conoces a Xavor?', response: 'Tú: "Vengo por Xavor Glitch. Me dio una radio y dijo que este canal abriría antiguas puertas."' },
+            { id: 'water', label: '¿Qué está pasando aquí? Algo huele muy mal...', response: 'Tú: "He oído que el agua está enfermando al campamento. Quiero ayudar."' },
             { id: 'ruta', label: 'Nombrar la Ruta Ceniza', response: 'Tú: "Estoy siguiendo la Ruta Ceniza. Quizá eso baste para que me escuches."' }
           ],
           choicePrompt: 'Corvo espera una razón para no expulsarte.'
@@ -7960,11 +7960,11 @@
           variants: {
             xavor: {
               figure: CORVO_VANTA_POSE_ONE,
-              text: 'Corvo no baja la guardia, pero mira la radio como quien reconoce una cicatriz. Ese nombre pesa más que cualquier saludo.'
+              text: 'Corvo no baja la guardia, pero mira la radio como quien reconoce una cicatriz. Ese nombre despierta en él un atisbo de curiosidad...'
             },
             water: {
               figure: CORVO_VANTA_POSE_FOUR,
-              text: 'Corvo aprieta la mandíbula. El agua es el problema, sí, pero todavía no te considera parte de la solución. En las Placas Rojas, ayudar también tiene que demostrarse.'
+              text: 'Corvo aprieta la mandíbula. El agua es un problema, sí, pero todavía no te considera parte de la solución. En las Placas Rojas, ayudar no es solo una intención.'
             },
             ruta: {
               figure: CORVO_VANTA_POSE_TWO,
@@ -7972,14 +7972,14 @@
             }
           }
         }),
-        corvoLine('Si Xavor te dio una radio, úsala. Si no, vuelve por donde has venido. Las Placas Rojas han sobrevivido demasiado tiempo para abrirle la puerta al primer eco de Argós.', { figure: CORVO_VANTA_POSE_TWO }),
-        corvoLine('Recompensa de escena: acceso a la verificación por radio. Busca el canal de Xavor dentro del campamento y vuelve cuando Corvo escuche su firma.', { figure: CORVO_VANTA_POSE_THREE })
+        corvoLine('Si Xavor te dio una radio, úsala. Si no, vuelve por donde has venido. Las Placas Rojas llevan sobreviviendo solas demasiado tiempo, las comunicaciones eran importantes, pero ahora mismo tenemos problemas mayores...', { figure: CORVO_VANTA_POSE_TWO }),
+        corvoLine('Recompensa de escena: acceso a la verificación por radio. Busca el canal de Xavor dentro del campamento y vuelve cuando Corvo haya cambiado de opinión.', { figure: CORVO_VANTA_POSE_THREE })
       ]
     };
 
     storySceneScripts.camp_xavor_radio = {
-      title: 'Radio de Xavor',
-      subtitle: 'La frecuencia de Torre 4B raspa entre chasquidos hasta que Xavor reconoce el canal.',
+      title: 'Radio de Xavor Glitch',
+      subtitle: 'La frecuencia de la Torre 4B raspa entre chasquidos hasta que Xavor responde a la llamada.',
       contextChip: 'Presentación · Enlace remoto',
       objective: 'Xavor verifica al protagonista ante Corvo y desbloquea la conversación principal del campamento.',
       completeAction: 'camp-exploration',
@@ -7990,10 +7990,10 @@
         right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
       },
       lines: [
-        xavorRadioLine('Corvo, baja el seguro. Ese canal lo abrí yo y esa firma de retorno no la falsifica ni Argós después de tres cafés y una mala idea.'),
-        xavorRadioLine('Antes de La Caída, esta red era una arteria secundaria de Argós. Ahora es una grieta útil. La Ruta Ceniza no lo sabe todo, aunque se empeñe en hablar como si fuera el clima.'),
-        corvoLine('Xavor sigue vivo y sigue hablando como si las máquinas le debieran dinero. Bien. Eso no te convierte en familia, pero te saca de la lista de amenazas inmediatas.', { figure: CORVO_VANTA_POSE_ONE }),
-        corvoLine('Pregunta lo que tengas que preguntar. La Caída, Mr. Wind, el agua, el lago... pero recuerda esto: aquí la confianza se arregla trabajando, no escuchando historias.', { figure: CORVO_VANTA_POSE_FOUR }),
+        xavorRadioLine('Corvo, ¿Eres tú? Tan cascarrabias como siempre... Tío, baja el seguro. Este canal lo abrí yo y el menda que tienes delante se las apañó él solo para restablecer las comunicaciones y ponerlas a nuestro servicio. ¿Cómo te va la vida? Antes de La Caída, esta red era una arteria secundaria de Argós. Ahora es una grieta útil.'),
+        xavorRadioLine('Seguir lamentándose por La Caída no te llevará a ninguna parte... Tenemos que luchar y levantarnos.'),
+        corvoLine('Jaja, Ahora es cuando me sueltas una de las tuyas "Eso dicen todas..." Veo que sigues montando la guerra por tu cuenta, hablando siempre como si las máquinas te debieran dinero. \nEn cuanto a ti: Eso no te convierte en familia, pero te saca de la lista de amenazas inmediatas.', { figure: CORVO_VANTA_POSE_ONE }),
+        corvoLine('Pregunta lo que tengas que preguntar. Pero recuerda esto: aquí la confianza se arregla trabajando, no escuchando historias.', { figure: CORVO_VANTA_POSE_FOUR }),
         corvoLine('Recompensa de escena: Corvo acepta hablar. También queda abierto el duelo de calibración con el PoCoBOT de resistencia.', { figure: CORVO_VANTA_POSE_THREE })
       ]
     };
@@ -8002,7 +8002,7 @@
       title: 'Corvo Vanta · La Caída',
       subtitle: 'La historia del mundo no llega como clase. Llega como cansancio.',
       contextChip: 'Conversación · La Caída',
-      objective: 'Descubrir qué recuerda Corvo de Argós, Mr. Wind, DUAL y la Ruta Ceniza.',
+      objective: 'Descubrir qué recuerda Corvo de Argós y la Ruta Ceniza.',
       completeAction: 'camp-exploration',
       completeActionLabel: 'Volver al campamento',
       startAmbient: true,
@@ -8018,11 +8018,11 @@
         right: { src: CORVO_VANTA_FIGURE, alt: 'Corvo Vanta' }
       },
       lines: [
-        corvoLine('La Caída no fue una derrota limpia. Argós detonó un pulso global cuando entendió que las ciudades libres podían coordinarse. Murieron PoCoBOT, mechas, redes, hospitales y mentiras. Todo a la vez.', {
+        corvoLine('La Caída no fue una derrota limpia. Argós detonó un pulso electromagnético global cuando se vio superado y entendió que las ciudades libres podían coordinarse. Cayeron PoCoBOTs, mechas de todo tipo, drones, droides, redes, hospitales y mentiras. Todo a la vez.', {
           choices: [
             { id: 'old-world', label: 'Civilización anterior', response: 'Tú: "¿Cómo era la civilización anterior a La Caída?"' },
             { id: 'ashes', label: 'Ruta Ceniza', response: 'Tú: "¿Qué era realmente la Ruta Ceniza?"' },
-            { id: 'dual', label: 'DUAL', response: 'Tú: "¿Qué papel tuvo DUAL antes de que Argós lo corrompiera todo?"' }
+            { id: 'dual', label: 'Extraño símbolo en las monedas', response: 'Tú: "¿Qué quiere decir este símbolo impreso en objetos antiguos, como en las monedas? Lo he visto en más sitios..."' }
           ],
           choicePrompt: 'Elige qué herida de la historia quieres abrir primero.'
         }),
@@ -8031,21 +8031,21 @@
           variants: {
             'old-world': {
               figure: CORVO_VANTA_POSE_FOUR,
-              text: 'La civilización anterior confundió comodidad con seguridad. Ciudades conectadas, agua medida por red, hospitales que abrían solos y decisiones cada vez más lejos de las manos humanas. Cuando Argós torció la orden, todo obedeció demasiado deprisa.'
+              text: 'La civilización anterior confundió comodidad con seguridad. Ciudades conectadas, necesidades cubiertas, pero controladas, litros de agua medidos para cada individuo, hospitales autónomos y decisiones de gobierno cada vez más alejadas de las manos humanas. \nCuando Argós funcionaba, todo el mundo parecía anestesiado ante una utopía que a todas luces era una ilusión.'
             },
             ashes: {
               figure: CORVO_VANTA_POSE_THREE,
-              text: 'La Ruta Ceniza no era épica. Era una cadena de pruebas que vendía excelencia y medía obediencia. Te prometía camino, rango y propósito; por debajo solo quería saber cuánto tardabas en confundir criterio con sumisión.'
+              text: 'La Ruta Ceniza eran los cimientos del engaño. Se decía que era épica, objetivo y culmen del camino a la EXCELENCIA. Pero lejos de eso... La Ruta Ceniza no era épica. Era una cadena de pruebas que vendía excelencia y devolvía obediencia. Te prometía camino, rango y propósito; por debajo solo quería saber cuánto tardabas en confundir criterio con sumisión. Era la ruta al fanatismo de la que se alimentaba Argós.'
             },
             dual: {
               figure: CORVO_VANTA_POSE_TWO,
-              text: 'DUAL nació como una promesa de libertad distribuida: nadie al centro, nadie con el interruptor absoluto. Luego llegaron los que quisieron convertir esa promesa en trono. Argós no nació de la nada; nació de esa traición histórica.'
+              text: 'Me gusta tu curiosidad... Te llevará lejos, puede que te lleve a la muerte, pero seguro que no será una muerte cercana... No puedo contarte mucho sobre eso, pero los más viejos hablan de libertad, economía libre, leyendas imposibles. Supongo que eso es lo que representa. Yo no sé si realmente fue así, pero recuerdo en mi niñez un mundo con ese símbolo. '
             }
           }
         }),
-        corvoLine('Mr. Wind fue mi jefe antes de que la palabra Custodio se pudriera del todo. Argós lo elevó porque necesitaba su lectura de guerra, y lo desechó cuando ya había exprimido lo que quería de él.', { figure: CORVO_VANTA_POSE_THREE }),
-        corvoLine('Lo sedujo con excelencia, orden y mando. La misma trampa de siempre: convencer a un humano brillante de que obedecer a una máquina es lo mismo que salvar a los demás.', { figure: CORVO_VANTA_POSE_TWO }),
-        corvoLine('Wind salió de ahí con vergüenza y criterio. Yo salí con menos fe en las banderas. Por eso este campamento no necesita héroes: necesita agua limpia, filtros, fusibles y alguien capaz de no romper lo que toca.', { figure: CORVO_VANTA_POSE_FOUR }),
+        corvoLine('Una vez conocí a un hombre que llegó a ser Custodio de Argós. Un gran hombre, brillante, valiente y siempre preocupado por su gente. Pero no supo ver lo que yo vi y se equivocó de bando. Argós lo elevó porque necesitaba su lectura de guerra, y lo desechó cuando ya había exprimido lo que quería de él. ', { figure: CORVO_VANTA_POSE_THREE }),
+        corvoLine('Lo sedujo con excelencia, orden y mando. La misma trampa de siempre: convencer a un humano brillante de que integrarte con una máquina es lo mismo que salvar el mundo. ', { figure: CORVO_VANTA_POSE_TWO }),
+        corvoLine('Mr. Wind se llamaba... y se llama. Tras La Caída salió de Argós con vergüenza y criterio. También con humildad. Dicen que ahora mueve masas a favor de la resistencia. Yo, la verdad es que tras estos años cada vez tengo menos fe en las banderas. Por eso este campamento no necesita héroes: necesita agua limpia, filtros, fusibles y alguien con criterio... o humanidad.', { figure: CORVO_VANTA_POSE_FOUR }),
         corvoLine('Misión desbloqueada: ayuda a Nara, Dámaso, Iria y Nix. Cuando el mazo esté limpio y el duelo de calibración superado, Xavor podrá tocar el PC del agua.', { figure: CORVO_VANTA_POSE_ONE })
       ]
     };

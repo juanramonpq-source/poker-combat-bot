@@ -125,8 +125,12 @@
     canvas{display:block;max-width:100%;height:auto;margin:auto}
     .tools{display:grid;gap:10px}
     .tool-group{display:grid;gap:8px;padding:10px;border:1px solid rgba(147,203,255,.14);border-radius:14px;background:rgba(255,255,255,.025)}
+    .tool-subgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+    .tool-subgrid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .tool-subgrid .btn{padding:8px 7px;border-radius:10px;font-size:.72rem}
     .tool-button.active{background:rgba(86,215,255,.22);border-color:var(--cyan)}
     .inspector{display:grid;gap:10px}
+    .map-json{min-height:150px;max-height:260px;font-size:.72rem;font-family:"SFMono-Regular",Consolas,monospace;text-transform:none;letter-spacing:0}
     .status{min-height:1.3em;color:var(--mint);font-size:.86rem}
     .list{display:grid;gap:10px;margin-top:12px}
     .item-title{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
@@ -262,7 +266,29 @@
               </div>
               <aside class="tools">
                 <div class="tool-group">
-                  <h3>Herramientas</h3>
+                  <h3>Editor tipo devtools</h3>
+                  <p class="hint">Elige capa, modo y forma. “Radio” cambia el área de activación; “Tamaño” ajusta la escala visual.</p>
+                  <div class="tool-subgrid" role="group" aria-label="Capa de mapa">
+                    <button class="btn tool-button active" type="button" data-map-layer="collisions">Colisiones</button>
+                    <button class="btn tool-button" type="button" data-map-layer="interactions">Interacciones</button>
+                    <button class="btn tool-button" type="button" data-map-layer="enemies">Enemigos</button>
+                    <button class="btn tool-button" type="button" data-map-layer="door">Puerta / humo</button>
+                  </div>
+                  <div class="tool-subgrid three" role="group" aria-label="Modo de edición">
+                    <button class="btn tool-button active" type="button" data-map-mode="draw">Dibujar</button>
+                    <button class="btn tool-button" type="button" data-map-mode="move">Mover</button>
+                    <button class="btn tool-button danger" type="button" data-map-mode="erase">Borrar</button>
+                    <button class="btn tool-button" type="button" data-map-mode="radius">Radio</button>
+                    <button class="btn tool-button" type="button" data-map-mode="scale">Tamaño</button>
+                    <button class="btn tool-button expert-only" type="button" data-map-mode="crop">Recorte</button>
+                  </div>
+                  <div class="tool-subgrid" role="group" aria-label="Forma de colisión">
+                    <button class="btn tool-button active" type="button" data-map-shape="rect">Rectángulo</button>
+                    <button class="btn tool-button" type="button" data-map-shape="oval">Óvalo</button>
+                  </div>
+                </div>
+                <div class="tool-group">
+                  <h3>Acciones rápidas</h3>
                   <button class="btn tool-button active" type="button" data-tool="rect">Colisión rectángulo</button>
                   <button class="btn tool-button" type="button" data-tool="oval">Colisión óvalo</button>
                   <button class="btn tool-button" type="button" data-tool="interaction">Punto de interacción</button>
@@ -314,7 +340,16 @@
                   </div>
                   <label>Etiqueta / destino<input id="editLabel"></label>
                   <button class="btn success" type="button" id="applyEdit">Aplicar edición</button>
-                  <p class="hint">En modo editar también puedes hacer clic sobre el lienzo para seleccionar.</p>
+                  <p class="hint">Para interacciones y enemigos, Ancho = radio de activación y Alto = escala visual.</p>
+                </div>
+                <div class="tool-group">
+                  <h3>JSON físico</h3>
+                  <textarea class="map-json" id="scenarioPhysicsJson" readonly></textarea>
+                  <div class="button-row">
+                    <button class="btn" type="button" id="copyScenarioPhysicsJson">Copiar físico</button>
+                    <button class="btn" type="button" id="copyScenarioUnifiedJson">Copiar escenario</button>
+                  </div>
+                  <p class="hint">Incluye colisiones, entidades, rutas, humo, inicio y recorte temporal.</p>
                 </div>
                 <div class="status" id="scenarioStatus"></div>
               </aside>
@@ -574,8 +609,12 @@
       selected: null
     };
     let tool = 'rect';
+    let mapLayer = 'collisions';
+    let mapMode = 'draw';
+    let mapShape = 'rect';
     let dragStart = null;
     let dragPreview = null;
+    let activeTransform = null;
 
     const help = {
       scenario: ['Dibuja colisiones arrastrando sobre la imagen.', 'Usa puntos de interacción para enlazar contenido ya creado.', 'Editar selecciona un elemento y permite ajustar coordenadas.'],
@@ -793,6 +832,73 @@
         y: Math.round((event.clientY - rect.top) * canvas.height / rect.height)
       };
     }
+    function setQuickTool(nextTool, label = nextTool){
+      tool = nextTool;
+      $all('[data-tool]').forEach(node => node.classList.toggle('active', node.dataset.tool === nextTool));
+      dragPreview = null;
+      activeTransform = null;
+      setScenarioStatus(`Herramienta: ${label}`);
+      drawScenario();
+    }
+    function toolForMapControls(){
+      if(mapMode === 'crop') return 'crop';
+      if(mapMode === 'erase') return 'erase';
+      if(mapMode === 'move') return 'move';
+      if(mapMode === 'radius') return 'radius';
+      if(mapMode === 'scale') return 'scale';
+      if(mapLayer === 'collisions') return mapShape;
+      if(mapLayer === 'interactions') return 'interaction';
+      if(mapLayer === 'enemies') return 'enemy';
+      if(mapLayer === 'door') return 'door-smoke';
+      return mapShape;
+    }
+    function syncMapTool(){
+      const nextTool = toolForMapControls();
+      setQuickTool(nextTool, `${mapLayer} · ${mapMode}`);
+      $all('[data-map-layer]').forEach(node => node.classList.toggle('active', node.dataset.mapLayer === mapLayer));
+      $all('[data-map-mode]').forEach(node => node.classList.toggle('active', node.dataset.mapMode === mapMode));
+      $all('[data-map-shape]').forEach(node => node.classList.toggle('active', node.dataset.mapShape === mapShape));
+    }
+    function interactionRadius(item){ return Math.max(8, Number(item.radius || item.activationRadius || 34)); }
+    function interactionScale(item){ return Math.max(.25, Number(item.spriteScale || item.scale || 1)); }
+    function enemyRadius(item){ return Math.max(8, Number(item.radius || 44)); }
+    function enemyScale(item){ return Math.max(.25, Number(item.spriteScale || item.scale || 1)); }
+    function selectedRef(){
+      if(!scenarioDraft.selected) return null;
+      const [type, indexText] = scenarioDraft.selected.split(':');
+      return { type, index: Number(indexText) };
+    }
+    function makeScenarioPhysicsPayload(){
+      return {
+        start: { x: Number($('#scenarioStartX').value || 160), y: Number($('#scenarioStartY').value || 220) },
+        collisions: clone(scenarioDraft.collisions),
+        interactions: clone(scenarioDraft.interactions),
+        enemies: clone(scenarioDraft.enemies),
+        doorSmokePoints: clone(scenarioDraft.doorSmokePoints),
+        crop: scenarioDraft.crop ? clone(scenarioDraft.crop) : null
+      };
+    }
+    function makeScenarioDraftPayload(){
+      const id = $('#scenarioId').value.trim() || 'escenario_sin_guardar';
+      return {
+        id,
+        name: $('#scenarioName').value.trim() || id,
+        assetPath: $('#scenarioAssetPath').value.trim(),
+        entry: {
+          origin: $('#scenarioEntryOrigin').value,
+          from: $('#scenarioEntryLink').value,
+          start: { x: Number($('#scenarioStartX').value || 160), y: Number($('#scenarioStartY').value || 220) }
+        },
+        layers: readScenarioLayers(),
+        ...makeScenarioPhysicsPayload(),
+        radioBlocks: readScenarioRadioBlocks(),
+        doorEvent: readDoorEvent()
+      };
+    }
+    function updateScenarioPhysicsJson(){
+      const node = $('#scenarioPhysicsJson');
+      if(node) node.value = JSON.stringify(makeScenarioPhysicsPayload(), null, 2);
+    }
     function drawScenario(){
       const canvas = $('#scenarioCanvas');
       const ctx = canvas.getContext('2d');
@@ -807,6 +913,7 @@
         scenarioDraft.doorSmokePoints.forEach((point, index) => drawSmokePoint(ctx, point, index));
         if(scenarioDraft.crop || (dragPreview && dragPreview.kind === 'crop')) drawCrop(ctx, scenarioDraft.crop || dragPreview);
         drawStart(ctx);
+        updateScenarioPhysicsJson();
       };
       const imageSource = scenarioDraft.imageData || $('#scenarioAssetPath').value.trim();
       if(imageSource){
@@ -846,19 +953,35 @@
     }
     function drawInteraction(ctx, item, index){
       const selected = scenarioDraft.selected === `interaction:${index}`;
+      const radius = interactionRadius(item);
+      const scale = interactionScale(item);
+      ctx.save();
+      ctx.fillStyle = selected ? 'rgba(126,255,196,.16)' : 'rgba(255,211,100,.12)';
+      ctx.strokeStyle = selected ? '#7effc4' : 'rgba(255,211,100,.74)';
+      ctx.lineWidth = selected ? 3 : 2;
+      ctx.beginPath();
+      ctx.arc(item.x, item.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = selected ? '#7effc4' : '#ffd364';
       ctx.strokeStyle = '#1e1302';
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(item.x, item.y, selected ? 15 : 12, 0, Math.PI * 2);
+      ctx.arc(item.x, item.y, (selected ? 15 : 12) * scale, 0, Math.PI * 2);
       ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#1e1302';
       ctx.font = '900 11px system-ui';
       ctx.fillText(String(index + 1), item.x - 3, item.y + 4);
+      ctx.fillStyle = '#f6fbff';
+      ctx.font = '800 12px system-ui';
+      ctx.fillText(item.label || item.target || `Interacción ${index + 1}`, item.x + radius + 7, item.y + 4);
+      ctx.restore();
     }
     function drawEnemy(ctx, item, index){
       const selected = scenarioDraft.selected === `enemy:${index}`;
       const path = item.path || [];
+      const radius = enemyRadius(item);
+      const scale = enemyScale(item);
       ctx.save();
       if(path.length > 1){
         ctx.strokeStyle = selected ? '#7effc4' : 'rgba(255,211,100,.84)';
@@ -881,13 +1004,20 @@
           ctx.stroke();
         });
       }
+      ctx.fillStyle = selected ? 'rgba(126,255,196,.14)' : 'rgba(255,122,138,.12)';
+      ctx.strokeStyle = selected ? '#7effc4' : 'rgba(255,122,138,.8)';
+      ctx.lineWidth = selected ? 3 : 2;
+      ctx.beginPath();
+      ctx.arc(item.x, item.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = selected ? '#7effc4' : '#ff7a8a';
       ctx.strokeStyle = '#1e1302';
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(item.x, item.y - 18);
-      ctx.lineTo(item.x + 18, item.y + 14);
-      ctx.lineTo(item.x - 18, item.y + 14);
+      ctx.moveTo(item.x, item.y - 18 * scale);
+      ctx.lineTo(item.x + 18 * scale, item.y + 14 * scale);
+      ctx.lineTo(item.x - 18 * scale, item.y + 14 * scale);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
@@ -946,11 +1076,11 @@
     function hitTest(point){
       for(let i = scenarioDraft.interactions.length - 1; i >= 0; i--){
         const item = scenarioDraft.interactions[i];
-        if(Math.hypot(point.x - item.x, point.y - item.y) <= 16) return { type:'interaction', index:i };
+        if(Math.hypot(point.x - item.x, point.y - item.y) <= Math.max(18, interactionRadius(item))) return { type:'interaction', index:i };
       }
       for(let i = scenarioDraft.enemies.length - 1; i >= 0; i--){
         const item = scenarioDraft.enemies[i];
-        if(Math.hypot(point.x - item.x, point.y - item.y) <= 24) return { type:'enemy', index:i };
+        if(Math.hypot(point.x - item.x, point.y - item.y) <= Math.max(24, enemyRadius(item))) return { type:'enemy', index:i };
         const pathIndex = (item.path || []).findIndex(pathPoint => Math.hypot(point.x - pathPoint.x, point.y - pathPoint.y) <= 12);
         if(pathIndex >= 0) return { type:'enemyPath', index:i, pathIndex };
       }
@@ -979,6 +1109,53 @@
       populateSelectedElement();
       drawScenario();
     }
+    function moveSelectedItem(point){
+      const item = currentSelectedItem();
+      const ref = selectedRef();
+      if(!item || !ref) return;
+      const dx = point.x - activeTransform.last.x;
+      const dy = point.y - activeTransform.last.y;
+      item.x = Math.round((item.x || 0) + dx);
+      item.y = Math.round((item.y || 0) + dy);
+      if(ref.type === 'enemy' && (item.path || []).length){
+        item.path[0] = { x: item.x, y: item.y };
+      }
+      if(ref.type === 'collision'){
+        item.x = Math.max(0, item.x);
+        item.y = Math.max(0, item.y);
+      }
+      activeTransform.last = point;
+      populateSelectedElement();
+      drawScenario();
+    }
+    function resizeSelectedItem(point){
+      const item = currentSelectedItem();
+      const ref = selectedRef();
+      if(!item || !ref) return;
+      if(ref.type === 'collision'){
+        item.w = Math.max(8, Math.round(point.x - item.x));
+        item.h = Math.max(8, Math.round(point.y - item.y));
+      } else if(ref.type === 'interaction'){
+        item.radius = Math.max(8, Math.round(Math.hypot(point.x - item.x, point.y - item.y)));
+      } else if(ref.type === 'enemy'){
+        item.radius = Math.max(8, Math.round(Math.hypot(point.x - item.x, point.y - item.y)));
+      } else if(ref.type === 'doorSmoke'){
+        item.size = Math.max(8, Math.round(Math.hypot(point.x - item.x, point.y - item.y)));
+      }
+      populateSelectedElement();
+      drawScenario();
+    }
+    function scaleSelectedItem(point){
+      const item = currentSelectedItem();
+      const ref = selectedRef();
+      if(!item || !ref) return;
+      const distance = Math.max(8, Math.hypot(point.x - item.x, point.y - item.y));
+      const scale = Math.max(.25, Math.min(4, Number((distance / 34).toFixed(2))));
+      if(ref.type === 'interaction' || ref.type === 'enemy') item.spriteScale = scale;
+      if(ref.type === 'doorSmoke') item.duration = Math.max(.2, Number((scale * 1.2).toFixed(2)));
+      populateSelectedElement();
+      drawScenario();
+    }
     function populateSelectedElement(){
       const selected = $('#selectedElement');
       const options = ['<option value="">Nada seleccionado</option>'];
@@ -991,8 +1168,19 @@
       const item = currentSelectedItem();
       $('#editX').value = item ? item.x : '';
       $('#editY').value = item ? item.y : '';
-      $('#editW').value = item && item.w !== undefined ? item.w : '';
-      $('#editH').value = item && item.h !== undefined ? item.h : '';
+      if(scenarioDraft.selected?.startsWith('interaction:')){
+        $('#editW').value = item ? interactionRadius(item) : '';
+        $('#editH').value = item ? interactionScale(item) : '';
+      } else if(scenarioDraft.selected?.startsWith('enemy:')){
+        $('#editW').value = item ? enemyRadius(item) : '';
+        $('#editH').value = item ? enemyScale(item) : '';
+      } else if(scenarioDraft.selected?.startsWith('doorSmoke:')){
+        $('#editW').value = item ? item.size || 34 : '';
+        $('#editH').value = item ? item.duration || 2.4 : '';
+      } else {
+        $('#editW').value = item && item.w !== undefined ? item.w : '';
+        $('#editH').value = item && item.h !== undefined ? item.h : '';
+      }
       $('#editLabel').value = item ? (item.label || item.target || '') : '';
     }
     function currentSelectedItem(){
@@ -1014,10 +1202,19 @@
         item.w = Number($('#editW').value || item.w || 1);
         item.h = Number($('#editH').value || item.h || 1);
       }
-      if(scenarioDraft.selected?.startsWith('doorSmoke:')) item.size = Number($('#editW').value || item.size || 34);
-      if(item.type) item.label = $('#editLabel').value.trim();
+      if(scenarioDraft.selected?.startsWith('interaction:')){
+        item.radius = Number($('#editW').value || item.radius || 34);
+        item.spriteScale = Number($('#editH').value || item.spriteScale || item.scale || 1);
+        item.label = $('#editLabel').value.trim();
+      }
+      if(scenarioDraft.selected?.startsWith('doorSmoke:')){
+        item.size = Number($('#editW').value || item.size || 34);
+        item.duration = Number($('#editH').value || item.duration || 2.4);
+      }
       if(scenarioDraft.selected?.startsWith('enemy:')){
         item.label = $('#editLabel').value.trim() || item.label;
+        item.radius = Number($('#editW').value || item.radius || 44);
+        item.spriteScale = Number($('#editH').value || item.spriteScale || item.scale || 1);
         if((item.path || []).length) item.path[0] = { x: item.x, y: item.y };
       }
       setScenarioStatus('Elemento editado');
@@ -1105,6 +1302,7 @@
         visualSource: $('#enemyVisualSource').value.trim(),
         speed: Number($('#enemySpeed').value || 60),
         radius: Number($('#enemyRadius').value || 44),
+        spriteScale: 1,
         loop: $('#enemyLoop').value,
         condition: $('#enemyCondition').value.trim(),
         path: [{ x: point.x, y: point.y }]
@@ -2003,11 +2201,29 @@
       }
       const toolButton = event.target.closest('[data-tool]');
       if(toolButton){
-        tool = toolButton.dataset.tool;
-        $all('[data-tool]').forEach(node => node.classList.toggle('active', node === toolButton));
-        dragPreview = null;
-        setScenarioStatus(`Herramienta: ${toolButton.textContent.trim()}`);
-        drawScenario();
+        setQuickTool(toolButton.dataset.tool, toolButton.textContent.trim());
+        return;
+      }
+      const mapLayerButton = event.target.closest('[data-map-layer]');
+      if(mapLayerButton){
+        mapLayer = mapLayerButton.dataset.mapLayer;
+        if(mapMode === 'crop') mapMode = 'draw';
+        syncMapTool();
+        return;
+      }
+      const mapModeButton = event.target.closest('[data-map-mode]');
+      if(mapModeButton){
+        mapMode = mapModeButton.dataset.mapMode;
+        syncMapTool();
+        return;
+      }
+      const mapShapeButton = event.target.closest('[data-map-shape]');
+      if(mapShapeButton){
+        mapShape = mapShapeButton.dataset.mapShape;
+        if(mapLayer === 'collisions' && mapMode === 'draw') syncMapTool();
+        else {
+          $all('[data-map-shape]').forEach(node => node.classList.toggle('active', node === mapShapeButton));
+        }
         return;
       }
       const loadItem = event.target.closest('[data-load-item]');
@@ -2098,8 +2314,11 @@
           type: $('#interactionType').value,
           target,
           label: $('#interactionLabel').value.trim() || target,
+          radius: 34,
+          spriteScale: 1,
           condition: $('#interactionCondition').value.trim()
         });
+        scenarioDraft.selected = `interaction:${scenarioDraft.interactions.length - 1}`;
         populateSelectedElement();
         drawScenario();
         return;
@@ -2142,22 +2361,34 @@
         }
         return;
       }
-      if(tool === 'edit'){
+      if(tool === 'edit' || tool === 'move' || tool === 'radius' || tool === 'scale'){
         const hit = hitTest(point);
         selectElement(hit?.type === 'enemyPath' ? { type:'enemy', index: hit.index } : hit);
+        if(hit && tool !== 'edit') activeTransform = { mode: tool, last: point };
         return;
       }
       dragStart = point;
       dragPreview = null;
     });
     $('#scenarioCanvas').addEventListener('mousemove', event => {
-      if(!dragStart) return;
       const point = canvasPoint(event);
+      if(activeTransform){
+        if(activeTransform.mode === 'move') moveSelectedItem(point);
+        if(activeTransform.mode === 'radius') resizeSelectedItem(point);
+        if(activeTransform.mode === 'scale') scaleSelectedItem(point);
+        return;
+      }
+      if(!dragStart) return;
       if(tool === 'rect' || tool === 'oval') dragPreview = normalizeRect(dragStart, point, tool);
       if(tool === 'crop') dragPreview = normalizeRect(dragStart, point, 'crop');
       drawScenario();
     });
     $('#scenarioCanvas').addEventListener('mouseup', event => {
+      if(activeTransform){
+        activeTransform = null;
+        setScenarioStatus('Elemento ajustado');
+        return;
+      }
       if(!dragStart) return;
       const point = canvasPoint(event);
       const shape = normalizeRect(dragStart, point, tool === 'crop' ? 'crop' : tool);
@@ -2170,6 +2401,7 @@
       populateSelectedElement();
       drawScenario();
     });
+    $('#scenarioCanvas').addEventListener('mouseleave', () => { activeTransform = null; });
     $('#undoScenario').addEventListener('click', () => {
       if(scenarioDraft.interactions.length && tool === 'interaction') scenarioDraft.interactions.pop();
       else if(scenarioDraft.enemies.length && tool === 'enemy') scenarioDraft.enemies.pop();
@@ -2184,6 +2416,8 @@
     });
     $('#applyCrop').addEventListener('click', applyCrop);
     $('#applyEdit').addEventListener('click', applyScenarioEdit);
+    $('#copyScenarioPhysicsJson').addEventListener('click', () => copyText(JSON.stringify(makeScenarioPhysicsPayload(), null, 2)));
+    $('#copyScenarioUnifiedJson').addEventListener('click', () => copyText(JSON.stringify(makeScenarioDraftPayload(), null, 2)));
     $('#selectedElement').addEventListener('change', event => { scenarioDraft.selected = event.target.value || null; populateSelectedElement(); drawScenario(); });
     $('#interactionType').addEventListener('change', refreshReferenceSelects);
     $('#scenarioEntryOrigin').addEventListener('change', refreshReferenceSelects);
@@ -2246,6 +2480,7 @@
     setExpertMode(localStorage.getItem(EXPERT_KEY) === '1');
     $('#hasPresentation').dispatchEvent(new Event('change'));
     renderAll();
+    syncMapTool();
     populateSelectedElement();
     drawScenario();
   </script>

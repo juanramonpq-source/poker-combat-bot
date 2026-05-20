@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editor de textos de capítulos · PoCoBOT</title>
+  <style>
+    :root{
+      --bg:#101315;
+      --panel:#171d20;
+      --panel-2:#20282c;
+      --ink:#f4efe8;
+      --muted:#aeb8b8;
+      --line:#344046;
+      --accent:#e15b44;
+      --accent-2:#67d4c1;
+      --warn:#f0b45a;
+      --shadow:0 18px 48px rgba(0,0,0,.28);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+    }
+    button, textarea, input, select{
+      font:inherit;
+    }
+    button{
+      border:0;
+      cursor:pointer;
+    }
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:minmax(260px, 320px) minmax(0, 1fr);
+    }
+    .sidebar{
+      position:sticky;
+      top:0;
+      height:100vh;
+      padding:24px 18px;
+      border-right:1px solid var(--line);
+      background:#121719;
+      overflow:auto;
+    }
+    .brand{
+      display:grid;
+      gap:8px;
+      margin-bottom:18px;
+    }
+    .brand h1{
+      margin:0;
+      font-size:22px;
+      line-height:1.1;
+      letter-spacing:0;
+    }
+    .brand p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.45;
+      font-size:14px;
+    }
+    .status{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:8px;
+      margin:18px 0;
+    }
+    .stat{
+      padding:10px;
+      border:1px solid var(--line);
+      background:var(--panel);
+      border-radius:8px;
+    }
+    .stat strong{
+      display:block;
+      font-size:22px;
+    }
+    .stat span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-top:2px;
+    }
+    .tools{
+      display:grid;
+      gap:8px;
+      margin:18px 0;
+    }
+    .btn{
+      min-height:40px;
+      padding:10px 12px;
+      border-radius:8px;
+      color:#111;
+      background:var(--accent-2);
+      font-weight:800;
+      text-align:center;
+    }
+    .btn.secondary{
+      color:var(--ink);
+      background:var(--panel-2);
+      border:1px solid var(--line);
+    }
+    .btn.danger{
+      color:#fff;
+      background:var(--accent);
+    }
+    .file-row{
+      display:grid;
+      gap:8px;
+    }
+    .file-row input{
+      width:100%;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .nav{
+      display:grid;
+      gap:6px;
+      margin-top:20px;
+    }
+    .nav button{
+      width:100%;
+      padding:10px;
+      border-radius:8px;
+      color:var(--muted);
+      background:transparent;
+      border:1px solid transparent;
+      text-align:left;
+      font-size:14px;
+      line-height:1.25;
+    }
+    .nav button.active,
+    .nav button:hover{
+      color:var(--ink);
+      background:var(--panel);
+      border-color:var(--line);
+    }
+    .main{
+      min-width:0;
+      padding:28px;
+      display:grid;
+      gap:18px;
+      align-content:start;
+    }
+    .notice{
+      padding:14px 16px;
+      border:1px solid rgba(240,180,90,.35);
+      background:rgba(240,180,90,.1);
+      color:#ffe4ba;
+      border-radius:8px;
+      line-height:1.45;
+    }
+    .paste-box{
+      display:none;
+      gap:10px;
+      padding:16px;
+      border:1px solid var(--line);
+      background:var(--panel);
+      border-radius:8px;
+    }
+    .paste-box.show{
+      display:grid;
+    }
+    .paste-box textarea{
+      width:100%;
+      min-height:180px;
+      resize:vertical;
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:12px;
+      color:var(--ink);
+      background:#0d1112;
+      line-height:1.45;
+    }
+    .tabs{
+      position:sticky;
+      top:0;
+      z-index:5;
+      display:flex;
+      gap:8px;
+      padding:8px;
+      border:1px solid var(--line);
+      background:rgba(23,29,32,.96);
+      border-radius:8px;
+      backdrop-filter:blur(12px);
+    }
+    .tab{
+      flex:1;
+      min-height:42px;
+      border-radius:7px;
+      color:var(--muted);
+      background:transparent;
+      font-weight:800;
+    }
+    .tab.active{
+      color:#101315;
+      background:var(--accent-2);
+    }
+    .search-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:8px;
+    }
+    .search-row input{
+      min-height:42px;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid var(--line);
+      background:var(--panel);
+      color:var(--ink);
+    }
+    .section{
+      display:grid;
+      gap:12px;
+    }
+    .section[hidden]{
+      display:none;
+    }
+    .group{
+      border:1px solid var(--line);
+      background:var(--panel);
+      box-shadow:var(--shadow);
+      border-radius:8px;
+      overflow:hidden;
+    }
+    .group-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      background:var(--panel-2);
+      border-bottom:1px solid var(--line);
+    }
+    .group-header h2{
+      margin:0;
+      font-size:17px;
+      line-height:1.25;
+      letter-spacing:0;
+    }
+    .group-header span{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .fields{
+      display:grid;
+      gap:12px;
+      padding:14px;
+    }
+    .field{
+      display:grid;
+      gap:7px;
+      padding:12px;
+      border:1px solid rgba(52,64,70,.7);
+      background:#111719;
+      border-radius:8px;
+    }
+    .field.changed{
+      border-color:rgba(225,91,68,.85);
+      background:#181616;
+    }
+    .field label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+    }
+    .field label em{
+      color:var(--accent);
+      font-style:normal;
+      font-size:12px;
+    }
+    .field textarea{
+      min-height:44px;
+      width:100%;
+      resize:vertical;
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:10px 11px;
+      color:var(--ink);
+      background:#0b0f10;
+      line-height:1.45;
+    }
+    .field textarea:focus,
+    .search-row input:focus,
+    .paste-box textarea:focus{
+      outline:2px solid rgba(103,212,193,.35);
+      outline-offset:2px;
+    }
+    .original{
+      color:#7f8d8d;
+      font-size:12px;
+      line-height:1.4;
+      overflow-wrap:anywhere;
+    }
+    .output{
+      display:grid;
+      gap:12px;
+      border:1px solid var(--line);
+      background:var(--panel);
+      border-radius:8px;
+      padding:16px;
+    }
+    .output textarea{
+      width:100%;
+      min-height:260px;
+      resize:vertical;
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:12px;
+      background:#090d0e;
+      color:#dff7ef;
+      line-height:1.45;
+      font-family:"SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size:13px;
+    }
+    .output-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .empty{
+      padding:18px;
+      border:1px dashed var(--line);
+      color:var(--muted);
+      border-radius:8px;
+    }
+    @media (max-width: 860px){
+      .app{
+        grid-template-columns:1fr;
+      }
+      .sidebar{
+        position:relative;
+        height:auto;
+        border-right:0;
+        border-bottom:1px solid var(--line);
+      }
+      .main{
+        padding:16px;
+      }
+      .tabs{
+        top:0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>Editor de capítulos</h1>
+        <p>Edita textos de conversación y exploración de cualquier capítulo. El JSON final contiene solo los campos modificados.</p>
+      </div>
+      <div class="status">
+        <div class="stat"><strong id="totalCount">0</strong><span>campos</span></div>
+        <div class="stat"><strong id="changedCount">0</strong><span>cambios</span></div>
+      </div>
+      <div class="tools">
+        <button class="btn" id="generateBtn" type="button">Generar JSON</button>
+        <button class="btn secondary" id="copyBtn" type="button">Copiar JSON</button>
+        <button class="btn secondary" id="downloadBtn" type="button">Descargar JSON</button>
+        <button class="btn danger" id="resetBtn" type="button">Restaurar originales</button>
+      </div>
+      <div class="file-row">
+        <input id="fileInput" type="file" accept=".md,.txt,text/markdown,text/plain">
+        <button class="btn secondary" id="pasteToggleBtn" type="button">Pegar Markdown</button>
+      </div>
+      <nav class="nav" id="nav"></nav>
+    </aside>
+
+    <main class="main">
+      <div class="notice" id="notice">
+        Cargando plantilla de textos. Puedes usar el archivo por defecto, cargar otro Markdown o pegar cualquier capítulo con el mismo formato.
+      </div>
+
+      <section class="paste-box" id="pasteBox">
+        <textarea id="pasteInput" placeholder="Pega aquí el Markdown reducido de cualquier capítulo..."></textarea>
+        <button class="btn" id="parsePasteBtn" type="button">Crear formulario desde el Markdown pegado</button>
+      </section>
+
+      <div class="tabs">
+        <button class="tab active" type="button" data-tab="conversation">Escenas de conversación</button>
+        <button class="tab" type="button" data-tab="exploration">Zona de exploración</button>
+        <button class="tab" type="button" data-tab="json">JSON</button>
+      </div>
+
+      <div class="search-row">
+        <input id="searchInput" type="search" placeholder="Buscar personaje, situación o texto...">
+        <button class="btn secondary" id="clearSearchBtn" type="button">Limpiar</button>
+      </div>
+
+      <section class="section" id="conversationSection"></section>
+      <section class="section" id="explorationSection" hidden></section>
+      <section class="section" id="jsonSection" hidden>
+        <div class="output">
+          <div class="output-actions">
+            <button class="btn" id="generateBtn2" type="button">Generar JSON</button>
+            <button class="btn secondary" id="copyBtn2" type="button">Copiar JSON</button>
+          </div>
+          <textarea id="jsonOutput" spellcheck="false" placeholder="Aquí aparecerá el JSON de cambios."></textarea>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const DEFAULT_MARKDOWN_URL = params.get("source") || "";
+    const state = {
+      fields: [],
+      activeTab: "conversation",
+      search: "",
+      lastJson: ""
+    };
+
+    const els = {
+      totalCount: document.getElementById("totalCount"),
+      changedCount: document.getElementById("changedCount"),
+      conversationSection: document.getElementById("conversationSection"),
+      explorationSection: document.getElementById("explorationSection"),
+      jsonSection: document.getElementById("jsonSection"),
+      jsonOutput: document.getElementById("jsonOutput"),
+      nav: document.getElementById("nav"),
+      notice: document.getElementById("notice"),
+      searchInput: document.getElementById("searchInput"),
+      pasteBox: document.getElementById("pasteBox"),
+      pasteInput: document.getElementById("pasteInput"),
+      fileInput: document.getElementById("fileInput")
+    };
+
+    function slugify(value){
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80) || "campo";
+    }
+
+    function parseMarkdown(markdown){
+      const lines = String(markdown || "").split(/\r?\n/);
+      const fields = [];
+      let area = "";
+      let group = "";
+      let groupIndex = 0;
+      let fieldIndex = 0;
+
+      for (const rawLine of lines){
+        const line = rawLine.trim();
+        if (!line) continue;
+        if (line.startsWith("## ")){
+          const title = line.replace(/^##\s+/, "").trim();
+          if (/escenas de conversación/i.test(title)) area = "conversation";
+          else if (/zona de exploración/i.test(title)) area = "exploration";
+          else area = "";
+          group = "";
+          continue;
+        }
+        if (line.startsWith("### ") && area){
+          group = line.replace(/^###\s+/, "").trim();
+          groupIndex += 1;
+          continue;
+        }
+        if (!area || !group || !line.startsWith("- ")) continue;
+        const match = line.match(/^-\s+([^:]+):\s+`([\s\S]*)`\s*$/);
+        if (!match) continue;
+        const label = match[1].trim();
+        const original = match[2];
+        fieldIndex += 1;
+        fields.push({
+          id: `${area}.${String(groupIndex).padStart(2, "0")}.${String(fieldIndex).padStart(3, "0")}.${slugify(label)}`,
+          area,
+          group,
+          label,
+          original,
+          value: original,
+          changed: false
+        });
+      }
+      return fields;
+    }
+
+    function setMarkdown(markdown, sourceLabel){
+      state.fields = parseMarkdown(markdown);
+      state.activeTab = "conversation";
+      if (!state.fields.length){
+        els.notice.innerHTML = "No he encontrado campos editables en ese Markdown. Revisa que conserve líneas con formato <strong>- Etiqueta: `texto`</strong>.";
+        render();
+        return;
+      }
+      els.notice.innerHTML = `Formulario cargado desde <strong>${sourceLabel}</strong>. Edita los campos y genera el JSON de cambios.`;
+      render();
+    }
+
+    function getFilteredFields(area){
+      const query = state.search.trim().toLowerCase();
+      return state.fields.filter((field) => {
+        if (field.area !== area) return false;
+        if (!query) return true;
+        return [field.group, field.label, field.value, field.original]
+          .join(" ")
+          .toLowerCase()
+          .includes(query);
+      });
+    }
+
+    function groupFields(fields){
+      return fields.reduce((acc, field) => {
+        if (!acc.has(field.group)) acc.set(field.group, []);
+        acc.get(field.group).push(field);
+        return acc;
+      }, new Map());
+    }
+
+    function autoRows(value){
+      const lengthRows = Math.ceil(String(value || "").length / 80);
+      const lineRows = String(value || "").split(/\n/).length;
+      return Math.min(12, Math.max(2, lengthRows, lineRows));
+    }
+
+    function renderArea(area, container){
+      const filtered = getFilteredFields(area);
+      const groups = groupFields(filtered);
+      container.innerHTML = "";
+      if (!filtered.length){
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = state.fields.length ? "No hay resultados para esta búsqueda." : "Carga el Markdown para crear el formulario.";
+        container.appendChild(empty);
+        return;
+      }
+
+      groups.forEach((items, groupName) => {
+        const groupEl = document.createElement("article");
+        groupEl.className = "group";
+        groupEl.id = `group-${slugify(area + "-" + groupName)}`;
+        const changed = items.filter((item) => item.changed).length;
+        groupEl.innerHTML = `
+          <header class="group-header">
+            <h2>${escapeHtml(groupName)}</h2>
+            <span>${items.length} campos${changed ? ` · ${changed} cambios` : ""}</span>
+          </header>
+          <div class="fields"></div>
+        `;
+        const fieldsEl = groupEl.querySelector(".fields");
+        items.forEach((field) => {
+          const fieldEl = document.createElement("div");
+          fieldEl.className = `field${field.changed ? " changed" : ""}`;
+          fieldEl.dataset.fieldId = field.id;
+          fieldEl.innerHTML = `
+            <label for="${field.id}">
+              <span>${escapeHtml(field.label)}</span>
+              ${field.changed ? "<em>modificado</em>" : ""}
+            </label>
+            <textarea id="${field.id}" rows="${autoRows(field.value)}">${escapeHtml(field.value)}</textarea>
+            <div class="original">Original: ${escapeHtml(field.original)}</div>
+          `;
+          fieldEl.querySelector("textarea").addEventListener("input", (event) => {
+            field.value = event.target.value;
+            field.changed = field.value !== field.original;
+            updateCounts();
+            fieldEl.classList.toggle("changed", field.changed);
+            const label = fieldEl.querySelector("label");
+            const marker = label.querySelector("em");
+            if (field.changed && !marker) label.insertAdjacentHTML("beforeend", "<em>modificado</em>");
+            if (!field.changed && marker) marker.remove();
+          });
+          fieldsEl.appendChild(fieldEl);
+        });
+        container.appendChild(groupEl);
+      });
+    }
+
+    function renderNav(){
+      const groups = [...new Set(state.fields
+        .filter((field) => field.area === state.activeTab)
+        .map((field) => field.group))];
+      els.nav.innerHTML = "";
+      groups.forEach((group) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = group;
+        button.addEventListener("click", () => {
+          document.getElementById(`group-${slugify(state.activeTab + "-" + group)}`)?.scrollIntoView({ behavior:"smooth", block:"start" });
+        });
+        els.nav.appendChild(button);
+      });
+    }
+
+    function updateCounts(){
+      els.totalCount.textContent = String(state.fields.length);
+      els.changedCount.textContent = String(state.fields.filter((field) => field.changed).length);
+    }
+
+    function render(){
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.classList.toggle("active", tab.dataset.tab === state.activeTab);
+      });
+      els.conversationSection.hidden = state.activeTab !== "conversation";
+      els.explorationSection.hidden = state.activeTab !== "exploration";
+      els.jsonSection.hidden = state.activeTab !== "json";
+      renderArea("conversation", els.conversationSection);
+      renderArea("exploration", els.explorationSection);
+      renderNav();
+      updateCounts();
+    }
+
+    function buildChangesJson(){
+      const changes = state.fields
+        .filter((field) => field.changed)
+        .map((field) => ({
+          id: field.id,
+          area: field.area,
+          group: field.group,
+          label: field.label,
+          original: field.original,
+          value: field.value
+        }));
+      const payload = {
+        schema: "pocobot.chapter-text-edits.v1",
+        source: DEFAULT_MARKDOWN_URL || "manual",
+        generatedAt: new Date().toISOString(),
+        changeCount: changes.length,
+        changes
+      };
+      state.lastJson = JSON.stringify(payload, null, 2);
+      els.jsonOutput.value = state.lastJson;
+      state.activeTab = "json";
+      render();
+      els.jsonOutput.value = state.lastJson;
+      return state.lastJson;
+    }
+
+    function downloadJson(){
+      const json = state.lastJson || buildChangesJson();
+      const blob = new Blob([json], { type:"application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "cambios_textos_capitulo.json";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    async function copyJson(){
+      const json = state.lastJson || buildChangesJson();
+      await navigator.clipboard.writeText(json);
+      els.notice.innerHTML = "JSON copiado al portapapeles.";
+    }
+
+    function resetAll(){
+      state.fields.forEach((field) => {
+        field.value = field.original;
+        field.changed = false;
+      });
+      state.lastJson = "";
+      els.jsonOutput.value = "";
+      render();
+    }
+
+    function escapeHtml(value){
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    async function loadDefaultMarkdown(){
+      if (!DEFAULT_MARKDOWN_URL) {
+        els.notice.innerHTML = "Carga un Markdown de capítulo o pégalo con el botón de la izquierda. También puedes abrir este editor con <strong>?source=ruta/al/archivo.md</strong> para precargar una plantilla.";
+        els.pasteBox.classList.add("show");
+        render();
+        return;
+      }
+      try{
+        const response = await fetch(DEFAULT_MARKDOWN_URL, { cache:"no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        setMarkdown(await response.text(), DEFAULT_MARKDOWN_URL);
+      }catch(error){
+        els.notice.innerHTML = `No se pudo leer el Markdown automáticamente. Carga un archivo Markdown de capítulo o pégalo con el botón de la izquierda. Fuente intentada: <strong>${escapeHtml(DEFAULT_MARKDOWN_URL)}</strong>.`;
+        els.pasteBox.classList.add("show");
+        render();
+      }
+    }
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        state.activeTab = tab.dataset.tab;
+        render();
+      });
+    });
+    document.getElementById("generateBtn").addEventListener("click", buildChangesJson);
+    document.getElementById("generateBtn2").addEventListener("click", buildChangesJson);
+    document.getElementById("copyBtn").addEventListener("click", copyJson);
+    document.getElementById("copyBtn2").addEventListener("click", copyJson);
+    document.getElementById("downloadBtn").addEventListener("click", downloadJson);
+    document.getElementById("resetBtn").addEventListener("click", resetAll);
+    document.getElementById("clearSearchBtn").addEventListener("click", () => {
+      state.search = "";
+      els.searchInput.value = "";
+      render();
+    });
+    document.getElementById("pasteToggleBtn").addEventListener("click", () => {
+      els.pasteBox.classList.toggle("show");
+    });
+    document.getElementById("parsePasteBtn").addEventListener("click", () => {
+      setMarkdown(els.pasteInput.value, "Markdown pegado");
+    });
+    els.searchInput.addEventListener("input", (event) => {
+      state.search = event.target.value;
+      render();
+    });
+    els.fileInput.addEventListener("change", async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      setMarkdown(await file.text(), file.name);
+    });
+
+    loadDefaultMarkdown();
+  </script>
+</body>
+</html>
