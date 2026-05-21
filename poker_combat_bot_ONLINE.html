@@ -1452,6 +1452,8 @@ body.mobile-pc-compact-mode .mobile-pro-fx-layer.show{
 .mobile-pro-fx-ring,
 .mobile-pro-fx-streaks,
 .mobile-pro-fx-shards,
+.mobile-pro-fx-fireworks,
+.mobile-pro-fx-confetti-field,
 .mobile-pro-fx-trophy,
 .mobile-pro-fx-caption{
   position:absolute;
@@ -1532,6 +1534,63 @@ body.mobile-pc-compact-mode .mobile-pro-fx-layer.show{
     radial-gradient(circle at 86% 44%, var(--mobile-fx-main) 0 3px, transparent 4px);
   filter:drop-shadow(0 0 12px color-mix(in srgb, var(--mobile-fx-main) 50%, transparent));
 }
+.mobile-pro-fx-confetti-field{
+  inset:0;
+  left:0;
+  top:0;
+  transform:none;
+  opacity:0;
+  background:
+    radial-gradient(circle at 10% 16%, #ffd65c 0 3px, transparent 4px),
+    radial-gradient(circle at 24% 72%, #74fff2 0 3px, transparent 4px),
+    radial-gradient(circle at 38% 24%, #ff7b61 0 3px, transparent 4px),
+    radial-gradient(circle at 52% 82%, #8affcb 0 3px, transparent 4px),
+    radial-gradient(circle at 68% 18%, #fff6cb 0 3px, transparent 4px),
+    radial-gradient(circle at 84% 70%, #23d8ff 0 3px, transparent 4px),
+    linear-gradient(118deg, transparent 0 9%, rgba(255,214,92,.68) 9% 10.5%, transparent 10.5% 100%),
+    linear-gradient(64deg, transparent 0 18%, rgba(116,255,242,.55) 18% 19.5%, transparent 19.5% 100%),
+    linear-gradient(148deg, transparent 0 76%, rgba(255,123,97,.52) 76% 77.5%, transparent 77.5% 100%);
+  background-size:170px 170px, 210px 210px, 190px 190px, 230px 230px, 160px 160px, 200px 200px, 240px 240px, 280px 280px, 260px 260px;
+  mix-blend-mode:screen;
+}
+.mobile-pro-fx-fireworks{
+  inset:0;
+  left:0;
+  top:0;
+  transform:none;
+  opacity:0;
+}
+.mobile-pro-fx-fireworks::before,
+.mobile-pro-fx-fireworks::after{
+  content:"";
+  position:absolute;
+  width:min(42vw, 220px);
+  aspect-ratio:1;
+  border-radius:50%;
+  opacity:.94;
+  background:
+    radial-gradient(circle, #fff7c9 0 4px, transparent 5px),
+    radial-gradient(circle at 50% 0%, #ffd65c 0 4px, transparent 5px),
+    radial-gradient(circle at 85% 16%, #74fff2 0 4px, transparent 5px),
+    radial-gradient(circle at 100% 50%, #ff7b61 0 4px, transparent 5px),
+    radial-gradient(circle at 84% 84%, #8affcb 0 4px, transparent 5px),
+    radial-gradient(circle at 50% 100%, #fff6cb 0 4px, transparent 5px),
+    radial-gradient(circle at 16% 84%, #23d8ff 0 4px, transparent 5px),
+    radial-gradient(circle at 0% 50%, #ffcf68 0 4px, transparent 5px),
+    radial-gradient(circle at 16% 16%, #ff7b61 0 4px, transparent 5px);
+  filter:drop-shadow(0 0 10px rgba(255,214,92,.48)) drop-shadow(0 0 18px rgba(116,255,242,.30));
+  animation:mobileVictoryFirework 2.4s ease-in-out infinite;
+}
+.mobile-pro-fx-fireworks::before{
+  left:7%;
+  top:12%;
+}
+.mobile-pro-fx-fireworks::after{
+  right:6%;
+  top:20%;
+  width:min(36vw, 190px);
+  animation-delay:.62s;
+}
 .mobile-pro-fx-caption{
   top:50%;
   min-width:min(420px, calc(100vw - 34px));
@@ -1597,6 +1656,51 @@ body.mobile-pc-compact-mode .mobile-pro-fx-layer.show{
 .mobile-pro-fx-layer.fx-victory.show .mobile-pro-fx-shards::before{ animation:mobileFxShards var(--mobile-fx-dur, 980ms) ease both; }
 .mobile-pro-fx-layer.fx-victory.show .mobile-pro-fx-trophy{ animation:mobileFxTrophy 2300ms cubic-bezier(.16,.86,.18,1) both; }
 .mobile-pro-fx-layer.fx-victory.show .mobile-pro-fx-caption{ top:64%; }
+body.victory .mobile-pro-fx-layer.victory-hold{
+  display:block;
+  opacity:1;
+  animation:none;
+}
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-vignette{
+  opacity:.78;
+  animation:none;
+}
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-grid{
+  opacity:.28;
+  animation:mobileVictoryGridDrift 12s linear infinite;
+}
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-ring{
+  opacity:.72;
+  animation:mobileVictoryRingPulse 2.8s ease-in-out infinite;
+}
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-shards::before,
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-shards::after{
+  opacity:.78;
+  animation:mobileVictorySparkle 2.1s ease-in-out infinite;
+}
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-shards::after{
+  animation-delay:.5s;
+}
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-fireworks,
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-confetti-field{
+  opacity:1;
+}
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-confetti-field{
+  animation:mobileVictoryConfettiDrift 7s linear infinite;
+}
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-trophy{
+  top:42%;
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1) rotate(-2deg);
+  animation:mobileVictoryTrophyHold 2.4s ease-in-out infinite;
+}
+body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-caption{
+  top:66%;
+  opacity:1;
+  border-color:rgba(255,214,92,.82);
+  box-shadow:0 0 30px rgba(255,214,92,.24), 0 0 36px rgba(116,255,242,.16), inset 0 0 18px rgba(255,255,255,.08);
+  animation:mobileVictoryCaptionHold 2.6s ease-in-out infinite;
+}
 @keyframes mobileFxLayerFade{
   0%{opacity:0}
   8%,78%{opacity:1}
@@ -1647,11 +1751,46 @@ body.mobile-pc-compact-mode .mobile-pro-fx-layer.show{
   72%{opacity:1; transform:translate(-50%,-52%) scale(1.04) rotate(2deg)}
   100%{opacity:0; transform:translate(-50%,-60%) scale(1.28) rotate(8deg)}
 }
+@keyframes mobileVictoryGridDrift{
+  0%{transform:translate(-50%,-50%) scale(1.02) rotate(0deg)}
+  100%{transform:translate(-50%,-50%) scale(1.02) rotate(360deg)}
+}
+@keyframes mobileVictoryRingPulse{
+  0%,100%{transform:translate(-50%,-50%) scale(.94); opacity:.56}
+  50%{transform:translate(-50%,-50%) scale(1.08); opacity:.88}
+}
+@keyframes mobileVictorySparkle{
+  0%,100%{opacity:.48; transform:scale(.96)}
+  50%{opacity:.96; transform:scale(1.06)}
+}
+@keyframes mobileVictoryFirework{
+  0%,100%{transform:scale(.72) rotate(0deg); opacity:.36}
+  45%{transform:scale(1.08) rotate(18deg); opacity:1}
+  70%{transform:scale(.94) rotate(28deg); opacity:.7}
+}
+@keyframes mobileVictoryConfettiDrift{
+  0%{background-position:0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0}
+  100%{background-position:0 170px, 0 210px, 0 190px, 0 230px, 0 160px, 0 200px, 90px 240px, -110px 280px, 80px 260px}
+}
+@keyframes mobileVictoryTrophyHold{
+  0%,100%{transform:translate(-50%,-50%) scale(1) rotate(-2deg)}
+  50%{transform:translate(-50%,-54%) scale(1.06) rotate(2deg)}
+}
+@keyframes mobileVictoryCaptionHold{
+  0%,100%{transform:translate(-50%,-50%) scale(1)}
+  50%{transform:translate(-50%,-50%) scale(1.03)}
+}
 
 @media (prefers-reduced-motion: reduce){
   body.mobile-compact-mode .mobile-pro-fx-layer,
   body.mobile-panorama-mode .mobile-pro-fx-layer{
-    display:none !important;
+    animation:none !important;
+  }
+  body.victory .mobile-pro-fx-layer.victory-hold{
+    display:block !important;
+  }
+  body.victory .mobile-pro-fx-layer.victory-hold *{
+    animation:none !important;
   }
 }
 
@@ -20602,9 +20741,11 @@ function returnToMainMenu(){
   clearSinglePlayerAiTimer();
   resetTutorialSession();
   hideTransientOverlays();
+  clearVictoryFx();
   stopOnlineModeUi();
 
   state.tutorial = false;
+  state.winner = null;
   state.attackMode = false;
   state.projectileMode = false;
   state.transitionLock = false;
@@ -22096,22 +22237,24 @@ function ensureEnhancedFxDom(){
     layer.className = 'ui-particle-layer';
     document.body.appendChild(layer);
   }
-  if(!document.getElementById('mobileProFxLayer')){
-    const layer = document.createElement('div');
-    layer.id = 'mobileProFxLayer';
-    layer.className = 'mobile-pro-fx-layer';
-    layer.setAttribute('aria-hidden', 'true');
-    layer.innerHTML = `
-      <div class="mobile-pro-fx-vignette"></div>
-      <div class="mobile-pro-fx-grid"></div>
-      <div class="mobile-pro-fx-ring"></div>
-      <div class="mobile-pro-fx-streaks"></div>
-      <div class="mobile-pro-fx-shards"></div>
-      <div class="mobile-pro-fx-trophy">🏆</div>
-      <div class="mobile-pro-fx-caption"></div>
-    `;
-    document.body.appendChild(layer);
-  }
+	  if(!document.getElementById('mobileProFxLayer')){
+	    const layer = document.createElement('div');
+	    layer.id = 'mobileProFxLayer';
+	    layer.className = 'mobile-pro-fx-layer';
+	    layer.setAttribute('aria-hidden', 'true');
+	    layer.innerHTML = `
+	      <div class="mobile-pro-fx-vignette"></div>
+	      <div class="mobile-pro-fx-grid"></div>
+	      <div class="mobile-pro-fx-ring"></div>
+	      <div class="mobile-pro-fx-streaks"></div>
+	      <div class="mobile-pro-fx-shards"></div>
+	      <div class="mobile-pro-fx-fireworks"></div>
+	      <div class="mobile-pro-fx-confetti-field"></div>
+	      <div class="mobile-pro-fx-trophy">🏆</div>
+	      <div class="mobile-pro-fx-caption"></div>
+	    `;
+	    document.body.appendChild(layer);
+	  }
   if(!document.getElementById('proTurnSplash')){
     const splash = document.createElement('div');
     splash.id = 'proTurnSplash';
@@ -22143,6 +22286,7 @@ function triggerMobileProFx(kind='impact', options={}){
   const layer = document.getElementById('mobileProFxLayer');
   if(!layer) return false;
   const normalized = ['modify','attack','defense','impact','victory'].includes(kind) ? kind : 'impact';
+  const shouldHoldVictory = normalized === 'victory' && !!state.winner;
   const caption = layer.querySelector('.mobile-pro-fx-caption');
   const text = options.text || {
     modify:'Sistema modificado',
@@ -22152,7 +22296,7 @@ function triggerMobileProFx(kind='impact', options={}){
     victory:'Victoria'
   }[normalized];
   if(caption) caption.textContent = text;
-  layer.className = `mobile-pro-fx-layer fx-${normalized}`;
+  layer.className = `mobile-pro-fx-layer fx-${normalized}${shouldHoldVictory ? ' victory-hold' : ''}`;
   void layer.offsetWidth;
   layer.classList.add('show');
   window.clearTimeout(layer._mobileFxTimer);
@@ -22239,6 +22383,19 @@ function clearConfetti(){
   const layer = document.getElementById('confettiLayer');
   if(layer) layer.innerHTML = '';
 }
+function syncMobileVictoryHold(){
+  const layer = document.getElementById('mobileProFxLayer');
+  if(!layer) return;
+  const shouldShow = !!state.winner && isMobileProHudActive();
+  layer.classList.toggle('victory-hold', shouldShow);
+  if(shouldShow){
+    layer.classList.add('fx-victory');
+    const caption = layer.querySelector('.mobile-pro-fx-caption');
+    if(caption) caption.textContent = `${state.winner} gana`;
+  }else{
+    layer.classList.remove('victory-hold');
+  }
+}
 function spawnConfetti(count=140, options={}){
   const layer = document.getElementById('confettiLayer');
   if(!layer) return;
@@ -22271,6 +22428,11 @@ function spawnConfetti(count=140, options={}){
 }
 function clearVictoryFx(){
   document.body.classList.remove('victory');
+  const mobileLayer = document.getElementById('mobileProFxLayer');
+  if(mobileLayer){
+    window.clearTimeout(mobileLayer._mobileFxTimer);
+    mobileLayer.classList.remove('show', 'victory-hold', 'fx-victory');
+  }
   clearConfetti();
 }
 function triggerVictorySequence(){
@@ -22278,9 +22440,11 @@ function triggerVictorySequence(){
   stopAllMusic(false);
   state.musicPhase = 'none';
   const mobileVictory = isMobileProHudActive();
+  syncMobileVictoryHold();
   spawnConfetti(mobileVictory ? 320 : 180, { streamers: mobileVictory });
   const playMobileVictoryFx = () => {
     triggerMobileProFx('victory', { text: state.winner ? `${state.winner} gana` : 'Victoria', duration: 2300 });
+    syncMobileVictoryHold();
   };
   window.setTimeout(playMobileVictoryFx, mobileVictory ? 40 : 0);
   if(mobileVictory){
@@ -23502,6 +23666,7 @@ function setupStoryMissionBriefBar(){
 
 function returnToStoryMap() {
   const mission = state.storyMission || STORY_MISSION_BOOT || '';
+  clearVictoryFx();
   if(STORY_EMBED_MODE && window.parent && window.parent !== window){
     try{
       window.parent.postMessage({
@@ -30708,6 +30873,7 @@ function render(){
     clearStoryArgosHackGate();
   }
   document.body.classList.toggle('victory', !!state.winner);
+  syncMobileVictoryHold();
   document.body.classList.toggle('tutorial-guided-active', tutorialIsGuided());
   document.body.classList.toggle('tutorial-guided-busy', tutorialSystem.enabled && tutorialSystem.busy);
   document.body.classList.toggle(
@@ -30759,6 +30925,7 @@ function render(){
   updateHints();
   syncTutorialAttackJumpButton();
   syncModeUi();
+  syncMobileVictoryHold();
   syncMusicToState();
 
   state.players.forEach((player, idx) => maybeQueueFigureBurstPrompt(idx));
@@ -34603,9 +34770,13 @@ window.__pocobotDev = {
     spawnElementSparks(document.getElementById(`player-panel-${idx}`), count, palette);
     return true;
   },
-  victory(){
+  victory(playerIdx=0){
     devBootArena();
+    const winnerIdx = Number.isInteger(playerIdx) && state.players[playerIdx] ? playerIdx : 0;
+    state.winner = state.players[winnerIdx]?.name || 'Jugador 1';
+    state.phase = 'Final';
     triggerVictorySequence();
+    render();
     return devGetSnapshot();
   }
 };
