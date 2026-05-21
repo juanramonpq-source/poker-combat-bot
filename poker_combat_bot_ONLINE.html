@@ -2390,12 +2390,48 @@ button:disabled{
   border-radius:inherit;
   box-sizing:border-box;
   pointer-events:none;
+  position:relative;
+  z-index:1;
   transform:scale(1.018);
   transform-origin:center;
+  transition:opacity .12s ease;
 }
 .card-real-image.card-real-image-safe{
   padding:1.35px;
   transform:scale(1.002);
+}
+.card.card-detailed.card-image-pending .card-real-image,
+.card.card-detailed.card-image-failed .card-real-image{
+  opacity:0;
+}
+.card-value-fallback{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  padding:5px;
+  border-radius:inherit;
+  box-sizing:border-box;
+  background:linear-gradient(180deg,#fffaf0 0%,#f0ddaa 100%);
+  color:#121c28;
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+  font-weight:900;
+  line-height:1;
+  pointer-events:none;
+}
+.card-value-fallback.is-red{color:#c82b38}
+.card-value-fallback-rank{font-size:.72rem}
+.card-value-fallback-suit{
+  align-self:center;
+  justify-self:center;
+  font-size:1.16rem;
+  white-space:nowrap;
+}
+.card-value-fallback-rank.is-bottom{
+  align-self:end;
+  justify-self:end;
+  transform:rotate(180deg);
 }
 .card-zone-hand.card-detailed{
   width:54px !important;
@@ -2884,6 +2920,17 @@ button:disabled{
 .toast.ok{border-color:rgba(66,255,222,.38); color:#b4fff0}
 .toast.warn{border-color:rgba(255,178,46,.42); color:#ffe0ab}
 .toast.danger{border-color:rgba(255,106,123,.42); color:#ffc4cb}
+.toast.first-turn{
+  border-color:rgba(255,211,93,.72);
+  color:#fff2b5;
+  font-weight:900;
+  letter-spacing:.02em;
+  text-align:center;
+  box-shadow:
+    0 12px 26px rgba(0,0,0,.32),
+    0 0 0 2px rgba(255,211,93,.16),
+    inset 0 0 18px rgba(66,255,222,.08);
+}
 @keyframes toastIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes toastOut{to{opacity:0;transform:translateY(-8px)}}
 @media (pointer: coarse){
@@ -3476,6 +3523,11 @@ button:disabled{
 .toast.ok{ border-color:rgba(42,199,104,.45) !important; }
 .toast.warn{ border-color:rgba(255,148,74,.45) !important; }
 .toast.danger{ border-color:rgba(255,80,107,.45) !important; }
+.toast.first-turn{
+  border-color:rgba(255,184,41,.68) !important;
+  color:#17355e !important;
+  font-weight:900 !important;
+}
 
 @media (max-width: 1120px){
   .app{ max-width:100%; margin:0; border-radius:0; }
@@ -20216,7 +20268,12 @@ const state = {
   storyMissionProgress: {},
   storyDeckMode: false,
   storyPlayerDecks: null,
+  firstTurnNoticeNonce: 0,
 };
+
+const FIRST_TURN_NOTICE_TEXT = '¡PRIMER TURNO, Puedes colocar 3 cartas!';
+let firstTurnNoticeNonceCounter = 0;
+let firstTurnNoticeShownKey = '';
 
 
 const academySystem = {
@@ -20420,7 +20477,9 @@ let defenseUiCueKey = '';
 let defenseAlertTimer = null;
 let attackSpecialPopupTimer = null;
 const ATTACK_LAUNCH_DELAY_MS = 360;
-const ATTACK_SPECIAL_POPUP_DURATION_MS = 3200;
+const ATTACK_SPECIAL_MIN_DURATION_MS = 3200;
+const ATTACK_SPECIAL_FALLBACK_DURATION_MS = 6200;
+const ATTACK_SPECIAL_END_PAD_MS = 260;
 const ATTACK_RESOLVE_AFTER_LAUNCH_MS = 1500;
 const ATTACK_POST_IMPACT_HOLD_MS = 1650;
 let olLastFxCueId = null;
@@ -20514,11 +20573,37 @@ function replayOnlineAttackFx(cue){
 
   const completeAttack = shouldPlayCompleteAttackSpecial(attackerIdx, typeof cue.completeAttack === 'boolean' ? cue.completeAttack : undefined);
   playMobileSpriteAttackSequence(attackerIdx, withProjectile, { completeAttack, attackPoints });
-  const specialShown = completeAttack ? showAttackSpecialPopup(attackerIdx, { force:true }) : false;
+  let launched = false;
+  const launchAttack = () => {
+    if(launched) return;
+    launched = true;
+    triggerAttackLaunchFeedback(attackerIdx, withProjectile, { completeAttack });
+    window.setTimeout(() => {
+      if(!(destroyedArmorCount > 0 || destroyedDefenseCount > 0 || attackPoints > 0)) return;
+      queueFx(`player-panel-${defenderIdx}`, 'damage-shake');
+      queueFx(`player-panel-${defenderIdx}`, 'damage-flash');
+      queueFx(`player-panel-${defenderIdx}`, 'impact-burst');
+      queueFx(`mechaDial-${defenderIdx}`, 'impact-burst');
+      if(destroyedArmorCount > 0) queueFx(`module-box-armor-${defenderIdx}`, 'zone-pulse');
+      if(destroyedDefenseCount > 0) queueFx(`module-box-defense-${defenderIdx}`, 'zone-pulse');
+      flushFxQueue();
+      triggerSideRadarImpact(defenderIdx, heavyImpact);
+      playUiSound(destroyedDefenseCount > 0 ? 'heavy' : 'impact');
+      triggerScreenShake(heavyImpact ? 'heavy' : 'light');
+      triggerScreenRipple(destroyedDefenseCount > 0 ? 'red' : 'amber');
+      pulseVibrate(destroyedDefenseCount > 0 ? [40, 30, 60] : [20, 20, 20]);
+      spawnDamageNumber(defenderIdx, attackPoints);
+      spawnImpactBurst(defenderIdx, heavyImpact, attackPoints);
+      triggerImpactFlash(destroyedDefenseCount > 0 ? 'red' : 'amber');
+      if(destroyedArmorCount > 0) pulseRadarStat(defenderIdx, 'armor');
+      if(destroyedDefenseCount > 0) pulseRadarStat(defenderIdx, 'defense');
+    }, ATTACK_RESOLVE_AFTER_LAUNCH_MS);
+  };
+  const specialShown = completeAttack ? showAttackSpecialPopup(attackerIdx, { force:true, onComplete: launchAttack }) : false;
   if(specialShown){
     triggerCompleteAttackChargeFeedback(attackerIdx);
   }
-  const launchDelay = specialShown ? ATTACK_SPECIAL_POPUP_DURATION_MS : ATTACK_LAUNCH_DELAY_MS;
+  const launchDelay = specialShown ? getAttackSpecialPlaybackDurationMs() : ATTACK_LAUNCH_DELAY_MS;
   const impactDelay = launchDelay + ATTACK_RESOLVE_AFTER_LAUNCH_MS;
 
   olSuppressWaitingVeil(Math.max(3200, impactDelay + 520));
@@ -20526,30 +20611,7 @@ function replayOnlineAttackFx(cue){
   window.setTimeout(() => scrollToTopArea('auto'), 80);
   window.setTimeout(() => scrollToTopArea('auto'), 320);
 
-  window.setTimeout(() => {
-    triggerAttackLaunchFeedback(attackerIdx, withProjectile, { completeAttack });
-  }, launchDelay);
-
-  window.setTimeout(() => {
-    if(!(destroyedArmorCount > 0 || destroyedDefenseCount > 0 || attackPoints > 0)) return;
-    queueFx(`player-panel-${defenderIdx}`, 'damage-shake');
-    queueFx(`player-panel-${defenderIdx}`, 'damage-flash');
-    queueFx(`player-panel-${defenderIdx}`, 'impact-burst');
-    queueFx(`mechaDial-${defenderIdx}`, 'impact-burst');
-    if(destroyedArmorCount > 0) queueFx(`module-box-armor-${defenderIdx}`, 'zone-pulse');
-    if(destroyedDefenseCount > 0) queueFx(`module-box-defense-${defenderIdx}`, 'zone-pulse');
-    flushFxQueue();
-    triggerSideRadarImpact(defenderIdx, heavyImpact);
-    playUiSound(destroyedDefenseCount > 0 ? 'heavy' : 'impact');
-    triggerScreenShake(heavyImpact ? 'heavy' : 'light');
-    triggerScreenRipple(destroyedDefenseCount > 0 ? 'red' : 'amber');
-    pulseVibrate(destroyedDefenseCount > 0 ? [40, 30, 60] : [20, 20, 20]);
-    spawnDamageNumber(defenderIdx, attackPoints);
-    spawnImpactBurst(defenderIdx, heavyImpact, attackPoints);
-    triggerImpactFlash(destroyedDefenseCount > 0 ? 'red' : 'amber');
-    if(destroyedArmorCount > 0) pulseRadarStat(defenderIdx, 'armor');
-    if(destroyedDefenseCount > 0) pulseRadarStat(defenderIdx, 'defense');
-  }, impactDelay);
+  if(!specialShown) window.setTimeout(launchAttack, ATTACK_LAUNCH_DELAY_MS);
 }
 
 function replayOnlineFxCue(cue){
@@ -22574,10 +22636,41 @@ function addToast(msg, type='info'){
   const stack = document.getElementById('toastStack');
   if(!stack) return;
   const div = document.createElement('div');
-  div.className = `toast ${type==='ok' ? 'ok' : type==='warn' ? 'warn' : type==='danger' ? 'danger' : ''}`;
+  const tone = type === 'ok' ? 'ok'
+    : type === 'warn' ? 'warn'
+    : type === 'danger' ? 'danger'
+    : type === 'first-turn' ? 'first-turn'
+    : '';
+  div.className = `toast ${tone}`;
   div.textContent = msg;
   stack.appendChild(div);
-  setTimeout(() => div.remove(), 3200);
+  setTimeout(() => div.remove(), type === 'first-turn' ? 4200 : 3200);
+}
+function startFirstTurnNoticeCycle(){
+  firstTurnNoticeShownKey = '';
+  state.firstTurnNoticeNonce = ++firstTurnNoticeNonceCounter;
+}
+function shouldShowFirstTurnNotice(){
+  const hasWinner = state.winner !== null && state.winner !== undefined && state.winner !== false && state.winner !== '';
+  return !!state.gameStarted
+    && Number(state.turnCount) === 1
+    && !state.pendingDefense
+    && !hasWinner;
+}
+function getFirstTurnNoticeKey(){
+  if(!shouldShowFirstTurnNotice()) return '';
+  if(Number.isFinite(Number(state.firstTurnNoticeNonce)) && Number(state.firstTurnNoticeNonce) > 0){
+    return `first-turn:${state.firstTurnNoticeNonce}`;
+  }
+  const playersKey = (state.players || []).map(player => player?.name || '').join('|');
+  return `first-turn:${state.currentPlayer}:${playersKey}:${state.deck?.length || 0}:${state.discard?.length || 0}`;
+}
+function maybeShowFirstTurnNotice(){
+  const key = getFirstTurnNoticeKey();
+  if(!key || firstTurnNoticeShownKey === key) return false;
+  firstTurnNoticeShownKey = key;
+  addToast(FIRST_TURN_NOTICE_TEXT, 'first-turn');
+  return true;
 }
 function getDefenseCueCopy(defender){
   const name = defender?.name || 'El defensor';
@@ -24276,6 +24369,7 @@ async function restoreGameFromCode(code, options = {}){
   state.postAttackTopFocus = false;
   state.onlineFxCue = null;
   state.musicPhase = state.winner ? 'none' : (state.firstAttackTriggered ? 'battle' : 'intro');
+  startFirstTurnNoticeCycle();
 
   state.players = (payload.p || []).map((player, idx) => ({
     name: Array.isArray(forcePlayerNames) && forcePlayerNames[idx]
@@ -24489,6 +24583,7 @@ function newGame(){
   decideFirstPlayer();
   state.phase = 'Montaje';
   state.turnCount = 1;
+  startFirstTurnNoticeCycle();
   log('🆕 Nueva partida iniciada.');
   if(storyDecksActive) log(`📜 Deck propio de historia activo: ${state.storyPlayerDecks?.[0]?.length || 0} cartas restantes tras el reparto.`);
   addToast('Nueva partida iniciada', 'ok');
@@ -26249,6 +26344,9 @@ function createMobileSpriteSnapshot(){
   return {
     players: [cloneMobileSpritePlayer(viewIdx), cloneMobileSpritePlayer(rivalIdx)],
     currentPlayer,
+    internalTurn: state.turnCount || 0,
+    firstTurnNoticeKey: getFirstTurnNoticeKey(),
+    firstTurnNoticeText: FIRST_TURN_NOTICE_TEXT,
     phase: state.phase || '',
     selectedIds,
     attackMode: !!state.attackMode,
@@ -28092,11 +28190,22 @@ function hideAttackSpecialPopup(){
     overlay.setAttribute('aria-hidden', 'true');
   }
   if(video){
+    video.onended = null;
+    video.onerror = null;
+    video.onloadedmetadata = null;
     video.pause();
     try{
       video.currentTime = 0;
     }catch(_err){}
   }
+}
+
+function getAttackSpecialPlaybackDurationMs(video=document.getElementById('attackSpecialPopupVideo')){
+  const duration = Number(video?.duration);
+  if(Number.isFinite(duration) && duration > 0){
+    return Math.max(ATTACK_SPECIAL_MIN_DURATION_MS, Math.ceil(duration * 1000) + ATTACK_SPECIAL_END_PAD_MS);
+  }
+  return ATTACK_SPECIAL_FALLBACK_DURATION_MS;
 }
 
 function playAttackSpecialVideo(video){
@@ -28150,10 +28259,23 @@ function showAttackSpecialPopup(attackerIdx, options={}){
   try{
     video.currentTime = 0;
   }catch(_err){}
-  playAttackSpecialVideo(video);
-  attackSpecialPopupTimer = window.setTimeout(() => {
+  let finished = false;
+  const finish = () => {
+    if(finished) return;
+    finished = true;
     hideAttackSpecialPopup();
-  }, ATTACK_SPECIAL_POPUP_DURATION_MS);
+    if(typeof options.onComplete === 'function') options.onComplete();
+  };
+  const scheduleFallback = () => {
+    if(finished) return;
+    if(attackSpecialPopupTimer) window.clearTimeout(attackSpecialPopupTimer);
+    attackSpecialPopupTimer = window.setTimeout(finish, getAttackSpecialPlaybackDurationMs(video));
+  };
+  video.onended = finish;
+  video.onerror = finish;
+  video.onloadedmetadata = scheduleFallback;
+  playAttackSpecialVideo(video);
+  scheduleFallback();
   return true;
 }
 
@@ -28165,7 +28287,7 @@ function shouldPlayCompleteAttackSpecial(attackerIdx, override){
 }
 
 function getAttackFxTotalDelay(completeAttack=false){
-  return (completeAttack ? ATTACK_SPECIAL_POPUP_DURATION_MS : ATTACK_LAUNCH_DELAY_MS) + ATTACK_RESOLVE_AFTER_LAUNCH_MS;
+  return (completeAttack ? getAttackSpecialPlaybackDurationMs() : ATTACK_LAUNCH_DELAY_MS) + ATTACK_RESOLVE_AFTER_LAUNCH_MS;
 }
 
 function triggerCompleteAttackChargeFeedback(attackerIdx){
@@ -28877,18 +28999,21 @@ function runHeaderAttackSequence(attackerIdx, withProjectile, callback, options=
     completeAttack,
     attackPoints: Number(options.attackPoints) || 0
   });
-  const specialShown = completeAttack ? showAttackSpecialPopup(attackerIdx, { force:true }) : false;
+  let launched = false;
+  const launchAttack = () => {
+    if(launched) return;
+    launched = true;
+    triggerAttackLaunchFeedback(attackerIdx, withProjectile, { completeAttack });
+    window.setTimeout(() => {
+      state.transitionLock = false;
+      if(callback) callback();
+    }, ATTACK_RESOLVE_AFTER_LAUNCH_MS);
+  };
+  const specialShown = completeAttack ? showAttackSpecialPopup(attackerIdx, { force:true, onComplete: launchAttack }) : false;
   if(specialShown){
     triggerCompleteAttackChargeFeedback(attackerIdx);
   }
-  const launchDelay = specialShown ? ATTACK_SPECIAL_POPUP_DURATION_MS : ATTACK_LAUNCH_DELAY_MS;
-  window.setTimeout(() => {
-    triggerAttackLaunchFeedback(attackerIdx, withProjectile, { completeAttack });
-  }, launchDelay);
-  window.setTimeout(() => {
-    state.transitionLock = false;
-    if(callback) callback();
-  }, launchDelay + ATTACK_RESOLVE_AFTER_LAUNCH_MS);
+  if(!specialShown) window.setTimeout(launchAttack, ATTACK_LAUNCH_DELAY_MS);
 }
 
 function getAttackSelection(){
@@ -30082,18 +30207,49 @@ function preloadDetailedCardAssets(force = false){
   });
   DETAILED_CARD_IMAGE_STATE.preloaded = true;
 }
-function buildRealCardImageElement(card){
+function buildCardValueFallbackElement(card, suitInfo){
+  const fallback = document.createElement('div');
+  const symbol = suitInfo?.symbol || '?';
+  const text = `${card?.rank || '?'}${symbol}`;
+  fallback.className = `card-value-fallback ${suitInfo?.color === 'red' ? 'is-red' : 'is-black'}`;
+  fallback.setAttribute('aria-hidden', 'true');
+
+  const top = document.createElement('span');
+  top.className = 'card-value-fallback-rank';
+  top.textContent = text;
+
+  const suit = document.createElement('span');
+  suit.className = 'card-value-fallback-suit';
+  suit.textContent = text;
+
+  const bottom = document.createElement('span');
+  bottom.className = 'card-value-fallback-rank is-bottom';
+  bottom.textContent = text;
+
+  fallback.append(top, suit, bottom);
+  return fallback;
+}
+function buildRealCardImageElement(card, hostEl=null){
   const src = getRealCardImageSrc(card);
   if(!src) return null;
   primeDetailedCardImage(src);
   const safeClass = ['10','J','Q','K','A'].includes(card.rank) ? ' card-real-image-safe' : '';
   const img = document.createElement('img');
   img.className = `card-real-image${safeClass}`;
-  img.src = src;
-  img.alt = '';
+  img.alt = cardText(card);
   img.loading = 'eager';
   img.decoding = 'sync';
   img.draggable = false;
+  img.addEventListener('load', () => {
+    if(!hostEl) return;
+    hostEl.classList.remove('card-image-pending', 'card-image-failed');
+  });
+  img.addEventListener('error', () => {
+    if(!hostEl) return;
+    hostEl.classList.remove('card-image-pending');
+    hostEl.classList.add('card-image-failed');
+  });
+  img.src = src;
   return img;
 }
 function createCoreArray(player){
@@ -30943,6 +31099,7 @@ function render(){
   // Online multiplayer post-render
   afterRender();
   sendMobileSpriteSnapshotSoon(0);
+  maybeShowFirstTurnNotice();
 }
 
 
@@ -30974,9 +31131,15 @@ function createCardEl(card, playerIdx, zone){
   if(shouldUseCompactCardLayout()){
     div.innerHTML = buildCompactCardMarkup(card, suitInfo);
   } else {
-    div.classList.add('card-detailed');
-    const realCardImage = buildRealCardImageElement(card);
-    if(realCardImage) div.appendChild(realCardImage);
+    div.classList.add('card-detailed', 'card-image-pending');
+    div.appendChild(buildCardValueFallbackElement(card, suitInfo));
+    const realCardImage = buildRealCardImageElement(card, div);
+    if(realCardImage) {
+      div.appendChild(realCardImage);
+    } else {
+      div.classList.remove('card-image-pending');
+      div.classList.add('card-image-failed');
+    }
   }
   if(activePlayer) div.addEventListener('click', () => {
     if(shouldSuppressCompactCardClick(card.id, zone, playerIdx)) return;
@@ -32235,6 +32398,7 @@ function tutorialPreparePracticeScenario(){
   state.currentPlayer = 0;
   state.turnCount = 1;
   state.phase = 'Montaje';
+  startFirstTurnNoticeCycle();
   state.winner = null;
   state.selected = [];
   state.attackMode = false;

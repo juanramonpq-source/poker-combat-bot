@@ -666,11 +666,42 @@
     }
 
     .fighter {
+      --turn-glow: rgba(116, 255, 242, .48);
+      --turn-glow-soft: rgba(116, 255, 242, .16);
+      --turn-glow-core: rgba(116, 255, 242, .08);
       position: relative;
       min-width: 0;
       padding: 10px 7px 8px;
       animation: fighterBreath 5.2s ease-in-out infinite;
       will-change: transform, filter;
+    }
+
+    .fighter::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 6px 1px 6px;
+      border-radius: 18px;
+      opacity: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 48% 42%, var(--turn-glow-core), transparent 58%),
+        linear-gradient(180deg, transparent, var(--turn-glow-soft), transparent);
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, .04),
+        inset 0 0 22px var(--turn-glow-soft),
+        0 0 18px var(--turn-glow-soft);
+      transition: opacity .22s ease, filter .22s ease, transform .22s ease;
+      mix-blend-mode: screen;
+    }
+
+    .fighter.is-turn-active {
+      filter: brightness(1.07) saturate(1.08);
+    }
+
+    .fighter.is-turn-active::before {
+      opacity: 1;
+      animation: turnDialGlow 1.9s ease-in-out infinite;
     }
 
     .fighter-blue {
@@ -679,6 +710,9 @@
     }
 
     .fighter-red {
+      --turn-glow: rgba(255, 108, 98, .5);
+      --turn-glow-soft: rgba(255, 108, 98, .17);
+      --turn-glow-core: rgba(255, 108, 98, .09);
       grid-column: 2;
       grid-row: 1;
     }
@@ -700,6 +734,7 @@
       font-size: 15px;
       font-weight: 900;
       overflow: hidden;
+      transition: box-shadow .22s ease, filter .22s ease, border-color .22s ease;
     }
 
     .fighter header span {
@@ -993,11 +1028,27 @@
       color: var(--cyan);
       background: rgba(2, 18, 31, .82);
       clip-path: polygon(6% 0, 100% 0, 100% 88%, 94% 100%, 0 100%, 0 12%);
+      transition: box-shadow .22s ease, filter .22s ease, border-color .22s ease;
     }
 
     .fighter-red .stats-card {
       color: var(--red);
       clip-path: polygon(0 0, 94% 0, 100% 12%, 100% 100%, 6% 100%, 0 88%);
+    }
+
+    .fighter.is-turn-active header,
+    .fighter.is-turn-active .stats-card {
+      box-shadow:
+        0 0 14px var(--turn-glow-soft),
+        inset 0 0 14px rgba(255, 255, 255, .06);
+      filter: brightness(1.1);
+    }
+
+    .fighter.is-turn-active .mecha-phase-live {
+      filter:
+        drop-shadow(0 15px 15px rgba(0, 0, 0, .62))
+        drop-shadow(0 0 16px var(--turn-glow))
+        saturate(1.14);
     }
 
     .stats-card p {
@@ -2239,6 +2290,18 @@
       overflow: visible;
     }
 
+    .cards.is-expanded-hand {
+      position: relative;
+      display: block;
+      height: 150px;
+      padding: 0 8px;
+    }
+
+    .cards.is-expanded-hand .card {
+      position: absolute;
+      margin-left: 0;
+    }
+
     .phone-shell.actions-open .cards {
       filter: brightness(.72) saturate(.78);
       pointer-events: none;
@@ -2303,6 +2366,53 @@
       object-fit: contain;
       display: block;
       pointer-events: none;
+      position: relative;
+      z-index: 1;
+      background: #fff4d8;
+      transition: opacity .12s ease;
+    }
+
+    .card.card-image-pending img,
+    .card.card-image-failed img {
+      opacity: 0;
+    }
+
+    .card-value-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 5px;
+      border-radius: inherit;
+      box-sizing: border-box;
+      background: linear-gradient(180deg, #fff9e8 0%, #f5dfad 100%);
+      color: #111b27;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-weight: 900;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .card-value-fallback.is-red {
+      color: #d52638;
+    }
+
+    .card-value-fallback-rank {
+      font-size: 12px;
+    }
+
+    .card-value-fallback-suit {
+      align-self: center;
+      justify-self: center;
+      font-size: 22px;
+      white-space: nowrap;
+    }
+
+    .card-value-fallback-rank.is-bottom {
+      align-self: end;
+      justify-self: end;
+      transform: rotate(180deg);
     }
 
     .card.is-touch-dragging {
@@ -2560,11 +2670,41 @@
       text-align: center;
       box-shadow: 0 16px 36px rgba(0,0,0,.38);
       overflow-wrap: anywhere;
+      pointer-events: none;
     }
 
     .toast.show {
       display: block;
       animation: messageIn .18s ease both;
+    }
+
+    .toast.attack-ready {
+      top: clamp(128px, 16vh, 176px);
+      bottom: auto;
+      border-color: rgba(116,255,242,.9);
+      background:
+        radial-gradient(circle at 14% 0%, rgba(116,255,242,.22), transparent 42%),
+        linear-gradient(180deg, rgba(10, 53, 76, .98), rgba(5, 18, 36, .98));
+      color: #eaffff;
+      box-shadow:
+        0 14px 30px rgba(0,0,0,.34),
+        0 0 0 2px rgba(116,255,242,.18),
+        inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+
+    .toast.first-turn {
+      top: clamp(128px, 16vh, 176px);
+      bottom: auto;
+      border-color: rgba(255,214,92,.92);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255,214,92,.22), transparent 42%),
+        linear-gradient(180deg, rgba(44, 40, 10, .98), rgba(10, 22, 42, .98));
+      color: #fff4be;
+      font-weight: 900;
+      box-shadow:
+        0 14px 30px rgba(0,0,0,.34),
+        0 0 0 2px rgba(255,214,92,.18),
+        inset 0 0 0 1px rgba(255,255,255,.08);
     }
 
     .fx-layer {
@@ -2902,6 +3042,11 @@
     @keyframes fighterBreath {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-2px); }
+    }
+
+    @keyframes turnDialGlow {
+      0%, 100% { filter: brightness(1); transform: scale(1); }
+      50% { filter: brightness(1.28); transform: scale(1.015); }
     }
 
     @keyframes readyHeaderPulse {
@@ -3324,6 +3469,11 @@
         --hand-card-height: 73px;
         height: 116px;
         padding-top: 25px;
+      }
+
+      .cards.is-expanded-hand {
+        height: 132px;
+        padding: 0 6px;
       }
 
     }
@@ -3969,6 +4119,11 @@
         overflow: visible;
       }
 
+      .cards.is-expanded-hand {
+        height: calc(100% - 4px);
+        padding: 0;
+      }
+
       .cards .card {
         position: absolute;
       }
@@ -4339,6 +4494,16 @@
         min-height: 30px;
         padding: 7px 12px;
         font-size: 12px;
+      }
+
+      .toast.attack-ready {
+        top: 10px;
+        bottom: auto;
+      }
+
+      .toast.first-turn {
+        top: 10px;
+        bottom: auto;
       }
     }
 
@@ -5083,9 +5248,15 @@
     let handShiftTimer = null;
     let touchDrag = null;
     let suppressCardClickUntil = 0;
+    const ATTACK_SPECIAL_MIN_DURATION_MS = 2300;
+    const ATTACK_SPECIAL_FALLBACK_DURATION_MS = 6200;
+    const ATTACK_SPECIAL_END_PAD_MS = 220;
+    const COMPACT_ATTACK_FX_DURATION_MS = 1220;
+    const FIRST_TURN_NOTICE_TEXT = "¡PRIMER TURNO, Puedes colocar 3 cartas!";
     let defensePopupSuppressedKey = "";
     let tutorialHiddenUntil = 0;
     let tutorialResumeTimer = null;
+    let firstTurnNoticeKey = "";
 
     const state = {
       gameStarted: false,
@@ -5172,6 +5343,7 @@
 
     function loadFromSave(raw) {
       const data = JSON.parse(raw);
+      resetFirstTurnNotice();
       Object.assign(state, {
         deck: data.deck || [],
         discard: data.discard || [],
@@ -5221,6 +5393,7 @@
 
     function seedDemoGame() {
       window.clearTimeout(rivalTimer);
+      resetFirstTurnNotice();
       Object.assign(state, {
         gameStarted: true,
         deck: createDeck(),
@@ -5250,8 +5423,8 @@
       dealOpeningHand(p2, "hearts");
 
       log("Nueva partida real iniciada: mazo, manos, montaje, ataque y defensa activos.");
-      toast("Nueva partida lista");
       render();
+      maybeShowFirstTurnNotice();
     }
 
     function markZone(card, zone) {
@@ -5265,6 +5438,29 @@
 
     function cardAsset(card) {
       return `${CARD_ASSET_ROOT}${RANK_FILE[card.rank]}_of_${card.suit}.svg`;
+    }
+
+    function createCardValueFallback(card) {
+      const fallback = document.createElement("span");
+      const suitSymbol = SUIT_LABELS[card.suit] || "?";
+      const text = `${card.rank || "?"}${suitSymbol}`;
+      fallback.className = `card-value-fallback ${["hearts", "diamonds"].includes(card.suit) ? "is-red" : "is-black"}`;
+      fallback.setAttribute("aria-hidden", "true");
+
+      const top = document.createElement("span");
+      top.className = "card-value-fallback-rank";
+      top.textContent = text;
+
+      const suit = document.createElement("span");
+      suit.className = "card-value-fallback-suit";
+      suit.textContent = text;
+
+      const bottom = document.createElement("span");
+      bottom.className = "card-value-fallback-rank is-bottom";
+      bottom.textContent = text;
+
+      fallback.append(top, suit, bottom);
+      return fallback;
     }
 
     function isFigure(card) {
@@ -5362,11 +5558,41 @@
       renderLeftGuidance();
     }
 
-    function toast(text) {
+    function toast(text, variant = "") {
       window.clearTimeout(toastTimer);
       toastNode.textContent = text;
+      toastNode.classList.toggle("attack-ready", variant === "attack-ready");
+      toastNode.classList.toggle("first-turn", variant === "first-turn");
       toastNode.classList.add("show");
-      toastTimer = window.setTimeout(() => toastNode.classList.remove("show"), 1800);
+      toastTimer = window.setTimeout(() => {
+        toastNode.classList.remove("show", "attack-ready", "first-turn");
+      }, variant === "first-turn" ? 3400 : 1800);
+    }
+
+    function resetFirstTurnNotice() {
+      firstTurnNoticeKey = "";
+    }
+
+    function canShowFirstTurnNotice() {
+      return !!state.gameStarted
+        && Number(state.internalTurn) === 1
+        && !state.pendingDefense
+        && !state.winner;
+    }
+
+    function getFirstTurnNoticeKey(explicitKey = "") {
+      if (!canShowFirstTurnNotice()) return "";
+      if (explicitKey) return `bridge:${explicitKey}`;
+      const playersKey = (state.players || []).map((player) => player?.name || "").join("|");
+      return `local:${state.currentPlayer}:${playersKey}:${state.deck?.length || 0}:${state.discard?.length || 0}`;
+    }
+
+    function maybeShowFirstTurnNotice(explicitKey = "", text = FIRST_TURN_NOTICE_TEXT) {
+      const key = getFirstTurnNoticeKey(explicitKey);
+      if (!key || firstTurnNoticeKey === key) return false;
+      firstTurnNoticeKey = key;
+      toast(text || FIRST_TURN_NOTICE_TEXT, "first-turn");
+      return true;
     }
 
     function isLandscapeLayout() {
@@ -5545,9 +5771,20 @@
       attackSpecialOverlay?.classList.remove("show");
       attackSpecialOverlay?.setAttribute("aria-hidden", "true");
       if (attackSpecialVideo) {
+        attackSpecialVideo.onended = null;
+        attackSpecialVideo.onerror = null;
+        attackSpecialVideo.onloadedmetadata = null;
         attackSpecialVideo.pause();
         try { attackSpecialVideo.currentTime = 0; } catch (_error) {}
       }
+    }
+
+    function getAttackSpecialPlaybackDurationMs() {
+      const duration = Number(attackSpecialVideo?.duration);
+      if (Number.isFinite(duration) && duration > 0) {
+        return Math.max(ATTACK_SPECIAL_MIN_DURATION_MS, Math.ceil(duration * 1000) + ATTACK_SPECIAL_END_PAD_MS);
+      }
+      return ATTACK_SPECIAL_FALLBACK_DURATION_MS;
     }
 
     function playAttackSpecialVideo() {
@@ -5567,18 +5804,31 @@
     function showAttackSpecialPopup(attackerIndex = 0, onFinish) {
       if (prefersReducedMotion() || !attackSpecialOverlay || !attackSpecialVideo) {
         onFinish?.();
-        return;
+        return false;
       }
       hideAttackSpecialPopup();
       positionAttackSpecialPopup(attackerIndex);
       attackSpecialOverlay.classList.add("show");
       attackSpecialOverlay.setAttribute("aria-hidden", "false");
       spawnSparksFromElement(fighterNode(attackerIndex), "amber", 24);
-      playAttackSpecialVideo();
-      attackVideoTimer = window.setTimeout(() => {
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
         hideAttackSpecialPopup();
         onFinish?.();
-      }, 2300);
+      };
+      const scheduleFallback = () => {
+        if (finished) return;
+        window.clearTimeout(attackVideoTimer);
+        attackVideoTimer = window.setTimeout(finish, getAttackSpecialPlaybackDurationMs());
+      };
+      attackSpecialVideo.onended = finish;
+      attackSpecialVideo.onerror = finish;
+      attackSpecialVideo.onloadedmetadata = scheduleFallback;
+      playAttackSpecialVideo();
+      scheduleFallback();
+      return true;
     }
 
     function isCompleteAttackMecha(player) {
@@ -5612,19 +5862,23 @@
     }
 
     function playAttackFx({ attackerIndex = 0, damage = 0, projectile = false, full = false } = {}) {
-      temporarilyHideTutorialOverlay(full ? 3600 : 1900);
+      temporarilyHideTutorialOverlay(full ? getAttackSpecialPlaybackDurationMs() + COMPACT_ATTACK_FX_DURATION_MS + 500 : 1900);
       if (full) {
-        let played = false;
-        const playBoard = () => {
-          if (played) return;
-          played = true;
-          runCompactAttackFx({ attackerIndex, damage, projectile });
-        };
-        showAttackSpecialPopup(attackerIndex, () => window.setTimeout(playBoard, 100));
-        window.setTimeout(playBoard, 2500);
-        return;
+        return new Promise((resolve) => {
+          let played = false;
+          const playBoard = () => {
+            if (played) return;
+            played = true;
+            window.setTimeout(() => {
+              runCompactAttackFx({ attackerIndex, damage, projectile });
+              window.setTimeout(resolve, COMPACT_ATTACK_FX_DURATION_MS);
+            }, 100);
+          };
+          if (!showAttackSpecialPopup(attackerIndex, playBoard)) playBoard();
+        });
       }
       runCompactAttackFx({ attackerIndex, damage, projectile });
+      return new Promise((resolve) => window.setTimeout(resolve, COMPACT_ATTACK_FX_DURATION_MS));
     }
 
     function animateModification(zoneOrOptions = "attack") {
@@ -5687,7 +5941,7 @@
       }
       if (readiness.full && readiness.key && attackReadyCueKey !== readiness.key) {
         attackReadyCueKey = readiness.key;
-        toast("Ataque completo listo. Pulsa Confirmar para ejecutarlo.");
+        toast("Ataque completo listo. Pulsa Confirmar para ejecutarlo.", "attack-ready");
       }
     }
 
@@ -6317,13 +6571,18 @@
       log(`${attacker.name} declara ataque de ${total} punto(s).`);
       shell.classList.add("attack-flash");
       window.setTimeout(() => shell.classList.remove("attack-flash"), 600);
-      playAttackFx({
+      const fullAttackFx = !projectileOnly && isCompleteAttackMecha(attacker);
+      const attackFxDone = playAttackFx({
         attackerIndex: state.currentPlayer,
         damage: total,
         projectile: !!projectile,
-        full: !projectileOnly && isCompleteAttackMecha(attacker)
+        full: fullAttackFx
       });
-      beginDefenseWindow(total, !!projectile);
+      if (fullAttackFx && attackFxDone && typeof attackFxDone.then === "function") {
+        attackFxDone.then(() => beginDefenseWindow(total, !!projectile));
+      } else {
+        beginDefenseWindow(total, !!projectile);
+      }
     }
 
     function beginDefenseWindow(totalAttack, withProjectile) {
@@ -6483,13 +6742,18 @@
         state.discard.push(fuel);
         const total = Math.min(attack.value, limit);
         log(`Rival declara ataque de ${total} punto(s).`);
-        playAttackFx({
+        const fullAttackFx = isCompleteAttackMecha(rival);
+        const attackFxDone = playAttackFx({
           attackerIndex: 1,
           damage: total,
           projectile: false,
-          full: isCompleteAttackMecha(rival)
+          full: fullAttackFx
         });
-        beginDefenseWindow(total, false);
+        if (fullAttackFx && attackFxDone && typeof attackFxDone.then === "function") {
+          attackFxDone.then(() => beginDefenseWindow(total, false));
+        } else {
+          beginDefenseWindow(total, false);
+        }
         return;
       }
 
@@ -6573,8 +6837,8 @@
           return;
         }
         loadFromSave(raw);
-        toast("Partida cargada");
         render();
+        if (!maybeShowFirstTurnNotice()) toast("Partida cargada");
       }
       if (action === "music") {
         state.musicOn = !state.musicOn;
@@ -6800,14 +7064,41 @@
       fighter?.classList.toggle("is-complete", isCompleteAttackMecha(player));
     }
 
+    function getTurnFocusIndex() {
+      if (state.winner) return -1;
+      const defenseIndex = Number(state.pendingDefense?.defenderIndex);
+      if (Number.isInteger(defenseIndex) && defenseIndex >= 0 && defenseIndex < state.players.length) {
+        return defenseIndex;
+      }
+      const turnIndex = Number(state.currentPlayer);
+      return Number.isInteger(turnIndex) && turnIndex >= 0 && turnIndex < state.players.length ? turnIndex : -1;
+    }
+
+    function renderTurnDialFocus() {
+      const focusIndex = getTurnFocusIndex();
+      [0, 1].forEach((index) => {
+        const fighter = fighterNode(index);
+        if (!fighter) return;
+        const active = index === focusIndex;
+        fighter.classList.toggle("is-turn-active", active);
+        if (active) {
+          fighter.setAttribute("aria-current", "true");
+        } else {
+          fighter.removeAttribute("aria-current");
+        }
+      });
+    }
+
     function renderMechas() {
       state.players.forEach((player, index) => renderMechaBuild(player, index));
+      renderTurnDialFocus();
     }
 
     function makeCardNode(card, context) {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "card";
+      button.classList.add("card-image-pending");
       button.draggable = context === "hand" && !card.bridgeDraftPreview;
       button.title = cardText(card);
       button.setAttribute("aria-pressed", state.selected.includes(card.id) ? "true" : "false");
@@ -6822,9 +7113,18 @@
         if (state.selected.includes(card.id)) button.classList.add("is-selected");
         if (state.bridgeDraftPlacements?.[card.id]) button.classList.add("is-draft-origin");
       }
+      button.appendChild(createCardValueFallback(card));
       const img = document.createElement("img");
-      img.src = cardAsset(card);
       img.alt = cardText(card);
+      img.draggable = false;
+      img.addEventListener("load", () => {
+        button.classList.remove("card-image-pending", "card-image-failed");
+      });
+      img.addEventListener("error", () => {
+        button.classList.remove("card-image-pending");
+        button.classList.add("card-image-failed");
+      });
+      img.src = cardAsset(card);
       button.appendChild(img);
       return button;
     }
@@ -6860,6 +7160,10 @@
         tray.classList.remove("is-shifting-left", "is-shifting-right");
       }, 220);
       renderHand();
+    }
+
+    function shouldUseExpandedPortraitHand(count) {
+      return count > 9 && !isLandscapeLayout();
     }
 
     function layoutHandCard(cardNode, index, count, tray) {
@@ -6898,6 +7202,44 @@
         : window.matchMedia("(max-height: 760px)").matches
           ? 50
           : 54;
+      const cardHeight = window.matchMedia("(max-height: 760px)").matches ? 73 : 79;
+      if (shouldUseExpandedPortraitHand(count)) {
+        const rows = 2;
+        const cardsPerRow = Math.ceil(count / rows);
+        const row = Math.floor(index / cardsPerRow);
+        const col = index % cardsPerRow;
+        const rowCount = row === 0 ? cardsPerRow : count - cardsPerRow;
+        const trayWidth = tray.clientWidth || 360;
+        const trayHeight = tray.clientHeight || (window.matchMedia("(max-height: 760px)").matches ? 132 : 150);
+        const narrow = window.innerWidth <= 430 || trayWidth <= 390;
+        const leftGuard = row === 0 ? (narrow ? 86 : 78) : (narrow ? 18 : 22);
+        const rightGuard = row === 0 ? (narrow ? 118 : 132) : (narrow ? 18 : 22);
+        const scale = count > 15 ? .82 : count > 12 ? .86 : .92;
+        const visualWidth = cardWidth * scale;
+        const usableWidth = Math.max(visualWidth, trayWidth - leftGuard - rightGuard);
+        const step = rowCount > 1
+          ? Math.max(24, Math.min(visualWidth * 1.08, (usableWidth - visualWidth) / (rowCount - 1)))
+          : 0;
+        const rowWidth = visualWidth + step * Math.max(0, rowCount - 1);
+        const rowLeft = leftGuard + Math.max(0, (usableWidth - rowWidth) / 2);
+        const centerX = rowLeft + (visualWidth / 2) + col * step;
+        const rowGap = count > 15 ? 4 : 6;
+        const rowStep = Math.min(cardHeight * .7, Math.max(44, (trayHeight - cardHeight - rowGap)));
+        const topBase = Math.max(0, Math.min(18, (trayHeight - cardHeight - rowStep) / 2));
+        const mid = (rowCount - 1) / 2;
+        const localTilt = rowCount > 1 ? (col - mid) / mid : 0;
+        const angle = localTilt * (count > 15 ? 3.2 : 4.2);
+        const rise = Math.max(0, (count > 15 ? 5 : 7) - Math.abs(col - mid) * .9);
+        cardNode.style.left = `${Math.max(0, centerX - (cardWidth / 2)).toFixed(2)}px`;
+        cardNode.style.top = `${(topBase + row * rowStep).toFixed(2)}px`;
+        cardNode.style.zIndex = String(10 + row * cardsPerRow + col);
+        tray.style.setProperty("--fan-overlap", "0px");
+        cardNode.style.setProperty("--hand-rotate", `${angle.toFixed(2)}deg`);
+        cardNode.style.setProperty("--hand-rise", `${rise.toFixed(2)}px`);
+        cardNode.style.setProperty("--hand-scale", scale.toFixed(3));
+        cardNode.style.setProperty("--hand-hover-scale", Math.min(1.02, scale + .06).toFixed(3));
+        return;
+      }
       const trayWidth = tray.clientWidth || 420;
       const narrow = window.innerWidth <= 430 || trayWidth <= 390;
       const sideSafety = count > 14
@@ -6953,11 +7295,13 @@
       tray.innerHTML = "";
       overview.innerHTML = "";
       if (!player) {
+        tray.classList.remove("is-expanded-hand");
         document.querySelector("[data-hand-count]").textContent = `0/${MAX_HAND_SIZE}`;
         return;
       }
       const handCards = orderedHandCards(player);
       tray.style.setProperty("--hand-count", handCards.length);
+      tray.classList.toggle("is-expanded-hand", shouldUseExpandedPortraitHand(handCards.length));
       handCards.forEach((card, index) => {
         const cardNode = makeCardNode(card, "hand");
         layoutHandCard(cardNode, index, handCards.length, tray);
@@ -7699,6 +8043,7 @@
     function applyRealGameSnapshot(snapshot = {}) {
       state.players = (snapshot.players || []).map(normalizeBridgePlayer);
       state.currentPlayer = Number.isInteger(snapshot.currentPlayer) ? snapshot.currentPlayer : 0;
+      state.internalTurn = Number.isFinite(Number(snapshot.internalTurn)) ? Number(snapshot.internalTurn) : state.internalTurn;
       state.phase = snapshot.phase || "Turno";
       state.selected = Array.isArray(snapshot.selectedIds) ? snapshot.selectedIds.slice() : [];
       state.attackMode = !!snapshot.attackMode;
@@ -7722,6 +8067,7 @@
       state.argosHack = snapshot.argosHack && snapshot.argosHack.active ? snapshot.argosHack : null;
       state.log = Array.isArray(snapshot.log) ? snapshot.log.slice(0, 60) : [];
       render();
+      maybeShowFirstTurnNotice(snapshot.firstTurnNoticeKey || "", snapshot.firstTurnNoticeText || FIRST_TURN_NOTICE_TEXT);
     }
 
     function registerEmbeddedRealGame() {
