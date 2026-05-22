@@ -2400,7 +2400,6 @@ button:disabled{
   padding:1.35px;
   transform:scale(1.002);
 }
-.card.card-detailed.card-image-pending .card-real-image,
 .card.card-detailed.card-image-failed .card-real-image{
   opacity:0;
 }
@@ -20014,7 +20013,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
         </div>
         <button class="compact-action-hub-button acciones-btn" id="accionesBtn" type="button" aria-label="Acciones" data-label="Acciones" aria-expanded="false" aria-controls="compactMobileActionGrid"></button>
         <div class="compact-mobile-action-grid" id="compactMobileActionGrid">
-          <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Abrir ataque</button>
+          <button class="cyan" data-source-button="attackModeBtn" id="compactMobileAttackModeBtn" type="button">Atacar</button>
           <button class="cyan" data-mobile-drawer="rival" id="compactMobileRivalDrawerBtn" type="button">Ver rival</button>
           <button class="cyan" data-mobile-drawer="player" id="compactMobilePlayerDrawerBtn" type="button">Panel jugador</button>
           <button class="warn compact-action-hidden" data-contextual-projectile-mode="true" data-source-button="toggleProjectileBtn" id="compactMobileProjectileModeBtn" type="button">Modo proyectil</button>
@@ -26224,6 +26223,182 @@ function mobileSpriteEscapeHtml(text=''){
   return box.innerHTML;
 }
 
+function getCompactMobileTutorialCopy(step){
+  const copy = {
+    body: step?.body || 'Sigue la acción marcada por el tutorial.',
+    objective: step?.objective || '',
+    tip: step?.tip || ''
+  };
+  if(!step?.id) return copy;
+
+  switch(step.id){
+    case 'core-build':
+      copy.objective = 'Toca <strong>K♠</strong>, <strong>J♦</strong> y <strong>A♦</strong> en tu mano y pulsa <strong>Modificar</strong>.';
+      copy.tip = 'En móvil, selecciona las cartas tocándolas. <strong>Modificar</strong> aplica los cambios al panel.';
+      break;
+    case 'attack-build':
+      copy.objective = 'Toca <strong>7♠</strong> y <strong>8♠</strong> en tu mano y pulsa <strong>Modificar</strong>.';
+      copy.tip = 'El panel central muestra dónde entran las cartas; no necesitas cambiar al modo scroll.';
+      break;
+    case 'fuel-build':
+      copy.objective = 'Toca <strong>8♦</strong> y pulsa <strong>Modificar</strong> para cargar combustible.';
+      copy.tip = 'El contador Fuel x2 se actualizará en la cabecera en cuanto el diamante quede montado.';
+      break;
+    case 'open-attack':
+      copy.body = 'Tu mecha ya cumple la condición del piloto. En móvil no tienes que buscar una consola superior: abre el botón amarillo <strong>Acciones</strong> y pulsa <strong>Atacar</strong>. Eso abre la selección de ataque.';
+      copy.objective = 'Pulsa <strong>Acciones</strong> y después <strong>Atacar</strong>.';
+      copy.tip = 'Cuando Atacar se activa, el tablero cambia a selección de ataque para que elijas fuel y picas.';
+      break;
+    case 'first-attack':
+      copy.body = 'Vas a usar <strong>8♦</strong> como combustible y <strong>4♠ + 7♠</strong> como ataque principal. En móvil, primero toca las cartas en Fuel y Ataque; después abre <strong>Acciones</strong> y confirma.';
+      copy.objective = 'Selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, abre <strong>Acciones</strong> y pulsa <strong>Confirmar ataque</strong>.';
+      copy.tip = '8♦ da límite 16; 4♠ + 7♠ = 11, así que el ataque es válido.';
+      break;
+    case 'defend':
+      copy.objective = 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>. Si no lo ves directo, abre <strong>Acciones</strong>.';
+      copy.tip = 'La defensa móvil aparece como ventana o como acción contextual cuando te toca responder.';
+      break;
+    case 'draw-diamond':
+      copy.body = 'Los diamantes también funcionan como motor de robo. En móvil, selecciona el diamante de la mano, abre <strong>Acciones</strong> y pulsa <strong>Robar con ♦</strong>.';
+      copy.objective = 'Selecciona <strong>2♦</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Robar con ♦</strong>.';
+      copy.tip = 'No puedes usar este robo en dos turnos propios seguidos.';
+      break;
+    case 'figure-burst':
+      copy.objective = 'Pulsa <strong>2 Figuras → 4</strong>. Si no aparece como botón directo, abre <strong>Acciones</strong>.';
+      copy.tip = 'La acción solo se activa cuando ya tienes piloto, copiloto y al menos 2 figuras en mano.';
+      break;
+    case 'pass-turn':
+      copy.body = 'Si no puedes o no quieres hacer nada útil, usa <strong>Pasar</strong> desde <strong>Acciones</strong> y descarta <strong>2 cartas</strong> de la mano. Si te quedara menos de 2, descartarías las que tuvieras.';
+      copy.objective = 'Selecciona <strong>10♥</strong> y <strong>8♣</strong>, abre <strong>Acciones</strong> y pulsa <strong>Pasar</strong>.';
+      copy.tip = 'Pasar turno no es “no hacer nada”: siempre implica descartar para ceder la iniciativa.';
+      break;
+    case 'swap-card':
+      copy.objective = 'Selecciona <strong>7♣</strong> de tu mano y <strong>6♣</strong> en Armadura; después pulsa <strong>Modificar</strong>.';
+      copy.tip = 'En móvil puedes tocar la carta ya montada del panel para marcar la sustitución.';
+      break;
+    case 'projectile':
+      copy.body = 'Los proyectiles ya están desbloqueados. En móvil, usa <strong>Acciones</strong> para <strong>Atacar</strong>, activar <strong>Modo proyectil</strong> si quieres añadir la pica extra y terminar con <strong>Confirmar ataque</strong>.<br><br><strong>Opción A · Ataque normal:</strong> selecciona <strong>7♣ + 4♠ + 7♠</strong> y confirma.<br><br><strong>Opción B · Ataque con todo:</strong> activa <strong>Modo proyectil</strong> y selecciona <strong>7♣ + 4♠ + 7♠ + 8♠</strong>, dejando la pica extra como proyectil.';
+      copy.objective = 'Gana con ataque normal o con <strong>Modo proyectil</strong>; todo se hace desde <strong>Acciones</strong> y el panel móvil.';
+      copy.tip = 'Usa proyectil solo cuando quieras añadir una pica extra que ya no cabe dentro del límite del combustible principal.';
+      break;
+    case 'academy-fuel-attack':
+      copy.objective = 'Abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, y termina con <strong>Confirmar ataque</strong>.';
+      copy.tip = 'Atacar abre la selección. Confirmar ataque aparece en Acciones cuando la selección es válida.';
+      break;
+    case 'academy-active-defense':
+      copy.body = 'Cuando te atacan, puedes usar <strong>1 ♦ numérico de la mano</strong> para recortar el daño antes de que toque tu blindaje. En móvil, usa la ventana de defensa o abre <strong>Acciones</strong> si el botón no está visible.';
+      copy.objective = 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>.';
+      copy.tip = 'Las figuras de diamantes no valen aquí; solo cuentan los diamantes numéricos.';
+      break;
+    case 'academy-diamond-draw':
+      copy.body = 'Un <strong>♦ numérico en mano</strong> también puede convertirse en robo. En móvil, selecciona el diamante, abre <strong>Acciones</strong> y pulsa <strong>Robar con ♦</strong>. <strong>Ojo:</strong> no puedes cambiar diamantes por robo <strong>dos turnos propios seguidos</strong>.';
+      copy.objective = 'Selecciona <strong>2♦</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Robar con ♦</strong>.';
+      copy.tip = 'Si el botón está oculto, todavía no se cumplen las condiciones de la acción.';
+      break;
+    case 'academy-figure-burst':
+      copy.body = 'Cuando ya tienes <strong>piloto</strong> y <strong>copiloto</strong>, si consigues otras <strong>2 figuras</strong> en la mano puedes descartarlas y robar <strong>4 cartas</strong>. En móvil aparecerá como botón directo o dentro de <strong>Acciones</strong>.';
+      copy.objective = 'Pulsa <strong>2 Figuras → 4</strong>.';
+      copy.tip = 'Este reciclado por figuras no cuenta como robar con ♦, así que no choca con esa restricción.';
+      break;
+    case 'academy-pass-two-cards':
+    case 'academy-pass-one-card':
+      copy.objective = step.id === 'academy-pass-two-cards'
+        ? 'Selecciona las <strong>2 cartas</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Pasar</strong>.'
+        : 'Selecciona la <strong>única carta</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Pasar</strong>.';
+      copy.tip = step.id === 'academy-pass-two-cards'
+        ? 'Primero practicamos el caso normal: pasar pagando 2 cartas.'
+        : 'Con una sola carta en mano también puedes pasar descartando esa carta.';
+      break;
+    case 'academy-armor-fuel':
+      copy.objective = 'Abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, selecciona <strong>6♣</strong> en Armadura y <strong>4♠ + 7♠</strong> en Ataque, y termina con <strong>Confirmar ataque</strong>.';
+      copy.tip = 'El As♦ permite usar armadura como fuel; esa armadura se descartará tras el ataque.';
+      break;
+    case 'academy-projectile-only':
+      copy.body = 'El <strong>proyectil</strong> es una pica que se dispara y se descarta. En móvil, abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, selecciona la pica montada y usa <strong>Solo proyectil</strong>. No necesita fuel.';
+      copy.objective = 'Abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, selecciona <strong>7♠</strong> y usa <strong>Solo proyectil</strong>.';
+      copy.tip = 'Solo proyectil se ilumina cuando hay una pica numérica válida seleccionada.';
+      break;
+    case 'academy-projectile-combo':
+      copy.body = 'Ahora combinamos ambos mundos: <strong>4♦</strong> limita el ataque principal a <strong>8</strong>, así que la <strong>8♠</strong> será ataque normal y la <strong>4♠</strong> debe salir como proyectil. En móvil, todo se hace desde <strong>Acciones</strong>: Atacar, Modo proyectil y Confirmar ataque.';
+      copy.objective = 'Abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, activa <strong>Modo proyectil</strong> y marca <strong>4♦ + 8♠</strong>, dejando <strong>4♠</strong> como última pica antes de confirmar.';
+      copy.tip = 'Recuerda: la última pica marcada será el proyectil.';
+      break;
+    default:
+      break;
+  }
+
+  return copy;
+}
+
+function getCompactMobileTutorialFocusText(step){
+  if(!step) return 'Abre Acciones para ver las jugadas disponibles y sigue las zonas iluminadas.';
+  switch(step.id){
+    case 'open-attack':
+      return 'Botón amarillo Acciones → Atacar. En móvil no hay que subir al panel superior.';
+    case 'first-attack':
+    case 'academy-fuel-attack':
+    case 'academy-armor-fuel':
+      return 'Selecciona las cartas iluminadas en el panel y confirma desde Acciones.';
+    case 'draw-diamond':
+    case 'academy-diamond-draw':
+      return 'Selecciona el diamante de la mano y usa Robar con ♦ desde Acciones.';
+    case 'figure-burst':
+    case 'academy-figure-burst':
+      return 'Busca 2 Figuras → 4 como botón directo o dentro de Acciones.';
+    case 'pass-turn':
+    case 'academy-pass-two-cards':
+    case 'academy-pass-one-card':
+      return 'Marca las cartas de la mano y usa Pasar desde Acciones.';
+    case 'projectile':
+    case 'academy-projectile-only':
+    case 'academy-projectile-combo':
+      return 'Acciones concentra Atacar, Modo proyectil, Solo proyectil y Confirmar ataque.';
+    default:
+      return tutorialBuildFocusText(step);
+  }
+}
+
+function getCompactMobileTutorialPayload(){
+  if(!tutorialSystem.enabled) return null;
+  const step = tutorialGetCurrentStep();
+  if(!step) return {
+    step: null,
+    title: 'Tutorial guiado',
+    html: 'Preparando escenario guiado.',
+    text: 'Preparando escenario guiado.',
+    meta: 'Instructor en acción'
+  };
+  const script = getActiveTutorialScript();
+  const stepNumber = Math.min(tutorialSystem.stepIndex + 1, script.length);
+  const lesson = tutorialSystem.mode === 'academy' ? academyGetLessonById(tutorialSystem.lessonId) : null;
+  const title = step.title || (tutorialSystem.mode === 'academy' ? 'Carnet PoCoBOT' : 'Tutorial guiado');
+  const copy = getCompactMobileTutorialCopy(step);
+  const objectiveHtml = copy.objective ? `<div class="tutorial-objective"><strong>Objetivo actual:</strong> ${copy.objective}</div>` : '';
+  const tipHtml = copy.tip ? `<div class="tutorial-tip"><strong>Pista:</strong> ${copy.tip}</div>` : '';
+  const focusText = getCompactMobileTutorialFocusText(step);
+  const statusText = tutorialSystem.completed
+    ? 'La guía ha soltado las restricciones. Puedes seguir jugando o reiniciar cuando quieras.'
+    : (tutorialSystem.statusText || copy.tip || 'Solo se habilitan las acciones relevantes para el paso actual.');
+  const focusHtml = focusText && !(tutorialSystem.mode === 'academy' && step.id === 'academy-definition')
+    ? `<div class="tutorial-focus"><strong>Foco visual:</strong> ${mobileSpriteEscapeHtml(focusText)}</div>`
+    : '';
+  const normalizeTutorialLine = (value='') => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const statusHtml = statusText && normalizeTutorialLine(statusText) !== normalizeTutorialLine(copy.tip)
+    ? `<div class="tutorial-status"><strong>Estado:</strong> ${mobileSpriteEscapeHtml(statusText)}</div>`
+    : '';
+  const html = [copy.body, objectiveHtml, tipHtml, focusHtml, statusHtml].filter(Boolean).join('');
+  const modeLabel = tutorialSystem.mode === 'academy'
+    ? `Carnet PoCoBOT${lesson ? ` · Fase ${lesson.phase}/${ACADEMY_LESSONS.length}` : ''}`
+    : 'Tutorial compacto';
+  return {
+    step,
+    title,
+    html,
+    text: mobileSpriteTextFromHtml(html),
+    meta: `${modeLabel} · Paso ${stepNumber}/${script.length}`
+  };
+}
+
 function getMobileSpriteTutorialActions(step){
   if(!tutorialSystem.enabled || !step) return [];
   const actions = [];
@@ -26259,42 +26434,14 @@ function getMobileSpriteTutorialActions(step){
 
 function getMobileSpriteTutorialPayload(){
   if(!tutorialSystem.enabled) return null;
-  const step = tutorialGetCurrentStep();
-  if(!step) return {
-    title: 'Tutorial guiado',
-    html: 'Preparando escenario guiado.',
-    text: 'Preparando escenario guiado.',
-    meta: 'Instructor en acción',
-    actions: []
-  };
-  const script = getActiveTutorialScript();
-  const stepNumber = Math.min(tutorialSystem.stepIndex + 1, script.length);
-  const lesson = tutorialSystem.mode === 'academy' ? academyGetLessonById(tutorialSystem.lessonId) : null;
-  const title = step.title || (tutorialSystem.mode === 'academy' ? 'Carnet PoCoBOT' : 'Tutorial guiado');
-  const bodyHtml = step.body || 'Sigue la acción marcada por el tutorial.';
-  const objectiveHtml = step.objective ? `<div class="tutorial-objective"><strong>Objetivo actual:</strong> ${step.objective}</div>` : '';
-  const tipHtml = step.tip ? `<div class="tutorial-tip"><strong>Pista:</strong> ${step.tip}</div>` : '';
-  const focusText = tutorialBuildFocusText(step);
-  const statusText = tutorialSystem.completed
-    ? 'La guía ha soltado las restricciones. Puedes seguir jugando o reiniciar cuando quieras.'
-    : (tutorialSystem.statusText || step.tip || 'Solo se habilitan las acciones relevantes para el paso actual.');
-  const focusHtml = focusText && !(tutorialSystem.mode === 'academy' && step.id === 'academy-definition')
-    ? `<div class="tutorial-focus"><strong>Foco visual:</strong> ${mobileSpriteEscapeHtml(focusText)}</div>`
-    : '';
-  const normalizeTutorialLine = (value='') => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
-  const statusHtml = statusText && normalizeTutorialLine(statusText) !== normalizeTutorialLine(step.tip)
-    ? `<div class="tutorial-status"><strong>Estado:</strong> ${mobileSpriteEscapeHtml(statusText)}</div>`
-    : '';
-  const html = [bodyHtml, objectiveHtml, tipHtml, focusHtml, statusHtml].filter(Boolean).join('');
-  const modeLabel = tutorialSystem.mode === 'academy'
-    ? `Carnet PoCoBOT${lesson ? ` · Fase ${lesson.phase}/${ACADEMY_LESSONS.length}` : ''}`
-    : 'Tutorial compacto';
+  const payload = getCompactMobileTutorialPayload();
+  if(!payload) return null;
   return {
-    title,
-    html,
-    text: mobileSpriteTextFromHtml(html),
-    meta: `${modeLabel} · Paso ${stepNumber}/${script.length}`,
-    actions: getMobileSpriteTutorialActions(step)
+    title: payload.title,
+    html: payload.html,
+    text: payload.text,
+    meta: payload.meta,
+    actions: getMobileSpriteTutorialActions(payload.step)
   };
 }
 
@@ -27780,6 +27927,9 @@ function renderDesktopCompactHud(){
     return node ? node.innerHTML : '';
   };
   const compactTurnIndicator = olGetCompactTurnIndicator();
+  const compactMobileTutorialPayload = isCompactMobileHudActive() && tutorialSystem.enabled
+    ? getCompactMobileTutorialPayload()
+    : null;
 
   const compactPlayerName = document.getElementById('compactPlayerName');
   if(compactPlayerName) compactPlayerName.textContent = player.name;
@@ -28036,19 +28186,21 @@ function renderDesktopCompactHud(){
 
   const compactTutorialBoxTitle = document.getElementById('compactTutorialBoxTitle');
   if(compactTutorialBoxTitle){
-    compactTutorialBoxTitle.textContent = state.tutorial ? (sourceText('tutorialPanelTitle') || 'Tutorial activo') : 'Registro';
+    compactTutorialBoxTitle.textContent = state.tutorial
+      ? (compactMobileTutorialPayload?.title || sourceText('tutorialPanelTitle') || 'Tutorial activo')
+      : 'Registro';
   }
   const compactTutorialBoxText = document.getElementById('compactTutorialBoxText');
   if(compactTutorialBoxText){
     const recentLogHtml = (state.log || []).slice(-5).reverse().map(entry => `<div class="log-entry">${entry}</div>`).join('');
     compactTutorialBoxText.innerHTML = state.tutorial
-      ? (sourceHtml('tutorialPanelText') || sourceHtml('attackHint') || 'La guía táctica aparecerá aquí.')
+      ? (compactMobileTutorialPayload?.html || sourceHtml('tutorialPanelText') || sourceHtml('attackHint') || 'La guía táctica aparecerá aquí.')
       : (recentLogHtml || sourceHtml('attackHint') || 'La consola compacta mantiene visibles las acciones legales del turno.');
   }
   const compactTutorialBoxMeta = document.getElementById('compactTutorialBoxMeta');
   if(compactTutorialBoxMeta){
     compactTutorialBoxMeta.textContent = state.tutorial
-      ? (sourceText('tutorialPanelObjective') || sourceText('attackSubHint') || 'Sigue el objetivo actual y usa las zonas iluminadas.')
+      ? (compactMobileTutorialPayload?.meta || sourceText('tutorialPanelObjective') || sourceText('attackSubHint') || 'Sigue el objetivo actual y usa las zonas iluminadas.')
       : (sourceText('rightStatusText') || sourceText('attackSubHint') || 'La lectura rival y tus módulos quedan visibles sin depender del scroll.');
   }
   const compactTutorialActions = document.getElementById('compactTutorialActions');
@@ -30191,14 +30343,23 @@ function getRealCardImageSrc(card){
 }
 function primeDetailedCardImage(src){
   if(!src || DETAILED_CARD_IMAGE_STATE.loadedSrcs.has(src)) return;
+  DETAILED_CARD_IMAGE_STATE.loadedSrcs.add(src);
+
+  if(document.head){
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = src;
+    link.type = 'image/svg+xml';
+    document.head.appendChild(link);
+  }
+
   const img = new Image();
-  img.decoding = 'sync';
+  img.decoding = 'async';
   img.loading = 'eager';
   img.src = src;
-  DETAILED_CARD_IMAGE_STATE.loadedSrcs.add(src);
 }
 function preloadDetailedCardAssets(force = false){
-  if(!force && shouldUseCompactCardLayout()) return;
   if(DETAILED_CARD_IMAGE_STATE.preloaded && !force) return;
   Object.values(CARD_FILE_SUITS).forEach(suitCode => {
     Object.values(CARD_FILE_RANKS).forEach(rankCode => {
@@ -30207,6 +30368,7 @@ function preloadDetailedCardAssets(force = false){
   });
   DETAILED_CARD_IMAGE_STATE.preloaded = true;
 }
+preloadDetailedCardAssets(true);
 function buildCardValueFallbackElement(card, suitInfo){
   const fallback = document.createElement('div');
   const symbol = suitInfo?.symbol || '?';

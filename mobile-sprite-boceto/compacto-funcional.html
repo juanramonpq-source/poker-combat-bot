@@ -2372,7 +2372,6 @@
       transition: opacity .12s ease;
     }
 
-    .card.card-image-pending img,
     .card.card-image-failed img {
       opacity: 0;
     }
@@ -5439,6 +5438,42 @@
     function cardAsset(card) {
       return `${CARD_ASSET_ROOT}${RANK_FILE[card.rank]}_of_${card.suit}.svg`;
     }
+
+    const CARD_ASSET_PRELOAD_STATE = {
+      started: false,
+      requestedSrcs: new Set()
+    };
+
+    function primeCardAsset(src) {
+      if (!src || CARD_ASSET_PRELOAD_STATE.requestedSrcs.has(src)) return;
+      CARD_ASSET_PRELOAD_STATE.requestedSrcs.add(src);
+
+      if (document.head) {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = src;
+        link.type = "image/svg+xml";
+        document.head.appendChild(link);
+      }
+
+      const img = new Image();
+      img.decoding = "async";
+      img.loading = "eager";
+      img.src = src;
+    }
+
+    function preloadCardAssets(force = false) {
+      if (CARD_ASSET_PRELOAD_STATE.started && !force) return;
+      Object.keys(SUIT_LABELS).forEach((suit) => {
+        Object.keys(RANK_FILE).forEach((rank) => {
+          primeCardAsset(`${CARD_ASSET_ROOT}${RANK_FILE[rank]}_of_${suit}.svg`);
+        });
+      });
+      CARD_ASSET_PRELOAD_STATE.started = true;
+    }
+
+    preloadCardAssets(true);
 
     function createCardValueFallback(card) {
       const fallback = document.createElement("span");
