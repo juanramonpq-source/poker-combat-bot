@@ -8054,7 +8054,7 @@
       title: 'PoCoBOT de resistencia',
       subtitle: 'Un veterano del campamento te ofrece un combate medido, sin teatro y sin odio.',
       contextChip: 'Presentación · Combate controlado',
-      objective: 'Aceptar el duelo de calibración al estilo de Viajero.',
+      objective: 'Aceptar el duelo de calibración.',
       completeAction: 'camp-trial-combat',
       completeActionLabel: 'Iniciar combate',
       startAmbient: true,
@@ -8070,13 +8070,13 @@
         right: { src: PILOTO_RESISTENCIA_FIGURE, alt: 'Piloto de resistencia' }
       },
       lines: [
-        pilotLine('Corvo no confía solo porque Xavor diga tu nombre por radio. Aquí medimos otra cosa: si sabes parar antes de convertir un problema en ruina.', {
+        pilotLine('Puede que hayas engañado a Corvo, pero yo no me dejo engañar tan solo porque un friki loco pronuncie tu nombre. Para convencerme a mi tendrás que demostrarme que estás hablando en serio. Y yo solo conozco el idioma del combate. ', {
           choices: [
-            { id: 'ready', label: 'Aceptar la prueba', response: 'Tú: "Acepto. Si esto demuestra que puedo ayudar sin romperlo todo, adelante."' },
+            { id: 'ready', label: 'Aceptar la prueba', response: 'Tú: "Acepto. Si esto demuestra que puedo ayudar, adelante."' },
             { id: 'rules', label: 'Pedir reglas', response: 'Tú: "Antes de empezar, dime las reglas exactas."' },
             { id: 'story', label: 'Preguntar por la resistencia', response: 'Tú: "¿De dónde salió esta resistencia? No parecéis una patrulla cualquiera."' }
           ],
-          choicePrompt: 'La piloto espera que entiendas que no todo combate es una guerra.'
+          choicePrompt: 'La piloto espera que entiendas que un combate de entrenamiento puede ahorrar sangre en la guerra.'
         }),
         pilotLine('', {
           variantSourceLine: 0,
