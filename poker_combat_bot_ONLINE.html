@@ -19404,7 +19404,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
                   <circle class="dial-track" cx="60" cy="60" r="48" pathLength="100"></circle>
                   <circle class="dial-progress" id="dialProgress-0" cx="60" cy="60" r="48" pathLength="100"></circle>
                 </svg>
-                
+
                 <div class="mecha-blueprint mini" id="mechaBlueprint-0">
                   <img class="mecha-phase-img" id="mechaImg-0" src="" alt="Mecha 0">
                 </div>
@@ -19420,7 +19420,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
                   <circle class="dial-track" cx="60" cy="60" r="48" pathLength="100"></circle>
                   <circle class="dial-progress" id="dialProgress-1" cx="60" cy="60" r="48" pathLength="100"></circle>
                 </svg>
-                
+
                 <div class="mecha-blueprint mini" id="mechaBlueprint-1">
                   <img class="mecha-phase-img" id="mechaImg-1" src="" alt="Mecha 1">
                 </div>
@@ -25043,6 +25043,34 @@ function dedupeSelectedCards(cards){
     return true;
   });
 }
+function getTurnCardSelectionLimit(){
+  return state.turnCount === 1 ? 3 : 2;
+}
+function trimSelectedCardsToTurnLimit(cards){
+  const limit = getTurnCardSelectionLimit();
+  const next = dedupeSelectedCards(cards);
+  while(next.length > limit) next.shift();
+  return next;
+}
+function addSelectedCardWithTurnLimit(card){
+  state.selected = trimSelectedCardsToTurnLimit([...(state.selected || []), card]);
+  return state.selected;
+}
+function prepareDraftSelectionRotation(draftPlacements, cardId){
+  if(!draftPlacements || typeof draftPlacements.has !== 'function') return;
+  state.selected = dedupeSelectedCards(state.selected).filter(card => card.id !== cardId);
+  if(draftPlacements.has(cardId)) return;
+  const limit = getTurnCardSelectionLimit();
+  while(state.selected.length + draftPlacements.size >= limit){
+    if(state.selected.length){
+      state.selected.shift();
+      continue;
+    }
+    const oldestDraftId = draftPlacements.keys().next().value;
+    if(!oldestDraftId) break;
+    draftPlacements.delete(oldestDraftId);
+  }
+}
 function getCardNaturalZone(card){
   if(!card) return null;
   if(isFigureCard(card) || isAceCard(card)) return null;
@@ -25106,7 +25134,7 @@ function toggleSelect(id){
   const idx = state.selected.findIndex(s => s.id===id);
   const selectedNow = idx < 0;
   if(idx>=0) state.selected = state.selected.filter(s => s.id!==id);
-  else state.selected = dedupeSelectedCards(state.selected.concat(found));
+  else addSelectedCardWithTurnLimit(found);
   render();
   triggerCardSelectionFeedback(found, selectedNow);
 }
@@ -26554,8 +26582,8 @@ function getMobileSpriteDraftLegalZones(cardId){
 
   const draftAlreadyExists = mobileSpriteDraftPlacements.has(cardId);
   const operationBase = state.selected.filter(card => card.zone !== 'hand').length + mobileSpriteDraftPlacements.size - (draftAlreadyExists ? 1 : 0);
-  const operationLimit = state.turnCount === 1 ? 3 : 2;
-  if(operationBase >= operationLimit) return [];
+  const operationLimit = getTurnCardSelectionLimit();
+  if(operationLimit <= 0 || (draftAlreadyExists && operationBase >= operationLimit)) return [];
 
   const basePlayer = buildMobileSpriteDraftSimulationPlayer(playerIdx, cardId);
   if(!basePlayer) return [];
@@ -26585,8 +26613,8 @@ function setMobileSpriteDraftPlacement(cardId, zone){
     return false;
   }
   mobileSpriteDraftOwnerIdx = playerIdx;
+  prepareDraftSelectionRotation(mobileSpriteDraftPlacements, cardId);
   mobileSpriteDraftPlacements.set(cardId, normalizedZone);
-  state.selected = state.selected.filter(card => card.id !== cardId);
   const card = state.players?.[playerIdx]?.hand?.find(item => item.id === cardId);
   if(card) notifySelection(`${cardText(card)} preparado en ${zoneLabel(normalizedZone)}. Pulsa Modificar para confirmar.`);
   render();
@@ -26600,7 +26628,7 @@ function commitMobileSpriteDraftPlacements(){
   if(_ol.active && _ol.role === 'guest'){
     const selectable = flattenCollectionsForInteractivePlayer();
     const byId = new Map(selectable.map(card => [card.id, card]));
-    state.selected = dedupeSelectedCards(Array.from(mobileSpriteDraftPlacements.keys()).map(id => byId.get(id)).filter(Boolean));
+    state.selected = trimSelectedCardsToTurnLimit(Array.from(mobileSpriteDraftPlacements.keys()).map(id => byId.get(id)).filter(Boolean));
     olSendAction({ type:'modifyMecha', selected: state.selected.slice() });
     clearMobileSpriteDraftPlacements(false);
     return true;
@@ -26914,7 +26942,7 @@ function clearCompactDraftPlacements(renderNow=false){
 }
 
 function getCompactDraftOperationLimit(){
-  return state.turnCount === 1 ? 3 : 2;
+  return getTurnCardSelectionLimit();
 }
 
 function getCompactDraftBoardSelectionCount(){
@@ -26986,7 +27014,8 @@ function getCompactDraftLegalZones(playerIdx, cardId){
 
   const draftAlreadyExists = compactDraftPlacements.has(cardId);
   const operationBase = getCompactDraftBoardSelectionCount() + compactDraftPlacements.size - (draftAlreadyExists ? 1 : 0);
-  if(operationBase >= getCompactDraftOperationLimit()) return [];
+  const operationLimit = getCompactDraftOperationLimit();
+  if(operationLimit <= 0 || (draftAlreadyExists && operationBase >= operationLimit)) return [];
 
   const basePlayer = buildCompactDraftSimulationPlayer(playerIdx, cardId);
   if(!basePlayer) return [];
@@ -27160,7 +27189,7 @@ function commitCompactDraftSelections(){
   const byId = new Map(selectable.map(card => [card.id, card]));
   const draftedCards = Array.from(compactDraftPlacements.keys()).map(cardId => byId.get(cardId)).filter(Boolean);
   if(!draftedCards.length) return false;
-  state.selected = dedupeSelectedCards([
+  state.selected = trimSelectedCardsToTurnLimit([
     ...state.selected.filter(card => card.zone !== 'hand'),
     ...draftedCards
   ]);
@@ -27432,8 +27461,8 @@ function handleCompactHandDragEnd(event){
 
   if(activeZone){
     compactDraftOwnerIdx = dragState.ownerIdx;
+    prepareDraftSelectionRotation(compactDraftPlacements, dragState.cardId);
     compactDraftPlacements.set(dragState.cardId, activeZone);
-    state.selected = state.selected.filter(card => card.id !== dragState.cardId);
     renderCurrentDraftSurface();
     if(draggedCard){
       notifySelection(`${cardText(draggedCard)} preparado en ${getCompactDraftDropzoneMap(dragState.ownerIdx)[activeZone].label}. Pulsa Modificar para confirmarlo.`);
