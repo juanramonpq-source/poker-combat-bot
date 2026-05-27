@@ -47,6 +47,23 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%}
+html:has(body.intro-active),
+body.intro-active{
+  height:100dvh;
+  overflow:hidden;
+}
+body.intro-active .app{
+  max-height:100dvh;
+  overflow:hidden;
+}
+body.intro-active .app,
+body.intro-active #olStatusBar,
+body.intro-active .story-embed-nav,
+body.intro-active .story-mission-brief-bar,
+body.intro-active .story-orientation-toast,
+body.intro-active .combat-opening-overlay{
+  display:none !important;
+}
 body{
   margin:0;
   font-family:"Segoe UI", Inter, system-ui, sans-serif;
@@ -4272,7 +4289,7 @@ body.story-argos-hack-ui .pro-turn-kicker{
   letter-spacing:.18em;
   text-transform:uppercase;
 }
-.intro-menu-copy{
+          .intro-menu-copy{
   color:#8ddff0;
   font-size:.8rem;
   line-height:1.34;
@@ -19011,9 +19028,1265 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   }
 }
 
+/* ===== COMMERCIAL COVER REPLACEMENT ===== */
+.intro-screen{
+  width:100vw !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  align-items:stretch !important;
+  justify-content:stretch !important;
+  background:#02050c !important;
+  backdrop-filter:none !important;
+}
+.intro-cover-art{
+  position:absolute;
+  inset:0;
+  z-index:-5;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:52% 46%;
+  transform:scale(1.03);
+  filter:saturate(1.08) contrast(1.04);
+  pointer-events:none;
+}
+.intro-screen::before{
+  inset:0 !important;
+  z-index:-4;
+  opacity:1 !important;
+  background:
+    linear-gradient(90deg, rgba(2,5,12,.92) 0%, rgba(2,5,12,.62) 32%, rgba(2,5,12,.14) 58%, rgba(2,5,12,.64) 100%),
+    linear-gradient(180deg, rgba(2,5,12,.24) 0%, rgba(2,5,12,.18) 50%, rgba(2,5,12,.92) 100%) !important;
+  animation:none !important;
+  mask-image:none !important;
+}
+.intro-screen::after{
+  inset:0 !important;
+  z-index:-3;
+  opacity:.7 !important;
+  background:
+    linear-gradient(90deg, rgba(49,223,255,.12) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(49,223,255,.08) 1px, transparent 1px) !important;
+  background-size:96px 96px !important;
+  mask-image:radial-gradient(circle at 55% 38%, transparent 0 26%, #000 64%) !important;
+  animation:gridDrift 24s linear infinite !important;
+  border-radius:0 !important;
+}
+@keyframes gridDrift{
+  0%{transform:translate3d(0,0,0)}
+  100%{transform:translate3d(-96px,96px,0)}
+}
+.intro-card{
+  width:100% !important;
+  max-width:none !important;
+  height:100dvh !important;
+  max-height:100dvh !important;
+  min-height:100dvh !important;
+  margin:0 !important;
+  padding:
+    max(18px, env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right))
+    max(18px, env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left)) !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column;
+  gap:0;
+}
+.intro-card::before{content:none !important}
+.intro-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  min-height:44px;
+  flex:0 0 auto;
+  position:relative;
+  z-index:4;
+}
+.intro-studio-link{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  color:rgba(248,251,255,.92);
+  text-decoration:none;
+  font-weight:900;
+  font-size:.82rem;
+  text-shadow:0 2px 16px rgba(0,0,0,.72);
+}
+.intro-studio-link img{
+  width:32px;
+  height:32px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 10px rgba(49,223,255,.28));
+}
+.intro-utility-links{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:rgba(248,251,255,.88);
+  font-size:.78rem;
+  font-weight:850;
+}
+.intro-utility-links a,
+.intro-utility-links button{
+  min-height:38px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 12px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;
+  background:rgba(4,9,20,.42);
+  color:inherit;
+  text-decoration:none;
+  cursor:pointer;
+  backdrop-filter:blur(12px);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04), 0 10px 28px rgba(0,0,0,.18);
+}
+.intro-utility-links a:hover,
+.intro-utility-links button:hover{
+  border-color:rgba(49,223,255,.52);
+  color:#fff;
+}
+.intro-kicker,
+.intro-panels,
+.intro-note,
+.intro-studio-signature,
+.intro-install-tip{
+  display:none !important;
+}
+.intro-suits{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  display:block !important;
+  margin:0 !important;
+  opacity:1 !important;
+}
+.intro-suits span{
+  position:absolute;
+  display:grid;
+  place-items:center;
+  width:clamp(32px, 4.8vw, 72px);
+  height:clamp(32px, 4.8vw, 72px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;
+  background:linear-gradient(180deg, rgba(5,10,22,.24), rgba(5,10,22,.08));
+  color:rgba(248,251,255,.16);
+  font-size:clamp(1.25rem, 3vw, 3.25rem);
+  line-height:1;
+  text-shadow:0 0 24px currentColor;
+  box-shadow:0 0 34px rgba(49,223,255,.08), inset 0 0 18px rgba(255,255,255,.025);
+  animation:introSuitFloat 10s ease-in-out infinite;
+}
+.intro-suits .s-red{
+  color:rgba(255,65,93,.28);
+  box-shadow:0 0 34px rgba(255,65,93,.08), inset 0 0 18px rgba(255,255,255,.025);
+}
+.intro-suits .s-white{
+  color:rgba(138,246,255,.26);
+}
+.intro-suits span:nth-child(1){
+  left:4.4%;
+  top:22%;
+  rotate:-12deg;
+}
+.intro-suits span:nth-child(2){
+  right:8%;
+  top:13%;
+  rotate:10deg;
+  animation-delay:-2s;
+}
+.intro-suits span:nth-child(3){
+  right:5.8%;
+  bottom:20%;
+  rotate:-8deg;
+  animation-delay:-4s;
+}
+.intro-suits span:nth-child(4){
+  left:10%;
+  bottom:15%;
+  rotate:13deg;
+  animation-delay:-6s;
+}
+@keyframes introSuitFloat{
+  0%,100%{transform:translate3d(0,0,0) scale(1); opacity:.74}
+  50%{transform:translate3d(0,-10px,0) scale(1.05); opacity:1}
+}
+.intro-title{
+  width:min(760px, 58vw) !important;
+  margin:clamp(42px, 16vh, 170px) 0 -4px !important;
+  justify-content:flex-start !important;
+  position:relative;
+  z-index:2;
+}
+.brand-title-image.intro{
+  width:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  object-fit:contain;
+  transform:translateX(-2.2%) !important;
+  filter:
+    drop-shadow(0 24px 34px rgba(0,0,0,.52))
+    drop-shadow(0 0 22px rgba(49,223,255,.23)) !important;
+}
+.intro-commercial-line{
+  max-width:720px;
+  margin:0;
+  color:#fff;
+  font-size:clamp(2rem, 4.2vw, 5.25rem);
+  font-weight:1000;
+  line-height:.92;
+  text-transform:uppercase;
+  text-align:left;
+  text-shadow:0 5px 28px rgba(0,0,0,.72);
+  position:relative;
+  z-index:2;
+}
+.intro-subtitle{
+  max-width:560px !important;
+  margin:10px 0 0 !important;
+  color:rgba(241,248,255,.88) !important;
+  font-size:clamp(1rem, 1.38vw, 1.18rem) !important;
+  line-height:1.45 !important;
+  text-align:left;
+  text-shadow:0 2px 18px rgba(0,0,0,.82);
+}
+.intro-arena{
+  width:min(430px, 36vw);
+  min-height:76px;
+  margin:-152px 1.3vw 14px auto !important;
+  display:grid !important;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center !important;
+  justify-content:stretch !important;
+  gap:10px;
+  padding:7px 8px;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:8px;
+  background:
+    linear-gradient(90deg, rgba(49,223,255,.08), rgba(255,190,61,.07), rgba(255,65,93,.08)),
+    rgba(1,7,17,.34);
+  overflow:hidden;
+  position:relative;
+  z-index:3;
+  backdrop-filter:blur(12px);
+}
+.intro-arena::before{
+  content:"";
+  position:absolute;
+  inset:auto 10% 10px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(49,223,255,.5), rgba(255,190,61,.45), transparent);
+  box-shadow:0 0 16px rgba(49,223,255,.26);
+}
+.intro-mecha-slot{
+  display:grid !important;
+  grid-template-columns:46px minmax(0,1fr);
+  align-items:center !important;
+  gap:8px;
+  min-width:0;
+}
+.intro-mecha-right{
+  grid-template-columns:minmax(0,1fr) 46px;
+  text-align:right;
+}
+.intro-mecha-img{
+  width:46px !important;
+  height:54px !important;
+  object-fit:contain;
+  filter:drop-shadow(0 0 12px rgba(49,223,255,.32));
+  transform:scaleX(-1);
+  animation:mechaFloat 3.4s ease-in-out infinite !important;
+}
+.intro-mecha-right .intro-mecha-img{
+  grid-column:2;
+  transform:none;
+  filter:drop-shadow(0 0 12px rgba(255,190,61,.34));
+  animation-delay:.45s !important;
+}
+.intro-mecha-name{
+  display:block;
+  min-width:0;
+  color:#fff;
+  font-size:.74rem;
+  line-height:1;
+  font-weight:1000;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.intro-mecha-right .intro-mecha-name{grid-column:1;grid-row:1}
+.intro-vs{
+  width:32px;
+  height:32px;
+  margin:0 !important;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  border:1px solid rgba(255,190,61,.42);
+  color:#ffe6a2;
+  background:rgba(0,0,0,.28);
+  font-size:.7rem !important;
+  font-weight:1000;
+  line-height:1;
+  box-shadow:0 0 20px rgba(255,190,61,.15);
+  animation:introPulse 1.9s ease-in-out infinite;
+}
+@keyframes mechaFloat{
+  0%,100%{translate:0 0}
+  50%{translate:0 -5px}
+}
+.intro-menu-stack{
+  width:min(430px, 36vw);
+  margin:0 1.3vw 0 auto !important;
+  display:grid !important;
+  gap:12px;
+  position:relative;
+  z-index:3;
+}
+.intro-menu{
+  min-height:0;
+  align-content:start;
+  gap:12px;
+}
+.intro-menu-label,
+.intro-menu-copy{
+  text-align:left;
+}
+#introMenuRoot .intro-menu-label,
+#introMenuRoot .intro-menu-copy{
+  display:none;
+}
+.intro-buttons-group{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:8px !important;
+  margin:0 !important;
+}
+.intro-mode-band,
+.intro-mode-band.intro-enter,
+.intro-mode-band.intro-tutorial{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:52px;
+  display:grid !important;
+  grid-template-columns:38px minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  padding:0 13px !important;
+  border:1px solid rgba(255,255,255,.2) !important;
+  border-radius:8px !important;
+  color:#fff;
+  text-align:left;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+  box-shadow:0 14px 30px rgba(0,0,0,.34), inset 0 0 0 1px rgba(255,255,255,.045) !important;
+  transform:none !important;
+  backdrop-filter:blur(12px);
+}
+.intro-mode-online{
+  min-height:68px;
+  grid-template-columns:42px minmax(0,1fr);
+  padding:0 15px !important;
+  border-color:rgba(255,241,184,.82) !important;
+  background:linear-gradient(135deg, #fff0a5 0%, #ffbd38 38%, #ff7047 100%) !important;
+  color:#190a04 !important;
+  box-shadow:0 20px 40px rgba(255,93,57,.32), 0 0 30px rgba(255,190,61,.24), inset 0 0 0 1px rgba(255,255,255,.42) !important;
+}
+.intro-mode-local{
+  background:
+    linear-gradient(105deg, rgba(49,223,255,.88), rgba(21,91,255,.78) 52%, rgba(4,13,30,.74)),
+    radial-gradient(circle at 8% 0%, rgba(255,255,255,.28), transparent 36%) !important;
+}
+.intro-mode-tutorial{
+  border-color:rgba(255,151,166,.72) !important;
+  background:
+    linear-gradient(105deg, rgba(255,92,116,.95), rgba(201,31,88,.86) 53%, rgba(38,8,27,.76)),
+    radial-gradient(circle at 8% 0%, rgba(255,255,255,.28), transparent 36%) !important;
+}
+.intro-mode-icon{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:7px;
+  color:#fff;
+  background:rgba(3,9,21,.48);
+  border:1px solid rgba(255,255,255,.15);
+  font-size:.94rem;
+  font-weight:1000;
+  box-shadow:0 10px 20px rgba(0,0,0,.2), inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.intro-mode-online .intro-mode-icon{
+  width:42px;
+  height:42px;
+  color:#ffda68;
+  background:linear-gradient(180deg, #11203a, #060b16);
+}
+.intro-mode-copy{
+  min-width:0;
+  display:grid;
+  gap:3px;
+}
+.intro-mode-copy strong{
+  color:#fff;
+  font-size:.9rem;
+  line-height:1;
+  font-weight:1000;
+  text-transform:uppercase;
+  text-shadow:0 2px 8px rgba(0,0,0,.32);
+}
+.intro-mode-online .intro-mode-copy strong{
+  color:#190a04;
+  font-size:1.05rem;
+  text-shadow:0 1px 0 rgba(255,255,255,.32);
+}
+.intro-mode-copy span{
+  color:rgba(248,251,255,.78);
+  font-size:.62rem;
+  line-height:1.04;
+  font-weight:850;
+}
+.intro-mode-online .intro-mode-copy span{
+  color:rgba(36,13,2,.78);
+  font-size:.66rem;
+  font-weight:900;
+}
+.intro-mode-band:hover{
+  filter:brightness(1.06);
+}
+.intro-card:not([data-menu="root"]){
+  background:rgba(4,9,20,.66) !important;
+  backdrop-filter:blur(16px);
+}
+.intro-card:not([data-menu="root"]) .intro-title,
+.intro-card:not([data-menu="root"]) .intro-commercial-line,
+.intro-card:not([data-menu="root"]) .intro-subtitle,
+.intro-card:not([data-menu="root"]) .intro-arena{
+  display:none !important;
+}
+.intro-card:not([data-menu="root"]) .intro-menu-stack{
+  width:min(980px, 100%) !important;
+  flex:1 1 auto;
+  min-height:0;
+  margin:clamp(14px, 4vh, 44px) auto 0 !important;
+  padding:clamp(14px, 2.2vh, 22px);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:8px;
+  background:
+    linear-gradient(180deg, rgba(7,14,29,.88), rgba(5,9,19,.82)),
+    radial-gradient(circle at top right, rgba(255,190,61,.16), transparent 42%);
+  box-shadow:0 28px 80px rgba(0,0,0,.42), inset 0 0 0 1px rgba(255,255,255,.045);
+  overflow:hidden;
+}
+.intro-card:not([data-menu="root"]) .intro-menu:not([hidden]){
+  display:grid;
+  height:100%;
+  overflow:hidden;
+}
+.intro-card:not([data-menu="root"]) .intro-buttons-group{
+  grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+}
+.intro-card:not([data-menu="root"]) .intro-enter,
+.intro-card:not([data-menu="root"]) .intro-tutorial{
+  min-width:0 !important;
+  width:100% !important;
+  min-height:48px;
+  border-radius:8px !important;
+  font-size:.82rem !important;
+  letter-spacing:.04em !important;
+  padding:0 14px !important;
+}
+#introMenuLocal,
+#introMenuTutorial{
+  gap:14px;
+  align-content:center;
+}
+#introMenuLocal .intro-menu-label,
+#introMenuTutorial .intro-menu-label{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:#ffe6a2;
+  font-size:.86rem;
+  letter-spacing:.16em;
+}
+#introMenuLocal .intro-menu-label::after,
+#introMenuTutorial .intro-menu-label::after{
+  content:"";
+  flex:1;
+  height:1px;
+  min-width:80px;
+  background:linear-gradient(90deg, rgba(255,230,162,.42), rgba(49,223,255,.22), transparent);
+}
+#introMenuLocal .intro-buttons-group,
+#introMenuTutorial .intro-buttons-group{
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  gap:12px !important;
+  align-items:stretch;
+}
+#enterGameBtn,
+#tutorialSummaryBtn,
+#academyMenuBtn{
+  grid-column:auto;
+}
+#localBackBtn,
+#tutorialBackBtn{
+  grid-column:1 / -1;
+}
+#introMenuLocal .intro-enter,
+#introMenuLocal .intro-tutorial,
+#introMenuTutorial .intro-enter,
+#introMenuTutorial .intro-tutorial{
+  min-height:112px !important;
+  display:grid !important;
+  align-content:center;
+  justify-items:start;
+  gap:8px;
+  border:1px solid rgba(255,255,255,.18) !important;
+  border-radius:8px !important;
+  padding:14px !important;
+  color:#fff !important;
+  text-align:left;
+  letter-spacing:.02em !important;
+  text-transform:none !important;
+  background:
+    linear-gradient(135deg, rgba(49,223,255,.22), rgba(21,91,255,.18) 48%, rgba(4,13,30,.82)),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025)) !important;
+  box-shadow:0 18px 34px rgba(0,0,0,.24), inset 0 0 0 1px rgba(255,255,255,.04) !important;
+}
+#singleEasyBtn,
+#tutorialSummaryBtn{
+  border-color:rgba(255,230,162,.44) !important;
+  background:
+    linear-gradient(135deg, rgba(255,190,61,.42), rgba(255,112,71,.22) 46%, rgba(4,13,30,.78)),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.025)) !important;
+}
+#singleHardBtn,
+#academyMenuBtn{
+  border-color:rgba(255,91,116,.46) !important;
+  background:
+    linear-gradient(135deg, rgba(255,91,116,.34), rgba(201,31,88,.24) 48%, rgba(4,13,30,.82)),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.025)) !important;
+}
+#enterGameBtn{
+  grid-column:1 / -1;
+  min-height:88px !important;
+  border-color:rgba(49,223,255,.42) !important;
+}
+#localBackBtn,
+#tutorialBackBtn{
+  min-height:44px !important;
+  justify-items:center !important;
+  padding:0 14px !important;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)) !important;
+}
+#introMenuLocal .intro-menu-copy,
+#introMenuTutorial .intro-menu-copy{
+  max-width:none;
+  padding:12px 14px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;
+  background:rgba(1,7,17,.28);
+  color:rgba(223,252,255,.78);
+  font-size:.84rem;
+  line-height:1.34;
+}
+.submenu-mode-title{
+  display:block;
+  color:#fff;
+  font-size:1rem;
+  line-height:1.02;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+.submenu-mode-sub{
+  display:block;
+  max-width:28ch;
+  color:rgba(223,252,255,.78);
+  font-size:.72rem;
+  line-height:1.2;
+  font-weight:800;
+}
+#singleEasyBtn .submenu-mode-title,
+#tutorialSummaryBtn .submenu-mode-title{
+  color:#fff5c8;
+}
+#singleHardBtn .submenu-mode-title,
+#academyMenuBtn .submenu-mode-title{
+  color:#ffe7ee;
+}
+@media (max-width:1080px){
+  .intro-title{
+    width:min(620px, 90vw) !important;
+    margin:clamp(16px, 8vh, 68px) auto 0 !important;
+    justify-content:center !important;
+  }
+  .brand-title-image.intro{
+    transform:none !important;
+  }
+  .intro-commercial-line,
+  .intro-subtitle{
+    margin-inline:auto !important;
+    text-align:center;
+  }
+  .intro-arena,
+  .intro-menu-stack{
+    width:min(640px, 100%);
+    margin-inline:auto !important;
+  }
+  .intro-arena{
+    margin-top:auto !important;
+  }
+}
+@media (orientation:portrait){
+  .intro-cover-art{
+    object-position:50% 18%;
+  }
+  .intro-screen::before{
+    background:
+      linear-gradient(180deg, rgba(2,5,12,.54) 0%, rgba(2,5,12,.16) 28%, rgba(2,5,12,.88) 63%, rgba(2,5,12,.96) 100%),
+      linear-gradient(90deg, rgba(2,5,12,.74) 0%, transparent 48%, rgba(2,5,12,.68) 100%) !important;
+  }
+  .intro-card{
+    padding:
+      max(10px, env(safe-area-inset-top))
+      max(10px, env(safe-area-inset-right))
+      max(9px, env(safe-area-inset-bottom))
+      max(10px, env(safe-area-inset-left)) !important;
+  }
+  .intro-topbar{
+    gap:6px;
+    min-height:34px;
+  }
+  .intro-studio-link{
+    gap:5px;
+    font-size:.6rem;
+    min-width:0;
+  }
+  .intro-studio-link img{
+    width:24px;
+    height:24px;
+  }
+  .intro-studio-link span{
+    display:inline;
+    white-space:nowrap;
+  }
+  .intro-utility-links{
+    flex:0 0 auto;
+    gap:5px;
+    font-size:.58rem;
+  }
+  .intro-utility-links a,
+  .intro-utility-links button{
+    min-height:30px;
+    padding:0 6px;
+    border-color:rgba(255,255,255,.22);
+    background:rgba(2,7,16,.36);
+  }
+  .intro-title{
+    width:min(318px, 88vw) !important;
+    margin:clamp(10px, 3vh, 24px) auto 0 !important;
+  }
+  .intro-suits span{
+    width:42px;
+    height:42px;
+    font-size:1.7rem;
+    background:transparent;
+  }
+  .intro-suits span:nth-child(1){left:4%;top:16%}
+  .intro-suits span:nth-child(2){right:5%;top:22%}
+  .intro-suits span:nth-child(3){right:6%;bottom:17%}
+  .intro-suits span:nth-child(4){left:7%;bottom:21%}
+  .brand-title-image.intro{
+    filter:
+      drop-shadow(0 18px 26px rgba(0,0,0,.62))
+      drop-shadow(0 0 16px rgba(49,223,255,.26)) !important;
+  }
+  .intro-commercial-line{
+    max-width:338px;
+    font-size:clamp(1.58rem, 8.4vw, 2.35rem);
+    line-height:.88;
+  }
+  .intro-subtitle{
+    max-width:315px !important;
+    margin-top:7px !important;
+    font-size:.75rem !important;
+    line-height:1.18 !important;
+  }
+  .intro-arena{
+    width:min(344px, 100%);
+    min-height:60px;
+    margin:auto auto -2px !important;
+    padding:3px 10px 6px;
+    grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);
+    gap:7px;
+    border:0;
+    border-radius:0;
+    background:
+      radial-gradient(ellipse at center, rgba(49,223,255,.22), transparent 64%),
+      linear-gradient(90deg, transparent, rgba(255,190,61,.18), transparent);
+    overflow:visible;
+    backdrop-filter:none;
+  }
+  .intro-arena::before{
+    inset:auto 15% 7px;
+    background:linear-gradient(90deg, transparent, rgba(49,223,255,.72), rgba(255,190,61,.68), transparent);
+  }
+  .intro-mecha-slot{
+    grid-template-columns:44px minmax(0,1fr);
+    gap:5px;
+  }
+  .intro-mecha-right{
+    grid-template-columns:minmax(0,1fr) 44px;
+  }
+  .intro-mecha-img{
+    width:44px !important;
+    height:52px !important;
+    filter:drop-shadow(0 0 14px rgba(49,223,255,.48)) drop-shadow(0 10px 13px rgba(0,0,0,.5));
+  }
+  .intro-mecha-right .intro-mecha-img{
+    filter:drop-shadow(0 0 14px rgba(255,190,61,.46)) drop-shadow(0 10px 13px rgba(0,0,0,.5));
+  }
+  .intro-mecha-name{
+    width:max-content;
+    max-width:95px;
+    padding:4px 6px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    background:rgba(2,7,16,.58);
+    color:#f8fbff;
+    font-size:.6rem;
+    box-shadow:0 8px 18px rgba(0,0,0,.28);
+  }
+  .intro-mecha-right .intro-mecha-name{
+    justify-self:end;
+  }
+  .intro-vs{
+    width:34px;
+    height:34px;
+    border-color:rgba(255,229,150,.92);
+    background:linear-gradient(180deg, #fff1ba, #ffba37);
+    color:#160c05;
+    font-size:.65rem !important;
+    box-shadow:0 0 24px rgba(255,190,61,.38), 0 10px 18px rgba(0,0,0,.34);
+  }
+  .intro-menu-stack{
+    width:min(352px, 100%);
+    margin:0 auto clamp(58px, 13vh, 108px) !important;
+  }
+  .intro-mode-band,
+  .intro-mode-band.intro-enter,
+  .intro-mode-band.intro-tutorial{
+    min-height:52px;
+  }
+  .intro-mode-online{
+    min-height:68px;
+  }
+  .intro-card:not([data-menu="root"]) .intro-menu-stack{
+    margin:36px auto 0 !important;
+    padding:12px !important;
+  }
+  #introMenuLocal,
+  #introMenuTutorial{
+    height:100%;
+    gap:10px;
+    align-content:center;
+  }
+  #introMenuLocal .intro-menu-label,
+  #introMenuTutorial .intro-menu-label{
+    font-size:.68rem;
+    line-height:1;
+  }
+  #introMenuLocal .intro-buttons-group,
+  #introMenuTutorial .intro-buttons-group{
+    gap:8px !important;
+  }
+  #introMenuLocal .intro-enter,
+  #introMenuLocal .intro-tutorial,
+  #introMenuTutorial .intro-enter,
+  #introMenuTutorial .intro-tutorial{
+    min-height:92px !important;
+    padding:11px 12px !important;
+    font-size:.72rem !important;
+  }
+  .submenu-mode-title{
+    font-size:.76rem;
+  }
+  .submenu-mode-sub{
+    font-size:.58rem;
+    line-height:1.12;
+  }
+  #enterGameBtn{
+    min-height:72px !important;
+  }
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    min-height:38px !important;
+    align-content:center;
+    justify-items:center !important;
+  }
+  #introMenuLocal .intro-menu-copy,
+  #introMenuTutorial .intro-menu-copy{
+    padding:10px 12px;
+    font-size:.68rem;
+    line-height:1.18;
+  }
+}
+@media (orientation:portrait) and (max-height:700px){
+  .intro-title{
+    width:min(270px, 82vw) !important;
+    margin-top:2px !important;
+  }
+  .intro-commercial-line{
+    max-width:300px;
+    font-size:clamp(1.34rem, 7.6vw, 1.92rem);
+  }
+  .intro-subtitle{
+    max-width:292px !important;
+    font-size:.67rem !important;
+    line-height:1.12 !important;
+  }
+  .intro-arena{
+    min-height:54px;
+    margin-bottom:-3px !important;
+  }
+  .intro-mecha-img{
+    width:39px !important;
+    height:46px !important;
+  }
+  .intro-mecha-slot{
+    grid-template-columns:39px minmax(0,1fr);
+  }
+  .intro-mecha-right{
+    grid-template-columns:minmax(0,1fr) 39px;
+  }
+  .intro-mecha-name{
+    max-width:86px;
+    font-size:.55rem;
+  }
+  .intro-menu-stack{
+    margin-bottom:clamp(30px, 8vh, 48px) !important;
+  }
+  .intro-mode-online{
+    min-height:62px;
+  }
+  .intro-mode-band,
+  .intro-mode-band.intro-enter,
+  .intro-mode-band.intro-tutorial{
+    min-height:46px;
+    grid-template-columns:34px minmax(0,1fr);
+    padding-inline:10px !important;
+  }
+  .intro-mode-icon{
+    width:34px;
+    height:34px;
+  }
+  .intro-mode-copy strong{
+    font-size:.78rem;
+  }
+  .intro-mode-online .intro-mode-copy strong{
+    font-size:.96rem;
+  }
+  .intro-mode-copy span,
+  .intro-mode-online .intro-mode-copy span{
+    font-size:.56rem;
+  }
+  .intro-card:not([data-menu="root"]) .intro-menu-stack{
+    margin-top:28px !important;
+    padding:10px !important;
+  }
+  #introMenuLocal,
+  #introMenuTutorial{
+    gap:8px;
+  }
+  #introMenuLocal .intro-enter,
+  #introMenuLocal .intro-tutorial,
+  #introMenuTutorial .intro-enter,
+  #introMenuTutorial .intro-tutorial{
+    min-height:72px !important;
+    padding:8px 10px !important;
+    font-size:.64rem !important;
+  }
+  .submenu-mode-title{
+    font-size:.66rem;
+  }
+  .submenu-mode-sub{
+    font-size:.52rem;
+    line-height:1.08;
+  }
+  #enterGameBtn{
+    min-height:54px !important;
+  }
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    min-height:32px !important;
+    align-content:center;
+    justify-items:center !important;
+  }
+  #introMenuLocal .intro-menu-copy,
+  #introMenuTutorial .intro-menu-copy{
+    font-size:.6rem;
+    line-height:1.12;
+    padding:7px 9px;
+  }
+}
+@media (orientation:portrait) and (max-width:360px){
+  .intro-studio-link{font-size:.56rem}
+  .intro-utility-links a,
+  .intro-utility-links button{
+    padding:0 5px;
+    font-size:.54rem;
+  }
+}
+@media (orientation:landscape) and (max-height:540px){
+  .intro-card{
+    padding:8px 12px !important;
+  }
+  .intro-topbar{min-height:34px}
+  .intro-title{
+    width:min(430px, 48vw) !important;
+    margin:8px 0 0 !important;
+    justify-content:flex-start !important;
+  }
+  .intro-commercial-line{
+    margin:0 !important;
+    text-align:left;
+    font-size:clamp(1.45rem, 4.5vw, 2.7rem);
+  }
+  .intro-subtitle{
+    margin:6px 0 0 !important;
+    text-align:left;
+    font-size:.78rem !important;
+    line-height:1.25 !important;
+    max-width:410px !important;
+  }
+  .intro-arena{
+    width:min(390px, 42vw);
+    min-height:34px;
+    margin:-148px 0 4px auto !important;
+    padding:4px 6px;
+  }
+  .intro-mecha-slot{grid-template-columns:32px minmax(0,1fr);gap:6px}
+  .intro-mecha-right{grid-template-columns:minmax(0,1fr) 32px}
+  .intro-mecha-img{width:28px !important;height:31px !important}
+  .intro-mecha-name{font-size:.62rem}
+  .intro-vs{width:26px;height:26px;font-size:.58rem !important}
+  .intro-menu-stack{
+    width:min(390px, 42vw);
+    margin:0 0 0 auto !important;
+    gap:7px;
+  }
+  .intro-mode-band,
+  .intro-mode-band.intro-enter,
+  .intro-mode-band.intro-tutorial,
+  .intro-mode-online{
+    min-height:40px;
+    padding:6px 8px !important;
+    grid-template-columns:32px minmax(0,1fr);
+  }
+  .intro-mode-icon,
+  .intro-mode-online .intro-mode-icon{
+    width:32px;
+    height:32px;
+    font-size:.86rem;
+  }
+  .intro-mode-copy strong,
+  .intro-mode-online .intro-mode-copy strong{
+    font-size:.72rem;
+  }
+  .intro-mode-copy span{
+    display:none;
+  }
+}
+@media (min-width:1081px) and (max-height:760px){
+  .intro-title{
+    width:min(590px, 50vw) !important;
+    margin:clamp(18px, 7vh, 54px) 0 -4px !important;
+  }
+  .intro-commercial-line{
+    max-width:620px;
+    font-size:clamp(1.7rem, 3.5vw, 3.55rem);
+  }
+  .intro-subtitle{
+    max-width:520px !important;
+    font-size:.95rem !important;
+    line-height:1.28 !important;
+  }
+  .intro-arena{
+    width:min(390px, 34vw);
+    min-height:56px;
+    margin:-116px 1.3vw 8px auto !important;
+    padding:5px 8px;
+  }
+  .intro-mecha-img{
+    width:38px !important;
+    height:44px !important;
+  }
+  .intro-mecha-slot{
+    grid-template-columns:38px minmax(0,1fr);
+  }
+  .intro-mecha-right{
+    grid-template-columns:minmax(0,1fr) 38px;
+  }
+  .intro-menu-stack{
+    width:min(390px, 34vw);
+    gap:7px;
+  }
+  .intro-mode-online{
+    min-height:58px;
+  }
+  .intro-mode-band,
+  .intro-mode-band.intro-enter,
+  .intro-mode-band.intro-tutorial{
+    min-height:44px;
+  }
+  .intro-mode-copy span{
+    font-size:.56rem;
+  }
+}
+@media (orientation:landscape) and (max-width:760px) and (max-height:540px){
+  .intro-title{
+    width:min(360px, 46vw) !important;
+    margin:4px 0 0 !important;
+  }
+  .intro-commercial-line{
+    max-width:min(350px, 48vw);
+    font-size:clamp(1.3rem, 4.15vw, 1.85rem);
+    line-height:.94;
+  }
+  .intro-subtitle{
+    max-width:min(330px, 48vw) !important;
+    font-size:.72rem !important;
+    line-height:1.18 !important;
+  }
+  .intro-arena,
+  .intro-menu-stack{
+    width:min(280px, 42vw);
+  }
+  .intro-arena{
+    margin:-134px 0 4px auto !important;
+  }
+}
+@media (orientation:portrait) and (max-width:600px){
+  .intro-card[data-menu="academy"] .intro-menu-stack{
+    margin:36px auto 0 !important;
+    padding:10px !important;
+  }
+  #introMenuAcademy{
+    height:100%;
+    min-height:0;
+  }
+  #introMenuAcademy .intro-menu-label{
+    font-size:.68rem;
+    line-height:1;
+  }
+  #introMenuAcademy .academy-menu-shell{
+    min-height:0;
+    display:grid;
+    grid-template-rows:auto auto minmax(0, 1fr) auto;
+    gap:6px;
+    padding:0;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+    overflow:hidden;
+  }
+  #introMenuAcademy .academy-menu-shell::before,
+  #introMenuAcademy .academy-menu-shell::after,
+  #introMenuAcademy .academy-console-head,
+  #introMenuAcademy .academy-brief,
+  #introMenuAcademy .academy-progress-note,
+  #introMenuAcademy .academy-reward-kicker,
+  #introMenuAcademy .academy-reward-title,
+  #introMenuAcademy .academy-reward-copy,
+  #introMenuAcademy .academy-reward-hint,
+  #introMenuAcademy .academy-reward-actions,
+  #introMenuAcademy .academy-preview-banner,
+  #introMenuAcademy .academy-preview-mecha{
+    display:none !important;
+  }
+  #introMenuAcademy .academy-name-row{
+    gap:4px;
+    padding:7px 8px;
+    border-radius:8px;
+  }
+  #introMenuAcademy .academy-name-row::before,
+  #introMenuAcademy .academy-name-row::after,
+  #introMenuAcademy .academy-progress-strip::before,
+  #introMenuAcademy .academy-progress-strip::after,
+  #introMenuAcademy .academy-lesson-card::before,
+  #introMenuAcademy .academy-lesson-card::after,
+  #introMenuAcademy .academy-reward-panel::before,
+  #introMenuAcademy .academy-reward-panel::after{
+    content:none !important;
+  }
+  #introMenuAcademy .academy-name-row label{
+    font-size:.54rem;
+    line-height:1;
+  }
+  #introMenuAcademy .academy-name-input{
+    min-height:34px;
+    padding:0 10px;
+    border-radius:8px;
+    font-size:.72rem;
+  }
+  #introMenuAcademy .academy-progress-strip{
+    display:grid;
+    gap:5px;
+    padding:0;
+    border:0;
+    background:transparent;
+  }
+  #introMenuAcademy .academy-progress-copy{
+    font-size:.66rem;
+    line-height:1.05;
+  }
+  #introMenuAcademy .academy-progress-meter{
+    min-width:0;
+    width:100%;
+    height:7px;
+  }
+  #introMenuAcademy .academy-stage-layout{
+    min-height:0;
+    display:grid;
+    grid-template-columns:minmax(0, 1fr);
+    gap:6px;
+    align-items:start;
+    overflow:hidden;
+  }
+  #introMenuAcademy .academy-lesson-grid{
+    min-height:0;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:4px;
+    overflow:hidden;
+    align-content:start;
+  }
+  #introMenuAcademy .academy-lesson-card{
+    min-height:0;
+    padding:5px;
+    gap:3px;
+    border-radius:8px;
+  }
+  #introMenuAcademy .academy-lesson-top{
+    display:block;
+  }
+  #introMenuAcademy .academy-lesson-kicker{
+    font-size:.48rem;
+    line-height:1;
+    letter-spacing:.08em;
+  }
+  #introMenuAcademy .academy-lesson-title{
+    margin-top:2px;
+    font-size:.58rem;
+    line-height:1;
+  }
+  #introMenuAcademy .academy-lesson-badge,
+  #introMenuAcademy .academy-lesson-desc,
+  #introMenuAcademy .academy-lesson-meta{
+    display:none;
+  }
+  #introMenuAcademy .academy-lesson-btn{
+    min-height:22px;
+    width:100%;
+    padding:0 4px;
+    border-radius:6px;
+    font-size:.46rem;
+    line-height:1;
+    letter-spacing:.05em;
+    box-shadow:none;
+  }
+  #introMenuAcademy .academy-reward-panel{
+    display:none;
+  }
+  #introMenuAcademy .academy-preview-surface{
+    min-height:92px;
+    padding:7px 6px 6px;
+    border-radius:8px;
+  }
+  #introMenuAcademy .academy-preview-surface::before{
+    inset:5px;
+    border-radius:6px;
+  }
+  #introMenuAcademy .academy-preview-badge{
+    font-size:.42rem;
+  }
+  #introMenuAcademy .academy-preview-logo{
+    width:72px;
+  }
+  #introMenuAcademy .academy-preview-kicker,
+  #introMenuAcademy .academy-preview-meta{
+    font-size:.46rem;
+  }
+  #introMenuAcademy .academy-preview-name{
+    font-size:.62rem;
+    line-height:1;
+  }
+  #introMenuAcademy .academy-menu-actions{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:5px;
+    padding-top:5px;
+  }
+  #introMenuAcademy .academy-menu-actions .intro-enter,
+  #introMenuAcademy .academy-menu-actions .intro-tutorial,
+  #introMenuAcademy .academy-progress-code-btn,
+  #introMenuAcademy .academy-reset-btn{
+    min-height:30px !important;
+    padding:0 5px !important;
+    border-radius:8px !important;
+    font-size:.5rem !important;
+    line-height:1 !important;
+  }
+}
+@media (orientation:portrait) and (max-width:600px) and (max-height:700px){
+  .intro-card[data-menu="academy"] .intro-menu-stack{
+    margin-top:28px !important;
+    padding:8px !important;
+  }
+  #introMenuAcademy .academy-name-input{
+    min-height:30px;
+  }
+  #introMenuAcademy .academy-stage-layout{
+    grid-template-columns:minmax(0, 1fr);
+  }
+  #introMenuAcademy .academy-lesson-card{
+    padding:4px;
+  }
+  #introMenuAcademy .academy-lesson-title{
+    font-size:.47rem;
+  }
+  #introMenuAcademy .academy-lesson-btn{
+    min-height:19px;
+    font-size:.42rem;
+  }
+  #introMenuAcademy .academy-preview-surface{
+    min-height:72px;
+  }
+  #introMenuAcademy .academy-preview-logo{
+    width:60px;
+  }
+  #introMenuAcademy .academy-menu-actions .intro-enter,
+  #introMenuAcademy .academy-menu-actions .intro-tutorial,
+  #introMenuAcademy .academy-progress-code-btn,
+  #introMenuAcademy .academy-reset-btn{
+    min-height:26px !important;
+  }
+}
 </style>
 </head>
-<body>
+<body class="intro-active">
 
 <!-- Socket.IO Library (Required for Online Multiplayer) -->
 <script src="/socket.io/socket.io.js"></script>
@@ -19023,6 +20296,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     if(params.get('story_embed') === '1' || params.get('story_standalone') === '1'){
       document.documentElement.classList.add('story-embed-mode');
       document.body.classList.add('story-embed-mode');
+      document.body.classList.remove('intro-active');
     }
   })();
 </script>
@@ -19109,21 +20383,36 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
 <button id="storyAudioAutostartBtn" type="button" hidden aria-hidden="true" tabindex="-1"></button>
 
 <div class="intro-screen" id="introScreen">
+  <img class="intro-cover-art" src="assets/pocobot_cover_suits_attack_1920x1080.png" alt="" aria-hidden="true">
   <div class="intro-card" data-menu="root">
+    <header class="intro-topbar">
+      <a class="intro-studio-link" href="https://pentonui.com" target="_blank" rel="noreferrer">
+        <img src="assets/pentonui-games/icons/pentonui-games-icon-transparent-512.png" alt="" aria-hidden="true">
+        <span>Pentonúi Games</span>
+      </a>
+      <nav class="intro-utility-links" aria-label="Accesos">
+        <a href="MANUAL_USUARIO.html" target="_blank" rel="noreferrer">Manual</a>
+        <a href="mailto:autores@factordual.com">Contacto</a>
+        <button id="installHintBtn" type="button">Instalar</button>
+      </nav>
+    </header>
     <div class="intro-kicker">Sistema táctico de combate</div>
     <h1 class="intro-title">
-      <img class="brand-title-image intro" src="assets/pocobot_title.png" alt="Poker Combat Bot">
+      <img class="brand-title-image intro" src="assets/pocobot_logo_dynamic_transparent.png" alt="PoCoBOT Poker Combat Bot">
     </h1>
+    <div class="intro-commercial-line">Cartas. Mechas. Combate.</div>
     <div class="intro-subtitle">
-      Construye tu mecha, activa sus sistemas y entra en combate desde un panel de control retro con cartas de póker.
+      Construye tu bot, rompe la defensa rival y decide la partida con una mano perfecta.
     </div>
     <div class="intro-arena">
       <div class="intro-mecha-slot intro-mecha-left">
         <img id="introMechaLeft" class="intro-mecha-img" src="" alt="Mecha">
+        <strong id="introMechaLeftName" class="intro-mecha-name">Mecha</strong>
       </div>
       <div class="intro-vs">VS</div>
       <div class="intro-mecha-slot intro-mecha-right">
         <img id="introMechaRight" class="intro-mecha-img" src="" alt="Mecha">
+        <strong id="introMechaRightName" class="intro-mecha-name">Mecha</strong>
       </div>
     </div>
     <div class="intro-suits">
@@ -19146,18 +20435,45 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
       <div class="intro-menu" id="introMenuRoot">
         <div class="intro-menu-label">Selecciona modo</div>
         <div class="intro-buttons-group" id="introButtonsMain">
-          <button class="intro-enter" id="localModeBtn">Local</button>
-          <button class="intro-tutorial" id="tutorialBtn">Tutorial</button>
-          <button class="intro-enter" id="olEnterBtn" style="background: linear-gradient(135deg, #4a90ff, #357abd);">Online</button>
+          <button class="intro-enter intro-mode-band intro-mode-online" id="olEnterBtn" type="button">
+            <span class="intro-mode-icon" aria-hidden="true">♦</span>
+            <span class="intro-mode-copy">
+              <strong>Jugar online</strong>
+              <span>Crear o unirse a una sala en tiempo real.</span>
+            </span>
+          </button>
+          <button class="intro-enter intro-mode-band intro-mode-local" id="localModeBtn" type="button">
+            <span class="intro-mode-icon" aria-hidden="true">♣</span>
+            <span class="intro-mode-copy">
+              <strong>Local</strong>
+              <span>CPU fácil, CPU difícil o dos jugadores.</span>
+            </span>
+          </button>
+          <button class="intro-tutorial intro-mode-band intro-mode-tutorial" id="tutorialBtn" type="button">
+            <span class="intro-mode-icon" aria-hidden="true">PB</span>
+            <span class="intro-mode-copy">
+              <strong>Tutoriales</strong>
+              <span>Ruta compacta o carnet PoCoBOT.</span>
+            </span>
+          </button>
         </div>
         <div class="intro-menu-copy">Local abre los modos presenciales, Tutorial enseña paso a paso y Online te lleva directamente a la creación o unión de sala.</div>
       </div>
       <div class="intro-menu" id="introMenuLocal" hidden>
         <div class="intro-menu-label">Opciones locales</div>
         <div class="intro-buttons-group">
-          <button class="intro-enter" id="singleEasyBtn">1 Jugador · Fácil</button>
-          <button class="intro-enter" id="singleHardBtn">1 Jugador · Difícil</button>
-          <button class="intro-tutorial" id="enterGameBtn">Multijugador Local</button>
+          <button class="intro-enter" id="singleEasyBtn">
+            <span class="submenu-mode-title">1 Jugador · Fácil</span>
+            <span class="submenu-mode-sub">Combate rápido contra CPU para calentar motores.</span>
+          </button>
+          <button class="intro-enter" id="singleHardBtn">
+            <span class="submenu-mode-title">1 Jugador · Difícil</span>
+            <span class="submenu-mode-sub">Rival más agresivo para probar tu estrategia.</span>
+          </button>
+          <button class="intro-tutorial" id="enterGameBtn">
+            <span class="submenu-mode-title">Multijugador Local</span>
+            <span class="submenu-mode-sub">Dos pilotos en el mismo dispositivo, sin sala online.</span>
+          </button>
           <button class="intro-tutorial" id="localBackBtn">Volver</button>
         </div>
         <div class="intro-menu-copy">Aquí eliges si quieres jugar contra la CPU en dos dificultades o compartir pantalla con otro jugador en el mismo dispositivo.</div>
@@ -19165,8 +20481,14 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
       <div class="intro-menu" id="introMenuTutorial" hidden>
         <div class="intro-menu-label">Ruta de aprendizaje</div>
         <div class="intro-buttons-group">
-          <button class="intro-tutorial" id="tutorialSummaryBtn">Tutorial Compacto</button>
-          <button class="intro-enter" id="academyMenuBtn">Carnet PoCoBOT</button>
+          <button class="intro-tutorial" id="tutorialSummaryBtn">
+            <span class="submenu-mode-title">Tutorial Compacto</span>
+            <span class="submenu-mode-sub">Una entrada directa al combate guiado clásico.</span>
+          </button>
+          <button class="intro-enter" id="academyMenuBtn">
+            <span class="submenu-mode-title">Carnet PoCoBOT</span>
+            <span class="submenu-mode-sub">Academia por fases, progreso local y emblema PB.</span>
+          </button>
           <button class="intro-tutorial" id="tutorialBackBtn">Volver</button>
         </div>
         <div class="intro-menu-copy">Tutorial Compacto mantiene el tutorial clásico y no da premio. El Carnet PoCoBOT abre una academia de 11 fases cortas, una por gesto o concepto, y al superarlo consigues el emblema PB y el carnet oficiales.</div>
@@ -20676,6 +21998,7 @@ function getFocusPlayerIndex(){
 function hideIntroScreen(){
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.add('hidden');
+  document.body.classList.remove('intro-active');
   if(state.musicPhase === 'menu') pauseMusic(state.bgmMenu, false);
 }
 function showIntroMenu(menuKey='root'){
@@ -20697,6 +22020,7 @@ function showIntroScreen(menuKey='root'){
   if(STORY_EMBED_MODE) return;
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.remove('hidden');
+  document.body.classList.add('intro-active');
   showIntroMenu(menuKey);
   startMenuMusic(false);
 }
@@ -20735,8 +22059,93 @@ function isRunningStandaloneApp(){
   }
   return iosStandalone || refStandalone || displayStandalone;
 }
-function syncIntroInstallTip(){
-  document.body.classList.toggle('standalone-installed', isRunningStandaloneApp());
+let deferredInstallPrompt = null;
+function getInstallPlatform(){
+  const ua = navigator.userAgent || '';
+  const platform = navigator.platform || '';
+  const touchMac = platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) || touchMac;
+  const isAndroid = /Android/i.test(ua);
+  const isWindows = /Windows/i.test(ua);
+  const isMac = /Macintosh|Mac OS X/i.test(ua) && !isIOS;
+  if(isIOS) return 'ios';
+  if(isAndroid) return 'android';
+  if(isWindows) return 'windows';
+  if(isMac) return 'mac';
+  return 'desktop';
+}
+function getInstallGuidance(){
+  if(isRunningStandaloneApp()){
+    return {
+      button: 'Instalada',
+      message: 'PoCoBOT ya se está ejecutando como web app instalada.'
+    };
+  }
+  if(deferredInstallPrompt){
+    return {
+      button: 'Instalar',
+      message: 'Instalación disponible: pulsa Instalar para abrir el diálogo oficial del navegador.'
+    };
+  }
+  const platform = getInstallPlatform();
+  if(platform === 'ios'){
+    return {
+      button: 'Instalar',
+      message: 'iPhone/iPad: usa Compartir y después Añadir a pantalla de inicio.'
+    };
+  }
+  if(platform === 'android'){
+    return {
+      button: 'Instalar',
+      message: 'Android: abre el menú del navegador y elige Instalar app o Añadir a pantalla de inicio.'
+    };
+  }
+  if(platform === 'mac'){
+    return {
+      button: 'Instalar',
+      message: 'Mac: en Safari usa Archivo > Añadir al Dock; en Chrome/Edge usa el icono de instalar si aparece.'
+    };
+  }
+  return {
+    button: 'Instalar',
+    message: 'PC: en Chrome o Edge usa el icono de instalar de la barra o el menú de apps.'
+  };
+}
+function syncIntroInstallTip(message){
+  const installed = isRunningStandaloneApp();
+  const guidance = getInstallGuidance();
+  document.body.classList.toggle('standalone-installed', installed);
+  const installButton = document.getElementById('installHintBtn');
+  if(installButton){
+    installButton.textContent = guidance.button;
+    installButton.disabled = installed;
+    installButton.setAttribute('aria-label', guidance.message);
+  }
+  const installCopy = document.querySelector('.intro-install-copy');
+  if(installCopy){
+    installCopy.textContent = message || guidance.message;
+  }
+}
+async function handleInstallHintClick(){
+  syncIntroInstallTip();
+  if(isRunningStandaloneApp()){
+    notifySelection(getInstallGuidance().message);
+    return;
+  }
+  if(deferredInstallPrompt){
+    const promptEvent = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+    promptEvent.prompt();
+    const choice = await promptEvent.userChoice.catch(() => null);
+    notifySelection(choice && choice.outcome === 'accepted'
+      ? 'Instalación aceptada.'
+      : 'Instalación cancelada. Puedes intentarlo de nuevo desde el navegador.');
+    syncIntroInstallTip();
+    return;
+  }
+  const guidance = getInstallGuidance();
+  notifySelection(guidance.message);
+  syncIntroInstallTip(guidance.message);
 }
 function resetOnlineLobbyUi(){
   const status = document.getElementById('olStatus');
@@ -34024,6 +35433,7 @@ function startTutorialMode(){
 
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.add('hidden');
+  document.body.classList.remove('intro-active');
 
   compactTutorialUserCollapsed = false;
   prepareNormalCombatStartHudMode();
@@ -34161,6 +35571,18 @@ document.getElementById('academyCertificateCloseBtn').addEventListener('click', 
   academyReturnToMenu();
 });
 
+document.getElementById('installHintBtn')?.addEventListener('click', handleInstallHintClick);
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  syncIntroInstallTip();
+});
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  notifySelection('PoCoBOT instalado como web app.');
+  syncIntroInstallTip();
+});
+
 document.getElementById('academyCadetName').addEventListener('change', academyPersistNameFromInput);
 document.getElementById('academyCadetName').addEventListener('blur', academyPersistNameFromInput);
 document.getElementById('singleEasyBtn').addEventListener('click', () => startSinglePlayerMode('easy'));document.getElementById('singleEasyBtn').addEventListener('click', () => startSinglePlayerMode('easy'));
@@ -34233,15 +35655,40 @@ document.addEventListener('visibilitychange', () => {
 });
 window.addEventListener('pointerdown', maybeResumeMenuMusic, { passive:true });
 window.addEventListener('keydown', maybeResumeMenuMusic);
+function syncIntroMenuFromHash(){
+  const key = (window.location.hash || '').replace('#', '').trim();
+  if(['local','tutorial','academy'].includes(key)){
+    showIntroMenu(key);
+  }
+}
+syncIntroMenuFromHash();
+window.addEventListener('hashchange', syncIntroMenuFromHash);
 
 // Populate intro screen mecha images — random pair each load
 (function(){
   const imgL = document.getElementById('introMechaLeft');
   const imgR = document.getElementById('introMechaRight');
+  const nameL = document.getElementById('introMechaLeftName');
+  const nameR = document.getElementById('introMechaRightName');
   if(!imgL || !imgR || typeof MECHA_IMAGES === 'undefined') return;
+  const labels = {
+    completo: 'Comando total',
+    piloto_completo: 'Piloto alpha',
+    piloto_ataque: 'Lanza picas',
+    piloto_defensa: 'Muro corazón',
+    piloto_armadura: 'Coraza club',
+    piloto_combustible: 'Motor diamante',
+    piloto_booster: 'Impulso PB',
+    base_ataque: 'Cañón base',
+    base_defensa: 'Escudo base',
+    base_armadura: 'Chasis duro',
+    base_combustible: 'Fuel base',
+    base_booster: 'Base turbo'
+  };
   const pool = [
     'completo','piloto_completo','piloto_ataque','piloto_defensa',
-    'piloto_armadura','base_ataque','base_defensa','base_armadura'
+    'piloto_armadura','piloto_combustible','piloto_booster',
+    'base_ataque','base_defensa','base_armadura','base_combustible','base_booster'
   ].filter(k => MECHA_IMAGES[k]);
   function pick(exclude){
     const opts = pool.filter(k => k !== exclude);
@@ -34251,6 +35698,8 @@ window.addEventListener('keydown', maybeResumeMenuMusic);
   const keyR = pick(keyL);
   imgL.src = MECHA_IMAGES[keyL];
   imgR.src = MECHA_IMAGES[keyR];
+  if(nameL) nameL.textContent = labels[keyL] || 'Mecha';
+  if(nameR) nameR.textContent = labels[keyR] || 'Mecha';
 })();
 
 const DEV_MECHA_PRESET_LABELS = {
@@ -35868,6 +37317,7 @@ function olShowLobby() {
   state.singleDifficulty = null;
   state.tutorial = false;
   document.getElementById('introScreen').classList.add('hidden');
+  document.body.classList.remove('intro-active');
   document.getElementById('olLobbyScreen').classList.remove('ol-hidden');
 }
 
