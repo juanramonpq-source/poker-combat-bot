@@ -105,7 +105,8 @@ function assertCanonicalProject() {
 
 function isBootstrapDeployment(deployment) {
   const command = deployment?.meta?.serviceManifest?.deploy?.startCommand || '';
-  return deployment?.status === 'SUCCESS' && command.includes('railway_bootstrap.sh');
+  const image = deployment?.meta?.image || '';
+  return deployment?.status === 'SUCCESS' && image === 'node:18-alpine' && command.includes('railway_bootstrap.sh');
 }
 
 function sleep(ms) {
