@@ -13,7 +13,7 @@
     "railway:autodeploy:off": "node scripts/railway-autodeploy.js off",
     "railway:autodeploy:on": "node scripts/railway-autodeploy.js on",
     "railway:guard": "node scripts/railway-deploy-guard.js",
-    "railway:redeploy": "npm run railway:guard && npx -y @railway/cli service redeploy --service poker-combat-bot --from-source --yes",
+    "railway:redeploy": "npm run railway:guard && npm run railway:bootstrap-refresh",
     "deploy:railway": "npm run railway:redeploy"
   },
   "keywords": [
