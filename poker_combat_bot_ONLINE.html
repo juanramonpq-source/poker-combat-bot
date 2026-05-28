@@ -19938,23 +19938,39 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   overflow:hidden;
   border:1px solid rgba(49,223,255,.18);
   border-radius:14px;
-  padding:10px;
+  padding:0;
   background:
-    radial-gradient(circle at 18% 34%, rgba(255,92,116,.16), transparent 24rem),
-    radial-gradient(circle at 80% 36%, rgba(56,216,255,.16), transparent 20rem),
+    radial-gradient(circle at 18% 34%, rgba(255,59,212,.18), transparent 22rem),
+    radial-gradient(circle at 75% 44%, rgba(56,216,255,.18), transparent 22rem),
     linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015)),
-    rgba(6,10,19,.92);
-  box-shadow:0 18px 34px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.03);
+    #060a13;
+  box-shadow:
+    0 18px 34px rgba(0,0,0,.22),
+    0 0 46px rgba(56,216,255,.1),
+    0 0 50px rgba(255,59,212,.1),
+    inset 0 0 0 1px rgba(255,255,255,.03);
+}
+.intro-mini-range .intro-mini-head{
+  position:absolute;
+  top:12px;
+  left:14px;
+  right:14px;
+  z-index:4;
+  font-family:"Orbitron", system-ui, sans-serif;
+  font-size:.76rem;
+  color:#fceeb0;
+  text-shadow:0 0 12px rgba(255,209,90,.35);
+}
+.intro-mini-range .intro-mini-head span:last-child{
+  color:rgba(223,252,255,.76);
 }
 .intro-mini-range-stage{
   position:relative;
-  min-height:132px;
-  margin-top:8px;
+  min-height:260px;
+  margin-top:0;
   overflow:hidden;
-  border-radius:12px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0)),
-    rgba(5,10,18,.44);
+  border-radius:14px;
+  background:transparent;
 }
 .intro-mini-range-stage::before{
   content:"";
@@ -19962,23 +19978,38 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   inset:auto 0 0;
   height:42%;
   background:
-    linear-gradient(180deg, transparent, rgba(56,216,255,.12)),
-    repeating-linear-gradient(90deg, rgba(56,216,255,.36) 0 1px, transparent 1px 38px),
-    repeating-linear-gradient(0deg, rgba(255,92,116,.18) 0 1px, transparent 1px 20px);
-  transform:perspective(260px) rotateX(65deg);
+    linear-gradient(180deg, transparent, rgba(56,216,255,.14)),
+    repeating-linear-gradient(90deg, rgba(56,216,255,.5) 0 2px, transparent 2px 74px),
+    repeating-linear-gradient(0deg, rgba(255,59,212,.32) 0 1px, transparent 1px 34px);
+  transform:perspective(360px) rotateX(62deg);
   transform-origin:bottom;
-  opacity:.6;
+  opacity:.58;
+}
+.intro-mini-range-stage::after{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:10%;
+  bottom:30%;
+  height:26%;
+  background:linear-gradient(90deg, rgba(255,59,212,.12), rgba(56,216,255,.16), transparent);
+  filter:blur(14px);
+  opacity:.7;
+  pointer-events:none;
 }
 .intro-mini-range-mecha{
   position:absolute;
-  left:2px;
-  bottom:2px;
+  left:clamp(10px, 4.6vw, 38px);
+  bottom:18px;
   z-index:2;
-  width:132px;
-  height:122px;
-  border:0;
-  padding:0;
-  background:transparent;
+  width:clamp(210px, 31vw, 330px);
+  height:clamp(222px, 33vw, 350px);
+  border:0 !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:inherit !important;
   cursor:pointer;
   transform-origin:40% 82%;
   transition:transform .16s ease, filter .16s ease;
@@ -19986,8 +20017,8 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
 .intro-mini-range-mecha:hover,
 .intro-mini-range-mecha:focus-visible{
   outline:none;
-  transform:translateY(-2px) scale(1.015);
-  filter:drop-shadow(0 0 14px rgba(56,216,255,.24));
+  transform:translateY(-4px) scale(1.02);
+  filter:drop-shadow(0 0 22px rgba(56,216,255,.3));
 }
 .intro-mini-range-mecha.is-firing{
   animation:introMiniRangeKick .26s ease;
@@ -19998,33 +20029,36 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   display:block;
   width:100%;
   height:100%;
-  background-image:url("assets/Historia/tower-drone-spades.png");
-  background-position:left bottom;
+  background-image:url("landing/assets/pocobot_mecha_spade_sprite.png");
+  background-position:0 0;
   background-repeat:no-repeat;
-  background-size:contain;
-  filter:drop-shadow(0 0 12px rgba(56,216,255,.26)) drop-shadow(0 0 18px rgba(255,92,116,.12));
+  background-size:300% 100%;
+  filter:
+    drop-shadow(0 0 14px rgba(56,216,255,.32))
+    drop-shadow(0 0 22px rgba(255,59,212,.18));
 }
 .intro-mini-range-mecha.is-firing .intro-mini-range-sprite{
-  animation:introMiniRangeSpriteFire .36s ease;
+  animation:introMiniRangeSpriteFire .36s steps(1, end);
 }
 .intro-mini-range-target{
   position:absolute;
-  top:20px;
-  right:22px;
+  top:72px;
+  right:clamp(18px, 6vw, 60px);
   z-index:2;
-  width:72px;
-  height:72px;
+  width:96px;
+  height:96px;
   border-radius:50%;
-  border:1px solid rgba(56,216,255,.42);
+  border:1px solid rgba(56,216,255,.45);
   display:grid;
   place-items:center;
   color:rgba(56,216,255,.94);
-  font-size:1.7rem;
-  text-shadow:0 0 14px currentColor;
+  font-family:"Orbitron", system-ui, sans-serif;
+  font-size:2.18rem;
+  text-shadow:0 0 18px currentColor;
   background:
-    radial-gradient(circle, rgba(56,216,255,.18), transparent 36%),
-    radial-gradient(circle, transparent 45%, rgba(255,92,116,.16) 46% 48%, transparent 49%);
-  box-shadow:0 0 22px rgba(56,216,255,.12);
+    radial-gradient(circle, rgba(56,216,255,.2), transparent 34%),
+    radial-gradient(circle, transparent 45%, rgba(255,59,212,.18) 46% 48%, transparent 49%);
+  box-shadow:0 0 32px rgba(56,216,255,.14);
 }
 .intro-mini-range-target.is-hit{
   animation:introMiniTargetHit .36s ease;
@@ -20035,20 +20069,22 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   top:0;
   z-index:4;
   color:#101827;
-  font-size:1.45rem;
+  font-family:"Orbitron", system-ui, sans-serif;
+  font-size:2rem;
   line-height:1;
-  text-shadow:0 0 8px #fff, 0 0 18px rgba(56,216,255,.94), 0 0 30px rgba(56,216,255,.9);
-  animation:introMiniSpadeFire .68s cubic-bezier(.12,.72,.18,1) forwards;
+  text-shadow:0 0 10px #fff, 0 0 22px rgba(56,216,255,.94), 0 0 40px rgba(56,216,255,.9);
+  animation:introMiniSpadeFire .74s cubic-bezier(.12,.72,.18,1) forwards;
 }
 .intro-mini-range-shot::before{
   content:"";
   position:absolute;
   right:60%;
   top:50%;
-  width:64px;
-  height:2px;
+  width:100px;
+  height:3px;
   transform:translateY(-50%);
-  background:linear-gradient(90deg, transparent, rgba(56,216,255,.95), rgba(255,255,255,.9));
+  background:linear-gradient(90deg, transparent, rgba(56,216,255,.95), rgba(255,255,255,.92));
+  filter:blur(.3px);
 }
 .intro-mini-lab{
   position:relative;
@@ -20276,16 +20312,17 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   100%{opacity:0;transform:translate3d(var(--shot-dx, 84px), var(--shot-dy, -24px), 0) scale(1.12) rotate(18deg)}
 }
 @keyframes introMiniRangeSpriteFire{
-  0%,100%{transform:translateX(0) scale(1)}
-  45%{transform:translateX(-4px) scale(1.02)}
+  0%,30%{background-position:50% 0}
+  31%,92%{background-position:100% 0}
+  100%{background-position:0 0}
 }
 @keyframes introMiniRangeKick{
   0%,100%{transform:translateY(0) rotate(0deg)}
-  45%{transform:translate(-5px, 1px) rotate(-2deg)}
+  45%{transform:translate(-8px, 2px) rotate(-2deg)}
 }
 @keyframes introMiniTargetHit{
   0%,100%{transform:scale(1)}
-  45%{transform:scale(1.14); color:#ffe6a2; box-shadow:0 0 26px rgba(255,190,61,.26)}
+  45%{transform:scale(1.18); color:#ffe6a2; box-shadow:0 0 42px rgba(255,209,90,.32)}
 }
 .submenu-mode-title{
   display:block;
@@ -20561,18 +20598,20 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     margin-top:clamp(12px, 4.5vh, 44px);
   }
   .intro-mini-range-stage{
-    min-height:154px;
+    min-height:236px;
   }
   .intro-mini-range-mecha{
-    width:138px;
-    height:128px;
+    left:12px;
+    bottom:10px;
+    width:198px;
+    height:212px;
   }
   .intro-mini-range-target{
-    top:20px;
+    top:74px;
     right:18px;
-    width:68px;
-    height:68px;
-    font-size:1.6rem;
+    width:72px;
+    height:72px;
+    font-size:1.72rem;
   }
   .intro-mini-lab{
     gap:6px;
@@ -20719,24 +20758,32 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     padding:6px 8px;
   }
   .intro-mini-range{
-    padding:8px;
+    padding:0;
   }
   #introMenuLocal .intro-mini-widget{
     margin-top:4px;
   }
+  .intro-mini-range .intro-mini-head{
+    top:9px;
+    left:10px;
+    right:10px;
+    font-size:.54rem;
+  }
   .intro-mini-range-stage{
-    min-height:92px;
+    min-height:178px;
   }
   .intro-mini-range-mecha{
-    width:94px;
-    height:88px;
+    left:8px;
+    bottom:8px;
+    width:150px;
+    height:162px;
   }
   .intro-mini-range-target{
-    top:12px;
+    top:58px;
     right:12px;
-    width:50px;
-    height:50px;
-    font-size:1.22rem;
+    width:56px;
+    height:56px;
+    font-size:1.34rem;
   }
   .intro-mini-lab{
     padding:8px;
@@ -23244,23 +23291,6 @@ function bindIntroMiniLab(){
 
 let introMiniShotCount = 0;
 let introMiniRangeBound = false;
-const INTRO_MINI_RANGE_MECHAS = [
-  'completo',
-  'piloto_ataque',
-  'piloto_booster',
-  'base_ataque',
-  'base_combustible',
-  'base_booster'
-];
-
-function seedIntroMiniRangeMecha(){
-  const sprite = document.querySelector('#introMiniRangeFire .intro-mini-range-sprite');
-  if(!sprite || typeof MECHA_IMAGES === 'undefined') return;
-  const pool = INTRO_MINI_RANGE_MECHAS.filter(key => MECHA_IMAGES[key]);
-  const key = pool[Math.floor(Math.random() * pool.length)];
-  if(key) sprite.style.backgroundImage = `url("${MECHA_IMAGES[key]}")`;
-}
-
 function updateIntroMiniRangeStatus(){
   const status = document.getElementById('introMiniRangeStatus');
   if(status) status.textContent = `Disparos: ${introMiniShotCount}`;
@@ -23284,21 +23314,24 @@ function fireIntroMiniRange(){
   const stageBox = stage.getBoundingClientRect();
   const mechaBox = mecha.getBoundingClientRect();
   const targetBox = target.getBoundingClientRect();
-  const startX = mechaBox.left - stageBox.left + mechaBox.width * 0.82;
-  const startY = mechaBox.top - stageBox.top + mechaBox.height * 0.42;
+  const startX = mechaBox.left - stageBox.left + mechaBox.width * 0.84;
+  const startY = mechaBox.top - stageBox.top + mechaBox.height * 0.44;
   const targetX = targetBox.left - stageBox.left + targetBox.width * 0.5;
   const targetY = targetBox.top - stageBox.top + targetBox.height * 0.5;
   shot.style.left = `${startX}px`;
   shot.style.top = `${startY}px`;
-  shot.style.setProperty('--shot-dx', `${targetX - startX - 10}px`);
-  shot.style.setProperty('--shot-dy', `${targetY - startY - 8}px`);
+  shot.style.setProperty('--shot-dx', `${targetX - startX - 12}px`);
+  shot.style.setProperty('--shot-dy', `${targetY - startY - 10}px`);
   window.setTimeout(() => {
     target.classList.add('is-hit');
-  }, 380);
+  }, 470);
   window.setTimeout(() => {
     shot.remove();
+  }, 840);
+  window.setTimeout(() => {
     mecha.classList.remove('is-firing');
-  }, 760);
+    target.classList.remove('is-hit');
+  }, 980);
 }
 
 function bindIntroMiniRange(){
@@ -23312,7 +23345,6 @@ function bindIntroMiniRange(){
     introMiniRangeBound = true;
   }
   introMiniShotCount = 0;
-  seedIntroMiniRangeMecha();
   updateIntroMiniRangeStatus();
 }
 
