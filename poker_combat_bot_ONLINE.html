@@ -4463,6 +4463,9 @@ body.story-argos-hack-ui .pro-turn-kicker{
 .standalone-installed .intro-install-tip{
   display:none !important;
 }
+.standalone-installed #installHintBtn{
+  display:none !important;
+}
 @media (max-width: 760px){
   .intro-screen{
     justify-content:center;
@@ -24203,7 +24206,7 @@ function getInstallPlatform(){
 function getInstallGuidance(){
   if(isRunningStandaloneApp()){
     return {
-      button: 'Instalada',
+      button: '',
       message: 'PoCoBOT ya se está ejecutando como web app instalada.'
     };
   }
@@ -24243,8 +24246,11 @@ function syncIntroInstallTip(message){
   document.body.classList.toggle('standalone-installed', installed);
   const installButton = document.getElementById('installHintBtn');
   if(installButton){
-    installButton.textContent = guidance.button;
+    installButton.hidden = installed;
+    installButton.textContent = installed ? '' : guidance.button;
     installButton.disabled = installed;
+    installButton.setAttribute('aria-hidden', installed ? 'true' : 'false');
+    installButton.tabIndex = installed ? -1 : 0;
     installButton.setAttribute('aria-label', guidance.message);
   }
   const installCopy = document.querySelector('.intro-install-copy');
