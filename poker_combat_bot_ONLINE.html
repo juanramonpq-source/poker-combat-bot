@@ -19177,70 +19177,49 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   margin:0 !important;
   opacity:1 !important;
 }
-.intro-suits span{
+.intro-suits .float-suit{
   position:absolute;
-  display:grid;
-  place-items:center;
-  width:clamp(32px, 4.8vw, 72px);
-  height:clamp(32px, 4.8vw, 72px);
-  left:var(--intro-suit-x, 10%);
-  top:var(--intro-suit-y, 18%);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:8px;
-  background:linear-gradient(180deg, rgba(5,10,22,.24), rgba(5,10,22,.08));
-  color:rgba(248,251,255,.16);
-  font-size:clamp(1.25rem, 3vw, 3.25rem);
+  bottom:-3rem;
+  z-index:3;
+  pointer-events:none;
+  color:var(--cyan);
+  font-family:"Orbitron", system-ui, sans-serif;
   line-height:1;
-  text-shadow:0 0 24px currentColor;
-  box-shadow:0 0 34px rgba(49,223,255,.08), inset 0 0 18px rgba(255,255,255,.025);
-  opacity:var(--intro-suit-opacity, .74);
-  transform:translate3d(0,0,0) rotate(var(--intro-suit-rotate, 0deg)) scale(var(--intro-suit-scale, 1));
-  animation:introSuitFloat var(--intro-suit-duration, 10s) ease-in-out infinite;
-  animation-delay:var(--intro-suit-delay, 0s);
+  opacity:0;
+  text-shadow:0 0 16px currentColor;
+  animation:suitFloat 9s linear forwards;
   will-change:transform, opacity;
 }
-.intro-suits span.is-figure{
-  width:clamp(28px, 3.1vw, 44px);
-  height:clamp(38px, 4.4vw, 62px);
-  border-radius:6px;
-  font-size:clamp(.72rem, 1.12vw, 1.02rem);
-  font-weight:950;
-  letter-spacing:0;
-  background:
-    linear-gradient(180deg, rgba(248,251,255,.1), rgba(248,251,255,.025)),
-    rgba(5,10,22,.16);
-}
-.intro-suits .s-red{
-  color:rgba(255,65,93,.28);
-  box-shadow:0 0 34px rgba(255,65,93,.08), inset 0 0 18px rgba(255,255,255,.025);
-}
-.intro-suits .s-white{
-  color:rgba(138,246,255,.26);
-}
-@keyframes introSuitFloat{
-  0%,100%{
-    transform:translate3d(0,0,0) rotate(var(--intro-suit-rotate, 0deg)) scale(var(--intro-suit-scale, 1));
-    opacity:calc(var(--intro-suit-opacity, .74) * .8);
-  }
-  50%{
-    transform:translate3d(var(--intro-suit-drift, 0px), -10px, 0) rotate(calc(var(--intro-suit-rotate, 0deg) + 6deg)) scale(calc(var(--intro-suit-scale, 1) * 1.05));
-    opacity:var(--intro-suit-opacity, .74);
-  }
-}
-@keyframes introSuitFall{
+@keyframes suitFloat{
   0%{
-    transform:translate3d(0, -16vh, 0) rotate(var(--intro-suit-rotate, 0deg)) scale(var(--intro-suit-scale, 1));
     opacity:0;
+    transform:translate3d(0, 0, 0) rotate(0deg) scale(.82);
   }
   12%{
-    opacity:var(--intro-suit-opacity, .74);
+    opacity:.5;
   }
-  84%{
-    opacity:var(--intro-suit-opacity, .74);
+  78%{
+    opacity:.24;
   }
   100%{
-    transform:translate3d(var(--intro-suit-drift, 0px), 108dvh, 0) rotate(calc(var(--intro-suit-rotate, 0deg) + 18deg)) scale(var(--intro-suit-scale, 1));
     opacity:0;
+    transform:translate3d(var(--drift, 20px), -112vh, 0) rotate(360deg) scale(1.22);
+  }
+}
+@keyframes suitFloatMobile{
+  0%{
+    opacity:0;
+    transform:translate3d(0, 0, 0) rotate(0deg) scale(.72);
+  }
+  14%{
+    opacity:.26;
+  }
+  76%{
+    opacity:.11;
+  }
+  100%{
+    opacity:0;
+    transform:translate3d(var(--drift, 20px), -108vh, 0) rotate(340deg) scale(1.04);
   }
 }
 .intro-title{
@@ -20404,23 +20383,12 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     width:min(318px, 88vw) !important;
     margin:clamp(10px, 3vh, 24px) auto 0 !important;
   }
-  .intro-suits span{
-    width:calc(24px * var(--intro-suit-scale, 1));
-    height:calc(24px * var(--intro-suit-scale, 1));
-    left:var(--intro-suit-x, 10%);
-    top:var(--intro-suit-y, -24%);
-    border-color:rgba(255,255,255,.055);
-    border-radius:7px;
-    background:linear-gradient(180deg, rgba(8,13,24,.14), rgba(8,13,24,.02));
-    font-size:calc(.72rem * var(--intro-suit-scale, 1));
-    box-shadow:0 0 16px rgba(49,223,255,.055);
-    animation:introSuitFall var(--intro-suit-duration, 14s) linear infinite;
-    animation-delay:var(--intro-suit-delay, 0s);
-  }
-  .intro-suits span.is-figure{
-    width:calc(28px * var(--intro-suit-scale, 1));
-    height:calc(38px * var(--intro-suit-scale, 1));
-    font-size:calc(.58rem * var(--intro-suit-scale, 1));
+  .intro-suits .float-suit{
+    z-index:1;
+    font-size:clamp(.9rem, 5vw, 1.45rem) !important;
+    filter:blur(.1px);
+    animation-name:suitFloatMobile;
+    animation-duration:8.4s;
   }
   .brand-title-image.intro{
     filter:
@@ -21158,7 +21126,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
 }
 @media (prefers-reduced-motion:reduce){
   .intro-screen::after,
-  .intro-suits span,
+  .intro-suits .float-suit,
   .intro-arena::before,
   .intro-vs,
   .intro-mode-band::before,
@@ -23014,6 +22982,9 @@ function getFocusPlayerIndex(){
 function hideIntroScreen(){
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.add('hidden');
+  window.clearInterval(introSuitAmbientTimer);
+  const suits = document.querySelector('.intro-suits');
+  if(suits) suits.textContent = '';
   document.body.classList.remove('intro-active');
   if(state.musicPhase === 'menu') pauseMusic(state.bgmMenu, false);
 }
@@ -23039,54 +23010,61 @@ function showIntroMenu(menuKey='root'){
     node.hidden = key !== menuKey;
   });
   if(introCard) introCard.dataset.menu = menuKey;
-  if(menuKey === 'root') scheduleIntroSuitRefresh();
+  scheduleIntroSuitRefresh();
   animateIntroMenu(menus[menuKey]);
   if(menuKey === 'local') bindIntroMiniRange();
   if(menuKey === 'tutorial') bindIntroMiniLab();
   if(menuKey === 'academy' && typeof renderAcademyMenu === 'function') renderAcademyMenu();
 }
-const INTRO_SUIT_SYMBOLS = ['A♠', 'K♣', 'Q♥', 'J♦', '10♦', '9♠', '8♥', '7♣', '♠', '♣', '♦'];
+const INTRO_SUIT_SYMBOLS = ['♠', '♥', '♦', '♣'];
+const INTRO_SUIT_COLORS = {
+  '♠': '#38d8ff',
+  '♥': '#ff3bd4',
+  '♦': '#ffd15a',
+  '♣': '#94ff72'
+};
 let introSuitRefreshTimer = null;
+let introSuitAmbientTimer = null;
+
+function spawnIntroSuitParticle(){
+  const container = document.querySelector('.intro-suits');
+  const intro = document.getElementById('introScreen');
+  if(!container || !intro || intro.classList.contains('hidden')) return;
+  const canMatchMedia = typeof window.matchMedia === 'function';
+  const smallViewport = canMatchMedia && window.matchMedia('(max-width: 720px)').matches;
+  const reducedMotion = canMatchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reducedMotion) return;
+  const ambientSuitLimit = smallViewport ? 5 : 12;
+  if(container.querySelectorAll('.float-suit').length >= ambientSuitLimit) return;
+
+  const suit = INTRO_SUIT_SYMBOLS[Math.floor(Math.random() * INTRO_SUIT_SYMBOLS.length)];
+  const item = document.createElement('span');
+  item.className = 'float-suit';
+  item.setAttribute('aria-hidden', 'true');
+  item.textContent = suit;
+  item.style.left = `${(4 + Math.random() * 92).toFixed(2)}vw`;
+  item.style.fontSize = `${(smallViewport ? 0.95 + Math.random() * 0.75 : 1.15 + Math.random() * 1.55).toFixed(2)}rem`;
+  item.style.color = INTRO_SUIT_COLORS[suit] || '#38d8ff';
+  item.style.setProperty('--drift', `${((Math.random() * (smallViewport ? 70 : 120)) - (smallViewport ? 35 : 60)).toFixed(1)}px`);
+  container.appendChild(item);
+  window.setTimeout(() => item.remove(), smallViewport ? 8600 : 9500);
+}
 
 function seedIntroSuitParticles(){
   const container = document.querySelector('.intro-suits');
   if(!container) return;
   const canMatchMedia = typeof window.matchMedia === 'function';
-  const portrait = canMatchMedia && window.matchMedia('(orientation: portrait)').matches;
+  const smallViewport = canMatchMedia && window.matchMedia('(max-width: 720px)').matches;
   const reducedMotion = canMatchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const particleCount = portrait ? 12 : 8;
-  if(container.childElementCount !== particleCount){
-    container.innerHTML = Array.from({ length: particleCount }, () => '<span aria-hidden="true"></span>').join('');
+  window.clearInterval(introSuitAmbientTimer);
+  container.textContent = '';
+  if(reducedMotion) return;
+  const ambientSuitDelay = smallViewport ? 1750 : 1050;
+  const initialBurst = smallViewport ? 3 : 5;
+  for(let i = 0; i < initialBurst; i += 1){
+    window.setTimeout(spawnIntroSuitParticle, i * 260);
   }
-  Array.from(container.children).forEach((node, index) => {
-    const suit = INTRO_SUIT_SYMBOLS[Math.floor(Math.random() * INTRO_SUIT_SYMBOLS.length)];
-    const suitGlyph = suit.slice(-1);
-    const isRed = suitGlyph === '♥' || suitGlyph === '♦';
-    const isFigure = suit.length > 1;
-    const driftBase = portrait ? 26 : 18;
-    const drift = ((Math.random() * driftBase * 2) - driftBase).toFixed(1);
-    const rotate = ((Math.random() * 34) - 17).toFixed(1);
-    const scale = (portrait ? 0.7 + Math.random() * 0.58 : 0.84 + Math.random() * 0.5).toFixed(2);
-    const opacity = (portrait ? 0.2 + Math.random() * 0.2 : 0.14 + Math.random() * 0.14).toFixed(2);
-    const duration = reducedMotion ? 0.01 : (portrait ? 11 + Math.random() * 7 : 8 + Math.random() * 6);
-    const delay = reducedMotion ? 0 : (portrait ? index * 0.7 - duration * 0.42 : -(Math.random() * duration));
-    const posX = portrait
-      ? (4 + Math.random() * 88).toFixed(2)
-      : (index % 2 === 0 ? 3 + Math.random() * 18 : 72 + Math.random() * 22).toFixed(2);
-    const posY = portrait
-      ? (-34 - Math.random() * 72).toFixed(2)
-      : (10 + Math.random() * 72).toFixed(2);
-    node.textContent = suit;
-    node.className = `${isRed ? 's-red' : 's-white'} ${isFigure ? 'is-figure' : 'is-suit'}`;
-    node.style.setProperty('--intro-suit-x', `${posX}%`);
-    node.style.setProperty('--intro-suit-y', `${posY}%`);
-    node.style.setProperty('--intro-suit-drift', `${drift}${portrait ? 'vw' : 'px'}`);
-    node.style.setProperty('--intro-suit-rotate', `${rotate}deg`);
-    node.style.setProperty('--intro-suit-scale', scale);
-    node.style.setProperty('--intro-suit-opacity', opacity);
-    node.style.setProperty('--intro-suit-duration', `${duration.toFixed(2)}s`);
-    node.style.setProperty('--intro-suit-delay', `${delay.toFixed(2)}s`);
-  });
+  introSuitAmbientTimer = window.setInterval(spawnIntroSuitParticle, ambientSuitDelay);
 }
 
 function scheduleIntroSuitRefresh(){
