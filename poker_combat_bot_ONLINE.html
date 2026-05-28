@@ -8675,6 +8675,18 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   filter:drop-shadow(0 0 18px rgba(255,163,77,.26));
 }
 
+#compactAttackLayer.normal-attack .compact-attack-beam{
+  width:min(58vw, 520px);
+  height:24px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0), rgba(255,250,210,.98) 9%, rgba(255,160,68,.98) 30%, rgba(255,255,255,1) 50%, rgba(255,93,52,.98) 68%, rgba(255,255,255,0)),
+    repeating-linear-gradient(90deg, transparent 0 18px, rgba(255,255,255,.42) 20px 24px, transparent 26px 42px);
+  box-shadow:
+    0 0 22px rgba(255,206,92,.76),
+    0 0 42px rgba(255,93,52,.48),
+    0 0 68px rgba(35,216,255,.22);
+}
+
 .compact-attack-impact,
 .compact-attack-wave{
   width:120px;
@@ -8689,9 +8701,25 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   box-shadow:0 0 26px rgba(255,170,66,.34);
 }
 
+#compactAttackLayer.normal-attack .compact-attack-impact{
+  width:156px;
+  height:156px;
+  background:
+    radial-gradient(circle, rgba(255,255,255,1) 0 11%, rgba(255,236,158,.98) 18%, rgba(255,97,67,.92) 42%, rgba(255,255,255,0) 72%);
+  box-shadow:0 0 32px rgba(255,170,66,.72), 0 0 58px rgba(255,93,52,.44);
+}
+
 .compact-attack-wave{
   border:4px solid rgba(255,224,128,.7);
   box-shadow:0 0 28px rgba(35,216,255,.2);
+}
+
+#compactAttackLayer.normal-attack .compact-attack-wave{
+  width:168px;
+  height:168px;
+  border-width:6px;
+  border-color:rgba(255,242,196,.92);
+  box-shadow:0 0 34px rgba(255,214,92,.46), 0 0 62px rgba(255,93,52,.26);
 }
 
 .compact-attack-label{
@@ -10874,7 +10902,7 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
     overflow-y:auto;
     padding-right:2px;
   }
-  .app.mobile-compact-mode .compact-mobile-action-grid button{
+.app.mobile-compact-mode .compact-mobile-action-grid button{
     min-height:27px;
     padding:4px 5px !important;
     font-size:.46rem !important;
@@ -10883,6 +10911,11 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
     white-space:normal;
     overflow-wrap:anywhere;
     text-wrap:balance;
+  }
+  .app.mobile-compact-mode #compactMobileAttackModeBtn{
+    justify-self:start;
+    width:calc(100% - 8px);
+    transform:translateX(-4px);
   }
   .app.mobile-compact-mode #compactMobileModifyBtn{
     min-height:34px;
@@ -10896,6 +10929,29 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
     min-height:34px;
     font-size:.44rem !important;
     line-height:.84 !important;
+  }
+  .app.mobile-compact-mode #compactMobileConfirmAttackBtn{
+    justify-self:start;
+    align-self:center;
+    width:58px;
+    min-height:58px;
+    aspect-ratio:1;
+    padding:8px 7px !important;
+    transform:translateX(-7px) rotate(-3deg);
+    clip-path:polygon(50% 0%, 60% 31%, 93% 18%, 73% 49%, 98% 72%, 65% 69%, 50% 100%, 36% 69%, 2% 72%, 27% 49%, 7% 18%, 40% 31%);
+    border:0 !important;
+    color:#fff8dc !important;
+    background:
+      radial-gradient(circle at 50% 43%, rgba(255,255,255,.9), rgba(255,214,92,.92) 18%, rgba(255,93,52,.96) 48%, rgba(154,11,28,.98) 78%) !important;
+    box-shadow:
+      0 0 0 2px rgba(255,244,190,.58),
+      0 0 24px rgba(255,93,52,.56),
+      0 8px 18px rgba(41,0,8,.28) !important;
+    font-size:.42rem !important;
+    line-height:.82 !important;
+    text-transform:uppercase;
+    text-shadow:0 1px 0 rgba(94,0,0,.55), 0 0 10px rgba(255,255,255,.38) !important;
+    z-index:3;
   }
   .app.mobile-compact-mode .compact-rival-panel,
   .app.mobile-compact-mode .compact-actions-panel{
@@ -15784,6 +15840,37 @@ body.story-argos-hack-ui{
     border-color:#6f170d !important;
     background:linear-gradient(180deg, #ff7a5e, #cf3329 64%, #8a1815) !important;
     box-shadow:inset 0 2px 0 rgba(255,210,190,.46), inset 0 -3px 0 rgba(70,0,0,.28), 0 3px 0 #4f0704 !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode #compactMobileAttackModeBtn{
+    transform:translate(calc(-50% + 8px), calc(-50% - 58px)) !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-mobile-action-grid #compactMobileConfirmAttackBtn{
+    left:22% !important;
+    bottom:46px !important;
+    width:60px !important;
+    min-width:60px !important;
+    max-width:60px !important;
+    height:60px !important;
+    min-height:60px !important;
+    padding:9px 8px !important;
+    transform:translate(-50%, -42px) rotate(-4deg) !important;
+    clip-path:polygon(50% 0%, 60% 31%, 93% 18%, 73% 49%, 98% 72%, 65% 69%, 50% 100%, 36% 69%, 2% 72%, 27% 49%, 7% 18%, 40% 31%) !important;
+    border:0 !important;
+    border-radius:0 !important;
+    color:#fff8dc !important;
+    background:
+      radial-gradient(circle at 50% 43%, rgba(255,255,255,.96), rgba(255,214,92,.96) 18%, rgba(255,93,52,.98) 48%, rgba(154,11,28,.99) 78%) !important;
+    box-shadow:
+      0 0 0 2px rgba(255,244,190,.6),
+      0 0 24px rgba(255,93,52,.58),
+      0 8px 18px rgba(41,0,8,.30) !important;
+    font-size:.42rem !important;
+    line-height:.82 !important;
+    text-transform:uppercase;
+    text-shadow:0 1px 0 rgba(94,0,0,.55), 0 0 10px rgba(255,255,255,.38) !important;
+    z-index:5;
   }
 
   body.mobile-compact-mode .compact-mobile-action-grid #compactMobilePlayerDrawerBtn{
@@ -31374,10 +31461,11 @@ function triggerCompactAttackCinematic(attackerIdx, withProjectile=false, option
   });
 
   label.textContent = completeAttack ? 'Completo' : (withProjectile ? 'Proyectil' : 'Ataque');
-  layer.classList.remove('active', 'from-left', 'from-right', 'with-projectile');
+  layer.classList.remove('active', 'from-left', 'from-right', 'with-projectile', 'normal-attack');
   void layer.offsetWidth;
   layer.classList.add('active', directionClass);
   if(heavyLaunch) layer.classList.add('with-projectile');
+  else layer.classList.add('normal-attack');
 
   pulseElementWithDuration(attackerStageId, 'compact-attack-launch', 760);
   pulseElementWithDuration(attackerRingId, 'compact-attack-ring-launch', 920);
@@ -31388,16 +31476,16 @@ function triggerCompactAttackCinematic(attackerIdx, withProjectile=false, option
 
   const attackerAnchor = getCompactMechaAnchor(attackerIdx);
   const defenderAnchor = getCompactMechaAnchor(defenderIdx);
-  if(attackerAnchor) spawnElementSparks(attackerAnchor.target, completeAttack ? 34 : (withProjectile ? 24 : 16), palette);
+  if(attackerAnchor) spawnElementSparks(attackerAnchor.target, completeAttack ? 34 : (withProjectile ? 24 : 28), palette);
   if(defenderAnchor){
     window.setTimeout(() => {
-      spawnElementSparks(defenderAnchor.target, completeAttack ? 42 : (withProjectile ? 30 : 20), palette);
-      spawnUiSparks(defenderAnchor.x, defenderAnchor.y, completeAttack ? 34 : (withProjectile ? 26 : 18), palette);
+      spawnElementSparks(defenderAnchor.target, completeAttack ? 42 : (withProjectile ? 30 : 34), palette);
+      spawnUiSparks(defenderAnchor.x, defenderAnchor.y, completeAttack ? 34 : (withProjectile ? 26 : 30), palette);
     }, heavyLaunch ? 390 : 320);
   }
 
   window.setTimeout(() => {
-    layer.classList.remove('active', 'from-left', 'from-right', 'with-projectile');
+    layer.classList.remove('active', 'from-left', 'from-right', 'with-projectile', 'normal-attack');
   }, 980);
   return true;
 }
