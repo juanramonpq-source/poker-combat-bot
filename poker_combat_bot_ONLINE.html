@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <link rel="icon" href="favicon.ico?v=20260506-pocobot-icon" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_web_icon_32.png?v=20260506-pocobot-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/pocobot_web_icon_16.png?v=20260506-pocobot-icon" />
@@ -47,6 +47,27 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%}
+html{
+  touch-action:manipulation;
+  -webkit-text-size-adjust:100%;
+}
+body{
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+  overscroll-behavior:none;
+}
+button,
+a,
+[role="button"]{
+  touch-action:manipulation;
+}
+input,
+textarea{
+  -webkit-user-select:text;
+  user-select:text;
+  touch-action:manipulation;
+}
 html:has(body.intro-active),
 body.intro-active{
   height:100dvh;
@@ -19234,10 +19255,27 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   max-width:none !important;
   max-height:none !important;
   object-fit:contain;
-  transform:translateX(-2.2%) !important;
+  transform:translateX(-2.2%) scale(var(--intro-title-scale, 1)) !important;
+  transform-origin:50% 58%;
+  cursor:pointer;
+  touch-action:manipulation;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-user-drag:none;
+  transition:transform .18s cubic-bezier(.2, .9, .2, 1.2), filter .18s ease;
   filter:
     drop-shadow(0 24px 34px rgba(0,0,0,.52))
     drop-shadow(0 0 22px rgba(49,223,255,.23)) !important;
+}
+.brand-title-image.intro.is-title-booping{
+  --intro-title-scale:1.3;
+  animation:introTitleBoop .42s cubic-bezier(.18, .9, .24, 1.18) both;
+}
+@keyframes introTitleBoop{
+  0%{ --intro-title-scale:1; }
+  56%{ --intro-title-scale:1.3; }
+  78%{ --intro-title-scale:1.24; }
+  100%{ --intro-title-scale:1.3; }
 }
 .intro-commercial-line{
   max-width:720px;
@@ -20011,6 +20049,10 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   box-shadow:none !important;
   color:inherit !important;
   cursor:pointer;
+  touch-action:manipulation;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-user-drag:none;
   transform-origin:40% 82%;
   transition:transform .16s ease, filter .16s ease;
 }
@@ -20253,6 +20295,9 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   color:#080b11;
   background:linear-gradient(135deg, #fff1a1, #ff9a3f 58%, #ff4bcf);
   font-weight:950;
+  touch-action:manipulation;
+  user-select:none;
+  -webkit-user-select:none;
   cursor:pointer;
   box-shadow:0 14px 28px rgba(255,92,116,.16);
   transition:transform .16s ease, filter .16s ease;
@@ -20427,7 +20472,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     justify-content:center !important;
   }
   .brand-title-image.intro{
-    transform:none !important;
+    transform:scale(var(--intro-title-scale, 1)) !important;
   }
   .intro-commercial-line,
   .intro-subtitle{
@@ -23765,6 +23810,38 @@ function triggerIntroButtonFx(button){
   window.setTimeout(() => button.classList.remove('is-fired'), 320);
 }
 
+function bindIntroTitleBoop(){
+  const title = document.querySelector('.brand-title-image.intro');
+  if(!title || title.dataset.boopBound === '1') return;
+  title.dataset.boopBound = '1';
+  title.draggable = false;
+  const inflate = (event) => {
+    if(event.cancelable) event.preventDefault();
+    title.classList.remove('is-title-booping');
+    void title.offsetWidth;
+    title.classList.add('is-title-booping');
+  };
+  const release = () => {
+    title.classList.remove('is-title-booping');
+  };
+  title.addEventListener('pointerdown', inflate);
+  title.addEventListener('pointerup', release);
+  title.addEventListener('pointercancel', release);
+  title.addEventListener('pointerleave', release);
+}
+
+function installMobileZoomGuards(){
+  if(window.__pocobotZoomGuardsInstalled) return;
+  window.__pocobotZoomGuardsInstalled = true;
+  const preventZoomGesture = (event) => {
+    if(event.cancelable) event.preventDefault();
+  };
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(eventName => {
+    document.addEventListener(eventName, preventZoomGesture, { passive:false });
+  });
+  document.addEventListener('dblclick', preventZoomGesture, { passive:false, capture:true });
+}
+
 function bindIntroButtonFx(){
   document.querySelectorAll('.intro-screen button').forEach(button => {
     if(button.dataset.introFxBound === '1') return;
@@ -23817,7 +23894,8 @@ const introMiniLab = {
   attackCards: [],
   defenseCards: [],
   armorCards: [],
-  fuelCards: []
+  fuelCards: [],
+  activeSuit: '♡'
 };
 
 function getIntroMiniLabEls(){
@@ -23911,7 +23989,7 @@ function updateIntroMiniLab(message=''){
   els.status.textContent = status;
   els.statusHead.textContent = status;
   els.count.textContent = Math.max(0, introMiniLab.deck.length - introMiniLab.index);
-  els.pulse.textContent = introMiniLabReady() ? '♣' : introMiniLab.copilotCard ? '♣' : introMiniLab.pilotCard ? '♠' : '♡';
+  els.pulse.textContent = introMiniLab.activeSuit || '♡';
   els.machine.classList.toggle('is-ready', introMiniLabReady());
   if(els.note) els.note.textContent = message || 'Roba una carta y monta el PoCoBOT de prueba.';
   if(els.draw) els.draw.disabled = introMiniLab.index >= introMiniLab.deck.length;
@@ -23957,6 +24035,7 @@ function drawIntroMiniLabCard(){
   if(!els.draw || introMiniLab.index >= introMiniLab.deck.length) return;
   const card = introMiniLab.deck[introMiniLab.index];
   introMiniLab.index += 1;
+  introMiniLab.activeSuit = card.suit;
   const destination = introMiniLabApplyCard(card);
   if(els.cards){
     els.cards.appendChild(createIntroMiniLabCard(card));
@@ -23978,6 +24057,7 @@ function resetIntroMiniLab(){
   introMiniLab.defenseCards = [];
   introMiniLab.armorCards = [];
   introMiniLab.fuelCards = [];
+  introMiniLab.activeSuit = '♡';
   if(els.cards) els.cards.textContent = '';
   updateIntroMiniLab();
 }
@@ -24064,6 +24144,8 @@ function showIntroScreen(menuKey='root'){
   const intro = document.getElementById('introScreen');
   if(intro) intro.classList.remove('hidden');
   document.body.classList.add('intro-active');
+  installMobileZoomGuards();
+  bindIntroTitleBoop();
   showIntroMenu(menuKey);
   scheduleIntroSuitRefresh();
   startMenuMusic(false);
@@ -38673,6 +38755,8 @@ try{
   }
 }catch(err){}
 
+installMobileZoomGuards();
+bindIntroTitleBoop();
 bindIntroButtonFx();
 seedIntroSuitParticles();
 bindIntroMiniLab();
