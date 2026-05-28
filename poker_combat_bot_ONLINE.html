@@ -20165,13 +20165,64 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   font-weight:900;
   letter-spacing:.05em;
 }
+.intro-mini-lab-core-slots{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:6px;
+  margin-top:8px;
+}
+.intro-mini-lab-core-slot,
+.intro-mini-lab-zone-cards{
+  min-width:0;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;
+  background:rgba(2,7,16,.34);
+  box-shadow:inset 0 0 12px rgba(56,216,255,.04);
+}
+.intro-mini-lab-core-slot{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  padding:4px 5px;
+}
+.intro-mini-lab-core-slot span{
+  color:rgba(223,252,255,.66);
+  font-size:.46rem;
+  font-weight:950;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.intro-mini-lab-zone-cards{
+  min-height:30px;
+  padding:2px;
+}
+.intro-mini-lab-slot-cards{
+  min-width:0;
+  min-height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:3px;
+}
+.intro-mini-lab-slot-cards:empty::before,
+.intro-mini-lab-zone-cards:empty::before{
+  content:"";
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  border:1px solid rgba(223,252,255,.2);
+}
 .intro-mini-lab-bars{
   display:grid;
   gap:6px;
 }
 .intro-mini-lab-bar{
   display:grid;
-  grid-template-columns:48px 1fr 18px;
+  grid-template-columns:48px 34px 1fr 18px;
   gap:6px;
   align-items:center;
   color:rgba(223,252,255,.76);
@@ -20278,7 +20329,25 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   box-shadow:0 6px 10px rgba(0,0,0,.18);
   animation:cardPop .22s ease-out;
 }
+.intro-mini-lab-placed-card{
+  width:22px;
+  height:31px;
+  flex:0 0 auto;
+  overflow:hidden;
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,.2);
+  background:#fff;
+  box-shadow:0 6px 10px rgba(0,0,0,.22);
+  animation:cardPop .22s ease-out;
+}
 .intro-mini-lab-card img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  background:#fff;
+}
+.intro-mini-lab-placed-card img{
   width:100%;
   height:100%;
   display:block;
@@ -20676,16 +20745,39 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     line-height:1.1;
     letter-spacing:0;
   }
+  #introMenuTutorial .intro-mini-lab-core-slots{
+    gap:8px;
+    margin-top:10px;
+  }
+  #introMenuTutorial .intro-mini-lab-core-slot{
+    min-height:42px;
+    padding:5px 7px;
+    border-radius:10px;
+  }
+  #introMenuTutorial .intro-mini-lab-core-slot span{
+    font-size:.56rem;
+  }
+  #introMenuTutorial .intro-mini-lab-slot-cards{
+    min-height:32px;
+  }
   #introMenuTutorial .intro-mini-lab-bars{
     gap:9px;
     margin-top:12px;
   }
   #introMenuTutorial .intro-mini-lab-bar{
-    grid-template-columns:76px 1fr 24px;
-    gap:10px;
+    grid-template-columns:70px 44px 1fr 24px;
+    gap:8px;
     color:rgba(217,236,255,.82);
     font-size:.78rem;
     font-weight:700;
+  }
+  #introMenuTutorial .intro-mini-lab-zone-cards{
+    min-height:36px;
+    border-radius:9px;
+  }
+  #introMenuTutorial .intro-mini-lab-placed-card{
+    width:26px;
+    height:36px;
   }
   #introMenuTutorial .intro-mini-lab-track{
     height:9px;
@@ -20936,14 +21028,35 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     margin-top:8px;
     font-size:.78rem;
   }
+  #introMenuTutorial .intro-mini-lab-core-slots{
+    gap:5px;
+    margin-top:7px;
+  }
+  #introMenuTutorial .intro-mini-lab-core-slot{
+    min-height:32px;
+    padding:3px 5px;
+  }
+  #introMenuTutorial .intro-mini-lab-core-slot span{
+    font-size:.44rem;
+  }
+  #introMenuTutorial .intro-mini-lab-slot-cards{
+    min-height:26px;
+  }
   #introMenuTutorial .intro-mini-lab-bars{
     gap:6px;
     margin-top:8px;
   }
   #introMenuTutorial .intro-mini-lab-bar{
-    grid-template-columns:58px 1fr 18px;
-    gap:7px;
+    grid-template-columns:48px 31px 1fr 18px;
+    gap:5px;
     font-size:.6rem;
+  }
+  #introMenuTutorial .intro-mini-lab-zone-cards{
+    min-height:28px;
+  }
+  #introMenuTutorial .intro-mini-lab-placed-card{
+    width:20px;
+    height:28px;
   }
   #introMenuTutorial .intro-mini-lab-track{
     height:7px;
@@ -21621,24 +21734,38 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
                 <div class="intro-mini-lab-pulse" id="introMiniLabPulse">♡</div>
               </div>
               <div class="intro-mini-lab-status" id="introMiniLabStatus">Nucleo sin piloto</div>
+              <div class="intro-mini-lab-core-slots" aria-label="Núcleo de piloto y copiloto">
+                <div class="intro-mini-lab-core-slot">
+                  <span>Piloto</span>
+                  <div class="intro-mini-lab-slot-cards" id="introMiniLabPilotSlot"></div>
+                </div>
+                <div class="intro-mini-lab-core-slot">
+                  <span>Copiloto</span>
+                  <div class="intro-mini-lab-slot-cards" id="introMiniLabCopilotSlot"></div>
+                </div>
+              </div>
               <div class="intro-mini-lab-bars" aria-label="Estado del PoCoBOT de prueba">
                 <div class="intro-mini-lab-bar">
                   <span>Ataque</span>
+                  <div class="intro-mini-lab-zone-cards" id="introMiniLabAttackCards"></div>
                   <div class="intro-mini-lab-track"><div class="intro-mini-lab-fill" id="introMiniLabAttack"></div></div>
                   <strong id="introMiniLabAttackValue">0</strong>
                 </div>
                 <div class="intro-mini-lab-bar">
                   <span>Defensa</span>
+                  <div class="intro-mini-lab-zone-cards" id="introMiniLabDefenseCards"></div>
                   <div class="intro-mini-lab-track"><div class="intro-mini-lab-fill" id="introMiniLabDefense"></div></div>
                   <strong id="introMiniLabDefenseValue">0</strong>
                 </div>
                 <div class="intro-mini-lab-bar">
                   <span>Armad.</span>
+                  <div class="intro-mini-lab-zone-cards" id="introMiniLabArmorCards"></div>
                   <div class="intro-mini-lab-track"><div class="intro-mini-lab-fill" id="introMiniLabArmor"></div></div>
                   <strong id="introMiniLabArmorValue">0</strong>
                 </div>
                 <div class="intro-mini-lab-bar">
                   <span>Fuel</span>
+                  <div class="intro-mini-lab-zone-cards" id="introMiniLabFuelCards"></div>
                   <div class="intro-mini-lab-track"><div class="intro-mini-lab-fill" id="introMiniLabFuel"></div></div>
                   <strong id="introMiniLabFuelValue">0</strong>
                 </div>
@@ -23311,20 +23438,25 @@ function bindIntroButtonFx(){
 const introMiniLab = {
   deck: [
     { rank:'J', suit:'♠', value:3, src:'assets/cards/hayeah-full/jack_of_spades.svg', alt:'Jota de picas' },
-    { rank:'6', suit:'♣', value:6, src:'assets/cards/hayeah-full/6_of_clubs.svg', alt:'Seis de tréboles' },
-    { rank:'8', suit:'♥', value:8, src:'assets/cards/hayeah-full/8_of_hearts.svg', alt:'Ocho de corazones' },
-    { rank:'5', suit:'♦', value:5, src:'assets/cards/hayeah-full/5_of_diamonds.svg', alt:'Cinco de diamantes' },
-    { rank:'A', suit:'♥', value:4, src:'assets/cards/hayeah-full/ace_of_hearts.svg', alt:'As de corazones' },
     { rank:'7', suit:'♠', value:7, src:'assets/cards/hayeah-full/7_of_spades.svg', alt:'Siete de picas' },
+    { rank:'Q', suit:'♥', value:3, src:'assets/cards/hayeah-full/queen_of_hearts.svg', alt:'Reina de corazones' },
+    { rank:'8', suit:'♥', value:8, src:'assets/cards/hayeah-full/8_of_hearts.svg', alt:'Ocho de corazones' },
+    { rank:'6', suit:'♣', value:6, src:'assets/cards/hayeah-full/6_of_clubs.svg', alt:'Seis de tréboles' },
+    { rank:'10', suit:'♦', value:10, src:'assets/cards/hayeah-full/10_of_diamonds.svg', alt:'Diez de diamantes' },
     { rank:'9', suit:'♣', value:9, src:'assets/cards/hayeah-full/9_of_clubs.svg', alt:'Nueve de tréboles' },
-    { rank:'10', suit:'♦', value:10, src:'assets/cards/hayeah-full/10_of_diamonds.svg', alt:'Diez de diamantes' }
+    { rank:'5', suit:'♦', value:5, src:'assets/cards/hayeah-full/5_of_diamonds.svg', alt:'Cinco de diamantes' }
   ],
   index: 0,
-  pilot: false,
+  pilotCard: null,
+  copilotCard: null,
   attack: 0,
   defense: 0,
   armor: 0,
-  fuel: 0
+  fuel: 0,
+  attackCards: [],
+  defenseCards: [],
+  armorCards: [],
+  fuelCards: []
 };
 
 function getIntroMiniLabEls(){
@@ -23338,6 +23470,12 @@ function getIntroMiniLabEls(){
     count: document.getElementById('introMiniLabCount'),
     cards: document.getElementById('introMiniLabCards'),
     note: document.getElementById('introMiniLabNote'),
+    pilotSlot: document.getElementById('introMiniLabPilotSlot'),
+    copilotSlot: document.getElementById('introMiniLabCopilotSlot'),
+    attackCards: document.getElementById('introMiniLabAttackCards'),
+    defenseCards: document.getElementById('introMiniLabDefenseCards'),
+    armorCards: document.getElementById('introMiniLabArmorCards'),
+    fuelCards: document.getElementById('introMiniLabFuelCards'),
     attack: document.getElementById('introMiniLabAttack'),
     defense: document.getElementById('introMiniLabDefense'),
     armor: document.getElementById('introMiniLabArmor'),
@@ -23354,7 +23492,39 @@ function introMiniLabClamp(value){
 }
 
 function introMiniLabReady(){
-  return introMiniLab.pilot && introMiniLab.attack >= 5 && introMiniLab.defense >= 5 && introMiniLab.armor >= 5 && introMiniLab.fuel >= 5;
+  return introMiniLab.pilotCard
+    && introMiniLab.copilotCard
+    && introMiniLab.attackCards.length
+    && introMiniLab.defenseCards.length
+    && introMiniLab.armorCards.length
+    && introMiniLab.fuelCards.length;
+}
+
+function createIntroMiniLabCard(card, placed=false){
+  const cardEl = document.createElement('span');
+  cardEl.className = placed ? 'intro-mini-lab-placed-card' : 'intro-mini-lab-card';
+  const img = document.createElement('img');
+  img.src = card.src;
+  img.alt = card.alt;
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.draggable = false;
+  cardEl.appendChild(img);
+  return cardEl;
+}
+
+function renderIntroMiniLabPlacements(els){
+  const renderSlot = (node, cards) => {
+    if(!node) return;
+    node.textContent = '';
+    cards.filter(Boolean).slice(-2).forEach(card => node.appendChild(createIntroMiniLabCard(card, true)));
+  };
+  renderSlot(els.pilotSlot, [introMiniLab.pilotCard]);
+  renderSlot(els.copilotSlot, [introMiniLab.copilotCard]);
+  renderSlot(els.attackCards, introMiniLab.attackCards);
+  renderSlot(els.defenseCards, introMiniLab.defenseCards);
+  renderSlot(els.armorCards, introMiniLab.armorCards);
+  renderSlot(els.fuelCards, introMiniLab.fuelCards);
 }
 
 function updateIntroMiniLab(message=''){
@@ -23369,26 +23539,56 @@ function updateIntroMiniLab(message=''){
   setBar('defense', introMiniLab.defense);
   setBar('armor', introMiniLab.armor);
   setBar('fuel', introMiniLab.fuel);
+  renderIntroMiniLabPlacements(els);
   const status = introMiniLabReady()
     ? 'PoCoBOT listo'
-    : introMiniLab.pilot
-      ? 'Piloto enlazado'
+    : introMiniLab.copilotCard
+      ? 'Copiloto enlazado'
+      : introMiniLab.pilotCard
+        ? 'Piloto enlazado'
       : 'Núcleo sin piloto';
   els.status.textContent = status;
   els.statusHead.textContent = status;
   els.count.textContent = Math.max(0, introMiniLab.deck.length - introMiniLab.index);
-  els.pulse.textContent = introMiniLabReady() ? '♣' : introMiniLab.pilot ? '♠' : '♡';
+  els.pulse.textContent = introMiniLabReady() ? '♣' : introMiniLab.copilotCard ? '♣' : introMiniLab.pilotCard ? '♠' : '♡';
   els.machine.classList.toggle('is-ready', introMiniLabReady());
   if(els.note) els.note.textContent = message || 'Roba una carta y monta el PoCoBOT de prueba.';
   if(els.draw) els.draw.disabled = introMiniLab.index >= introMiniLab.deck.length;
 }
 
 function introMiniLabApplyCard(card){
-  if((card.rank === 'J' || card.rank === 'Q' || card.rank === 'K') && card.suit !== '♦') introMiniLab.pilot = true;
-  if(card.suit === '♠') introMiniLab.attack += card.value;
-  if(card.suit === '♥') introMiniLab.defense += card.value;
-  if(card.suit === '♣') introMiniLab.armor += card.value;
-  if(card.suit === '♦') introMiniLab.fuel += card.value;
+  const isFigure = ['J', 'Q', 'K'].includes(card.rank);
+  if(isFigure){
+    if(!introMiniLab.pilotCard){
+      introMiniLab.pilotCard = card;
+      return 'piloto';
+    }
+    if(!introMiniLab.copilotCard){
+      introMiniLab.copilotCard = card;
+      return 'copiloto';
+    }
+  }
+  if(card.suit === '♠'){
+    introMiniLab.attack += card.value;
+    introMiniLab.attackCards.push(card);
+    return 'ataque';
+  }
+  if(card.suit === '♥'){
+    introMiniLab.defense += card.value;
+    introMiniLab.defenseCards.push(card);
+    return 'defensa';
+  }
+  if(card.suit === '♣'){
+    introMiniLab.armor += card.value;
+    introMiniLab.armorCards.push(card);
+    return 'armadura';
+  }
+  if(card.suit === '♦'){
+    introMiniLab.fuel += card.value;
+    introMiniLab.fuelCards.push(card);
+    return 'fuel';
+  }
+  return 'panel';
 }
 
 function drawIntroMiniLabCard(){
@@ -23396,32 +23596,27 @@ function drawIntroMiniLabCard(){
   if(!els.draw || introMiniLab.index >= introMiniLab.deck.length) return;
   const card = introMiniLab.deck[introMiniLab.index];
   introMiniLab.index += 1;
-  introMiniLabApplyCard(card);
+  const destination = introMiniLabApplyCard(card);
   if(els.cards){
-    const cardEl = document.createElement('span');
-    cardEl.className = 'intro-mini-lab-card';
-    const img = document.createElement('img');
-    img.src = card.src;
-    img.alt = card.alt;
-    img.loading = 'lazy';
-    img.decoding = 'async';
-    img.draggable = false;
-    cardEl.appendChild(img);
-    els.cards.appendChild(cardEl);
+    els.cards.appendChild(createIntroMiniLabCard(card));
   }
-  const suitName = card.suit === '♠' ? 'ataque' : card.suit === '♥' ? 'defensa' : card.suit === '♣' ? 'armadura' : 'fuel';
   const readyText = introMiniLabReady() ? ' PoCoBOT listo para prueba.' : '';
-  updateIntroMiniLab(`${card.rank}${card.suit} carga ${suitName}.${readyText}`);
+  updateIntroMiniLab(`${card.rank}${card.suit} se coloca en ${destination}.${readyText}`);
 }
 
 function resetIntroMiniLab(){
   const els = getIntroMiniLabEls();
   introMiniLab.index = 0;
-  introMiniLab.pilot = false;
+  introMiniLab.pilotCard = null;
+  introMiniLab.copilotCard = null;
   introMiniLab.attack = 0;
   introMiniLab.defense = 0;
   introMiniLab.armor = 0;
   introMiniLab.fuel = 0;
+  introMiniLab.attackCards = [];
+  introMiniLab.defenseCards = [];
+  introMiniLab.armorCards = [];
+  introMiniLab.fuelCards = [];
   if(els.cards) els.cards.textContent = '';
   updateIntroMiniLab();
 }
