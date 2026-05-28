@@ -22102,6 +22102,157 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     opacity:.76;
   }
 }
+@media (orientation:landscape) and (pointer:fine) and (min-width:900px) and (max-width:1080px) and (min-height:820px){
+  .intro-card[data-menu="root"]{
+    position:relative;
+    display:block !important;
+    height:100dvh !important;
+    min-height:100dvh !important;
+    max-height:100dvh !important;
+    overflow:hidden !important;
+    padding:
+      max(16px, env(safe-area-inset-top))
+      max(18px, env(safe-area-inset-right))
+      max(18px, env(safe-area-inset-bottom))
+      max(18px, env(safe-area-inset-left)) !important;
+  }
+  .intro-card[data-menu="root"] .intro-topbar{
+    min-height:42px;
+  }
+  .intro-card[data-menu="root"] .intro-studio-link{
+    font-size:.72rem;
+  }
+  .intro-card[data-menu="root"] .intro-studio-link img{
+    width:30px;
+    height:30px;
+  }
+  .intro-card[data-menu="root"] .intro-utility-links{
+    gap:8px;
+    font-size:.7rem;
+  }
+  .intro-card[data-menu="root"] .intro-utility-links a,
+  .intro-card[data-menu="root"] .intro-utility-links button{
+    min-height:36px;
+    padding:0 12px;
+    border-radius:16px;
+  }
+  .intro-card[data-menu="root"] .intro-title{
+    position:absolute;
+    left:50%;
+    top:clamp(74px, 10vh, 104px);
+    width:min(560px, 56vw) !important;
+    margin:0 !important;
+    transform:translateX(-50%);
+    justify-content:center !important;
+  }
+  .intro-card[data-menu="root"] .brand-title-image.intro{
+    transform:scale(var(--intro-title-scale, 1)) !important;
+  }
+  .intro-card[data-menu="root"] .intro-commercial-line{
+    position:absolute;
+    left:50%;
+    bottom:clamp(330px, 36vh, 390px);
+    width:min(760px, 78vw);
+    max-width:min(760px, 78vw);
+    margin:0 !important;
+    transform:translateX(-50%);
+    text-align:center;
+    font-size:clamp(2rem, 5vw, 3rem);
+    line-height:.95;
+  }
+  .intro-card[data-menu="root"] .intro-subtitle{
+    position:absolute;
+    left:50%;
+    bottom:clamp(286px, 31vh, 336px);
+    width:min(760px, 78vw);
+    max-width:min(760px, 78vw) !important;
+    margin:0 !important;
+    transform:translateX(-50%);
+    text-align:center;
+    font-size:clamp(.8rem, 1.9vw, 1rem) !important;
+    line-height:1.22 !important;
+  }
+  .intro-card[data-menu="root"] .intro-arena{
+    position:absolute;
+    left:50%;
+    right:auto;
+    top:auto;
+    bottom:clamp(210px, 24vh, 250px);
+    width:min(700px, 76vw);
+    min-height:68px;
+    margin:0 !important;
+    padding:7px 12px;
+    transform:translateX(-50%);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:8px;
+    background:
+      linear-gradient(90deg, rgba(49,223,255,.1), rgba(255,190,61,.08), rgba(255,65,93,.1)),
+      rgba(1,7,17,.46);
+    backdrop-filter:blur(12px);
+  }
+  .intro-card[data-menu="root"] .intro-mecha-slot{
+    grid-template-columns:42px minmax(0,1fr);
+    gap:8px;
+  }
+  .intro-card[data-menu="root"] .intro-mecha-right{
+    grid-template-columns:minmax(0,1fr) 42px;
+  }
+  .intro-card[data-menu="root"] .intro-mecha-img{
+    width:42px !important;
+    height:50px !important;
+  }
+  .intro-card[data-menu="root"] .intro-mecha-name{
+    font-size:.68rem;
+  }
+  .intro-card[data-menu="root"] .intro-vs{
+    width:34px;
+    height:34px;
+    font-size:.62rem !important;
+  }
+  .intro-card[data-menu="root"] .intro-menu-stack{
+    position:absolute;
+    left:50%;
+    right:auto;
+    bottom:clamp(18px, 2.5vh, 28px);
+    width:min(700px, 76vw);
+    margin:0 !important;
+    padding:9px;
+    transform:translateX(-50%);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:10px;
+    background:linear-gradient(180deg, rgba(5,12,25,.56), rgba(2,6,15,.44));
+    backdrop-filter:blur(14px);
+  }
+  .intro-card[data-menu="root"] .intro-buttons-group{
+    gap:7px !important;
+  }
+  .intro-card[data-menu="root"] .intro-mode-band,
+  .intro-card[data-menu="root"] .intro-mode-band.intro-enter,
+  .intro-card[data-menu="root"] .intro-mode-band.intro-tutorial{
+    min-height:48px;
+    grid-template-columns:36px minmax(0,1fr);
+    gap:10px;
+    padding:0 12px !important;
+  }
+  .intro-card[data-menu="root"] .intro-mode-online{
+    min-height:56px;
+  }
+  .intro-card[data-menu="root"] .intro-mode-icon,
+  .intro-card[data-menu="root"] .intro-mode-online .intro-mode-icon{
+    width:34px;
+    height:34px;
+    font-size:.82rem;
+  }
+  .intro-card[data-menu="root"] .intro-mode-copy strong,
+  .intro-card[data-menu="root"] .intro-mode-online .intro-mode-copy strong{
+    font-size:.88rem;
+  }
+  .intro-card[data-menu="root"] .intro-mode-copy span,
+  .intro-card[data-menu="root"] .intro-mode-online .intro-mode-copy span{
+    font-size:.58rem;
+    line-height:1;
+  }
+}
 @media (orientation:portrait) and (max-width:360px){
   .intro-studio-link{font-size:.56rem}
   .intro-utility-links a,
