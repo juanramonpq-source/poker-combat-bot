@@ -632,7 +632,7 @@ const campInteractables = [
     x: 1353.4837905236907,
     y: 489.3855865334034,
     radius: 104,
-    label: "Damaso, intendencia",
+    label: "Dámaso, logística",
     hint: "Intercambio",
     message: "Damaso guarda filtros, pero pide una placa roja sellada.",
     scale: 0.85,
@@ -656,7 +656,7 @@ const campInteractables = [
     radius: 70,
     label: "Nix Corsario",
     hint: "Piratear mazo",
-    message: "Nix puede limpiar hasta tres cartas añadidas del mazo antes del hackeo del agua.",
+    message: "Nix puede purgar hasta tres cartas del mazo antes del hackeo del agua.",
     scale: 0.6,
     role: "deck_pirate"
   },
@@ -667,7 +667,7 @@ const campInteractables = [
     radius: 106,
     label: "PoCoBOT de resistencia",
     hint: "Combate controlado",
-    message: "Un PoCoBOT veterano acepta un duelo de calibracion, al estilo de Viajero.",
+    message: "Un PoCoBOT veterano acepta un duelo de calibracion.",
     scale: 0.8,
     role: "resistance_bot"
   },
@@ -678,7 +678,7 @@ const campInteractables = [
     radius: 70,
     label: "PC del flujo de agua",
     hint: "Hackear",
-    message: "El PC controla el flujo del agua. Xavor puede entrar desde la radio.",
+    message: "El PC controla el flujo del agua. Xavor puede entrar conectando la radio.",
     scale: 1
   },
   {
@@ -701,7 +701,7 @@ const lakeInteractables = [
     radius: 160,
     label: "Dron del lago",
     hint: "Combate",
-    message: "El dron esta ensuciando el lago con sedimentos de Argos.",
+    message: "El dron esta ensuciando el lago con sedimentos de Argós.",
     scale: 1,
     role: "lake_drone"
   },
@@ -1320,11 +1320,11 @@ function handleInteraction(interaction) {
     return;
   }
   if (action === "lake-cleared") {
-    setInteractionMessage("El lago vuelve a correr limpio. Corvo ya no aparta la mirada.", 3.2);
+    setInteractionMessage("El lago vuelve a correr limpio. Te has ganado el respeto del Campamento de las Placas Rojas.", 3.2);
     return;
   }
   if (interaction.id === "radio_xavor" && !campProgress.corvoIntroSeen) {
-    setInteractionMessage("Es la radio que te dio Xavor, la dejo aquí por si tengo que contactar con él en algún momento", 4.2);
+    setInteractionMessage("Es la radio que te dio Xavor, la dejas aquí por si hay que contactar con él en algún momento.", 4.2);
     return;
   }
 
@@ -1379,23 +1379,23 @@ const standaloneSceneCopy = {
   xavor_radio: {
     kicker: "Radio de Xavor",
     title: "Señal verificada",
-    text: "Xavor entra por la radio con su voz rota y confirma que vienes de los nuestros. Corvo no sonríe, pero deja de tratarte como una amenaza inmediata.",
+    text: "Xavor entra por la radio con su voz rota y confirma que vienes de los nuestros. Corvo no sonríe, pero deja de tratarte como una posible amenaza.",
     actions: [{ label: "Hablar con Corvo", action: "close" }],
   },
   medic: {
     kicker: "Nara · Enfermería",
     title: "Fiebre de agua",
-    text: "Nara necesita filtros. El agua sabe a óxido caliente y la gente empieza a enfermar. Te entrega una placa médica para que Dámaso abra intendencia.",
-    actions: [{ label: "Ir a intendencia", action: "close" }],
+    text: "Nara necesita filtros. El agua sabe a óxido caliente y la gente empieza a enfermar. Te entrega una placa médica para que Dámaso abra mueva la logística.",
+    actions: [{ label: "Ir a logística", action: "close" }],
   },
   quartermaster_locked: {
-    kicker: "Dámaso · Intendencia",
+    kicker: "Dámaso · Logística",
     title: "Falta una placa médica",
-    text: "Dámaso no libera filtros sin una petición sellada. Primero habla con Nara, porque en este campamento cada recurso tiene memoria y responsable.",
+    text: "Dámaso no libera filtros sin una petición sellada. Primero habla con Nara, porque en este campamento cada recurso tiene su trámite.",
     actions: [{ label: "Buscar a Nara", action: "close" }],
   },
   quartermaster: {
-    kicker: "Dámaso · Intendencia",
+    kicker: "Dámaso · Logística",
     title: "Filtros entregados",
     text: "Dámaso entrega los filtros y habla de la escasez posterior a La Caída. La válvula norte aún necesita un fusible estable: Iria puede tenerlo.",
     actions: [{ label: "Buscar a Iria", action: "close" }],
@@ -1409,7 +1409,7 @@ const standaloneSceneCopy = {
   mechanic: {
     kicker: "Iria · Válvula norte",
     title: "Fusible de válvula",
-    text: "Iria te entrega el fusible y advierte que los sensores viejos de Argós leen permisos, energía y mazo como un mismo protocolo. Falta limpiar el ruido con Nix.",
+    text: "Iria te entrega el fusible. Falta purgar el mazo, busca a Nix.",
     actions: [{ label: "Buscar a Nix", action: "close" }],
   },
   deck_pirate_locked: {
@@ -1421,37 +1421,36 @@ const standaloneSceneCopy = {
   deck_pirate: {
     kicker: "Nix Corsario",
     title: "Piratear el mazo",
-    text: "Nix puede retirar hasta tres cartas añadidas del mazo histórico. En este boceto directo sellará el canal para que el PC del agua acepte mejor a Xavor.",
+    text: "Nix puede purgar hasta tres cartas del mazo histórico. Sellará el canal para que el PC del agua acepte mejor a Xavor.",
     actions: [
-      { label: "Sellar mazo", action: "deck-purge" },
+      { label: "Purgar mazo", action: "deck-purge" },
       { label: "Cerrar", action: "close" },
     ],
   },
   deck_pirate_done: {
     kicker: "Nix Corsario",
-    title: "Mazo sellado",
+    title: "Mazo purgado",
     text: "El canal de cartas ya no chisporrotea con ruido de Argós. Si ya superaste la calibración, el PC del agua está listo.",
     actions: [{ label: "Ir al PC del agua", action: "close" }],
   },
   trial: {
     kicker: "PoCoBOT de resistencia",
     title: "Combate controlado",
-    text: "La piloto propone una prueba al estilo de Viajero: demostrar criterio antes de tocar sistemas vitales. En modo historia se abre el combate; aquí puedes lanzarlo o marcar el boceto como superado.",
+    text: "La piloto propone una prueba controlada: demostrar criterio y priorizar velocidad. ",
     actions: [
       { label: "Iniciar combate", action: "combat-trial" },
-      { label: "Marcar victoria", action: "trial-win" },
     ],
   },
   trial_win: {
     kicker: "Calibración",
     title: "Prueba superada",
-    text: "La resistencia concede la marca de calibración. Corvo ya no puede usar el PC como excusa para bloquear la reparación.",
+    text: "La resistencia concede la marca de calibración. ",
     actions: [{ label: "Seguir reparación", action: "close" }],
   },
   pc_hack: {
     kicker: "PC del flujo de agua",
     title: "Xavor entra en la red",
-    text: "Con fusible, mazo limpio y autorización, Xavor restaura el flujo. El agua vuelve a correr, pero llega sucia desde el Lago Norte. El paso norte queda abierto.",
+    text: "Con fusible, mazo limpio y autorización, Xavor restaura el flujo. El agua vuelve a correr, pero llega sucia desde el Lago Norte. El paso norte queda abierto. Busca la causa.",
     actions: [
       { label: "Ir al Lago Norte", action: "go-lake" },
       { label: "Cerrar", action: "close" },
@@ -1460,7 +1459,7 @@ const standaloneSceneCopy = {
   lake_drone: {
     kicker: "Lago Norte",
     title: "Dron contaminante",
-    text: "El dron ejecuta una purga antigua de Argós y remueve sedimentos del lago. Usa mazo completo y no responde a negociación.",
+    text: "El dron ejecuta una purga antigua de Argós y remueve sedimentos del lago. No responde a una negociación.",
     actions: [
       { label: "Iniciar combate", action: "combat-drone" },
     ],
@@ -1468,7 +1467,7 @@ const standaloneSceneCopy = {
   lake_win: {
     kicker: "Lago Norte",
     title: "Agua limpia",
-    text: "El dron cae. El lago deja de arrastrar barro oscuro y Corvo concede su confianza definitiva.",
+    text: "El dron cae. El lago deja de arrastrar barro oscuro y eres el nuevo héroe del Campamento de las Placas Rojas.",
     actions: [{ label: "Volver al campamento", action: "go-camp" }],
   },
 };
@@ -1542,11 +1541,6 @@ function handleStandaloneSceneAction(action) {
   if (action === "deck-purge") {
     campProgress = writeCampProgress({ deckPurged: true, deckPirateMet: true, deckPurgedCount: 0, deckPurgedIds: [] });
     openStandaloneScene("deck_pirate_done");
-    return;
-  }
-  if (action === "trial-win") {
-    campProgress = writeCampProgress({ trialCleared: true });
-    openStandaloneScene("trial_win");
     return;
   }
   if (action === "combat-trial") {
