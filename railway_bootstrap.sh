@@ -24,6 +24,7 @@ git sparse-checkout set --no-cone \
   '/assets/*.png' \
   '/assets/*.svg' \
   '/assets/*.ico' \
+  '/assets/*.webp' \
   '/assets/*.webmanifest' \
   '/assets/*.mp3' \
   '/assets/cards/**' \
