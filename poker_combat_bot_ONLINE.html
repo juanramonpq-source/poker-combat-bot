@@ -21099,6 +21099,309 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     display:none !important;
   }
 }
+@media (orientation:portrait) and (min-width:601px) and (max-width:1080px){
+  .intro-card:not([data-menu="root"]) .intro-menu-stack{
+    width:min(760px, 100%) !important;
+    margin:clamp(12px, 2.8vh, 28px) auto 0 !important;
+    padding:clamp(12px, 1.8vh, 18px) !important;
+  }
+  #introMenuLocal,
+  #introMenuTutorial{
+    gap:10px;
+  }
+  #introMenuLocal .intro-submenu-hero,
+  #introMenuTutorial .intro-submenu-hero{
+    display:grid !important;
+    min-height:0;
+    gap:8px;
+    padding:10px 12px;
+    border-radius:12px;
+  }
+  #introMenuLocal .intro-submenu-brand,
+  #introMenuTutorial .intro-submenu-brand{
+    align-items:center;
+  }
+  #introMenuLocal .intro-submenu-logo,
+  #introMenuTutorial .intro-submenu-logo{
+    width:min(210px, 42vw);
+    max-height:74px;
+    object-fit:contain;
+  }
+  #introMenuLocal .intro-submenu-suits,
+  #introMenuTutorial .intro-submenu-suits{
+    font-size:1rem;
+  }
+  #introMenuLocal .intro-submenu-kicker,
+  #introMenuTutorial .intro-submenu-kicker{
+    padding:5px 8px;
+    font-size:.52rem;
+  }
+  #introMenuLocal .intro-submenu-copy p,
+  #introMenuTutorial .intro-submenu-copy p{
+    max-width:60ch;
+    font-size:.62rem;
+    line-height:1.14;
+  }
+  #introMenuLocal .intro-enter,
+  #introMenuLocal .intro-tutorial,
+  #introMenuTutorial .intro-enter,
+  #introMenuTutorial .intro-tutorial{
+    min-height:78px !important;
+    padding:10px 12px !important;
+  }
+  #enterGameBtn{
+    min-height:58px !important;
+  }
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    min-height:38px !important;
+  }
+  #introMenuLocal .intro-menu-copy,
+  #introMenuTutorial .intro-menu-copy{
+    display:none;
+  }
+  #introMenuLocal .intro-mini-widget,
+  #introMenuTutorial .intro-mini-widget{
+    display:grid !important;
+    margin-top:auto;
+    align-self:stretch;
+  }
+  #introMenuLocal .intro-mini-widget{
+    min-height:clamp(360px, 42vh, 500px);
+  }
+  #introMenuTutorial .intro-mini-widget{
+    min-height:clamp(440px, 43vh, 520px);
+  }
+  #introMenuLocal .intro-mini-range-stage{
+    min-height:100%;
+  }
+  #introMenuLocal .intro-mini-range-mecha{
+    width:clamp(205px, 34vw, 300px);
+    height:clamp(220px, 36vw, 320px);
+  }
+  #introMenuLocal .intro-mini-range-target{
+    top:clamp(70px, 10vh, 112px);
+    right:clamp(28px, 8vw, 82px);
+  }
+  #introMenuTutorial .intro-mini-lab > .intro-mini-head,
+  #introMenuTutorial .intro-mini-lab-foot,
+  #introMenuTutorial .intro-mini-lab-note{
+    display:none;
+  }
+  #introMenuTutorial .intro-mini-lab{
+    padding:10px;
+  }
+  #introMenuTutorial .intro-mini-lab-shell{
+    grid-template-columns:minmax(0,1fr) minmax(112px, 28%);
+    gap:10px;
+  }
+  #introMenuTutorial .intro-mini-lab-machine{
+    gap:6px;
+    padding:10px;
+  }
+  #introMenuTutorial .intro-mini-lab-core{
+    min-height:112px;
+  }
+  #introMenuTutorial .intro-mini-lab-pulse{
+    width:64px;
+    height:64px;
+    font-size:1.48rem;
+  }
+  #introMenuTutorial .intro-mini-lab-status{
+    margin-top:6px;
+    font-size:.82rem;
+  }
+  #introMenuTutorial .intro-mini-lab-bars{
+    gap:6px;
+    margin-top:8px;
+  }
+  #introMenuTutorial .intro-mini-lab-bar{
+    grid-template-columns:66px 58px 1fr 26px;
+    gap:8px;
+    font-size:.74rem;
+  }
+  #introMenuTutorial .intro-mini-lab-draw{
+    min-height:100%;
+    padding:8px !important;
+  }
+  #introMenuTutorial .intro-mini-lab-deck{
+    width:86px;
+    height:56px;
+  }
+  #introMenuTutorial .intro-mini-lab-deck img{
+    width:38px;
+  }
+  #introMenuTutorial .intro-mini-lab-count{
+    font-size:2.35rem;
+  }
+}
+@media (orientation:landscape) and (pointer:coarse) and (min-width:761px) and (max-width:1366px){
+  .intro-card:not([data-menu="root"]) .intro-menu-stack{
+    width:min(1180px, 100%) !important;
+    margin:clamp(10px, 2.6vh, 24px) auto 0 !important;
+    padding:clamp(10px, 2vh, 16px) !important;
+  }
+  #introMenuLocal,
+  #introMenuTutorial{
+    grid-template-columns:minmax(0, .9fr) minmax(300px, 1.1fr);
+    grid-template-rows:auto auto auto minmax(0, 1fr);
+    gap:10px 14px;
+    align-content:stretch;
+    height:100%;
+  }
+  #introMenuLocal .intro-submenu-hero,
+  #introMenuTutorial .intro-submenu-hero{
+    grid-column:1 / -1;
+    min-height:0;
+    grid-template-columns:auto minmax(0, 1fr);
+    align-items:center;
+    gap:12px;
+    padding:9px 12px;
+    border-radius:12px;
+  }
+  #introMenuLocal .intro-submenu-brand,
+  #introMenuTutorial .intro-submenu-brand{
+    min-width:0;
+    align-items:center;
+  }
+  #introMenuLocal .intro-submenu-logo,
+  #introMenuTutorial .intro-submenu-logo{
+    width:min(176px, 18vw);
+    max-height:62px;
+    object-fit:contain;
+  }
+  #introMenuLocal .intro-submenu-suits,
+  #introMenuTutorial .intro-submenu-suits{
+    display:none;
+  }
+  #introMenuLocal .intro-submenu-copy,
+  #introMenuTutorial .intro-submenu-copy{
+    min-width:0;
+  }
+  #introMenuLocal .intro-submenu-kicker,
+  #introMenuTutorial .intro-submenu-kicker{
+    padding:4px 8px;
+    font-size:.48rem;
+  }
+  #introMenuLocal .intro-submenu-copy p,
+  #introMenuTutorial .intro-submenu-copy p{
+    max-width:none;
+    font-size:.58rem;
+    line-height:1.12;
+  }
+  #introMenuLocal .intro-menu-label,
+  #introMenuTutorial .intro-menu-label{
+    grid-column:1;
+    font-size:.66rem;
+  }
+  #introMenuLocal .intro-buttons-group,
+  #introMenuTutorial .intro-buttons-group{
+    grid-column:1;
+    grid-row:3;
+    gap:8px !important;
+  }
+  #introMenuLocal .intro-enter,
+  #introMenuLocal .intro-tutorial,
+  #introMenuTutorial .intro-enter,
+  #introMenuTutorial .intro-tutorial{
+    min-height:68px !important;
+    padding:9px 11px !important;
+  }
+  #enterGameBtn{
+    min-height:54px !important;
+  }
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    min-height:34px !important;
+  }
+  #introMenuLocal .intro-menu-copy,
+  #introMenuTutorial .intro-menu-copy{
+    grid-column:1;
+    grid-row:4;
+    align-self:start;
+    padding:9px 10px;
+    font-size:.58rem;
+    line-height:1.12;
+  }
+  #introMenuLocal .intro-mini-widget,
+  #introMenuTutorial .intro-mini-widget{
+    display:grid !important;
+    grid-column:2;
+    grid-row:2 / 5;
+    align-self:stretch;
+    min-height:0;
+  }
+  #introMenuLocal .intro-mini-range-stage{
+    min-height:100%;
+  }
+  #introMenuLocal .intro-mini-range-mecha{
+    width:clamp(190px, 22vw, 300px);
+    height:clamp(205px, 24vw, 320px);
+  }
+  #introMenuLocal .intro-mini-range-target{
+    top:clamp(58px, 14vh, 112px);
+    right:clamp(26px, 5vw, 70px);
+  }
+  #introMenuTutorial .intro-mini-lab > .intro-mini-head,
+  #introMenuTutorial .intro-mini-lab-foot,
+  #introMenuTutorial .intro-mini-lab-note{
+    display:none;
+  }
+  #introMenuTutorial .intro-mini-lab{
+    padding:10px;
+  }
+  #introMenuTutorial .intro-mini-lab-shell{
+    height:100%;
+    grid-template-columns:minmax(0, 1fr) minmax(108px, 28%);
+    gap:10px;
+  }
+  #introMenuTutorial .intro-mini-lab-machine{
+    gap:6px;
+    padding:9px;
+  }
+  #introMenuTutorial .intro-mini-lab-core{
+    min-height:clamp(76px, 18vh, 132px);
+  }
+  #introMenuTutorial .intro-mini-lab-pulse{
+    width:clamp(46px, 7vw, 66px);
+    height:clamp(46px, 7vw, 66px);
+    font-size:clamp(1.12rem, 2vw, 1.52rem);
+  }
+  #introMenuTutorial .intro-mini-lab-status{
+    margin-top:5px;
+    font-size:.72rem;
+  }
+  #introMenuTutorial .intro-mini-lab-bars{
+    gap:5px;
+    margin-top:6px;
+  }
+  #introMenuTutorial .intro-mini-lab-bar{
+    grid-template-columns:58px 52px 1fr 24px;
+    gap:6px;
+    font-size:.66rem;
+  }
+  #introMenuTutorial .intro-mini-lab-zone-cards{
+    min-height:31px;
+  }
+  #introMenuTutorial .intro-mini-lab-placed-card{
+    width:22px;
+    height:31px;
+  }
+  #introMenuTutorial .intro-mini-lab-draw{
+    min-height:100%;
+    padding:8px !important;
+  }
+  #introMenuTutorial .intro-mini-lab-deck{
+    width:78px;
+    height:50px;
+  }
+  #introMenuTutorial .intro-mini-lab-deck img{
+    width:34px;
+  }
+  #introMenuTutorial .intro-mini-lab-count{
+    font-size:2.2rem;
+  }
+}
 @media (orientation:portrait) and (max-width:360px){
   .intro-studio-link{font-size:.56rem}
   .intro-utility-links a,
