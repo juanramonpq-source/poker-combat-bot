@@ -29518,8 +29518,17 @@ function getTurnCardSelectionLimit(){
 function trimSelectedCardsToTurnLimit(cards){
   const limit = getTurnCardSelectionLimit();
   const next = dedupeSelectedCards(cards);
-  while(next.length > limit) next.shift();
-  return next;
+  const excessHandCards = next.filter(card => card.zone === 'hand').length - limit;
+  if(excessHandCards <= 0) return next;
+  let removedHandCards = 0;
+  return next.filter(card => {
+    if(card.zone !== 'hand') return true;
+    if(removedHandCards < excessHandCards){
+      removedHandCards += 1;
+      return false;
+    }
+    return true;
+  });
 }
 function addSelectedCardWithTurnLimit(card){
   state.selected = trimSelectedCardsToTurnLimit([...(state.selected || []), card]);
@@ -29530,9 +29539,10 @@ function prepareDraftSelectionRotation(draftPlacements, cardId){
   state.selected = dedupeSelectedCards(state.selected).filter(card => card.id !== cardId);
   if(draftPlacements.has(cardId)) return;
   const limit = getTurnCardSelectionLimit();
-  while(state.selected.length + draftPlacements.size >= limit){
-    if(state.selected.length){
-      state.selected.shift();
+  while(state.selected.filter(card => card.zone === 'hand').length + draftPlacements.size >= limit){
+    const oldestHandIndex = state.selected.findIndex(card => card.zone === 'hand');
+    if(oldestHandIndex >= 0){
+      state.selected.splice(oldestHandIndex, 1);
       continue;
     }
     const oldestDraftId = draftPlacements.keys().next().value;
