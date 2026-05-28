@@ -20866,6 +20866,44 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     display:none;
   }
 }
+@media (min-width:1081px) and (max-height:820px) and (pointer:fine){
+  #introMenuLocal:not([hidden]),
+  #introMenuTutorial:not([hidden]){
+    grid-template-rows:auto auto auto auto;
+    gap:12px;
+  }
+  #introMenuLocal .intro-buttons-group,
+  #introMenuTutorial .intro-buttons-group{
+    align-self:start;
+    gap:10px !important;
+  }
+  #introMenuLocal .intro-enter,
+  #introMenuLocal .intro-tutorial,
+  #introMenuTutorial .intro-enter,
+  #introMenuTutorial .intro-tutorial{
+    min-height:72px !important;
+    padding:12px !important;
+  }
+  #enterGameBtn{
+    min-height:66px !important;
+  }
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    height:42px !important;
+    min-height:42px !important;
+    align-self:start;
+    align-content:center;
+    justify-items:center !important;
+  }
+  #introMenuLocal .intro-menu-copy,
+  #introMenuTutorial .intro-menu-copy{
+    align-self:end;
+    margin-top:6px;
+    padding:10px 12px;
+    font-size:.78rem;
+    line-height:1.25;
+  }
+}
 @keyframes introMiniSpadeFire{
   0%{opacity:0;transform:translate3d(0,0,0) scale(.6) rotate(-18deg)}
   12%{opacity:1}
