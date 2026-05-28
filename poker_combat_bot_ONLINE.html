@@ -21243,9 +21243,9 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   }
   #introMenuLocal,
   #introMenuTutorial{
-    grid-template-columns:minmax(0, .9fr) minmax(300px, 1.1fr);
+    grid-template-columns:1fr;
     grid-template-rows:auto auto auto minmax(0, 1fr);
-    gap:10px 14px;
+    gap:10px;
     align-content:stretch;
     height:100%;
   }
@@ -21299,35 +21299,56 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     grid-column:1;
     grid-row:3;
     gap:8px !important;
+    align-self:stretch;
+    height:auto;
+    grid-template-rows:1fr;
+    align-items:stretch;
+  }
+  #introMenuLocal .intro-buttons-group{
+    grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+  }
+  #introMenuTutorial .intro-buttons-group{
+    grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) minmax(120px, .42fr) !important;
+  }
+  #introMenuLocal #enterGameBtn,
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    grid-column:auto;
   }
   #introMenuLocal .intro-enter,
   #introMenuLocal .intro-tutorial,
   #introMenuTutorial .intro-enter,
   #introMenuTutorial .intro-tutorial{
-    min-height:68px !important;
+    min-height:86px !important;
     padding:9px 11px !important;
   }
   #enterGameBtn{
-    min-height:54px !important;
+    min-height:86px !important;
   }
   #introMenuLocal #localBackBtn,
   #introMenuTutorial #tutorialBackBtn{
-    min-height:34px !important;
+    min-height:86px !important;
+    align-content:center;
+    justify-items:center !important;
   }
   #introMenuLocal .intro-menu-copy,
   #introMenuTutorial .intro-menu-copy{
-    grid-column:1;
-    grid-row:4;
-    align-self:start;
-    padding:9px 10px;
-    font-size:.58rem;
+    display:none;
+  }
+  #introMenuLocal .submenu-mode-title,
+  #introMenuTutorial .submenu-mode-title{
+    font-size:clamp(.88rem, 2.1vw, 1.18rem);
+  }
+  #introMenuLocal .submenu-mode-sub,
+  #introMenuTutorial .submenu-mode-sub{
+    font-size:clamp(.58rem, 1.35vw, .72rem);
     line-height:1.12;
   }
   #introMenuLocal .intro-mini-widget,
   #introMenuTutorial .intro-mini-widget{
     display:grid !important;
-    grid-column:2;
-    grid-row:2 / 5;
+    grid-column:1;
+    grid-row:4;
     align-self:stretch;
     min-height:0;
   }
@@ -21335,12 +21356,13 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     min-height:100%;
   }
   #introMenuLocal .intro-mini-range-mecha{
-    width:clamp(190px, 22vw, 300px);
-    height:clamp(205px, 24vw, 320px);
+    left:clamp(22px, 5vw, 70px);
+    width:clamp(190px, 25vw, 290px);
+    height:clamp(205px, 27vw, 310px);
   }
   #introMenuLocal .intro-mini-range-target{
-    top:clamp(58px, 14vh, 112px);
-    right:clamp(26px, 5vw, 70px);
+    top:clamp(44px, 10vh, 84px);
+    right:clamp(72px, 16vw, 190px);
   }
   #introMenuTutorial .intro-mini-lab > .intro-mini-head,
   #introMenuTutorial .intro-mini-lab-foot,
@@ -21352,15 +21374,20 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   }
   #introMenuTutorial .intro-mini-lab-shell{
     height:100%;
-    grid-template-columns:minmax(0, 1fr) minmax(108px, 28%);
+    grid-template-columns:1fr;
+    grid-template-rows:minmax(0, 1fr) clamp(74px, 10vh, 88px);
     gap:10px;
   }
   #introMenuTutorial .intro-mini-lab-machine{
     gap:6px;
     padding:9px;
+    grid-template-columns:minmax(320px, 1.35fr) minmax(300px, .95fr);
+    grid-template-rows:auto auto minmax(0, 1fr);
+    align-items:stretch;
   }
   #introMenuTutorial .intro-mini-lab-core{
     min-height:clamp(76px, 18vh, 132px);
+    grid-row:1 / -1;
   }
   #introMenuTutorial .intro-mini-lab-pulse{
     width:clamp(46px, 7vw, 66px);
@@ -21368,12 +21395,21 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     font-size:clamp(1.12rem, 2vw, 1.52rem);
   }
   #introMenuTutorial .intro-mini-lab-status{
-    margin-top:5px;
+    margin-top:0;
     font-size:.72rem;
+    align-self:start;
+    text-align:left;
+  }
+  #introMenuTutorial .intro-mini-lab-core-slots{
+    margin-top:0;
+    align-self:start;
   }
   #introMenuTutorial .intro-mini-lab-bars{
     gap:5px;
-    margin-top:6px;
+    margin-top:0;
+    grid-column:2;
+    grid-row:3;
+    align-self:end;
   }
   #introMenuTutorial .intro-mini-lab-bar{
     grid-template-columns:58px 52px 1fr 24px;
@@ -21388,18 +21424,31 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     height:31px;
   }
   #introMenuTutorial .intro-mini-lab-draw{
-    min-height:100%;
+    min-height:0;
     padding:8px !important;
+    grid-template-columns:auto auto minmax(0, auto);
+    grid-template-rows:1fr;
+    align-content:center;
+    align-items:center;
+    justify-content:center;
+    column-gap:18px;
   }
   #introMenuTutorial .intro-mini-lab-deck{
     width:78px;
     height:50px;
+    margin:0;
   }
   #introMenuTutorial .intro-mini-lab-deck img{
     width:34px;
   }
   #introMenuTutorial .intro-mini-lab-count{
     font-size:2.2rem;
+  }
+  #introMenuTutorial .intro-mini-lab-draw-label{
+    align-self:center;
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
   }
 }
 @media (orientation:portrait) and (max-width:360px){
