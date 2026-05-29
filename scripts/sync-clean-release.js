@@ -205,7 +205,11 @@ function validateReferences() {
     for (const ref of extractReferences(text)) {
       if (!shouldCheckReference(ref)) continue;
       const cleanRef = stripUrl(ref);
-      const resolved = toPosix(path.normalize(path.join(baseDir, cleanRef)));
+      const resolved = toPosix(path.normalize(
+        cleanRef.startsWith('/')
+          ? cleanRef.slice(1)
+          : path.join(baseDir, cleanRef)
+      ));
       if (resolved.startsWith('../')) continue;
       if (!existsSync(path.join(cleanRoot, resolved))) {
         missingRefs.push(`${rel} -> ${ref}`);

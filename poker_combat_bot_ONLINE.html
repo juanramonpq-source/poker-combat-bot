@@ -7,12 +7,14 @@
   <link rel="icon" href="favicon.ico?v=20260506-pocobot-icon" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_web_icon_32.png?v=20260506-pocobot-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/pocobot_web_icon_16.png?v=20260506-pocobot-icon" />
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_app_icon_180.png?v=20260506-pocobot-icon" />
-  <link rel="manifest" href="site.webmanifest?v=20260506-pocobot-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_app_icon_180.png?v=20260529-pocobot-pwa" />
+  <link rel="manifest" href="site.webmanifest?v=20260529-pocobot-pwa" />
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand" />
   <link rel="prefetch" href="assets/audio_01.mp3" />
   <link rel="prefetch" href="assets/audio_02.mp3" />
   <meta name="msapplication-TileImage" content="assets/pocobot_app_icon_512.png?v=20260506-pocobot-icon" />
+  <meta name="application-name" content="PoCoBOT" />
+  <meta name="apple-mobile-web-app-title" content="PoCoBOT" />
   <meta name="theme-color" content="#17307a" />
   <meta name="description" content="PoCoBOT: combate retro de mechas con estrategia de poker, cartas y duelos tacticos en navegador." />
   <meta property="og:type" content="website" />
@@ -11007,6 +11009,39 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
     font-size:.58rem !important;
     line-height:.96 !important;
   }
+  body.mobile-compact-mode.compact-mobile-actions-open .app.mobile-compact-mode .compact-action-grid{
+    position:relative !important;
+    grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+    padding-right:150px !important;
+    padding-bottom:54px !important;
+    align-content:center !important;
+    overflow:visible !important;
+  }
+  body.mobile-compact-mode.compact-mobile-actions-open .app.mobile-compact-mode .compact-action-grid #compactAttackModeBtn{
+    position:absolute !important;
+    left:clamp(32px, 22vw, 260px) !important;
+    bottom:8px !important;
+    width:116px !important;
+    min-width:0 !important;
+    max-width:116px !important;
+    height:42px !important;
+    transform:none !important;
+  }
+  body.mobile-compact-mode.compact-mobile-actions-open .app.mobile-compact-mode .compact-action-grid #compactConfirmAttackBtn{
+    position:absolute !important;
+    left:clamp(136px, 40vw, 430px) !important;
+    bottom:8px !important;
+    width:124px !important;
+    min-width:0 !important;
+    max-width:124px !important;
+    height:42px !important;
+    transform:none !important;
+    box-shadow:
+      inset 0 2px 0 rgba(255,210,190,.50),
+      inset 0 -3px 0 rgba(70,0,0,.32),
+      0 3px 0 #4f0704,
+      0 0 18px rgba(255,93,52,.42) !important;
+  }
   .app.mobile-compact-mode .compact-rival-zones{
     min-height:0;
     overflow-y:auto;
@@ -11109,6 +11144,22 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
   }
   .app.mobile-compact-mode .compact-defense-warning.show{
     transform:translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (max-width:520px) and (orientation: portrait) and (pointer: coarse){
+  body.mobile-compact-mode.compact-mobile-actions-open .app.mobile-compact-mode .compact-action-grid{
+    padding-right:126px !important;
+  }
+  body.mobile-compact-mode.compact-mobile-actions-open .app.mobile-compact-mode .compact-action-grid #compactAttackModeBtn{
+    left:18px !important;
+    width:104px !important;
+    max-width:104px !important;
+  }
+  body.mobile-compact-mode.compact-mobile-actions-open .app.mobile-compact-mode .compact-action-grid #compactConfirmAttackBtn{
+    left:132px !important;
+    width:104px !important;
+    max-width:104px !important;
   }
 }
 
@@ -14165,6 +14216,62 @@ body.story-argos-hack-ui{
 
   .app.mobile-panorama-mode .compact-hand-tray .card.compact-draft-origin{
     transform:translateY(calc(var(--compact-hand-card-lift, 0px) + 7px)) rotate(var(--compact-hand-card-angle, 0deg)) scale(.94);
+  }
+}
+
+@media (orientation: landscape) and (pointer: coarse) and (min-width: 900px) and (min-height: 600px){
+  body.mobile-panorama-mode .app.mobile-panorama-mode .compact-player-panel{
+    gap:7px !important;
+  }
+
+  body.mobile-panorama-mode .app.mobile-panorama-mode .compact-player-zones{
+    gap:8px !important;
+  }
+
+  body.mobile-panorama-mode .app.mobile-panorama-mode .compact-zone-card{
+    padding:7px 8px !important;
+    gap:6px !important;
+  }
+
+  body.mobile-panorama-mode .app.mobile-panorama-mode .compact-zone-cards{
+    --compact-zone-card-width:76px;
+    --compact-zone-card-height:108px;
+    min-height:112px !important;
+    height:100% !important;
+    display:flex !important;
+    flex-wrap:wrap !important;
+    justify-content:flex-start !important;
+    align-items:center !important;
+    align-content:center !important;
+    gap:8px !important;
+    overflow:hidden !important;
+  }
+
+  body.mobile-panorama-mode .app.mobile-panorama-mode #compactCoreCards{
+    --compact-zone-card-width:70px;
+    --compact-zone-card-height:99px;
+    min-height:102px !important;
+  }
+
+  body.mobile-panorama-mode .app.mobile-panorama-mode .compact-zone-cards .card,
+  body.mobile-panorama-mode .app.mobile-panorama-mode .compact-zone-cards .card.card-detailed{
+    flex:0 0 var(--compact-zone-card-width) !important;
+    width:var(--compact-zone-card-width) !important;
+    min-width:var(--compact-zone-card-width) !important;
+    height:var(--compact-zone-card-height) !important;
+    min-height:var(--compact-zone-card-height) !important;
+    border-radius:12px !important;
+  }
+
+  body.mobile-panorama-mode .app.mobile-panorama-mode .compact-zone-cards .card-real-image{
+    padding:1px !important;
+    transform:none !important;
+  }
+
+  body.mobile-panorama-mode .app.mobile-panorama-mode .compact-empty{
+    min-width:108px !important;
+    min-height:38px !important;
+    font-size:.58rem !important;
   }
 }
 
@@ -17409,6 +17516,143 @@ body.story-argos-hack-ui{
     width:54px !important;
     height:79px !important;
     flex-basis:54px !important;
+  }
+}
+
+@media (orientation: portrait) and (pointer: coarse) and (min-width: 700px) and (min-height: 900px){
+  body.mobile-compact-mode .app.mobile-compact-mode .desktop-compact-shell{
+    grid-template-rows:clamp(150px, 13dvh, 176px) minmax(0, 1fr) clamp(82px, 7dvh, 96px) clamp(250px, 24dvh, 320px) !important;
+    padding:clamp(12px, 1.7vw, 18px) !important;
+    gap:clamp(9px, 1.1vw, 13px) !important;
+    border-radius:34px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-topbar{
+    grid-template-columns:minmax(100px, .82fr) minmax(110px, .9fr) minmax(100px, .78fr) 132px !important;
+    grid-template-rows:clamp(86px, 8.2dvh, 108px) 52px !important;
+    gap:7px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode #compactClassicModeBtn{
+    margin:0 72px 0 68px !important;
+    border-radius:24px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode #compactClassicModeBtn img{
+    top:-54px !important;
+    width:min(460px, calc(100% + 96px)) !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode #compactMenuToggleBtn{
+    width:60px !important;
+    height:60px !important;
+    margin:7px 7px 0 0 !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-top-resource,
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-top-status{
+    height:52px !important;
+    border-radius:14px !important;
+    padding:5px 8px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-top-resource strong,
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-top-status strong{
+    font-size:22px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-player-panel,
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-rival-panel,
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-actions-panel,
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-log-panel{
+    left:clamp(18px, 2.4vw, 30px) !important;
+    right:clamp(18px, 2.4vw, 30px) !important;
+    top:clamp(160px, 15dvh, 188px) !important;
+    bottom:clamp(268px, 26dvh, 344px) !important;
+    border-radius:24px !important;
+    padding:12px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-player-zones{
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows:minmax(112px, .82fr) minmax(142px, 1fr) minmax(142px, 1fr) minmax(118px, .78fr) !important;
+    grid-template-areas:
+      "core core"
+      "attack defense"
+      "armor armor"
+      "fuel fuel" !important;
+    gap:10px !important;
+    overflow:hidden !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode #compactPlayerArmorZone,
+  body.mobile-compact-mode .app.mobile-compact-mode #compactPlayerFuelZone{
+    grid-column:1 / -1 !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-card{
+    padding:10px 12px !important;
+    gap:8px !important;
+    border-radius:18px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-head{
+    font-size:.72rem !important;
+    letter-spacing:.1em !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-head strong{
+    font-size:.82rem !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-cards{
+    min-height:0 !important;
+    height:100% !important;
+    align-items:center !important;
+    align-content:center !important;
+    justify-content:flex-start !important;
+    gap:9px !important;
+    overflow:hidden !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode #compactCoreCards{
+    justify-content:space-around !important;
+    gap:12px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode #compactAttackCards,
+  body.mobile-compact-mode .app.mobile-compact-mode #compactDefenseCards,
+  body.mobile-compact-mode .app.mobile-compact-mode #compactArmorCards{
+    gap:10px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode #compactFuelCards{
+    gap:8px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-cards .card,
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-cards .card.card-detailed{
+    flex:0 0 var(--compact-zone-card-width) !important;
+    width:var(--compact-zone-card-width) !important;
+    min-width:var(--compact-zone-card-width) !important;
+    height:var(--compact-zone-card-height) !important;
+    min-height:var(--compact-zone-card-height) !important;
+    border-radius:12px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-hand-panel{
+    grid-template-rows:62px minmax(0, 1fr) !important;
+    border-radius:24px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode .compact-hand-tray{
+    padding:8px 42px 24px !important;
+  }
+
+  body.mobile-compact-mode .app.mobile-compact-mode #compactHandCards .card{
+    width:68px !important;
+    height:98px !important;
+    flex-basis:68px !important;
   }
 }
 
@@ -22178,6 +22422,550 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     opacity:.76;
   }
 }
+
+/* Tablet landscape should read like the desktop cover, not like a stretched
+   phone menu. Keep the choices on the left and give the cameo the right rail. */
+@media (orientation:landscape) and (pointer:coarse) and (min-width:761px) and (max-width:1366px) and (min-height:541px){
+  .intro-card:not([data-menu="root"]) .intro-menu-stack{
+    width:min(1180px, calc(100vw - max(28px, calc(env(safe-area-inset-left) + env(safe-area-inset-right))))) !important;
+    height:calc(100dvh - 108px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    max-height:calc(100dvh - 108px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    margin:clamp(10px, 2vh, 18px) auto 0 !important;
+    padding:clamp(12px, 1.7vw, 18px) !important;
+    overflow:hidden !important;
+  }
+
+  .intro-card:not([data-menu="root"]) .intro-menu:not([hidden]){
+    height:100%;
+    min-height:0;
+    overflow:hidden;
+  }
+
+  #introMenuLocal:not([hidden]),
+  #introMenuTutorial:not([hidden]){
+    display:grid !important;
+    grid-template-columns:minmax(330px, .86fr) minmax(0, 1.14fr) !important;
+    grid-template-rows:auto auto minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "hero widget"
+      "label widget"
+      "buttons widget"
+      "copy widget" !important;
+    gap:clamp(10px, 1.5vw, 16px) !important;
+    align-items:stretch;
+  }
+
+  #introMenuLocal .intro-submenu-hero,
+  #introMenuTutorial .intro-submenu-hero{
+    grid-area:hero !important;
+    display:grid !important;
+    grid-template-columns:minmax(118px, 35%) minmax(0, 1fr) !important;
+    align-items:center;
+    min-height:clamp(104px, 17vh, 144px);
+    max-height:clamp(104px, 17vh, 144px);
+    padding:clamp(10px, 1.2vw, 14px) !important;
+    border-radius:12px;
+  }
+
+  #introMenuLocal .intro-submenu-brand,
+  #introMenuTutorial .intro-submenu-brand{
+    align-items:center;
+  }
+
+  #introMenuLocal .intro-submenu-logo,
+  #introMenuTutorial .intro-submenu-logo{
+    width:min(210px, 100%) !important;
+    max-height:clamp(66px, 12vh, 96px) !important;
+    object-fit:contain;
+  }
+
+  #introMenuLocal .intro-submenu-suits,
+  #introMenuTutorial .intro-submenu-suits{
+    display:flex !important;
+    justify-content:flex-end;
+    font-size:clamp(.9rem, 1.7vw, 1.18rem);
+  }
+
+  #introMenuLocal .intro-submenu-kicker,
+  #introMenuTutorial .intro-submenu-kicker{
+    padding:5px 9px;
+    font-size:clamp(.48rem, .9vw, .58rem);
+  }
+
+  #introMenuLocal .intro-submenu-copy p,
+  #introMenuTutorial .intro-submenu-copy p{
+    max-width:34ch;
+    font-size:clamp(.58rem, 1.05vw, .72rem);
+    line-height:1.14;
+  }
+
+  #introMenuLocal .intro-menu-label,
+  #introMenuTutorial .intro-menu-label{
+    grid-area:label !important;
+    font-size:clamp(.66rem, 1.1vw, .78rem);
+  }
+
+  #introMenuLocal .intro-buttons-group,
+  #introMenuTutorial .intro-buttons-group{
+    grid-area:buttons !important;
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows:minmax(72px, auto);
+    gap:clamp(8px, 1.1vw, 12px) !important;
+    align-content:start;
+  }
+
+  #introMenuLocal #enterGameBtn,
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    grid-column:auto !important;
+  }
+
+  #introMenuLocal .intro-enter,
+  #introMenuLocal .intro-tutorial,
+  #introMenuTutorial .intro-enter,
+  #introMenuTutorial .intro-tutorial,
+  #introMenuLocal #enterGameBtn,
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    min-height:clamp(70px, 10.5vh, 92px) !important;
+    padding:clamp(9px, 1.1vw, 13px) !important;
+  }
+
+  #introMenuLocal .intro-menu-copy,
+  #introMenuTutorial .intro-menu-copy{
+    grid-area:copy !important;
+    display:block !important;
+    margin:0;
+    padding:10px 12px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:10px;
+    background:rgba(2,7,16,.35);
+    color:rgba(236,246,255,.74);
+    font-size:clamp(.6rem, 1vw, .72rem);
+    line-height:1.18;
+  }
+
+  #introMenuLocal .submenu-mode-title,
+  #introMenuTutorial .submenu-mode-title{
+    font-size:clamp(.82rem, 1.75vw, 1.08rem);
+    line-height:1.02;
+  }
+
+  #introMenuLocal .submenu-mode-sub,
+  #introMenuTutorial .submenu-mode-sub{
+    max-width:24ch;
+    font-size:clamp(.54rem, 1.05vw, .68rem);
+    line-height:1.12;
+  }
+
+  #introMenuLocal .intro-mini-widget,
+  #introMenuTutorial .intro-mini-widget{
+    grid-area:widget !important;
+    display:grid !important;
+    align-self:stretch;
+    min-height:0 !important;
+    height:100%;
+    margin:0 !important;
+    overflow:hidden;
+  }
+
+  #introMenuLocal .intro-mini-range-stage{
+    min-height:0 !important;
+    height:100%;
+  }
+
+  #introMenuLocal .intro-mini-range-mecha{
+    left:clamp(18px, 4vw, 54px) !important;
+    bottom:clamp(10px, 2.4vh, 22px) !important;
+    width:clamp(210px, 24vw, 318px) !important;
+    height:clamp(224px, 26vw, 338px) !important;
+  }
+
+  #introMenuLocal .intro-mini-range-target{
+    top:clamp(70px, 15vh, 128px) !important;
+    right:clamp(44px, 7vw, 110px) !important;
+  }
+
+  #introMenuTutorial .intro-mini-lab > .intro-mini-head,
+  #introMenuTutorial .intro-mini-lab-foot,
+  #introMenuTutorial .intro-mini-lab-note{
+    display:none !important;
+  }
+
+  #introMenuTutorial .intro-mini-lab{
+    padding:clamp(10px, 1.2vw, 14px) !important;
+  }
+
+  #introMenuTutorial .intro-mini-lab-shell{
+    height:100%;
+    min-height:0;
+    grid-template-columns:minmax(0, 1fr) minmax(112px, 24%) !important;
+    grid-template-rows:minmax(0, 1fr) !important;
+    gap:clamp(8px, 1.2vw, 12px) !important;
+  }
+
+  #introMenuTutorial .intro-mini-lab-machine{
+    min-height:0;
+    grid-template-columns:minmax(210px, .95fr) minmax(250px, 1.05fr) !important;
+    grid-template-rows:auto auto minmax(0, 1fr) !important;
+    gap:clamp(6px, 1vw, 10px) !important;
+    padding:clamp(8px, 1.1vw, 12px) !important;
+  }
+
+  #introMenuTutorial .intro-mini-lab-core{
+    grid-row:1 / -1;
+    min-height:0 !important;
+  }
+
+  #introMenuTutorial .intro-mini-lab-pulse{
+    width:clamp(54px, 6vw, 70px);
+    height:clamp(54px, 6vw, 70px);
+    font-size:clamp(1.24rem, 1.7vw, 1.68rem);
+  }
+
+  #introMenuTutorial .intro-mini-lab-status{
+    margin:0;
+    text-align:left;
+    font-size:clamp(.7rem, 1vw, .86rem);
+  }
+
+  #introMenuTutorial .intro-mini-lab-core-slots{
+    margin-top:0;
+  }
+
+  #introMenuTutorial .intro-mini-lab-bars{
+    grid-column:2;
+    grid-row:3;
+    align-self:end;
+    gap:clamp(5px, .9vh, 8px);
+    margin:0;
+  }
+
+  #introMenuTutorial .intro-mini-lab-bar{
+    grid-template-columns:58px 52px minmax(80px, 1fr) 24px;
+    gap:6px;
+    font-size:clamp(.58rem, .95vw, .68rem);
+  }
+
+  #introMenuTutorial .intro-mini-lab-zone-cards{
+    min-height:31px;
+  }
+
+  #introMenuTutorial .intro-mini-lab-placed-card{
+    width:22px;
+    height:31px;
+  }
+
+  #introMenuTutorial .intro-mini-lab-draw{
+    min-height:0 !important;
+    height:100%;
+    padding:8px !important;
+  }
+
+  #introMenuTutorial .intro-mini-lab-deck{
+    width:76px;
+    height:52px;
+  }
+
+  #introMenuTutorial .intro-mini-lab-deck img{
+    width:34px;
+  }
+
+  #introMenuTutorial .intro-mini-lab-count{
+    font-size:clamp(1.9rem, 2.5vw, 2.3rem);
+  }
+
+  #introMenuAcademy:not([hidden]){
+    display:grid !important;
+    grid-template-columns:minmax(230px, .28fr) minmax(0, 1fr) !important;
+    grid-template-rows:auto minmax(0, 1fr) !important;
+    grid-template-areas:
+      "hero label"
+      "hero academy" !important;
+    gap:clamp(10px, 1.4vw, 16px) !important;
+    height:100%;
+    min-height:0;
+    overflow:hidden !important;
+  }
+
+  #introMenuAcademy .intro-submenu-hero{
+    grid-area:hero !important;
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    grid-template-rows:auto auto minmax(0, 1fr);
+    align-content:start;
+    min-height:0 !important;
+    max-height:none !important;
+    height:100%;
+    padding:clamp(10px, 1.2vw, 14px) !important;
+    border-radius:12px;
+  }
+
+  #introMenuAcademy .intro-submenu-brand{
+    display:grid;
+    gap:10px;
+    justify-items:start;
+    align-items:start;
+  }
+
+  #introMenuAcademy .intro-submenu-logo{
+    width:min(210px, 100%) !important;
+    max-height:clamp(84px, 18vh, 128px) !important;
+    object-fit:contain;
+  }
+
+  #introMenuAcademy .intro-submenu-suits{
+    display:flex !important;
+    align-self:end;
+    justify-self:stretch;
+    justify-content:space-around;
+    margin-top:auto;
+    font-size:clamp(1.1rem, 2.2vw, 1.7rem);
+  }
+
+  #introMenuAcademy .intro-submenu-copy{
+    align-content:start;
+  }
+
+  #introMenuAcademy .intro-submenu-kicker{
+    padding:5px 9px;
+    font-size:clamp(.48rem, .9vw, .58rem);
+  }
+
+  #introMenuAcademy .intro-submenu-copy p{
+    max-width:24ch;
+    font-size:clamp(.58rem, 1vw, .7rem);
+    line-height:1.16;
+  }
+
+  #introMenuAcademy .intro-menu-label{
+    grid-area:label !important;
+    align-self:center;
+    margin:0;
+    font-size:clamp(.7rem, 1.15vw, .84rem);
+  }
+
+  #introMenuAcademy .academy-menu-shell{
+    grid-area:academy !important;
+    height:100%;
+    min-height:0;
+    display:grid;
+    grid-template-rows:auto auto minmax(0, 1fr) auto;
+    gap:clamp(8px, 1vh, 12px);
+    padding:clamp(10px, 1.2vw, 14px);
+    border-radius:16px;
+    overflow:hidden !important;
+  }
+
+  #introMenuAcademy .academy-console-head{
+    padding:9px 11px;
+    border-radius:12px;
+  }
+
+  #introMenuAcademy .academy-console-row{
+    align-items:center;
+  }
+
+  #introMenuAcademy .academy-console-kicker{
+    font-size:.54rem;
+  }
+
+  #introMenuAcademy .academy-console-title{
+    margin-top:2px;
+    font-size:clamp(.9rem, 1.45vw, 1.08rem);
+  }
+
+  #introMenuAcademy .academy-console-copy,
+  #introMenuAcademy .academy-brief,
+  #introMenuAcademy .academy-progress-note,
+  #introMenuAcademy .academy-reward-copy,
+  #introMenuAcademy .academy-reward-hint,
+  #introMenuAcademy .academy-reward-actions,
+  #introMenuAcademy .academy-preview-banner,
+  #introMenuAcademy .academy-preview-mecha{
+    display:none !important;
+  }
+
+  #introMenuAcademy .academy-console-status{
+    gap:6px;
+  }
+
+  #introMenuAcademy .academy-console-chip{
+    padding:4px 8px;
+    font-size:.48rem;
+  }
+
+  #introMenuAcademy .academy-name-row,
+  #introMenuAcademy .academy-progress-strip{
+    min-height:0;
+    margin:0;
+    padding:8px 10px;
+    border-radius:12px;
+  }
+
+  #introMenuAcademy .academy-name-row{
+    display:grid;
+    grid-template-columns:auto minmax(0, 1fr);
+    align-items:center;
+    gap:10px;
+  }
+
+  #introMenuAcademy .academy-name-row label{
+    font-size:.54rem;
+    white-space:nowrap;
+  }
+
+  #introMenuAcademy .academy-name-input{
+    min-height:32px;
+    padding:0 10px;
+    border-radius:9px;
+    font-size:.68rem;
+  }
+
+  #introMenuAcademy .academy-progress-strip{
+    display:grid;
+    grid-template-columns:auto minmax(120px, 1fr);
+    align-items:center;
+    gap:10px;
+  }
+
+  #introMenuAcademy .academy-progress-copy{
+    font-size:.62rem;
+    line-height:1.1;
+    white-space:nowrap;
+  }
+
+  #introMenuAcademy .academy-progress-meter{
+    min-width:0;
+    width:100%;
+    height:8px;
+  }
+
+  #introMenuAcademy .academy-stage-layout{
+    min-height:0;
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(190px, .32fr);
+    gap:clamp(8px, 1vw, 12px);
+    align-items:stretch;
+    overflow:hidden !important;
+  }
+
+  #introMenuAcademy .academy-lesson-grid{
+    min-height:0;
+    height:100%;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-auto-rows:minmax(92px, auto);
+    gap:7px;
+    align-content:start;
+    overflow:auto !important;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    padding-right:4px;
+  }
+
+  #introMenuAcademy .academy-lesson-card{
+    min-height:92px;
+    padding:7px;
+    gap:5px;
+    border-radius:10px;
+  }
+
+  #introMenuAcademy .academy-lesson-top{
+    display:block;
+  }
+
+  #introMenuAcademy .academy-lesson-kicker{
+    font-size:.42rem;
+    letter-spacing:.08em;
+  }
+
+  #introMenuAcademy .academy-lesson-title{
+    margin-top:2px;
+    font-size:clamp(.54rem, 1vw, .68rem);
+    line-height:1.02;
+  }
+
+  #introMenuAcademy .academy-lesson-badge,
+  #introMenuAcademy .academy-lesson-desc,
+  #introMenuAcademy .academy-lesson-meta{
+    display:none !important;
+  }
+
+  #introMenuAcademy .academy-lesson-btn{
+    align-self:end;
+    min-height:28px;
+    padding:0 5px;
+    border-radius:8px;
+    font-size:.46rem;
+    letter-spacing:.05em;
+  }
+
+  #introMenuAcademy .academy-reward-panel{
+    min-height:0;
+    padding:9px;
+    border-radius:12px;
+    gap:8px;
+    overflow:hidden;
+  }
+
+  #introMenuAcademy .academy-reward-kicker{
+    font-size:.5rem;
+  }
+
+  #introMenuAcademy .academy-reward-title{
+    font-size:.78rem;
+  }
+
+  #introMenuAcademy .academy-preview-surface{
+    min-height:150px;
+    padding:10px 8px;
+    border-radius:12px;
+  }
+
+  #introMenuAcademy .academy-preview-badge{
+    top:8px;
+    right:8px;
+    min-width:0;
+    padding:4px 7px;
+    font-size:.42rem;
+  }
+
+  #introMenuAcademy .academy-preview-logo{
+    width:88px;
+    right:8px;
+    bottom:8px;
+  }
+
+  #introMenuAcademy .academy-preview-kicker,
+  #introMenuAcademy .academy-preview-meta{
+    font-size:.44rem;
+  }
+
+  #introMenuAcademy .academy-preview-name{
+    font-size:.62rem;
+  }
+
+  #introMenuAcademy .academy-menu-actions{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:7px;
+    padding-top:7px;
+  }
+
+  #introMenuAcademy .academy-menu-actions .intro-enter,
+  #introMenuAcademy .academy-menu-actions .intro-tutorial,
+  #introMenuAcademy .academy-progress-code-btn,
+  #introMenuAcademy .academy-reset-btn{
+    min-height:32px !important;
+    padding:0 7px !important;
+    border-radius:9px !important;
+    font-size:.48rem !important;
+    line-height:1 !important;
+  }
+}
+
 @media (orientation:landscape) and (pointer:fine) and (min-width:900px) and (max-width:1080px) and (min-height:820px){
   .intro-card[data-menu="root"]{
     position:relative;
@@ -32617,9 +33405,19 @@ function syncCompactHandTraySizing(tray, cardCount){
   const mobileCompact = document.body?.classList.contains('mobile-compact-mode');
   const mobilePcCompact = document.body?.classList.contains('mobile-pc-compact-mode');
   if(mobileCompact || mobilePanorama || mobilePcCompact){
-    const cardWidth = mobileCompact ? 60 : 54;
-    const cardHeight = mobileCompact ? 86 : 77;
-    const step = mobileCompact ? 48 : (mobilePcCompact ? 46 : 50);
+    const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
+    const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
+    const minSide = Math.min(viewportW, viewportH);
+    const maxSide = Math.max(viewportW, viewportH);
+    const tabletPortraitCompact = mobileCompact
+      && !mobilePanorama
+      && !mobilePcCompact
+      && minSide >= 700
+      && maxSide >= 900
+      && window.matchMedia?.('(orientation: portrait) and (pointer: coarse)')?.matches;
+    const cardWidth = tabletPortraitCompact ? 68 : (mobileCompact ? 60 : 54);
+    const cardHeight = tabletPortraitCompact ? 98 : (mobileCompact ? 86 : 77);
+    const step = tabletPortraitCompact ? 56 : (mobileCompact ? 48 : (mobilePcCompact ? 46 : 50));
     tray.style.setProperty('--compact-hand-card-width', `${cardWidth}px`);
     tray.style.setProperty('--compact-hand-card-height', `${cardHeight}px`);
     tray.style.setProperty('--compact-hand-card-step', `${step}px`);
@@ -32655,11 +33453,51 @@ function syncCompactZoneCardSizing(container, cardCount, options = {}){
   const isCore = !!options.core;
   const isFuel = !!options.fuel;
   const isRival = !!options.rival;
+  const body = document.body;
+  const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
+  const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
+  const minSide = Math.min(viewportW, viewportH);
+  const maxSide = Math.max(viewportW, viewportH);
+  const portraitCoarse = !!window.matchMedia?.('(orientation: portrait) and (pointer: coarse)')?.matches;
+  const landscapeCoarse = !!window.matchMedia?.('(orientation: landscape) and (pointer: coarse)')?.matches;
+  const tabletPortraitCompact = body?.classList.contains('mobile-compact-mode')
+    && !body.classList.contains('mobile-panorama-mode')
+    && !body.classList.contains('mobile-pc-compact-mode')
+    && portraitCoarse
+    && minSide >= 700
+    && maxSide >= 900;
+  const tabletLandscapeCompact = body?.classList.contains('mobile-panorama-mode')
+    && landscapeCoarse
+    && minSide >= 600
+    && maxSide >= 900;
   const availableWidth = Math.max(72, Math.floor((container.clientWidth || container.parentElement?.clientWidth || 104) - 2));
   const parentHeight = container.parentElement?.clientHeight || 0;
   const headHeight = container.previousElementSibling?.offsetHeight || 28;
   const measuredHeight = parentHeight ? Math.max(container.clientHeight || 0, parentHeight - headHeight - 16) : (container.clientHeight || 90);
   const availableHeight = Math.max(52, Math.floor(measuredHeight - 2));
+  if(!isRival && (tabletPortraitCompact || tabletLandscapeCompact)){
+    const targetCols = isCore
+      ? Math.min(3, Math.max(1, count || 1))
+      : isFuel
+        ? Math.min(7, Math.max(4, count || 4))
+        : 4;
+    const gap = tabletPortraitCompact ? (isFuel ? 8 : 10) : (isFuel ? 8 : 10);
+    const rows = Math.max(1, Math.ceil(Math.max(1, count) / targetCols));
+    const maxWidthByCols = Math.floor((availableWidth - gap * Math.max(0, targetCols - 1)) / targetCols);
+    const maxWidthByRows = Math.floor(((availableHeight - gap * Math.max(0, rows - 1)) / rows) / 1.43);
+    const softMax = tabletPortraitCompact
+      ? (isCore ? 88 : isFuel ? 64 : 78)
+      : (isCore ? 76 : isFuel ? 68 : 76);
+    const hardMin = tabletPortraitCompact
+      ? (isCore ? 58 : isFuel ? 44 : 52)
+      : (isCore ? 54 : isFuel ? 44 : 52);
+    const cardWidth = Math.max(hardMin, Math.min(softMax, Math.max(hardMin, maxWidthByCols), Math.max(hardMin, maxWidthByRows)));
+    const cardHeight = Math.round(cardWidth * 1.43);
+    container.style.setProperty('--compact-zone-card-width', `${cardWidth}px`);
+    container.style.setProperty('--compact-zone-card-height', `${cardHeight}px`);
+    container.dataset.cardCount = String(cardCount || 0);
+    return;
+  }
   const preferredCols = isCore
     ? Math.min(3, Math.max(1, count || 1))
     : isFuel

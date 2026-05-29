@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>PoCoBOT - Modo Historia Ruta Ceniza</title>
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#06090f">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/Historia/camino_pocobot_icon_192.png?v=20260506-story-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/Historia/camino_pocobot_icon_180.png?v=20260506-story-icon">
-  <link rel="manifest" href="assets/Historia/camino_pocobot.webmanifest?v=20260506-story-icon">
+  <link rel="manifest" href="assets/Historia/camino_pocobot.webmanifest?v=20260529-story-scope">
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand">
   <style>
     :root{
@@ -34,7 +34,11 @@
     }
 
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
+    html{
+      scroll-behavior:smooth;
+      touch-action:manipulation;
+      -webkit-text-size-adjust:100%;
+    }
     body{
       margin:0;
       min-height:100vh;
@@ -45,6 +49,10 @@
         radial-gradient(circle at 80% 16%, rgba(74,199,227,.12), transparent 24%),
         linear-gradient(180deg, #19120f 0%, #0b131c 30%, #06090f 100%);
       overflow-x:hidden;
+      touch-action:manipulation;
+      -webkit-user-select:none;
+      user-select:none;
+      overscroll-behavior:none;
     }
     body.story-title-lock{
       height:100svh;
@@ -78,6 +86,15 @@
     }
     a{color:inherit}
     img{display:block;max-width:100%}
+    button,
+    a,
+    [role="button"]{touch-action:manipulation}
+    input,
+    textarea{
+      touch-action:manipulation;
+      -webkit-user-select:text;
+      user-select:text;
+    }
     button{font:inherit}
 
     .page-shell{

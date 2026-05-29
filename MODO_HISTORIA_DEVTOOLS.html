@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>PoCoBOT - Laboratorio Ruta Ceniza</title>
   <meta name="theme-color" content="#06090f">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/Historia/camino_pocobot_icon_192.png?v=20260506-story-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/Historia/camino_pocobot_icon_180.png?v=20260506-story-icon">
-  <link rel="manifest" href="assets/Historia/camino_pocobot.webmanifest?v=20260506-story-icon">
+  <link rel="manifest" href="assets/Historia/camino_pocobot.webmanifest?v=20260529-story-scope">
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand">
   <style>
     :root{
@@ -26,6 +26,8 @@
     html{
       min-height:100%;
       overscroll-behavior:none;
+      touch-action:manipulation;
+      -webkit-text-size-adjust:100%;
     }
     body{
       min-height:100svh;
@@ -37,6 +39,10 @@
         radial-gradient(circle at 78% 4%, rgba(255,216,168,.14), transparent 30%),
         linear-gradient(180deg, rgba(5,8,13,.8), rgba(5,8,13,.98)),
         #05080d url("assets/Historia/low/mapaok_ultraligero_1080.webp") center / cover fixed;
+      touch-action:manipulation;
+      -webkit-user-select:none;
+      user-select:none;
+      overscroll-behavior:none;
     }
     body::before{
       content:"";
@@ -48,6 +54,15 @@
         linear-gradient(180deg, rgba(255,255,255,.025) 1px, transparent 1px);
       background-size:42px 42px;
       mask-image:linear-gradient(180deg, rgba(0,0,0,.8), transparent 88%);
+    }
+    button,
+    a,
+    [role="button"]{touch-action:manipulation}
+    input,
+    textarea{
+      touch-action:manipulation;
+      -webkit-user-select:text;
+      user-select:text;
     }
     .shell{
       position:relative;
