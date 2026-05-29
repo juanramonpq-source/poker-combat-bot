@@ -19136,6 +19136,37 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   }
 }
 
+/* Keep the contextual attack buttons clear of the floating Acciones button. */
+@media (orientation:portrait) and (pointer:coarse){
+  body.mobile-compact-mode.compact-action-hub-open .app.mobile-compact-mode .compact-mobile-action-grid #compactMobileAttackModeBtn{
+    top:auto !important;
+    bottom:44px !important;
+    left:auto !important;
+    right:clamp(192px, 60vw, 238px) !important;
+    width:92px !important;
+    min-width:92px !important;
+    max-width:92px !important;
+    height:38px !important;
+    min-height:38px !important;
+    transform:none !important;
+    z-index:8 !important;
+  }
+
+  body.mobile-compact-mode.compact-action-hub-open .app.mobile-compact-mode .compact-mobile-action-grid #compactMobileConfirmAttackBtn{
+    top:auto !important;
+    bottom:40px !important;
+    left:auto !important;
+    right:clamp(128px, 38vw, 154px) !important;
+    width:70px !important;
+    min-width:70px !important;
+    max-width:70px !important;
+    height:70px !important;
+    min-height:70px !important;
+    transform:rotate(-4deg) !important;
+    z-index:9 !important;
+  }
+}
+
 @media (pointer: coarse){
   body.mobile-compact-mode .app.mobile-compact-mode .compact-zone-card.compact-pilot-gated,
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode .compact-zone-card.compact-pilot-gated{
