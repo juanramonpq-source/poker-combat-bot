@@ -5961,6 +5961,26 @@ body.story-argos-hack-ui .pro-turn-kicker{
   content:'Estado';
   color:#ffd67d;
 }
+body.academy-guided .tutorial-panel-text::before{
+  content:'Meta';
+  display:block;
+  margin-bottom:5px;
+  color:#ffcf68;
+  font-size:.64rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  font-weight:900;
+}
+body.academy-guided .tutorial-panel-objective::before{
+  content:'Acción';
+}
+body.academy-guided .tutorial-panel-tip::before{
+  content:'Regla';
+}
+body.academy-guided .tutorial-panel-focus,
+body.academy-guided .tutorial-panel-status{
+  display:none;
+}
 .tutorial-panel-actions{
   display:flex;
   gap:8px;
@@ -22611,6 +22631,356 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
     min-height:26px !important;
   }
 }
+#introMenuAcademy:not([hidden]){
+  overflow:hidden !important;
+}
+#introMenuAcademy .academy-menu-shell{
+  overflow:auto !important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-gutter:stable;
+}
+#introMenuAcademy .academy-menu-shell::-webkit-scrollbar{
+  width:6px;
+  height:6px;
+}
+#introMenuAcademy .academy-menu-shell::-webkit-scrollbar-track{
+  background:rgba(7,12,22,.18);
+}
+#introMenuAcademy .academy-menu-shell::-webkit-scrollbar-thumb{
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(103,241,255,.45), rgba(255,207,104,.38));
+}
+@media (orientation:landscape) and (max-width:980px) and (max-height:540px){
+  .intro-card:not([data-menu="root"]){
+    padding:
+      max(7px, env(safe-area-inset-top))
+      max(10px, env(safe-area-inset-right))
+      max(7px, env(safe-area-inset-bottom))
+      max(10px, env(safe-area-inset-left)) !important;
+    overflow:hidden !important;
+  }
+  .intro-card:not([data-menu="root"]) .intro-topbar{
+    min-height:32px;
+  }
+  .intro-card:not([data-menu="root"]) .intro-studio-link{
+    gap:6px;
+    font-size:.62rem;
+  }
+  .intro-card:not([data-menu="root"]) .intro-studio-link img{
+    width:25px;
+    height:25px;
+  }
+  .intro-card:not([data-menu="root"]) .intro-utility-links{
+    gap:8px;
+  }
+  .intro-card:not([data-menu="root"]) .intro-utility-links a,
+  .intro-card:not([data-menu="root"]) .intro-utility-links button{
+    min-height:31px;
+    padding:0 12px;
+    border-radius:18px;
+    font-size:.62rem;
+  }
+  .intro-card:not([data-menu="root"]) .intro-menu-stack{
+    width:100% !important;
+    height:calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    min-height:0 !important;
+    margin:6px 0 0 !important;
+    padding:8px !important;
+    border-radius:12px !important;
+    overflow:hidden !important;
+  }
+  .intro-card:not([data-menu="root"]) .intro-menu-stack::after{
+    opacity:.52;
+  }
+  .intro-card:not([data-menu="root"]) .intro-menu:not([hidden]){
+    height:100%;
+    min-height:0;
+    overflow:hidden;
+  }
+  #introMenuLocal,
+  #introMenuTutorial{
+    grid-template-rows:auto auto minmax(0, 1fr);
+    gap:7px;
+    align-content:stretch;
+  }
+  #introMenuLocal .intro-submenu-hero,
+  #introMenuTutorial .intro-submenu-hero,
+  #introMenuAcademy .intro-submenu-hero{
+    min-height:0;
+    max-height:66px;
+    padding:7px 10px;
+    gap:10px;
+    border-radius:10px;
+  }
+  #introMenuLocal .intro-submenu-logo,
+  #introMenuTutorial .intro-submenu-logo,
+  #introMenuAcademy .intro-submenu-logo{
+    width:min(142px, 19vw);
+    max-height:52px;
+    object-fit:contain;
+  }
+  #introMenuLocal .intro-submenu-kicker,
+  #introMenuTutorial .intro-submenu-kicker,
+  #introMenuAcademy .intro-submenu-kicker{
+    padding:3px 7px;
+    font-size:.44rem;
+  }
+  #introMenuLocal .intro-submenu-copy p,
+  #introMenuTutorial .intro-submenu-copy p,
+  #introMenuAcademy .intro-submenu-copy p{
+    font-size:.54rem;
+    line-height:1.08;
+  }
+  #introMenuLocal .intro-menu-label,
+  #introMenuTutorial .intro-menu-label,
+  #introMenuAcademy .intro-menu-label{
+    font-size:.58rem;
+    line-height:1;
+  }
+  #introMenuLocal .intro-buttons-group,
+  #introMenuTutorial .intro-buttons-group{
+    gap:7px !important;
+    grid-row:3;
+    align-self:stretch;
+    grid-template-rows:1fr;
+  }
+  #introMenuLocal .intro-buttons-group{
+    grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+  }
+  #introMenuTutorial .intro-buttons-group{
+    grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) minmax(96px, .48fr) !important;
+  }
+  #introMenuLocal #enterGameBtn,
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    grid-column:auto !important;
+  }
+  #introMenuLocal .intro-enter,
+  #introMenuLocal .intro-tutorial,
+  #introMenuTutorial .intro-enter,
+  #introMenuTutorial .intro-tutorial,
+  #introMenuLocal #enterGameBtn,
+  #introMenuLocal #localBackBtn,
+  #introMenuTutorial #tutorialBackBtn{
+    min-height:72px !important;
+    padding:7px 9px !important;
+  }
+  #introMenuLocal .submenu-mode-title,
+  #introMenuTutorial .submenu-mode-title{
+    font-size:clamp(.74rem, 2.15vw, .96rem);
+    line-height:1.02;
+  }
+  #introMenuLocal .submenu-mode-sub,
+  #introMenuTutorial .submenu-mode-sub{
+    font-size:clamp(.5rem, 1.35vw, .62rem);
+    line-height:1.06;
+  }
+  #introMenuLocal .intro-mini-widget,
+  #introMenuTutorial .intro-mini-widget,
+  #introMenuLocal .intro-menu-copy,
+  #introMenuTutorial .intro-menu-copy{
+    display:none !important;
+  }
+  #introMenuAcademy{
+    grid-template-rows:auto auto minmax(0, 1fr);
+    gap:7px;
+    height:100%;
+    min-height:0;
+    overflow:hidden !important;
+  }
+  #introMenuAcademy .intro-submenu-hero{
+    display:grid;
+    grid-template-columns:auto minmax(0, 1fr);
+    align-items:center;
+  }
+  #introMenuAcademy .intro-submenu-suits{
+    display:none;
+  }
+  #introMenuAcademy .academy-menu-shell{
+    min-height:0;
+    height:100%;
+    padding:8px;
+    gap:8px;
+    border-radius:12px;
+    overflow:auto !important;
+    overscroll-behavior:contain;
+  }
+  #introMenuAcademy .academy-menu-shell::before,
+  #introMenuAcademy .academy-menu-shell::after,
+  #introMenuAcademy .academy-brief,
+  #introMenuAcademy .academy-progress-note,
+  #introMenuAcademy .academy-reward-kicker,
+  #introMenuAcademy .academy-reward-title,
+  #introMenuAcademy .academy-reward-copy,
+  #introMenuAcademy .academy-reward-hint,
+  #introMenuAcademy .academy-reward-actions,
+  #introMenuAcademy .academy-preview-banner,
+  #introMenuAcademy .academy-preview-mecha,
+  #introMenuAcademy .academy-lesson-desc,
+  #introMenuAcademy .academy-lesson-meta{
+    display:none !important;
+  }
+  #introMenuAcademy .academy-console-head{
+    padding:8px 10px;
+    gap:5px;
+    border-radius:10px;
+  }
+  #introMenuAcademy .academy-console-row{
+    align-items:center;
+  }
+  #introMenuAcademy .academy-console-kicker{
+    font-size:.5rem;
+  }
+  #introMenuAcademy .academy-console-title{
+    margin-top:2px;
+    font-size:.86rem;
+  }
+  #introMenuAcademy .academy-console-copy{
+    display:none;
+  }
+  #introMenuAcademy .academy-console-status{
+    gap:5px;
+  }
+  #introMenuAcademy .academy-console-chip{
+    padding:4px 7px;
+    font-size:.46rem;
+  }
+  #introMenuAcademy .academy-name-row{
+    grid-template-columns:auto minmax(0, 1fr);
+    align-items:center;
+    gap:8px;
+    padding:7px 8px;
+    border-radius:10px;
+  }
+  #introMenuAcademy .academy-name-row::before,
+  #introMenuAcademy .academy-name-row::after,
+  #introMenuAcademy .academy-progress-strip::before,
+  #introMenuAcademy .academy-progress-strip::after,
+  #introMenuAcademy .academy-lesson-card::before,
+  #introMenuAcademy .academy-lesson-card::after,
+  #introMenuAcademy .academy-reward-panel::before,
+  #introMenuAcademy .academy-reward-panel::after{
+    content:none !important;
+  }
+  #introMenuAcademy .academy-name-row label{
+    font-size:.5rem;
+    white-space:nowrap;
+  }
+  #introMenuAcademy .academy-name-input{
+    min-height:30px;
+    padding:0 9px;
+    border-radius:8px;
+    font-size:.64rem;
+  }
+  #introMenuAcademy .academy-progress-strip{
+    gap:6px;
+    padding:7px 8px;
+    border-radius:10px;
+  }
+  #introMenuAcademy .academy-progress-copy{
+    font-size:.58rem;
+    line-height:1.1;
+  }
+  #introMenuAcademy .academy-progress-meter{
+    min-width:90px;
+    height:7px;
+  }
+  #introMenuAcademy .academy-stage-layout{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(150px, .34fr);
+    gap:8px;
+    align-items:stretch;
+  }
+  #introMenuAcademy .academy-lesson-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:6px;
+  }
+  #introMenuAcademy .academy-lesson-card{
+    min-height:78px;
+    padding:7px;
+    gap:5px;
+    border-radius:10px;
+  }
+  #introMenuAcademy .academy-lesson-top{
+    display:block;
+  }
+  #introMenuAcademy .academy-lesson-kicker{
+    font-size:.42rem;
+    letter-spacing:.08em;
+  }
+  #introMenuAcademy .academy-lesson-title{
+    margin-top:2px;
+    font-size:.55rem;
+    line-height:1.02;
+  }
+  #introMenuAcademy .academy-lesson-badge{
+    display:none;
+  }
+  #introMenuAcademy .academy-lesson-btn{
+    min-height:24px;
+    width:100%;
+    padding:0 5px;
+    border-radius:7px;
+    font-size:.43rem;
+    letter-spacing:.04em;
+    box-shadow:0 3px 0 rgba(116,46,10,.34);
+  }
+  #introMenuAcademy .academy-reward-panel{
+    min-height:0;
+    padding:8px;
+    border-radius:12px;
+    align-self:stretch;
+  }
+  #introMenuAcademy .academy-preview-surface{
+    min-height:112px;
+    padding:8px;
+    border-radius:12px;
+  }
+  #introMenuAcademy .academy-preview-surface::before{
+    inset:6px;
+    border-radius:8px;
+  }
+  #introMenuAcademy .academy-preview-badge{
+    top:8px;
+    right:8px;
+    min-width:0;
+    padding:4px 7px;
+    font-size:.42rem;
+  }
+  #introMenuAcademy .academy-preview-logo{
+    width:82px;
+    right:8px;
+    bottom:8px;
+  }
+  #introMenuAcademy .academy-preview-kicker,
+  #introMenuAcademy .academy-preview-meta{
+    font-size:.42rem;
+  }
+  #introMenuAcademy .academy-preview-name{
+    font-size:.56rem;
+  }
+  #introMenuAcademy .academy-menu-actions{
+    position:static;
+    z-index:3;
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:6px;
+    padding:7px 0 0;
+    background:none;
+  }
+  #introMenuAcademy .academy-menu-actions .intro-enter,
+  #introMenuAcademy .academy-menu-actions .intro-tutorial,
+  #introMenuAcademy .academy-progress-code-btn,
+  #introMenuAcademy .academy-reset-btn{
+    min-height:30px !important;
+    padding:0 6px !important;
+    border-radius:8px !important;
+    font-size:.45rem !important;
+    line-height:1 !important;
+  }
+}
 @media (prefers-reduced-motion:reduce){
   .intro-screen::after,
   .intro-suits .float-suit,
@@ -23194,7 +23564,8 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
           </div>
           <div class="academy-menu-actions">
             <button class="intro-enter" id="academyCertificateBtn" type="button" hidden>Ver o descargar carnet</button>
-            <button class="academy-progress-code-btn" id="academyProgressCodeBtn" type="button">Código progreso</button>
+            <button class="academy-progress-code-btn" id="academyProgressCodeBtn" type="button">Guardar progreso</button>
+            <button class="academy-progress-code-btn" id="academyImportCodeBtn" type="button">Cargar progreso</button>
             <button class="academy-reset-btn" id="academyResetBtn" type="button" hidden>Resetear academia</button>
             <button class="intro-tutorial" id="academyBackBtn" type="button">Volver</button>
           </div>
@@ -24252,7 +24623,9 @@ const academySystem = {
 function getDefaultAcademyProfile(){
   return {
     candidateName: '',
-    completed: {}
+    completed: {},
+    unlocked: {},
+    activeLessonId: ''
   };
 }
 
@@ -24263,7 +24636,9 @@ function loadAcademyProfile(){
     const parsed = JSON.parse(raw);
     return {
       candidateName: typeof parsed?.candidateName === 'string' ? parsed.candidateName : '',
-      completed: parsed && typeof parsed.completed === 'object' && parsed.completed ? parsed.completed : {}
+      completed: parsed && typeof parsed.completed === 'object' && parsed.completed ? parsed.completed : {},
+      unlocked: parsed && typeof parsed.unlocked === 'object' && parsed.unlocked ? parsed.unlocked : {},
+      activeLessonId: typeof parsed?.activeLessonId === 'string' ? parsed.activeLessonId : ''
     };
   }catch(_err){
     return getDefaultAcademyProfile();
@@ -30789,23 +31164,23 @@ function getCompactMobileTutorialCopy(step){
       copy.tip = 'Usa proyectil solo cuando quieras añadir una pica extra que ya no cabe dentro del límite del combustible principal.';
       break;
     case 'academy-fuel-attack':
-      copy.objective = 'Abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, y termina con <strong>Confirmar ataque</strong>.';
-      copy.tip = 'Atacar abre la selección. Confirmar ataque aparece en Acciones cuando la selección es válida.';
+      copy.objective = 'Pulsa <strong>Atacar</strong>, marca <strong>8♦ + 4♠ + 7♠</strong> y confirma.';
+      copy.tip = 'Fuel x2 marca el límite del ataque principal.';
       break;
     case 'academy-active-defense':
-      copy.body = 'Cuando te atacan, puedes usar <strong>1 ♦ numérico de la mano</strong> para recortar el daño antes de que toque tu blindaje. En móvil, usa la ventana de defensa o abre <strong>Acciones</strong> si el botón no está visible.';
+      copy.body = 'Reduce el ataque con una defensa activa.';
       copy.objective = 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>.';
-      copy.tip = 'Las figuras de diamantes no valen aquí; solo cuentan los diamantes numéricos.';
+      copy.tip = 'Solo vale 1 diamante numérico de la mano.';
       break;
     case 'academy-diamond-draw':
-      copy.body = 'Un <strong>♦ numérico en mano</strong> también puede convertirse en robo. En móvil, selecciona el diamante, abre <strong>Acciones</strong> y pulsa <strong>Robar con ♦</strong>. <strong>Ojo:</strong> no puedes cambiar diamantes por robo <strong>dos turnos propios seguidos</strong>.';
+      copy.body = 'Convierte un diamante numérico en robo.';
       copy.objective = 'Selecciona <strong>2♦</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Robar con ♦</strong>.';
-      copy.tip = 'Si el botón está oculto, todavía no se cumplen las condiciones de la acción.';
+      copy.tip = 'No puedes robar con ♦ en dos turnos propios seguidos.';
       break;
     case 'academy-figure-burst':
-      copy.body = 'Cuando ya tienes <strong>piloto</strong> y <strong>copiloto</strong>, si consigues otras <strong>2 figuras</strong> en la mano puedes descartarlas y robar <strong>4 cartas</strong>. En móvil aparecerá como botón directo o dentro de <strong>Acciones</strong>.';
+      copy.body = 'Recicla figuras sobrantes para ganar mano.';
       copy.objective = 'Pulsa <strong>2 Figuras → 4</strong>.';
-      copy.tip = 'Este reciclado por figuras no cuenta como robar con ♦, así que no choca con esa restricción.';
+      copy.tip = 'Con piloto y copiloto, 2 figuras extra roban 4 cartas.';
       break;
     case 'academy-pass-two-cards':
     case 'academy-pass-one-card':
@@ -30813,22 +31188,22 @@ function getCompactMobileTutorialCopy(step){
         ? 'Selecciona las <strong>2 cartas</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Pasar</strong>.'
         : 'Selecciona la <strong>única carta</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Pasar</strong>.';
       copy.tip = step.id === 'academy-pass-two-cards'
-        ? 'Primero practicamos el caso normal: pasar pagando 2 cartas.'
-        : 'Con una sola carta en mano también puedes pasar descartando esa carta.';
+        ? 'Pasar descarta 2 cartas y cede la iniciativa.'
+        : 'Si no tienes 2 cartas, descarta lo que tengas.';
       break;
     case 'academy-armor-fuel':
-      copy.objective = 'Abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, selecciona <strong>6♣</strong> en Armadura y <strong>4♠ + 7♠</strong> en Ataque, y termina con <strong>Confirmar ataque</strong>.';
+      copy.objective = 'Ataca con <strong>6♣</strong> como fuel y <strong>4♠ + 7♠</strong>; confirma.';
       copy.tip = 'El As♦ permite usar armadura como fuel; esa armadura se descartará tras el ataque.';
       break;
     case 'academy-projectile-only':
-      copy.body = 'El <strong>proyectil</strong> es una pica que se dispara y se descarta. En móvil, abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, selecciona la pica montada y usa <strong>Solo proyectil</strong>. No necesita fuel.';
-      copy.objective = 'Abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, selecciona <strong>7♠</strong> y usa <strong>Solo proyectil</strong>.';
-      copy.tip = 'Solo proyectil se ilumina cuando hay una pica numérica válida seleccionada.';
+      copy.body = 'Dispara una pica como proyectil sin gastar fuel.';
+      copy.objective = 'Pulsa <strong>Atacar</strong>, marca <strong>7♠</strong> y usa <strong>Solo proyectil</strong>.';
+      copy.tip = 'Solo proyectil descarta una pica numérica montada.';
       break;
     case 'academy-projectile-combo':
-      copy.body = 'Ahora combinamos ambos mundos: <strong>4♦</strong> limita el ataque principal a <strong>8</strong>, así que la <strong>8♠</strong> será ataque normal y la <strong>4♠</strong> debe salir como proyectil. En móvil, todo se hace desde <strong>Acciones</strong>: Atacar, Modo proyectil y Confirmar ataque.';
-      copy.objective = 'Abre <strong>Acciones</strong>, pulsa <strong>Atacar</strong>, activa <strong>Modo proyectil</strong> y marca <strong>4♦ + 8♠</strong>, dejando <strong>4♠</strong> como última pica antes de confirmar.';
-      copy.tip = 'Recuerda: la última pica marcada será el proyectil.';
+      copy.body = 'Combina ataque principal y proyectil para rematar.';
+      copy.objective = 'Activa <strong>Modo proyectil</strong>, marca fuel y picas, y deja la pica proyectil para el final.';
+      copy.tip = 'La última pica marcada sale libre de fuel.';
       break;
     default:
       break;
@@ -30880,20 +31255,22 @@ function getCompactMobileTutorialPayload(){
   const lesson = tutorialSystem.mode === 'academy' ? academyGetLessonById(tutorialSystem.lessonId) : null;
   const title = step.title || (tutorialSystem.mode === 'academy' ? 'Carnet PoCoBOT' : 'Tutorial guiado');
   const copy = getCompactMobileTutorialCopy(step);
-  const objectiveHtml = copy.objective ? `<div class="tutorial-objective"><strong>Objetivo actual:</strong> ${copy.objective}</div>` : '';
-  const tipHtml = copy.tip ? `<div class="tutorial-tip"><strong>Pista:</strong> ${copy.tip}</div>` : '';
+  const academyCompact = tutorialSystem.mode === 'academy';
+  const bodyHtml = academyCompact && copy.body ? `<div class="tutorial-meta"><strong>Meta:</strong> ${copy.body}</div>` : copy.body;
+  const objectiveHtml = copy.objective ? `<div class="tutorial-objective"><strong>${academyCompact ? 'Acción' : 'Objetivo actual'}:</strong> ${copy.objective}</div>` : '';
+  const tipHtml = copy.tip ? `<div class="tutorial-tip"><strong>${academyCompact ? 'Regla' : 'Pista'}:</strong> ${copy.tip}</div>` : '';
   const focusText = getCompactMobileTutorialFocusText(step);
   const statusText = tutorialSystem.completed
     ? 'La guía ha soltado las restricciones. Puedes seguir jugando o reiniciar cuando quieras.'
     : (tutorialSystem.statusText || copy.tip || 'Solo se habilitan las acciones relevantes para el paso actual.');
-  const focusHtml = focusText && !(tutorialSystem.mode === 'academy' && step.id === 'academy-definition')
+  const focusHtml = focusText && !(academyCompact)
     ? `<div class="tutorial-focus"><strong>Foco visual:</strong> ${mobileSpriteEscapeHtml(focusText)}</div>`
     : '';
   const normalizeTutorialLine = (value='') => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
-  const statusHtml = statusText && normalizeTutorialLine(statusText) !== normalizeTutorialLine(copy.tip)
+  const statusHtml = !academyCompact && statusText && normalizeTutorialLine(statusText) !== normalizeTutorialLine(copy.tip)
     ? `<div class="tutorial-status"><strong>Estado:</strong> ${mobileSpriteEscapeHtml(statusText)}</div>`
     : '';
-  const html = [copy.body, objectiveHtml, tipHtml, focusHtml, statusHtml].filter(Boolean).join('');
+  const html = [bodyHtml, objectiveHtml, tipHtml, focusHtml, statusHtml].filter(Boolean).join('');
   const modeLabel = tutorialSystem.mode === 'academy'
     ? `Carnet PoCoBOT${lesson ? ` · Fase ${lesson.phase}/${ACADEMY_LESSONS.length}` : ''}`
     : 'Tutorial compacto';
@@ -33921,6 +34298,7 @@ function resolveAttackAfterDefense(defenseCard){
       }, ATTACK_POST_IMPACT_HOLD_MS);
     }else{
       state.transitionLock = false;
+      if(tutorialSystem.enabled) updateTutorialPhase();
       window.setTimeout(() => scrollToWinnerCup('smooth'), 180);
     }
   }, { attackPoints: totalAttack });
@@ -34544,8 +34922,9 @@ function updateHints(){
 
   if(tutorialSystem.enabled){
     const step = tutorialGetCurrentStep();
-    const stepNumber = Math.min(tutorialSystem.stepIndex + 1, TUTORIAL_SCRIPT.length);
-    const totalSteps = TUTORIAL_SCRIPT.length;
+    const activeScript = getActiveTutorialScript();
+    const stepNumber = Math.min(tutorialSystem.stepIndex + 1, activeScript.length);
+    const totalSteps = activeScript.length;
     const busyText = tutorialSystem.statusText || (step ? step.tip : '');
     const attackPanelReturnCue = step?.id === 'first-attack' && state.attackMode && state.selected.length === 0;
 
@@ -34566,7 +34945,9 @@ function updateHints(){
     if(tutorialPanelTitle) tutorialPanelTitle.textContent = step ? step.title : 'Tutorial guiado';
     if(tutorialPanelText) tutorialPanelText.innerHTML = step ? step.body : 'Preparando escenario guiado.';
     if(tutorialPanelTip) tutorialPanelTip.textContent = step ? step.tip : 'Sigue las instrucciones paso a paso.';
-    if(tutorialPanelObjective) tutorialPanelObjective.innerHTML = step ? `<strong>Objetivo actual:</strong> ${step.objective}` : 'Objetivo: espera la inicialización del tutorial.';
+    if(tutorialPanelObjective) tutorialPanelObjective.innerHTML = step
+      ? (tutorialSystem.mode === 'academy' ? step.objective : `<strong>Objetivo actual:</strong> ${step.objective}`)
+      : 'Objetivo: espera la inicialización del tutorial.';
     if(tutorialPanelStep) tutorialPanelStep.textContent = tutorialSystem.completed ? 'Guía completada' : `Paso ${stepNumber}/${totalSteps}`;
     if(tutorialPanelMode) tutorialPanelMode.textContent = tutorialSystem.completed ? 'Modo libre' : (tutorialSystem.busy ? 'Instructor en acción' : 'Guía activa');
     if(tutorialPanelMeterFill) tutorialPanelMeterFill.style.width = `${tutorialGetGuidedProgressPercent()}%`;
@@ -35690,6 +36071,7 @@ function render(){
   mountFloatingHudToBody();
   maybeResolveStoryMission();
   syncDesktopHudAvailability();
+  document.body.classList.toggle('academy-guided', tutorialSystem.enabled && tutorialSystem.mode === 'academy');
   if(tutorialSystem.enabled) updateTutorialPhase();
   const argosHackUiActive = isStoryArgosHackCombat(state.storyMission || STORY_MISSION_BOOT);
   document.body.classList.toggle('story-argos-hack-ui', argosHackUiActive);
@@ -37117,9 +37499,9 @@ function academySummaryStep(title){
   return {
     id: 'academy-summary',
     title,
-    body: 'La fase ya ha quedado registrada en verde dentro del carnet PoCoBOT. Puedes volver a la academia o seguir repasando el tablero unos segundos.',
-    objective: 'El progreso queda guardado localmente en este navegador.',
-    tip: 'Cuando quieras, puedes volver a la academia o repetir la fase para afianzar lo aprendido.',
+    body: 'Fase registrada en el Carnet PoCoBOT.',
+    objective: 'Pulsa Siguiente fase o vuelve a la academia.',
+    tip: 'El progreso queda guardado en este navegador.',
     allowedButtons: [],
     allowedCardIds: null,
     highlightButtons: [],
@@ -37136,7 +37518,63 @@ function academyGetCandidateName(fallback='Cadete'){
   return name || fallback;
 }
 
+function academyNormalizeProfile(profile = academySystem.profile){
+  const validLessonIds = new Set(ACADEMY_LESSONS.map(lesson => lesson.id));
+  const source = profile && typeof profile === 'object' ? profile : getDefaultAcademyProfile();
+  const normalized = {
+    candidateName: academySanitizeName(source.candidateName || ''),
+    completed: {},
+    unlocked: {},
+    activeLessonId: ''
+  };
+
+  Object.keys(source.completed || {}).forEach(lessonId => {
+    if(validLessonIds.has(lessonId)) normalized.completed[lessonId] = true;
+  });
+  Object.keys(source.unlocked || {}).forEach(lessonId => {
+    if(validLessonIds.has(lessonId)) normalized.unlocked[lessonId] = true;
+  });
+  if(ACADEMY_LESSONS[0]) normalized.unlocked[ACADEMY_LESSONS[0].id] = true;
+
+  ACADEMY_LESSONS.forEach((lesson, index) => {
+    if(!normalized.completed[lesson.id]) return;
+    normalized.unlocked[lesson.id] = true;
+    const nextLesson = ACADEMY_LESSONS[index + 1];
+    if(nextLesson) normalized.unlocked[nextLesson.id] = true;
+  });
+
+  if(validLessonIds.has(source.activeLessonId) && !normalized.completed[source.activeLessonId]){
+    normalized.activeLessonId = source.activeLessonId;
+    normalized.unlocked[source.activeLessonId] = true;
+  }
+
+  academySystem.profile = normalized;
+  return normalized;
+}
+
+function academyRememberLessonAccess(lessonId, options = {}){
+  const lesson = academyGetLessonById(lessonId);
+  if(!lesson) return null;
+  const profile = academyNormalizeProfile();
+  profile.unlocked[lesson.id] = true;
+  if(options.active) profile.activeLessonId = lesson.id;
+  saveAcademyProfile();
+  return lesson.id;
+}
+
+function academyUnlockNextLesson(currentLessonId){
+  const idx = ACADEMY_LESSONS.findIndex(lesson => lesson.id === currentLessonId);
+  const nextLesson = idx >= 0 ? ACADEMY_LESSONS[idx + 1] : null;
+  if(!nextLesson) return null;
+  const profile = academyNormalizeProfile();
+  profile.unlocked[nextLesson.id] = true;
+  profile.activeLessonId = nextLesson.id;
+  saveAcademyProfile();
+  return nextLesson.id;
+}
+
 function academyPersistNameFromInput(){
+  academyNormalizeProfile();
   const input = document.getElementById('academyCadetName');
   const nextName = academySanitizeName(input?.value || '');
   academySystem.profile.candidateName = nextName;
@@ -37147,17 +37585,29 @@ function academyPersistNameFromInput(){
 }
 
 function academyGetValidCompletedLessonIds(){
+  academyNormalizeProfile();
   const completed = academySystem.profile?.completed || {};
   return ACADEMY_LESSONS
     .filter(lesson => !!completed[lesson.id])
     .map(lesson => lesson.id);
 }
 
+function academyGetValidUnlockedLessonIds(){
+  academyNormalizeProfile();
+  const unlocked = academySystem.profile?.unlocked || {};
+  return ACADEMY_LESSONS
+    .filter(lesson => !!unlocked[lesson.id])
+    .map(lesson => lesson.id);
+}
+
 function academyBuildProgressCode(){
+  academyNormalizeProfile();
   const payload = {
     v: 1,
     n: academyGetCandidateName(''),
-    c: academyGetValidCompletedLessonIds()
+    c: academyGetValidCompletedLessonIds(),
+    u: academyGetValidUnlockedLessonIds(),
+    a: academySystem.profile.activeLessonId || ''
   };
   return ACADEMY_PROGRESS_CODE_PREFIX + utf8ToBase64Url(JSON.stringify(payload));
 }
@@ -37179,14 +37629,23 @@ function academyImportProgressCode(rawCode){
 
   const validLessonIds = new Set(ACADEMY_LESSONS.map(lesson => lesson.id));
   const completed = {};
+  const unlocked = {};
   payload.c.forEach(lessonId => {
     if(validLessonIds.has(lessonId)) completed[lessonId] = true;
   });
+  if(Array.isArray(payload.u)){
+    payload.u.forEach(lessonId => {
+      if(validLessonIds.has(lessonId)) unlocked[lessonId] = true;
+    });
+  }
 
   academySystem.profile = {
     candidateName: academySanitizeName(payload.n || ''),
-    completed
+    completed,
+    unlocked,
+    activeLessonId: validLessonIds.has(payload.a) ? payload.a : ''
   };
+  academyNormalizeProfile();
   saveAcademyProfile();
   academyApplyOfflineBadges(state.players);
   renderAcademyMenu();
@@ -37198,7 +37657,7 @@ function showAcademyProgressCodeDialog(){
   academyPersistNameFromInput();
   const currentCode = academyBuildProgressCode();
   const pastedCode = window.prompt(
-    'Código de progreso PoCoBOT:\n\nCópialo para llevar tu Academia a otro navegador. En el otro navegador, pulsa este mismo botón, pega el código sustituyendo el texto y confirma.',
+    'Código de progreso PoCoBOT:\n\nCópialo para llevar tu Academia a otro navegador. Incluye fases completadas, fases desbloqueadas y la fase que dejaste empezada.',
     currentCode
   );
   if(pastedCode === null) return;
@@ -37216,8 +37675,14 @@ function showAcademyProgressCodeDialog(){
     return;
   }
 
+  addToast('Usa Cargar progreso para importar otro código', 'warn');
+}
+
+function showAcademyImportProgressDialog(){
+  const pastedCode = window.prompt('Pega aquí tu código de progreso PoCoBOT para cargar la academia guardada:', '');
+  if(pastedCode === null) return;
   try{
-    academyImportProgressCode(normalizedPasted);
+    academyImportProgressCode(pastedCode);
     addToast('Progreso de Academia importado', 'ok');
   }catch(err){
     addToast(err.message || 'No se pudo importar el progreso', 'warn');
@@ -37261,6 +37726,7 @@ function academyGetLessonById(lessonId){
 }
 
 function academyIsLessonCompleted(lessonId){
+  academyNormalizeProfile();
   return !!academySystem.profile?.completed?.[lessonId];
 }
 
@@ -37269,8 +37735,11 @@ function academyGetCompletedCount(){
 }
 
 function academyIsLessonUnlocked(lessonId){
+  academyNormalizeProfile();
   const idx = ACADEMY_LESSONS.findIndex(lesson => lesson.id === lessonId);
   if(idx <= 0) return true;
+  if(academySystem.profile?.unlocked?.[lessonId]) return true;
+  if(academyIsLessonCompleted(lessonId)) return true;
   return academyIsLessonCompleted(ACADEMY_LESSONS[idx - 1].id);
 }
 
@@ -37647,7 +38116,10 @@ function academyReturnToMenu(){
 function academyCompleteActiveLesson(){
   const lesson = academyGetLessonById(tutorialSystem.lessonId);
   if(!lesson) return;
+  academyNormalizeProfile();
   academySystem.profile.completed[lesson.id] = true;
+  const nextLessonId = academyUnlockNextLesson(lesson.id);
+  if(!nextLessonId) academySystem.profile.activeLessonId = '';
   academySystem.lastCompletedLessonId = lesson.id;
   saveAcademyProfile();
   tutorialSetStep(getActiveTutorialScript().length - 1, { clearSelection:false, renderNow:false });
@@ -37896,9 +38368,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-definition',
         title: 'Fase 1 · Qué es un mecha',
-        body: 'Un <strong>mecha PoCoBOT</strong> es un robot modular de combate. Para que exista de verdad en mesa necesita <strong>núcleo</strong> y al menos <strong>6 cartas de estadísticas</strong> repartidas entre <strong>Ataque</strong>, <strong>Defensa</strong> y <strong>Armadura</strong>, con <strong>1 piloto</strong> que le dé forma.<br><br><strong>Mapa rápido:</strong> ♠ ataque, ♥ defensa, ♣ armadura y ♦ combustible, defensa activa o robo.',
-        objective: 'Lee la definición y, cuando te cuadre, pulsa <strong>Entendido</strong>.',
-        tip: 'Este primer paso es intencionalmente corto: fija el vocabulario antes de tocar botones.',
+        body: 'Entiende el mapa base: <strong>núcleo</strong>, <strong>piloto</strong> y módulos de <strong>♠ Ataque</strong>, <strong>♥ Defensa</strong>, <strong>♣ Armadura</strong> y <strong>♦ Fuel</strong>.',
+        objective: 'Pulsa <strong>Entendido</strong>.',
+        tip: 'Un PoCoBOT necesita núcleo y estadísticas para combatir.',
         allowedButtons: ['clearSelectionBtn'],
         allowedCardIds: [],
         highlightButtons: [],
@@ -37929,9 +38401,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-pilot-choice',
         title: 'Fase 2 · Elegir piloto',
-        body: 'Un <strong>PILOTO es un LIMITANTE</strong>: obliga a que el módulo de su palo llegue a <strong>3 cartas</strong> para que el PoCoBOT pueda combatir. Si eliges un piloto de <strong>♠</strong>, el Ataque tendrá que llegar a 3; si fuera <strong>♥</strong> o <strong>♣</strong>, la exigencia se trasladaría a Defensa o Armadura. En cambio, el <strong>copiloto es una VENTAJA</strong>: permite tener <strong>3 cartas</strong> en el palo que sostiene.',
+        body: 'Fija un piloto de <strong>♠</strong> para orientar el mecha a ataque.',
         objective: 'Selecciona <strong>K♠</strong> y pulsa <strong>Modificar</strong> para fijar un mecha ofensivo.',
-        tip: 'Un piloto de ♦ no sirve como piloto principal.',
+        tip: 'El piloto obliga a reunir 3 cartas de su palo para combatir.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0Pilot],
         highlightButtons: ['actionAddBtn'],
@@ -37956,9 +38428,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-fuel-attack',
         title: 'Fase 3 · Atacar con combustible',
-        body: 'El <strong>fuel</strong> no es daño: es el permiso para disparar. Su valor total se multiplica por <strong>2</strong> y eso fija cuánto puede sumar tu ataque principal de picas.',
+        body: 'Lanza tu primer ataque usando fuel y picas.',
         objective: 'Pulsa <strong>Atacar</strong> o <strong>Abrir ataque</strong>, selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, y termina con <strong>Confirmar ataque</strong>.',
-        tip: 'El botón Atacar del panel del jugador te abre la consola superior y el botón Confirmar ataque se muestra en rojo como en la partida normal.',
+        tip: 'El fuel no daña: marca el límite del ataque principal x2.',
         allowedButtons: ['attackModeBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
         highlightButtons: ['attackModeBtn', 'confirmAttackBtn'],
@@ -37983,9 +38455,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-active-defense',
         title: 'Fase 4 · Defensa activa',
-        body: 'Cuando te atacan, puedes usar <strong>1 ♦ numérico de la mano</strong> para recortar el daño antes de que toque tu blindaje. En modo horizontal móvil aparece un <strong>acceso rápido de defensa</strong> en Controles; si quieres ver la consola completa, abre <strong>Todas las acciones</strong>.',
-        objective: 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>. En horizontal móvil puedes usar el botón rápido <strong>Elegir 1♦ / Confirmar defensa</strong>.',
-        tip: 'Las figuras de diamantes no valen aquí; solo cuentan los diamantes numéricos. Si no ves el botón principal, abre Todas las acciones.',
+        body: 'Reduce un ataque enemigo con una defensa activa.',
+        objective: 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>.',
+        tip: 'Solo 1 diamante numérico de la mano puede defender.',
         allowedButtons: ['confirmDefenseBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0DefendDiamond],
         highlightButtons: ['confirmDefenseBtn'],
@@ -38010,9 +38482,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-copilot-place',
         title: 'Fase 5 · Coloca copiloto',
-        body: 'El <strong>copiloto</strong> es una ventaja. Si es <strong>♠</strong>, <strong>♥</strong> o <strong>♣</strong>, <strong>PERMITE tener 3 cartas</strong> en <strong>♠ Ataque</strong>, <strong>♥ Defensa</strong> o <strong>♣ Armadura</strong> respectivamente. Si es <strong>♦</strong>, esa ventaja es <strong>dinámica</strong>: funciona como un comodín y puede prestarse a cualquiera de esos módulos (<strong>♠ Ataque</strong>, <strong>♥ Defensa</strong> o <strong>♣ Armadura</strong>) para ayudarle a llegar a <strong>3</strong>.',
+        body: 'Monta un copiloto para abrir una ventaja de módulo.',
         objective: 'Selecciona <strong>J♦</strong> y pulsa <strong>Modificar</strong> para montar el copiloto.',
-        tip: 'Primero verás entrar el copiloto en el núcleo y después el tutorial te devolverá el turno para aprovechar el tercer hueco que abre.',
+        tip: 'El copiloto no limita: ayuda a ampliar capacidad.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0Copilot],
         highlightButtons: ['actionAddBtn'],
@@ -38027,9 +38499,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-copilot-advantage',
         title: 'Fase 5 · Aprovecha la ventaja',
-        body: 'Ahora sí: como el copiloto de <strong>♦</strong> funciona como comodín de módulos, puede ayudar a <strong>♠ Ataque</strong>, <strong>♥ Defensa</strong> o <strong>♣ Armadura</strong> según lo que el mecha necesite. En este caso te presta un <strong>tercer hueco de defensa</strong>. Si el copiloto fuera <strong>♥</strong>, ese tercer hueco quedaría fijo en <strong>♥ Defensa</strong>; si fuera <strong>♠</strong> o <strong>♣</strong>, lo haría en <strong>♠ Ataque</strong> o <strong>♣ Armadura</strong>.',
+        body: 'Usa el hueco extra del copiloto para reforzar defensa.',
         objective: 'Selecciona <strong>3♥</strong> y pulsa <strong>Modificar</strong> para llevar defensa a 3.',
-        tip: 'Aquí debes ver cómo el 3♥ entra en Defensa y el módulo crece hasta 3 antes de cerrarse la fase.',
+        tip: 'El copiloto ♦ presta su ventaja al módulo que lo necesite.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
         allowedCardIds: [ACADEMY_CARD_IDS.lesson5Defense],
         highlightButtons: ['actionAddBtn'],
@@ -38054,9 +38526,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-diamond-draw',
         title: 'Fase 6 · Roba con diamantes',
-        body: 'Un <strong>♦ numérico en mano</strong> también puede convertirse en robo. Lo descargas y robas tantas cartas como indique su valor. En modo horizontal móvil aparece un acceso rápido <strong>Robar con ♦</strong> en Controles; si quieres ver la consola completa, abre <strong>Todas las acciones</strong>. <strong>Ojo:</strong> no puedes cambiar diamantes por robo <strong>dos turnos propios seguidos</strong>.',
-        objective: 'Selecciona <strong>2♦</strong> de tu mano y pulsa <strong>Robar con ♦</strong>. En horizontal móvil usa el botón rápido de Controles cuando se ilumine.',
-        tip: 'Ese bloqueo solo afecta a volver a robar con ♦ en tu siguiente turno propio. Aun así, si ya tienes piloto y copiloto, luego podrás reciclar mano con el acceso rápido <strong>2 Figuras → 4</strong>.',
+        body: 'Convierte un diamante numérico en robo de cartas.',
+        objective: 'Selecciona <strong>2♦</strong> de tu mano y pulsa <strong>Robar con ♦</strong>.',
+        tip: 'No puedes robar con ♦ en dos turnos propios seguidos.',
         allowedButtons: ['actionDrawDiamondBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0DrawDiamond],
         highlightButtons: ['actionDrawDiamondBtn'],
@@ -38071,9 +38543,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-figure-burst',
         title: 'Fase 6 · Exceso de figuras',
-        body: 'Cuando ya tienes <strong>piloto</strong> y <strong>copiloto</strong>, si consigues otras <strong>2 figuras cualquiera</strong> en tu mano puedes descartarlas en un sencillo movimiento y robar <strong>4 cartas extra</strong> del mazo. En modo horizontal móvil aparece el acceso rápido <strong>2 Figuras → 4</strong> en Controles. <strong>¡Incluso aunque hayas robado cartas del mazo descartando diamantes en el turno anterior! ASÍ DE FÁCIL.</strong>',
-        objective: 'Pulsa <strong>2 Figuras → 4</strong>. En horizontal móvil lo tienes como botón directo en Controles; en el modo completo también puedes abrir el panel del jugador.',
-        tip: 'El límite de “no robar dos veces seguidas con ♦” no impide este reciclado especial por figuras. Si no ves un botón avanzado, abre <strong>Todas las acciones</strong> para consultar la consola completa.',
+        body: 'Recicla figuras sobrantes para ganar mano.',
+        objective: 'Pulsa <strong>2 Figuras → 4</strong>.',
+        tip: 'Con piloto y copiloto, 2 figuras extra se cambian por 4 cartas.',
         allowedButtons: ['quickFigureDrawBtn'],
         allowedCardIds: [],
         highlightButtons: ['quickFigureDrawBtn'],
@@ -38097,9 +38569,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-pass-two-cards',
         title: 'Fase 7 · Pasar descartando 2 cartas',
-        body: 'Si no quieres o no puedes hacer una jugada útil, puedes <strong>pasar turno</strong>. Lo normal es descartar <strong>2 cartas obligatoriamente</strong> para ceder la iniciativa.',
+        body: 'Practica pasar turno pagando el coste normal.',
         objective: 'Selecciona las <strong>2 cartas</strong> de tu mano y pulsa <strong>Pasar</strong>.',
-        tip: 'Primero practicamos el caso normal: pasar pagando 2 cartas.',
+        tip: 'Pasar descarta 2 cartas y cede la iniciativa.',
         allowedButtons: ['actionPassBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0DefendDiamond, TUTORIAL_CARD_IDS.p0DrawDiamond],
         highlightButtons: ['actionPassBtn'],
@@ -38114,9 +38586,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-pass-one-card',
         title: 'Fase 7 · Pasar con una sola carta',
-        body: 'Ahora empieza tu siguiente turno y el juego te ha dado <strong>1 carta nueva</strong>. Si quieres volver a pasar pero no tienes 2 cartas, también puedes hacerlo usando <strong>esa única carta</strong>.',
+        body: 'Practica pasar cuando solo queda una carta.',
         objective: 'Selecciona la <strong>única carta</strong> de tu mano y pulsa <strong>Pasar</strong>.',
-        tip: 'Esta excepción evita que te quedes bloqueado cuando el turno empieza con una sola carta en la mano.',
+        tip: 'Si no tienes 2 cartas, puedes pasar descartando lo que tengas.',
         allowedButtons: ['actionPassBtn', 'clearSelectionBtn'],
         allowedCardIds: () => state.players[0]?.hand?.length ? [state.players[0].hand[0].id] : [],
         highlightButtons: ['actionPassBtn'],
@@ -38141,9 +38613,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-swap-upgrade',
         title: 'Fase 8 · Mejorar un módulo',
-        body: '<strong>Modificar</strong> no solo coloca cartas: también permite <strong>sustituir</strong> una carta ya montada por otra mejor del mismo módulo. Y ese mismo gesto puede usarse también para cambiar <strong>piloto</strong>, <strong>copiloto</strong> o <strong>potenciador</strong>.',
-        objective: 'Con el piloto de <strong>♠</strong> sosteniendo 3 cartas de ataque, selecciona <strong>8♠</strong> de tu mano y <strong>4♠</strong> del panel, luego pulsa <strong>Modificar</strong>.',
-        tip: 'La carta vieja se descarta y la nueva ocupa exactamente ese hueco. Después verás el mismo principio aplicado a un cambio de piloto.',
+        body: 'Sustituye una carta montada por otra mejor.',
+        objective: 'Selecciona <strong>8♠</strong> de tu mano y <strong>4♠</strong> del panel; pulsa <strong>Modificar</strong>.',
+        tip: 'Modificar también sirve para intercambiar cartas ya colocadas.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
         highlightButtons: ['actionAddBtn'],
@@ -38169,9 +38641,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-core-swap',
         title: 'Fase 8 · Cambiar el piloto',
-        body: 'Ahora aplicamos el intercambio al <strong>núcleo</strong>. Si sustituyes el piloto de <strong>♠</strong> por uno de <strong>♥</strong>, el mecha deja de sostener 3 huecos en Ataque y ese exceso debe ajustarse automáticamente. Como la Defensa ya está preparada, el nuevo piloto de <strong>♥</strong> encaja y el sistema soltará por sí solo la <strong>pica de menor valor</strong> que sobre.',
+        body: 'Cambia el piloto y observa cómo se recalcula el mecha.',
         objective: 'Selecciona <strong>K♥</strong> de tu mano y el <strong>K♠</strong> del núcleo, luego pulsa <strong>Modificar</strong>.',
-        tip: 'La idea importante es esta: al cambiar piloto, copiloto o potenciador, el mecha se recalcula solo. Si un módulo se pasa de capacidad, el ajuste baja automáticamente la carta sobrante de menor valor.',
+        tip: 'Si un módulo se pasa de capacidad, cae la carta sobrante de menor valor.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
         allowedCardIds: [ACADEMY_CARD_IDS.lesson8PilotSwap, TUTORIAL_CARD_IDS.p0Pilot],
         highlightButtons: ['actionAddBtn'],
@@ -38198,9 +38670,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-armor-fuel',
         title: 'Fase 9 · As♦ y armadura como fuel',
-        body: 'El <strong>As♦</strong> no amplía un módulo como otros ases. Su truco es permitirte gastar <strong>♣ armadura del panel como combustible</strong>.<br><br>Es potencia inmediata, pero a costa de adelgazar el blindaje.',
-        objective: 'Pulsa <strong>Atacar</strong> o <strong>Abrir ataque</strong>, selecciona <strong>6♣</strong> en Armadura y <strong>4♠ + 7♠</strong> en Ataque, y termina con <strong>Confirmar ataque</strong>.',
-        tip: 'El botón Atacar del panel del jugador queda habilitado para que puedas subir al panel principal como en la partida real. Si la armadura entra como fuel, luego desaparece del panel.',
+        body: 'Usa armadura como combustible gracias al <strong>As♦</strong>.',
+        objective: 'Ataca con <strong>6♣</strong> como fuel y <strong>4♠ + 7♠</strong>; pulsa <strong>Confirmar ataque</strong>.',
+        tip: 'La armadura usada como fuel se descarta después del ataque.',
         allowedButtons: ['attackModeBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0ArmorA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
         highlightButtons: ['attackModeBtn', 'confirmAttackBtn'],
@@ -38225,9 +38697,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-projectile-only',
         title: 'Fase 10 · Solo proyectil',
-        body: 'El <strong>proyectil</strong> es una pica que se dispara y se descarta. En modo “solo proyectil” no necesitas fuel: solo una pica montada y el disparo desbloqueado. En modo horizontal móvil, al abrir ataque aparecerá <strong>Solo proyectil</strong> directamente en Controles; si quieres ver la consola completa, abre <strong>Todas las acciones</strong>.',
-        objective: 'Pulsa <strong>Atacar</strong> o <strong>Abrir ataque</strong>, selecciona <strong>7♠</strong> y usa <strong>Solo proyectil</strong>. En horizontal móvil no hace falta abrir el panel completo: el botón aparece en Controles.',
-        tip: 'He dejado activo también el botón Atacar del panel del jugador para que puedas subir al control principal sin perderte. El botón Solo proyectil se ilumina cuando la pica marcada ya sirve para disparar.',
+        body: 'Dispara una pica como proyectil sin gastar fuel.',
+        objective: 'Pulsa <strong>Atacar</strong>, selecciona <strong>7♠</strong> y usa <strong>Solo proyectil</strong>.',
+        tip: 'Solo proyectil descarta una pica numérica montada.',
         allowedButtons: ['attackModeBtn', 'projectileOnlyBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackA],
         highlightButtons: ['attackModeBtn', 'projectileOnlyBtn'],
@@ -38244,9 +38716,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-projectile-combo',
         title: 'Fase 10 · Ataque normal + proyectil',
-        body: 'Ahora combinamos ambos mundos: <strong>4♦</strong> limita el ataque principal a <strong>8</strong>, así que solo podrás usar la <strong>8♠</strong> como ataque normal y necesitarás sumar la <strong>4♠</strong> como proyectil para rematar. En horizontal móvil, tras abrir ataque, <strong>Modo proyectil</strong> aparece también en Controles. <strong>Importante:</strong> la <strong>última carta marcada</strong> en ataque será la que salga como proyectil.',
-        objective: 'Pulsa <strong>Atacar</strong> o <strong>Abrir ataque</strong>, activa <strong>Modo proyectil</strong> desde Controles y marca <strong>4♦ + 8♠</strong>, dejando <strong>4♠</strong> como última carta seleccionada antes de confirmar.',
-        tip: 'Si intentas cerrar este paso sin combinar proyectil con ataque, la fase se reinicia. Recuerda: la última pica marcada será el proyectil. Para ver la consola completa, abre <strong>Todas las acciones</strong>.',
+        body: 'Combina ataque principal y proyectil para rematar.',
+        objective: 'Activa <strong>Modo proyectil</strong>, marca fuel y picas, y deja la pica proyectil para el final.',
+        tip: 'En Modo proyectil, la última pica marcada sale libre de fuel.',
         allowedButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
         allowedCardIds: [ACADEMY_CARD_IDS.lesson10Fuel, TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
         highlightButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn'],
@@ -38256,7 +38728,6 @@ const ACADEMY_LESSONS = [
           if(!state.projectileMode) return 'toggleProjectile';
           return 'confirmAttack';
         },
-        expectedSelection: [ACADEMY_CARD_IDS.lesson10Fuel, TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
         isComplete: () => tutorialSystem.validation.academyProjectileComboUsed && state.winner === state.players[0]?.name && academySceneSettled(),
         onComplete: () => academyCompleteActiveLesson()
       },
@@ -38275,9 +38746,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-short-fight',
         title: 'Fase 11 · Combate completo',
-        body: 'Última fase: ahora juegas una <strong>partida completa en dificultad fácil contra la CPU</strong>, con montaje normal, turnos normales y combate normal. El objetivo real del juego es dejar al rival <strong>sin corazones</strong>.<br><br><strong>Muy importante:</strong> las cartas de <strong>♥ Defensa</strong>, si se pierden, <strong>desaparecen de la partida</strong>. En cambio, las cartas de <strong>♣ Armadura</strong> se descartan y pueden volver más adelante cuando el mazo se recicle.',
-        objective: 'Monta tu mecha y gana la partida contra el instructor. Si pierdes, pulsa <strong>Nueva partida</strong> o repite la fase desde la Academia.',
-        tip: 'Aquí no hay cartas preseleccionadas ni recorrido marcado: es una partida real de práctica para aplicar todo lo aprendido.',
+        body: 'Cierra la academia ganando una partida completa.',
+        objective: 'Monta tu mecha y gana la partida contra el instructor.',
+        tip: 'Ganas cuando el rival se queda sin defensa de corazones.',
         allowedButtons: [],
         allowedCardIds: null,
         highlightButtons: [],
@@ -38291,6 +38762,7 @@ const ACADEMY_LESSONS = [
 ];
 
 function renderAcademyMenu(){
+  academyNormalizeProfile();
   const input = document.getElementById('academyCadetName');
   if(input && input.value !== (academySystem.profile.candidateName || '')){
     input.value = academySystem.profile.candidateName || '';
@@ -38313,6 +38785,7 @@ function renderAcademyMenu(){
   const previewMeta = document.getElementById('academyPreviewMeta');
   const quickDownloadBtn = document.getElementById('academyCertificateQuickDownloadBtn');
   const progressCodeBtn = document.getElementById('academyProgressCodeBtn');
+  const importCodeBtn = document.getElementById('academyImportCodeBtn');
   const resetBtn = document.getElementById('academyResetBtn');
   const unlocked = academyAllLessonsCompleted();
   const candidateName = academyGetCandidateName('Cadete PoCoBOT');
@@ -38320,8 +38793,8 @@ function renderAcademyMenu(){
   if(progressCopy) progressCopy.innerHTML = `Completadas <strong>${completed}/${total}</strong> fases del carnet PoCoBOT.`;
   if(progressFill) progressFill.style.width = `${(completed / total) * 100}%`;
   if(progressNote) progressNote.textContent = academyAllLessonsCompleted()
-    ? 'El progreso se guarda en este navegador. Usa Código progreso para llevarlo a otro navegador. Ya has conseguido el emblema PB de Piloto PoCoBOT, que aparece junto al nombre del jugador en todos los modos, además del carnet oficial.'
-    : 'El progreso se guarda en este navegador con el nombre del cadete. Usa Código progreso para exportarlo. Supera las 11 fases para conseguir el emblema PB de Piloto PoCoBOT y el carnet oficiales.';
+    ? 'El progreso se guarda en este navegador. Usa Guardar progreso o Cargar progreso para llevar el carnet a otro navegador. Ya has conseguido el emblema PB de Piloto PoCoBOT, que aparece junto al nombre del jugador en todos los modos, además del carnet oficial.'
+    : 'El progreso se guarda en este navegador con el nombre del cadete. Usa Guardar progreso o Cargar progreso para moverlo entre dispositivos. Supera las 11 fases para conseguir el emblema PB de Piloto PoCoBOT y el carnet oficiales.';
   if(certificateBtn){
     certificateBtn.hidden = !unlocked;
     certificateBtn.textContent = unlocked ? 'Ver o descargar carnet' : 'Carnet bloqueado';
@@ -38353,7 +38826,10 @@ function renderAcademyMenu(){
   }
   if(quickDownloadBtn) quickDownloadBtn.hidden = !unlocked;
   if(progressCodeBtn){
-    progressCodeBtn.title = 'Exporta o importa el progreso local de la Academia con un código PoCoBOT.';
+    progressCodeBtn.title = 'Exporta el progreso local de la Academia con un código PoCoBOT.';
+  }
+  if(importCodeBtn){
+    importCodeBtn.title = 'Carga un código PoCoBOT guardado en otro navegador o dispositivo.';
   }
   if(resetBtn){
     resetBtn.hidden = !academySystem.secretResetUnlocked;
@@ -38368,10 +38844,11 @@ function renderAcademyMenu(){
   ACADEMY_LESSONS.forEach((lesson, index) => {
     const completedLesson = academyIsLessonCompleted(lesson.id);
     const unlocked = academyIsLessonUnlocked(lesson.id);
+    const activeLesson = !completedLesson && academySystem.profile?.activeLessonId === lesson.id;
     const card = document.createElement('article');
     card.className = `academy-lesson-card ${completedLesson ? 'completed' : unlocked ? 'available' : 'locked'}`;
-    const statusLabel = completedLesson ? 'Completada' : unlocked ? 'Disponible' : 'Bloqueada';
-    const buttonLabel = completedLesson ? 'Repetir fase' : unlocked ? 'Empezar fase' : 'Bloqueada';
+    const statusLabel = completedLesson ? 'Completada' : activeLesson ? 'En curso' : unlocked ? 'Disponible' : 'Bloqueada';
+    const buttonLabel = completedLesson ? 'Repetir fase' : activeLesson ? 'Continuar fase' : unlocked ? 'Empezar fase' : 'Bloqueada';
     card.innerHTML = `
       <div class="academy-lesson-top">
         <div>
@@ -38454,6 +38931,7 @@ function startAcademyLesson(lessonId){
   const lesson = academyGetLessonById(lessonId);
   if(!lesson || !academyIsLessonUnlocked(lessonId)) return;
   academyPersistNameFromInput();
+  academyRememberLessonAccess(lesson.id, { active:true });
   ensureAudio();
   ensureMusicElements();
   syncMusicToState();
@@ -38629,7 +39107,13 @@ document.getElementById('academyProgressCodeBtn').addEventListener('click', () =
   showAcademyProgressCodeDialog();
 });
 
+document.getElementById('academyImportCodeBtn').addEventListener('click', () => {
+  playUiSound('tap');
+  showAcademyImportProgressDialog();
+});
+
 document.getElementById('academyLocalModeChip').addEventListener('click', academyHandleLocalModeSecretTap);
+document.getElementById('academyProgressCopy').addEventListener('click', academyHandleLocalModeSecretTap);
 
 document.getElementById('academyResetBtn').addEventListener('click', () => {
   if(!academySystem.secretResetUnlocked) return;
