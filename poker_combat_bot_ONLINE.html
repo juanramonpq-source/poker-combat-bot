@@ -5808,6 +5808,7 @@ body.story-argos-hack-ui .pro-turn-kicker{
 .tutorial-assistant-bubble{
   position:relative;
   min-width:0;
+  max-width:100%;
   padding:14px 16px 12px;
   border-radius:20px;
   border:1px solid rgba(255,255,255,.10);
@@ -5817,6 +5818,26 @@ body.story-argos-hack-ui .pro-turn-kicker{
   box-shadow:
     0 12px 28px rgba(2,9,18,.28),
     inset 0 1px 0 rgba(255,255,255,.65);
+}
+.tutorial-assistant-dismiss{
+  position:absolute;
+  top:8px;
+  right:8px;
+  width:26px;
+  height:26px;
+  border:0;
+  border-radius:999px;
+  background:rgba(15,77,102,.10);
+  color:#275d74;
+  font:900 .8rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  cursor:pointer;
+  transition:transform .14s ease, background .18s ease, color .18s ease;
+}
+.tutorial-assistant-dismiss:hover,
+.tutorial-assistant-dismiss:focus-visible{
+  background:rgba(15,77,102,.18);
+  color:#0f4d66;
+  transform:scale(1.06);
 }
 .tutorial-assistant-bubble::before{
   content:'';
@@ -5842,7 +5863,9 @@ body.story-argos-hack-ui .pro-turn-kicker{
   font-size:.93rem;
   line-height:1.42;
   font-weight:800;
-  text-wrap:balance;
+  text-wrap:pretty;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 .tutorial-assistant-message strong{
   color:#0f4d66;
@@ -5873,6 +5896,178 @@ body.story-argos-hack-ui .pro-turn-kicker{
 .tutorial-panel.tutobot-sequence-only .tutorial-panel-status,
 .tutorial-panel.tutobot-sequence-only .tutorial-panel-actions{
   display:none !important;
+}
+.tutorial-panel .tutorial-assistant{
+  grid-template-columns:minmax(0, 1fr);
+  justify-items:center;
+  align-items:center;
+  gap:10px;
+  text-align:center;
+}
+.tutorial-panel .tutorial-assistant-stage{
+  width:min(96px, 100%);
+}
+.tutorial-panel .tutorial-assistant-bubble{
+  width:100%;
+  max-width:100%;
+  padding:12px 14px 10px;
+}
+.tutorial-panel .tutorial-assistant-bubble::before{
+  left:50%;
+  top:-10px;
+  bottom:auto;
+  transform:translateX(-50%) rotate(45deg);
+}
+.tutorial-panel .tutorial-assistant-name,
+.tutorial-panel .tutorial-assistant-meta{
+  text-align:center;
+}
+.tutorial-panel .tutorial-assistant-message{
+  font-size:.82rem;
+  line-height:1.28;
+}
+.tutorial-panel .tutorial-assistant-subline{
+  font-size:.72rem;
+}
+.tutorial-panel.tutobot-sequence-only .tutorial-assistant-stage{
+  width:min(84px, 100%);
+}
+.tutorial-panel.tutobot-sequence-only .tutorial-assistant-bubble{
+  padding:10px 12px 8px;
+}
+.tutorial-panel.tutobot-sequence-only .tutorial-assistant-message{
+  font-size:.78rem;
+  line-height:1.24;
+}
+.tutorial-panel.tutobot-sequence-only .tutorial-assistant-meta{
+  display:none;
+}
+.tutobot-overlay{
+  position:fixed;
+  inset:0;
+  z-index:240;
+  display:grid;
+  place-items:center;
+  padding:clamp(16px, 3vw, 30px);
+}
+.tutobot-overlay[hidden]{
+  display:none !important;
+}
+.tutobot-overlay-backdrop{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(120,216,255,.18), transparent 40%),
+    linear-gradient(180deg, rgba(5,10,28,.78), rgba(5,10,28,.88));
+  backdrop-filter:blur(8px);
+}
+.tutobot-overlay-card{
+  position:relative;
+  z-index:1;
+  width:min(1080px, calc(100vw - 32px));
+  max-height:min(88dvh, 920px);
+  padding:clamp(18px, 3.4vw, 34px);
+  border-radius:28px;
+  border:1px solid rgba(127,229,255,.26);
+  background:
+    linear-gradient(180deg, rgba(14,27,54,.96), rgba(8,16,30,.98)),
+    radial-gradient(circle at 50% 0%, rgba(114,220,255,.08), transparent 48%);
+  box-shadow:
+    0 28px 72px rgba(1,4,14,.52),
+    inset 0 0 42px rgba(103,241,255,.08);
+  overflow:auto;
+}
+.tutobot-overlay-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
+}
+.tutobot-overlay-kicker{
+  color:#9deaff;
+  font:900 .76rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.tutobot-overlay-close{
+  min-height:34px;
+  padding:0 14px;
+  border:1px solid rgba(146,221,255,.22);
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  color:#f0fbff;
+  font:900 .72rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.tutobot-overlay .tutorial-assistant{
+  grid-template-columns:minmax(220px, 320px) minmax(0, 1fr);
+  align-items:center;
+  gap:clamp(16px, 3vw, 34px);
+  margin:0;
+}
+.tutobot-overlay .tutorial-assistant-stage{
+  width:100%;
+}
+.tutobot-overlay .tutorial-assistant-holo{
+  padding:18px 18px 0;
+  border-radius:30px;
+  min-height:min(50vh, 520px);
+  display:flex;
+  align-items:flex-end;
+}
+.tutobot-overlay .tutorial-assistant-holo img{
+  max-height:min(56vh, 560px);
+  margin-inline:auto;
+}
+.tutobot-overlay .tutorial-assistant-bubble{
+  width:100%;
+  padding:22px 24px 18px;
+  border-radius:28px;
+}
+.tutobot-overlay .tutorial-assistant-name{
+  font-size:.82rem;
+}
+.tutobot-overlay .tutorial-assistant-message{
+  font-size:clamp(1.18rem, 2vw, 1.56rem);
+  line-height:1.24;
+}
+.tutobot-overlay .tutorial-assistant-subline{
+  font-size:clamp(.92rem, 1.4vw, 1.04rem);
+  line-height:1.42;
+}
+.tutobot-overlay .tutorial-assistant-meta{
+  font-size:.76rem;
+  color:#44677a;
+}
+.tutobot-overlay-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:16px;
+}
+.tutobot-overlay-primary,
+.tutobot-overlay-secondary{
+  min-height:42px;
+  padding:0 18px;
+  border-radius:999px;
+  font:900 .8rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.tutobot-overlay-primary{
+  border:1px solid rgba(255,228,142,.32);
+  background:linear-gradient(180deg, #fff0a7, #ffc96f);
+  color:#3c2200;
+  box-shadow:0 10px 22px rgba(0,0,0,.18);
+}
+.tutobot-overlay-secondary{
+  border:1px solid rgba(146,221,255,.22);
+  background:rgba(255,255,255,.06);
+  color:#e8fbff;
 }
 .hint-close-btn{
   position:absolute;
@@ -7948,11 +8143,31 @@ body.desktop-compact-mode > footer{
   --tutobot-size:112px;
 }
 .compact-tutorial-panel .tutorial-assistant{
+  grid-column:1 / -1;
+  grid-template-columns:minmax(0, 1fr);
+  justify-items:center;
+  align-items:center;
   margin:2px 0 4px;
-  gap:10px;
+  gap:8px;
+  text-align:center;
+}
+.compact-tutorial-panel .tutorial-assistant-stage{
+  width:min(128px, 100%);
 }
 .compact-tutorial-panel .tutorial-assistant-bubble{
+  width:100%;
+  max-width:100%;
   padding:12px 14px 10px;
+}
+.compact-tutorial-panel .tutorial-assistant-bubble::before{
+  left:50%;
+  top:-10px;
+  bottom:auto;
+  transform:translateX(-50%) rotate(45deg);
+}
+.compact-tutorial-panel .tutorial-assistant-name,
+.compact-tutorial-panel .tutorial-assistant-meta{
+  text-align:center;
 }
 .compact-tutorial-panel .tutorial-assistant-message{
   font-size:.84rem;
@@ -7962,6 +8177,26 @@ body.desktop-compact-mode > footer{
 }
 .compact-tutorial-panel .tutorial-assistant-meta{
   font-size:.64rem;
+}
+.compact-tutorial-panel.tutobot-sequence-only{
+  align-content:start;
+  --tutobot-size:82px;
+}
+.compact-tutorial-panel.tutobot-sequence-only .tutorial-assistant{
+  margin:4px 0 0;
+}
+.compact-tutorial-panel.tutobot-sequence-only .tutorial-assistant-stage{
+  width:min(84px, 100%);
+}
+.compact-tutorial-panel.tutobot-sequence-only .tutorial-assistant-bubble{
+  padding:10px 12px 8px;
+}
+.compact-tutorial-panel.tutobot-sequence-only .tutorial-assistant-message{
+  font-size:.76rem;
+  line-height:1.24;
+}
+.compact-tutorial-panel.tutobot-sequence-only .tutorial-assistant-meta{
+  display:none;
 }
 .compact-tutorial-panel.tutobot-sequence-only .compact-kicker,
 .compact-tutorial-panel.tutobot-sequence-only h2,
@@ -7982,6 +8217,35 @@ body.desktop-compact-mode > footer{
   }
   .tutorial-assistant-message{
     font-size:.88rem;
+  }
+  .tutobot-overlay-card{
+    width:min(100%, calc(100vw - 20px));
+    padding:16px 14px 18px;
+    border-radius:24px;
+  }
+  .tutobot-overlay .tutorial-assistant{
+    grid-template-columns:minmax(0, 1fr);
+    justify-items:center;
+    text-align:center;
+  }
+  .tutobot-overlay .tutorial-assistant-stage{
+    width:min(240px, 100%);
+  }
+  .tutobot-overlay .tutorial-assistant-holo{
+    min-height:0;
+    padding:14px 14px 0;
+  }
+  .tutobot-overlay .tutorial-assistant-bubble{
+    padding:18px 18px 16px;
+  }
+  .tutobot-overlay .tutorial-assistant-bubble::before{
+    left:50%;
+    top:-10px;
+    bottom:auto;
+    transform:translateX(-50%) rotate(45deg);
+  }
+  .tutobot-overlay-actions{
+    justify-content:center;
   }
 }
 
@@ -25481,6 +25745,7 @@ body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-cards
           </div>
         </div>
         <div class="tutorial-assistant-bubble" data-tutobot-bubble hidden>
+          <button class="tutorial-assistant-dismiss" type="button" data-tutobot-dismiss aria-label="Ocultar TutoBOT">×</button>
           <div class="tutorial-assistant-name">TutoBOT</div>
           <div class="tutorial-assistant-message" id="tutorialAssistantMessage" data-tutobot-message></div>
           <div class="tutorial-assistant-meta" id="tutorialAssistantMeta" data-tutobot-meta></div>
@@ -25879,6 +26144,7 @@ body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-cards
             </div>
           </div>
           <div class="tutorial-assistant-bubble" data-tutobot-bubble hidden>
+            <button class="tutorial-assistant-dismiss" type="button" data-tutobot-dismiss aria-label="Ocultar TutoBOT">×</button>
             <div class="tutorial-assistant-name">TutoBOT</div>
             <div class="tutorial-assistant-message" id="compactTutorialAssistantMessage" data-tutobot-message></div>
             <div class="tutorial-assistant-meta" id="compactTutorialAssistantMeta" data-tutobot-meta></div>
@@ -25923,6 +26189,39 @@ body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-cards
       ></video>
     </div>
     <div class="attack-special-monitor-foot" aria-hidden="true"><span></span><span></span><span></span></div>
+  </div>
+</div>
+
+<div class="tutobot-overlay" id="tutorialBotOverlay" hidden aria-hidden="true">
+  <div class="tutobot-overlay-backdrop" id="tutorialBotOverlayBackdrop"></div>
+  <div class="tutobot-overlay-card" role="dialog" aria-modal="true" aria-labelledby="tutorialBotOverlayTitle">
+    <div class="tutobot-overlay-head">
+      <div class="tutobot-overlay-kicker" id="tutorialBotOverlayTitle">Guía de TutoBOT</div>
+      <button class="tutobot-overlay-close" id="tutorialBotOverlayCloseBtn" type="button">Cerrar</button>
+    </div>
+    <div class="tutorial-assistant tutorial-assistant--overlay">
+      <div class="tutorial-assistant-stage">
+        <div class="tutorial-assistant-holo">
+          <img
+            id="tutorialBotOverlaySprite"
+            data-tutobot-overlay-sprite
+            src="assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png"
+            alt="TutoBOT"
+            loading="eager"
+            decoding="async"
+          >
+        </div>
+      </div>
+      <div class="tutorial-assistant-bubble" id="tutorialBotOverlayBubble" data-tutobot-overlay-bubble hidden>
+        <div class="tutorial-assistant-name">TutoBOT</div>
+        <div class="tutorial-assistant-message" id="tutorialBotOverlayMessage" data-tutobot-overlay-message></div>
+        <div class="tutorial-assistant-meta" id="tutorialBotOverlayMeta" data-tutobot-overlay-meta></div>
+        <div class="tutobot-overlay-actions">
+          <button class="tutobot-overlay-primary" id="tutorialBotOverlayPrimaryBtn" type="button">Entendido</button>
+          <button class="tutobot-overlay-secondary" id="tutorialBotOverlaySecondaryBtn" type="button">Ocultar por ahora</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -26023,6 +26322,8 @@ const tutorialBotState = {
   introActive: false,
   greetingActive: false,
   greetingDone: false,
+  overlayDismissed: false,
+  panelDismissedKey: '',
   frameMode: 'idle',
   frameIndex: 0,
   currentFrame: TUTOBOT_TALK_FRAMES[0],
@@ -32735,21 +33036,39 @@ function getTutorialBotFrameSet(mode = tutorialBotState.frameMode){
 function syncTutorialBotDom(payload = getTutorialBotSpeechPayload()){
   const active = !!payload?.visible;
   const sprite = payload?.sprite || TUTOBOT_TALK_FRAMES[0];
+  const messageKey = payload?.messageKey || '';
+  const panelDismissed = !!messageKey && tutorialBotState.panelDismissedKey === messageKey;
+  const overlayActive = active && !!payload?.sequenceOnly && !tutorialBotState.overlayDismissed;
+  const panelActive = active && !payload?.sequenceOnly && !panelDismissed;
+
   document.querySelectorAll('[data-tutobot-shell]').forEach(node => {
-    node.hidden = !active;
+    node.hidden = !panelActive;
   });
   document.querySelectorAll('[data-tutobot-sprite]').forEach(img => {
     if(img.getAttribute('src') !== sprite) img.setAttribute('src', sprite);
   });
   document.querySelectorAll('[data-tutobot-bubble]').forEach(node => {
-    node.hidden = !(active && payload?.bubbleVisible);
+    node.hidden = !(panelActive && payload?.bubbleVisible);
   });
   document.querySelectorAll('[data-tutobot-message]').forEach(node => {
-    node.innerHTML = active && payload?.bubbleVisible ? payload.messageHtml : '';
+    node.innerHTML = panelActive && payload?.bubbleVisible ? payload.messageHtml : '';
   });
   document.querySelectorAll('[data-tutobot-meta]').forEach(node => {
-    node.textContent = active && payload?.bubbleVisible ? payload.meta : '';
+    node.textContent = panelActive && payload?.bubbleVisible ? payload.meta : '';
   });
+  const overlay = document.getElementById('tutorialBotOverlay');
+  if(overlay){
+    overlay.hidden = !overlayActive;
+    overlay.setAttribute('aria-hidden', overlayActive ? 'false' : 'true');
+  }
+  const overlayBubble = document.getElementById('tutorialBotOverlayBubble');
+  if(overlayBubble) overlayBubble.hidden = !(overlayActive && payload?.bubbleVisible);
+  const overlaySprite = document.getElementById('tutorialBotOverlaySprite');
+  if(overlaySprite && overlaySprite.getAttribute('src') !== sprite) overlaySprite.setAttribute('src', sprite);
+  const overlayMessage = document.getElementById('tutorialBotOverlayMessage');
+  if(overlayMessage) overlayMessage.innerHTML = overlayActive && payload?.bubbleVisible ? payload.messageHtml : '';
+  const overlayMeta = document.getElementById('tutorialBotOverlayMeta');
+  if(overlayMeta) overlayMeta.textContent = overlayActive && payload?.bubbleVisible ? payload.meta : '';
   document.getElementById('tutorialPanel')?.classList.toggle('tutobot-sequence-only', !!payload?.sequenceOnly);
   document.querySelector('.compact-tutorial-panel')?.classList.toggle('tutobot-sequence-only', !!payload?.sequenceOnly);
 }
@@ -32759,6 +33078,8 @@ function resetTutorialBotState(){
   tutorialBotState.introActive = false;
   tutorialBotState.greetingActive = false;
   tutorialBotState.greetingDone = false;
+  tutorialBotState.overlayDismissed = false;
+  tutorialBotState.panelDismissedKey = '';
   tutorialBotState.frameMode = 'idle';
   tutorialBotState.frameIndex = 0;
   tutorialBotState.currentFrame = TUTOBOT_TALK_FRAMES[0];
@@ -32806,6 +33127,29 @@ function playTutoBotSpeakSound(){
   window.setTimeout(() => playTone(980, .026, 'square', .008, 1180), 88);
 }
 
+function dismissTutorialBotPanel(){
+  const payload = getTutorialBotSpeechPayload();
+  if(payload?.messageKey) tutorialBotState.panelDismissedKey = payload.messageKey;
+  syncTutorialBotPresentation();
+}
+
+function dismissTutorialBotOverlay(){
+  if(!tutorialBotUsesCharacter()) return;
+  tutorialBotState.overlayDismissed = true;
+  if(tutorialBotState.greetingTimer){
+    window.clearTimeout(tutorialBotState.greetingTimer);
+    tutorialBotState.greetingTimer = null;
+  }
+  if(tutorialBotState.introActive || tutorialBotState.greetingActive){
+    tutorialBotState.introActive = false;
+    tutorialBotState.greetingActive = false;
+    tutorialBotState.greetingDone = true;
+    setTutorialBotFrameMode('talk');
+  }
+  syncTutorialBotPresentation();
+  render();
+}
+
 function startTutorialBotIntroSequence(){
   if(!tutorialBotUsesCharacter()){
     resetTutorialBotState();
@@ -32819,12 +33163,6 @@ function startTutorialBotIntroSequence(){
     tutorialBotState.greetingActive = true;
     setTutorialBotFrameMode('talk');
     syncTutorialBotPresentation();
-    tutorialBotState.greetingTimer = window.setTimeout(() => {
-      tutorialBotState.greetingActive = false;
-      tutorialBotState.greetingDone = true;
-      syncTutorialBotPresentation();
-      render();
-    }, 2600);
     render();
   }, 820);
 }
@@ -32847,7 +33185,8 @@ function getTutorialBotSpeechPayload(){
       sprite: tutorialBotState.currentFrame,
       messageHtml: '',
       meta: '',
-      soundKey: ''
+      soundKey: '',
+      messageKey: 'intro'
     };
   }
   if(tutorialBotState.greetingActive || !tutorialBotState.greetingDone){
@@ -32857,8 +33196,9 @@ function getTutorialBotSpeechPayload(){
       sequenceOnly: true,
       sprite: tutorialBotState.currentFrame,
       messageHtml: TUTOBOT_GREETING_HTML,
-      meta: 'Tutorial compacto listo',
-      soundKey: 'greeting'
+      meta: 'Lee el saludo y pulsa Entendido para empezar',
+      soundKey: 'greeting',
+      messageKey: 'greeting'
     };
   }
   const objectiveText = step ? mobileSpriteTextFromHtml(step.objective || '') : '';
@@ -32873,7 +33213,8 @@ function getTutorialBotSpeechPayload(){
     sprite: tutorialBotState.currentFrame,
     messageHtml: `${mobileSpriteEscapeHtml(leadText)}${subline ? `<span class="tutorial-assistant-subline">${mobileSpriteEscapeHtml(subline)}</span>` : ''}`,
     meta: tutorialSystem.completed ? 'Modo libre' : `Paso ${stepNumber}/${script.length}`,
-    soundKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`
+    soundKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`,
+    messageKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`
   };
 }
 
@@ -32884,12 +33225,22 @@ function syncTutorialBotPresentation(){
     setTutorialBotFrameMode(desiredMode);
   }
   const currentPayload = getTutorialBotSpeechPayload();
+  const messageKey = currentPayload?.messageKey || '';
+  if(messageKey !== tutorialBotState.lastMessageKey){
+    if(tutorialBotState.lastMessageKey && tutorialBotState.panelDismissedKey === tutorialBotState.lastMessageKey){
+      tutorialBotState.panelDismissedKey = '';
+    }
+    tutorialBotState.lastMessageKey = messageKey;
+  }
   const soundKey = currentPayload?.soundKey || '';
   if(soundKey && soundKey !== tutorialBotState.lastSoundKey){
     tutorialBotState.lastSoundKey = soundKey;
     playTutoBotSpeakSound();
   }else if(!soundKey){
     tutorialBotState.lastSoundKey = '';
+  }
+  if(currentPayload?.sequenceOnly){
+    revealCompactTutorialForMobile(true);
   }
   syncTutorialBotDom(currentPayload);
 }
@@ -38420,6 +38771,17 @@ document.getElementById('tutorialAttackJumpBtn').addEventListener('click', () =>
   scrollToPlayerPanel(state.currentPlayer, 'smooth');
   addToast('Baja ahora y elige combustible y cartas de ataque', 'ok');
 });
+document.querySelectorAll('[data-tutobot-dismiss]').forEach(btn => {
+  btn.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    dismissTutorialBotPanel();
+  });
+});
+document.getElementById('tutorialBotOverlayPrimaryBtn')?.addEventListener('click', dismissTutorialBotOverlay);
+document.getElementById('tutorialBotOverlaySecondaryBtn')?.addEventListener('click', dismissTutorialBotOverlay);
+document.getElementById('tutorialBotOverlayCloseBtn')?.addEventListener('click', dismissTutorialBotOverlay);
+document.getElementById('tutorialBotOverlayBackdrop')?.addEventListener('click', dismissTutorialBotOverlay);
 document.getElementById('confirmDefenseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
   confirmDefense();
@@ -40832,10 +41194,10 @@ function startTutorialMode(){
   document.body.classList.remove('intro-active');
 
   compactTutorialUserCollapsed = false;
-  startTutorialBotIntroSequence();
   prepareNormalCombatStartHudMode();
   render();
   revealCompactTutorialForMobile(true);
+  startTutorialBotIntroSequence();
   startIntroMusic(true);
   scheduleCombatOpeningSequence('tutorial', 150);
   window.setTimeout(() => {
