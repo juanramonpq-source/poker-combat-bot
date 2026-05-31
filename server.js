@@ -15,6 +15,13 @@ const io = new Server(server, {
   }
 });
 
+app.use((req, res, next) => {
+  if (req.path === '/' || req.path.endsWith('.html')) {
+    res.set('Cache-Control', 'no-store, max-age=0, must-revalidate');
+  }
+  next();
+});
+
 // Serve static files from current directory
 app.use(express.static(__dirname));
 

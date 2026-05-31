@@ -14219,7 +14219,7 @@ body.story-argos-hack-ui{
   }
 }
 
-@media (orientation: landscape) and (pointer: coarse) and (min-width: 900px) and (min-height: 600px){
+@media (orientation: landscape) and (min-width: 900px) and (min-height: 600px){
   body.mobile-panorama-mode .app.mobile-panorama-mode .compact-player-panel{
     gap:7px !important;
   }
@@ -14275,7 +14275,7 @@ body.story-argos-hack-ui{
   }
 }
 
-@media (orientation: landscape) and (pointer: coarse){
+@media (orientation: landscape) and (min-width: 900px) and (min-height: 600px){
   .app.mobile-panorama-mode .compact-action-hub-button{
     top:62px !important;
     width:96px !important;
@@ -17519,7 +17519,7 @@ body.story-argos-hack-ui{
   }
 }
 
-@media (orientation: portrait) and (pointer: coarse) and (min-width: 700px) and (min-height: 900px){
+@media (orientation: portrait) and (min-width: 700px) and (min-height: 900px){
   body.mobile-compact-mode .app.mobile-compact-mode .desktop-compact-shell{
     grid-template-rows:clamp(150px, 13dvh, 176px) minmax(0, 1fr) clamp(82px, 7dvh, 96px) clamp(250px, 24dvh, 320px) !important;
     padding:clamp(12px, 1.7vw, 18px) !important;
@@ -17656,7 +17656,7 @@ body.story-argos-hack-ui{
   }
 }
 
-@media (orientation: landscape) and (pointer: coarse){
+@media (orientation: landscape) and (min-width: 900px) and (min-height: 600px){
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode .compact-module-values-grid{
     grid-template-columns:1fr !important;
   }
@@ -19129,7 +19129,7 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
 
 /* Final mobile landscape combat layout lock.
    Keeps stats mapped as: top = core/defense, middle = attack/armor, bottom = fuel. */
-@media (orientation: landscape) and (pointer: coarse){
+@media (orientation: landscape) and (min-width: 900px) and (min-height: 540px){
   body.mobile-pc-compact-mode .app.mobile-pc-compact-mode .compact-player-panel{
     grid-template-rows:auto minmax(0, 1fr) !important;
     gap:7px !important;
@@ -31500,8 +31500,7 @@ function isTabletTouchViewport(){
   return isTouchLikeDevice()
     && shortSide >= 600
     && shortSide <= 1180
-    && longSide >= 900
-    && longSide <= 1500;
+    && longSide >= 850;
 }
 
 function isDesktopCompactLikelyFullscreen(){
@@ -31518,7 +31517,7 @@ function isMobileLandscapeViewport(){
   try{
     const hasTouchInput = isTouchLikeDevice();
     const { shortSide, longSide, landscape: landscapeGeometry } = getViewportProfile();
-    const tabletOrPhoneViewport = shortSide <= 1180 && longSide <= 1500;
+    const tabletOrPhoneViewport = shortSide <= 1180 && longSide >= 0;
     const landscapeQuery = !!window.matchMedia && window.matchMedia('(orientation: landscape)').matches;
     return hasTouchInput && tabletOrPhoneViewport && (landscapeQuery || landscapeGeometry);
   }catch(_err){
@@ -31545,7 +31544,7 @@ function canOfferMobilePanoramaHud(){
     const hasTouchInput = isTouchLikeDevice();
     const { shortSide, longSide, landscape: landscapeGeometry } = getViewportProfile();
     const compactMobileViewport = landscapeGeometry
-      ? (shortSide <= 1180 && longSide <= 1500)
+      ? shortSide <= 1180
       : shortSide <= 820;
     return !!state.gameStarted && introHidden && lobbyHidden && hasTouchInput && compactMobileViewport;
   }catch(_err){
@@ -31560,7 +31559,7 @@ function canOfferMobileCompactHud(){
   try{
     const hasTouchInput = isTouchLikeDevice();
     const { shortSide, longSide, landscape: landscapeGeometry } = getViewportProfile();
-    const compactMobileViewport = shortSide <= 1180 && longSide <= 1500;
+    const compactMobileViewport = shortSide <= 1180 && longSide >= 0;
     const portrait = !!window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
     return !!state.gameStarted && introHidden && lobbyHidden && hasTouchInput && compactMobileViewport && portrait && !landscapeGeometry;
   }catch(_err){
@@ -33447,8 +33446,7 @@ function syncCompactHandTraySizing(tray, cardCount){
       && !mobilePcCompact
       && !landscape
       && shortSide >= 700
-      && longSide >= 900
-      && longSide <= 1500;
+      && longSide >= 850;
     const cardWidth = tabletPortraitCompact ? 68 : (mobileCompact ? 60 : 54);
     const cardHeight = tabletPortraitCompact ? 98 : (mobileCompact ? 86 : 77);
     const step = tabletPortraitCompact ? 56 : (mobileCompact ? 48 : (mobilePcCompact ? 46 : 50));
@@ -33494,16 +33492,14 @@ function syncCompactZoneCardSizing(container, cardCount, options = {}){
     && !body.classList.contains('mobile-pc-compact-mode')
     && !landscape
     && shortSide >= 700
-    && longSide >= 900
-    && longSide <= 1500;
+    && longSide >= 850;
   const tabletLandscapeCompact = (
       body?.classList.contains('mobile-panorama-mode')
       || body?.classList.contains('mobile-pc-compact-mode')
     )
     && landscape
-    && shortSide >= 600
-    && longSide >= 900
-    && longSide <= 1500;
+    && shortSide >= 540
+    && longSide >= 850;
   const availableWidth = Math.max(72, Math.floor((container.clientWidth || container.parentElement?.clientWidth || 104) - 2));
   const parentHeight = container.parentElement?.clientHeight || 0;
   const headHeight = container.previousElementSibling?.offsetHeight || 28;
