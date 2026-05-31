@@ -94,6 +94,10 @@
     ".git",
     "backups"
   ],
+  "ignorePaths": [
+    "assets/Historia/tutorial-robot-animacion",
+    "scripts/generate-tutorial-robot-animation.js"
+  ],
   "ignoreExtensions": [
     ".zip",
     ".tar.gz"

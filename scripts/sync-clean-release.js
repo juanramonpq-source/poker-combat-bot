@@ -33,13 +33,19 @@ function isIgnoredName(name) {
   return (manifest.ignoreNames || []).includes(name);
 }
 
+function isIgnoredPath(relPath) {
+  return (manifest.ignorePaths || []).some((ignoredPath) => (
+    relPath === ignoredPath || relPath.startsWith(`${ignoredPath}/`)
+  ));
+}
+
 function hasIgnoredExtension(filePath) {
   return (manifest.ignoreExtensions || []).some((extension) => filePath.endsWith(extension));
 }
 
 function shouldIgnore(relPath) {
   const parts = relPath.split('/');
-  return parts.some(isIgnoredName) || hasIgnoredExtension(relPath);
+  return isIgnoredPath(relPath) || parts.some(isIgnoredName) || hasIgnoredExtension(relPath);
 }
 
 function ensureCleanRepo() {

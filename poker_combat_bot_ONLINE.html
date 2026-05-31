@@ -31471,6 +31471,39 @@ function isDesktopCompactCapable(){
   }
 }
 
+function getViewportProfile(){
+  const width = window.innerWidth || document.documentElement.clientWidth || 0;
+  const height = window.innerHeight || document.documentElement.clientHeight || 0;
+  return {
+    width,
+    height,
+    shortSide: Math.min(width, height),
+    longSide: Math.max(width, height),
+    landscape: width > height
+  };
+}
+
+function isTouchLikeDevice(){
+  try{
+    const coarsePointer = !!window.matchMedia && (
+      window.matchMedia('(pointer: coarse)').matches
+      || window.matchMedia('(any-pointer: coarse)').matches
+    );
+    return coarsePointer || (navigator.maxTouchPoints || 0) > 0 || 'ontouchstart' in window;
+  }catch(_err){
+    return (navigator.maxTouchPoints || 0) > 0 || 'ontouchstart' in window;
+  }
+}
+
+function isTabletTouchViewport(){
+  const { shortSide, longSide } = getViewportProfile();
+  return isTouchLikeDevice()
+    && shortSide >= 600
+    && shortSide <= 1180
+    && longSide >= 900
+    && longSide <= 1500;
+}
+
 function isDesktopCompactLikelyFullscreen(){
   if(typeof document !== 'undefined' && document.fullscreenElement) return true;
   if(isRunningStandaloneApp()) return true;
@@ -31483,16 +31516,11 @@ function isDesktopCompactLikelyFullscreen(){
 
 function isMobileLandscapeViewport(){
   try{
-    const hasCoarsePointer = !!window.matchMedia && (
-      window.matchMedia('(pointer: coarse)').matches
-      || window.matchMedia('(any-pointer: coarse)').matches
-    );
-    const shortSide = Math.min(window.innerWidth || 0, window.innerHeight || 0);
-    const longSide = Math.max(window.innerWidth || 0, window.innerHeight || 0);
+    const hasTouchInput = isTouchLikeDevice();
+    const { shortSide, longSide, landscape: landscapeGeometry } = getViewportProfile();
     const tabletOrPhoneViewport = shortSide <= 1180 && longSide <= 1500;
     const landscapeQuery = !!window.matchMedia && window.matchMedia('(orientation: landscape)').matches;
-    const landscapeGeometry = (window.innerWidth || 0) > (window.innerHeight || 0);
-    return hasCoarsePointer && tabletOrPhoneViewport && (landscapeQuery || landscapeGeometry);
+    return hasTouchInput && tabletOrPhoneViewport && (landscapeQuery || landscapeGeometry);
   }catch(_err){
     return false;
   }
@@ -31514,17 +31542,12 @@ function canOfferMobilePanoramaHud(){
   const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
   try{
-    const hasCoarsePointer = !!window.matchMedia && (
-      window.matchMedia('(pointer: coarse)').matches
-      || window.matchMedia('(any-pointer: coarse)').matches
-    );
-    const landscapeGeometry = (window.innerWidth || 0) > (window.innerHeight || 0);
-    const shortSide = Math.min(window.innerWidth || 0, window.innerHeight || 0);
-    const longSide = Math.max(window.innerWidth || 0, window.innerHeight || 0);
+    const hasTouchInput = isTouchLikeDevice();
+    const { shortSide, longSide, landscape: landscapeGeometry } = getViewportProfile();
     const compactMobileViewport = landscapeGeometry
       ? (shortSide <= 1180 && longSide <= 1500)
       : shortSide <= 820;
-    return !!state.gameStarted && introHidden && lobbyHidden && hasCoarsePointer && compactMobileViewport;
+    return !!state.gameStarted && introHidden && lobbyHidden && hasTouchInput && compactMobileViewport;
   }catch(_err){
     return false;
   }
@@ -31535,16 +31558,11 @@ function canOfferMobileCompactHud(){
   const introHidden = !!document.getElementById('introScreen')?.classList.contains('hidden');
   const lobbyHidden = !!document.getElementById('olLobbyScreen')?.classList.contains('ol-hidden');
   try{
-    const hasCoarsePointer = !!window.matchMedia && (
-      window.matchMedia('(pointer: coarse)').matches
-      || window.matchMedia('(any-pointer: coarse)').matches
-    );
-    const shortSide = Math.min(window.innerWidth || 0, window.innerHeight || 0);
-    const longSide = Math.max(window.innerWidth || 0, window.innerHeight || 0);
+    const hasTouchInput = isTouchLikeDevice();
+    const { shortSide, longSide, landscape: landscapeGeometry } = getViewportProfile();
     const compactMobileViewport = shortSide <= 1180 && longSide <= 1500;
     const portrait = !!window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
-    const landscapeGeometry = (window.innerWidth || 0) > (window.innerHeight || 0);
-    return !!state.gameStarted && introHidden && lobbyHidden && hasCoarsePointer && compactMobileViewport && portrait && !landscapeGeometry;
+    return !!state.gameStarted && introHidden && lobbyHidden && hasTouchInput && compactMobileViewport && portrait && !landscapeGeometry;
   }catch(_err){
     return false;
   }
@@ -31558,9 +31576,9 @@ function shouldPreserveMobilePanoramaRequest(){
   if(!mobilePanoramaRequested || STORY_EMBED_MODE || devHudModeOverride !== 'auto') return false;
   if(!state.gameStarted) return false;
   try{
-    const hasCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-    const compactishMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 920;
-    return hasCoarsePointer && compactishMobileViewport;
+    const { shortSide } = getViewportProfile();
+    const compactishMobileViewport = shortSide <= 1180;
+    return isTouchLikeDevice() && compactishMobileViewport;
   }catch(_err){
     return false;
   }
@@ -31791,15 +31809,20 @@ function syncDesktopHudAvailability(){
   syncDevMobilePanoramaEmulation(false);
   const devMobileHorizontal = isDevMobileHorizontalHudOverride();
   const devLegacyHorizontal = isDevLegacyCompactHorizontalHudOverride() || isDevLegacyMobileHudOverride();
+  let emulateMobileMediaRules = false;
   if(devHudModeOverride === 'compact' || isDevMobileVerticalHudOverride() || devMobileHorizontal || devLegacyHorizontal){
     desktopAvailable = devHudModeOverride === 'compact';
     mobileCompactAvailable = isDevMobileVerticalHudOverride();
     mobilePanoramaAvailable = devMobileHorizontal || devLegacyHorizontal;
     desktopHudMode = 'compact';
     mobilePanoramaRequested = devMobileHorizontal || devLegacyHorizontal;
-    syncDevMobilePanoramaEmulation(isDevMobileVerticalHudOverride() || devMobileHorizontal || devLegacyHorizontal);
+    emulateMobileMediaRules = isDevMobileVerticalHudOverride() || devMobileHorizontal || devLegacyHorizontal;
+    syncDevMobilePanoramaEmulation(emulateMobileMediaRules);
   }
   if(mobilePanoramaAvailable) mobileCompactAvailable = false;
+  if(devHudModeOverride === 'auto' && isTabletTouchViewport() && (mobileCompactAvailable || mobilePanoramaAvailable)){
+    desktopAvailable = false;
+  }
   let available = desktopAvailable || mobileCompactAvailable || mobilePanoramaAvailable;
   if(!available && devHudModeOverride === 'auto'){
     if(shouldPreserveMobilePanoramaRequest()){
@@ -31833,6 +31856,17 @@ function syncDesktopHudAvailability(){
   document.body.classList.toggle('mobile-compact-mode', mobileCompactActive);
   document.body.classList.toggle('mobile-panorama-mode', mobilePanoramaActive);
   document.body.classList.toggle('mobile-pc-compact-mode', mobileLandscapeCompactActive);
+  const viewportProfile = getViewportProfile();
+  const tabletTouchViewport = isTabletTouchViewport();
+  const tabletPortraitActive = tabletTouchViewport && !viewportProfile.landscape && mobileCompactActive;
+  const tabletLandscapeActive = tabletTouchViewport && viewportProfile.landscape && mobileLandscapeCompactActive;
+  const nativeCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  emulateMobileMediaRules = emulateMobileMediaRules || (tabletTouchViewport && (tabletPortraitActive || tabletLandscapeActive) && !nativeCoarsePointer);
+  syncDevMobilePanoramaEmulation(emulateMobileMediaRules);
+  app.classList.toggle('tablet-touch-portrait-mode', tabletPortraitActive);
+  app.classList.toggle('tablet-touch-landscape-mode', tabletLandscapeActive);
+  document.body.classList.toggle('tablet-touch-portrait-mode', tabletPortraitActive);
+  document.body.classList.toggle('tablet-touch-landscape-mode', tabletLandscapeActive);
   document.body.classList.toggle('compact-tutorial-popup-active', (mobileLandscapeCompactActive || mobileCompactActive) && (state.tutorial || tutorialSystem.enabled));
   if((mobileLandscapeCompactActive || mobileCompactActive) && (state.tutorial || tutorialSystem.enabled)){
     revealCompactTutorialForMobile(false);
@@ -33407,16 +33441,14 @@ function syncCompactHandTraySizing(tray, cardCount){
   const mobileCompact = document.body?.classList.contains('mobile-compact-mode');
   const mobilePcCompact = document.body?.classList.contains('mobile-pc-compact-mode');
   if(mobileCompact || mobilePanorama || mobilePcCompact){
-    const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
-    const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
-    const minSide = Math.min(viewportW, viewportH);
-    const maxSide = Math.max(viewportW, viewportH);
+    const { shortSide, longSide, landscape } = getViewportProfile();
     const tabletPortraitCompact = mobileCompact
       && !mobilePanorama
       && !mobilePcCompact
-      && minSide >= 700
-      && maxSide >= 900
-      && window.matchMedia?.('(orientation: portrait) and (pointer: coarse)')?.matches;
+      && !landscape
+      && shortSide >= 700
+      && longSide >= 900
+      && longSide <= 1500;
     const cardWidth = tabletPortraitCompact ? 68 : (mobileCompact ? 60 : 54);
     const cardHeight = tabletPortraitCompact ? 98 : (mobileCompact ? 86 : 77);
     const step = tabletPortraitCompact ? 56 : (mobileCompact ? 48 : (mobilePcCompact ? 46 : 50));
@@ -33456,25 +33488,22 @@ function syncCompactZoneCardSizing(container, cardCount, options = {}){
   const isFuel = !!options.fuel;
   const isRival = !!options.rival;
   const body = document.body;
-  const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
-  const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
-  const minSide = Math.min(viewportW, viewportH);
-  const maxSide = Math.max(viewportW, viewportH);
-  const portraitCoarse = !!window.matchMedia?.('(orientation: portrait) and (pointer: coarse)')?.matches;
-  const landscapeCoarse = !!window.matchMedia?.('(orientation: landscape) and (pointer: coarse)')?.matches;
+  const { shortSide, longSide, landscape } = getViewportProfile();
   const tabletPortraitCompact = body?.classList.contains('mobile-compact-mode')
     && !body.classList.contains('mobile-panorama-mode')
     && !body.classList.contains('mobile-pc-compact-mode')
-    && portraitCoarse
-    && minSide >= 700
-    && maxSide >= 900;
+    && !landscape
+    && shortSide >= 700
+    && longSide >= 900
+    && longSide <= 1500;
   const tabletLandscapeCompact = (
       body?.classList.contains('mobile-panorama-mode')
       || body?.classList.contains('mobile-pc-compact-mode')
     )
-    && landscapeCoarse
-    && minSide >= 600
-    && maxSide >= 900;
+    && landscape
+    && shortSide >= 600
+    && longSide >= 900
+    && longSide <= 1500;
   const availableWidth = Math.max(72, Math.floor((container.clientWidth || container.parentElement?.clientWidth || 104) - 2));
   const parentHeight = container.parentElement?.clientHeight || 0;
   const headHeight = container.previousElementSibling?.offsetHeight || 28;
@@ -33492,10 +33521,10 @@ function syncCompactZoneCardSizing(container, cardCount, options = {}){
     const maxWidthByRows = Math.floor(((availableHeight - gap * Math.max(0, rows - 1)) / rows) / 1.43);
     const softMax = tabletPortraitCompact
       ? (isCore ? 88 : isFuel ? 64 : 78)
-      : (isCore ? 76 : isFuel ? 68 : 76);
+      : (isCore ? 86 : isFuel ? 78 : 96);
     const hardMin = tabletPortraitCompact
       ? (isCore ? 58 : isFuel ? 44 : 52)
-      : (isCore ? 54 : isFuel ? 44 : 52);
+      : (isCore ? 58 : isFuel ? 48 : 60);
     const cardWidth = Math.max(hardMin, Math.min(softMax, Math.max(hardMin, maxWidthByCols), Math.max(hardMin, maxWidthByRows)));
     const cardHeight = Math.round(cardWidth * 1.43);
     container.style.setProperty('--compact-zone-card-width', `${cardWidth}px`, 'important');
