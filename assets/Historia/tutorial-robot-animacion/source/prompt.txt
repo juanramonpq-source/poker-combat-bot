@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: game tutorial character sprite
+Primary request: Create an adorable talking tutorial robot for a poker-mecha game.
+Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal, no shadow, no gradient, no texture.
+Subject: a cute retro-futuristic robot shown from mid-torso up only, centered, facing slightly toward camera, friendly and welcoming, clearly designed to guide a new player.
+Design: rounded head, expressive digital face on a small screen visor, soft cyan eyes, compact metal body, warm orange and teal indicator lights, tiny antenna, subtle poker-tech details, charming proportions, non-threatening silhouette.
+Pose/expression: one small hand lifted as if explaining something, mouth area designed as simple glowing display shapes suitable for later talking animation.
+Style: polished game concept art with crisp edges, high readability, semi-realistic but stylized, clean silhouette, transparent-asset friendly composition.
+Composition: character fills most of frame with generous padding, medium close-up, no legs visible, no props covering the face, no text.
+Constraints: background must remain one exact flat #00ff00 color only; do not use #00ff00 anywhere on the robot; no cast shadow; no watermark; no extra characters.

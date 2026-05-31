@@ -95,8 +95,10 @@
     "backups"
   ],
   "ignorePaths": [
-    "assets/Historia/tutorial-robot-animacion",
-    "scripts/generate-tutorial-robot-animation.js"
+    "scripts/generate-tutorial-robot-animation.js",
+    "scripts/generate-tutorial-robot-entrance.js",
+    "assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01-left-v4.png",
+    "assets/Historia/tutorial-robot-animacion/tutorial-robot-speak-preview-left-v4.gif"
   ],
   "ignoreExtensions": [
     ".zip",

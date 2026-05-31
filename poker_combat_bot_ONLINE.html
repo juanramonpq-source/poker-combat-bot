@@ -5722,6 +5722,7 @@ body.story-argos-hack-ui .pro-turn-kicker{
   top:20px;
   right:20px;
   width:min(340px, calc(100% - 40px));
+  --tutobot-size:136px;
   border-radius:16px;
   border:2px solid rgba(35,216,255,.5);
   background:linear-gradient(180deg, rgba(14,24,44,.94), rgba(7,12,23,.96));
@@ -5756,6 +5757,122 @@ body.story-argos-hack-ui .pro-turn-kicker{
   opacity:0;
   transform:translateY(-6px);
   pointer-events:none;
+}
+.tutorial-assistant{
+  display:grid;
+  grid-template-columns:minmax(88px, var(--tutobot-size)) minmax(0, 1fr);
+  gap:12px;
+  align-items:end;
+  margin-bottom:12px;
+}
+.tutorial-assistant[hidden]{
+  display:none !important;
+}
+.tutorial-assistant-stage{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  min-width:0;
+}
+.tutorial-assistant-holo{
+  position:relative;
+  width:100%;
+  padding:10px 10px 0;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255,255,255,.16), transparent 38%),
+    linear-gradient(180deg, rgba(16,35,62,.88), rgba(8,16,30,.96));
+  border:1px solid rgba(103,241,255,.20);
+  box-shadow:
+    inset 0 0 24px rgba(103,241,255,.10),
+    0 12px 26px rgba(4,10,22,.38);
+  overflow:hidden;
+}
+.tutorial-assistant-holo::before{
+  content:'';
+  position:absolute;
+  inset:auto 12% 8px;
+  height:14px;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(103,241,255,.36), rgba(103,241,255,0) 72%);
+  filter:blur(6px);
+}
+.tutorial-assistant-holo img{
+  display:block;
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  transform-origin:50% 100%;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.32));
+}
+.tutorial-assistant-bubble{
+  position:relative;
+  min-width:0;
+  padding:14px 16px 12px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.10);
+  background:
+    linear-gradient(180deg, rgba(248,252,255,.97), rgba(224,242,255,.96));
+  color:#102739;
+  box-shadow:
+    0 12px 28px rgba(2,9,18,.28),
+    inset 0 1px 0 rgba(255,255,255,.65);
+}
+.tutorial-assistant-bubble::before{
+  content:'';
+  position:absolute;
+  left:-12px;
+  bottom:18px;
+  width:22px;
+  height:22px;
+  border-radius:0 0 0 6px;
+  background:linear-gradient(180deg, rgba(248,252,255,.97), rgba(224,242,255,.96));
+  transform:rotate(38deg);
+  box-shadow:-1px 1px 0 rgba(255,255,255,.16);
+}
+.tutorial-assistant-name{
+  font-size:.68rem;
+  font-weight:900;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:#1b8eb0;
+}
+.tutorial-assistant-message{
+  margin-top:6px;
+  font-size:.93rem;
+  line-height:1.42;
+  font-weight:800;
+  text-wrap:balance;
+}
+.tutorial-assistant-message strong{
+  color:#0f4d66;
+}
+.tutorial-assistant-subline{
+  display:block;
+  margin-top:8px;
+  font-size:.77rem;
+  line-height:1.35;
+  font-weight:700;
+  color:#345e72;
+}
+.tutorial-assistant-meta{
+  margin-top:8px;
+  font-size:.68rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#577487;
+}
+.tutorial-panel.tutobot-sequence-only .tutorial-panel-title,
+.tutorial-panel.tutobot-sequence-only .tutorial-panel-text,
+.tutorial-panel.tutobot-sequence-only .tutorial-panel-tip,
+.tutorial-panel.tutobot-sequence-only .tutorial-panel-objective,
+.tutorial-panel.tutobot-sequence-only .tutorial-panel-progress,
+.tutorial-panel.tutobot-sequence-only .tutorial-panel-meter,
+.tutorial-panel.tutobot-sequence-only .tutorial-panel-focus,
+.tutorial-panel.tutobot-sequence-only .tutorial-panel-status,
+.tutorial-panel.tutobot-sequence-only .tutorial-panel-actions{
+  display:none !important;
 }
 .hint-close-btn{
   position:absolute;
@@ -7825,6 +7942,47 @@ body.desktop-compact-mode > footer{
 .compact-hand-panel,
 .compact-tutorial-panel{
   padding:var(--compact-panel-pad) !important;
+}
+
+.compact-tutorial-panel{
+  --tutobot-size:112px;
+}
+.compact-tutorial-panel .tutorial-assistant{
+  margin:2px 0 4px;
+  gap:10px;
+}
+.compact-tutorial-panel .tutorial-assistant-bubble{
+  padding:12px 14px 10px;
+}
+.compact-tutorial-panel .tutorial-assistant-message{
+  font-size:.84rem;
+}
+.compact-tutorial-panel .tutorial-assistant-subline{
+  font-size:.72rem;
+}
+.compact-tutorial-panel .tutorial-assistant-meta{
+  font-size:.64rem;
+}
+.compact-tutorial-panel.tutobot-sequence-only .compact-kicker,
+.compact-tutorial-panel.tutobot-sequence-only h2,
+.compact-tutorial-panel.tutobot-sequence-only .compact-tutorial-toggle,
+.compact-tutorial-panel.tutobot-sequence-only .compact-tutorial-scroll,
+.compact-tutorial-panel.tutobot-sequence-only .compact-tutorial-actions{
+  display:none !important;
+}
+@media (max-width: 920px){
+  .tutorial-panel{
+    --tutobot-size:118px;
+  }
+  .compact-tutorial-panel{
+    --tutobot-size:96px;
+  }
+  .tutorial-assistant{
+    gap:10px;
+  }
+  .tutorial-assistant-message{
+    font-size:.88rem;
+  }
 }
 
 .compact-topbar{
@@ -19448,6 +19606,259 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
   }
 }
 
+/* Final tablet touch HUD guard.
+   iPad/Safari can report different pointer modes depending on browser chrome,
+   so tablet refinements are keyed to JS classes instead of pointer media only. */
+body.tablet-touch-portrait-mode{
+  overflow:hidden !important;
+  background:#070f31 !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:1200 !important;
+  width:100dvw !important;
+  height:100dvh !important;
+  max-width:none !important;
+  min-height:100dvh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .cockpit-grid,
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .board,
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .bottom-strip,
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .footer-note,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .cockpit-grid,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .board,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .bottom-strip,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .footer-note{
+  display:none !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .desktop-compact-shell,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .desktop-compact-shell{
+  display:grid !important;
+  position:absolute !important;
+  inset:0 !important;
+  width:100dvw !important;
+  height:min(100dvh, 100svh) !important;
+  min-height:0 !important;
+  max-width:none !important;
+  grid-template-columns:minmax(0, 1fr) !important;
+  grid-template-rows:clamp(126px, 13dvh, 176px) minmax(0, 1fr) clamp(82px, 7dvh, 96px) clamp(250px, 24dvh, 320px) !important;
+  grid-template-areas:
+    "topbar"
+    "player"
+    "dock"
+    "hand" !important;
+  gap:clamp(9px, 1.1vw, 13px) !important;
+  padding:
+    max(10px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(10px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left)) !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .desktop-compact-main,
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .desktop-compact-bottom,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .desktop-compact-main,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .desktop-compact-bottom{
+  display:contents !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-topbar,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-topbar{
+  grid-area:topbar !important;
+  display:grid !important;
+  grid-template-columns:minmax(100px, .82fr) minmax(110px, .9fr) minmax(100px, .78fr) 132px !important;
+  grid-template-rows:clamp(78px, 8.2dvh, 108px) 52px !important;
+  gap:7px !important;
+  padding:7px !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode #compactClassicModeBtn,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode #compactClassicModeBtn{
+  margin:0 72px 0 68px !important;
+  border-radius:24px !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode #compactClassicModeBtn img,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode #compactClassicModeBtn img{
+  top:-54px !important;
+  width:min(460px, calc(100% + 96px)) !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode #compactMenuToggleBtn,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode #compactMenuToggleBtn{
+  width:60px !important;
+  height:60px !important;
+  margin:7px 7px 0 0 !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-arena-panel,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-arena-panel{
+  display:none !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-player-panel,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-player-panel{
+  grid-area:player !important;
+  position:relative !important;
+  inset:auto !important;
+  display:grid !important;
+  grid-template-rows:auto minmax(0, 1fr) !important;
+  min-height:0 !important;
+  padding:12px !important;
+  border-radius:24px !important;
+  overflow:hidden !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-rival-panel,
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-actions-panel,
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-log-panel,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-rival-panel,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-actions-panel,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-log-panel{
+  display:none !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-player-zones,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-player-zones{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows:minmax(112px, .82fr) minmax(142px, 1fr) minmax(142px, 1fr) minmax(118px, .78fr) !important;
+  grid-template-areas:
+    "core core"
+    "attack defense"
+    "armor armor"
+    "fuel fuel" !important;
+  gap:10px !important;
+  height:100% !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-zone-card,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-zone-card{
+  display:grid !important;
+  grid-template-rows:auto minmax(0, 1fr) !important;
+  padding:10px 12px !important;
+  gap:8px !important;
+  border-radius:18px !important;
+  min-height:0 !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode #compactPlayerArmorZone,
+body.tablet-touch-portrait-mode .app.desktop-compact-mode #compactPlayerFuelZone,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode #compactPlayerArmorZone,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode #compactPlayerFuelZone{
+  grid-column:1 / -1 !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-zone-cards,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-zone-cards{
+  min-height:0 !important;
+  height:100% !important;
+  align-items:center !important;
+  align-content:center !important;
+  justify-content:flex-start !important;
+  gap:10px !important;
+  overflow:hidden !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-mobile-actions-panel,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-mobile-actions-panel{
+  grid-area:dock !important;
+  display:grid !important;
+  min-height:0 !important;
+  padding:0 clamp(18px, 3vw, 32px) !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-action-hub-button,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-action-hub-button{
+  position:relative !important;
+  inset:auto !important;
+  width:100% !important;
+  height:clamp(54px, 6dvh, 68px) !important;
+  min-height:54px !important;
+  max-height:68px !important;
+  transform:none !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-hand-panel,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-hand-panel{
+  grid-area:hand !important;
+  position:relative !important;
+  display:grid !important;
+  grid-template-rows:62px minmax(0, 1fr) !important;
+  min-height:0 !important;
+  border-radius:24px !important;
+  padding:9px 12px 12px !important;
+}
+
+body.tablet-touch-portrait-mode .app.desktop-compact-mode .compact-hand-tray,
+body.tablet-touch-portrait-mode .app.mobile-compact-mode .compact-hand-tray{
+  --compact-hand-card-width:68px !important;
+  --compact-hand-card-height:98px !important;
+  --compact-hand-card-step:56px !important;
+  padding:8px 42px 24px !important;
+}
+
+body.tablet-touch-landscape-mode{
+  overflow:hidden !important;
+}
+
+body.tablet-touch-landscape-mode .app.desktop-compact-mode,
+body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode{
+  width:100dvw !important;
+  height:min(100dvh, 100svh) !important;
+  max-width:none !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:max(5px, env(safe-area-inset-top)) max(7px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(7px, env(safe-area-inset-left)) !important;
+  overflow:hidden !important;
+}
+
+body.tablet-touch-landscape-mode .app.desktop-compact-mode .compact-player-zones,
+body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-player-zones{
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows:minmax(0, .82fr) minmax(0, 1fr) minmax(0, .86fr) !important;
+  grid-template-areas:
+    "core defense"
+    "attack armor"
+    "fuel fuel" !important;
+  gap:8px !important;
+  height:100% !important;
+  min-height:0 !important;
+}
+
+body.tablet-touch-landscape-mode .app.desktop-compact-mode .compact-zone-card,
+body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-card{
+  display:grid !important;
+  grid-template-rows:auto minmax(0, 1fr) !important;
+  align-content:stretch !important;
+  overflow:hidden !important;
+}
+
+body.tablet-touch-landscape-mode .app.desktop-compact-mode .compact-zone-cards,
+body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-cards{
+  min-height:64px !important;
+  height:100% !important;
+  align-content:center !important;
+  align-items:center !important;
+  gap:10px !important;
+  overflow:hidden !important;
+}
+
 /* ===== COMMERCIAL COVER REPLACEMENT ===== */
 .intro-screen{
   width:100vw !important;
@@ -25055,9 +25466,28 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
 
       <div class="frame tutorial-panel" id="tutorialPanel">
         <button class="hint-close-btn" id="hintCloseBtn" title="Cerrar">✕</button>
-        <div class="tutorial-panel-title" id="tutorialPanelTitle">Tutorial activo</div>
-        <div class="tutorial-panel-text" id="tutorialPanelText">Aquí aparecerán los consejos visuales paso a paso.</div>
-        <div class="tutorial-panel-tip" id="tutorialPanelTip">Puedes desactivarlo con el botón TUTORIAL ON/OFF de la consola.</div>
+      <div class="tutorial-panel-title" id="tutorialPanelTitle">Tutorial activo</div>
+      <div class="tutorial-assistant" id="tutorialAssistantShell" data-tutobot-shell hidden>
+        <div class="tutorial-assistant-stage">
+          <div class="tutorial-assistant-holo">
+            <img
+              id="tutorialAssistantSprite"
+              data-tutobot-sprite
+              src="assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png"
+              alt="TutoBOT"
+              loading="eager"
+              decoding="async"
+            >
+          </div>
+        </div>
+        <div class="tutorial-assistant-bubble" data-tutobot-bubble hidden>
+          <div class="tutorial-assistant-name">TutoBOT</div>
+          <div class="tutorial-assistant-message" id="tutorialAssistantMessage" data-tutobot-message></div>
+          <div class="tutorial-assistant-meta" id="tutorialAssistantMeta" data-tutobot-meta></div>
+        </div>
+      </div>
+      <div class="tutorial-panel-text" id="tutorialPanelText">Aquí aparecerán los consejos visuales paso a paso.</div>
+      <div class="tutorial-panel-tip" id="tutorialPanelTip">Puedes desactivarlo con el botón TUTORIAL ON/OFF de la consola.</div>
         <div class="tutorial-panel-objective" id="tutorialPanelObjective">Objetivo: preparar una secuencia guiada que te enseñe a jugar.</div>
         <div class="tutorial-panel-progress" id="tutorialPanelProgress">
           <span id="tutorialPanelStep">Paso libre</span>
@@ -25435,6 +25865,25 @@ body.mobile-sprite-hud-active .desktop-hud-transition{
         <div class="compact-kicker">Tutorial integrado</div>
         <h2 id="compactTutorialBoxTitle">Lectura tactica</h2>
         <button class="compact-tutorial-toggle" id="compactTutorialToggleBtn" type="button" aria-expanded="false">Abrir guía</button>
+        <div class="tutorial-assistant tutorial-assistant--compact" id="compactTutorialAssistantShell" data-tutobot-shell hidden>
+          <div class="tutorial-assistant-stage">
+            <div class="tutorial-assistant-holo">
+              <img
+                id="compactTutorialAssistantSprite"
+                data-tutobot-sprite
+                src="assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png"
+                alt="TutoBOT"
+                loading="eager"
+                decoding="async"
+              >
+            </div>
+          </div>
+          <div class="tutorial-assistant-bubble" data-tutobot-bubble hidden>
+            <div class="tutorial-assistant-name">TutoBOT</div>
+            <div class="tutorial-assistant-message" id="compactTutorialAssistantMessage" data-tutobot-message></div>
+            <div class="tutorial-assistant-meta" id="compactTutorialAssistantMeta" data-tutobot-meta></div>
+          </div>
+        </div>
         <div class="compact-tutorial-scroll" id="compactTutorialScroll">
           <div class="compact-tutorial-body" id="compactTutorialBoxText">
             La lectura del tutorial aparecerá aquí cuando la guía esté activa o cuando una acción importante necesite contexto.
@@ -25533,6 +25982,55 @@ const tutorialSystem = {
     academyProjectileComboUsed: false,
     academySingleCardPassUsed: false
   }
+};
+
+const TUTOBOT_ENTRANCE_FRAMES = [
+  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-01.png',
+  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-02.png',
+  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-03.png',
+  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-04.png',
+  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-05.png',
+  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-06.png'
+];
+
+const TUTOBOT_TALK_FRAMES = [
+  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png',
+  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-02.png',
+  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-03.png',
+  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-04.png',
+  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-05.png',
+  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-06.png'
+];
+
+const TUTOBOT_GREETING_HTML = '¡Hola, soy <strong>TutoBOT</strong>! Estoy aquí para hacerte la vida más fácil. ¿Comenzamos?';
+
+const TUTOBOT_STEP_LINES = {
+  'core-build': 'Vamos a montar el corazón del mecha.',
+  'attack-build': 'Perfecto. Ahora completa el módulo que manda tu piloto.',
+  'fuel-build': 'Bien visto. Carga combustible y ya casi disparamos.',
+  'open-attack': 'Abre el modo de ataque y te acompaño arriba.',
+  'first-attack': 'Hora del primer disparo. Marca fuel y picas.',
+  'defend': 'Atención: te atacan. Vamos a esquivarlo con un diamante.',
+  'draw-diamond': 'Recarga tu mano usando un diamante.',
+  'figure-burst': 'Convierte esas figuras extra en cartas nuevas.',
+  'pass-turn': 'Ahora practicamos cómo pasar turno sin perder el ritmo.',
+  'swap-card': 'Vamos a sustituir una pieza del panel.',
+  'projectile': 'Último truco: añade un proyectil para cerrar la lección.',
+  summary: 'Muy bien. Ya controlas el ciclo básico de PoCoBOT.'
+};
+
+const tutorialBotState = {
+  introActive: false,
+  greetingActive: false,
+  greetingDone: false,
+  frameMode: 'idle',
+  frameIndex: 0,
+  currentFrame: TUTOBOT_TALK_FRAMES[0],
+  frameTimer: null,
+  introTimer: null,
+  greetingTimer: null,
+  lastSoundKey: '',
+  lastMessageKey: ''
 };
 
 const TUTORIAL_PHASES = [
@@ -31496,7 +31994,14 @@ function isTouchLikeDevice(){
 }
 
 function isTabletTouchViewport(){
-  const { shortSide, longSide } = getViewportProfile();
+  const viewport = getViewportProfile();
+  const screenObj = window.screen || {};
+  const screenWidth = Number(screenObj.width) || viewport.width;
+  const screenHeight = Number(screenObj.height) || viewport.height;
+  const screenShortSide = Math.min(screenWidth, screenHeight);
+  const screenLongSide = Math.max(screenWidth, screenHeight);
+  const shortSide = Math.max(viewport.shortSide, screenShortSide || 0);
+  const longSide = Math.max(viewport.longSide, screenLongSide || 0);
   return isTouchLikeDevice()
     && shortSide >= 600
     && shortSide <= 1180
@@ -31560,7 +32065,8 @@ function canOfferMobileCompactHud(){
     const hasTouchInput = isTouchLikeDevice();
     const { shortSide, longSide, landscape: landscapeGeometry } = getViewportProfile();
     const compactMobileViewport = shortSide <= 1180 && longSide >= 0;
-    const portrait = !!window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
+    const portrait = (!landscapeGeometry)
+      || (!!window.matchMedia && window.matchMedia('(orientation: portrait)').matches);
     return !!state.gameStarted && introHidden && lobbyHidden && hasTouchInput && compactMobileViewport && portrait && !landscapeGeometry;
   }catch(_err){
     return false;
@@ -31857,8 +32363,8 @@ function syncDesktopHudAvailability(){
   document.body.classList.toggle('mobile-pc-compact-mode', mobileLandscapeCompactActive);
   const viewportProfile = getViewportProfile();
   const tabletTouchViewport = isTabletTouchViewport();
-  const tabletPortraitActive = tabletTouchViewport && !viewportProfile.landscape && mobileCompactActive;
-  const tabletLandscapeActive = tabletTouchViewport && viewportProfile.landscape && mobileLandscapeCompactActive;
+  const tabletPortraitActive = tabletTouchViewport && !viewportProfile.landscape && compactActive;
+  const tabletLandscapeActive = tabletTouchViewport && viewportProfile.landscape && compactActive;
   const nativeCoarsePointer = !!window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
   emulateMobileMediaRules = emulateMobileMediaRules || (tabletTouchViewport && (tabletPortraitActive || tabletLandscapeActive) && !nativeCoarsePointer);
   syncDevMobilePanoramaEmulation(emulateMobileMediaRules);
@@ -32197,6 +32703,195 @@ function mobileSpriteEscapeHtml(text=''){
   const box = document.createElement('div');
   box.textContent = String(text || '');
   return box.innerHTML;
+}
+
+function clearTutorialBotTimers(){
+  if(tutorialBotState.frameTimer){
+    window.clearInterval(tutorialBotState.frameTimer);
+    tutorialBotState.frameTimer = null;
+  }
+  if(tutorialBotState.introTimer){
+    window.clearTimeout(tutorialBotState.introTimer);
+    tutorialBotState.introTimer = null;
+  }
+  if(tutorialBotState.greetingTimer){
+    window.clearTimeout(tutorialBotState.greetingTimer);
+    tutorialBotState.greetingTimer = null;
+  }
+}
+
+function tutorialBotUsesCharacter(){
+  return tutorialSystem.enabled && tutorialSystem.mode === 'summary';
+}
+
+function tutorialBotBlocksInput(){
+  return tutorialBotUsesCharacter() && (tutorialBotState.introActive || tutorialBotState.greetingActive);
+}
+
+function getTutorialBotFrameSet(mode = tutorialBotState.frameMode){
+  return mode === 'entrance' ? TUTOBOT_ENTRANCE_FRAMES : TUTOBOT_TALK_FRAMES;
+}
+
+function syncTutorialBotDom(payload = getTutorialBotSpeechPayload()){
+  const active = !!payload?.visible;
+  const sprite = payload?.sprite || TUTOBOT_TALK_FRAMES[0];
+  document.querySelectorAll('[data-tutobot-shell]').forEach(node => {
+    node.hidden = !active;
+  });
+  document.querySelectorAll('[data-tutobot-sprite]').forEach(img => {
+    if(img.getAttribute('src') !== sprite) img.setAttribute('src', sprite);
+  });
+  document.querySelectorAll('[data-tutobot-bubble]').forEach(node => {
+    node.hidden = !(active && payload?.bubbleVisible);
+  });
+  document.querySelectorAll('[data-tutobot-message]').forEach(node => {
+    node.innerHTML = active && payload?.bubbleVisible ? payload.messageHtml : '';
+  });
+  document.querySelectorAll('[data-tutobot-meta]').forEach(node => {
+    node.textContent = active && payload?.bubbleVisible ? payload.meta : '';
+  });
+  document.getElementById('tutorialPanel')?.classList.toggle('tutobot-sequence-only', !!payload?.sequenceOnly);
+  document.querySelector('.compact-tutorial-panel')?.classList.toggle('tutobot-sequence-only', !!payload?.sequenceOnly);
+}
+
+function resetTutorialBotState(){
+  clearTutorialBotTimers();
+  tutorialBotState.introActive = false;
+  tutorialBotState.greetingActive = false;
+  tutorialBotState.greetingDone = false;
+  tutorialBotState.frameMode = 'idle';
+  tutorialBotState.frameIndex = 0;
+  tutorialBotState.currentFrame = TUTOBOT_TALK_FRAMES[0];
+  tutorialBotState.lastSoundKey = '';
+  tutorialBotState.lastMessageKey = '';
+  syncTutorialBotDom(null);
+}
+
+function setTutorialBotFrameMode(mode = 'idle'){
+  if(tutorialBotState.frameMode === mode && tutorialBotState.frameTimer) return;
+  if(tutorialBotState.frameTimer){
+    window.clearInterval(tutorialBotState.frameTimer);
+    tutorialBotState.frameTimer = null;
+  }
+  tutorialBotState.frameMode = mode;
+  tutorialBotState.frameIndex = 0;
+  tutorialBotState.currentFrame = getTutorialBotFrameSet(mode)[0] || TUTOBOT_TALK_FRAMES[0];
+  if(mode === 'idle'){
+    syncTutorialBotDom();
+    return;
+  }
+  const frames = getTutorialBotFrameSet(mode);
+  const delay = mode === 'entrance' ? 110 : 140;
+  tutorialBotState.frameTimer = window.setInterval(() => {
+    if(mode === 'entrance'){
+      if(tutorialBotState.frameIndex < frames.length - 1){
+        tutorialBotState.frameIndex += 1;
+      }else{
+        window.clearInterval(tutorialBotState.frameTimer);
+        tutorialBotState.frameTimer = null;
+      }
+    }else{
+      tutorialBotState.frameIndex = (tutorialBotState.frameIndex + 1) % frames.length;
+    }
+    tutorialBotState.currentFrame = frames[tutorialBotState.frameIndex] || frames[0] || TUTOBOT_TALK_FRAMES[0];
+    syncTutorialBotDom();
+  }, delay);
+  syncTutorialBotDom();
+}
+
+function playTutoBotSpeakSound(){
+  if(!state.soundOn) return;
+  playTone(880, .038, 'square', .010, 1040);
+  window.setTimeout(() => playTone(640, .034, 'triangle', .009, 760), 44);
+  window.setTimeout(() => playTone(980, .026, 'square', .008, 1180), 88);
+}
+
+function startTutorialBotIntroSequence(){
+  if(!tutorialBotUsesCharacter()){
+    resetTutorialBotState();
+    return;
+  }
+  resetTutorialBotState();
+  tutorialBotState.introActive = true;
+  setTutorialBotFrameMode('entrance');
+  tutorialBotState.introTimer = window.setTimeout(() => {
+    tutorialBotState.introActive = false;
+    tutorialBotState.greetingActive = true;
+    setTutorialBotFrameMode('talk');
+    syncTutorialBotPresentation();
+    tutorialBotState.greetingTimer = window.setTimeout(() => {
+      tutorialBotState.greetingActive = false;
+      tutorialBotState.greetingDone = true;
+      syncTutorialBotPresentation();
+      render();
+    }, 2600);
+    render();
+  }, 820);
+}
+
+function getTutorialBotStepLead(step){
+  if(!step) return TUTOBOT_STEP_LINES.summary;
+  return TUTOBOT_STEP_LINES[step.id] || step.title || 'Vamos paso a paso.';
+}
+
+function getTutorialBotSpeechPayload(){
+  if(!tutorialBotUsesCharacter()) return null;
+  const step = tutorialGetCurrentStep();
+  const script = getActiveTutorialScript();
+  const stepNumber = step ? Math.min(tutorialSystem.stepIndex + 1, script.length) : 0;
+  if(tutorialBotState.introActive){
+    return {
+      visible: true,
+      bubbleVisible: false,
+      sequenceOnly: true,
+      sprite: tutorialBotState.currentFrame,
+      messageHtml: '',
+      meta: '',
+      soundKey: ''
+    };
+  }
+  if(tutorialBotState.greetingActive || !tutorialBotState.greetingDone){
+    return {
+      visible: true,
+      bubbleVisible: true,
+      sequenceOnly: true,
+      sprite: tutorialBotState.currentFrame,
+      messageHtml: TUTOBOT_GREETING_HTML,
+      meta: 'Tutorial compacto listo',
+      soundKey: 'greeting'
+    };
+  }
+  const objectiveText = step ? mobileSpriteTextFromHtml(step.objective || '') : '';
+  const leadText = getTutorialBotStepLead(step);
+  const subline = tutorialSystem.completed
+    ? 'Puedes seguir jugando libremente o reiniciar la lección cuando quieras.'
+    : objectiveText;
+  return {
+    visible: true,
+    bubbleVisible: true,
+    sequenceOnly: false,
+    sprite: tutorialBotState.currentFrame,
+    messageHtml: `${mobileSpriteEscapeHtml(leadText)}${subline ? `<span class="tutorial-assistant-subline">${mobileSpriteEscapeHtml(subline)}</span>` : ''}`,
+    meta: tutorialSystem.completed ? 'Modo libre' : `Paso ${stepNumber}/${script.length}`,
+    soundKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`
+  };
+}
+
+function syncTutorialBotPresentation(){
+  const payload = getTutorialBotSpeechPayload();
+  const desiredMode = !payload ? 'idle' : (payload.sequenceOnly && !payload.bubbleVisible ? 'entrance' : 'talk');
+  if(desiredMode !== tutorialBotState.frameMode || (desiredMode !== 'idle' && !tutorialBotState.frameTimer)){
+    setTutorialBotFrameMode(desiredMode);
+  }
+  const currentPayload = getTutorialBotSpeechPayload();
+  const soundKey = currentPayload?.soundKey || '';
+  if(soundKey && soundKey !== tutorialBotState.lastSoundKey){
+    tutorialBotState.lastSoundKey = soundKey;
+    playTutoBotSpeakSound();
+  }else if(!soundKey){
+    tutorialBotState.lastSoundKey = '';
+  }
+  syncTutorialBotDom(currentPayload);
 }
 
 function getCompactMobileTutorialCopy(step){
@@ -33487,19 +34182,26 @@ function syncCompactZoneCardSizing(container, cardCount, options = {}){
   const isRival = !!options.rival;
   const body = document.body;
   const { shortSide, longSide, landscape } = getViewportProfile();
-  const tabletPortraitCompact = body?.classList.contains('mobile-compact-mode')
-    && !body.classList.contains('mobile-panorama-mode')
-    && !body.classList.contains('mobile-pc-compact-mode')
+  const tabletTouchActive = body?.classList.contains('tablet-touch-portrait-mode')
+    || body?.classList.contains('tablet-touch-landscape-mode')
+    || isTabletTouchViewport();
+  const tabletPortraitCompact = tabletTouchActive
     && !landscape
-    && shortSide >= 700
-    && longSide >= 850;
-  const tabletLandscapeCompact = (
-      body?.classList.contains('mobile-panorama-mode')
-      || body?.classList.contains('mobile-pc-compact-mode')
-    )
+    && shortSide >= 600
+    && longSide >= 850
+    && (
+      body?.classList.contains('mobile-compact-mode')
+      || body?.classList.contains('desktop-compact-mode')
+    );
+  const tabletLandscapeCompact = tabletTouchActive
     && landscape
     && shortSide >= 540
-    && longSide >= 850;
+    && longSide >= 850
+    && (
+      body?.classList.contains('mobile-panorama-mode')
+      || body?.classList.contains('mobile-pc-compact-mode')
+      || body?.classList.contains('desktop-compact-mode')
+    );
   const availableWidth = Math.max(72, Math.floor((container.clientWidth || container.parentElement?.clientWidth || 104) - 2));
   const parentHeight = container.parentElement?.clientHeight || 0;
   const headHeight = container.previousElementSibling?.offsetHeight || 28;
@@ -33516,11 +34218,11 @@ function syncCompactZoneCardSizing(container, cardCount, options = {}){
     const maxWidthByCols = Math.floor((availableWidth - gap * Math.max(0, targetCols - 1)) / targetCols);
     const maxWidthByRows = Math.floor(((availableHeight - gap * Math.max(0, rows - 1)) / rows) / 1.43);
     const softMax = tabletPortraitCompact
-      ? (isCore ? 88 : isFuel ? 64 : 78)
-      : (isCore ? 86 : isFuel ? 78 : 96);
+      ? (isCore ? 96 : isFuel ? 72 : 88)
+      : (isCore ? 100 : isFuel ? 84 : 104);
     const hardMin = tabletPortraitCompact
-      ? (isCore ? 58 : isFuel ? 44 : 52)
-      : (isCore ? 58 : isFuel ? 48 : 60);
+      ? (isCore ? 68 : isFuel ? 50 : 62)
+      : (isCore ? 72 : isFuel ? 58 : 70);
     const cardWidth = Math.max(hardMin, Math.min(softMax, Math.max(hardMin, maxWidthByCols), Math.max(hardMin, maxWidthByRows)));
     const cardHeight = Math.round(cardWidth * 1.43);
     container.style.setProperty('--compact-zone-card-width', `${cardWidth}px`, 'important');
@@ -34250,6 +34952,7 @@ function renderDesktopCompactHud(){
     compactTutorialToggleBtn.setAttribute('aria-expanded', compactTutorialExpanded ? 'true' : 'false');
     compactTutorialToggleBtn.textContent = compactTutorialExpanded ? 'Reducir' : 'Abrir guía';
   }
+  syncTutorialBotPresentation();
   updateCompactActionHubMenuAnchor();
 }
 
@@ -36054,6 +36757,7 @@ function updateHints(){
   const tutorialPanelActions = document.getElementById('tutorialPanelActions');
 
   tutorialLabel.textContent = `Tutorial ${state.tutorial ? 'ON' : 'OFF'}`;
+  syncTutorialBotPresentation();
 
   if(tutorialPanel){
     tutorialPanel.classList.toggle('active', !!state.tutorial);
@@ -38058,6 +38762,7 @@ function resetTutorialSession(){
     window.clearTimeout(tutorialSystem.autoTimer);
     tutorialSystem.autoTimer = null;
   }
+  resetTutorialBotState();
   tutorialSystem.enabled = false;
   tutorialSystem.mode = 'summary';
   tutorialSystem.lessonId = null;
@@ -38118,6 +38823,7 @@ function tutorialResolveAllowedCardIds(step = tutorialGetCurrentStep()){
 
 function tutorialCanSelectCard(card){
   if(!tutorialIsGuided()) return true;
+  if(tutorialBotBlocksInput()) return false;
   if(tutorialSystem.busy) return false;
   if(getInteractivePlayerIndex() !== 0) return false;
   const step = tutorialGetCurrentStep();
@@ -38136,6 +38842,7 @@ function tutorialCanSelectCard(card){
 
 function tutorialAllowsButton(id){
   if(!tutorialIsGuided()) return true;
+  if(tutorialBotBlocksInput()) return false;
   if(tutorialSystem.busy) return false;
   if(getInteractivePlayerIndex() !== 0) return false;
   const step = tutorialGetCurrentStep();
@@ -38205,6 +38912,7 @@ function tutorialExpectedSelection(stepId){
 
 function tutorialValidateAction(actionKey, selectedCards = state.selected){
   if(!tutorialIsGuided()) return true;
+  if(tutorialBotBlocksInput()) return false;
   if(tutorialSystem.busy) return false;
   if(getInteractivePlayerIndex() !== 0) return true;
 
@@ -40124,6 +40832,7 @@ function startTutorialMode(){
   document.body.classList.remove('intro-active');
 
   compactTutorialUserCollapsed = false;
+  startTutorialBotIntroSequence();
   prepareNormalCombatStartHudMode();
   render();
   revealCompactTutorialForMobile(true);
@@ -41065,6 +41774,116 @@ function devGetSnapshot(){
   };
 }
 
+function devGetHudDiagnostics(){
+  const readZone = (selector) => {
+    const node = document.querySelector(selector);
+    if(!node) return null;
+    const styles = window.getComputedStyle(node);
+    const firstCard = node.querySelector('.card');
+    const cardRect = firstCard ? firstCard.getBoundingClientRect() : null;
+    return {
+      selector,
+      width: Math.round(node.getBoundingClientRect().width),
+      height: Math.round(node.getBoundingClientRect().height),
+      cardWidthVar: styles.getPropertyValue('--compact-zone-card-width').trim(),
+      cardHeightVar: styles.getPropertyValue('--compact-zone-card-height').trim(),
+      firstCard: cardRect ? {
+        width: Math.round(cardRect.width),
+        height: Math.round(cardRect.height)
+      } : null
+    };
+  };
+  const match = query => {
+    try{
+      return !!window.matchMedia && window.matchMedia(query).matches;
+    }catch(_err){
+      return false;
+    }
+  };
+  return {
+    viewport: getViewportProfile(),
+    visualViewport: window.visualViewport ? {
+      width: Math.round(window.visualViewport.width),
+      height: Math.round(window.visualViewport.height),
+      scale: window.visualViewport.scale
+    } : null,
+    screen: window.screen ? {
+      width: window.screen.width,
+      height: window.screen.height,
+      availWidth: window.screen.availWidth,
+      availHeight: window.screen.availHeight
+    } : null,
+    dpr: window.devicePixelRatio || 1,
+    maxTouchPoints: navigator.maxTouchPoints || 0,
+    media: {
+      coarse: match('(pointer: coarse)'),
+      anyCoarse: match('(any-pointer: coarse)'),
+      fine: match('(pointer: fine)'),
+      portrait: match('(orientation: portrait)'),
+      landscape: match('(orientation: landscape)')
+    },
+    isTouchLikeDevice: isTouchLikeDevice(),
+    isTabletTouchViewport: isTabletTouchViewport(),
+    bodyClasses: document.body?.className || '',
+    appClasses: document.querySelector('.app')?.className || '',
+    zones: [
+      readZone('#compactCoreCards'),
+      readZone('#compactAttackCards'),
+      readZone('#compactDefenseCards'),
+      readZone('#compactArmorCards'),
+      readZone('#compactFuelCards')
+    ].filter(Boolean)
+  };
+}
+
+function maybeMountHudDiagnosticsOverlay(){
+  try{
+    const params = new URLSearchParams(window.location.search || '');
+    if(!params.has('huddiag')) return;
+    if(document.getElementById('pocobotHudDiagnosticsOverlay')) return;
+    const box = document.createElement('pre');
+    box.id = 'pocobotHudDiagnosticsOverlay';
+    box.setAttribute('aria-label', 'Diagnostico HUD PoCoBOT');
+    box.style.cssText = [
+      'position:fixed',
+      'left:8px',
+      'right:8px',
+      'bottom:8px',
+      'z-index:99999',
+      'max-height:42vh',
+      'overflow:auto',
+      'margin:0',
+      'padding:10px',
+      'border:2px solid rgba(103,241,255,.62)',
+      'border-radius:12px',
+      'background:rgba(2,7,18,.92)',
+      'color:#dffcff',
+      'font:12px/1.35 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+      'white-space:pre-wrap',
+      'box-shadow:0 14px 34px rgba(0,0,0,.38)',
+      'pointer-events:auto'
+    ].join(';');
+    document.body.appendChild(box);
+    const renderDiag = () => {
+      const diag = devGetHudDiagnostics();
+      box.textContent = JSON.stringify({
+        viewport: diag.viewport,
+        visualViewport: diag.visualViewport,
+        screen: diag.screen,
+        dpr: diag.dpr,
+        maxTouchPoints: diag.maxTouchPoints,
+        media: diag.media,
+        isTabletTouchViewport: diag.isTabletTouchViewport,
+        bodyClasses: diag.bodyClasses,
+        appClasses: diag.appClasses,
+        zones: diag.zones
+      }, null, 2);
+    };
+    renderDiag();
+    window.setInterval(renderDiag, 1000);
+  }catch(_err){}
+}
+
 function devBootArena(){
   devResetEnvironment();
   devSyncPlayers(devBuildCombatPlayers(), 0, 'Turno');
@@ -41209,6 +42028,7 @@ function devPrimeAudio(){
 window.__pocobotDev = {
   boot: devBootArena,
   getSnapshot: devGetSnapshot,
+  getHudDiagnostics: devGetHudDiagnostics,
   getMechaPresets: devGetMechaPresetCatalog,
   getRulePresets: devGetRulePresetCatalog,
   getTutorialPresets: devGetTutorialPresetCatalog,
@@ -41278,6 +42098,8 @@ window.__pocobotDev = {
     return devGetSnapshot();
   }
 };
+
+maybeMountHudDiagnosticsOverlay();
 
 function postDevBridgeMessage(targetWindow, targetOrigin, payload){
   if(!targetWindow) return;

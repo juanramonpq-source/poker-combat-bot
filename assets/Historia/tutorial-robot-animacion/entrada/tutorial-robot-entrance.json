@@ -1,0 +1,82 @@
+{
+  "name": "tutorial-robot-entrance",
+  "size": {
+    "width": 768,
+    "height": 768
+  },
+  "sourcePoses": [
+    {
+      "id": "01",
+      "name": "arm-low",
+      "chroma": "assets/Historia/tutorial-robot-animacion/entrada/source/pose-01-arm-low-chroma.png",
+      "base": "assets/Historia/tutorial-robot-animacion/entrada/source/pose-01-base.png"
+    },
+    {
+      "id": "02",
+      "name": "arm-mid",
+      "chroma": "assets/Historia/tutorial-robot-animacion/entrada/source/pose-02-arm-mid-chroma.png",
+      "base": "assets/Historia/tutorial-robot-animacion/entrada/source/pose-02-base.png"
+    },
+    {
+      "id": "03",
+      "name": "arm-high",
+      "chroma": "assets/Historia/tutorial-robot-animacion/entrada/source/pose-03-arm-high-chroma.png",
+      "base": "assets/Historia/tutorial-robot-animacion/entrada/source/pose-03-base.png"
+    },
+    {
+      "id": "04",
+      "name": "arm-point",
+      "chroma": "assets/Historia/tutorial-robot-animacion/entrada/source/pose-04-arm-point-chroma.png",
+      "base": "assets/Historia/tutorial-robot-animacion/entrada/source/pose-04-base.png"
+    }
+  ],
+  "frames": [
+    {
+      "id": "01",
+      "pose": "01",
+      "file": "assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-01.png",
+      "offsetY": 210,
+      "delayMs": 100
+    },
+    {
+      "id": "02",
+      "pose": "01",
+      "file": "assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-02.png",
+      "offsetY": 140,
+      "delayMs": 90
+    },
+    {
+      "id": "03",
+      "pose": "02",
+      "file": "assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-03.png",
+      "offsetY": 84,
+      "delayMs": 90
+    },
+    {
+      "id": "04",
+      "pose": "03",
+      "file": "assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-04.png",
+      "offsetY": 42,
+      "delayMs": 90
+    },
+    {
+      "id": "05",
+      "pose": "03",
+      "file": "assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-05.png",
+      "offsetY": 10,
+      "delayMs": 100
+    },
+    {
+      "id": "06",
+      "pose": "04",
+      "file": "assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-06.png",
+      "offsetY": 0,
+      "delayMs": 140
+    }
+  ],
+  "previews": {
+    "gif": "assets/Historia/tutorial-robot-animacion/entrada/tutorial-robot-entrance-preview.gif",
+    "webp": "assets/Historia/tutorial-robot-animacion/entrada/tutorial-robot-entrance-preview.webp",
+    "contactSheet": "assets/Historia/tutorial-robot-animacion/entrada/tutorial-robot-entrance-contact-sheet.png"
+  }
+}

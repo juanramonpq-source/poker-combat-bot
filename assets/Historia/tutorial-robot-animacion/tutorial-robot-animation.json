@@ -1,0 +1,56 @@
+{
+  "name": "tutorial-robot-speaking",
+  "size": {
+    "width": 768,
+    "height": 768
+  },
+  "source": {
+    "chroma": "assets/Historia/tutorial-robot-animacion/source/tutorial-robot-chroma.png",
+    "base": "assets/Historia/tutorial-robot-animacion/source/tutorial-robot-base.png",
+    "promptFile": "assets/Historia/tutorial-robot-animacion/source/prompt.txt",
+    "generationMode": "built-in image_gen + ImageMagick post-processing"
+  },
+  "frames": [
+    {
+      "id": "01",
+      "name": "closed-smile",
+      "file": "assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png",
+      "delayMs": 120
+    },
+    {
+      "id": "02",
+      "name": "soft-open",
+      "file": "assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-02.png",
+      "delayMs": 100
+    },
+    {
+      "id": "03",
+      "name": "wide-open",
+      "file": "assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-03.png",
+      "delayMs": 100
+    },
+    {
+      "id": "04",
+      "name": "blink-chat",
+      "file": "assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-04.png",
+      "delayMs": 110
+    },
+    {
+      "id": "05",
+      "name": "big-grin",
+      "file": "assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-05.png",
+      "delayMs": 100
+    },
+    {
+      "id": "06",
+      "name": "wink-open",
+      "file": "assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-06.png",
+      "delayMs": 120
+    }
+  ],
+  "previews": {
+    "gif": "assets/Historia/tutorial-robot-animacion/tutorial-robot-speak-preview.gif",
+    "webp": "assets/Historia/tutorial-robot-animacion/tutorial-robot-speak-preview.webp",
+    "contactSheet": "assets/Historia/tutorial-robot-animacion/tutorial-robot-contact-sheet.png"
+  }
+}
