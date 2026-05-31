@@ -31539,7 +31539,9 @@ function canOfferMobileCompactHud(){
       window.matchMedia('(pointer: coarse)').matches
       || window.matchMedia('(any-pointer: coarse)').matches
     );
-    const compactMobileViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 920;
+    const shortSide = Math.min(window.innerWidth || 0, window.innerHeight || 0);
+    const longSide = Math.max(window.innerWidth || 0, window.innerHeight || 0);
+    const compactMobileViewport = shortSide <= 1180 && longSide <= 1500;
     const portrait = !!window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
     const landscapeGeometry = (window.innerWidth || 0) > (window.innerHeight || 0);
     return !!state.gameStarted && introHidden && lobbyHidden && hasCoarsePointer && compactMobileViewport && portrait && !landscapeGeometry;
@@ -33466,7 +33468,10 @@ function syncCompactZoneCardSizing(container, cardCount, options = {}){
     && portraitCoarse
     && minSide >= 700
     && maxSide >= 900;
-  const tabletLandscapeCompact = body?.classList.contains('mobile-panorama-mode')
+  const tabletLandscapeCompact = (
+      body?.classList.contains('mobile-panorama-mode')
+      || body?.classList.contains('mobile-pc-compact-mode')
+    )
     && landscapeCoarse
     && minSide >= 600
     && maxSide >= 900;
@@ -33493,8 +33498,8 @@ function syncCompactZoneCardSizing(container, cardCount, options = {}){
       : (isCore ? 54 : isFuel ? 44 : 52);
     const cardWidth = Math.max(hardMin, Math.min(softMax, Math.max(hardMin, maxWidthByCols), Math.max(hardMin, maxWidthByRows)));
     const cardHeight = Math.round(cardWidth * 1.43);
-    container.style.setProperty('--compact-zone-card-width', `${cardWidth}px`);
-    container.style.setProperty('--compact-zone-card-height', `${cardHeight}px`);
+    container.style.setProperty('--compact-zone-card-width', `${cardWidth}px`, 'important');
+    container.style.setProperty('--compact-zone-card-height', `${cardHeight}px`, 'important');
     container.dataset.cardCount = String(cardCount || 0);
     return;
   }
@@ -33523,8 +33528,8 @@ function syncCompactZoneCardSizing(container, cardCount, options = {}){
   );
   cardWidth = Math.max(hardMin, Math.min(cardWidth, sizeCap));
   const cardHeight = Math.round(cardWidth * 1.43);
-  container.style.setProperty('--compact-zone-card-width', `${cardWidth}px`);
-  container.style.setProperty('--compact-zone-card-height', `${cardHeight}px`);
+  container.style.setProperty('--compact-zone-card-width', `${cardWidth}px`, 'important');
+  container.style.setProperty('--compact-zone-card-height', `${cardHeight}px`, 'important');
   container.dataset.cardCount = String(cardCount || 0);
 }
 
