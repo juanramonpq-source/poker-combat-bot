@@ -6069,6 +6069,114 @@ body.story-argos-hack-ui .pro-turn-kicker{
   background:rgba(255,255,255,.06);
   color:#e8fbff;
 }
+.tutobot-dock{
+  position:fixed;
+  z-index:235;
+  width:min(520px, calc(100vw - 36px));
+  pointer-events:none;
+}
+.tutobot-dock[hidden]{
+  display:none !important;
+}
+.tutobot-dock-card{
+  pointer-events:auto;
+  padding:14px;
+  border-radius:28px;
+  border:1px solid rgba(127,229,255,.24);
+  background:
+    linear-gradient(180deg, rgba(14,27,54,.92), rgba(8,16,30,.96)),
+    radial-gradient(circle at 15% 10%, rgba(115,224,255,.10), transparent 42%);
+  box-shadow:
+    0 22px 48px rgba(1,4,14,.44),
+    inset 0 0 32px rgba(103,241,255,.08);
+  backdrop-filter:blur(8px);
+}
+.tutobot-dock .tutorial-assistant{
+  grid-template-columns:minmax(92px, 132px) minmax(0, 1fr);
+  align-items:end;
+  gap:14px;
+}
+.tutobot-dock .tutorial-assistant-stage{
+  width:100%;
+}
+.tutobot-dock .tutorial-assistant-holo{
+  min-height:126px;
+  padding:12px 10px 0;
+  border-radius:26px;
+  background:
+    radial-gradient(circle at 50% 100%, rgba(66,212,255,.26), transparent 58%),
+    linear-gradient(180deg, rgba(27,52,92,.62), rgba(8,16,30,.24));
+}
+.tutobot-dock .tutorial-assistant-holo img{
+  max-height:176px;
+  margin-inline:auto;
+}
+.tutobot-dock .tutorial-assistant-bubble{
+  width:100%;
+  padding:18px 20px 16px;
+  border-radius:24px;
+}
+.tutobot-dock .tutorial-assistant-name{
+  font-size:.76rem;
+}
+.tutobot-dock .tutorial-assistant-message{
+  font-size:clamp(.98rem, 1.1vw, 1.12rem);
+  line-height:1.36;
+}
+.tutobot-dock .tutorial-assistant-subline{
+  font-size:.82rem;
+  line-height:1.42;
+}
+.tutobot-dock .tutorial-assistant-meta{
+  font-size:.72rem;
+}
+body.desktop-compact-mode .tutobot-dock{
+  top:104px;
+  left:50%;
+  right:auto;
+  bottom:auto;
+  width:min(780px, calc(100vw - 430px));
+  transform:translateX(-50%);
+}
+body.mobile-compact-mode .tutobot-dock,
+body.mobile-pc-compact-mode .tutobot-dock,
+body.mobile-panorama-mode .tutobot-dock{
+  left:12px;
+  right:12px;
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 108px);
+  top:auto;
+  width:auto;
+  transform:none;
+}
+body.mobile-pc-compact-mode .tutobot-dock,
+body.mobile-panorama-mode .tutobot-dock{
+  top:86px;
+  bottom:auto;
+}
+body.tablet-touch-portrait-mode .tutobot-dock{
+  top:102px;
+  left:50%;
+  right:auto;
+  bottom:auto;
+  width:min(720px, calc(100vw - 96px));
+  transform:translateX(-50%);
+}
+body.tablet-touch-landscape-mode .tutobot-dock{
+  top:88px;
+  left:50%;
+  right:auto;
+  bottom:auto;
+  width:min(760px, calc(100vw - 120px));
+  transform:translateX(-50%);
+}
+body:not(.desktop-compact-mode):not(.mobile-compact-mode):not(.mobile-pc-compact-mode):not(.mobile-panorama-mode) .tutobot-dock{
+  top:94px;
+  right:24px;
+  left:auto;
+  bottom:auto;
+  width:min(500px, calc(100vw - 48px));
+  transform:none;
+}
 .hint-close-btn{
   position:absolute;
   top:6px; right:6px;
@@ -8246,6 +8354,46 @@ body.desktop-compact-mode > footer{
   }
   .tutobot-overlay-actions{
     justify-content:center;
+  }
+  .tutobot-dock{
+    left:12px !important;
+    right:12px !important;
+    width:auto !important;
+    transform:none !important;
+  }
+  .tutobot-dock .tutorial-assistant{
+    grid-template-columns:minmax(76px, 94px) minmax(0, 1fr);
+    gap:10px;
+  }
+  .tutobot-dock .tutorial-assistant-holo{
+    min-height:102px;
+    padding:10px 8px 0;
+  }
+  .tutobot-dock .tutorial-assistant-holo img{
+    max-height:138px;
+  }
+  .tutobot-dock .tutorial-assistant-bubble{
+    padding:14px 16px 12px;
+  }
+  .tutobot-dock .tutorial-assistant-message{
+    font-size:.94rem;
+    line-height:1.32;
+  }
+  .tutobot-dock .tutorial-assistant-subline{
+    font-size:.78rem;
+  }
+}
+@media (max-height: 620px){
+  body.mobile-pc-compact-mode .tutobot-dock,
+  body.mobile-panorama-mode .tutobot-dock,
+  body.tablet-touch-landscape-mode .tutobot-dock{
+    top:72px;
+  }
+  .tutobot-dock .tutorial-assistant-holo{
+    min-height:90px;
+  }
+  .tutobot-dock .tutorial-assistant-holo img{
+    max-height:118px;
   }
 }
 
@@ -26225,6 +26373,30 @@ body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-cards
   </div>
 </div>
 
+<div class="tutobot-dock" id="tutorialBotDock" hidden aria-live="polite">
+  <div class="tutobot-dock-card">
+    <div class="tutorial-assistant tutorial-assistant--dock">
+      <div class="tutorial-assistant-stage">
+        <div class="tutorial-assistant-holo">
+          <img
+            id="tutorialBotDockSprite"
+            src="assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png"
+            alt="TutoBOT"
+            loading="eager"
+            decoding="async"
+          >
+        </div>
+      </div>
+      <div class="tutorial-assistant-bubble" id="tutorialBotDockBubble" hidden>
+        <button class="tutorial-assistant-dismiss" type="button" data-tutobot-dismiss aria-label="Ocultar TutoBOT">×</button>
+        <div class="tutorial-assistant-name">TutoBOT</div>
+        <div class="tutorial-assistant-message" id="tutorialBotDockMessage"></div>
+        <div class="tutorial-assistant-meta" id="tutorialBotDockMeta"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast-stack" id="toastStack"></div>
 <button class="tutorial-attack-jump-btn" id="tutorialAttackJumpBtn" type="button" aria-hidden="true">
   <span><strong>Tutorial</strong>Bajar al panel del mecha para elegir combustible y cartas de ataque</span>
@@ -26301,6 +26473,10 @@ const TUTOBOT_TALK_FRAMES = [
   'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-06.png'
 ];
 
+const TUTOBOT_ENTRANCE_FRAME_DELAY = 120;
+const TUTOBOT_TALK_FRAME_DELAY = 140;
+const TUTOBOT_GREETING_TRANSITION_MS = 180;
+
 const TUTOBOT_GREETING_HTML = '¡Hola, soy <strong>TutoBOT</strong>! Estoy aquí para hacerte la vida más fácil. ¿Comenzamos?';
 
 const TUTOBOT_STEP_LINES = {
@@ -26324,6 +26500,7 @@ const tutorialBotState = {
   greetingDone: false,
   overlayDismissed: false,
   panelDismissedKey: '',
+  assetsPreloaded: false,
   frameMode: 'idle',
   frameIndex: 0,
   currentFrame: TUTOBOT_TALK_FRAMES[0],
@@ -33039,22 +33216,22 @@ function syncTutorialBotDom(payload = getTutorialBotSpeechPayload()){
   const messageKey = payload?.messageKey || '';
   const panelDismissed = !!messageKey && tutorialBotState.panelDismissedKey === messageKey;
   const overlayActive = active && !!payload?.sequenceOnly && !tutorialBotState.overlayDismissed;
-  const panelActive = active && !payload?.sequenceOnly && !panelDismissed;
+  const dockActive = active && !payload?.sequenceOnly && !panelDismissed;
 
   document.querySelectorAll('[data-tutobot-shell]').forEach(node => {
-    node.hidden = !panelActive;
+    node.hidden = true;
   });
   document.querySelectorAll('[data-tutobot-sprite]').forEach(img => {
     if(img.getAttribute('src') !== sprite) img.setAttribute('src', sprite);
   });
   document.querySelectorAll('[data-tutobot-bubble]').forEach(node => {
-    node.hidden = !(panelActive && payload?.bubbleVisible);
+    node.hidden = true;
   });
   document.querySelectorAll('[data-tutobot-message]').forEach(node => {
-    node.innerHTML = panelActive && payload?.bubbleVisible ? payload.messageHtml : '';
+    node.innerHTML = '';
   });
   document.querySelectorAll('[data-tutobot-meta]').forEach(node => {
-    node.textContent = panelActive && payload?.bubbleVisible ? payload.meta : '';
+    node.textContent = '';
   });
   const overlay = document.getElementById('tutorialBotOverlay');
   if(overlay){
@@ -33069,6 +33246,16 @@ function syncTutorialBotDom(payload = getTutorialBotSpeechPayload()){
   if(overlayMessage) overlayMessage.innerHTML = overlayActive && payload?.bubbleVisible ? payload.messageHtml : '';
   const overlayMeta = document.getElementById('tutorialBotOverlayMeta');
   if(overlayMeta) overlayMeta.textContent = overlayActive && payload?.bubbleVisible ? payload.meta : '';
+  const dock = document.getElementById('tutorialBotDock');
+  if(dock) dock.hidden = !dockActive;
+  const dockBubble = document.getElementById('tutorialBotDockBubble');
+  if(dockBubble) dockBubble.hidden = !(dockActive && payload?.bubbleVisible);
+  const dockSprite = document.getElementById('tutorialBotDockSprite');
+  if(dockSprite && dockSprite.getAttribute('src') !== sprite) dockSprite.setAttribute('src', sprite);
+  const dockMessage = document.getElementById('tutorialBotDockMessage');
+  if(dockMessage) dockMessage.innerHTML = dockActive && payload?.bubbleVisible ? payload.messageHtml : '';
+  const dockMeta = document.getElementById('tutorialBotDockMeta');
+  if(dockMeta) dockMeta.textContent = dockActive && payload?.bubbleVisible ? payload.meta : '';
   document.getElementById('tutorialPanel')?.classList.toggle('tutobot-sequence-only', !!payload?.sequenceOnly);
   document.querySelector('.compact-tutorial-panel')?.classList.toggle('tutobot-sequence-only', !!payload?.sequenceOnly);
 }
@@ -33088,6 +33275,25 @@ function resetTutorialBotState(){
   syncTutorialBotDom(null);
 }
 
+function preloadTutorialBotAssets(){
+  if(tutorialBotState.assetsPreloaded) return;
+  tutorialBotState.assetsPreloaded = true;
+  [...TUTOBOT_ENTRANCE_FRAMES, ...TUTOBOT_TALK_FRAMES].forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+}
+
+function beginTutorialBotGreeting(){
+  if(!tutorialBotUsesCharacter() || !tutorialBotState.introActive) return;
+  tutorialBotState.introActive = false;
+  tutorialBotState.greetingActive = true;
+  tutorialBotState.introTimer = null;
+  setTutorialBotFrameMode('talk');
+  syncTutorialBotPresentation();
+  render();
+}
+
 function setTutorialBotFrameMode(mode = 'idle'){
   if(tutorialBotState.frameMode === mode && tutorialBotState.frameTimer) return;
   if(tutorialBotState.frameTimer){
@@ -33102,7 +33308,7 @@ function setTutorialBotFrameMode(mode = 'idle'){
     return;
   }
   const frames = getTutorialBotFrameSet(mode);
-  const delay = mode === 'entrance' ? 110 : 140;
+  const delay = mode === 'entrance' ? TUTOBOT_ENTRANCE_FRAME_DELAY : TUTOBOT_TALK_FRAME_DELAY;
   tutorialBotState.frameTimer = window.setInterval(() => {
     if(mode === 'entrance'){
       if(tutorialBotState.frameIndex < frames.length - 1){
@@ -33110,6 +33316,10 @@ function setTutorialBotFrameMode(mode = 'idle'){
       }else{
         window.clearInterval(tutorialBotState.frameTimer);
         tutorialBotState.frameTimer = null;
+        if(tutorialBotState.introActive){
+          if(tutorialBotState.introTimer) window.clearTimeout(tutorialBotState.introTimer);
+          tutorialBotState.introTimer = window.setTimeout(beginTutorialBotGreeting, TUTOBOT_GREETING_TRANSITION_MS);
+        }
       }
     }else{
       tutorialBotState.frameIndex = (tutorialBotState.frameIndex + 1) % frames.length;
@@ -33155,16 +33365,10 @@ function startTutorialBotIntroSequence(){
     resetTutorialBotState();
     return;
   }
+  preloadTutorialBotAssets();
   resetTutorialBotState();
   tutorialBotState.introActive = true;
   setTutorialBotFrameMode('entrance');
-  tutorialBotState.introTimer = window.setTimeout(() => {
-    tutorialBotState.introActive = false;
-    tutorialBotState.greetingActive = true;
-    setTutorialBotFrameMode('talk');
-    syncTutorialBotPresentation();
-    render();
-  }, 820);
 }
 
 function getTutorialBotStepLead(step){
@@ -33241,6 +33445,9 @@ function syncTutorialBotPresentation(){
   }
   if(currentPayload?.sequenceOnly){
     revealCompactTutorialForMobile(true);
+  }else if(currentPayload?.visible && isCompactMobileHudActive()){
+    compactTutorialUserCollapsed = true;
+    setCompactTutorialExpanded(false);
   }
   syncTutorialBotDom(currentPayload);
 }
@@ -33512,6 +33719,10 @@ function createMobileSpriteSnapshot(){
   const selectedIds = (state.selected || []).map(card => card.id).filter(Boolean);
   const attackSelection = getAttackSelection();
   const guidance = getMobileSpriteGuidanceText();
+  const tutorialBotPayload = getTutorialBotSpeechPayload();
+  const tutorialBotMessageKey = tutorialBotPayload?.messageKey || '';
+  const tutorialBotDismissed = !!tutorialBotMessageKey && tutorialBotState.panelDismissedKey === tutorialBotMessageKey;
+  const mobileTutorialBotVisible = !!tutorialBotPayload?.visible && !!tutorialBotPayload?.bubbleVisible && !tutorialBotDismissed;
   return {
     players: [cloneMobileSpritePlayer(viewIdx), cloneMobileSpritePlayer(rivalIdx)],
     currentPlayer,
@@ -33538,6 +33749,12 @@ function createMobileSpriteSnapshot(){
     bridgeTutorialHtml: guidance.html || '',
     bridgeTutorialMeta: guidance.meta,
     bridgeTutorialActions: guidance.actions || [],
+    tutorialBotVisible: mobileTutorialBotVisible,
+    tutorialBotTitle: mobileTutorialBotVisible ? 'TutoBOT' : '',
+    tutorialBotHtml: mobileTutorialBotVisible ? (tutorialBotPayload?.messageHtml || '') : '',
+    tutorialBotText: mobileTutorialBotVisible ? mobileSpriteTextFromHtml(tutorialBotPayload?.messageHtml || '') : '',
+    tutorialBotMeta: mobileTutorialBotVisible ? (tutorialBotPayload?.meta || '') : '',
+    tutorialBotSprite: mobileTutorialBotVisible ? toMobileSpriteAssetPath(tutorialBotPayload?.sprite || TUTOBOT_TALK_FRAMES[0]) : '',
     argosHack: isStoryArgosHackCombat(state.storyMission || STORY_MISSION_BOOT) ? {
       active: true,
       gated: !!storyArgosHackGateActive,

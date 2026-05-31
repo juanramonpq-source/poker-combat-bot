@@ -1217,6 +1217,90 @@
       max-height: 100%;
     }
 
+    .floating-message.tutorial.with-bot.show {
+      grid-template-columns: 76px minmax(0, 1fr) 28px;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        "avatar title dismiss"
+        "avatar body dismiss"
+        "avatar actions dismiss";
+      gap: 0 10px;
+      width: min(100%, 540px);
+      justify-self: end;
+      padding: 10px 12px;
+      border-radius: 18px;
+      border-color: rgba(157, 234, 255, .9);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(140, 232, 255, .22), transparent 42%),
+        linear-gradient(180deg, rgba(11, 28, 58, .96), rgba(5, 14, 33, .97));
+      box-shadow:
+        0 16px 34px rgba(0, 0, 0, .42),
+        inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+
+    .tutorial-bot-avatar {
+      display: none;
+    }
+
+    .floating-message.tutorial.with-bot .tutorial-bot-avatar {
+      grid-area: avatar;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      padding: 8px 6px 0;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 50% 100%, rgba(66,212,255,.30), transparent 62%),
+        linear-gradient(180deg, rgba(29, 77, 116, .64), rgba(7, 19, 42, .44));
+      overflow: hidden;
+    }
+
+    .tutorial-bot-avatar img {
+      display: block;
+      width: 100%;
+      max-width: 64px;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,.35));
+    }
+
+    .floating-message.tutorial.with-bot > strong {
+      grid-area: title;
+      margin-bottom: 2px;
+      align-self: end;
+    }
+
+    .floating-message.tutorial.with-bot > span {
+      grid-area: body;
+      font-size: 13px;
+      line-height: 1.34;
+      color: #f6fbff;
+    }
+
+    .floating-message.tutorial.with-bot .message-actions {
+      grid-area: actions;
+      margin-top: 8px;
+    }
+
+    .tutorial-dismiss {
+      display: none;
+    }
+
+    .floating-message.tutorial.with-bot .tutorial-dismiss {
+      grid-area: dismiss;
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin-top: 2px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(240, 248, 255, .86);
+      color: #26476b;
+      font: 900 16px/1 "Trebuchet MS", sans-serif;
+      box-shadow: 0 5px 14px rgba(0, 0, 0, .24);
+    }
+
     .floating-message.tutorial .message-actions {
       align-self: end;
       padding-top: 8px;
@@ -4486,6 +4570,20 @@
         font-size: 10px;
       }
 
+      .floating-message.tutorial.with-bot.show {
+        grid-template-columns: 60px minmax(0, 1fr) 24px;
+        width: min(100%, 400px);
+        padding: 8px 9px;
+      }
+
+      .tutorial-bot-avatar img {
+        max-width: 52px;
+      }
+
+      .floating-message.tutorial.with-bot > span {
+        font-size: 11px;
+      }
+
       .toast {
         left: calc(var(--land-left) + 16px);
         right: calc(var(--land-hand) + 16px);
@@ -5056,7 +5154,11 @@
 
       <div class="message-stack">
         <article class="floating-message tutorial" data-tutorial-message>
+          <div class="tutorial-bot-avatar" aria-hidden="true">
+            <img data-tutorial-bot-avatar src="../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png" alt="">
+          </div>
           <strong data-tutorial-title>Tutorial activo</strong>
+          <button class="tutorial-dismiss" type="button" data-tutorial-dismiss aria-label="Ocultar TutoBOT">×</button>
           <span data-tutorial-text></span>
           <div class="message-actions" data-tutorial-actions></div>
         </article>
@@ -5286,6 +5388,12 @@
       bridgeTutorialHtml: "",
       bridgeTutorialMeta: "",
       bridgeTutorialActions: [],
+      tutorialBotVisible: false,
+      tutorialBotTitle: "",
+      tutorialBotText: "",
+      tutorialBotHtml: "",
+      tutorialBotMeta: "",
+      tutorialBotSprite: "",
       argosHack: null
     };
 
@@ -7638,17 +7746,28 @@
       const tutorialText = document.querySelector("[data-tutorial-text]");
       const tutorialTitle = document.querySelector("[data-tutorial-title]");
       const tutorialActions = document.querySelector("[data-tutorial-actions]");
+      const tutorialAvatar = document.querySelector("[data-tutorial-bot-avatar]");
       const landscape = isLandscapeLayout();
       const tutorialSuppressed = isTutorialOverlaySuppressed();
-      tutorial.classList.toggle("show", state.tutorial && !landscape && !tutorialSuppressed);
+      const embeddedBotVisible = EMBEDDED_REAL_GAME && state.tutorialBotVisible && (!!state.tutorialBotText || !!state.tutorialBotHtml);
+      const tutorialVisible = state.tutorial && !tutorialSuppressed && (embeddedBotVisible || !landscape);
+      tutorial.classList.toggle("show", tutorialVisible);
+      tutorial.classList.toggle("with-bot", embeddedBotVisible);
       let tutorialCopy = "";
       let tutorialHtml = "";
       let alertTitle = "";
       let alertCopy = "";
-      if (EMBEDDED_REAL_GAME && (state.bridgeTutorialText || state.bridgeTutorialMeta)) {
-        tutorialCopy = state.bridgeTutorialText || "Sistema preparado.";
-        tutorialHtml = state.bridgeTutorialHtml || "";
-        if (tutorialTitle) tutorialTitle.textContent = state.bridgeTutorialTitle || state.bridgeTutorialMeta || "Tutorial activo";
+      if (EMBEDDED_REAL_GAME && (state.bridgeTutorialText || state.bridgeTutorialMeta || embeddedBotVisible)) {
+        tutorialCopy = embeddedBotVisible
+          ? (state.tutorialBotText || "Sistema preparado.")
+          : (state.bridgeTutorialText || "Sistema preparado.");
+        tutorialHtml = embeddedBotVisible ? (state.tutorialBotHtml || "") : (state.bridgeTutorialHtml || "");
+        if (tutorialTitle) tutorialTitle.textContent = embeddedBotVisible
+          ? (state.tutorialBotTitle || "TutoBOT")
+          : (state.bridgeTutorialTitle || state.bridgeTutorialMeta || "Tutorial activo");
+        if (tutorialAvatar) {
+          tutorialAvatar.src = state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png";
+        }
         setTutorialBody(tutorialText, tutorialCopy, tutorialHtml);
         renderTutorialActionButtons(tutorialActions);
         const alert = document.querySelector("[data-alert-message]");
@@ -7682,7 +7801,7 @@
         }
         const guidanceAlertTitle = embeddedPlayerDefensePopup ? "" : alertTitle;
         const guidanceAlertCopy = embeddedPlayerDefensePopup ? "" : alertCopy;
-        renderLeftGuidance(tutorialSuppressed ? "" : tutorialCopy, guidanceAlertTitle, guidanceAlertCopy, tutorialSuppressed ? "" : tutorialHtml);
+        renderLeftGuidance((tutorialSuppressed || embeddedBotVisible) ? "" : tutorialCopy, guidanceAlertTitle, guidanceAlertCopy, (tutorialSuppressed || embeddedBotVisible) ? "" : tutorialHtml);
         renderDefensePopup();
         return;
       }
@@ -8099,6 +8218,12 @@
       state.bridgeTutorialHtml = snapshot.bridgeTutorialHtml || "";
       state.bridgeTutorialMeta = snapshot.bridgeTutorialMeta || "";
       state.bridgeTutorialActions = Array.isArray(snapshot.bridgeTutorialActions) ? snapshot.bridgeTutorialActions : [];
+      state.tutorialBotVisible = !!snapshot.tutorialBotVisible;
+      state.tutorialBotTitle = snapshot.tutorialBotTitle || "";
+      state.tutorialBotText = snapshot.tutorialBotText || "";
+      state.tutorialBotHtml = snapshot.tutorialBotHtml || "";
+      state.tutorialBotMeta = snapshot.tutorialBotMeta || "";
+      state.tutorialBotSprite = snapshot.tutorialBotSprite || "";
       state.argosHack = snapshot.argosHack && snapshot.argosHack.active ? snapshot.argosHack : null;
       state.log = Array.isArray(snapshot.log) ? snapshot.log.slice(0, 60) : [];
       render();
@@ -8289,6 +8414,7 @@
         else skipDefense();
       }
       if (button.dataset.tutorialAction) handleTutorialAction(button.dataset.tutorialAction);
+      if (button.dataset.tutorialDismiss) temporarilyHideTutorialOverlay(18000);
     });
 
     document.addEventListener("dragstart", (event) => {
