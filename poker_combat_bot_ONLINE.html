@@ -26476,6 +26476,7 @@ const TUTOBOT_TALK_FRAMES = [
 const TUTOBOT_ENTRANCE_FRAME_DELAY = 120;
 const TUTOBOT_TALK_FRAME_DELAY = 140;
 const TUTOBOT_GREETING_TRANSITION_MS = 180;
+const TUTOBOT_INTRO_MIN_MS = 1200;
 
 const TUTOBOT_GREETING_HTML = '¡Hola, soy <strong>TutoBOT</strong>! Estoy aquí para hacerte la vida más fácil. ¿Comenzamos?';
 
@@ -26507,6 +26508,7 @@ const tutorialBotState = {
   frameTimer: null,
   introTimer: null,
   greetingTimer: null,
+  introStartedAt: 0,
   lastSoundKey: '',
   lastMessageKey: ''
 };
@@ -33196,6 +33198,7 @@ function clearTutorialBotTimers(){
     window.clearTimeout(tutorialBotState.greetingTimer);
     tutorialBotState.greetingTimer = null;
   }
+  tutorialBotState.introStartedAt = 0;
 }
 
 function tutorialBotUsesCharacter(){
@@ -33318,7 +33321,9 @@ function setTutorialBotFrameMode(mode = 'idle'){
         tutorialBotState.frameTimer = null;
         if(tutorialBotState.introActive){
           if(tutorialBotState.introTimer) window.clearTimeout(tutorialBotState.introTimer);
-          tutorialBotState.introTimer = window.setTimeout(beginTutorialBotGreeting, TUTOBOT_GREETING_TRANSITION_MS);
+          const elapsed = tutorialBotState.introStartedAt ? (Date.now() - tutorialBotState.introStartedAt) : 0;
+          const holdMs = Math.max(TUTOBOT_GREETING_TRANSITION_MS, TUTOBOT_INTRO_MIN_MS - elapsed);
+          tutorialBotState.introTimer = window.setTimeout(beginTutorialBotGreeting, holdMs);
         }
       }
     }else{
@@ -33326,8 +33331,10 @@ function setTutorialBotFrameMode(mode = 'idle'){
     }
     tutorialBotState.currentFrame = frames[tutorialBotState.frameIndex] || frames[0] || TUTOBOT_TALK_FRAMES[0];
     syncTutorialBotDom();
+    if(canUseMobileSpriteHud()) sendMobileSpriteSnapshotSoon(0);
   }, delay);
   syncTutorialBotDom();
+  if(canUseMobileSpriteHud()) sendMobileSpriteSnapshotSoon(0);
 }
 
 function playTutoBotSpeakSound(){
@@ -33341,6 +33348,7 @@ function dismissTutorialBotPanel(){
   const payload = getTutorialBotSpeechPayload();
   if(payload?.messageKey) tutorialBotState.panelDismissedKey = payload.messageKey;
   syncTutorialBotPresentation();
+  if(canUseMobileSpriteHud()) sendMobileSpriteSnapshotSoon(0);
 }
 
 function dismissTutorialBotOverlay(){
@@ -33358,6 +33366,7 @@ function dismissTutorialBotOverlay(){
   }
   syncTutorialBotPresentation();
   render();
+  if(canUseMobileSpriteHud()) sendMobileSpriteSnapshotSoon(0);
 }
 
 function startTutorialBotIntroSequence(){
@@ -33368,7 +33377,9 @@ function startTutorialBotIntroSequence(){
   preloadTutorialBotAssets();
   resetTutorialBotState();
   tutorialBotState.introActive = true;
+  tutorialBotState.introStartedAt = Date.now();
   setTutorialBotFrameMode('entrance');
+  if(canUseMobileSpriteHud()) sendMobileSpriteSnapshotSoon(0);
 }
 
 function getTutorialBotStepLead(step){
@@ -33722,7 +33733,13 @@ function createMobileSpriteSnapshot(){
   const tutorialBotPayload = getTutorialBotSpeechPayload();
   const tutorialBotMessageKey = tutorialBotPayload?.messageKey || '';
   const tutorialBotDismissed = !!tutorialBotMessageKey && tutorialBotState.panelDismissedKey === tutorialBotMessageKey;
-  const mobileTutorialBotVisible = !!tutorialBotPayload?.visible && !!tutorialBotPayload?.bubbleVisible && !tutorialBotDismissed;
+  const tutorialBotMode = tutorialBotState.introActive
+    ? 'intro'
+    : ((tutorialBotState.greetingActive || !tutorialBotState.greetingDone) ? 'greeting' : 'step');
+  const tutorialBotSequenceOnly = !!tutorialBotPayload?.sequenceOnly;
+  const tutorialBotBubbleVisible = !!tutorialBotPayload?.bubbleVisible;
+  const mobileTutorialBotVisible = !!tutorialBotPayload?.visible
+    && (tutorialBotSequenceOnly ? !tutorialBotState.overlayDismissed : !tutorialBotDismissed);
   return {
     players: [cloneMobileSpritePlayer(viewIdx), cloneMobileSpritePlayer(rivalIdx)],
     currentPlayer,
@@ -33750,11 +33767,17 @@ function createMobileSpriteSnapshot(){
     bridgeTutorialMeta: guidance.meta,
     bridgeTutorialActions: guidance.actions || [],
     tutorialBotVisible: mobileTutorialBotVisible,
+    tutorialBotMode,
+    tutorialBotSequenceOnly,
+    tutorialBotBubbleVisible,
     tutorialBotTitle: mobileTutorialBotVisible ? 'TutoBOT' : '',
     tutorialBotHtml: mobileTutorialBotVisible ? (tutorialBotPayload?.messageHtml || '') : '',
     tutorialBotText: mobileTutorialBotVisible ? mobileSpriteTextFromHtml(tutorialBotPayload?.messageHtml || '') : '',
     tutorialBotMeta: mobileTutorialBotVisible ? (tutorialBotPayload?.meta || '') : '',
     tutorialBotSprite: mobileTutorialBotVisible ? toMobileSpriteAssetPath(tutorialBotPayload?.sprite || TUTOBOT_TALK_FRAMES[0]) : '',
+    tutorialBotPrimaryAction: tutorialBotMode === 'greeting' ? 'tutobot-continue' : '',
+    tutorialBotPrimaryLabel: tutorialBotMode === 'greeting' ? 'Entendido' : '',
+    tutorialBotDismissAction: tutorialBotSequenceOnly ? 'tutobot-continue' : 'tutobot-hide',
     argosHack: isStoryArgosHackCombat(state.storyMission || STORY_MISSION_BOOT) ? {
       active: true,
       gated: !!storyArgosHackGateActive,
@@ -33995,6 +34018,14 @@ function handleMobileSpriteMenu(action){
 
 function handleMobileSpriteTutorialAction(action){
   if(!tutorialSystem.enabled) return;
+  if(action === 'tutobot-continue'){
+    dismissTutorialBotOverlay();
+    return;
+  }
+  if(action === 'tutobot-hide'){
+    dismissTutorialBotPanel();
+    return;
+  }
   if(action === 'academy-definition-ack'){
     academyAcknowledgeDefinitionStep();
     return;

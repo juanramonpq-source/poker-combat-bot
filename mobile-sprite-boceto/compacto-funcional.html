@@ -1238,6 +1238,80 @@
         inset 0 0 0 1px rgba(255,255,255,.08);
     }
 
+    .floating-message.tutorial.with-bot.is-sequence.show {
+      width: min(100%, 620px);
+      min-height: min(46vh, 360px);
+      justify-self: center;
+      align-self: center;
+      padding: 16px 16px 14px;
+      border-width: 3px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(140, 232, 255, .28), transparent 42%),
+        linear-gradient(180deg, rgba(10, 25, 52, .98), rgba(4, 12, 28, .98));
+      box-shadow:
+        0 24px 52px rgba(0, 0, 0, .50),
+        0 0 0 2px rgba(146, 226, 255, .24),
+        inset 0 0 0 1px rgba(255,255,255,.10);
+    }
+
+    .floating-message.tutorial.with-bot.is-sequence .tutorial-bot-avatar {
+      min-height: 154px;
+      border-radius: 22px;
+    }
+
+    .floating-message.tutorial.with-bot.is-sequence .tutorial-bot-avatar img {
+      max-width: 110px;
+    }
+
+    .floating-message.tutorial.with-bot.is-sequence > strong {
+      font-size: clamp(24px, 4.4vw, 34px);
+      letter-spacing: .03em;
+    }
+
+    .floating-message.tutorial.with-bot.is-sequence > span {
+      font-size: clamp(22px, 3.8vw, 30px);
+      line-height: 1.2;
+      font-weight: 800;
+    }
+
+    .floating-message.tutorial.with-bot.is-sequence .message-actions {
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+
+    .floating-message.tutorial.with-bot.is-sequence .message-actions button {
+      min-height: 46px;
+      font-size: 16px;
+    }
+
+    .floating-message.tutorial.with-bot.is-intro.show {
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(0, 1fr);
+      grid-template-areas: "avatar";
+      width: min(100%, 440px);
+      min-height: min(52vh, 420px);
+      justify-self: center;
+      align-self: center;
+      padding: 22px 20px 10px;
+    }
+
+    .floating-message.tutorial.with-bot.is-intro.show > strong,
+    .floating-message.tutorial.with-bot.is-intro.show > span,
+    .floating-message.tutorial.with-bot.is-intro.show .message-actions,
+    .floating-message.tutorial.with-bot.is-intro.show .tutorial-dismiss {
+      display: none !important;
+    }
+
+    .floating-message.tutorial.with-bot.is-intro.show .tutorial-bot-avatar {
+      min-height: 100%;
+      padding: 18px 12px 0;
+    }
+
+    .floating-message.tutorial.with-bot.is-intro.show .tutorial-bot-avatar img {
+      max-width: min(72vw, 240px);
+    }
+
     .tutorial-bot-avatar {
       display: none;
     }
@@ -4584,6 +4658,44 @@
         font-size: 11px;
       }
 
+      .floating-message.tutorial.with-bot.is-sequence.show {
+        width: min(100%, 92vw);
+        min-height: min(42vh, 300px);
+        padding: 12px 12px 10px;
+      }
+
+      .floating-message.tutorial.with-bot.is-sequence .tutorial-bot-avatar {
+        min-height: 116px;
+      }
+
+      .floating-message.tutorial.with-bot.is-sequence .tutorial-bot-avatar img {
+        max-width: 84px;
+      }
+
+      .floating-message.tutorial.with-bot.is-sequence > strong {
+        font-size: 18px;
+      }
+
+      .floating-message.tutorial.with-bot.is-sequence > span {
+        font-size: 14px;
+        line-height: 1.24;
+      }
+
+      .floating-message.tutorial.with-bot.is-sequence .message-actions button {
+        min-height: 40px;
+        font-size: 13px;
+      }
+
+      .floating-message.tutorial.with-bot.is-intro.show {
+        width: min(100%, 84vw);
+        min-height: min(42vh, 300px);
+        padding: 16px 14px 8px;
+      }
+
+      .floating-message.tutorial.with-bot.is-intro.show .tutorial-bot-avatar img {
+        max-width: min(54vw, 170px);
+      }
+
       .toast {
         left: calc(var(--land-left) + 16px);
         right: calc(var(--land-hand) + 16px);
@@ -5389,11 +5501,17 @@
       bridgeTutorialMeta: "",
       bridgeTutorialActions: [],
       tutorialBotVisible: false,
+      tutorialBotMode: "",
+      tutorialBotSequenceOnly: false,
+      tutorialBotBubbleVisible: false,
       tutorialBotTitle: "",
       tutorialBotText: "",
       tutorialBotHtml: "",
       tutorialBotMeta: "",
       tutorialBotSprite: "",
+      tutorialBotPrimaryAction: "",
+      tutorialBotPrimaryLabel: "",
+      tutorialBotDismissAction: "",
       argosHack: null
     };
 
@@ -7617,6 +7735,18 @@
       container.hidden = container.children.length === 0;
     }
 
+    function getTutorialBotActionList() {
+      if (!state.tutorialBotVisible) return [];
+      const actions = [];
+      if (state.tutorialBotPrimaryAction) {
+        actions.push({
+          id: state.tutorialBotPrimaryAction,
+          label: state.tutorialBotPrimaryLabel || "Entendido"
+        });
+      }
+      return actions;
+    }
+
     function setTutorialBody(node, text = "", html = "") {
       if (!node) return;
       if (html) node.innerHTML = html;
@@ -7747,12 +7877,16 @@
       const tutorialTitle = document.querySelector("[data-tutorial-title]");
       const tutorialActions = document.querySelector("[data-tutorial-actions]");
       const tutorialAvatar = document.querySelector("[data-tutorial-bot-avatar]");
+      const tutorialDismiss = document.querySelector("[data-tutorial-dismiss]");
       const landscape = isLandscapeLayout();
       const tutorialSuppressed = isTutorialOverlaySuppressed();
-      const embeddedBotVisible = EMBEDDED_REAL_GAME && state.tutorialBotVisible && (!!state.tutorialBotText || !!state.tutorialBotHtml);
+      const embeddedBotVisible = EMBEDDED_REAL_GAME && state.tutorialBotVisible;
       const tutorialVisible = state.tutorial && !tutorialSuppressed && (embeddedBotVisible || !landscape);
       tutorial.classList.toggle("show", tutorialVisible);
       tutorial.classList.toggle("with-bot", embeddedBotVisible);
+      tutorial.classList.toggle("is-sequence", embeddedBotVisible && state.tutorialBotSequenceOnly);
+      tutorial.classList.toggle("is-intro", embeddedBotVisible && state.tutorialBotMode === "intro");
+      tutorial.classList.toggle("is-greeting", embeddedBotVisible && state.tutorialBotMode === "greeting");
       let tutorialCopy = "";
       let tutorialHtml = "";
       let alertTitle = "";
@@ -7768,8 +7902,17 @@
         if (tutorialAvatar) {
           tutorialAvatar.src = state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png";
         }
+        if (tutorialDismiss) {
+          tutorialDismiss.hidden = !embeddedBotVisible || !state.tutorialBotDismissAction;
+          tutorialDismiss.dataset.tutorialAction = state.tutorialBotDismissAction || "";
+        }
+        if (embeddedBotVisible && state.tutorialBotMode === "intro") {
+          if (tutorialTitle) tutorialTitle.textContent = "";
+          tutorialCopy = "";
+          tutorialHtml = "";
+        }
         setTutorialBody(tutorialText, tutorialCopy, tutorialHtml);
-        renderTutorialActionButtons(tutorialActions);
+        renderTutorialActionButtons(tutorialActions, embeddedBotVisible ? getTutorialBotActionList() : getTutorialActionList());
         const alert = document.querySelector("[data-alert-message]");
         const embeddedPlayerDefensePopup = state.pendingDefense?.defenderIndex === 0;
         if (state.pendingDefense) {
@@ -7806,6 +7949,10 @@
         return;
       }
       if (tutorialTitle) tutorialTitle.textContent = "Tutorial activo";
+      if (tutorialDismiss) {
+        tutorialDismiss.hidden = true;
+        tutorialDismiss.dataset.tutorialAction = "";
+      }
       renderTutorialActionButtons(tutorialActions, []);
       if (state.pendingDefense) {
         const defender = state.players[state.pendingDefense.defenderIndex];
@@ -8219,11 +8366,17 @@
       state.bridgeTutorialMeta = snapshot.bridgeTutorialMeta || "";
       state.bridgeTutorialActions = Array.isArray(snapshot.bridgeTutorialActions) ? snapshot.bridgeTutorialActions : [];
       state.tutorialBotVisible = !!snapshot.tutorialBotVisible;
+      state.tutorialBotMode = snapshot.tutorialBotMode || "";
+      state.tutorialBotSequenceOnly = !!snapshot.tutorialBotSequenceOnly;
+      state.tutorialBotBubbleVisible = !!snapshot.tutorialBotBubbleVisible;
       state.tutorialBotTitle = snapshot.tutorialBotTitle || "";
       state.tutorialBotText = snapshot.tutorialBotText || "";
       state.tutorialBotHtml = snapshot.tutorialBotHtml || "";
       state.tutorialBotMeta = snapshot.tutorialBotMeta || "";
       state.tutorialBotSprite = snapshot.tutorialBotSprite || "";
+      state.tutorialBotPrimaryAction = snapshot.tutorialBotPrimaryAction || "";
+      state.tutorialBotPrimaryLabel = snapshot.tutorialBotPrimaryLabel || "";
+      state.tutorialBotDismissAction = snapshot.tutorialBotDismissAction || "";
       state.argosHack = snapshot.argosHack && snapshot.argosHack.active ? snapshot.argosHack : null;
       state.log = Array.isArray(snapshot.log) ? snapshot.log.slice(0, 60) : [];
       render();
@@ -8294,6 +8447,15 @@
     document.addEventListener("blur", clearPressedButtons, true);
 
     document.addEventListener("click", (event) => {
+      const directTutorialButton = event.target.closest?.("[data-tutorial-action], [data-tutorial-dismiss], button[data-tutorial-action]");
+      if (directTutorialButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        const action = directTutorialButton.dataset.tutorialAction || "";
+        if (action) handleTutorialAction(action);
+        else if (directTutorialButton.dataset.tutorialDismiss !== undefined) temporarilyHideTutorialOverlay(18000);
+        return;
+      }
       const button = visibleControlButtonAt(event);
       const zone = event.target.closest(".drop-zone");
       const overviewCard = event.target.closest(".hand-overview .card[data-card-id]");
