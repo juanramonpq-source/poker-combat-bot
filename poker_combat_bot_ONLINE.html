@@ -6135,7 +6135,7 @@ body.desktop-compact-mode .tutobot-dock{
   left:50%;
   right:auto;
   bottom:auto;
-  width:min(780px, calc(100vw - 430px));
+  width:min(780px, max(320px, calc(100vw - 430px)));
   transform:translateX(-50%);
 }
 body.mobile-compact-mode .tutobot-dock,
@@ -6168,6 +6168,22 @@ body.tablet-touch-landscape-mode .tutobot-dock{
   bottom:auto;
   width:min(760px, calc(100vw - 120px));
   transform:translateX(-50%);
+}
+@media (max-width: 900px){
+  body.desktop-compact-mode .tutobot-dock{
+    left:12px;
+    right:12px;
+    top:auto;
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 108px);
+    width:auto;
+    transform:none;
+  }
+}
+@media (max-width: 900px) and (orientation: landscape){
+  body.desktop-compact-mode .tutobot-dock{
+    top:86px;
+    bottom:auto;
+  }
 }
 body:not(.desktop-compact-mode):not(.mobile-compact-mode):not(.mobile-pc-compact-mode):not(.mobile-panorama-mode) .tutobot-dock{
   top:94px;
@@ -33012,10 +33028,20 @@ function clearMobileSpriteDraftPlacements(renderNow=false){
 
 function canUseMobileSpriteHud(){
   const body = document.body;
+  let compactTouchFallback = false;
+  try{
+    const viewport = getViewportProfile();
+    compactTouchFallback = !!body
+      && body.classList.contains('desktop-compact-mode')
+      && (isTouchLikeDevice() || window.innerWidth <= 900)
+      && viewport.shortSide <= 1180;
+  }catch(_err){}
   const mobileSpriteMode = !!body && (
     body.classList.contains('mobile-compact-mode')
     || body.classList.contains('mobile-pc-compact-mode')
-  ) && !body.classList.contains('mobile-panorama-mode');
+    || body.classList.contains('mobile-panorama-mode')
+    || compactTouchFallback
+  );
   const introVisible = !document.getElementById('introScreen')?.classList.contains('hidden');
   return !!mobileSpriteHudEnabled && !!state.gameStarted && !introVisible && mobileSpriteMode;
 }
@@ -33226,8 +33252,9 @@ function syncTutorialBotDom(payload = getTutorialBotSpeechPayload()){
   const sprite = payload?.sprite || TUTOBOT_TALK_FRAMES[0];
   const messageKey = payload?.messageKey || '';
   const panelDismissed = !!messageKey && tutorialBotState.panelDismissedKey === messageKey;
-  const overlayActive = active && !!payload?.sequenceOnly && !tutorialBotState.overlayDismissed;
-  const dockActive = active && !payload?.sequenceOnly && !panelDismissed;
+  const mobileSpriteOwnsPresentation = canUseMobileSpriteHud() && !!payload?.sequenceOnly;
+  const overlayActive = !mobileSpriteOwnsPresentation && active && !!payload?.sequenceOnly && !tutorialBotState.overlayDismissed;
+  const dockActive = !mobileSpriteOwnsPresentation && active && !payload?.sequenceOnly && !panelDismissed;
 
   document.querySelectorAll('[data-tutobot-shell]').forEach(node => {
     node.hidden = true;
