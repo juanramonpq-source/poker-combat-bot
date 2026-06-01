@@ -7424,8 +7424,16 @@
       renderHand();
     }
 
+    function shouldUseTutorialPortraitHandLayout(count) {
+      return EMBEDDED_REAL_GAME && state.tutorial && !isLandscapeLayout() && count >= 7;
+    }
+
+    function shouldUseTapOnlyTutorialHandSelection() {
+      return EMBEDDED_REAL_GAME && state.tutorial && !isLandscapeLayout();
+    }
+
     function shouldUseExpandedPortraitHand(count) {
-      return count > 9 && !isLandscapeLayout();
+      return !isLandscapeLayout() && (count > 9 || shouldUseTutorialPortraitHandLayout(count));
     }
 
     function layoutHandCard(cardNode, index, count, tray) {
@@ -7466,6 +7474,7 @@
           : 54;
       const cardHeight = window.matchMedia("(max-height: 760px)").matches ? 73 : 79;
       if (shouldUseExpandedPortraitHand(count)) {
+        const tutorialPortraitLayout = shouldUseTutorialPortraitHandLayout(count);
         const rows = 2;
         const cardsPerRow = Math.ceil(count / rows);
         const row = Math.floor(index / cardsPerRow);
@@ -7474,24 +7483,44 @@
         const trayWidth = tray.clientWidth || 360;
         const trayHeight = tray.clientHeight || (window.matchMedia("(max-height: 760px)").matches ? 132 : 150);
         const narrow = window.innerWidth <= 430 || trayWidth <= 390;
-        const leftGuard = row === 0 ? (narrow ? 86 : 78) : (narrow ? 18 : 22);
-        const rightGuard = row === 0 ? (narrow ? 118 : 132) : (narrow ? 18 : 22);
-        const scale = count > 15 ? .82 : count > 12 ? .86 : .92;
+        const leftGuard = tutorialPortraitLayout
+          ? (narrow ? 16 : 20)
+          : (row === 0 ? (narrow ? 86 : 78) : (narrow ? 18 : 22));
+        const rightGuard = tutorialPortraitLayout
+          ? (narrow ? 16 : 20)
+          : (row === 0 ? (narrow ? 118 : 132) : (narrow ? 18 : 22));
+        const scale = tutorialPortraitLayout
+          ? (count > 8 ? .78 : .82)
+          : (count > 15 ? .82 : count > 12 ? .86 : .92);
         const visualWidth = cardWidth * scale;
         const usableWidth = Math.max(visualWidth, trayWidth - leftGuard - rightGuard);
         const step = rowCount > 1
-          ? Math.max(24, Math.min(visualWidth * 1.08, (usableWidth - visualWidth) / (rowCount - 1)))
+          ? Math.max(
+              tutorialPortraitLayout ? 22 : 24,
+              Math.min(
+                visualWidth * (tutorialPortraitLayout ? 1.16 : 1.08),
+                (usableWidth - visualWidth) / (rowCount - 1)
+              )
+            )
           : 0;
         const rowWidth = visualWidth + step * Math.max(0, rowCount - 1);
         const rowLeft = leftGuard + Math.max(0, (usableWidth - rowWidth) / 2);
         const centerX = rowLeft + (visualWidth / 2) + col * step;
-        const rowGap = count > 15 ? 4 : 6;
-        const rowStep = Math.min(cardHeight * .7, Math.max(44, (trayHeight - cardHeight - rowGap)));
-        const topBase = Math.max(0, Math.min(18, (trayHeight - cardHeight - rowStep) / 2));
+        const rowGap = tutorialPortraitLayout ? 8 : (count > 15 ? 4 : 6);
+        const rowStep = tutorialPortraitLayout
+          ? Math.min(cardHeight * .88, Math.max(48, (trayHeight - cardHeight - rowGap)))
+          : Math.min(cardHeight * .7, Math.max(44, (trayHeight - cardHeight - rowGap)));
+        const topBase = tutorialPortraitLayout
+          ? Math.max(0, Math.min(10, (trayHeight - cardHeight - rowStep) / 2))
+          : Math.max(0, Math.min(18, (trayHeight - cardHeight - rowStep) / 2));
         const mid = (rowCount - 1) / 2;
         const localTilt = rowCount > 1 ? (col - mid) / mid : 0;
-        const angle = localTilt * (count > 15 ? 3.2 : 4.2);
-        const rise = Math.max(0, (count > 15 ? 5 : 7) - Math.abs(col - mid) * .9);
+        const angle = tutorialPortraitLayout
+          ? localTilt * 1.8
+          : localTilt * (count > 15 ? 3.2 : 4.2);
+        const rise = tutorialPortraitLayout
+          ? Math.max(0, 3 - Math.abs(col - mid) * .5)
+          : Math.max(0, (count > 15 ? 5 : 7) - Math.abs(col - mid) * .9);
         cardNode.style.left = `${Math.max(0, centerX - (cardWidth / 2)).toFixed(2)}px`;
         cardNode.style.top = `${(topBase + row * rowStep).toFixed(2)}px`;
         cardNode.style.zIndex = String(10 + row * cardsPerRow + col);
@@ -8183,6 +8212,10 @@
       const cardId = cardNode.dataset.cardId;
       const found = cardId ? findCard(cardId) : null;
       if (!found || found.player !== state.players[0] || found.zone !== "hand") return;
+      if (shouldUseTapOnlyTutorialHandSelection()) {
+        touchDrag = null;
+        return;
+      }
       touchDrag = {
         pointerId: event.pointerId,
         cardId,

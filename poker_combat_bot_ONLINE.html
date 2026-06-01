@@ -6161,11 +6161,16 @@ body.mobile-compact-mode .tutobot-overlay-actions button{
 body.mobile-compact-mode .tutobot-dock{
   left:10px;
   right:10px;
-  bottom:calc(env(safe-area-inset-bottom, 0px) + 94px);
+  top:calc(env(safe-area-inset-top, 0px) + clamp(182px, 21dvh, 248px));
+  bottom:auto;
 }
 body.mobile-compact-mode .tutobot-dock-card{
   padding:10px;
   border-radius:24px;
+  pointer-events:none;
+}
+body.mobile-compact-mode .tutobot-dock-card :is(button, a, [role="button"]){
+  pointer-events:auto;
 }
 body.mobile-compact-mode .tutobot-dock .tutorial-assistant{
   grid-template-columns:minmax(78px, 104px) minmax(0, 1fr);
@@ -6269,10 +6274,12 @@ body.mobile-pc-compact-mode .tutobot-dock,
 body.mobile-panorama-mode .tutobot-dock{
   left:12px;
   right:12px;
-  bottom:calc(env(safe-area-inset-bottom, 0px) + 108px);
-  top:auto;
   width:auto;
   transform:none;
+}
+body.mobile-compact-mode .tutobot-dock{
+  top:calc(env(safe-area-inset-top, 0px) + clamp(182px, 21dvh, 248px));
+  bottom:auto;
 }
 body.mobile-pc-compact-mode .tutobot-dock,
 body.mobile-panorama-mode .tutobot-dock{
@@ -6303,6 +6310,10 @@ body.tablet-touch-landscape-mode .tutobot-dock{
     bottom:calc(env(safe-area-inset-bottom, 0px) + 108px);
     width:auto;
     transform:none;
+  }
+  body.desktop-compact-mode.mobile-compact-mode .tutobot-dock{
+    top:calc(env(safe-area-inset-top, 0px) + clamp(182px, 21dvh, 248px));
+    bottom:auto;
   }
 }
 @media (max-width: 900px) and (orientation: landscape){
