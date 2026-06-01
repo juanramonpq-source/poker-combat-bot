@@ -5823,20 +5823,25 @@ body.story-argos-hack-ui .pro-turn-kicker{
   position:absolute;
   top:8px;
   right:8px;
-  width:26px;
-  height:26px;
-  border:0;
+  display:grid;
+  place-items:center;
+  width:32px;
+  height:32px;
+  padding:0;
+  border:1px solid rgba(80,129,156,.32);
   border-radius:999px;
-  background:rgba(15,77,102,.10);
-  color:#275d74;
-  font:900 .8rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(218,233,245,.98));
+  color:#1e4e67;
+  box-shadow:0 4px 12px rgba(9,25,40,.20);
+  font:900 1rem/1 "Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
   cursor:pointer;
-  transition:transform .14s ease, background .18s ease, color .18s ease;
+  transition:transform .14s ease, background .18s ease, color .18s ease, box-shadow .18s ease;
 }
 .tutorial-assistant-dismiss:hover,
 .tutorial-assistant-dismiss:focus-visible{
-  background:rgba(15,77,102,.18);
-  color:#0f4d66;
+  background:linear-gradient(180deg, rgba(255,255,255,1), rgba(228,241,252,1));
+  color:#123f56;
+  box-shadow:0 6px 16px rgba(9,25,40,.28);
   transform:scale(1.06);
 }
 .tutorial-assistant-bubble::before{
@@ -25909,7 +25914,7 @@ body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-cards
           </div>
         </div>
         <div class="tutorial-assistant-bubble" data-tutobot-bubble hidden>
-          <button class="tutorial-assistant-dismiss" type="button" data-tutobot-dismiss aria-label="Ocultar TutoBOT">×</button>
+          <button class="tutorial-assistant-dismiss" type="button" data-tutobot-dismiss aria-label="Ocultar TutoBOT">✕</button>
           <div class="tutorial-assistant-name">TutoBOT</div>
           <div class="tutorial-assistant-message" id="tutorialAssistantMessage" data-tutobot-message></div>
           <div class="tutorial-assistant-meta" id="tutorialAssistantMeta" data-tutobot-meta></div>
@@ -26308,7 +26313,7 @@ body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-cards
             </div>
           </div>
           <div class="tutorial-assistant-bubble" data-tutobot-bubble hidden>
-            <button class="tutorial-assistant-dismiss" type="button" data-tutobot-dismiss aria-label="Ocultar TutoBOT">×</button>
+            <button class="tutorial-assistant-dismiss" type="button" data-tutobot-dismiss aria-label="Ocultar TutoBOT">✕</button>
             <div class="tutorial-assistant-name">TutoBOT</div>
             <div class="tutorial-assistant-message" id="compactTutorialAssistantMessage" data-tutobot-message></div>
             <div class="tutorial-assistant-meta" id="compactTutorialAssistantMeta" data-tutobot-meta></div>
@@ -26404,7 +26409,7 @@ body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-cards
         </div>
       </div>
       <div class="tutorial-assistant-bubble" id="tutorialBotDockBubble" hidden>
-        <button class="tutorial-assistant-dismiss" type="button" data-tutobot-dismiss aria-label="Ocultar TutoBOT">×</button>
+        <button class="tutorial-assistant-dismiss" type="button" data-tutobot-dismiss aria-label="Ocultar TutoBOT">✕</button>
         <div class="tutorial-assistant-name">TutoBOT</div>
         <div class="tutorial-assistant-message" id="tutorialBotDockMessage"></div>
         <div class="tutorial-assistant-meta" id="tutorialBotDockMeta"></div>
@@ -26471,7 +26476,7 @@ const tutorialSystem = {
   }
 };
 
-const TUTOBOT_ASSET_VERSION = '20260601-tutobot-mobile-fix-2';
+const TUTOBOT_ASSET_VERSION = '20260601-tutobot-mobile-fix-3';
 function tutobotAsset(src=''){
   return `${src}?v=${encodeURIComponent(TUTOBOT_ASSET_VERSION)}`;
 }
@@ -26505,7 +26510,7 @@ const TUTOBOT_STEP_LINES = {
   'core-build': 'Vamos a montar el corazón del mecha.',
   'attack-build': 'Perfecto. Ahora completa el módulo que manda tu piloto.',
   'fuel-build': 'Bien visto. Carga combustible y ya casi disparamos.',
-  'open-attack': 'Abre el modo de ataque y te acompaño arriba.',
+  'open-attack': 'Pulsa Abrir Ataque y seguimos.',
   'first-attack': 'Hora del primer disparo. Marca fuel y picas.',
   'defend': 'Atención: te atacan. Vamos a esquivarlo con un diamante.',
   'draw-diamond': 'Recarga tu mano usando un diamante.',
@@ -26523,6 +26528,8 @@ const tutorialBotState = {
   overlayDismissed: false,
   panelDismissedKey: '',
   assetsPreloaded: false,
+  mobileSpriteHudReady: false,
+  pendingMobileSpriteIntroReplay: false,
   frameMode: 'idle',
   frameIndex: 0,
   currentFrame: TUTOBOT_TALK_FRAMES[0],
@@ -26909,7 +26916,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260601-tutobot-mobile-fix-2';
+const MOBILE_SPRITE_HUD_VERSION = '20260601-tutobot-mobile-fix-3';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -29026,9 +29033,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'open-attack',
     title: 'Paso 4 · Entra en modo ataque',
-    body: 'Tu mecha ya cumple la condición del piloto. Ahora abre la consola de ataque para elegir combustible y cartas de daño.<br><br>Puedes hacerlo de dos formas: con <strong>Abrir ataque</strong> en el panel principal de <strong>arriba</strong> o con el botón <strong>Ataque</strong> del panel de tu jugador, que te lleva automáticamente hacia arriba.',
-    objective: 'Pulsa <strong>Abrir ataque</strong> arriba o el botón <strong>Ataque</strong> de tu panel.',
-    tip: 'Si te pierdes, usa el botón Ataque del panel del jugador: te lleva al panel de control principal de arriba.',
+    body: 'Tu mecha ya cumple la condición del piloto. Ahora abre la consola de ataque para elegir combustible y cartas de daño.',
+    objective: 'Pulsa <strong>Abrir Ataque</strong>.',
+    tip: 'En cuanto abras el ataque, podrás elegir combustible y cartas de daño.',
     allowedButtons: ['attackModeBtn', 'clearSelectionBtn'],
     allowedCardIds: [],
     highlightButtons: ['attackModeBtn'],
@@ -33056,12 +33063,14 @@ function syncMobileSpriteHudBridge(force=false){
   shell.setAttribute('aria-hidden', active ? 'false' : 'true');
   document.body?.classList.toggle('mobile-sprite-hud-active', active);
   if(!active){
+    tutorialBotState.mobileSpriteHudReady = false;
     window.clearTimeout(mobileSpriteHudSyncTimer);
     mobileSpriteHudSyncTimer = null;
     return;
   }
   if(frame.getAttribute('src') !== desiredSrc){
     mobileSpriteHudApi = null;
+    tutorialBotState.mobileSpriteHudReady = false;
     frame.setAttribute('src', desiredSrc);
   }
   if(force) sendMobileSpriteSnapshotSoon(0);
@@ -33088,6 +33097,7 @@ function sendMobileSpriteSnapshot(){
   const snapshot = createMobileSpriteSnapshot();
   try{
     if(mobileSpriteHudApi && typeof mobileSpriteHudApi.receiveSnapshot === 'function'){
+      markMobileSpriteHudReady();
       mobileSpriteHudApi.receiveSnapshot(snapshot);
       return;
     }
@@ -33097,6 +33107,7 @@ function sendMobileSpriteSnapshot(){
     const api = frame?.contentWindow?.__pocobotSpriteHud;
     if(api && typeof api.receiveSnapshot === 'function'){
       mobileSpriteHudApi = api;
+      markMobileSpriteHudReady();
       api.receiveSnapshot(snapshot);
       return;
     }
@@ -33298,6 +33309,25 @@ function syncTutorialBotDom(payload = getTutorialBotSpeechPayload()){
   document.querySelector('.compact-tutorial-panel')?.classList.toggle('tutobot-sequence-only', !!payload?.sequenceOnly);
 }
 
+function maybeReplayTutorialBotIntroOnMobileReady(){
+  if(!tutorialBotState.pendingMobileSpriteIntroReplay) return;
+  tutorialBotState.pendingMobileSpriteIntroReplay = false;
+  if(!tutorialBotUsesCharacter() || tutorialBotState.overlayDismissed) return;
+  const sequenceStillPending = tutorialBotState.introActive || tutorialBotState.greetingActive || !tutorialBotState.greetingDone;
+  if(!sequenceStillPending) return;
+  startTutorialBotIntroSequence();
+}
+
+function markMobileSpriteHudReady(){
+  if(tutorialBotState.mobileSpriteHudReady) return;
+  tutorialBotState.mobileSpriteHudReady = true;
+  if(tutorialBotState.pendingMobileSpriteIntroReplay){
+    window.setTimeout(() => {
+      maybeReplayTutorialBotIntroOnMobileReady();
+    }, 0);
+  }
+}
+
 function resetTutorialBotState(){
   clearTutorialBotTimers();
   tutorialBotState.introActive = false;
@@ -33305,6 +33335,7 @@ function resetTutorialBotState(){
   tutorialBotState.greetingDone = false;
   tutorialBotState.overlayDismissed = false;
   tutorialBotState.panelDismissedKey = '';
+  tutorialBotState.pendingMobileSpriteIntroReplay = false;
   tutorialBotState.frameMode = 'idle';
   tutorialBotState.frameIndex = 0;
   tutorialBotState.currentFrame = TUTOBOT_TALK_FRAMES[0];
@@ -33413,6 +33444,7 @@ function startTutorialBotIntroSequence(){
   resetTutorialBotState();
   tutorialBotState.introActive = true;
   tutorialBotState.introStartedAt = Date.now();
+  tutorialBotState.pendingMobileSpriteIntroReplay = canUseMobileSpriteHud() && !tutorialBotState.mobileSpriteHudReady;
   setTutorialBotFrameMode('entrance');
   if(canUseMobileSpriteHud()) sendMobileSpriteSnapshotSoon(0);
 }
@@ -33520,9 +33552,9 @@ function getCompactMobileTutorialCopy(step){
       copy.tip = 'El contador Fuel x2 se actualizará en la cabecera en cuanto el diamante quede montado.';
       break;
     case 'open-attack':
-      copy.body = 'Tu mecha ya cumple la condición del piloto. En móvil no tienes que buscar una consola superior: abre el botón amarillo <strong>Acciones</strong> y pulsa <strong>Atacar</strong>. Eso abre la selección de ataque.';
-      copy.objective = 'Pulsa <strong>Acciones</strong> y después <strong>Atacar</strong>.';
-      copy.tip = 'Cuando Atacar se activa, el tablero cambia a selección de ataque para que elijas fuel y picas.';
+      copy.body = 'Tu mecha ya cumple la condición del piloto. Abre la selección de ataque para elegir combustible y cartas de daño.';
+      copy.objective = 'Pulsa <strong>Abrir Ataque</strong>.';
+      copy.tip = 'En cuanto abras el ataque, podrás elegir fuel y picas.';
       break;
     case 'first-attack':
       copy.body = 'Vas a usar <strong>8♦</strong> como combustible y <strong>4♠ + 7♠</strong> como ataque principal. En móvil, primero toca las cartas en Fuel y Ataque; después abre <strong>Acciones</strong> y confirma.';
@@ -34110,6 +34142,7 @@ function handleMobileSpriteBridge(type, payload={}){
 window.__pocobotSpriteMobileBridge = {
   register(api){
     mobileSpriteHudApi = api;
+    markMobileSpriteHudReady();
     sendMobileSpriteSnapshotSoon(0);
     return true;
   },
@@ -34120,7 +34153,10 @@ window.__pocobotSpriteMobileBridge = {
 window.addEventListener('message', event => {
   const data = event.data || {};
   if(data.source !== 'pocobot-sprite-hud') return;
-  if(data.type === 'ready') sendMobileSpriteSnapshotSoon(0);
+  if(data.type === 'ready'){
+    markMobileSpriteHudReady();
+    sendMobileSpriteSnapshotSoon(0);
+  }
 });
 
 function getDesktopCompactMechaStatus(player){
@@ -41478,9 +41514,9 @@ function startTutorialMode(){
 
   compactTutorialUserCollapsed = false;
   prepareNormalCombatStartHudMode();
+  startTutorialBotIntroSequence();
   render();
   revealCompactTutorialForMobile(true);
-  startTutorialBotIntroSequence();
   startIntroMusic(true);
   scheduleCombatOpeningSequence('tutorial', 150);
   window.setTimeout(() => {

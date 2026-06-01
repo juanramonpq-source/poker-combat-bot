@@ -5267,10 +5267,10 @@
       <div class="message-stack">
         <article class="floating-message tutorial" data-tutorial-message>
           <div class="tutorial-bot-avatar" aria-hidden="true">
-            <img data-tutorial-bot-avatar src="../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-2" alt="">
+            <img data-tutorial-bot-avatar src="../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-3" alt="">
           </div>
           <strong data-tutorial-title>Tutorial activo</strong>
-          <button class="tutorial-dismiss" type="button" data-tutorial-dismiss aria-label="Ocultar TutoBOT">×</button>
+          <button class="tutorial-dismiss" type="button" data-tutorial-dismiss aria-label="Ocultar TutoBOT">✕</button>
           <span data-tutorial-text></span>
           <div class="message-actions" data-tutorial-actions></div>
         </article>
@@ -7721,7 +7721,7 @@
     }
 
     function getTutorialBotSprite() {
-      return state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-2";
+      return state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-3";
     }
 
     function tutorialBotLooksLikeGreeting() {
@@ -7729,6 +7729,14 @@
       return state.tutorialBotMode === "greeting"
         || combined.includes("comenzamos")
         || combined.includes("hola, soy tutobot");
+    }
+
+    function tutorialBotShouldYieldToInteraction() {
+      if (!EMBEDDED_REAL_GAME || !state.tutorial || !state.tutorialBotVisible) return false;
+      if (state.tutorialBotSequenceOnly || ["intro", "greeting"].includes(state.tutorialBotMode)) return false;
+      const draftCount = Object.keys(state.bridgeDraftPlacements || {}).length;
+      const selectedCount = Array.isArray(state.selected) ? state.selected.length : 0;
+      return draftCount > 0 || selectedCount > 0;
     }
 
     function renderTutorialActionButtons(container, actions = getTutorialActionList()) {
@@ -7907,7 +7915,8 @@
       const tutorialAvatar = document.querySelector("[data-tutorial-bot-avatar]");
       const tutorialDismiss = document.querySelector("[data-tutorial-dismiss]");
       const landscape = isLandscapeLayout();
-      const tutorialSuppressed = isTutorialOverlaySuppressed();
+      const tutorialYieldingToInteraction = tutorialBotShouldYieldToInteraction();
+      const tutorialSuppressed = isTutorialOverlaySuppressed() || tutorialYieldingToInteraction;
       const embeddedBotVisible = EMBEDDED_REAL_GAME && state.tutorialBotVisible;
       const tutorialVisible = state.tutorial && !tutorialSuppressed && (embeddedBotVisible || !landscape);
       tutorial.classList.toggle("show", tutorialVisible);
@@ -7932,7 +7941,7 @@
           if (tutorialAvatar.getAttribute("src") !== spriteSrc) tutorialAvatar.src = spriteSrc;
           tutorialAvatar.onerror = () => {
             tutorialAvatar.onerror = null;
-            tutorialAvatar.src = "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-2";
+            tutorialAvatar.src = "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-3";
           };
         }
         if (tutorialDismiss) {
