@@ -5267,7 +5267,7 @@
       <div class="message-stack">
         <article class="floating-message tutorial" data-tutorial-message>
           <div class="tutorial-bot-avatar" aria-hidden="true">
-            <img data-tutorial-bot-avatar src="../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-3" alt="">
+            <img data-tutorial-bot-avatar src="../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-4" alt="">
           </div>
           <strong data-tutorial-title>Tutorial activo</strong>
           <button class="tutorial-dismiss" type="button" data-tutorial-dismiss aria-label="Ocultar TutoBOT">✕</button>
@@ -5503,6 +5503,7 @@
       tutorialBotVisible: false,
       tutorialBotMode: "",
       tutorialBotSequenceOnly: false,
+      tutorialBotExternalSequenceOverlay: false,
       tutorialBotBubbleVisible: false,
       tutorialBotTitle: "",
       tutorialBotText: "",
@@ -7721,7 +7722,7 @@
     }
 
     function getTutorialBotSprite() {
-      return state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-3";
+      return state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-4";
     }
 
     function tutorialBotLooksLikeGreeting() {
@@ -7915,9 +7916,10 @@
       const tutorialAvatar = document.querySelector("[data-tutorial-bot-avatar]");
       const tutorialDismiss = document.querySelector("[data-tutorial-dismiss]");
       const landscape = isLandscapeLayout();
+      const tutorialExternalSequenceOverlay = EMBEDDED_REAL_GAME && state.tutorialBotExternalSequenceOverlay;
       const tutorialYieldingToInteraction = tutorialBotShouldYieldToInteraction();
-      const tutorialSuppressed = isTutorialOverlaySuppressed() || tutorialYieldingToInteraction;
-      const embeddedBotVisible = EMBEDDED_REAL_GAME && state.tutorialBotVisible;
+      const tutorialSuppressed = isTutorialOverlaySuppressed() || tutorialYieldingToInteraction || tutorialExternalSequenceOverlay;
+      const embeddedBotVisible = EMBEDDED_REAL_GAME && state.tutorialBotVisible && !tutorialExternalSequenceOverlay;
       const tutorialVisible = state.tutorial && !tutorialSuppressed && (embeddedBotVisible || !landscape);
       tutorial.classList.toggle("show", tutorialVisible);
       tutorial.classList.toggle("with-bot", embeddedBotVisible);
@@ -7939,9 +7941,9 @@
         if (tutorialAvatar) {
           const spriteSrc = getTutorialBotSprite();
           if (tutorialAvatar.getAttribute("src") !== spriteSrc) tutorialAvatar.src = spriteSrc;
-          tutorialAvatar.onerror = () => {
-            tutorialAvatar.onerror = null;
-            tutorialAvatar.src = "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-3";
+            tutorialAvatar.onerror = () => {
+              tutorialAvatar.onerror = null;
+            tutorialAvatar.src = "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-4";
           };
         }
         if (tutorialDismiss) {
@@ -8410,6 +8412,7 @@
       state.tutorialBotVisible = !!snapshot.tutorialBotVisible;
       state.tutorialBotMode = snapshot.tutorialBotMode || "";
       state.tutorialBotSequenceOnly = !!snapshot.tutorialBotSequenceOnly;
+      state.tutorialBotExternalSequenceOverlay = !!snapshot.tutorialBotExternalSequenceOverlay;
       state.tutorialBotBubbleVisible = !!snapshot.tutorialBotBubbleVisible;
       state.tutorialBotTitle = snapshot.tutorialBotTitle || "";
       state.tutorialBotText = snapshot.tutorialBotText || "";
