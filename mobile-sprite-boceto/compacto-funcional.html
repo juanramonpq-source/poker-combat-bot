@@ -5267,7 +5267,7 @@
       <div class="message-stack">
         <article class="floating-message tutorial" data-tutorial-message>
           <div class="tutorial-bot-avatar" aria-hidden="true">
-            <img data-tutorial-bot-avatar src="../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png" alt="">
+            <img data-tutorial-bot-avatar src="../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-2" alt="">
           </div>
           <strong data-tutorial-title>Tutorial activo</strong>
           <button class="tutorial-dismiss" type="button" data-tutorial-dismiss aria-label="Ocultar TutoBOT">×</button>
@@ -7720,6 +7720,17 @@
       return Array.isArray(state.bridgeTutorialActions) ? state.bridgeTutorialActions : [];
     }
 
+    function getTutorialBotSprite() {
+      return state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-2";
+    }
+
+    function tutorialBotLooksLikeGreeting() {
+      const combined = `${state.tutorialBotTitle || ""} ${state.tutorialBotText || ""} ${state.tutorialBotHtml || ""}`.toLowerCase();
+      return state.tutorialBotMode === "greeting"
+        || combined.includes("comenzamos")
+        || combined.includes("hola, soy tutobot");
+    }
+
     function renderTutorialActionButtons(container, actions = getTutorialActionList()) {
       if (!container) return;
       container.innerHTML = "";
@@ -7744,6 +7755,12 @@
           label: state.tutorialBotPrimaryLabel || "Entendido"
         });
       }
+      if (!actions.length && tutorialBotLooksLikeGreeting()) {
+        actions.push({
+          id: "tutobot-continue",
+          label: "Entendido"
+        });
+      }
       return actions;
     }
 
@@ -7762,6 +7779,17 @@
       if (action === "academy-definition-ack") {
         showToast("Fase entendida.");
       }
+    }
+
+    function maybeHandleDirectTutorialControl(event) {
+      const directTutorialButton = event.target.closest?.("[data-tutorial-action], [data-tutorial-dismiss], button[data-tutorial-action]");
+      if (!directTutorialButton) return false;
+      event.preventDefault();
+      event.stopPropagation();
+      const action = directTutorialButton.dataset.tutorialAction || "";
+      if (action) handleTutorialAction(action);
+      else if (directTutorialButton.dataset.tutorialDismiss !== undefined) temporarilyHideTutorialOverlay(18000);
+      return true;
     }
 
     function renderLeftGuidance(tutorialCopy = "", alertTitle = "", alertCopy = "", tutorialHtml = "") {
@@ -7900,7 +7928,12 @@
           ? (state.tutorialBotTitle || "TutoBOT")
           : (state.bridgeTutorialTitle || state.bridgeTutorialMeta || "Tutorial activo");
         if (tutorialAvatar) {
-          tutorialAvatar.src = state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png";
+          const spriteSrc = getTutorialBotSprite();
+          if (tutorialAvatar.getAttribute("src") !== spriteSrc) tutorialAvatar.src = spriteSrc;
+          tutorialAvatar.onerror = () => {
+            tutorialAvatar.onerror = null;
+            tutorialAvatar.src = "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-2";
+          };
         }
         if (tutorialDismiss) {
           tutorialDismiss.hidden = !embeddedBotVisible || !state.tutorialBotDismissAction;
@@ -8438,7 +8471,13 @@
     document.addEventListener("pointerup", (event) => finishTouchCardDrag(event), { passive: false });
     document.addEventListener("pointercancel", (event) => finishTouchCardDrag(event, true), { passive: false });
 
-    document.addEventListener("pointerup", clearPressedButtons, { passive: true });
+    document.addEventListener("pointerup", (event) => {
+      if (maybeHandleDirectTutorialControl(event)) {
+        clearPressedButtons();
+        return;
+      }
+      clearPressedButtons();
+    }, { passive: false });
     document.addEventListener("pointercancel", clearPressedButtons, { passive: true });
     document.addEventListener("pointerleave", (event) => {
       const button = event.target.closest?.("button");
@@ -8447,15 +8486,7 @@
     document.addEventListener("blur", clearPressedButtons, true);
 
     document.addEventListener("click", (event) => {
-      const directTutorialButton = event.target.closest?.("[data-tutorial-action], [data-tutorial-dismiss], button[data-tutorial-action]");
-      if (directTutorialButton) {
-        event.preventDefault();
-        event.stopPropagation();
-        const action = directTutorialButton.dataset.tutorialAction || "";
-        if (action) handleTutorialAction(action);
-        else if (directTutorialButton.dataset.tutorialDismiss !== undefined) temporarilyHideTutorialOverlay(18000);
-        return;
-      }
+      if (maybeHandleDirectTutorialControl(event)) return;
       const button = visibleControlButtonAt(event);
       const zone = event.target.closest(".drop-zone");
       const overviewCard = event.target.closest(".hand-overview .card[data-card-id]");

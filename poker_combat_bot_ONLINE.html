@@ -26455,22 +26455,27 @@ const tutorialSystem = {
   }
 };
 
+const TUTOBOT_ASSET_VERSION = '20260601-tutobot-mobile-fix-2';
+function tutobotAsset(src=''){
+  return `${src}?v=${encodeURIComponent(TUTOBOT_ASSET_VERSION)}`;
+}
+
 const TUTOBOT_ENTRANCE_FRAMES = [
-  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-01.png',
-  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-02.png',
-  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-03.png',
-  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-04.png',
-  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-05.png',
-  'assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-06.png'
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-01.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-02.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-03.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-04.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-05.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/entrada/frames/tutorial-robot-entrance-06.png')
 ];
 
 const TUTOBOT_TALK_FRAMES = [
-  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png',
-  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-02.png',
-  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-03.png',
-  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-04.png',
-  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-05.png',
-  'assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-06.png'
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-02.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-03.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-04.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-05.png'),
+  tutobotAsset('assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-06.png')
 ];
 
 const TUTOBOT_ENTRANCE_FRAME_DELAY = 120;
@@ -26888,6 +26893,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
+const MOBILE_SPRITE_HUD_VERSION = '20260601-tutobot-mobile-fix-2';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -33019,6 +33025,7 @@ function syncMobileSpriteHudBridge(force=false){
   const frame = document.getElementById('mobileSpriteBridgeFrame');
   if(!shell || !frame) return;
   const active = canUseMobileSpriteHud();
+  const desiredSrc = `mobile-sprite-boceto/compacto-funcional.html?embedded=1&v=${encodeURIComponent(MOBILE_SPRITE_HUD_VERSION)}`;
   shell.hidden = !active;
   shell.setAttribute('aria-hidden', active ? 'false' : 'true');
   document.body?.classList.toggle('mobile-sprite-hud-active', active);
@@ -33027,8 +33034,9 @@ function syncMobileSpriteHudBridge(force=false){
     mobileSpriteHudSyncTimer = null;
     return;
   }
-  if(!frame.getAttribute('src')){
-    frame.setAttribute('src', 'mobile-sprite-boceto/compacto-funcional.html?embedded=1');
+  if(frame.getAttribute('src') !== desiredSrc){
+    mobileSpriteHudApi = null;
+    frame.setAttribute('src', desiredSrc);
   }
   if(force) sendMobileSpriteSnapshotSoon(0);
   else sendMobileSpriteSnapshotSoon(60);
