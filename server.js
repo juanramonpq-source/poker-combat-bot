@@ -3,6 +3,9 @@ const http = require('http');
 const { Server } = require('socket.io');
 const crypto = require('crypto');
 
+const APP_RELEASE_VERSION = '20260601-mobile-shell-v1';
+const MAIN_GAME_PATH = '/poker_combat_bot_ONLINE.html';
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -16,29 +19,46 @@ const io = new Server(server, {
 });
 
 app.use((req, res, next) => {
-  if (req.path === '/' || req.path.endsWith('.html')) {
+  if (req.path === '/' || req.path.endsWith('.html') || req.path.endsWith('.webmanifest')) {
     res.set('Cache-Control', 'no-store, max-age=0, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+    res.set('X-PoCoBOT-Release', APP_RELEASE_VERSION);
   }
   next();
+});
+
+function buildVersionedGameUrl(req) {
+  const params = new URLSearchParams(req.query || {});
+  params.set('appv', APP_RELEASE_VERSION);
+  return `${MAIN_GAME_PATH}?${params.toString()}`;
+}
+
+// Serve the main HTML file at root
+app.get('/', (req, res) => {
+  res.redirect(302, buildVersionedGameUrl(req));
+});
+
+app.get(MAIN_GAME_PATH, (req, res) => {
+  if (req.query.appv !== APP_RELEASE_VERSION) {
+    return res.redirect(302, buildVersionedGameUrl(req));
+  }
+  res.sendFile(__dirname + MAIN_GAME_PATH);
 });
 
 // Serve static files from current directory
 app.use(express.static(__dirname));
 
-// Serve the main HTML file at root
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/poker_combat_bot_ONLINE.html');
-});
-
-// Fallback: serve HTML for any route not matching a static file
-// This helps with relative paths for audio files
+// Fallback: serve HTML for any route not matching a static file.
+// Route it through the versioned game URL so installed mobile shells
+// stop restoring stale pages after a deploy.
 app.get('*', (req, res) => {
   // Check if it looks like a request for a file (has an extension)
   if (req.path.includes('.')) {
     res.status(404).send('Not found');
   } else {
-    // Otherwise serve the HTML (for SPA-like behavior)
-    res.sendFile(__dirname + '/poker_combat_bot_ONLINE.html');
+    res.redirect(302, buildVersionedGameUrl(req));
   }
 });
 

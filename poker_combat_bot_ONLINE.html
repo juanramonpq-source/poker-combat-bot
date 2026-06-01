@@ -4,11 +4,33 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <script>
+    (() => {
+      const APP_SHELL_VERSION = '20260601-mobile-shell-v1';
+      const ensureVersionedShell = (reloadPersisted = false) => {
+        try {
+          const url = new URL(window.location.href);
+          const current = url.searchParams.get('appv');
+          if (reloadPersisted || current !== APP_SHELL_VERSION) {
+            url.searchParams.set('appv', APP_SHELL_VERSION);
+            window.location.replace(url.toString());
+            return true;
+          }
+        } catch (_error) {}
+        return false;
+      };
+      window.__POCOBOT_APP_SHELL_VERSION = APP_SHELL_VERSION;
+      if (ensureVersionedShell(false)) return;
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted) ensureVersionedShell(true);
+      });
+    })();
+  </script>
   <link rel="icon" href="favicon.ico?v=20260506-pocobot-icon" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_web_icon_32.png?v=20260506-pocobot-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/pocobot_web_icon_16.png?v=20260506-pocobot-icon" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_app_icon_180.png?v=20260529-pocobot-pwa" />
-  <link rel="manifest" href="site.webmanifest?v=20260529-pocobot-pwa" />
+  <link rel="manifest" href="site.webmanifest?v=20260601-mobile-shell-v1" />
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand" />
   <link rel="prefetch" href="assets/audio_01.mp3" />
   <link rel="prefetch" href="assets/audio_02.mp3" />
