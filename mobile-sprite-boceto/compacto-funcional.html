@@ -5461,6 +5461,8 @@
     let handShiftTimer = null;
     let touchDrag = null;
     let suppressCardClickUntil = 0;
+    let suppressTrustedTouchClickUntil = 0;
+    const loadedCardAssetUrls = new Set();
     const ATTACK_SPECIAL_MIN_DURATION_MS = 2300;
     const ATTACK_SPECIAL_FALLBACK_DURATION_MS = 6200;
     const ATTACK_SPECIAL_END_PAD_MS = 220;
@@ -7360,8 +7362,10 @@
       const button = document.createElement("button");
       button.type = "button";
       button.className = "card";
-      button.classList.add("card-image-pending");
-      button.draggable = context === "hand" && !card.bridgeDraftPreview;
+      const imgSrc = cardAsset(card);
+      const imageIsCached = loadedCardAssetUrls.has(imgSrc);
+      if (!imageIsCached) button.classList.add("card-image-pending");
+      button.draggable = context === "hand" && !card.bridgeDraftPreview && !shouldUseTapOnlyTutorialHandSelection();
       button.title = cardText(card);
       button.setAttribute("aria-pressed", state.selected.includes(card.id) ? "true" : "false");
       if (card.bridgeDraftPreview) {
@@ -7380,13 +7384,14 @@
       img.alt = cardText(card);
       img.draggable = false;
       img.addEventListener("load", () => {
+        loadedCardAssetUrls.add(imgSrc);
         button.classList.remove("card-image-pending", "card-image-failed");
       });
       img.addEventListener("error", () => {
         button.classList.remove("card-image-pending");
         button.classList.add("card-image-failed");
       });
-      img.src = cardAsset(card);
+      img.src = imgSrc;
       button.appendChild(img);
       return button;
     }
@@ -8228,6 +8233,31 @@
       try { cardNode.setPointerCapture(event.pointerId); } catch (error) {}
     }
 
+    function activateTouchTutorialHandTap(event) {
+      if (!shouldUseTapOnlyTutorialHandSelection()) return false;
+      const cardNode = event.target.closest?.("[data-hand-cards] .card[data-card-id]");
+      if (!cardNode || cardNode.disabled) return false;
+      event.preventDefault();
+      event.stopPropagation();
+      closeActions();
+      closeTopMenu();
+      toggleSelected(cardNode.dataset.cardId);
+      suppressTrustedTouchClickUntil = Date.now() + 420;
+      return true;
+    }
+
+    function activateTouchControl(event) {
+      if (!isTouchPointer(event)) return false;
+      if (activateTouchTutorialHandTap(event)) return true;
+      const button = visibleControlButtonAt(event);
+      if (!button || button.disabled || button.classList.contains("card")) return false;
+      event.preventDefault();
+      event.stopPropagation();
+      button.click();
+      suppressTrustedTouchClickUntil = Date.now() + 420;
+      return true;
+    }
+
     function updateTouchDrag(event) {
       if (!touchDrag || event.pointerId !== touchDrag.pointerId) return;
       const dx = event.clientX - touchDrag.startX;
@@ -8241,7 +8271,7 @@
     }
 
     function finishTouchCardDrag(event, cancelled = false) {
-      if (!touchDrag || event.pointerId !== touchDrag.pointerId) return;
+      if (!touchDrag || event.pointerId !== touchDrag.pointerId) return false;
       const drag = touchDrag;
       touchDrag = null;
       if (!drag.active) {
@@ -8254,7 +8284,7 @@
           closeActions();
           toggleSelected(drag.cardId);
         }
-        return;
+        return tappedHandCard;
       }
       event.preventDefault();
       suppressCardClickUntil = Date.now() + 500;
@@ -8272,6 +8302,7 @@
       } else if (!cancelled) {
         toast("Suelta la carta sobre un campo iluminado.");
       }
+      return true;
     }
 
     function clearPressedButtons() {
@@ -8513,16 +8544,23 @@
 
     document.addEventListener("pointerdown", startTouchCardDrag, { passive: false });
     document.addEventListener("pointermove", updateTouchDrag, { passive: false });
-    document.addEventListener("pointerup", (event) => finishTouchCardDrag(event), { passive: false });
-    document.addEventListener("pointercancel", (event) => finishTouchCardDrag(event, true), { passive: false });
-
     document.addEventListener("pointerup", (event) => {
+      const dragHandled = finishTouchCardDrag(event);
+      if (dragHandled) {
+        clearPressedButtons();
+        return;
+      }
       if (maybeHandleDirectTutorialControl(event)) {
+        clearPressedButtons();
+        return;
+      }
+      if (activateTouchControl(event)) {
         clearPressedButtons();
         return;
       }
       clearPressedButtons();
     }, { passive: false });
+    document.addEventListener("pointercancel", (event) => finishTouchCardDrag(event, true), { passive: false });
     document.addEventListener("pointercancel", clearPressedButtons, { passive: true });
     document.addEventListener("pointerleave", (event) => {
       const button = event.target.closest?.("button");
@@ -8531,6 +8569,11 @@
     document.addEventListener("blur", clearPressedButtons, true);
 
     document.addEventListener("click", (event) => {
+      if (event.isTrusted && Date.now() < suppressTrustedTouchClickUntil) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       if (maybeHandleDirectTutorialControl(event)) return;
       const button = visibleControlButtonAt(event);
       const zone = event.target.closest(".drop-zone");
