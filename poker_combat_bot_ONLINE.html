@@ -2176,6 +2176,36 @@ body.story-final-colossus-boss-phase-shift .story-final-colossus-boss-hud{
 body.story-final-colossus-mobile .story-final-colossus-overlay{
   contain:layout paint;
 }
+body.story-final-colossus-mode .story-final-colossus-overlay{
+  z-index:9800;
+}
+body.mobile-sprite-hud-active.story-final-colossus-mode{
+  touch-action:manipulation;
+}
+body.mobile-sprite-hud-active.story-final-colossus-mode .app{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+body.story-final-colossus-breaking.mobile-sprite-hud-active .app{
+  pointer-events:none !important;
+}
+body.story-final-colossus-mode .mobile-sprite-bridge-shell{
+  z-index:5200;
+  pointer-events:none !important;
+}
+body.story-final-colossus-mobile .story-mission-brief-bar{
+  display:none !important;
+  pointer-events:none !important;
+}
+body.story-final-colossus-breaking .mobile-sprite-bridge-shell:not([hidden]){
+  animation:storyFinalColossusMobileBridgeBreak 3.4s cubic-bezier(.15,.82,.18,1) both;
+}
+body.story-final-colossus-engaged .mobile-sprite-bridge-shell{
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
 body.story-final-colossus-mobile .story-final-colossus-haze{
   background:
     radial-gradient(circle at 86% 42%, rgba(35,216,255,.16), transparent 24%),
@@ -2231,6 +2261,19 @@ body.story-final-colossus-mobile .story-final-colossus-overlay.play .story-final
 }
 body.story-final-colossus-mobile .story-final-colossus-overlay.play .story-final-colossus-breach-vein{
   animation-duration:2.9s;
+}
+body.story-final-colossus-mode:not(.desktop-compact-mode):not(.mobile-compact-mode):not(.mobile-pc-compact-mode):not(.mobile-panorama-mode) .story-final-colossus-standee{
+  --colossus-final-x: 8%;
+  right:max(-10vw, -150px);
+  width:min(82vw, 1480px);
+}
+@keyframes storyFinalColossusMobileBridgeBreak{
+  0%{opacity:1; transform:translate3d(0,0,0) scale(1); filter:brightness(1) saturate(1)}
+  12%{opacity:.94; transform:translate3d(-5px,3px,0) scale(1.01) rotate(-.8deg); filter:brightness(1.32) saturate(1.26)}
+  28%{opacity:.76; transform:translate3d(12px,-8px,0) scale(.98) rotate(1.4deg); filter:brightness(.86) saturate(1.4) contrast(1.2)}
+  48%{opacity:.48; transform:translate3d(-28px,19px,0) scale(.92) rotate(-3.8deg); filter:brightness(.58) saturate(.72) blur(2px)}
+  72%{opacity:.22; transform:translate3d(38px,-30px,0) scale(.84) rotate(7deg); filter:brightness(.42) saturate(.44) blur(6px)}
+  100%{opacity:0; transform:translate3d(62px,44px,0) scale(.72) rotate(-11deg); filter:brightness(.32) saturate(.32) blur(12px)}
 }
 @keyframes storyFinalColossusBossHit{
   0%{transform:translateX(0) rotate(.8deg) scale(1);filter:brightness(1)}
@@ -27551,20 +27594,29 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .desktop-compact-shell{
   position:fixed !important;
   inset:0 auto 0 0 !important;
-  width:min(58dvw, 760px) !important;
-  max-width:min(58dvw, 760px) !important;
+  width:min(52dvw, 700px) !important;
+  max-width:min(52dvw, 700px) !important;
   height:100dvh !important;
   min-height:100dvh !important;
   margin:0 !important;
-  transform:translateX(-1.2vw) scale(.96) rotate(-.45deg) !important;
+  transform:translateX(-3.2vw) scale(.9) rotate(-.65deg) !important;
   transform-origin:left center !important;
   overflow:visible !important;
+  z-index:9905 !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .desktop-compact-shell{
-  transform:translateX(-3.8vw) scale(.925) rotate(-.55deg) !important;
+  position:fixed !important;
+  inset:clamp(4px, 1.2dvh, 12px) auto auto 0 !important;
+  width:min(62dvw, 400px) !important;
+  max-width:min(62dvw, 400px) !important;
+  height:calc(100dvh - clamp(8px, 2.4dvh, 24px)) !important;
+  min-height:0 !important;
+  margin:0 !important;
+  transform:translateX(-8.6vw) scale(.76) rotate(-.7deg) !important;
   transform-origin:left center !important;
   overflow:visible !important;
+  z-index:9905 !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) :is(.compact-rival-panel, #compactMechaStage-1, .compact-zone-card-rival){
@@ -27583,16 +27635,118 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:
   animation-fill-mode:both !important;
 }
 
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) :is(.compact-topbar, .compact-player-panel, .compact-arena-panel, .compact-hand-panel, .compact-mobile-actions-panel){
+  max-width:59dvw !important;
+  margin-left:0 !important;
+  margin-right:auto !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-arena-panel{
+  translate:-1.2vw 0 !important;
+  scale:.92 !important;
+  rotate:.35deg !important;
+  transform-origin:left center !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-player-panel{
+  translate:-1.8vw 0 !important;
+  scale:.9 !important;
+  rotate:-.8deg !important;
+  transform-origin:left top !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-panel{
+  translate:-1.4vw -1.8dvh !important;
+  scale:.9 !important;
+  rotate:.55deg !important;
+  transform-origin:left bottom !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-action-hub-button{
+  translate:-3.8vw -1.8dvh !important;
+  scale:.88 !important;
+  rotate:-.9deg !important;
+  transform-origin:right bottom !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-mobile-actions-panel{
+  translate:-2.4vw -1dvh !important;
+  scale:.9 !important;
+  rotate:.4deg !important;
+  transform-origin:left bottom !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .story-final-colossus-boss-hud{
+  right:max(4px, 1.4vw) !important;
+  width:min(35vw, 360px) !important;
+  max-width:35vw !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-boss-hud,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-boss-hud{
+  top:max(7px, 1dvh) !important;
+  right:max(3px, .8vw) !important;
+  width:min(31vw, 150px) !important;
+  max-width:min(31vw, 150px) !important;
+  box-sizing:border-box !important;
+  padding:8px 7px !important;
+  border-radius:12px !important;
+  gap:5px !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-boss-title,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-boss-title{
+  font-size:.68rem !important;
+  letter-spacing:.03em !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-boss-kicker,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-boss-kicker,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-boss-phase,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-boss-phase{
+  font-size:.42rem !important;
+  letter-spacing:.08em !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-boss-readouts,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-boss-readouts{
+  gap:3px !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-boss-row,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-boss-row{
+  grid-template-columns:34px minmax(0, 1fr) 24px !important;
+  gap:4px !important;
+  font-size:.42rem !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-boss-directive,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-boss-directive,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-boss-plates,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-boss-plates{
+  display:none !important;
+}
+
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .story-final-colossus-standee{
-  --colossus-final-x:42%;
-  right:-42vw !important;
+  --colossus-final-x:24%;
+  right:-22vw !important;
+  width:min(94vw, 860px) !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-pc-compact-mode .story-final-colossus-standee,
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-landscape-mode .story-final-colossus-standee{
-  --colossus-final-x:46%;
-  right:-35vw !important;
-  width:min(82vw, 980px) !important;
+  --colossus-final-x:26%;
+  right:-18vw !important;
+  width:min(88vw, 1040px) !important;
+}
+
+@media (max-width: 520px){
+  body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-boss-hud,
+  body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-boss-hud{
+    width:132px !important;
+    max-width:132px !important;
+    padding:7px 6px !important;
+  }
 }
 
 @keyframes storyFinalColossusTouchShellWarp{
@@ -30499,7 +30653,7 @@ function prepareStoryArgosHackScrollMode(){
 }
 
 function prepareStoryTowerCombatHudMode(mission){
-  if(isStoryFinalColossusCombat(mission)){
+  if(isStoryFinalColossusCombat(mission) && storyHudMode !== 'scroll'){
     ensureStoryFinalColossusBreakingHudMode();
   }else if(shouldStartTowerCombatInMobileHorizontal(mission)){
     setStoryHudMode('horizontal');
@@ -31296,6 +31450,15 @@ function hideProTurnSplash(){
 
 function ensureStoryFinalColossusEngagedHudMode(){
   if(!isStoryFinalColossusCombat() || !STORY_EMBED_MODE) return false;
+  if(storyHudMode === 'scroll'){
+    desktopHudMode = 'expanded';
+    mobileSpriteHudEnabled = true;
+    mobilePanoramaRequested = false;
+    releaseOrientationLockBestEffort();
+    syncDesktopHudAvailability();
+    setupStoryEmbedNavigation();
+    return true;
+  }
   const mobileViewport = isStoryFinalColossusMobileLite();
   const useHorizontal = mobileViewport && isMobileLandscapeViewport();
   setStoryHudMode(mobileViewport && !useHorizontal ? 'compact' : (useHorizontal ? 'horizontal' : 'compact'));
@@ -31313,6 +31476,15 @@ function ensureStoryFinalColossusEngagedHudMode(){
 
 function ensureStoryFinalColossusBreakingHudMode(){
   if(!isStoryFinalColossusCombat() || !STORY_EMBED_MODE) return false;
+  if(storyHudMode === 'scroll'){
+    desktopHudMode = 'expanded';
+    mobileSpriteHudEnabled = true;
+    mobilePanoramaRequested = false;
+    releaseOrientationLockBestEffort();
+    syncDesktopHudAvailability();
+    setupStoryEmbedNavigation();
+    return true;
+  }
   const touchViewport = isStoryFinalColossusMobileLite();
   const useHorizontal = touchViewport && isMobileLandscapeViewport();
   setStoryHudMode(touchViewport && !useHorizontal ? 'compact' : (useHorizontal ? 'horizontal' : 'compact'));
@@ -36733,6 +36905,9 @@ function clearMobileSpriteDraftPlacements(renderNow=false){
 }
 
 function canUseMobileSpriteHud(){
+  if(isStoryFinalColossusCombat(state.storyMission || STORY_MISSION_BOOT)){
+    return false;
+  }
   const body = document.body;
   let compactTouchFallback = false;
   try{
