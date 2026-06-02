@@ -30691,8 +30691,10 @@ function startStoryTowerCombatMission(mission, profile){
   startStoryCombatMusicAtStart(false);
   scheduleStoryEmbedNavigationSetup();
   scheduleCombatOpeningSequence('story', 180);
-  addToast(`Mision historia: ${profile?.title || (isFinalColossusMission ? 'Combate final' : 'Torre 4B')}`, 'warn');
-  log(`📜 Mision historia ${isFinalColossusMission ? 'Combate final' : isCampMission ? 'Placas Rojas' : isFosoMission ? 'Foso de Viento Negro' : 'Torre 4B'}: ${profile?.intro || 'combate especial'}`);
+  if(!isFinalColossusMission){
+    addToast(`Mision historia: ${profile?.title || 'Torre 4B'}`, 'warn');
+    log(`📜 Mision historia ${isCampMission ? 'Placas Rojas' : isFosoMission ? 'Foso de Viento Negro' : 'Torre 4B'}: ${profile?.intro || 'combate especial'}`);
+  }
   window.setTimeout(() => {
     scrollToPlayerPanel(0, 'smooth');
     notifySelection(profile?.intro || `Objetivo: ${isFinalColossusMission ? 'sobrevive al Coloso de Argos y rompe su nucleo' : `vence y vuelve ${isCampMission ? 'al Campamento de las Placas Rojas' : isFosoMission ? 'al Foso de Viento Negro' : 'a la Torre 4B'}`}.`);
@@ -30950,6 +30952,10 @@ function isStoryArgosHackCombat(mission = state.storyMission || STORY_MISSION_BO
 
 function isStoryFinalColossusCombat(mission = state.storyMission || STORY_MISSION_BOOT){
   return mission === 'tower_final_colossus';
+}
+
+function shouldQuietStoryFinalColossusExperienceText(){
+  return isStoryFinalColossusCombat(state.storyMission || STORY_MISSION_BOOT);
 }
 
 const STORY_FINAL_COLOSSUS_BOSS_PHASE_META = {
@@ -33370,6 +33376,7 @@ function startFirstTurnNoticeCycle(){
   state.firstTurnNoticeNonce = ++firstTurnNoticeNonceCounter;
 }
 function shouldShowFirstTurnNotice(){
+  if(shouldQuietStoryFinalColossusExperienceText()) return false;
   const hasWinner = state.winner !== null && state.winner !== undefined && state.winner !== false && state.winner !== '';
   return !!state.gameStarted
     && Number(state.turnCount) === 1
@@ -34429,7 +34436,7 @@ const STORY_MISSION_BRIEFS = {
   tower_final_colossus: {
     kicker: 'Combate final del modo historia',
     title: 'Combate final · Coloso de Argos',
-    text: 'Fase 1 del experimento: la interfaz arranca normal, el primer turno está forzado para el piloto y la lectura del rival permanece vacía hasta que cierres ese turno.'
+    text: 'La interfaz arranca normal, el primer turno está forzado para el piloto y la lectura del rival permanece vacía hasta que cierres ese turno.'
   },
   tower_argos_hack: {
     kicker: 'Hackeo final del modo historia',
@@ -34484,7 +34491,8 @@ function syncStoryMissionBriefBar(){
   updateStoryMissionBriefPlacement(bar);
   const brief = getStoryMissionBrief();
   const mobileBocetoHudActive = STORY_EMBED_MODE && isStoryMobileViewport() && storyHudMode !== 'scroll';
-  const shouldShow = !mobileBocetoHudActive && STORY_BRIEF_MODE !== 'off' && STORY_EMBED_MODE && !!brief && state.gameStarted && !state.storyMissionAnnounced;
+  const finalColossusBriefSuppressed = isStoryFinalColossusCombat(state.storyMission || STORY_MISSION_BOOT);
+  const shouldShow = !finalColossusBriefSuppressed && !mobileBocetoHudActive && STORY_BRIEF_MODE !== 'off' && STORY_EMBED_MODE && !!brief && state.gameStarted && !state.storyMissionAnnounced;
   bar.hidden = !shouldShow;
   if(!shouldShow) return;
   const kicker = document.getElementById('storyMissionBriefKicker');
@@ -34735,6 +34743,11 @@ function setStoryHudMode(mode){
 
 function showStoryOrientationLockToast(){
   const toast = document.getElementById('storyOrientationToast');
+  if(shouldQuietStoryFinalColossusExperienceText()){
+    if(toast) toast.classList.remove('show');
+    window.clearTimeout(storyOrientationToastTimer);
+    return;
+  }
   if(toast) toast.classList.remove('show');
   window.clearTimeout(storyOrientationToastTimer);
 }
@@ -35364,9 +35377,9 @@ function newGame(){
   state.phase = 'Montaje';
   state.turnCount = 1;
   startFirstTurnNoticeCycle();
-  log('🆕 Nueva partida iniciada.');
+  if(!shouldQuietStoryFinalColossusExperienceText()) log('🆕 Nueva partida iniciada.');
   if(storyDecksActive) log(`📜 Deck propio de historia activo: ${state.storyPlayerDecks?.[0]?.length || 0} cartas restantes tras el reparto.`);
-  addToast('Nueva partida iniciada', 'ok');
+  if(!shouldQuietStoryFinalColossusExperienceText()) addToast('Nueva partida iniciada', 'ok');
   render();
   scheduleCombatOpeningSequence('new-game', 190);
   startIntroMusic(true);
@@ -35609,8 +35622,10 @@ function syncMilestones(playerIdx){
 
   if(build.mounted && !player.flags.mounted){
     player.flags.mounted = true;
-    log(`🤖 ${player.name} ya tiene el mecha montado.`);
-    addToast(`${player.name}: mecha montado`, 'ok');
+    if(!shouldQuietStoryFinalColossusExperienceText()){
+      log(`🤖 ${player.name} ya tiene el mecha montado.`);
+      addToast(`${player.name}: mecha montado`, 'ok');
+    }
     playUiSound('build');
     triggerScreenRipple('amber');
   }
@@ -35618,8 +35633,10 @@ function syncMilestones(playerIdx){
 
   if(build.combatReady && !player.flags.combatReady){
     player.flags.combatReady = true;
-    log(`⚙️ ${player.name} tiene el sistema de ataque operativo.`);
-    addToast(`${player.name}: ataque operativo`, 'warn');
+    if(!shouldQuietStoryFinalColossusExperienceText()){
+      log(`⚙️ ${player.name} tiene el sistema de ataque operativo.`);
+      addToast(`${player.name}: ataque operativo`, 'warn');
+    }
     playUiSound('alert');
     triggerScreenRipple('cyan');
 
@@ -40287,7 +40304,7 @@ function passTurn(){
     state.discard.push(card);
   });
   log(`⏭️ ${player.name} pasa turno y descarta ${required} carta(s).`);
-  addToast('Turno pasado', 'warn');
+  if(!shouldQuietStoryFinalColossusExperienceText()) addToast('Turno pasado', 'warn');
   state.lastActionType = 'pass';
   state.pendingTurnSfx = 'turn_pass';
   state.players[state.currentPlayer].flags.lastOwnAction = 'pass';
@@ -46720,8 +46737,10 @@ function devLoadStoryCombatMission(mission='tower_argos_hack'){
   if(isStoryArgosHackCombat(mission)){
     window.requestAnimationFrame(() => showStoryArgosHackGate(profile));
   }
-  addToast(`Sistema cargado: ${profile.title || profile.enemyName}`, isStoryArgosHackCombat(mission) ? 'warn' : 'ok');
-  log(`🧪 Dev sandbox: combate historia cargado · ${profile.title || mission}`);
+  if(!isStoryFinalColossusCombat(mission)){
+    addToast(`Sistema cargado: ${profile.title || profile.enemyName}`, isStoryArgosHackCombat(mission) ? 'warn' : 'ok');
+    log(`🧪 Dev sandbox: combate historia cargado · ${profile.title || mission}`);
+  }
   return devGetSnapshot();
 }
 
