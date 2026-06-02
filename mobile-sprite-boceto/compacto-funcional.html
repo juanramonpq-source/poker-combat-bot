@@ -1221,6 +1221,10 @@
       pointer-events: none;
     }
 
+    .message-stack.has-priority-tutorial {
+      z-index: 220;
+    }
+
     .floating-message {
       display: none;
       flex-direction: column;
@@ -1397,6 +1401,10 @@
       margin-top: 1px;
       font-size: 14px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail-front.show {
+      z-index: 220;
     }
 
     .floating-message.tutorial.with-bot.is-sequence .tutorial-bot-avatar {
@@ -4823,6 +4831,10 @@
         gap: 5px;
       }
 
+      .message-stack.has-priority-tutorial {
+        z-index: 240;
+      }
+
       .floating-message {
         padding: 7px 9px;
       }
@@ -4849,6 +4861,10 @@
         grid-template-columns: 48px minmax(0, 1fr) 22px;
         gap: 0 7px;
         padding: 7px 8px;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail-front.show {
+        z-index: 240;
       }
 
       .floating-message.tutorial.with-bot.is-top-rail.show .tutorial-bot-avatar {
@@ -8069,7 +8085,7 @@
     function tutorialBotShouldYieldToInteraction() {
       if (!EMBEDDED_REAL_GAME || !state.tutorial || !state.tutorialBotVisible) return false;
       if (state.tutorialBotSequenceOnly || ["intro", "greeting"].includes(state.tutorialBotMode)) return false;
-      if (state.tutorialBotPlacement === "top-rail") return false;
+      if ((state.tutorialBotPlacement || "").startsWith("top-rail")) return false;
       const draftCount = Object.keys(state.bridgeDraftPlacements || {}).length;
       const selectedCount = Array.isArray(state.selected) ? state.selected.length : 0;
       return draftCount > 0 || selectedCount > 0;
@@ -8245,6 +8261,7 @@
 
     function renderMessages() {
       const tutorial = document.querySelector("[data-tutorial-message]");
+      const messageStack = tutorial?.closest?.(".message-stack");
       const tutorialText = document.querySelector("[data-tutorial-text]");
       const tutorialTitle = document.querySelector("[data-tutorial-title]");
       const tutorialActions = document.querySelector("[data-tutorial-actions]");
@@ -8261,7 +8278,9 @@
       tutorial.classList.toggle("is-sequence", embeddedBotVisible && state.tutorialBotSequenceOnly);
       tutorial.classList.toggle("is-intro", embeddedBotVisible && state.tutorialBotMode === "intro");
       tutorial.classList.toggle("is-greeting", embeddedBotVisible && state.tutorialBotMode === "greeting");
-      tutorial.classList.toggle("is-top-rail", embeddedBotVisible && state.tutorialBotPlacement === "top-rail");
+      tutorial.classList.toggle("is-top-rail", embeddedBotVisible && (state.tutorialBotPlacement || "").startsWith("top-rail"));
+      tutorial.classList.toggle("is-top-rail-front", embeddedBotVisible && state.tutorialBotPlacement === "top-rail-front");
+      messageStack?.classList.toggle("has-priority-tutorial", embeddedBotVisible && state.tutorialBotPlacement === "top-rail-front");
       let tutorialCopy = "";
       let tutorialHtml = "";
       let alertTitle = "";

@@ -297,6 +297,10 @@ canvas {
   backdrop-filter: blur(8px);
 }
 
+.modal-layer[hidden] {
+  display: none;
+}
+
 .modal-card {
   width: min(920px, calc(100vw - 24px));
   max-height: min(84vh, 780px);

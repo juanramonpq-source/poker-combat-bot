@@ -824,6 +824,7 @@
     const STORY_VIAJERO_POST_TOWER_REWARD_PREFIX = 'mercado_viajero_4b_';
     const STORY_MARKET_EXPLORATION_PAGE = 'assets/Historia/mercado-reles-muertos-tutorial/index.html';
     const STORY_CAMP_EXPLORATION_PAGE = 'assets/Historia/campamento-placas-rojas-exploracion/index.html';
+    const STORY_FOSO_EXPLORATION_PAGE = 'assets/Historia/foso-viento-negro-asedio/index.html';
 
     const campAuditFlags = [
       { key:'xavorVerified', label:'Radio validada', actor:'Radio de Xavor', detail:'Xavor confirma ante Corvo que el jugador es de los nuestros.' },
@@ -1492,6 +1493,65 @@
         ]
       },
       {
+        id:'foso-viento-negro',
+        label:'Foso de Viento Negro · Ruta Ceniza',
+        map:'assets/Historia/foso-viento-negro-asedio/assets/foso-background.webp',
+        fallbackMap:'assets/Historia/foso-viento-negro-asedio/assets/foso-background.png',
+        width:1448,
+        height:1086,
+        openUrl:() => {
+          const url = new URL(STORY_FOSO_EXPLORATION_PAGE, window.location.href);
+          url.searchParams.set('story_embed', '1');
+          url.searchParams.set('story_node', 'foso-viento-negro');
+          url.searchParams.set('story_audio', 'internal');
+          url.searchParams.set('story_return', new URL(STORY_PAGE, window.location.href).href);
+          url.searchParams.set('story_load_id', String(Date.now()));
+          return url.href;
+        },
+        zones:[
+          { type:'rect', x:0, y:4, width:87, height:837 },
+          { type:'rect', x:6, y:874, width:55, height:204 },
+          { type:'rect', x:71, y:1050, width:1377, height:36 },
+          { type:'rect', x:1381, y:2, width:67, height:935 },
+          { type:'rect', x:1188, y:934, width:260, height:120 },
+          { type:'rect', x:94, y:2, width:870, height:59 },
+          { type:'rect', x:984, y:5, width:417, height:53 },
+          { type:'ellipse', x:98, y:655, width:179, height:175 },
+          { type:'ellipse', x:521, y:669, width:47, height:51 },
+          { type:'ellipse', x:621, y:869, width:91, height:64 },
+          { type:'ellipse', x:930, y:880, width:60, height:50 },
+          { type:'ellipse', x:1118, y:699, width:92, height:56 },
+          { type:'ellipse', x:1088, y:731, width:36, height:45 },
+          { type:'ellipse', x:1235, y:503, width:62, height:32 },
+          { type:'ellipse', x:1004, y:513, width:63, height:48 },
+          { type:'ellipse', x:767, y:649, width:118, height:74 },
+          { type:'ellipse', x:647, y:457, width:123, height:94 },
+          { type:'ellipse', x:350, y:497, width:121, height:71 },
+          { type:'ellipse', x:401, y:346, width:86, height:49 },
+          { type:'ellipse', x:66, y:236, width:199, height:113 },
+          { type:'ellipse', x:37, y:378, width:173, height:101 },
+          { type:'ellipse', x:581, y:184, width:87, height:31 },
+          { type:'ellipse', x:706, y:265, width:39, height:53 },
+          { type:'ellipse', x:835, y:208, width:44, height:24 },
+          { type:'ellipse', x:1032, y:298, width:29, height:32 },
+          { type:'ellipse', x:1129, y:372, width:78, height:55 },
+          { type:'ellipse', x:1289, y:172, width:98, height:57 },
+          { type:'ellipse', x:821, y:58, width:156, height:50 },
+          { type:'ellipse', x:286, y:971, width:179, height:90 }
+        ],
+        interactions:[
+          { id:'sign', label:'Cartel Ruta Ceniza', x:152, y:818, radius:86, scale:0.78 },
+          { id:'battery', label:'Bateria residual', x:1075.0623777705343, y:191.43350717079528, radius:132, scale:1 },
+          { id:'red-glow', label:'Resplandor rojo', x:826, y:952, radius:30, scale:0.45 },
+          { id:'t1', label:'Impacto 1 · Salva apertura', x:404.7282838983051, y:744.2842649934811, radius:88, scale:0.7 },
+          { id:'t2', label:'Impacto 2 · Curva sur', x:1025.173647327249, y:665.7178536505867, radius:92, scale:0.7 },
+          { id:'t3', label:'Impacto 3 · Nudo central', x:607.7832871577575, y:359.66806551499343, radius:94, scale:0.7 },
+          { id:'t4', label:'Impacto 4 · Pasarela este', x:910, y:408, radius:98, scale:0.7 },
+          { id:'t5', label:'Impacto 5 · Subida norte', x:350.0147490221643, y:175.86016949152543, radius:96, scale:0.7 },
+          { id:'t6', label:'Impacto 6 · Acceso bateria', x:1299.2475146675358, y:410.76804921773146, radius:104, scale:0.7 }
+        ]
+      },
+      {
         id:'tower-exterior',
         label:'Torre 4B exterior',
         map:'assets/Historia/torre-seguimiento-4b-tutorial/assets/torre-seguimiento-4b-rendered-map.png',
@@ -1724,6 +1784,16 @@
       return getDefaultInteractionPoints(scene);
     }
 
+    function getCollisionSceneWidth(scene){
+      const width = Number(scene?.width);
+      return Number.isFinite(width) && width > 0 ? width : 1536;
+    }
+
+    function getCollisionSceneHeight(scene){
+      const height = Number(scene?.height);
+      return Number.isFinite(height) && height > 0 ? height : 1024;
+    }
+
     function pushCollisionHistory(){
       collisionEditor.history.push({
         zones:cloneCollisionZones(collisionEditor.zones),
@@ -1738,9 +1808,11 @@
 
     function getCollisionPointer(event){
       const rect = collisionCanvas.getBoundingClientRect();
+      const sceneWidth = getCollisionSceneWidth(collisionEditor.scene);
+      const sceneHeight = getCollisionSceneHeight(collisionEditor.scene);
       return {
-        x: Math.max(0, Math.min(1536, (event.clientX - rect.left) * (collisionCanvas.width / rect.width))),
-        y: Math.max(0, Math.min(1024, (event.clientY - rect.top) * (collisionCanvas.height / rect.height)))
+        x: Math.max(0, Math.min(sceneWidth, (event.clientX - rect.left) * (collisionCanvas.width / rect.width))),
+        y: Math.max(0, Math.min(sceneHeight, (event.clientY - rect.top) * (collisionCanvas.height / rect.height)))
       };
     }
 
@@ -2125,6 +2197,11 @@
     function selectCollisionScene(sceneId){
       const scene = collisionSceneDefaults.find(item => item.id === sceneId) || collisionSceneDefaults[0];
       collisionEditor.scene = scene;
+      const sceneWidth = getCollisionSceneWidth(scene);
+      const sceneHeight = getCollisionSceneHeight(scene);
+      collisionCanvas.width = sceneWidth;
+      collisionCanvas.height = sceneHeight;
+      collisionCanvas.style.aspectRatio = `${sceneWidth} / ${sceneHeight}`;
       collisionEditor.zones = getStoredCollisionZones(scene);
       collisionEditor.interactions = getStoredInteractionPoints(scene);
       collisionEditor.selectedIndex = -1;

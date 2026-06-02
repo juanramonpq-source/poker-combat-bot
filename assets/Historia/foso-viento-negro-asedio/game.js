@@ -30,6 +30,7 @@ const storyLoadId = storyParams.get("story_load_id") || "default";
 const storyExtraDeckParam = storyParams.get("story_deck_cards") || "";
 const storyRemovedDeckParam = storyParams.get("story_removed_cards") || "";
 
+const FOSO_SCENE_ID = "foso-viento-negro";
 const FOSO_PROGRESS_KEY = "pocobot-story-foso-blackwind-progress-v1";
 const FOSO_SAVE_INTERVAL_MS = 800;
 const SUIT_SYMBOLS = {
@@ -132,29 +133,61 @@ const coverRects = [
   { x: 838, y: 382, width: 118, height: 62 },
   { x: 1078, y: 234, width: 126, height: 62 },
 ];
+const baseDebugCollisionZones = [
+  { type: "rect", x: 0, y: 4, width: 87, height: 837 },
+  { type: "rect", x: 6, y: 874, width: 55, height: 204 },
+  { type: "rect", x: 71, y: 1050, width: 1377, height: 36 },
+  { type: "rect", x: 1381, y: 2, width: 67, height: 935 },
+  { type: "rect", x: 1188, y: 934, width: 260, height: 120 },
+  { type: "rect", x: 94, y: 2, width: 870, height: 59 },
+  { type: "rect", x: 984, y: 5, width: 417, height: 53 },
+  { type: "ellipse", x: 98, y: 655, width: 179, height: 175 },
+  { type: "ellipse", x: 521, y: 669, width: 47, height: 51 },
+  { type: "ellipse", x: 621, y: 869, width: 91, height: 64 },
+  { type: "ellipse", x: 930, y: 880, width: 60, height: 50 },
+  { type: "ellipse", x: 1118, y: 699, width: 92, height: 56 },
+  { type: "ellipse", x: 1088, y: 731, width: 36, height: 45 },
+  { type: "ellipse", x: 1235, y: 503, width: 62, height: 32 },
+  { type: "ellipse", x: 1004, y: 513, width: 63, height: 48 },
+  { type: "ellipse", x: 767, y: 649, width: 118, height: 74 },
+  { type: "ellipse", x: 647, y: 457, width: 123, height: 94 },
+  { type: "ellipse", x: 350, y: 497, width: 121, height: 71 },
+  { type: "ellipse", x: 401, y: 346, width: 86, height: 49 },
+  { type: "ellipse", x: 66, y: 236, width: 199, height: 113 },
+  { type: "ellipse", x: 37, y: 378, width: 173, height: 101 },
+  { type: "ellipse", x: 581, y: 184, width: 87, height: 31 },
+  { type: "ellipse", x: 706, y: 265, width: 39, height: 53 },
+  { type: "ellipse", x: 835, y: 208, width: 44, height: 24 },
+  { type: "ellipse", x: 1032, y: 298, width: 29, height: 32 },
+  { type: "ellipse", x: 1129, y: 372, width: 78, height: 55 },
+  { type: "ellipse", x: 1289, y: 172, width: 98, height: 57 },
+  { type: "ellipse", x: 821, y: 58, width: 156, height: 50 },
+  { type: "ellipse", x: 286, y: 971, width: 179, height: 90 },
+];
+const debugCollisionZones = baseDebugCollisionZones.map((zone) => ({ ...zone }));
 
 const laneTargets = {
-  west: { x: 294, y: 720 },
-  south: { x: 458, y: 820 },
-  center: { x: 614, y: 536 },
+  west: { x: 404.7282838983051, y: 744.2842649934811 },
+  south: { x: 1025.173647327249, y: 665.7178536505867 },
+  center: { x: 607.7832871577575, y: 359.66806551499343 },
   east: { x: 910, y: 408 },
-  north: { x: 1074, y: 284 },
-  battery: { x: 1192, y: 206 },
+  north: { x: 350.0147490221643, y: 175.86016949152543 },
+  battery: { x: 1299.2475146675358, y: 410.76804921773146 },
 };
 
 const threats = [
-  { id: "t1", triggerX: 254, triggerY: 744, triggerRadius: 88, lane: "west", impactX: 294, impactY: 720, damage: 1, eta: "4.2s", title: "Salva de apertura", copy: "La bateria calibra el primer zigzag junto a la entrada de la Ruta Ceniza.", missileCount: 2, spread: 20 },
-  { id: "t2", triggerX: 444, triggerY: 802, triggerRadius: 92, lane: "south", impactX: 458, impactY: 820, damage: 2, eta: "3.8s", title: "Correccion de tiro", copy: "El fuego cae sobre la curva baja, donde el camino parece seguro pero no tiene salida limpia.", missileCount: 3, spread: 24 },
-  { id: "t3", triggerX: 578, triggerY: 586, triggerRadius: 94, lane: "center", impactX: 614, impactY: 536, damage: 1, eta: "3.1s", title: "Rastreo del nudo central", copy: "Los sensores fijan el cruce de chatarra; el camino bueno empieza a confundirse con los ramales muertos.", missileCount: 2, spread: 22 },
+  { id: "t1", triggerX: 404.7282838983051, triggerY: 744.2842649934811, triggerRadius: 88, lane: "west", impactX: 404.7282838983051, impactY: 744.2842649934811, damage: 1, eta: "4.2s", title: "Salva de apertura", copy: "La bateria calibra el primer zigzag junto a la entrada de la Ruta Ceniza.", missileCount: 2, spread: 20 },
+  { id: "t2", triggerX: 1025.173647327249, triggerY: 665.7178536505867, triggerRadius: 92, lane: "south", impactX: 1025.173647327249, impactY: 665.7178536505867, damage: 2, eta: "3.8s", title: "Correccion de tiro", copy: "El fuego cae sobre la curva baja, donde el camino parece seguro pero no tiene salida limpia.", missileCount: 3, spread: 24 },
+  { id: "t3", triggerX: 607.7832871577575, triggerY: 359.66806551499343, triggerRadius: 94, lane: "center", impactX: 607.7832871577575, impactY: 359.66806551499343, damage: 1, eta: "3.1s", title: "Rastreo del nudo central", copy: "Los sensores fijan el cruce de chatarra; el camino bueno empieza a confundirse con los ramales muertos.", missileCount: 2, spread: 22 },
   { id: "t4", triggerX: 840, triggerY: 420, triggerRadius: 98, lane: "east", impactX: 910, impactY: 408, damage: 2, eta: "2.7s", title: "Golpe sobre la pasarela", copy: "La bateria barre la pasarela este. Cubrirse aqui puede costar tiempo, pero llegar limpio al jefe vale oro.", missileCount: 3, spread: 26 },
-  { id: "t5", triggerX: 1048, triggerY: 300, triggerRadius: 96, lane: "north", impactX: 1074, impactY: 284, damage: 2, eta: "2.6s", title: "Salva corta de altura", copy: "Las piezas de artilleria ya estan cerca. El tiro cae casi vertical sobre la subida norte.", missileCount: 4, spread: 26 },
-  { id: "t6", triggerX: 1168, triggerY: 220, triggerRadius: 104, lane: "battery", impactX: 1192, impactY: 206, damage: 3, eta: "2.1s", title: "Ultima correccion", copy: "La bateria dispara a quemarropa sobre el acceso final antes de que puedas forzar el combate.", missileCount: 4, spread: 30 },
+  { id: "t5", triggerX: 350.0147490221643, triggerY: 175.86016949152543, triggerRadius: 96, lane: "north", impactX: 350.0147490221643, impactY: 175.86016949152543, damage: 2, eta: "2.6s", title: "Salva corta de altura", copy: "Las piezas de artilleria ya estan cerca. El tiro cae casi vertical sobre la subida norte.", missileCount: 4, spread: 26 },
+  { id: "t6", triggerX: 1299.2475146675358, triggerY: 410.76804921773146, triggerRadius: 104, lane: "battery", impactX: 1299.2475146675358, impactY: 410.76804921773146, damage: 3, eta: "2.1s", title: "Ultima correccion", copy: "La bateria dispara a quemarropa sobre el acceso final antes de que puedas forzar el combate.", missileCount: 4, spread: 30 },
 ];
 
 const interactables = [
-  { id: "sign", x: 152, y: 818, radius: 86, label: "Leer cartel de la Ruta Ceniza" },
-  { id: "battery", x: 1192, y: 184, radius: 132, label: "Alcance de la bateria residual" },
-  { id: "red-glow", x: WORLD_SCALE.redGlow.x, y: WORLD_SCALE.redGlow.y, radius: WORLD_SCALE.redGlow.radius, label: "Resplandor rojo en ruinas de metal" },
+  { id: "sign", x: 152, y: 818, radius: 86, label: "Leer cartel de la Ruta Ceniza", scale: 0.78 },
+  { id: "battery", x: 1075.0623777705343, y: 191.43350717079528, radius: 132, label: "Alcance de la bateria residual", scale: 1 },
+  { id: "red-glow", x: WORLD_SCALE.redGlow.x, y: WORLD_SCALE.redGlow.y, radius: WORLD_SCALE.redGlow.radius, label: "Resplandor rojo en ruinas de metal", scale: 0.45 },
 ];
 
 const routePaths = [
@@ -317,6 +350,52 @@ function constrainToPlayableRoute(x, y) {
   };
 }
 
+function constrainMovementPosition(x, y) {
+  const clamped = {
+    x: clamp(x, world.edgePadding + player.radius, world.width - world.edgePadding - player.radius),
+    y: clamp(y, world.edgePadding + player.radius, world.height - world.edgePadding - player.radius),
+  };
+  return debugCollisionZones.length ? clamped : constrainToPlayableRoute(clamped.x, clamped.y);
+}
+
+function pointInDebugCollisionZone(point, zone) {
+  if (!zone || typeof zone !== "object") return false;
+  if (zone.type === "circle") {
+    const dx = point.x - zone.x;
+    const dy = point.y - zone.y;
+    return dx * dx + dy * dy <= zone.radius * zone.radius;
+  }
+  if (zone.type === "ellipse") {
+    const rx = Math.max(1, zone.width / 2);
+    const ry = Math.max(1, zone.height / 2);
+    const cx = zone.x + rx;
+    const cy = zone.y + ry;
+    const dx = (point.x - cx) / rx;
+    const dy = (point.y - cy) / ry;
+    return dx * dx + dy * dy <= 1;
+  }
+  if (zone.type === "poly") {
+    if (!Array.isArray(zone.points) || zone.points.length < 3) return false;
+    let inside = false;
+    for (let index = 0, previous = zone.points.length - 1; index < zone.points.length; previous = index, index += 1) {
+      const currentPoint = zone.points[index];
+      const previousPoint = zone.points[previous];
+      const intersects = ((currentPoint.y > point.y) !== (previousPoint.y > point.y))
+        && point.x < ((previousPoint.x - currentPoint.x) * (point.y - currentPoint.y)) / (previousPoint.y - currentPoint.y || 1) + currentPoint.x;
+      if (intersects) inside = !inside;
+    }
+    return inside;
+  }
+  return point.x >= zone.x
+    && point.x <= zone.x + zone.width
+    && point.y >= zone.y
+    && point.y <= zone.y + zone.height;
+}
+
+function isBlockedByDebugCollision(x, y) {
+  return debugCollisionZones.some((zone) => pointInDebugCollisionZone({ x, y }, zone));
+}
+
 function damp(current, target, smoothing, dt) {
   return current + (target - current) * (1 - Math.exp(-smoothing * dt));
 }
@@ -425,6 +504,67 @@ function buildRedGlowRewardCard() {
   };
 }
 
+function buildDebugInteractionDefaults() {
+  return interactables.map((item) => ({
+    id: item.id,
+    label: item.label,
+    x: item.x,
+    y: item.y,
+    radius: item.radius,
+    scale: item.scale || 1,
+  })).concat(threats.map((threat, index) => ({
+    id: threat.id,
+    label: `Impacto ${index + 1} · ${threat.title}`,
+    x: threat.impactX || laneTargets[threat.lane]?.x || threat.triggerX,
+    y: threat.impactY || laneTargets[threat.lane]?.y || threat.triggerY,
+    radius: threat.triggerRadius || 84,
+    scale: 0.7,
+  })));
+}
+
+function applyDebugPhysicsOverrides() {
+  const editor = window.PoCoBOTStoryCollisionEditor;
+  if (!editor) return;
+  const zones = editor.getSceneZones ? editor.getSceneZones(FOSO_SCENE_ID, baseDebugCollisionZones) : baseDebugCollisionZones;
+  debugCollisionZones.splice(0, debugCollisionZones.length, ...(Array.isArray(zones) ? zones : []));
+
+  const points = editor.getSceneInteractionPoints
+    ? editor.getSceneInteractionPoints(FOSO_SCENE_ID, buildDebugInteractionDefaults())
+    : buildDebugInteractionDefaults();
+  const byId = new Map(points.map((point) => [point.id, point]));
+
+  interactables.forEach((item) => {
+    const point = byId.get(item.id);
+    if (!point) return;
+    item.x = point.x;
+    item.y = point.y;
+    item.radius = point.radius;
+    item.scale = point.scale || item.scale || 1;
+    if (point.label) item.label = item.id === "sign"
+      ? "Leer cartel de la Ruta Ceniza"
+      : point.label;
+    if (item.id === "red-glow") {
+      WORLD_SCALE.redGlow.x = point.x;
+      WORLD_SCALE.redGlow.y = point.y;
+      WORLD_SCALE.redGlow.radius = point.radius;
+    }
+  });
+
+  threats.forEach((threat) => {
+    const point = byId.get(threat.id);
+    if (!point) return;
+    threat.triggerX = point.x;
+    threat.triggerY = point.y;
+    threat.impactX = point.x;
+    threat.impactY = point.y;
+    threat.triggerRadius = point.radius;
+    if (laneTargets[threat.lane]) {
+      laneTargets[threat.lane].x = point.x;
+      laneTargets[threat.lane].y = point.y;
+    }
+  });
+}
+
 function makeLossEntry(card, reason) {
   return {
     id: card.id,
@@ -498,7 +638,7 @@ function restoreProgress() {
   state.modalCardAction = typeof saved.modalCardAction === "string" ? saved.modalCardAction : "";
   state.attemptComplete = !!saved.attemptComplete;
   if (saved.player) {
-    const restored = constrainToPlayableRoute(
+    const restored = constrainMovementPosition(
       Number(saved.player.x) || world.startX,
       Number(saved.player.y) || world.startY
     );
@@ -616,6 +756,24 @@ function postFosoAction(action, payload = {}) {
       targetWindow.postMessage(message, "*");
     } catch (error) {}
   });
+}
+
+function buildStandaloneFosoCombatUrl(blockedBaseCards = [], blockedExtraCardIds = []) {
+  const url = new URL("../../../poker_combat_bot_ONLINE.html", window.location.href);
+  url.searchParams.set("story_mission", "foso_blackwind_battery");
+  url.searchParams.set("story_embed", "1");
+  url.searchParams.set("story_standalone", "1");
+  url.searchParams.set("story_node", "foso");
+  url.searchParams.set("story_audio", "internal");
+  url.searchParams.set("story_brief", "on");
+  url.searchParams.set("story_return", storyReturnUrl || new URL("../../../MODO_HISTORIA_DEVTOOLS.html", window.location.href).href);
+  url.searchParams.set("story_ui", storyParams.get("story_ui") || "auto");
+  const removedDeckCards = encodeBase64Json(blockedBaseCards);
+  if (removedDeckCards) url.searchParams.set("story_removed_cards", removedDeckCards);
+  if (storyExtraDeckParam) url.searchParams.set("story_deck_cards", storyExtraDeckParam);
+  if (blockedExtraCardIds.length) url.searchParams.set("story_blocked_extra_card_ids", encodeBase64Json(blockedExtraCardIds));
+  url.searchParams.set("v", "20260602-foso-battery-combat");
+  return url.href;
 }
 
 function closeModal() {
@@ -947,11 +1105,15 @@ function launchFinalCombat() {
     const [rank, suit] = token.split(":");
     return { rank, suit };
   });
+  const blockedExtraCardIds = [...state.blockedExtraIds];
   postFosoAction("launch-battery-combat", {
     blockedBaseCards,
-    blockedExtraCardIds: [...state.blockedExtraIds],
+    blockedExtraCardIds,
     lossEntries: state.lossEntries,
   });
+  if (window.parent === window && !window.opener) {
+    window.location.href = buildStandaloneFosoCombatUrl(blockedBaseCards, blockedExtraCardIds);
+  }
 }
 
 function openSummaryModal() {
@@ -1147,7 +1309,11 @@ function drawCover(rect) {
 }
 
 function drawInteractableSign() {
-  ctx.drawImage(assets.sign, 62, 686, 150, 188);
+  const sign = interactables.find((entry) => entry.id === "sign") || { x: 152, y: 818, scale: 0.78 };
+  const scale = sign.scale || 0.78;
+  const width = 192 * scale;
+  const height = 240 * scale;
+  ctx.drawImage(assets.sign, sign.x - width * 0.5, sign.y - height + 28 * scale, width, height);
 }
 
 function drawBatteryWorld() {
@@ -1408,9 +1574,15 @@ function movePlayer(dt) {
   player.vy = hasInput ? damp(player.vy, moveY * player.maxSpeed, 9, dt) : damp(player.vy, 0, player.drag, dt);
   let nextX = player.x + player.vx * dt;
   let nextY = player.y + player.vy * dt;
-  const constrained = constrainToPlayableRoute(nextX, nextY);
+  const constrained = constrainMovementPosition(nextX, nextY);
   nextX = constrained.x;
   nextY = constrained.y;
+  if (isBlockedByDebugCollision(nextX, nextY)) {
+    nextX = player.x;
+    nextY = player.y;
+    player.vx = 0;
+    player.vy = 0;
+  }
 
   coverRects.forEach((rect) => {
     const intersects = (
@@ -1430,9 +1602,15 @@ function movePlayer(dt) {
     else if (fromBottom) nextY = rect.y + rect.height + player.radius + 1;
   });
 
-  const finalPosition = constrainToPlayableRoute(nextX, nextY);
+  const finalPosition = constrainMovementPosition(nextX, nextY);
   nextX = finalPosition.x;
   nextY = finalPosition.y;
+  if (isBlockedByDebugCollision(nextX, nextY)) {
+    nextX = player.x;
+    nextY = player.y;
+    player.vx = 0;
+    player.vy = 0;
+  }
 
   player.x = nextX;
   player.y = nextY;
@@ -1482,12 +1660,14 @@ function handleInteract() {
 
 function maybeTriggerThreat() {
   if (!state.signRead || modalLayer.hidden === false || state.activeThreatId) return;
-  const threat = getPendingThreat();
+  const threat = threats.find((entry) => {
+    if (state.resolvedThreatIds.has(entry.id)) return false;
+    const triggerX = entry.triggerX || entry.impactX || laneTargets[entry.lane]?.x || player.x;
+    const triggerY = entry.triggerY || entry.impactY || laneTargets[entry.lane]?.y || player.y;
+    const triggerRadius = entry.triggerRadius || 84;
+    return Math.hypot(player.x - triggerX, player.y - triggerY) <= triggerRadius;
+  });
   if (!threat) return;
-  const triggerX = threat.triggerX || threat.impactX || laneTargets[threat.lane]?.x || player.x;
-  const triggerY = threat.triggerY || threat.impactY || laneTargets[threat.lane]?.y || player.y;
-  const triggerRadius = threat.triggerRadius || 84;
-  if (Math.hypot(player.x - triggerX, player.y - triggerY) > triggerRadius) return;
   state.activeThreatId = threat.id;
   state.modalCardAction = "";
   spawnThreatVolley(threat);
@@ -1661,6 +1841,7 @@ function maybeStartMusic() {
 async function boot() {
   resizeCanvas();
   await loadAssets();
+  applyDebugPhysicsOverrides();
   const restored = restoreProgress();
   if (!restored) seedNewAttempt();
   state.loaded = true;
