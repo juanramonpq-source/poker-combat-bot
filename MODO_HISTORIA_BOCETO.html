@@ -8800,6 +8800,7 @@
         title: 'Taller de la Fosa Azul',
         copy: 'Monta tu PoCoBOT hasta dejarlo listo para atacar antes que Mara Óxido. Ella ensamblará en paralelo, y si llega antes, la prueba se pierde.',
         tip: 'Un mecha valido para PoCoBOT necesita al menos <strong>6 cartas</strong> repartidas entre <strong>Ataque, Defensa y Armadura</strong>, y al menos <strong>1 Piloto</strong>.',
+        audioMode: 'carry',
         url: 'poker_combat_bot_ONLINE.html?story_mission=hangar_race&story_embed=1&story_audio=internal'
       },
       patio: {
@@ -8807,6 +8808,7 @@
         title: 'Patio de Pruebas del Taller',
         copy: 'Entra con un chasis prestado del taller, usa combustible para abrir ataque y dispara un proyectil. Puedes resolverlo en ataques separados o con un ataque combinado si el límite de combustible se queda corto.',
         tip: 'Circunstancia especial del Patio: Mara fuerza los seguros del chasis para que puedas atacar aunque el mecha no cumpla las reglas PoCoBOT. Fuera de esta prueba, un PoCoBOT incompleto no recibe ese perdón.',
+        audioMode: 'carry',
         url: 'poker_combat_bot_ONLINE.html?story_mission=patio_duel&story_embed=1&story_audio=internal'
       },
       mercado_sparring: {
@@ -11071,7 +11073,8 @@
       const mission = storyMissionScripts[nodeId];
       const localNode = storyDraftNodes[mission?.storyNodeId || nodeId];
       if (!localNode || !mission) return;
-      cutMapMusicForChapter();
+      const carriesMapAudio = mission.audioMode === 'carry';
+      if (!carriesMapAudio) cutMapMusicForChapter();
       if (nodeId === 'torre') {
         openStoryTowerScene('exterior');
         return;
@@ -11087,8 +11090,10 @@
     }
 
     function openStoryMissionStandalone(nodeId) {
-      if (!storyMissionScripts[nodeId]) return;
-      cutMapMusicForChapter();
+      const mission = storyMissionScripts[nodeId];
+      if (!mission) return;
+      const carriesMapAudio = mission.audioMode === 'carry';
+      if (!carriesMapAudio) cutMapMusicForChapter();
       playStoryCombatOpeningSfx();
 
       const navigate = () => {
