@@ -27426,6 +27426,264 @@ body.tablet-touch-landscape-mode .app.mobile-pc-compact-mode .compact-zone-cards
     line-height:1 !important;
   }
 }
+
+/* Final colossus: late touch/tablet rupture overrides.
+   These live at the end of the stylesheet so mobile/tablet HUD rules cannot
+   flatten the final boss break sequence into a normal rival encounter. */
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking{
+  overflow:hidden !important;
+  background:#020711 !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode){
+  overflow:visible !important;
+  contain:none !important;
+  isolation:isolate;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .desktop-compact-shell{
+  overflow:visible !important;
+  contain:none !important;
+  transform-origin:left center !important;
+  perspective:900px;
+  animation:storyFinalColossusTouchShellWarp 3.55s cubic-bezier(.15,.8,.18,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .desktop-compact-shell{
+  position:fixed !important;
+  inset:0 auto 0 0 !important;
+  width:min(58dvw, 760px) !important;
+  max-width:min(58dvw, 760px) !important;
+  height:100dvh !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .desktop-compact-shell{
+  transform-origin:left center !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) :is(.compact-topbar, .compact-player-panel, .compact-arena-panel, .compact-hand-panel, .compact-mobile-actions-panel, .compact-action-hub-button, .compact-mode-tabs){
+  position:relative !important;
+  overflow:visible !important;
+  pointer-events:none !important;
+  will-change:transform, opacity, filter !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-player-panel{
+  z-index:85 !important;
+  transform-origin:left top !important;
+  animation:storyFinalColossusTouchPlayerRupture 3.7s cubic-bezier(.14,.84,.17,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-player-panel::before{
+  content:"";
+  position:absolute;
+  inset:-10px;
+  z-index:24;
+  pointer-events:none;
+  border-radius:inherit;
+  background:
+    linear-gradient(104deg, transparent 0 20%, rgba(157,246,255,.9) 20.5% 21.5%, transparent 22% 39%, rgba(255,214,118,.78) 39.5% 40.5%, transparent 41% 100%),
+    linear-gradient(22deg, transparent 0 56%, rgba(255,74,88,.64) 56.5% 57.4%, transparent 58% 100%);
+  opacity:0;
+  mix-blend-mode:screen;
+  animation:storyFinalColossusTouchCrackFlash 3.3s cubic-bezier(.16,.84,.2,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-player-panel::after{
+  content:"";
+  position:absolute;
+  inset:-18px;
+  z-index:23;
+  pointer-events:none;
+  border-radius:inherit;
+  background:
+    radial-gradient(circle at 20% 24%, rgba(137,245,255,.85), transparent 18%),
+    radial-gradient(circle at 84% 72%, rgba(255,88,75,.72), transparent 16%),
+    conic-gradient(from 18deg at 48% 48%, transparent 0 10%, rgba(255,255,255,.42) 11% 12%, transparent 13% 33%, rgba(61,232,255,.5) 34% 35%, transparent 36% 100%);
+  clip-path:polygon(0 7%, 45% 0, 52% 19%, 92% 9%, 76% 44%, 100% 74%, 58% 68%, 39% 100%, 28% 62%, 0 78%);
+  opacity:0;
+  animation:storyFinalColossusTouchPanelShards 3.7s cubic-bezier(.14,.84,.18,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-topbar{
+  animation:storyFinalColossusTouchTopbarRip 3.45s cubic-bezier(.15,.82,.18,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-arena-panel{
+  z-index:70 !important;
+  transform-origin:left center !important;
+  animation:storyFinalColossusTouchArenaRip 3.65s cubic-bezier(.15,.82,.18,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) :is(.compact-rival-panel, #compactMechaStage-1, .compact-zone-card-rival){
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  transform:translateX(20%) scale(.55) !important;
+  filter:blur(10px) saturate(.45) !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) #compactMechaStage-0{
+  transform-origin:left bottom !important;
+  animation:storyFinalColossusTouchPilotShrink 3.7s cubic-bezier(.15,.82,.18,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-player-panel :is(.compact-zone-card, .compact-readout, .compact-zone-cards, .card):nth-child(odd),
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-hand-panel :is(.card, .compact-hand-card):nth-child(odd){
+  animation:storyFinalColossusTouchShardLeft 3.45s cubic-bezier(.14,.84,.18,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-player-panel :is(.compact-zone-card, .compact-readout, .compact-zone-cards, .card):nth-child(even),
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-hand-panel :is(.card, .compact-hand-card):nth-child(even){
+  animation:storyFinalColossusTouchShardRight 3.5s cubic-bezier(.14,.84,.18,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-hand-panel{
+  z-index:82 !important;
+  transform-origin:left bottom !important;
+  animation:storyFinalColossusTouchHandScatter 3.65s cubic-bezier(.15,.82,.18,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) :is(.compact-mobile-actions-panel, .compact-action-hub-button, .compact-mobile-action-grid button, .compact-action-grid button){
+  animation:storyFinalColossusTouchActionsScatter 3.35s cubic-bezier(.15,.82,.18,1) both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .desktop-compact-shell{
+  position:fixed !important;
+  inset:0 auto 0 0 !important;
+  width:min(58dvw, 760px) !important;
+  max-width:min(58dvw, 760px) !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  margin:0 !important;
+  transform:translateX(-1.2vw) scale(.96) rotate(-.45deg) !important;
+  transform-origin:left center !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .desktop-compact-shell{
+  transform:translateX(-3.8vw) scale(.925) rotate(-.55deg) !important;
+  transform-origin:left center !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) :is(.compact-rival-panel, #compactMechaStage-1, .compact-zone-card-rival){
+  display:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) :is(.compact-topbar, .compact-player-panel, .compact-arena-panel, .compact-hand-panel, .compact-mobile-actions-panel, .compact-action-hub-button){
+  position:relative !important;
+  overflow:visible !important;
+  animation-name:storyFinalColossusTouchRebuildChaos !important;
+  animation-duration:1.65s !important;
+  animation-timing-function:cubic-bezier(.16,.88,.2,1) !important;
+  animation-fill-mode:both !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .story-final-colossus-standee{
+  --colossus-final-x:42%;
+  right:-42vw !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-pc-compact-mode .story-final-colossus-standee,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-landscape-mode .story-final-colossus-standee{
+  --colossus-final-x:46%;
+  right:-35vw !important;
+  width:min(82vw, 980px) !important;
+}
+
+@keyframes storyFinalColossusTouchShellWarp{
+  0%{opacity:1; transform:translateX(0) scale(1) rotate(0); filter:brightness(1)}
+  12%{opacity:1; transform:translateX(-2vw) scale(.992) rotate(-.9deg); filter:brightness(1.24) saturate(1.16)}
+  30%{opacity:.94; transform:translateX(-6vw) scale(.96) rotate(1.8deg); filter:brightness(.86) saturate(1.4)}
+  56%{opacity:.72; transform:translateX(-10vw) scale(.9) rotate(-4.4deg); filter:brightness(.62) saturate(.74) contrast(1.16)}
+  78%{opacity:.54; transform:translateX(-13vw) scale(.86) rotate(3.2deg); filter:brightness(.48) saturate(.5) blur(1px)}
+  100%{opacity:.48; transform:translateX(-11vw) scale(.86) rotate(-2.2deg); filter:brightness(.54) saturate(.58)}
+}
+
+@keyframes storyFinalColossusTouchPlayerRupture{
+  0%{opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:brightness(1)}
+  10%{opacity:1; transform:translate3d(-2px,3px,0) rotate(-1.2deg) scale(1.015); filter:brightness(1.42)}
+  22%{opacity:.98; transform:translate3d(13px,-8px,0) rotate(4deg) scale(.99); filter:brightness(1.18) saturate(1.42)}
+  40%{opacity:.82; transform:translate3d(-38px,18px,0) rotate(-9deg) scale(.9); filter:brightness(.72) saturate(.8)}
+  65%{opacity:.66; transform:translate3d(-72px,48px,0) rotate(13deg) scale(.8); filter:brightness(.52) saturate(.62) blur(.8px)}
+  100%{opacity:.58; transform:translate3d(-54px,34px,0) rotate(-6deg) scale(.78); filter:brightness(.6) saturate(.66)}
+}
+
+@keyframes storyFinalColossusTouchCrackFlash{
+  0%, 7%{opacity:0; transform:scale(.96)}
+  12%{opacity:1; transform:scale(1.02)}
+  28%{opacity:.78; transform:scale(1.08) rotate(2deg)}
+  52%{opacity:.34; transform:scale(1.18) rotate(-6deg)}
+  100%{opacity:0; transform:scale(1.3) rotate(11deg)}
+}
+
+@keyframes storyFinalColossusTouchPanelShards{
+  0%, 10%{opacity:0; transform:translate3d(0,0,0) scale(.84) rotate(0)}
+  18%{opacity:.82; transform:translate3d(8px,-6px,0) scale(1.04) rotate(6deg)}
+  44%{opacity:.62; transform:translate3d(-42px,20px,0) scale(1.22) rotate(-18deg)}
+  74%{opacity:.28; transform:translate3d(-96px,58px,0) scale(1.38) rotate(26deg)}
+  100%{opacity:0; transform:translate3d(-130px,82px,0) scale(1.52) rotate(-32deg)}
+}
+
+@keyframes storyFinalColossusTouchTopbarRip{
+  0%{opacity:1; transform:translateY(0) rotate(0); filter:brightness(1)}
+  18%{opacity:.96; transform:translate(-10px,-6px) rotate(-3deg); filter:brightness(1.2)}
+  44%{opacity:.74; transform:translate(-42px,-18px) rotate(8deg); filter:brightness(.72)}
+  100%{opacity:.5; transform:translate(-66px,-28px) rotate(-5deg) scale(.88); filter:brightness(.58)}
+}
+
+@keyframes storyFinalColossusTouchArenaRip{
+  0%{opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:brightness(1)}
+  22%{opacity:.94; transform:translate3d(-16px,8px,0) rotate(3deg) scale(.98); filter:brightness(1.18)}
+  48%{opacity:.7; transform:translate3d(-52px,-12px,0) rotate(-6deg) scale(.9); filter:brightness(.64) saturate(.72)}
+  100%{opacity:.46; transform:translate3d(-84px,22px,0) rotate(5deg) scale(.82); filter:brightness(.46) saturate(.52)}
+}
+
+@keyframes storyFinalColossusTouchPilotShrink{
+  0%{opacity:1; transform:translateY(0) scale(1); filter:brightness(1)}
+  28%{opacity:.9; transform:translate(-10px,14px) scale(.82); filter:brightness(1.08)}
+  62%{opacity:.74; transform:translate(-34px,42px) scale(.62); filter:brightness(.7)}
+  100%{opacity:.58; transform:translate(-42px,54px) scale(.54); filter:brightness(.62)}
+}
+
+@keyframes storyFinalColossusTouchShardLeft{
+  0%{opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1)}
+  24%{opacity:.96; transform:translate3d(-12px,-8px,0) rotate(-8deg) scale(1.04)}
+  58%{opacity:.66; transform:translate3d(-54px,28px,0) rotate(21deg) scale(.86)}
+  100%{opacity:.42; transform:translate3d(-84px,52px,0) rotate(-34deg) scale(.74)}
+}
+
+@keyframes storyFinalColossusTouchShardRight{
+  0%{opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1)}
+  24%{opacity:.96; transform:translate3d(18px,-10px,0) rotate(10deg) scale(1.03)}
+  58%{opacity:.64; transform:translate3d(48px,30px,0) rotate(-25deg) scale(.84)}
+  100%{opacity:.4; transform:translate3d(72px,56px,0) rotate(37deg) scale(.72)}
+}
+
+@keyframes storyFinalColossusTouchHandScatter{
+  0%{opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:brightness(1)}
+  26%{opacity:.94; transform:translate3d(-14px,10px,0) rotate(-4deg) scale(.98); filter:brightness(1.15)}
+  60%{opacity:.68; transform:translate3d(-58px,42px,0) rotate(8deg) scale(.82); filter:brightness(.62)}
+  100%{opacity:.52; transform:translate3d(-76px,64px,0) rotate(-7deg) scale(.76); filter:brightness(.54)}
+}
+
+@keyframes storyFinalColossusTouchActionsScatter{
+  0%{opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1)}
+  28%{opacity:.9; transform:translate3d(12px,10px,0) rotate(6deg) scale(.94)}
+  66%{opacity:.5; transform:translate3d(38px,46px,0) rotate(-15deg) scale(.76)}
+  100%{opacity:.34; transform:translate3d(54px,68px,0) rotate(19deg) scale(.68)}
+}
+
+@keyframes storyFinalColossusTouchRebuildChaos{
+  0%{opacity:.24; transform:translate3d(-58px,34px,0) rotate(-12deg) scale(.76); filter:brightness(.52) saturate(.7)}
+  36%{opacity:.92; transform:translate3d(12px,-10px,0) rotate(7deg) scale(1.04); filter:brightness(1.18) saturate(1.22)}
+  68%{opacity:.96; transform:translate3d(-6px,5px,0) rotate(-3deg) scale(.97); filter:brightness(.94)}
+  100%{opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:brightness(1)}
+}
 </style>
 </head>
 <body class="intro-active">
@@ -30241,7 +30499,9 @@ function prepareStoryArgosHackScrollMode(){
 }
 
 function prepareStoryTowerCombatHudMode(mission){
-  if(shouldStartTowerCombatInMobileHorizontal(mission)){
+  if(isStoryFinalColossusCombat(mission)){
+    ensureStoryFinalColossusBreakingHudMode();
+  }else if(shouldStartTowerCombatInMobileHorizontal(mission)){
     setStoryHudMode('horizontal');
   }
   prepareStoryCombatStartHudMode();
@@ -30612,8 +30872,22 @@ function isStoryFinalColossusEngaged(){
   return !!progress && !!progress.phase2Complete && !state.winner;
 }
 
+function isStoryFinalColossusTouchViewport(){
+  if(!isStoryFinalColossusCombat()) return false;
+  try{
+    const viewport = getViewportProfile();
+    return isTouchLikeDevice() && viewport.shortSide <= 1180;
+  }catch(_err){
+    return isStoryMobileViewport() || isTabletTouchViewport();
+  }
+}
+
 function isStoryFinalColossusMobileLite(){
-  return isStoryFinalColossusCombat() && isStoryMobileViewport();
+  return isStoryFinalColossusCombat() && (
+    isStoryMobileViewport()
+    || isTabletTouchViewport()
+    || isStoryFinalColossusTouchViewport()
+  );
 }
 
 function getStoryFinalColossusSequenceTimings(){
@@ -31006,8 +31280,8 @@ function clearStoryFinalColossusSequence(forceHideOverlay = false){
       bossHud.setAttribute('aria-hidden', 'true');
     }
   }
-  document.body?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile');
-  document.querySelector('.app')?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile');
+  document.body?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced');
+  document.querySelector('.app')?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced');
   document.body?.classList.remove('story-final-colossus-recoiling');
   document.querySelector('.app')?.classList.remove('story-final-colossus-recoiling');
   clearStoryFinalColossusBossCueClasses();
@@ -31022,7 +31296,7 @@ function hideProTurnSplash(){
 
 function ensureStoryFinalColossusEngagedHudMode(){
   if(!isStoryFinalColossusCombat() || !STORY_EMBED_MODE) return false;
-  const mobileViewport = isStoryMobileViewport();
+  const mobileViewport = isStoryFinalColossusMobileLite();
   const useHorizontal = mobileViewport && isMobileLandscapeViewport();
   setStoryHudMode(mobileViewport && !useHorizontal ? 'compact' : (useHorizontal ? 'horizontal' : 'compact'));
   mobileSpriteHudEnabled = true;
@@ -31033,6 +31307,21 @@ function ensureStoryFinalColossusEngagedHudMode(){
     desktopHudMode = 'compact';
     syncDesktopHudAvailability();
   }
+  setupStoryEmbedNavigation();
+  return true;
+}
+
+function ensureStoryFinalColossusBreakingHudMode(){
+  if(!isStoryFinalColossusCombat() || !STORY_EMBED_MODE) return false;
+  const touchViewport = isStoryFinalColossusMobileLite();
+  const useHorizontal = touchViewport && isMobileLandscapeViewport();
+  setStoryHudMode(touchViewport && !useHorizontal ? 'compact' : (useHorizontal ? 'horizontal' : 'compact'));
+  mobileSpriteHudEnabled = true;
+  desktopHudMode = 'compact';
+  mobilePanoramaRequested = useHorizontal;
+  if(useHorizontal) requestLandscapeOrientationBestEffort();
+  else releaseOrientationLockBestEffort();
+  syncDesktopHudAvailability();
   setupStoryEmbedNavigation();
   return true;
 }
@@ -31061,6 +31350,8 @@ function syncStoryFinalColossusOverlay(){
   document.querySelector('.app')?.classList.toggle('story-final-colossus-engaged', engaged);
   document.body?.classList.toggle('story-final-colossus-mobile', mobileLite);
   document.querySelector('.app')?.classList.toggle('story-final-colossus-mobile', mobileLite);
+  document.body?.classList.toggle('story-final-colossus-mobile-panel-forced', mobileLite && (breaking || engaged));
+  document.querySelector('.app')?.classList.toggle('story-final-colossus-mobile-panel-forced', mobileLite && (breaking || engaged));
   if(!overlay) return;
   const showStage = breaking || engaged;
   overlay.hidden = !showStage;
@@ -31072,6 +31363,31 @@ function syncStoryFinalColossusOverlay(){
   overlay.classList.toggle('stand-ready', (breaking && !!progress.standReady) || engaged);
   overlay.classList.toggle('settled', engaged);
   syncStoryFinalColossusBossHud(engaged);
+}
+
+function forceStoryFinalColossusMobilePanelDestruction(){
+  if(!isStoryFinalColossusMobileLite()) return false;
+  document.body?.classList.add('story-final-colossus-mobile-panel-forced');
+  document.querySelector('.app')?.classList.add('story-final-colossus-mobile-panel-forced');
+  syncDesktopHudAvailability();
+  const selectors = [
+    '.compact-player-panel',
+    '.compact-player-zones',
+    '.compact-hand-panel',
+    '.compact-mobile-actions-panel',
+    '.compact-action-hub-button',
+    '#compactMechaStage-0',
+    '#desktopCompactShell'
+  ];
+  const targets = Array.from(new Set(selectors
+    .map(selector => document.querySelector(selector))
+    .filter(Boolean)));
+  targets.forEach((target, index) => {
+    window.setTimeout(() => {
+      spawnElementSparks(target, index === 0 ? 22 : 10, index % 2 ? 'amber' : 'cyan');
+    }, index * 120);
+  });
+  return true;
 }
 
 function triggerStoryFinalColossusBreakSequence(){
@@ -31087,6 +31403,7 @@ function triggerStoryFinalColossusBreakSequence(){
   proPendingDrawBurst = null;
   hideProTurnSplash();
   hideTransientOverlays();
+  ensureStoryFinalColossusBreakingHudMode();
   syncStoryFinalColossusOverlay();
   const overlay = document.getElementById('storyFinalColossusOverlay');
   if(overlay){
@@ -31098,6 +31415,7 @@ function triggerStoryFinalColossusBreakSequence(){
     if(isStoryFinalColossusMobileLite()) overlay.classList.add('mobile-lite');
     else overlay.classList.remove('mobile-lite');
   }
+  forceStoryFinalColossusMobilePanelDestruction();
   const impactTarget = (typeof getCompactCombatSurface === 'function' && getCompactCombatSurface())
     || document.getElementById('tacticalScreen')
     || document.querySelector('.app');

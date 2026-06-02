@@ -279,6 +279,12 @@ let ambientMissileTimer = 0;
 let toastMessage = "";
 let toastUntil = 0;
 let redGlowPulse = 0;
+let lastExplosionSoundAt = 0;
+
+const fosoAudio = {
+  context: null,
+  unlocked: false,
+};
 
 const state = {
   loaded: false,
@@ -981,6 +987,8 @@ function spawnThreatVolley(threat) {
 
 function pushExplosion(x, y, radius = 86) {
   state.explosions.push({ x, y, radius, life: 0.75 });
+  const distanceToPlayer = Math.hypot(player.x - x, player.y - y);
+  playExplosionSound(clamp(radius / 90, 0.6, 1.45), clamp(distanceToPlayer / 520, 0, 1));
 }
 
 function resolveThreatWithDiamond(card) {
@@ -1309,6 +1317,7 @@ function drawCover(rect) {
 }
 
 function drawInteractableSign() {
+  if (state.signRead) return;
   const sign = interactables.find((entry) => entry.id === "sign") || { x: 152, y: 818, scale: 0.78 };
   const scale = sign.scale || 0.78;
   const width = 192 * scale;
@@ -1361,26 +1370,6 @@ function drawBatteryWorld() {
   });
 
   if (!threat) return;
-  const lane = laneTargets[threat.lane];
-  const flash = 0.2 + Math.min(0.8, state.activeThreatFlash + pulse * 0.2);
-  const activePulse = pulse * 0.16;
-  ctx.save();
-  ctx.strokeStyle = `rgba(255, 150, 100, ${flash})`;
-  ctx.shadowColor = `rgba(255, 130, 65, ${flash})`;
-  ctx.shadowBlur = 10 + flash * 12;
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(WORLD_SCALE.battleground.x + WORLD_SCALE.battleground.width * 0.5, WORLD_SCALE.battleground.y + 42);
-  ctx.bezierCurveTo(
-    lane.x + 48,
-    WORLD_SCALE.battleground.y + 108 + activePulse,
-    lane.x + 18,
-    lane.y - 92 + activePulse,
-    lane.x,
-    lane.y + activePulse,
-  );
-  ctx.stroke();
-  ctx.restore();
 }
 
 function drawRedGlowMarker() {
@@ -1413,28 +1402,6 @@ function drawRedGlowMarker() {
   ctx.fillStyle = `rgba(255, 120, 95, ${Math.min(0.68, 0.18 + discover * 0.38 + basePulse * 0.1 + pulseGlow * hiddenRatio * 0.1)})`;
   ctx.arc(worldPoint.x, worldPoint.y, baseRadius + Math.sin(basePulse * Math.PI) * (1 + pulseGlow), 0, Math.PI * 2);
   ctx.fill();
-  ctx.restore();
-}
-
-function drawDangerRings() {
-  const threat = getThreatById(state.activeThreatId);
-  if (!threat) return;
-  const x = threat.impactX || laneTargets[threat.lane]?.x || player.x;
-  const y = threat.impactY || laneTargets[threat.lane]?.y || player.y;
-  const pulse = 0.5 + Math.sin(performance.now() * 0.012) * 0.5;
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.strokeStyle = `rgba(255, 110, 86, ${0.8 - pulse * 0.18})`;
-  ctx.lineWidth = 6;
-  ctx.setLineDash([18, 14]);
-  ctx.beginPath();
-  ctx.arc(0, 0, 54 + pulse * 16, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.strokeStyle = `rgba(255, 185, 122, ${0.58 - pulse * 0.16})`;
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(0, 0, 82 + pulse * 12, 0, Math.PI * 2);
-  ctx.stroke();
   ctx.restore();
 }
 
@@ -1584,24 +1551,6 @@ function movePlayer(dt) {
     player.vy = 0;
   }
 
-  coverRects.forEach((rect) => {
-    const intersects = (
-      nextX + player.radius > rect.x
-      && nextX - player.radius < rect.x + rect.width
-      && nextY + player.radius > rect.y
-      && nextY - player.radius < rect.y + rect.height
-    );
-    if (!intersects) return;
-    const fromLeft = player.x <= rect.x - player.radius;
-    const fromRight = player.x >= rect.x + rect.width + player.radius;
-    const fromTop = player.y <= rect.y - player.radius;
-    const fromBottom = player.y >= rect.y + rect.height + player.radius;
-    if (fromLeft) nextX = rect.x - player.radius - 1;
-    else if (fromRight) nextX = rect.x + rect.width + player.radius + 1;
-    if (fromTop) nextY = rect.y - player.radius - 1;
-    else if (fromBottom) nextY = rect.y + rect.height + player.radius + 1;
-  });
-
   const finalPosition = constrainMovementPosition(nextX, nextY);
   nextX = finalPosition.x;
   nextY = finalPosition.y;
@@ -1625,6 +1574,7 @@ function updateNearestInteractable() {
   let best = null;
   let bestDistance = Infinity;
   interactables.forEach((item) => {
+    if (item.id === "sign" && state.signRead) return;
     const distance = Math.hypot(player.x - item.x, player.y - item.y);
     if (distance <= item.radius && distance < bestDistance) {
       best = item;
@@ -1765,8 +1715,6 @@ function renderWorld(dt) {
   drawBackground();
   drawBatteryWorld();
   drawRedGlowMarker();
-  coverRects.forEach(drawCover);
-  drawDangerRings();
   state.ambientMissiles.forEach(drawMissile);
   state.scriptedMissiles.forEach(drawMissile);
   drawInteractableSign();
@@ -1838,6 +1786,78 @@ function maybeStartMusic() {
   }
 }
 
+function ensureFosoAudio() {
+  if (fosoAudio.context) return fosoAudio.context;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  fosoAudio.context = new AudioContextClass();
+  return fosoAudio.context;
+}
+
+function unlockFosoAudio() {
+  const context = ensureFosoAudio();
+  if (!context) return;
+  if (context.state === "suspended") {
+    context.resume().catch(() => {});
+  }
+  fosoAudio.unlocked = true;
+}
+
+function createExplosionNoiseBuffer(context) {
+  const length = Math.floor(context.sampleRate * 0.72);
+  const buffer = context.createBuffer(1, length, context.sampleRate);
+  const data = buffer.getChannelData(0);
+  let falloff = 1;
+  for (let index = 0; index < length; index += 1) {
+    falloff *= 0.9984;
+    data[index] = (Math.random() * 2 - 1) * falloff;
+  }
+  return buffer;
+}
+
+function playExplosionSound(intensity = 1, distanceRatio = 0.5) {
+  const nowMs = performance.now();
+  if (nowMs - lastExplosionSoundAt < 90) return;
+  const context = ensureFosoAudio();
+  if (!context || !fosoAudio.unlocked) return;
+
+  lastExplosionSoundAt = nowMs;
+  const now = context.currentTime;
+  const closeness = clamp(1 - distanceRatio, 0.16, 1);
+  const gainAmount = clamp(0.035 + intensity * 0.05 * closeness, 0.025, 0.14);
+  const master = context.createGain();
+  const low = context.createOscillator();
+  const lowGain = context.createGain();
+  const noise = context.createBufferSource();
+  const noiseGain = context.createGain();
+  const filter = context.createBiquadFilter();
+
+  master.gain.setValueAtTime(gainAmount, now);
+  master.gain.exponentialRampToValueAtTime(0.0001, now + 1.05);
+  master.connect(context.destination);
+
+  low.type = "sine";
+  low.frequency.setValueAtTime(58 + intensity * 12, now);
+  low.frequency.exponentialRampToValueAtTime(26, now + 0.62);
+  lowGain.gain.setValueAtTime(0.82, now);
+  lowGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.72);
+  low.connect(lowGain).connect(master);
+
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(760 + intensity * 420, now);
+  filter.frequency.exponentialRampToValueAtTime(110, now + 0.54);
+  filter.Q.value = 0.8;
+  noise.buffer = createExplosionNoiseBuffer(context);
+  noiseGain.gain.setValueAtTime(0.7, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.46);
+  noise.connect(filter).connect(noiseGain).connect(master);
+
+  low.start(now);
+  noise.start(now);
+  low.stop(now + 0.78);
+  noise.stop(now + 0.78);
+}
+
 async function boot() {
   resizeCanvas();
   await loadAssets();
@@ -1847,14 +1867,12 @@ async function boot() {
   state.loaded = true;
   renderStatus();
   setObjective(
-    state.signRead ? "Cruza el Foso y administra el desgaste." : "Lee el cartel y cruza el Foso.",
+    state.signRead ? "Cruza el Foso y administra el desgaste." : "Busca el cartel de la Ruta Ceniza.",
     state.signRead
       ? "Lee cada impacto, busca cobertura y guarda las mejores cartas posibles para la bateria."
-      : "Por primera vez no hay escena de dialogo: todo se decide en el asedio."
+      : "Está junto al inicio, en la esquina inferior izquierda. Acercate e interactua para leer las instrucciones."
   );
-  if (!state.signRead) {
-    openSignModal();
-  } else if (state.activeThreatId) {
+  if (state.activeThreatId) {
     openThreatModal(getThreatById(state.activeThreatId));
   }
   maybeStartMusic();
@@ -1863,6 +1881,7 @@ async function boot() {
 
 mapButton.addEventListener("click", attemptReturnToMap);
 canvas.addEventListener("pointerdown", (event) => {
+  unlockFosoAudio();
   if (modalLayer.hidden === false) return;
   setPointerActive(event);
 });
@@ -1875,11 +1894,17 @@ canvas.addEventListener("pointercancel", clearPointerActive);
 canvas.addEventListener("dblclick", () => {
   input.interactQueued = true;
 });
-window.addEventListener("keydown", (event) => handleKey(event, true));
+window.addEventListener("keydown", (event) => {
+  unlockFosoAudio();
+  handleKey(event, true);
+});
 window.addEventListener("keyup", (event) => handleKey(event, false));
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("beforeunload", saveProgress);
-window.addEventListener("pointerdown", maybeStartMusic, { once: true, passive: true });
+window.addEventListener("pointerdown", () => {
+  unlockFosoAudio();
+  maybeStartMusic();
+}, { once: true, passive: true });
 
 boot().catch((error) => {
   console.error(error);

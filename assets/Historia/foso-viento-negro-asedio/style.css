@@ -130,6 +130,11 @@ canvas {
   font-size: clamp(1.1rem, 2vw, 1.6rem);
 }
 
+.hand-header h3 {
+  margin-bottom: 0;
+  font-size: clamp(0.98rem, 1.7vw, 1.24rem);
+}
+
 .hud p,
 .hand-header p,
 .modal-copy {
@@ -173,28 +178,29 @@ canvas {
 
 .hand-tray {
   position: fixed;
-  left: max(16px, env(safe-area-inset-left));
-  right: max(16px, env(safe-area-inset-right));
-  bottom: max(14px, env(safe-area-inset-bottom));
+  left: 50%;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(1120px, calc(100vw - 32px));
   z-index: 15;
-  padding: 14px 16px 16px;
+  padding: 8px 10px 10px;
   border: 1px solid var(--border);
-  border-radius: 22px;
+  border-radius: 18px;
   background:
-    linear-gradient(180deg, rgba(12, 11, 15, 0.92), rgba(9, 10, 13, 0.88)),
+    linear-gradient(180deg, rgba(12, 11, 15, 0.86), rgba(9, 10, 13, 0.84)),
     radial-gradient(circle at 10% 0%, rgba(255, 108, 77, 0.12), transparent 36%);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(12px);
   box-shadow:
-    0 24px 54px rgba(0, 0, 0, 0.4),
+    0 16px 34px rgba(0, 0, 0, 0.32),
     0 0 0 1px rgba(255, 180, 107, 0.08) inset;
 }
 
 .hand-header {
   display: flex;
   justify-content: space-between;
-  gap: 18px;
-  align-items: flex-start;
-  margin-bottom: 12px;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .hand-header > div {
@@ -202,20 +208,26 @@ canvas {
 }
 
 #hand-copy {
-  max-width: 440px;
+  max-width: 520px;
+  font-size: 0.74rem;
+  line-height: 1.28;
 }
 
 .hand-cards,
 .modal-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+  gap: 7px;
+}
+
+.hand-cards {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 .story-card-btn {
   position: relative;
-  min-height: 104px;
-  padding: 10px 8px;
+  min-height: 62px;
+  padding: 7px 8px;
   border: 1px solid rgba(255, 180, 107, 0.18);
   border-radius: 16px;
   background: linear-gradient(180deg, rgba(23, 19, 23, 0.94), rgba(10, 11, 14, 0.96));
@@ -258,14 +270,14 @@ canvas {
 
 .story-card-rank {
   display: block;
-  font-size: 1.25rem;
+  font-size: 1.02rem;
   font-weight: 900;
 }
 
 .story-card-suit {
   display: block;
-  margin-top: 4px;
-  font-size: 0.86rem;
+  margin-top: 2px;
+  font-size: 0.68rem;
   color: var(--muted);
 }
 
@@ -273,8 +285,8 @@ canvas {
   position: absolute;
   left: 8px;
   right: 8px;
-  bottom: 8px;
-  font-size: 0.72rem;
+  bottom: 6px;
+  font-size: 0.6rem;
   color: rgba(255, 242, 224, 0.62);
 }
 
@@ -391,16 +403,16 @@ canvas {
 @media (max-width: 980px) {
   .top-right {
     top: auto;
-    bottom: calc(178px + env(safe-area-inset-bottom));
+    bottom: calc(128px + env(safe-area-inset-bottom));
     width: min(280px, calc(100vw - 32px));
   }
 
   .hand-header {
-    flex-direction: column;
+    gap: 8px;
   }
 
   #hand-copy {
-    max-width: none;
+    max-width: 46vw;
   }
 }
 
@@ -415,22 +427,41 @@ canvas {
   }
 
   .hand-tray {
-    left: 8px;
-    right: 8px;
+    width: calc(100vw - 16px);
     bottom: 8px;
-    padding: 12px;
+    padding: 8px;
   }
 
-  .hand-cards,
+  .hand-cards {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 5px;
+  }
+
   .modal-card-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
   }
 
   .story-card-btn {
-    min-height: 92px;
+    min-height: 54px;
+    padding: 6px 5px;
+    border-radius: 12px;
+  }
+
+  .story-card-suit,
+  .story-card-note {
+    display: none;
+  }
+
+  .story-card-rank {
+    font-size: 0.92rem;
   }
 
   .interact-prompt {
-    bottom: 154px;
+    bottom: 94px;
+  }
+
+  #hand-copy {
+    display: none;
   }
 }

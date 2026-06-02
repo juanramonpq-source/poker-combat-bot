@@ -1,7 +1,7 @@
 (function registerPoCoBOTPlayerVisual(global) {
   const SIDE_FRAME_VERTICAL_OFFSETS = [0, -55, -124, -134, -127];
   const SIDE_SOLID_FRAME_COUNT = 2;
-  const ASSET_VERSION = "20260506-no-ghost-legs";
+  const ASSET_VERSION = "20260602-front-fallback";
   const audioState = {
     context: null,
     movementGain: null,
@@ -492,7 +492,9 @@
     }
 
     function drawFrontLeanSprite(size, leanOverride = player.leanAmount) {
-      const frames = assets.frontFrames && assets.frontFrames.length ? assets.frontFrames : assets.botFrames;
+      const frames = assets.frontFrames && assets.frontFrames.length
+        ? assets.frontFrames
+        : assets.hoverFrames && assets.hoverFrames.length ? assets.hoverFrames : assets.botFrames;
       if (!frames || !frames.length) return;
       const framePosition = sceneClamp(leanOverride, 0, 1) * (frames.length - 1);
       const frameIndex = sceneClamp(Math.round(framePosition), 0, frames.length - 1);

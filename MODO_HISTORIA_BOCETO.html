@@ -5747,6 +5747,7 @@
       mara: {
         showIntroTag: true,
         minimalDialogue: false,
+        inheritBackgroundMusic: true,
         presentationFigure: MARA_PRESENTATION_FIGURE,
         presentationFigureLow: MARA_PRESENTATION_FIGURE,
         presentationFigureClass: 'figure-mara',
@@ -6634,9 +6635,11 @@
       } catch (error) {}
     }
 
-    function silenceStoryBackgroundAudioForScene() {
-      pauseMapMusic();
-      stopTitleMusic();
+    function silenceStoryBackgroundAudioForScene(options = {}) {
+      if (!options.inheritBackgroundMusic) {
+        pauseMapMusic();
+        stopTitleMusic();
+      }
       pauseStoryExplorationMedia(false);
     }
 
@@ -8758,6 +8761,9 @@
         ...scene,
         minimalDialogue: typeof preset.minimalDialogue === 'boolean' ? preset.minimalDialogue : scene.minimalDialogue
       };
+      if (typeof normalized.inheritBackgroundMusic === 'undefined' && typeof preset.inheritBackgroundMusic === 'boolean') {
+        normalized.inheritBackgroundMusic = preset.inheritBackgroundMusic;
+      }
       if (!normalized.musicSrc && preset.musicSrc) normalized.musicSrc = preset.musicSrc;
       if (typeof normalized.showIntroTag === 'undefined' && preset.showIntroTag) normalized.showIntroTag = true;
       if (!normalized.presentationFigure && preset.presentationFigure) normalized.presentationFigure = preset.presentationFigure;
@@ -9735,7 +9741,9 @@
       }
       rememberCurrentStorySceneSurface();
       storySceneStage.hidden = false;
-      startStorySceneMusic(scene.musicSrc || '');
+      startStorySceneMusic(scene.musicSrc || '', {
+        inheritBackgroundMusic: shouldStorySceneInheritBackgroundMusic(scene)
+      });
       requestAnimationFrame(() => storySceneStage.classList.add('active'));
       return true;
     }
@@ -10948,7 +10956,9 @@
         renderSceneLine(true);
       }
       storySceneStage.hidden = false;
-      startStorySceneMusic(scene.musicSrc || '');
+      startStorySceneMusic(scene.musicSrc || '', {
+        inheritBackgroundMusic: shouldStorySceneInheritBackgroundMusic(scene)
+      });
       requestAnimationFrame(() => storySceneStage.classList.add('active'));
       return true;
     }
@@ -12246,6 +12256,15 @@
       return typeof scene?.musicSrc === 'string' ? scene.musicSrc : '';
     }
 
+    function shouldStorySceneInheritBackgroundMusic(scene) {
+      return !!scene?.inheritBackgroundMusic && !scene?.musicSrc;
+    }
+
+    function shouldActiveStorySceneInheritBackgroundMusic() {
+      if (!activeSceneNodeId || !activeSceneScriptKey) return false;
+      return shouldStorySceneInheritBackgroundMusic(storySceneScripts[getActiveSceneScriptKey()]);
+    }
+
     function canResumeMapMusic() {
       if (!workspacePanel.classList.contains('active')) return false;
       if (isStoryChapterAudioSurfaceActive()) return false;
@@ -12266,9 +12285,9 @@
       }
     }
 
-    async function startStorySceneMusic(src) {
+    async function startStorySceneMusic(src, options = {}) {
       const safeSrc = typeof src === 'string' ? src.trim() : '';
-      silenceStoryBackgroundAudioForScene();
+      silenceStoryBackgroundAudioForScene({ inheritBackgroundMusic: !!options.inheritBackgroundMusic });
       if (!safeSrc) {
         stopStorySceneMusic(true);
         return;
@@ -12798,7 +12817,9 @@
     workspacePanel.addEventListener('pointerdown', () => {
       if (!workspacePanel.classList.contains('active')) return;
       if (hasActiveStoryStage(storySceneStage)) {
-        startStorySceneMusic(getActiveStorySceneMusicSrc());
+        startStorySceneMusic(getActiveStorySceneMusicSrc(), {
+          inheritBackgroundMusic: shouldActiveStorySceneInheritBackgroundMusic()
+        });
         return;
       }
       if (mapMusicUnlocked) return;
@@ -12877,7 +12898,9 @@
         return;
       }
       if (hasActiveStoryStage(storySceneStage)) {
-        startStorySceneMusic(getActiveStorySceneMusicSrc());
+        startStorySceneMusic(getActiveStorySceneMusicSrc(), {
+          inheritBackgroundMusic: shouldActiveStorySceneInheritBackgroundMusic()
+        });
         return;
       }
       if (workspacePanel.classList.contains('active')) return;
