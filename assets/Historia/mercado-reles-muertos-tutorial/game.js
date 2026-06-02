@@ -11,6 +11,7 @@ const storyReturnUrl = storyParams.get("story_return") || "";
 const storySparringLocked = storyParams.get("story_sparring_locked") === "1";
 const storyPostTowerMarket = storyParams.get("story_post_tower_market") === "1";
 const storyPostTowerViajeroCleared = storyParams.get("story_post_tower_viajero_cleared") === "1";
+const marketScenePositionKey = "pocobot-story-market-position-v1";
 
 if (storyEmbedMode) {
   document.body.classList.add("story-embed-mode");
@@ -111,6 +112,58 @@ const player = {
   spriteWidth: 248,
   spriteHeight: 248,
 };
+
+const marketScenePositionState = {
+  x: Math.round(player.x),
+  y: Math.round(player.y),
+  savedAt: 0,
+};
+
+function placePlayerAt(point) {
+  if (!point) return;
+  player.x = Math.max(player.radius, Math.min(world.width - player.radius, Number(point.x) || 775));
+  player.y = Math.max(player.radius, Math.min(world.height - player.radius, Number(point.y) || 650));
+  player.vx = 0;
+  player.vy = 0;
+}
+
+function readMarketScenePosition() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(marketScenePositionKey) || "{}");
+    if (!parsed || typeof parsed !== "object") return null;
+    const x = Number(parsed.x);
+    const y = Number(parsed.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    return { x, y };
+  } catch (error) {
+    return null;
+  }
+}
+
+function rememberMarketScenePosition(force = false) {
+  const x = Math.round(player.x);
+  const y = Math.round(player.y);
+  const now = Date.now();
+  if (!force) {
+    const movedEnough = Math.abs(x - marketScenePositionState.x) >= 8 || Math.abs(y - marketScenePositionState.y) >= 8;
+    const enoughTimePassed = now - marketScenePositionState.savedAt >= 900;
+    if (!movedEnough && !enoughTimePassed) return;
+  }
+  marketScenePositionState.x = x;
+  marketScenePositionState.y = y;
+  marketScenePositionState.savedAt = now;
+  try {
+    localStorage.setItem(marketScenePositionKey, JSON.stringify({ x, y, savedAt: now }));
+  } catch (error) {}
+}
+
+{
+  const savedMarketPosition = readMarketScenePosition();
+  if (savedMarketPosition) {
+    placePlayerAt(savedMarketPosition);
+    rememberMarketScenePosition(true);
+  }
+}
 
 const camera = {
   x: 0,
@@ -398,6 +451,7 @@ function primeParentMarketMusic() {
 });
 
 document.addEventListener("visibilitychange", () => {
+  if (document.hidden) rememberMarketScenePosition(true);
   if (!marketCrowdAmbience) return;
   if (document.hidden) {
     marketCrowdAmbience.pause();
@@ -406,7 +460,12 @@ document.addEventListener("visibilitychange", () => {
   resumeMarketCrowdAmbienceAfterGesture();
 });
 
+window.addEventListener("pagehide", () => {
+  rememberMarketScenePosition(true);
+});
+
 function postStoryTutorialAction(action, payload = {}) {
+  rememberMarketScenePosition(true);
   if (action === "talk-vera") {
     primeParentMarketMusic();
   }
@@ -1111,6 +1170,7 @@ function update(dt) {
 
   camera.x += (target.x - camera.x) * camera.smoothness;
   camera.y += (target.y - camera.y) * camera.smoothness;
+  rememberMarketScenePosition();
 }
 
 function drawMap() {

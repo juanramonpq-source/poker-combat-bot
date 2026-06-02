@@ -677,17 +677,18 @@
 
       <article class="panel">
         <div class="panel-head">
-          <h2>Accesos Torre 4B</h2>
+          <h2>Accesos historia y final</h2>
           <span class="kicker" id="skipCombatsChip">Combates normales</span>
         </div>
         <div class="panel-body">
-          <div class="status">Herramientas rapidas para probar enemigos, sala de control y el hackeo final sin rehacer toda la ruta.</div>
+          <div class="status">Herramientas rapidas para probar enemigos, sala de control, hackeo final y Coloso final sin rehacer toda la ruta.</div>
           <div class="actions">
             <button class="warn" id="toggleSkipCombatsBtn" type="button">Omitir combates: OFF</button>
             <button id="prepareControlRoomBtn" type="button">Preparar sala control</button>
             <button id="openTowerExteriorBtn" type="button">Abrir Torre exterior</button>
             <button id="openTowerControlBtn" type="button">Abrir sala control</button>
             <button class="primary" id="openArgosHackBtn" type="button">Combatir panel corrupto</button>
+            <button class="primary" id="openFinalColossusBtn" type="button">CombateFinal</button>
           </div>
         </div>
       </article>
@@ -3035,6 +3036,10 @@
       return url.href;
     }
 
+    function buildFinalColossusCombatUrl(){
+      return new URL('CombateFinal.html', window.location.href).href;
+    }
+
     function buildPostTowerMarketExplorationUrl(){
       const url = new URL(STORY_MARKET_EXPLORATION_PAGE, window.location.href);
       url.searchParams.set('story_embed', '1');
@@ -3233,6 +3238,11 @@
     document.getElementById('openArgosHackBtn').addEventListener('click', () => {
       prepareTowerControlRoom();
       window.location.href = buildArgosHackCombatUrl();
+    });
+
+    document.getElementById('openFinalColossusBtn').addEventListener('click', () => {
+      prepareTowerControlRoom();
+      window.location.href = buildFinalColossusCombatUrl();
     });
 
     document.getElementById('preparePostTowerMarketBtn').addEventListener('click', () => {

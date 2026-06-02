@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>PoCoBOT · Foso de Viento Negro</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <button id="story-map-button" class="floating-map-button" type="button">Volver al mapa</button>
+
+      <section class="intro-panel" aria-hidden="true">
+        <h1>PoCoBOT // Foso de Viento Negro</h1>
+        <p>Asedio de artilleria explorable. Lee el impacto, administra diamantes y cruza el pasillo antes de enfrentarte a la bateria.</p>
+      </section>
+
+      <section class="battle-shell">
+        <canvas id="game" width="1280" height="720" aria-label="Foso de Viento Negro explorable"></canvas>
+
+        <div class="hud top-left">
+          <p class="hud-kicker">Ruta Ceniza · Capitulo 6</p>
+          <h2 id="objective-title">Lee el cartel y cruza el Foso.</h2>
+          <p id="objective-copy">Por primera vez no hay escena de dialogo: todo se decide en el asedio.</p>
+        </div>
+
+        <div class="hud top-right">
+          <div class="status-line"><span>Impactos resueltos</span><strong id="status-threats">0/6</strong></div>
+          <div class="status-line"><span>Cobertura</span><strong id="status-cover">No</strong></div>
+          <div class="status-line"><span>Cartas bloqueadas</span><strong id="status-losses">0</strong></div>
+          <div class="status-line"><span>Reserva</span><strong id="status-deck">0</strong></div>
+        </div>
+
+        <div id="interact-prompt" class="interact-prompt" hidden></div>
+
+        <section class="hand-tray" aria-label="Mano tactica">
+          <div class="hand-header">
+            <div>
+              <p class="hand-kicker">Mano tactica</p>
+              <h3>7 cartas para cruzar el asedio</h3>
+            </div>
+            <p id="hand-copy">Los diamantes usados o quemados no estaran en el combate final. El dano perdido destruirá armadura temporalmente.</p>
+          </div>
+          <div id="hand-cards" class="hand-cards"></div>
+        </section>
+      </section>
+    </main>
+
+    <section id="modal-layer" class="modal-layer" hidden>
+      <article class="modal-card">
+        <p id="modal-kicker" class="modal-kicker"></p>
+        <h2 id="modal-title"></h2>
+        <p id="modal-copy" class="modal-copy"></p>
+        <div id="modal-meta" class="modal-meta"></div>
+        <div id="modal-loss-preview" class="modal-loss-preview"></div>
+        <div id="modal-card-grid" class="modal-card-grid"></div>
+        <div id="modal-actions" class="modal-actions"></div>
+      </article>
+    </section>
+
+    <audio id="foso-music" src="../Fuego de Lona.mp3" preload="auto" loop playsinline></audio>
+
+    <script src="../shared-mecha-orientation/pocobot-player-visual.js?v=20260517-camp-perspective"></script>
+    <script src="./game.js?v=20260602-foso-live-implementation"></script>
+  </body>
+</html>

@@ -10,6 +10,7 @@ const storyReturnUrl = storyParams.get("story_return") || "";
 const debugMode = storyParams.get("debug") === "1";
 const storyAudioMode = storyParams.get("story_audio") || "";
 const chapterStateKey = "pocobot-tower-4b-chapter-v1";
+const towerControlPositionKey = "pocobot-story-tower-4b-control-position-v1";
 const storySkipEnemyCombatsKey = "pocobot_story_skip_enemy_combats_v1";
 const skipEnemyCombatsMode = storyParams.get("story_skip_combats") === "1"
   || localStorage.getItem(storySkipEnemyCombatsKey) === "1";
@@ -182,6 +183,12 @@ const player = {
   spriteHeight: 170,
 };
 
+const towerControlPositionState = {
+  x: Math.round(player.x),
+  y: Math.round(player.y),
+  savedAt: 0,
+};
+
 const sceneSpawnPoints = {
   default: { x: 360, y: 580 },
   fromInterior: { x: 356, y: 332 },
@@ -197,6 +204,36 @@ function placePlayerAt(point) {
   player.vy = 0;
 }
 
+function readTowerControlPosition() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(towerControlPositionKey) || "{}");
+    if (!parsed || typeof parsed !== "object") return null;
+    const x = Number(parsed.x);
+    const y = Number(parsed.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    return { x, y };
+  } catch (error) {
+    return null;
+  }
+}
+
+function rememberTowerControlPosition(force = false) {
+  const x = Math.round(player.x);
+  const y = Math.round(player.y);
+  const now = Date.now();
+  if (!force) {
+    const movedEnough = Math.abs(x - towerControlPositionState.x) >= 8 || Math.abs(y - towerControlPositionState.y) >= 8;
+    const enoughTimePassed = now - towerControlPositionState.savedAt >= 900;
+    if (!movedEnough && !enoughTimePassed) return;
+  }
+  towerControlPositionState.x = x;
+  towerControlPositionState.y = y;
+  towerControlPositionState.savedAt = now;
+  try {
+    localStorage.setItem(towerControlPositionKey, JSON.stringify({ x, y, savedAt: now }));
+  } catch (error) {}
+}
+
 function applyInitialStorySpawn() {
   if (storyParams.get("story_restore_position") === "1") {
     const spawnX = Number(storyParams.get("story_player_x"));
@@ -209,6 +246,13 @@ function applyInitialStorySpawn() {
 
   if (storyParams.get("from_interior") === "1") {
     placePlayerAt(sceneSpawnPoints.fromInterior);
+    return;
+  }
+
+  const savedPosition = readTowerControlPosition();
+  if (savedPosition) {
+    placePlayerAt(savedPosition);
+    rememberTowerControlPosition(true);
     return;
   }
 
@@ -373,6 +417,7 @@ const hudHelp = {
 };
 
 function postStoryTutorialAction(action, payload = {}) {
+  rememberTowerControlPosition(true);
   const message = {
     type: "pocobot-story-tower-control-action",
     action,
@@ -396,6 +441,14 @@ function postStoryTutorialAction(action, payload = {}) {
     window.location.href = storyReturnUrl;
   }
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) rememberTowerControlPosition(true);
+});
+
+window.addEventListener("pagehide", () => {
+  rememberTowerControlPosition(true);
+});
 
 function postStoryReturnMapAction() {
   const payload = {
@@ -1351,6 +1404,7 @@ function update(dt) {
 
   camera.x += (target.x - camera.x) * camera.smoothness;
   camera.y += (target.y - camera.y) * camera.smoothness;
+  rememberTowerControlPosition();
 }
 
 function drawMap() {

@@ -16,6 +16,8 @@ const storyCampMusicUrl = new URL(storyCampMusicPath, window.location.href).href
 
 const CAMP_PROGRESS_KEY = "pocobot-story-camp-red-plates-progress-v1";
 const CAMP_AUDIO_TIME_KEY = `${CAMP_PROGRESS_KEY}:audio-time:${storyCampScene}`;
+const CAMP_SCENE_POSITION_KEY = `${CAMP_PROGRESS_KEY}:position:${storyCampScene}`;
+const CAMP_LAKE_SECRET_CARD_ID = "lake_secret_card";
 
 if (storyEmbedMode) {
   document.body.classList.add("story-embed-mode");
@@ -75,10 +77,18 @@ const player = {
   spriteHeight: 174,
 };
 
+const campSceneSpawnPoint = { x: player.x, y: player.y };
+
 const camera = {
   x: 0,
   y: 0,
   smoothness: 0.1,
+};
+
+const campScenePositionState = {
+  x: Math.round(player.x),
+  y: Math.round(player.y),
+  savedAt: 0,
 };
 
 const DESKTOP_CAMERA_ZOOM = 0.86;
@@ -595,6 +605,62 @@ function writeCampProgress(patch = {}) {
 
 let campProgress = readCampProgress();
 
+function placePlayerAt(point) {
+  if (!point) return;
+  player.x = Math.max(player.radius, Math.min(world.width - player.radius, Number(point.x) || campSceneSpawnPoint.x));
+  player.y = Math.max(player.radius, Math.min(world.height - player.radius, Number(point.y) || campSceneSpawnPoint.y));
+  player.vx = 0;
+  player.vy = 0;
+}
+
+function readCampScenePosition() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CAMP_SCENE_POSITION_KEY) || "{}");
+    if (!parsed || typeof parsed !== "object") return null;
+    const x = Number(parsed.x);
+    const y = Number(parsed.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    return { x, y };
+  } catch (error) {
+    return null;
+  }
+}
+
+function rememberCampScenePosition(force = false) {
+  const x = Math.round(player.x);
+  const y = Math.round(player.y);
+  const now = Date.now();
+  if (!force) {
+    const movedEnough = Math.abs(x - campScenePositionState.x) >= 8 || Math.abs(y - campScenePositionState.y) >= 8;
+    const enoughTimePassed = now - campScenePositionState.savedAt >= 900;
+    if (!movedEnough && !enoughTimePassed) return;
+  }
+  campScenePositionState.x = x;
+  campScenePositionState.y = y;
+  campScenePositionState.savedAt = now;
+  try {
+    localStorage.setItem(CAMP_SCENE_POSITION_KEY, JSON.stringify({ x, y, savedAt: now }));
+  } catch (error) {}
+}
+
+function applyInitialCampScenePosition() {
+  if (storyParams.get("story_restore_position") === "1") {
+    const spawnX = Number(storyParams.get("story_player_x"));
+    const spawnY = Number(storyParams.get("story_player_y"));
+    if (Number.isFinite(spawnX) && Number.isFinite(spawnY)) {
+      placePlayerAt({ x: spawnX, y: spawnY });
+      rememberCampScenePosition(true);
+      return;
+    }
+  }
+  const savedPosition = readCampScenePosition();
+  if (!savedPosition) return;
+  placePlayerAt(savedPosition);
+  rememberCampScenePosition(true);
+}
+
+applyInitialCampScenePosition();
+
 const campInteractables = [
   {
     id: "corvo",
@@ -704,6 +770,16 @@ const lakeInteractables = [
     message: "El dron esta ensuciando el lago con sedimentos de Argós.",
     scale: 1,
     role: "lake_drone"
+  },
+  {
+    id: CAMP_LAKE_SECRET_CARD_ID,
+    x: 1222,
+    y: 356,
+    radius: 76,
+    label: "Resplandor rojo",
+    hint: "Examinar",
+    message: "Un resplandor rojo palpita entre chatarra y barro seco.",
+    scale: 0.72
   },
   {
     id: "return_camp",
@@ -1292,6 +1368,24 @@ function completeLocalCampStep(interactionId) {
   }
 }
 
+function getWaterPcPendingTasks() {
+  const tasks = [];
+  if (!campProgress.corvoIntroSeen) tasks.push("Habla con Corvo");
+  if (campProgress.corvoIntroSeen && !campProgress.corvoTrusted) tasks.push("Activa la radio de Xavor");
+  if (!campProgress.medicRequest) tasks.push("Habla con Nara");
+  if (campProgress.medicRequest && !campProgress.filtersReady) tasks.push("Habla con Dámaso");
+  if (campProgress.filtersReady && !campProgress.valveFuse) tasks.push("Habla con Iria");
+  if (campProgress.valveFuse && !campProgress.deckPurged) tasks.push("Habla con Nix");
+  if (!campProgress.trialCleared) tasks.push("Supera la calibracion del PoCoBOT");
+  return tasks;
+}
+
+function getWaterPcLockedMessage() {
+  const pendingTasks = getWaterPcPendingTasks();
+  if (!pendingTasks.length) return "El PC sigue esperando la autorizacion final del campamento.";
+  return `Todavia falta: ${pendingTasks.join(" · ")}`;
+}
+
 function getInteractionAction(interaction) {
   if (!interaction) return "";
   if (interaction.id === "return_camp") return "return-camp";
@@ -1300,6 +1394,7 @@ function getInteractionAction(interaction) {
   if (interaction.id === "deck_pirate") return campProgress.valveFuse ? "deck-pirate" : "deck-pirate-locked";
   if (interaction.id === "sparring") return "camp-trial";
   if (interaction.id === "lake_drone") return campProgress.lakeClean ? "lake-cleared" : "lake-drone";
+  if (interaction.id === CAMP_LAKE_SECRET_CARD_ID) return campProgress.lakeGlowClaimed ? "lake-secret-card-claimed" : "lake-secret-card";
   return interaction.id.replaceAll("_", "-");
 }
 
@@ -1312,7 +1407,7 @@ function handleInteraction(interaction) {
     return;
   }
   if (action === "pc-locked") {
-    setInteractionMessage("No tienes acceso a este PC.", 3.0);
+    setInteractionMessage(getWaterPcLockedMessage(), 5.2);
     return;
   }
   if (action === "deck-pirate-locked") {
@@ -1323,11 +1418,16 @@ function handleInteraction(interaction) {
     setInteractionMessage("El lago vuelve a correr limpio. Te has ganado el respeto del Campamento de las Placas Rojas.", 3.2);
     return;
   }
+  if (action === "lake-secret-card-claimed") {
+    setInteractionMessage("El resplandor rojo ya se ha apagado. Solo queda el barro removido.", 3.4);
+    return;
+  }
   if (interaction.id === "radio_xavor" && !campProgress.corvoIntroSeen) {
     setInteractionMessage("Es la radio que te dio Xavor, la dejas aquí por si hay que contactar con él en algún momento.", 4.2);
     return;
   }
 
+  rememberCampScenePosition(true);
   completeLocalCampStep(interaction.id);
   setInteractionMessage(interaction.message, 2.4);
   postStoryCampAction(action, {
@@ -1358,6 +1458,7 @@ function buildStandaloneCombatUrl(mission, returnScene = "camp") {
   target.searchParams.set("story_audio", "internal");
   target.searchParams.set("story_brief", "on");
   target.searchParams.set("story_standalone", "1");
+  target.searchParams.set("story_ui", window.matchMedia("(pointer: coarse)").matches && Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 820 && window.matchMedia("(orientation: landscape)").matches ? "horizontal" : "compact");
   target.searchParams.set("story_camp_return_scene", returnScene);
   target.searchParams.set("story_return", window.location.href);
   return target.href;
@@ -1464,6 +1565,12 @@ const standaloneSceneCopy = {
       { label: "Iniciar combate", action: "combat-drone" },
     ],
   },
+  lake_secret_card: {
+    kicker: "Lago Norte",
+    title: "Resplandor oculto",
+    text: "Entre barro, chatarra y un brillo rojo casi tapado por la orilla, encuentras un 8 de tréboles intacto.",
+    actions: [{ label: "Guardar hallazgo", action: "close" }],
+  },
   lake_win: {
     kicker: "Lago Norte",
     title: "Agua limpia",
@@ -1559,6 +1666,13 @@ function handleStandaloneCampAction(action, payload = {}) {
   }
   if (action === "open-lake") {
     navigateStandaloneScene("lake");
+    return;
+  }
+  if (action === "lake-secret-card") {
+    if (!campProgress.lakeGlowClaimed) {
+      campProgress = writeCampProgress({ lakeGlowClaimed: true });
+    }
+    openStandaloneScene("lake_secret_card");
     return;
   }
   if (action === "return-map") {
@@ -1757,6 +1871,7 @@ storyMapButton?.addEventListener("click", () => {
 campMusic?.addEventListener("timeupdate", () => rememberCampMusicTime());
 
 document.addEventListener("visibilitychange", () => {
+  if (document.hidden) rememberCampScenePosition(true);
   if (!campMusic) return;
   if (document.hidden) {
     rememberCampMusicTime(true);
@@ -1770,7 +1885,10 @@ document.addEventListener("visibilitychange", () => {
   campMusicPausedForVisibility = false;
 });
 
-window.addEventListener("pagehide", () => rememberCampMusicTime(true));
+window.addEventListener("pagehide", () => {
+  rememberCampScenePosition(true);
+  rememberCampMusicTime(true);
+});
 
 const portraitMedia = window.matchMedia("(orientation: portrait)");
 const coarsePointerMedia = window.matchMedia("(pointer: coarse)");
@@ -1932,6 +2050,7 @@ function update(dt) {
     handleInteraction(interactionState.active);
   }
   maybeAutoUseSceneExit(now);
+  rememberCampScenePosition();
   input.interactQueued = false;
 }
 
@@ -2131,6 +2250,7 @@ function drawNpcImage(item, options = {}) {
   withCampPerspective(item, () => {
     drawSoftShadow(0, 18, shadowWidth, shadowHeight, options.shadowAlpha ?? 0.28);
     ctx.save();
+    if (options.offsetX || options.offsetY) ctx.translate(options.offsetX || 0, options.offsetY || 0);
     if (options.bob) ctx.translate(0, options.bob);
     if (options.rotate) ctx.rotate(options.rotate);
     ctx.drawImage(image, -width / 2, -height + lift, width, height);
@@ -2198,13 +2318,17 @@ function drawResistanceBotNpc(item) {
 }
 
 function drawLakeDroneNpc(item) {
-  const hover = Math.sin(performance.now() / 260) * 5;
+  const now = performance.now();
+  const hover = Math.sin(now / 180) * 6 + Math.sin(now / 74) * 2.8;
+  const offsetX = Math.sin(now / 92) * 5 + Math.cos(now / 41) * 2.2;
+  const rotate = Math.sin(now / 240) * 0.034 + Math.cos(now / 68) * 0.018;
   if (drawNpcImage(item, {
     width: 210,
     height: 140,
     lift: 72,
     bob: hover,
-    rotate: Math.sin(performance.now() / 520) * 0.018,
+    offsetX,
+    rotate,
     shadowWidth: 86,
     shadowHeight: 24,
     shadowAlpha: 0.34,
@@ -2212,7 +2336,8 @@ function drawLakeDroneNpc(item) {
 
   const palette = getNpcPalette(item);
   withCampPerspective(item, () => {
-    ctx.translate(0, hover);
+    ctx.translate(offsetX, hover);
+    ctx.rotate(rotate);
     drawSoftShadow(0, 48 - hover, 68, 20, 0.32);
     ctx.fillStyle = palette.body;
     ctx.strokeStyle = palette.trim;
@@ -2228,6 +2353,30 @@ function drawLakeDroneNpc(item) {
     ctx.strokeStyle = "rgba(255, 91, 63, 0.65)";
     ctx.beginPath();
     ctx.arc(0, 0, 64, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+}
+
+function drawLakeSecretGlow(item) {
+  const pulse = 0.5 + Math.sin(performance.now() / 260) * 0.5;
+  withCampPerspective(item, () => {
+    drawSoftShadow(0, 20, 52, 16, 0.22);
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = `rgba(255, 42, 24, ${0.18 + pulse * 0.16})`;
+    ctx.beginPath();
+    ctx.ellipse(0, -10, 56, 22, -0.42, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = `rgba(255, 124, 68, ${0.08 + pulse * 0.12})`;
+    ctx.beginPath();
+    ctx.ellipse(8, -22, 34, 14, -0.36, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = `rgba(255, 198, 146, ${0.4 + pulse * 0.25})`;
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(-18, 8);
+    ctx.lineTo(-2, -18);
+    ctx.lineTo(20, -6);
     ctx.stroke();
   });
 }
@@ -2401,6 +2550,10 @@ function drawObjectInteractable(item) {
     drawNorthGate(item);
     return true;
   }
+  if (item.id === CAMP_LAKE_SECRET_CARD_ID) {
+    drawLakeSecretGlow(item);
+    return true;
+  }
   if (item.id === "return_camp") {
     drawReturnCampSign(item);
     return true;
@@ -2417,6 +2570,7 @@ function drawNpcMarker(item) {
     radio_xavor: { labelLift: 94 },
     water_pc: { labelLift: 92 },
     north_exit: { labelLift: 118, labelDirection: "below" },
+    [CAMP_LAKE_SECRET_CARD_ID]: { labelLift: 80 },
     return_camp: { labelLift: 82 },
   }[item.id] || {};
   drawInteractionPlate(item, {
