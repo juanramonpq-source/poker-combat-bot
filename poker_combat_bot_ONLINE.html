@@ -1544,10 +1544,10 @@ body.victory .winner-banner.show{
   mix-blend-mode:screen;
 }
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-strip{
-  z-index:2;
-  filter:drop-shadow(0 0 22px rgba(35,216,255,.34)) drop-shadow(0 0 36px rgba(255,132,72,.24));
-  mix-blend-mode:normal;
-  animation:storyFinalColossusStripFrames 3.35s linear both;
+  z-index:0;
+  opacity:0;
+  filter:blur(18px) brightness(.34) saturate(.68);
+  animation:none;
 }
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-strip-window{
   opacity:1;
@@ -1558,12 +1558,40 @@ body.victory .winner-banner.show{
   opacity:.24;
   filter:blur(14px) saturate(.92);
 }
+.story-final-colossus-breakout{
+  position:absolute;
+  inset:2% 1% -3% 2%;
+  z-index:7;
+  pointer-events:none;
+  opacity:0;
+  background-image:url("assets/Historia/combate-final-coloso/coloso-irrupcion-strip.png");
+  background-repeat:no-repeat;
+  background-size:300% 100%;
+  background-position:0 50%;
+  transform-origin:54% 54%;
+  filter:
+    drop-shadow(0 30px 28px rgba(0,0,0,.46))
+    drop-shadow(0 0 24px rgba(35,216,255,.26))
+    drop-shadow(0 0 40px rgba(255,132,72,.18));
+  clip-path:polygon(2% 18%, 17% 5%, 43% 1%, 62% 7%, 88% 2%, 100% 22%, 98% 78%, 86% 96%, 58% 99%, 39% 91%, 18% 100%, 0 80%);
+  will-change:opacity, transform, filter, background-position;
+}
+.story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breakout{
+  animation:storyFinalColossusBreakoutFrames 3.35s linear both;
+}
 .story-final-colossus-overlay.breach-fade .story-final-colossus-strip-window,
 .story-final-colossus-overlay.stand-ready .story-final-colossus-strip-window,
 .story-final-colossus-overlay.settled .story-final-colossus-strip-window{
   opacity:0;
   transform:scale(1.08) rotate(1deg);
   filter:blur(18px) brightness(.48);
+}
+.story-final-colossus-overlay.breach-fade .story-final-colossus-breakout,
+.story-final-colossus-overlay.stand-ready .story-final-colossus-breakout,
+.story-final-colossus-overlay.settled .story-final-colossus-breakout{
+  opacity:0;
+  transform:translate(7%, -2%) scale(1.08) rotate(1deg);
+  filter:blur(18px) brightness(.55) saturate(.7);
 }
 .story-final-colossus-standee{
   --colossus-final-x: 18%;
@@ -2623,6 +2651,38 @@ body.story-final-colossus-mode:not(.desktop-compact-mode):not(.mobile-compact-mo
   32%, 63%{transform:translateX(-33.333%) scale(1); opacity:1}
   64%, 92%{transform:translateX(-66.666%) scale(1); opacity:1}
   100%{transform:translateX(-66.666%) scale(1); opacity:1}
+}
+@keyframes storyFinalColossusBreakoutFrames{
+  0%{
+    opacity:0;
+    background-position:0 50%;
+    transform:translate(-4%, 5%) scale(.82) rotate(-5deg);
+    filter:blur(12px) brightness(1.22) saturate(1.2) drop-shadow(0 18px 24px rgba(0,0,0,.38));
+  }
+  4%, 31%{
+    opacity:.96;
+    background-position:0 50%;
+    transform:translate(-1.5%, 1%) scale(.98) rotate(-2deg);
+    filter:blur(1px) brightness(1.05) saturate(1.08) drop-shadow(0 26px 28px rgba(0,0,0,.42)) drop-shadow(0 0 20px rgba(35,216,255,.24));
+  }
+  32%, 63%{
+    opacity:1;
+    background-position:50% 50%;
+    transform:translate(1%, -1%) scale(1.06) rotate(.6deg);
+    filter:brightness(1.08) saturate(1.12) drop-shadow(0 30px 30px rgba(0,0,0,.48)) drop-shadow(0 0 28px rgba(35,216,255,.26));
+  }
+  64%, 92%{
+    opacity:1;
+    background-position:100% 50%;
+    transform:translate(4%, -4%) scale(1.18) rotate(2deg);
+    filter:brightness(1.14) saturate(1.18) drop-shadow(0 36px 34px rgba(0,0,0,.54)) drop-shadow(0 0 34px rgba(35,216,255,.3)) drop-shadow(0 0 44px rgba(255,132,72,.2));
+  }
+  100%{
+    opacity:1;
+    background-position:100% 50%;
+    transform:translate(5%, -5%) scale(1.2) rotate(2.4deg);
+    filter:brightness(1.08) saturate(1.08) drop-shadow(0 36px 34px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(35,216,255,.24));
+  }
 }
 @keyframes storyFinalColossusBreachShadow{
   0%{
@@ -27692,6 +27752,7 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-breaking .app:is(.desktop-compact-mode, .mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-hand-panel{
   z-index:82 !important;
   transform-origin:left bottom !important;
+  scale:1.08 !important;
   animation:storyFinalColossusTouchHandScatter 3.65s cubic-bezier(.15,.82,.18,1) both !important;
 }
 
@@ -27764,10 +27825,105 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-panel{
-  translate:-1.4vw -1.8dvh !important;
-  scale:.9 !important;
+  translate:-.8vw -2.2dvh !important;
+  scale:1.08 !important;
   rotate:.55deg !important;
   transform-origin:left bottom !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray{
+  --compact-hand-card-width:72px !important;
+  --compact-hand-card-height:102px !important;
+  --compact-hand-card-step:56px !important;
+  min-height:clamp(128px, 22dvh, 186px) !important;
+  padding:8px 18px 22px !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card.card-detailed{
+  flex:0 0 var(--compact-hand-card-width) !important;
+  width:var(--compact-hand-card-width) !important;
+  min-width:var(--compact-hand-card-width) !important;
+  height:var(--compact-hand-card-height) !important;
+  min-height:var(--compact-hand-card-height) !important;
+  margin-left:calc(var(--compact-hand-card-step) - var(--compact-hand-card-width)) !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card:first-child,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card.card-detailed:first-child{
+  margin-left:0 !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-overview{
+  display:block !important;
+  position:absolute !important;
+  left:clamp(28px, 9vw, 44px) !important;
+  right:auto !important;
+  bottom:calc(100% - 8px) !important;
+  width:min(96dvw, 360px) !important;
+  max-width:none !important;
+  max-height:min(56dvh, 430px) !important;
+  padding:10px !important;
+  z-index:9999 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:translateY(0) scale(1) !important;
+  transform-origin:left bottom !important;
+  pointer-events:auto !important;
+  overflow:visible !important;
+  border-color:rgba(95,241,255,.82) !important;
+  box-shadow:0 14px 24px rgba(0,0,0,.48), 0 0 0 2px rgba(95,241,255,.18), 0 0 28px rgba(35,216,255,.22), inset 0 0 0 2px rgba(255,255,255,.28) !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-overview-grid{
+  display:grid !important;
+  grid-template-columns:repeat(6, minmax(0, 1fr)) !important;
+  grid-auto-rows:70px !important;
+  gap:6px 5px !important;
+  align-items:center !important;
+  justify-items:center !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .compact-hand-overview,
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .compact-hand-overview *{
+  animation:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  filter:none !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .compact-hand-panel{
+  z-index:10040 !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .compact-hand-overview{
+  z-index:10045 !important;
+  isolation:isolate !important;
+  background:
+    repeating-linear-gradient(135deg, rgba(109,69,26,.06) 0 1px, transparent 1px 8px),
+    linear-gradient(180deg, rgba(255,246,218,.97), rgba(220,184,112,.97)) !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-overview .card,
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-overview .card.card-detailed{
+  width:48px !important;
+  min-width:48px !important;
+  height:68px !important;
+  min-height:68px !important;
+  margin:0 !important;
+  transform:none !important;
+  flex-basis:auto !important;
+  pointer-events:auto !important;
+  justify-self:center !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .compact-hand-overview .card.defense-choice{
+  outline:3px solid rgba(255,214,92,.9) !important;
+  box-shadow:0 0 0 2px rgba(35,216,255,.7), 0 0 18px rgba(255,214,92,.5), 0 8px 12px rgba(0,0,0,.28) !important;
+  filter:brightness(1.08) saturate(1.12) !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-action-hub-button{
@@ -27782,6 +27938,80 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:
   scale:.9 !important;
   rotate:.4deg !important;
   transform-origin:left bottom !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-panel{
+  scale:1.06 !important;
+  transform-origin:left bottom !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-tray{
+  --compact-hand-card-width:58px !important;
+  --compact-hand-card-height:82px !important;
+  --compact-hand-card-step:48px !important;
+  min-height:clamp(112px, 26dvh, 164px) !important;
+  padding:12px 14px 34px !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-tray .card,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-tray .card.card-detailed{
+  flex:0 0 var(--compact-hand-card-width) !important;
+  width:var(--compact-hand-card-width) !important;
+  min-width:var(--compact-hand-card-width) !important;
+  height:var(--compact-hand-card-height) !important;
+  min-height:var(--compact-hand-card-height) !important;
+  margin-left:calc(var(--compact-hand-card-step) - var(--compact-hand-card-width)) !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-tray .card:first-child,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-tray .card.card-detailed:first-child{
+  margin-left:0 !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-overview{
+  display:block !important;
+  position:absolute !important;
+  left:clamp(-216px, -24dvw, -150px) !important;
+  right:auto !important;
+  top:clamp(6px, 2dvh, 14px) !important;
+  bottom:auto !important;
+  width:min(56dvw, 460px) !important;
+  max-width:none !important;
+  max-height:min(72dvh, 330px) !important;
+  padding:9px !important;
+  z-index:9999 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:translateY(0) scale(1.08) !important;
+  transform-origin:left bottom !important;
+  pointer-events:auto !important;
+  overflow:visible !important;
+  border-color:rgba(95,241,255,.82) !important;
+  box-shadow:0 14px 24px rgba(0,0,0,.48), 0 0 0 2px rgba(95,241,255,.18), 0 0 28px rgba(35,216,255,.22), inset 0 0 0 2px rgba(255,255,255,.28) !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-overview-grid{
+  display:grid !important;
+  grid-template-columns:repeat(6, minmax(0, 1fr)) !important;
+  grid-auto-rows:68px !important;
+  gap:7px 5px !important;
+  align-items:center !important;
+  justify-items:center !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-overview .card,
+body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-overview .card.card-detailed{
+  width:48px !important;
+  min-width:48px !important;
+  height:68px !important;
+  min-height:68px !important;
+  margin:0 !important;
+  transform:none !important;
+  flex-basis:auto !important;
+  pointer-events:auto !important;
+  justify-self:center !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .story-final-colossus-boss-hud{
@@ -28027,6 +28257,7 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.table
           decoding="async"
         >
       </div>
+      <span class="story-final-colossus-breakout" aria-hidden="true"></span>
     </div>
   </div>
   <div class="story-final-colossus-rebuild-blocks" aria-hidden="true">
@@ -29864,6 +30095,7 @@ let compactTutorialExpanded = false;
 let compactTutorialUserCollapsed = false;
 let compactActiveReadoutId = '';
 let compactHandOverviewOpen = false;
+let storyFinalColossusDefenseHandForcedOpen = false;
 let mobilePanoramaVitalityStage = null;
 let mobileSpriteHudEnabled = true;
 let mobileSpriteHudApi = null;
@@ -31509,8 +31741,8 @@ function markStoryFinalColossusOpeningTurnComplete(previousPlayerIdx){
   progress.rivalSpriteHidden = true;
   progress.stage = 'phase-2-ready';
   state.phase = 'Coloso detectado';
-  log('⚠️ Prólogo del coloso completado: la rotura de interfaz queda preparada para la siguiente fase.');
-  addToast('Prólogo del coloso completado', 'warn');
+  log('⚠️ COMBATE FINAL preparado: la rotura de interfaz queda lista para la siguiente fase.');
+  addToast('COMBATE FINAL preparado', 'warn');
   addToast('Coloso detectado detrás del HUD', 'warn');
   return true;
 }
@@ -31557,8 +31789,8 @@ function clearStoryFinalColossusSequence(forceHideOverlay = false){
       bossHud.setAttribute('aria-hidden', 'true');
     }
   }
-  document.body?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced');
-  document.querySelector('.app')?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced');
+  document.body?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open');
+  document.querySelector('.app')?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open');
   document.body?.classList.remove('story-final-colossus-recoiling');
   document.querySelector('.app')?.classList.remove('story-final-colossus-recoiling');
   clearStoryFinalColossusBossCueClasses();
@@ -32034,7 +32266,7 @@ const STORY_TOWER_COMBAT_PROFILES = {
     title: 'Coloso final',
     combatSprite: FINAL_COLOSSUS_STANDEE,
     enemyId: 'argos-final-colossus',
-    intro: 'Prólogo del combate final: el radar rival aparece vacío y el primer turno es tuyo. Cuando cierres ese turno, algo gigantesco empezará a empujar detrás de la interfaz.'
+    intro: 'COMBATE FINAL: el radar rival aparece vacío y el primer turno es tuyo. Cuando cierres ese turno, algo gigantesco empezará a empujar detrás de la interfaz.'
   },
   tower_argos_hack: {
     enemyName: 'Panel de Argos',
@@ -32524,7 +32756,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   state.currentPlayer = 0;
   state.turnCount = finalColossusStyle ? 1 : 2;
   state.phase = finalColossusStyle
-    ? 'Prologo del coloso'
+    ? 'COMBATE FINAL'
     : (isStoryCampCombatMission(mission) ? 'Placas Rojas' : fosoStyle ? 'Foso de Viento Negro' : 'Torre 4B');
   state.tutorial = false;
   state.projectileUnlocked = mission === 'camp_resistance_trial' ? false : true;
@@ -36754,6 +36986,9 @@ function revealCompactTutorialForMobile(force=false){
 }
 
 function setCompactHandOverviewOpen(open){
+  if(!open && storyFinalColossusDefenseHandForcedOpen && document.body?.classList.contains('story-final-colossus-defense-hand-open')){
+    open = true;
+  }
   compactHandOverviewOpen = !!open;
   const mobileHudActive = document.body?.classList.contains('mobile-compact-mode')
     || document.body?.classList.contains('mobile-panorama-mode')
@@ -39534,6 +39769,18 @@ function renderDesktopCompactHud(){
   const compactDefenseWarningPrimary = document.getElementById('compactDefenseWarningPrimaryBtn');
   const compactDefenseWarningSkip = document.getElementById('compactDefenseWarningSkipBtn');
   const compactDefenseVisible = !!state.pendingDefense && !state.winner && canUseInteractiveDefenseAction();
+  const finalColossusDefenseHandOpen = compactDefenseVisible
+    && isStoryFinalColossusCombat()
+    && document.body?.classList.contains('story-final-colossus-engaged');
+  document.body?.classList.toggle('story-final-colossus-defense-hand-open', finalColossusDefenseHandOpen);
+  document.querySelector('.app')?.classList.toggle('story-final-colossus-defense-hand-open', finalColossusDefenseHandOpen);
+  if(finalColossusDefenseHandOpen){
+    storyFinalColossusDefenseHandForcedOpen = true;
+    if(!compactHandOverviewOpen) setCompactHandOverviewOpen(true);
+  }else if(storyFinalColossusDefenseHandForcedOpen){
+    storyFinalColossusDefenseHandForcedOpen = false;
+    setCompactHandOverviewOpen(false);
+  }
   const compactDefenseSelected = compactDefenseVisible && state.selected.length === 1 && isNumericDiamondCard(state.selected[0])
     ? state.selected[0]
     : null;
@@ -41660,7 +41907,7 @@ function updateHints(){
       : 'El coloso ya ocupa la derecha. Tu HUD resiste a la izquierda y el combate real ha empezado.';
 
     if(mainHint) mainHint.innerHTML = openingTurn
-      ? '⚠️ Prólogo del coloso: el primer turno es tuyo y la interfaz rival aún no muestra ningún sprite.'
+      ? '⚠️ COMBATE FINAL: el primer turno es tuyo y la interfaz rival aún no muestra ningún sprite.'
       : (breaking
         ? '💥 El coloso está rompiendo la interfaz. El combate queda bloqueado durante la irrupción.'
         : (engaged
@@ -41688,7 +41935,7 @@ function updateHints(){
       ? 'Combate final · Irrupción'
       : engaged
         ? `Combate final · ${bossMeta?.label || 'Coloso en pie'}`
-        : 'Combate final · Prólogo';
+        : 'COMBATE FINAL';
     if(tutorialPanelText) tutorialPanelText.textContent = openingTurn
       ? 'La interfaz arranca como un combate normal, pero el radar rival está vacío a propósito. Este primer turno sirve para que el jugador actúe antes de que el coloso se revele.'
       : (breaking
@@ -41732,7 +41979,7 @@ function updateHints(){
         ? 'Irrupción del coloso en curso.'
         : (engaged
           ? `Coloso activo. Calor ${bossHeat}%. Bonus sísmico preparado: +${Math.max(getStoryFinalColossusBossMeta(boss?.phase || 'armor').attackBoost, Number(boss?.nextAttackBoost) || 0)}.`
-          : 'Prólogo resuelto. La Fase 2 queda preparada.'));
+          : 'COMBATE FINAL: la Fase 2 queda preparada.'));
     return;
   }
 
@@ -43458,6 +43705,7 @@ document.getElementById('desktopCompactShell').addEventListener('pointerdown', (
 }, true);
 document.getElementById('desktopCompactShell').addEventListener('pointerdown', (event) => {
   if(!document.body?.classList.contains('compact-hand-overview-open')) return;
+  if(document.body?.classList.contains('story-final-colossus-defense-hand-open')) return;
   if(event.target.closest('#compactHandOverviewPanel') || event.target.closest('#compactHandOverviewBtn')) return;
   setCompactHandOverviewOpen(false);
 }, true);
