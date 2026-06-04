@@ -110,6 +110,20 @@ const viewport = {
   height: canvas.height,
 };
 
+function resizeViewportCanvas() {
+  if (!storyEmbedMode) return;
+  const visualViewport = window.visualViewport;
+  const width = Math.max(320, Math.round(visualViewport?.width || window.innerWidth || document.documentElement.clientWidth || canvas.width));
+  const height = Math.max(240, Math.round(visualViewport?.height || window.innerHeight || document.documentElement.clientHeight || canvas.height));
+  if (viewport.width === width && viewport.height === height && canvas.width === width && canvas.height === height) return;
+  viewport.width = width;
+  viewport.height = height;
+  canvas.width = width;
+  canvas.height = height;
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+}
+
 const world = {
   width: 1536,
   height: 1024,
@@ -1087,7 +1101,15 @@ async function requestLandscapeLock() {
 }
 
 orientationLockButton?.addEventListener("click", requestLandscapeLock);
-window.addEventListener("resize", updateLandscapePrompt);
+function handleViewportResize() {
+  resizeViewportCanvas();
+  updateLandscapePrompt();
+  snapCameraToPlayer();
+}
+
+window.addEventListener("resize", handleViewportResize);
+window.visualViewport?.addEventListener?.("resize", handleViewportResize);
+window.addEventListener("orientationchange", () => window.setTimeout(handleViewportResize, 80));
 portraitMedia.addEventListener?.("change", updateLandscapePrompt);
 coarsePointerMedia.addEventListener?.("change", updateLandscapePrompt);
 screen.orientation?.addEventListener?.("change", updateLandscapePrompt);
@@ -3214,6 +3236,7 @@ function gameLoop(currentTime) {
   requestAnimationFrame(gameLoop);
 }
 
+resizeViewportCanvas();
 drawLoading();
 loadAssets()
   .catch((error) => {

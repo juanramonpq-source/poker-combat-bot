@@ -1208,8 +1208,9 @@ function renderStatus() {
 }
 
 function resizeCanvas() {
-  const width = Math.max(320, window.innerWidth);
-  const height = Math.max(240, window.innerHeight);
+  const visualViewport = window.visualViewport;
+  const width = Math.max(320, Math.round(visualViewport?.width || window.innerWidth || document.documentElement.clientWidth || canvas.width));
+  const height = Math.max(240, Math.round(visualViewport?.height || window.innerHeight || document.documentElement.clientHeight || canvas.height));
   viewport.width = width;
   viewport.height = height;
   viewport.dpr = Math.max(1, window.devicePixelRatio || 1);
@@ -1900,6 +1901,8 @@ window.addEventListener("keydown", (event) => {
 });
 window.addEventListener("keyup", (event) => handleKey(event, false));
 window.addEventListener("resize", resizeCanvas);
+window.visualViewport?.addEventListener?.("resize", resizeCanvas);
+window.addEventListener("orientationchange", () => window.setTimeout(resizeCanvas, 80));
 window.addEventListener("beforeunload", saveProgress);
 window.addEventListener("pointerdown", () => {
   unlockFosoAudio();

@@ -10668,7 +10668,7 @@
 
     function buildStoryFosoExplorationUrl() {
       const targetUrl = new URL(FOSO_EXPLORATION_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260602-foso-live-implementation');
+      targetUrl.searchParams.set('v', '20260604-foso-no-stretch');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', 'foso');
       targetUrl.searchParams.set('story_audio', 'internal');
@@ -10714,7 +10714,7 @@
       targetUrl.searchParams.set('story_brief', 'on');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('story_standalone', '1');
-      targetUrl.searchParams.set('v', '20260602-foso-live-implementation');
+      targetUrl.searchParams.set('v', '20260604-foso-no-stretch');
       const remainingExtraCards = buildStoryDeckCardsParamExcludingIds(blockedExtraCardIds);
       if (remainingExtraCards) targetUrl.searchParams.set('story_deck_cards', remainingExtraCards);
       const blockedTokens = (Array.isArray(blockedBaseCards) ? blockedBaseCards : [])
