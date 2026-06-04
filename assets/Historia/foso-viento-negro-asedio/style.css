@@ -401,19 +401,101 @@ canvas {
   color: #ffd5c8;
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1320px), (max-height: 760px) {
+  .floating-map-button {
+    min-height: 38px;
+    padding: 0 13px;
+    font-size: 0.62rem;
+  }
+
+  .hud {
+    max-width: min(340px, calc(100vw - 24px));
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+
+  .hud-kicker,
+  .hand-kicker {
+    margin-bottom: 4px;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+  }
+
+  .hud h2,
+  .hand-header h3 {
+    margin-bottom: 2px;
+    font-size: 0.88rem;
+    line-height: 1.14;
+  }
+
+  .hud p {
+    font-size: 0.72rem;
+    line-height: 1.22;
+  }
+
+  .top-left #objective-copy {
+    display: none;
+  }
+
+  .top-left {
+    max-width: min(340px, calc(100vw - 172px));
+  }
+
   .top-right {
-    top: auto;
-    bottom: calc(128px + env(safe-area-inset-bottom));
-    width: min(280px, calc(100vw - 32px));
+    top: max(62px, env(safe-area-inset-top));
+    bottom: auto;
+    width: min(210px, calc(100vw - 32px));
+    gap: 4px;
+  }
+
+  .status-line {
+    gap: 8px;
+    font-size: 0.72rem;
+  }
+
+  .status-line strong {
+    font-size: 0.78rem;
   }
 
   .hand-header {
     gap: 8px;
+    margin-bottom: 6px;
   }
 
   #hand-copy {
-    max-width: 46vw;
+    display: none;
+  }
+
+  .hand-tray {
+    width: calc(100vw - 20px);
+    bottom: max(6px, env(safe-area-inset-bottom));
+    padding: 6px 8px 8px;
+    border-radius: 15px;
+  }
+
+  .hand-cards {
+    gap: 5px;
+  }
+
+  .story-card-btn {
+    min-height: 42px;
+    padding: 5px 6px;
+    border-radius: 12px;
+  }
+
+  .story-card-rank {
+    font-size: 0.86rem;
+  }
+
+  .story-card-suit,
+  .story-card-note {
+    display: none;
+  }
+
+  .interact-prompt {
+    bottom: 78px;
+    padding: 8px 12px;
+    font-size: 0.76rem;
   }
 }
 
@@ -444,7 +526,7 @@ canvas {
   }
 
   .story-card-btn {
-    min-height: 54px;
+    min-height: 42px;
     padding: 6px 5px;
     border-radius: 12px;
   }
@@ -464,5 +546,32 @@ canvas {
 
   #hand-copy {
     display: none;
+  }
+}
+
+@media (max-height: 760px) {
+  .top-left #objective-copy {
+    display: none;
+  }
+
+  .top-left {
+    max-width: min(360px, calc(100vw - 172px));
+  }
+
+  .top-right {
+    width: min(210px, calc(100vw - 32px));
+  }
+
+  .hand-tray {
+    width: calc(100vw - 20px);
+    padding: 6px 8px 8px;
+  }
+
+  .hand-header {
+    margin-bottom: 5px;
+  }
+
+  .story-card-btn {
+    min-height: 40px;
   }
 }

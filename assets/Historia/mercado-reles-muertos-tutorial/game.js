@@ -4,9 +4,11 @@ const orientationOverlay = document.getElementById("orientation-overlay");
 const orientationLockButton = document.getElementById("orientation-lock-button");
 const orientationLockStatus = document.getElementById("orientation-lock-status");
 const storyMapButton = document.getElementById("story-map-button");
+const marketMusic = document.getElementById("market-music");
 const marketCrowdAmbience = document.getElementById("market-crowd-ambience");
 const storyParams = new URLSearchParams(window.location.search);
 const storyEmbedMode = storyParams.get("story_embed") === "1";
+const storyAudioMode = storyParams.get("story_audio") || "internal";
 const storyReturnUrl = storyParams.get("story_return") || "";
 const storySparringLocked = storyParams.get("story_sparring_locked") === "1";
 const storyPostTowerMarket = storyParams.get("story_post_tower_market") === "1";
@@ -185,7 +187,7 @@ const camera = {
   smoothness: 0.1,
 };
 
-const DESKTOP_CAMERA_ZOOM = 0.86;
+const DESKTOP_CAMERA_ZOOM = 0.8;
 const desktopCameraMedia = window.matchMedia("(pointer: fine) and (hover: hover)");
 
 const assets = {
@@ -350,8 +352,10 @@ const hudHelp = {
 
 const MARKET_CROWD_VOLUME = 0.192;
 const MARKET_THEME_SRC = "../MercadodeChatarra.mp3";
+const MARKET_THEME_VOLUME = 0.34;
 const PARENT_MARKET_MUSIC_VOLUME = 0.34;
 let marketCrowdShouldPlay = true;
+let marketThemeShouldPlay = true;
 let marketCrowdFadeFrame = null;
 
 function fadeMarketCrowdAmbience(targetVolume, duration = 700, onComplete = null) {
@@ -422,17 +426,12 @@ function stopMarketCrowdAmbience(immediate = false) {
   });
 }
 
-function resumeMarketCrowdAmbienceAfterGesture() {
-  if (!marketCrowdShouldPlay || !marketCrowdAmbience?.paused) return;
-  startMarketCrowdAmbience();
-}
-
 function primeParentMarketMusic() {
-  if (!storyEmbedMode || window.parent === window) return;
+  if (!storyEmbedMode || window.parent === window) return false;
 
   try {
     const parentMusic = window.parent.document?.getElementById("storyMapMusic");
-    if (!parentMusic) return;
+    if (!parentMusic) return false;
 
     const targetSource = new URL(MARKET_THEME_SRC, window.location.href).href;
     const sourceElement = parentMusic.querySelector("source");
@@ -455,23 +454,52 @@ function primeParentMarketMusic() {
     if (playPromise && typeof playPromise.catch === "function") {
       playPromise.catch(() => {});
     }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function startMarketThemeMusic() {
+  const parentHandled = primeParentMarketMusic();
+  if (parentHandled || storyAudioMode === "external") return;
+  if (!marketMusic || !marketThemeShouldPlay) return;
+
+  try {
+    marketMusic.volume = MARKET_THEME_VOLUME;
+    await marketMusic.play();
   } catch (error) {}
 }
 
+function stopMarketThemeMusic() {
+  marketThemeShouldPlay = false;
+  if (!marketMusic) return;
+  marketMusic.pause();
+}
+
+function startMarketAudio() {
+  startMarketThemeMusic();
+  startMarketCrowdAmbience();
+}
+
+function resumeMarketAudioAfterGesture() {
+  startMarketAudio();
+}
+
 ["pointerdown", "keydown", "touchstart"].forEach((eventName) => {
-  window.addEventListener(eventName, resumeMarketCrowdAmbienceAfterGesture, {
+  window.addEventListener(eventName, resumeMarketAudioAfterGesture, {
     passive: true,
   });
 });
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) rememberMarketScenePosition(true);
-  if (!marketCrowdAmbience) return;
   if (document.hidden) {
-    marketCrowdAmbience.pause();
+    marketCrowdAmbience?.pause();
+    marketMusic?.pause();
     return;
   }
-  resumeMarketCrowdAmbienceAfterGesture();
+  resumeMarketAudioAfterGesture();
 });
 
 window.addEventListener("pagehide", () => {
@@ -481,10 +509,11 @@ window.addEventListener("pagehide", () => {
 function postStoryTutorialAction(action, payload = {}) {
   rememberMarketScenePosition(true);
   if (action === "talk-vera") {
-    primeParentMarketMusic();
+    startMarketThemeMusic();
   }
 
   stopMarketCrowdAmbience(true);
+  stopMarketThemeMusic();
 
   const message = {
     type: "pocobot-story-market-tutorial-action",
@@ -547,6 +576,8 @@ function setMovementKey(key, isPressed) {
 }
 
 function handleStoryExplorationKeyDown(key, options = {}) {
+  startMarketAudio();
+
   if (isStoryInteractKey(key)) {
     if (!options.repeat) {
       input.interactQueued = true;
@@ -577,7 +608,8 @@ function isPortraitTouchViewport() {
 }
 
 function getCameraZoom() {
-  if (isPortraitTouchViewport()) return 0.82;
+  if (isPortraitTouchViewport()) return 0.72;
+  if (window.matchMedia("(pointer: coarse)").matches) return 0.82;
   return desktopCameraMedia.matches ? DESKTOP_CAMERA_ZOOM : 1;
 }
 
@@ -671,6 +703,7 @@ function updatePointerTarget(event) {
 
 canvas.addEventListener("pointerdown", (event) => {
   focusExplorationInput();
+  startMarketAudio();
 
   if (event.pointerType === "mouse" && event.button !== 0) {
     return;
@@ -1942,7 +1975,7 @@ requestAnimationFrame(() => {
         console.error("No se pudieron cargar los activos del juego:", error);
       })
       .finally(() => {
-        startMarketCrowdAmbience();
+        startMarketAudio();
       });
   }, 0);
 });

@@ -10502,10 +10502,11 @@
 
     function buildStoryMarketExplorationUrl() {
       const targetUrl = new URL(MERCADO_TUTORIAL_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260506-market-direct-fix');
+      targetUrl.searchParams.set('v', '20260604-market-audio-zoom');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('story_node', 'mercado');
+      targetUrl.searchParams.set('story_audio', 'internal');
       targetUrl.searchParams.set('story_load_id', String(Date.now()));
       const extraDeckCards = encodeStoryDeckCardsParam();
       if (extraDeckCards) targetUrl.searchParams.set('story_deck_cards', extraDeckCards);
@@ -10668,7 +10669,7 @@
 
     function buildStoryFosoExplorationUrl() {
       const targetUrl = new URL(FOSO_EXPLORATION_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260604-foso-no-stretch');
+      targetUrl.searchParams.set('v', '20260604-foso-readable-hud');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', 'foso');
       targetUrl.searchParams.set('story_audio', 'internal');
@@ -10714,7 +10715,7 @@
       targetUrl.searchParams.set('story_brief', 'on');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('story_standalone', '1');
-      targetUrl.searchParams.set('v', '20260604-foso-no-stretch');
+      targetUrl.searchParams.set('v', '20260604-foso-readable-hud');
       const remainingExtraCards = buildStoryDeckCardsParamExcludingIds(blockedExtraCardIds);
       if (remainingExtraCards) targetUrl.searchParams.set('story_deck_cards', remainingExtraCards);
       const blockedTokens = (Array.isArray(blockedBaseCards) ? blockedBaseCards : [])

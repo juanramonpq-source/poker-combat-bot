@@ -8022,11 +8022,11 @@
     }
 
     function shouldUseTapOnlyTutorialHandSelection() {
-      return EMBEDDED_REAL_GAME && state.tutorial && !isLandscapeLayout();
+      return false;
     }
 
     function getTutorialPortraitVisibleHandLimit() {
-      return shouldUseTapOnlyTutorialHandSelection() ? 8 : 0;
+      return EMBEDDED_REAL_GAME && state.tutorial && !isLandscapeLayout() ? 8 : 0;
     }
 
     function getRenderedHandCards(player) {

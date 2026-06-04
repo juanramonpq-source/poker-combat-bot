@@ -1056,7 +1056,7 @@ function isPortraitTouchViewport() {
 }
 
 function getCameraZoom() {
-  return isPortraitTouchViewport() ? 1.12 : 1;
+  return 1;
 }
 
 function getVisibleWorldSize() {

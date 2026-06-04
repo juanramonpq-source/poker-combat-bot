@@ -29528,7 +29528,7 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-m
             <span class="intro-mode-icon" aria-hidden="true">PB</span>
             <span class="intro-mode-copy">
               <strong>Tutoriales</strong>
-              <span>Ruta compacta o carnet PoCoBOT.</span>
+              <span>Ruta guiada o carnet PoCoBOT.</span>
             </span>
           </button>
         </div>
@@ -29597,8 +29597,8 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-m
         <div class="intro-menu-label">Ruta de aprendizaje</div>
         <div class="intro-buttons-group">
           <button class="intro-tutorial" id="tutorialSummaryBtn">
-            <span class="submenu-mode-title">Tutorial Compacto</span>
-            <span class="submenu-mode-sub">Una entrada directa al combate guiado clásico.</span>
+            <span class="submenu-mode-title">Tutorial guiado</span>
+            <span class="submenu-mode-sub">Una entrada directa al combate guiado paso a paso.</span>
           </button>
           <button class="intro-enter" id="academyMenuBtn">
             <span class="submenu-mode-title">Carnet PoCoBOT</span>
@@ -29606,7 +29606,7 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-m
           </button>
           <button class="intro-tutorial" id="tutorialBackBtn">Volver</button>
         </div>
-        <div class="intro-menu-copy">Tutorial Compacto mantiene el tutorial clásico y no da premio. El Carnet PoCoBOT abre una academia de 11 fases cortas, una por gesto o concepto, y al superarlo consigues el emblema PB y el carnet oficiales.</div>
+        <div class="intro-menu-copy">La ruta guiada te lleva directo al combate enseñándote gesto a gesto. El Carnet PoCoBOT abre una academia de 11 fases cortas, una por concepto, y al superarlo consigues el emblema PB y el carnet oficiales.</div>
         <div class="intro-mini-widget intro-mini-lab" aria-label="Banco de montaje rapido">
           <div class="intro-mini-head">
             <strong>Banco de montaje rapido</strong>
@@ -30731,6 +30731,8 @@ const tutorialSystem = {
   completionLock: false,
   cards: {},
   advancing: false,
+  primerScenarioReady: false,
+  primerCardCache: {},
   validation: {
     pilotPlaced: false,
     copilotPlaced: false,
@@ -30799,7 +30801,7 @@ const TUTORIAL_PRIMER_DRAG_STEP_IDS = new Set([
 ]);
 
 const TUTOBOT_STEP_LINES = {
-  'intro-definition': 'Qué define a un PoCoBOT.',
+  'intro-definition': 'Vamos a despertar este PoCoBOT desde cero.',
   'intro-attack-stat': 'Empezamos por las picas: una sola carta puede encender tu ataque.',
   'intro-defense-stat': 'Ahora verás cómo un corazón levanta la defensa desde cero.',
   'intro-armor-stat': 'Turno de los tréboles: blindaje puro, sin distracciones.',
@@ -34397,9 +34399,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-definition',
     title: 'Paso 1 · Qué define a un PoCoBOT',
-    body: 'Un <strong>PoCoBOT</strong> se define por tres bases: <strong>1 piloto</strong>, <strong>al menos 6 cartas en el panel de Stats</strong> y <strong>cumplir el palo que exige ese piloto</strong>.<br><br>Pero hay una regla más: <strong>hasta que el montaje no llegue al 100%</strong>, el mecha <strong>no puede atacar</strong>. La clave está en montarlo antes que el rival. Vamos a verlo muy visual, palo por palo, empezando con el panel limpio.',
-    objective: 'Pulsa <strong>Entendido</strong> y empezamos por las <strong>picas</strong>.',
-    tip: 'Primero verás subir Ataque, Defensa, Armadura y Fuel uno a uno. En compacto puedes arrastrar la carta al panel.',
+    body: 'Un <strong>PoCoBOT</strong> es un mecha hecho con cartas: el <strong>piloto</strong> lo despierta, las <strong>estadísticas</strong> le dan cuerpo y el <strong>palo del piloto</strong> marca su especialidad.<br><br>Para quedar listo necesita <strong>1 piloto</strong>, <strong>al menos 6 cartas en el panel de Stats</strong> y <strong>cumplir el palo que exige ese piloto</strong>. Hasta que el montaje no llegue al <strong>100%</strong>, el mecha <strong>no puede atacar</strong>. Vamos a construirlo poco a poco para verlo cobrar vida.',
+    objective: 'Pulsa <strong>Entendido</strong> y empezamos por las <strong>picas</strong> con el panel limpio.',
+    tip: 'Verás subir Ataque, Defensa, Armadura y Fuel uno a uno. Puedes llevar cada carta al panel arrastrándola o seleccionándola y pulsando <strong>Modificar</strong>.',
     tutorialBotPrimaryAction: 'step:intro-attack-stat',
     tutorialBotPrimaryLabel: 'Seguir',
     onEnter: () => tutorialPreparePrimerScenario('definition'),
@@ -34419,7 +34421,7 @@ const TUTORIAL_SCRIPT = [
     id: 'intro-attack-stat',
     title: 'Paso 2 · Picas = Ataque',
     body: 'Esta carta de <strong>picas</strong> suma <strong>Ataque</strong> puro. Partimos de <strong>0</strong>: cuando montes esta <strong>7♠</strong>, el Ataque subirá a <strong>7</strong> de forma inmediata.',
-    objective: 'Lleva <strong>7♠</strong> al panel de <strong>Ataque</strong>. En compacto puedes arrastrarla; en scroll también vale seleccionarla y pulsar <strong>Modificar</strong>.',
+    objective: 'Lleva <strong>7♠</strong> al panel de <strong>Ataque</strong>. Puedes arrastrarla o seleccionarla y pulsar <strong>Modificar</strong>.',
     tip: 'Quédate con esta idea: pica que entra, ataque que sube. Aún no basta para atacar porque el montaje sigue lejos del 100%.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0AttackA,
@@ -34438,7 +34440,7 @@ const TUTORIAL_SCRIPT = [
     id: 'intro-defense-stat',
     title: 'Paso 3 · Corazones = Defensa',
     body: 'La <strong>7♠</strong> ya se queda montada. Ahora los <strong>corazones</strong> refuerzan la <strong>Defensa</strong>: al colocar esta <strong>6♥</strong>, la Defensa subirá a <strong>6</strong> sin perder el <strong>Ataque 7</strong>.',
-    objective: 'Lleva <strong>6♥</strong> al panel de <strong>Defensa</strong>. En scroll también puedes seleccionarla y pulsar <strong>Modificar</strong>.',
+    objective: 'Lleva <strong>6♥</strong> al panel de <strong>Defensa</strong>. Puedes arrastrarla o seleccionarla y pulsar <strong>Modificar</strong>.',
     tip: 'Quédate con esta idea: el panel acumula lo que ya montaste.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0DefenseB,
@@ -34457,7 +34459,7 @@ const TUTORIAL_SCRIPT = [
     id: 'intro-armor-stat',
     title: 'Paso 4 · Tréboles = Armadura',
     body: 'La <strong>7♠</strong> y la <strong>6♥</strong> se mantienen. Ahora los <strong>tréboles</strong> aumentan la <strong>Armadura</strong>: al colocar este <strong>10♣</strong>, el blindaje subirá a <strong>10</strong>.',
-    objective: 'Lleva <strong>10♣</strong> al panel de <strong>Armadura</strong>. En scroll también puedes usar <strong>Modificar</strong>.',
+    objective: 'Lleva <strong>10♣</strong> al panel de <strong>Armadura</strong>. Puedes arrastrarla o seleccionarla y pulsar <strong>Modificar</strong>.',
     tip: 'Los tréboles son blindaje puro, y lo anterior sigue contado en el panel.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0IntroArmorCard,
@@ -34476,7 +34478,7 @@ const TUTORIAL_SCRIPT = [
     id: 'intro-fuel-stat',
     title: 'Paso 5 · Diamantes = Combustible',
     body: 'Con <strong>Ataque</strong>, <strong>Defensa</strong> y <strong>Armadura</strong> ya visibles, los <strong>diamantes numéricos</strong> entran en <strong>Fuel</strong>. Este <strong>8♦</strong> hará que el indicador pase de <strong>0</strong> a <strong>16</strong> porque el combustible funciona como <strong>valor × 2</strong>.<br><br><strong>Pero tiene muchos más usos, ya verás.</strong>',
-    objective: 'Lleva <strong>8♦</strong> al panel de <strong>Fuel</strong>. En scroll también puedes seleccionarlo y pulsar <strong>Modificar</strong>.',
+    objective: 'Lleva <strong>8♦</strong> al panel de <strong>Fuel</strong>. Puedes arrastrarla o seleccionarla y pulsar <strong>Modificar</strong>.',
     tip: 'Mira Fuel x2: todo lo anterior se mantiene, pero aún no puedes atacar sin llegar al 100%.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0FuelA,
@@ -39229,10 +39231,10 @@ function getTutorialBotSpeechPayload(){
   const objectiveText = step ? mobileSpriteTextFromHtml(step.objective || '') : '';
   const compactPrimerDefinitionStep = step?.id === 'intro-definition' && canUseMobileSpriteHud();
   const leadText = compactPrimerDefinitionStep
-    ? '1 piloto + 6 stats + palo correcto.'
+    ? 'Un PoCoBOT es un mecha de cartas.'
     : getTutorialBotStepLead(step);
   const compactPrimerObjective = compactPrimerDefinitionStep
-    ? 'Sin 100% no atacas.'
+    ? 'Piloto + 6 stats + palo correcto. Sin 100%, no ataca.'
     : objectiveText;
   const subline = tutorialSystem.completed
     ? 'Puedes seguir jugando libremente o reiniciar la lección cuando quieras.'
@@ -39295,9 +39297,9 @@ function getCompactMobileTutorialCopy(step){
 
   switch(step.id){
     case 'intro-definition':
-      copy.body = 'Un PoCoBOT necesita 1 piloto, 6 cartas de stats y cumplir el palo del piloto. Sin 100% de montaje no puede atacar.';
-      copy.objective = 'Pulsa <strong>Seguir</strong> y empezamos por las <strong>picas</strong>.';
-      copy.tip = 'En móvil y PC compacto arrastrarás la carta al panel para ver el cambio al instante.';
+      copy.body = 'Un <strong>PoCoBOT</strong> es un mecha de cartas: el <strong>piloto</strong> lo despierta, las <strong>stats</strong> le dan cuerpo y su <strong>palo</strong> marca la especialidad. Cuando llegue al <strong>100%</strong>, podrá atacar.';
+      copy.objective = 'Pulsa <strong>Seguir</strong> y empezamos por las <strong>picas</strong> con el panel limpio.';
+      copy.tip = 'En esta práctica puedes arrastrar cada carta al panel para ver el cambio al instante.';
       break;
     case 'intro-attack-stat':
       copy.body = 'Esta <strong>7♠</strong> suma Ataque directo. Partes de <strong>0</strong> y el panel debe subir a <strong>7</strong>.';
@@ -39325,7 +39327,7 @@ function getCompactMobileTutorialCopy(step){
       break;
     case 'attack-build':
       copy.objective = 'Toca <strong>7♠</strong> y <strong>8♠</strong> en tu mano y pulsa <strong>Modificar</strong>.';
-      copy.tip = 'El panel central muestra dónde entran las cartas; no necesitas cambiar al modo scroll.';
+      copy.tip = 'El panel central marca con claridad dónde entra cada carta.';
       break;
     case 'fuel-build':
       copy.objective = 'Toca <strong>8♦</strong> y pulsa <strong>Modificar</strong> para cargar combustible.';
@@ -39488,7 +39490,7 @@ function getCompactMobileTutorialPayload(){
   const html = [bodyHtml, objectiveHtml, tipHtml, focusHtml, statusHtml].filter(Boolean).join('');
   const modeLabel = tutorialSystem.mode === 'academy'
     ? `Carnet PoCoBOT${lesson ? ` · Fase ${lesson.phase}/${ACADEMY_LESSONS.length}` : ''}`
-    : 'Tutorial compacto';
+    : 'Tutorial guiado';
   return {
     step,
     title,
@@ -45528,6 +45530,8 @@ function resetTutorialSession(){
   tutorialSystem.statusText = '';
   tutorialSystem.completionLock = false;
   tutorialSystem.cards = { ...TUTORIAL_CARD_IDS };
+  tutorialSystem.primerScenarioReady = false;
+  tutorialSystem.primerCardCache = {};
   Object.keys(tutorialSystem.validation).forEach(key => {
     tutorialSystem.validation[key] = false;
   });
@@ -46334,6 +46338,7 @@ function tutorialPreparePracticeScenario(){
   state.players = players;
   academyApplyOfflineBadges(state.players);
   state.pendingDefense = null;
+  state.defenseSelectionMode = false;
   state.fxQueue = [];
   state.projectileUnlocked = false;
   state.projectilePromptPlayer = null;
@@ -46357,19 +46362,128 @@ function tutorialPreparePracticeScenario(){
     player.flags.attackReadyPromptTurn = 0;
     player.flags.firstAttackComplete = false;
   });
+  tutorialSystem.primerCardCache = {};
+  tutorialSystem.primerScenarioReady = false;
+}
+
+function tutorialPullCardFromAnyPlayerZone(player, cardId){
+  if(!player || !cardId) return null;
+  const zones = ['hand', 'attack', 'defense', 'armor', 'fuel', 'core-pilot', 'core-copilot', 'core-booster'];
+  for(const zone of zones){
+    const card = popCardFromZone(player, zone, cardId);
+    if(card) return card;
+  }
+  return null;
+}
+
+function tutorialEnsurePrimerCard(player, rank, suit, cardId){
+  const cached = tutorialSystem.primerCardCache?.[cardId] || null;
+  if(cached){
+    delete tutorialSystem.primerCardCache[cardId];
+    return cached;
+  }
+  return tutorialPullCardFromAnyPlayerZone(player, cardId) || tutorialTakeCard(state.deck, rank, suit, cardId);
+}
+
+function tutorialPreparePrimerBaseScenario(){
+  const deck = createDeck();
+  const players = initPlayers();
+  const p0 = players[0];
+  const p1 = players[1];
+
+  p0.name = 'Cadete';
+  p1.name = 'Instructor';
+
+  p0.core.pilot = tutorialTakeCard(deck, 'K', 'spades', TUTORIAL_CARD_IDS.p0Pilot);
+  p0.core.copilot = null;
+  p0.core.booster = null;
+  p0.hand = [];
+  p0.attack = [];
+  p0.defense = [];
+  p0.armor = [];
+  p0.fuel = [];
+
+  p1.hand = [
+    tutorialTakeCard(deck, 'K', 'clubs', 'tut-p1-hand-a'),
+    tutorialTakeCard(deck, 'Q', 'spades', 'tut-p1-hand-b')
+  ];
+  p1.core.pilot = tutorialTakeCard(deck, 'J', 'hearts', TUTORIAL_CARD_IDS.p1Pilot);
+  p1.core.copilot = tutorialTakeCard(deck, 'Q', 'clubs', TUTORIAL_CARD_IDS.p1Copilot);
+  p1.core.booster = tutorialTakeCard(deck, 'A', 'clubs', TUTORIAL_CARD_IDS.p1Booster);
+  p1.attack = [
+    tutorialTakeCard(deck, '5', 'spades', TUTORIAL_CARD_IDS.p1Attack),
+    tutorialTakeCard(deck, '2', 'spades', TUTORIAL_CARD_IDS.p1AttackSupport)
+  ];
+  p1.defense = [
+    tutorialTakeCard(deck, '4', 'hearts', TUTORIAL_CARD_IDS.p1DefenseA),
+    tutorialTakeCard(deck, '2', 'hearts', TUTORIAL_CARD_IDS.p1DefenseB),
+    tutorialTakeCard(deck, '7', 'hearts', TUTORIAL_CARD_IDS.p1DefenseC)
+  ];
+  p1.armor = [
+    tutorialTakeCard(deck, '4', 'clubs', TUTORIAL_CARD_IDS.p1ArmorA),
+    tutorialTakeCard(deck, '9', 'clubs', TUTORIAL_CARD_IDS.p1ArmorB)
+  ];
+  p1.fuel = [tutorialTakeCard(deck, '4', 'diamonds', TUTORIAL_CARD_IDS.p1FuelA)];
+
+  state.gameStarted = true;
+  state.tutorial = true;
+  state.deck = deck;
+  tutorialSystem.primerCardCache = {};
+  state.tutorialRiggedDraws = [];
+  state.discard = [];
+  state.removed = [];
+  state.currentPlayer = 0;
+  state.turnCount = 1;
+  state.phase = 'Montaje';
+  startFirstTurnNoticeCycle();
+  state.winner = null;
+  state.selected = [];
+  state.attackMode = false;
+  state.projectileMode = false;
+  state.tutorialStep = 0;
+  state.log = [
+    '🤖 TutoBOT ha vaciado tu panel para enseñarte cómo nace un PoCoBOT desde cero.',
+    '⚙️ Iremos sumando una sola carta cada vez para que veas qué estadística sube y por qué el 100% importa.'
+  ];
+  state.players = players;
+  academyApplyOfflineBadges(state.players);
+  state.pendingDefense = null;
+  state.fxQueue = [];
+  state.projectileUnlocked = false;
+  state.projectilePromptPlayer = null;
+  state.pendingTurnSfx = null;
+  state.figureBurstPromptPlayer = null;
+  state.figureBurstPromptActive = false;
+  state.attackReadyPromptPlayer = null;
+  state.attackReadyPromptActive = false;
+  state.firstAttackTriggered = false;
+  state.lastActionType = null;
+  state.transitionLock = false;
+
+  state.players.forEach(player => {
+    setBestFlexTargets(player);
+    const build = getBuildStatus(player);
+    player.flags.mounted = build.mounted;
+    player.flags.combatReady = build.combatReady;
+    player.flags.lastOwnAction = null;
+    player.flags.figureBurstButtonUnlocked = false;
+    player.flags.figureBurstPromptShown = false;
+    player.flags.attackReadyPromptTurn = 0;
+    player.flags.firstAttackComplete = false;
+  });
+
+  tutorialSystem.primerScenarioReady = true;
 }
 
 function tutorialPreparePrimerScenario(stage = 'definition'){
-  tutorialPreparePracticeScenario();
+  if(stage === 'definition' || !tutorialSystem.primerScenarioReady){
+    tutorialPreparePrimerBaseScenario();
+  }
   state.firstTurnNoticeNonce = 0;
+  clearCompactDraftPlacements(false);
+  clearMobileSpriteDraftPlacements(false);
   const p0 = state.players[0];
   if(!p0) return;
-
-  const pilot = popCardFromZone(p0, 'hand', TUTORIAL_CARD_IDS.p0Pilot);
-  const introAttackCard = popCardFromZone(p0, 'hand', TUTORIAL_CARD_IDS.p0AttackA);
-  const defenseCard = popCardFromZone(p0, 'defense', TUTORIAL_CARD_IDS.p0DefenseB);
-  const introArmorCard = tutorialTakeCard(state.deck, '10', 'clubs', TUTORIAL_CARD_IDS.p0IntroArmorCard);
-  const fuelCard = popCardFromZone(p0, 'hand', TUTORIAL_CARD_IDS.p0FuelA);
   const primerStageOrder = {
     definition: 0,
     attack: 1,
@@ -46378,6 +46492,11 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
     fuel: 4
   };
   const stageLevel = primerStageOrder[stage] || 0;
+  const pilot = tutorialEnsurePrimerCard(p0, 'K', 'spades', TUTORIAL_CARD_IDS.p0Pilot);
+  const introAttackCard = tutorialEnsurePrimerCard(p0, '7', 'spades', TUTORIAL_CARD_IDS.p0AttackA);
+  const defenseCard = tutorialEnsurePrimerCard(p0, '6', 'hearts', TUTORIAL_CARD_IDS.p0DefenseB);
+  const introArmorCard = tutorialEnsurePrimerCard(p0, '10', 'clubs', TUTORIAL_CARD_IDS.p0IntroArmorCard);
+  const fuelCard = tutorialEnsurePrimerCard(p0, '8', 'diamonds', TUTORIAL_CARD_IDS.p0FuelA);
 
   p0.core.pilot = pilot || null;
   p0.core.copilot = null;
@@ -46401,6 +46520,16 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
     p0.hand = [];
   }
 
+  [introAttackCard, defenseCard, introArmorCard, fuelCard].forEach(card => {
+    if(!card) return;
+    const inUse = p0.hand.includes(card)
+      || p0.attack.includes(card)
+      || p0.defense.includes(card)
+      || p0.armor.includes(card)
+      || p0.fuel.includes(card);
+    if(!inUse) tutorialSystem.primerCardCache[card.id] = card;
+  });
+
   state.currentPlayer = 0;
   state.turnCount = 1;
   state.phase = 'Montaje';
@@ -46408,6 +46537,7 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
   state.attackMode = false;
   state.projectileMode = false;
   state.pendingDefense = null;
+  state.defenseSelectionMode = false;
   state.transitionLock = false;
   state.lastActionType = null;
   state.projectileUnlocked = false;
@@ -46419,8 +46549,8 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
   state.attackReadyPromptActive = false;
   state.firstAttackTriggered = false;
   state.log = [
-    '🎓 TutoBOT ha limpiado el panel para enseñarte cada palo por separado.',
-    '🧪 Mira cómo sube exactamente un solo stat cada vez y recuerda: sin 100% de montaje no hay ataque.'
+    '🤖 TutoBOT está montando tu PoCoBOT paso a paso para que veas qué hace cada palo.',
+    '🧪 Fíjate en un detalle: las cartas ya colocadas se quedan montadas, y sin 100% el mecha todavía no puede atacar.'
   ];
 
   state.players.forEach(player => {
@@ -46434,6 +46564,7 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
     player.flags.attackReadyPromptTurn = 0;
     player.flags.firstAttackComplete = false;
   });
+  tutorialSystem.primerScenarioReady = true;
 }
 
 function getActiveTutorialScript(){

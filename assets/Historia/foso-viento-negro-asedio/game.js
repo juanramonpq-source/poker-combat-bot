@@ -123,7 +123,7 @@ const player = {
 const camera = {
   x: 0,
   y: 0,
-  zoom: 2.15,
+  zoom: 1.02,
 };
 
 const coverRects = [
@@ -1207,6 +1207,13 @@ function renderStatus() {
   renderHand();
 }
 
+function getFosoCameraZoom(width, height) {
+  const portrait = height > width;
+  if (portrait && width <= 720) return 0.72;
+  if (width <= 1180 || height <= 680) return 0.92;
+  return 1.02;
+}
+
 function resizeCanvas() {
   const visualViewport = window.visualViewport;
   const width = Math.max(320, Math.round(visualViewport?.width || window.innerWidth || document.documentElement.clientWidth || canvas.width));
@@ -1214,7 +1221,7 @@ function resizeCanvas() {
   viewport.width = width;
   viewport.height = height;
   viewport.dpr = Math.max(1, window.devicePixelRatio || 1);
-  camera.zoom = width <= 720 ? 2.45 : 2.15;
+  camera.zoom = getFosoCameraZoom(width, height);
   canvas.width = Math.round(width * viewport.dpr);
   canvas.height = Math.round(height * viewport.dpr);
   canvas.style.width = `${width}px`;
