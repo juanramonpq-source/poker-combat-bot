@@ -558,7 +558,12 @@ function getCanvasScreenPoint(event) {
   };
 }
 
+function isPortraitTouchViewport() {
+  return window.matchMedia("(orientation: portrait)").matches && window.matchMedia("(pointer: coarse)").matches;
+}
+
 function getCameraZoom() {
+  if (isPortraitTouchViewport()) return 0.82;
   return desktopCameraMedia.matches ? DESKTOP_CAMERA_ZOOM : 1;
 }
 
@@ -718,9 +723,10 @@ canvas.addEventListener("pointercancel", stopPointerControl);
 
 const portraitMedia = window.matchMedia("(orientation: portrait)");
 const coarsePointerMedia = window.matchMedia("(pointer: coarse)");
+const ALLOW_PORTRAIT_EXPLORATION = true;
 
 function shouldShowLandscapePrompt() {
-  return portraitMedia.matches && coarsePointerMedia.matches;
+  return !ALLOW_PORTRAIT_EXPLORATION && portraitMedia.matches && coarsePointerMedia.matches;
 }
 
 function updateLandscapePrompt() {

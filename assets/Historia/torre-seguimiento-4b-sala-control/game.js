@@ -794,9 +794,26 @@ canvas.addEventListener("pointercancel", stopPointerControl);
 
 const portraitMedia = window.matchMedia("(orientation: portrait)");
 const coarsePointerMedia = window.matchMedia("(pointer: coarse)");
+const ALLOW_PORTRAIT_EXPLORATION = true;
 
 function shouldShowLandscapePrompt() {
+  return !ALLOW_PORTRAIT_EXPLORATION && portraitMedia.matches && coarsePointerMedia.matches;
+}
+
+function isPortraitTouchViewport() {
   return portraitMedia.matches && coarsePointerMedia.matches;
+}
+
+function getCameraZoom() {
+  return isPortraitTouchViewport() ? 1.12 : 1;
+}
+
+function getVisibleWorldSize() {
+  const zoom = getCameraZoom();
+  return {
+    width: viewport.width / zoom,
+    height: viewport.height / zoom,
+  };
 }
 
 function updateLandscapePrompt() {
@@ -1106,12 +1123,14 @@ function loadPlayerVisualFramesInBackground() {
 }
 
 function getCameraTarget() {
-  const leadX = clamp(player.vx * 0.28, -92, 92);
-  const leadY = clamp(player.vy * 0.22, -70, 70);
+  const visibleWorld = getVisibleWorldSize();
+  const leadScale = isPortraitTouchViewport() ? 0.62 : 1;
+  const leadX = clamp(player.vx * 0.28 * leadScale, -92, 92);
+  const leadY = clamp(player.vy * 0.22 * leadScale, -70, 70);
 
   return {
-    x: clamp(player.x + leadX - viewport.width / 2, 0, world.width - viewport.width),
-    y: clamp(player.y + leadY - viewport.height / 2, 0, world.height - viewport.height),
+    x: clamp(player.x + leadX - visibleWorld.width / 2, 0, Math.max(0, world.width - visibleWorld.width)),
+    y: clamp(player.y + leadY - visibleWorld.height / 2, 0, Math.max(0, world.height - visibleWorld.height)),
   };
 }
 
@@ -2132,13 +2151,14 @@ function drawHud() {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 
   if (hudHelp.expanded) {
-    hudHelp.button = { x: 18, y: 18, width: 520, height: 92 };
+    const panelWidth = Math.min(520, viewport.width - 36);
+    hudHelp.button = { x: 18, y: 18, width: panelWidth, height: 92 };
     ctx.fillStyle = "rgba(8, 17, 29, 0.82)";
-    ctx.fillRect(18, 18, 520, 92);
+    ctx.fillRect(18, 18, panelWidth, 92);
 
     ctx.strokeStyle = "rgba(146, 246, 255, 0.3)";
     ctx.lineWidth = 2;
-    ctx.strokeRect(18, 18, 520, 92);
+    ctx.strokeRect(18, 18, panelWidth, 92);
 
     ctx.fillStyle = "#eef8ff";
     ctx.font = "18px Trebuchet MS";
@@ -2331,6 +2351,8 @@ function render() {
 
   ctx.clearRect(0, 0, viewport.width, viewport.height);
   ctx.save();
+  const cameraZoom = getCameraZoom();
+  ctx.scale(cameraZoom, cameraZoom);
   ctx.translate(-camera.x, -camera.y);
 
   drawMap();

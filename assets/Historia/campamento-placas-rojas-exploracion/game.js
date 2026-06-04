@@ -915,6 +915,7 @@ function withCampPerspective(subject, draw) {
 }
 
 function getCameraZoom() {
+  if (isPortraitTouchViewport()) return 0.82;
   return desktopCameraMedia.matches ? DESKTOP_CAMERA_ZOOM : 1;
 }
 
@@ -1892,9 +1893,14 @@ window.addEventListener("pagehide", () => {
 
 const portraitMedia = window.matchMedia("(orientation: portrait)");
 const coarsePointerMedia = window.matchMedia("(pointer: coarse)");
+const ALLOW_PORTRAIT_EXPLORATION = true;
+
+function isPortraitTouchViewport() {
+  return portraitMedia.matches && coarsePointerMedia.matches;
+}
 
 function shouldShowLandscapePrompt() {
-  return portraitMedia.matches && coarsePointerMedia.matches;
+  return !ALLOW_PORTRAIT_EXPLORATION && portraitMedia.matches && coarsePointerMedia.matches;
 }
 
 function updateLandscapePrompt() {
@@ -2702,19 +2708,22 @@ function drawHudHelp() {
   if (interactionState.active) {
     const label = interactionState.active.label;
     const hint = interactionState.active.hint;
+    const promptWidth = Math.min(376, viewport.width - 28);
+    const promptX = (viewport.width - promptWidth) / 2;
+    const promptY = viewport.height - (isPortraitTouchViewport() ? 118 : 132);
     ctx.fillStyle = "rgba(12, 8, 7, 0.84)";
     ctx.strokeStyle = "rgba(140, 236, 255, 0.34)";
     ctx.beginPath();
-    ctx.roundRect(292, viewport.height - 132, 376, 48, 17);
+    ctx.roundRect(promptX, promptY, promptWidth, 48, 17);
     ctx.fill();
     ctx.stroke();
     ctx.textAlign = "center";
     ctx.fillStyle = "#8cecff";
     ctx.font = "900 14px Trebuchet MS, Segoe UI, sans-serif";
-    ctx.fillText(`${label} · ${hint}`, viewport.width / 2, viewport.height - 112);
+    ctx.fillText(`${label} · ${hint}`, viewport.width / 2, promptY + 20);
     ctx.fillStyle = "rgba(255, 243, 230, 0.82)";
     ctx.font = "700 12px Trebuchet MS, Segoe UI, sans-serif";
-    ctx.fillText("Pulsa E / Enter o toca para interactuar", viewport.width / 2, viewport.height - 94);
+    ctx.fillText("Pulsa E / Enter o toca para interactuar", viewport.width / 2, promptY + 38);
   }
 
   if (interactionState.message && interactionState.messageTimer > 0) {
