@@ -1466,56 +1466,41 @@
     }
 
     .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show {
-      top: clamp(108px, 13vh, 124px);
-      max-height: min(160px, 24vh);
-      grid-template-columns: 50px minmax(0, 1fr) 24px;
-      gap: 0 8px;
-      padding: 7px 9px 42px;
-      border-radius: 15px;
+      top: clamp(112px, 14vh, 132px);
+      max-height: min(308px, 47vh);
+      grid-template-columns: 66px minmax(0, 1fr) 28px;
+      gap: 0 10px;
+      padding: 10px 12px;
     }
 
     .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show.has-actions {
-      max-height: min(160px, 24vh);
-      grid-template-rows: auto minmax(0, 1fr);
-      padding-bottom: 42px;
-    }
-
-    .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .tutorial-bot-avatar {
-      min-height: 60px;
-      padding: 5px 3px 0;
-      border-radius: 12px;
-    }
-
-    .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .tutorial-bot-avatar img {
-      max-width: 38px;
+      max-height: min(364px, 56vh);
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      padding-bottom: 12px;
     }
 
     .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show > strong {
-      font-size: 11px;
-      line-height: 1.05;
+      font-size: 13px;
+      line-height: 1.08;
     }
 
     .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show > span {
-      font-size: 11px;
-      line-height: 1.18;
+      font-size: 13px;
+      line-height: 1.26;
     }
 
     .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .message-actions {
       display: flex;
-      position: absolute;
-      left: 68px;
-      right: 36px;
-      bottom: 7px;
       pointer-events: auto;
-      margin-top: 0;
-      padding-top: 0;
-      border-top: 0;
-      background: none;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 236, 181, .24);
+      background: linear-gradient(180deg, rgba(9, 23, 50, .04), rgba(5, 14, 33, .82));
     }
 
     .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .message-actions button {
-      min-height: 34px;
-      font-size: 11px;
+      min-height: 40px;
+      font-size: 13px;
       flex: 1 1 100%;
     }
 
@@ -1563,7 +1548,65 @@
     }
 
     .floating-message.tutorial.with-bot.is-primer-sheet.show {
-      display: none !important;
+      z-index: 34;
+      width: min(100%, 96vw);
+      max-width: 386px;
+      min-height: 0;
+      max-height: min(286px, 44vh);
+      justify-self: center;
+      align-self: center;
+      grid-template-columns: 54px minmax(0, 1fr) 28px;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        "avatar title dismiss"
+        "avatar body dismiss"
+        "actions actions actions";
+      gap: 0 8px;
+      padding: 10px 12px;
+      border-width: 3px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(140, 232, 255, .24), transparent 42%),
+        linear-gradient(180deg, rgba(10, 25, 52, .97), rgba(4, 12, 28, .98));
+      box-shadow:
+        0 16px 34px rgba(0, 0, 0, .42),
+        0 0 0 1px rgba(146, 226, 255, .14),
+        inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show .tutorial-bot-avatar {
+      min-height: 62px;
+      padding: 4px 3px 0;
+      border-radius: 14px;
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show .tutorial-bot-avatar img {
+      max-width: 40px;
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show > strong {
+      font-size: 11px;
+      line-height: 1.04;
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show > span {
+      font-size: 11px;
+      line-height: 1.12;
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show .message-actions {
+      display: flex;
+      pointer-events: auto;
+      margin-top: 6px;
+      padding-top: 7px;
+      border-top: 1px solid rgba(255, 236, 181, .22);
+      background: linear-gradient(180deg, rgba(9, 23, 50, .06), rgba(5, 14, 33, .74));
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show .message-actions button {
+      min-height: 32px;
+      font-size: 11px;
+      flex: 1 1 100%;
     }
 
     .floating-message.tutorial.with-bot.is-intro.show {
@@ -1632,6 +1675,26 @@
       color: #f6fbff;
     }
 
+    .floating-message.tutorial.with-bot .tutorial-assistant-inline-actions {
+      display: flex;
+      margin-top: 8px;
+    }
+
+    .floating-message.tutorial.with-bot .tutorial-assistant-inline-actions button {
+      width: 100%;
+      min-height: 32px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffeab1 0%, #ffd56f 100%);
+      color: #17253f;
+      font: 900 11px/1 "Trebuchet MS", sans-serif;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      box-shadow:
+        0 6px 14px rgba(0, 0, 0, .18),
+        inset 0 1px 0 rgba(255,255,255,.75);
+    }
+
     .floating-message.tutorial.with-bot .message-actions {
       grid-area: actions;
       margin-top: 8px;
@@ -1666,23 +1729,6 @@
     .floating-message.tutorial span {
       min-height: 0;
       max-height: 100%;
-    }
-
-    .tutorial-inline-action {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      min-height: 32px;
-      margin-top: 8px;
-      border: 2px solid rgba(255,255,255,.26);
-      border-radius: 10px;
-      background: linear-gradient(180deg, #fff2cf, #ffc85d);
-      color: #071425;
-      font-size: 11px;
-      font-weight: 900;
-      text-transform: uppercase;
-      box-shadow: inset 0 2px 0 rgba(255,255,255,.58), 0 4px 0 rgba(73, 43, 0, .72);
     }
 
     .floating-message.tutorial .message-actions button {
@@ -5028,14 +5074,22 @@
 
       .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show {
         top: clamp(102px, 12vh, 118px);
-        max-height: min(152px, 23vh);
-        grid-template-columns: 46px minmax(0, 1fr) 22px;
-        gap: 0 7px;
-        padding: 6px 8px 38px;
+        max-height: min(294px, 46vh);
+        grid-template-columns: 58px minmax(0, 1fr) 24px;
+        gap: 0 8px;
+        padding: 8px 9px;
       }
 
       .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show.has-actions {
-        max-height: min(152px, 23vh);
+        max-height: min(344px, 54vh);
+      }
+
+      .floating-message.tutorial.with-bot.is-primer-sheet.show {
+        width: min(100%, 95vw);
+        max-height: min(266px, 42vh);
+        grid-template-columns: 48px minmax(0, 1fr) 24px;
+        gap: 0 7px;
+        padding: 8px 8px;
       }
 
       .floating-message.tutorial.with-bot.is-top-rail-front.show {
@@ -5085,31 +5139,31 @@
         min-height: 38px;
       }
 
-      .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .tutorial-bot-avatar {
-        min-height: 54px;
-      }
-
-      .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .tutorial-bot-avatar img {
-        max-width: 34px;
-      }
-
       .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show > strong {
-        font-size: 10px;
+        font-size: 12px;
       }
 
       .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show > span {
-        font-size: 10px;
-        line-height: 1.16;
-      }
-
-      .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .message-actions {
-        left: 62px;
-        right: 30px;
-        bottom: 6px;
+        font-size: 12px;
+        line-height: 1.24;
       }
 
       .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .message-actions button {
-        min-height: 32px;
+        min-height: 38px;
+        font-size: 12px;
+      }
+
+      .floating-message.tutorial.with-bot.is-primer-sheet.show > strong {
+        font-size: 10px;
+      }
+
+      .floating-message.tutorial.with-bot.is-primer-sheet.show > span {
+        font-size: 10px;
+        line-height: 1.1;
+      }
+
+      .floating-message.tutorial.with-bot.is-primer-sheet.show .message-actions button {
+        min-height: 30px;
         font-size: 10px;
       }
 
@@ -8386,11 +8440,18 @@
     }
 
     window.__pocobotInlineTutorialAction = (action) => {
+      if (!action) return false;
+      if (EMBEDDED_REAL_GAME) {
+        callRealGameBridge("tutorialAction", { action });
+        return false;
+      }
       handleTutorialAction(action);
+      return false;
     };
 
     function maybeHandleDirectTutorialControl(event) {
-      const directTutorialButton = event.target.closest?.("[data-tutorial-action], [data-tutorial-dismiss], button[data-tutorial-action]");
+      const rawTarget = event.target?.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+      const directTutorialButton = rawTarget?.closest?.("[data-tutorial-action], [data-tutorial-dismiss], button[data-tutorial-action]");
       if (!directTutorialButton) return false;
       event.preventDefault();
       event.stopPropagation();
@@ -8531,6 +8592,11 @@
       tutorial.classList.toggle("is-top-rail-front", embeddedBotVisible && state.tutorialBotPlacement === "top-rail-front");
       tutorial.classList.toggle("is-primer-step", embeddedBotVisible && tutorialBotIsPrimerLesson());
       tutorial.classList.toggle("is-primer-definition-step", embeddedBotVisible && tutorialBotIsPrimerDefinition());
+      if (embeddedBotVisible && tutorialBotIsPrimerDefinition() && state.tutorialBotMode === "step") {
+        tutorial.dataset.tutorialAction = "panel:0";
+      } else {
+        delete tutorial.dataset.tutorialAction;
+      }
       messageStack?.classList.toggle("has-priority-tutorial", embeddedBotVisible && state.tutorialBotPlacement === "top-rail-front");
       let tutorialCopy = "";
       let tutorialHtml = "";

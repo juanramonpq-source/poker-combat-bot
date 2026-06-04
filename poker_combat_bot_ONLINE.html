@@ -2734,32 +2734,32 @@ body.story-final-colossus-mode:not(.desktop-compact-mode):not(.mobile-compact-mo
   0%{
     opacity:0;
     background-position:0 50%;
-    transform:translate(-19%, 9%) scale(.62) rotate(-7deg);
-    filter:blur(7px) brightness(1.24) saturate(1.12) drop-shadow(0 18px 22px rgba(0,0,0,.42));
+    transform:translate(-24%, 11%) scale(.54) rotate(-8deg);
+    filter:blur(10px) brightness(1.28) saturate(1.1) drop-shadow(0 18px 22px rgba(0,0,0,.42));
   }
-  5%, 29%{
+  7%, 29%{
     opacity:.98;
     background-position:0 50%;
-    transform:translate(-12%, 4%) scale(.82) rotate(-3.8deg);
-    filter:blur(.4px) brightness(1.08) saturate(1.14) drop-shadow(0 24px 24px rgba(0,0,0,.48)) drop-shadow(0 0 20px rgba(35,216,255,.28));
+    transform:translate(-15%, 5%) scale(.82) rotate(-4deg);
+    filter:blur(.4px) brightness(1.1) saturate(1.16) drop-shadow(0 28px 26px rgba(0,0,0,.52)) drop-shadow(0 0 22px rgba(35,216,255,.3));
   }
   30%, 61%{
     opacity:1;
     background-position:50% 50%;
-    transform:translate(-2%, -1%) scale(1.02) rotate(.4deg);
-    filter:brightness(1.12) saturate(1.18) drop-shadow(0 31px 30px rgba(0,0,0,.52)) drop-shadow(0 0 28px rgba(35,216,255,.32)) drop-shadow(0 0 34px rgba(255,132,72,.2));
+    transform:translate(-4%, -4%) scale(1.04) rotate(.4deg);
+    filter:brightness(1.16) saturate(1.22) drop-shadow(0 38px 34px rgba(0,0,0,.56)) drop-shadow(0 0 32px rgba(35,216,255,.34)) drop-shadow(0 0 38px rgba(255,132,72,.24));
   }
   62%, 90%{
     opacity:1;
     background-position:100% 50%;
-    transform:translate(6%, -7%) scale(1.16) rotate(2.4deg);
-    filter:brightness(1.15) saturate(1.2) drop-shadow(0 36px 34px rgba(0,0,0,.58)) drop-shadow(0 0 34px rgba(35,216,255,.34)) drop-shadow(0 0 48px rgba(255,132,72,.24));
+    transform:translate(8%, -9%) scale(1.2) rotate(2.8deg);
+    filter:brightness(1.18) saturate(1.24) drop-shadow(0 48px 42px rgba(0,0,0,.64)) drop-shadow(0 0 42px rgba(35,216,255,.38)) drop-shadow(0 0 58px rgba(255,132,72,.28));
   }
   100%{
-    opacity:.96;
+    opacity:.98;
     background-position:100% 50%;
-    transform:translate(8%, -9%) scale(1.22) rotate(3deg);
-    filter:brightness(1.08) saturate(1.08) drop-shadow(0 38px 34px rgba(0,0,0,.56)) drop-shadow(0 0 30px rgba(35,216,255,.26));
+    transform:translate(12%, -10%) scale(1.28) rotate(3.2deg);
+    filter:brightness(1.1) saturate(1.1) drop-shadow(0 52px 46px rgba(0,0,0,.62)) drop-shadow(0 0 34px rgba(35,216,255,.28));
   }
 }
 @keyframes storyFinalColossusBreachShadow{
@@ -28780,6 +28780,268 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.table
   width:min(88vw, 1040px) !important;
 }
 
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal{
+  overflow:visible !important;
+  contain:layout !important;
+}
+
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-sequence,
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breach{
+  overflow:visible !important;
+}
+
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-strip-window{
+  z-index:9 !important;
+  filter:brightness(1.34) saturate(1.34) drop-shadow(0 0 22px rgba(255,118,68,.28)) !important;
+}
+
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-strip-window::before{
+  z-index:1 !important;
+  opacity:.22 !important;
+}
+
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-strip-window::after{
+  z-index:0 !important;
+  opacity:.18 !important;
+}
+
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breach::before,
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breach::after,
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breach-core,
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breach-vein{
+  opacity:.44 !important;
+}
+
+body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breakout{
+  inset:-62% -16% -86% -12% !important;
+  z-index:48 !important;
+  clip-path:polygon(0 8%, 11% 0, 39% 0, 60% 4%, 92% 0, 100% 13%, 100% 89%, 86% 100%, 58% 100%, 37% 94%, 13% 100%, 0 88%) !important;
+  filter:
+    drop-shadow(0 48px 42px rgba(0,0,0,.68))
+    drop-shadow(0 0 38px rgba(35,216,255,.38))
+    drop-shadow(0 0 62px rgba(255,118,68,.32)) !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .story-final-colossus-overlay{
+  z-index:9300 !important;
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app{
+  position:relative !important;
+  z-index:10000 !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .desktop-compact-shell{
+  position:relative !important;
+  z-index:10040 !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .story-final-colossus-standee{
+  --colossus-final-x:30% !important;
+  right:-30vw !important;
+  width:min(90vw, 860px) !important;
+  opacity:.94 !important;
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-standee,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-standee{
+  --colossus-final-x:28% !important;
+  right:-35vw !important;
+  width:min(96vw, 780px) !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-pc-compact-mode .story-final-colossus-standee,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-landscape-mode .story-final-colossus-standee{
+  --colossus-final-x:24% !important;
+  right:-14vw !important;
+  width:min(82vw, 980px) !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .desktop-compact-shell{
+  width:min(82dvw, 500px) !important;
+  max-width:min(82dvw, 500px) !important;
+  transform:translateX(-1.5vw) scale(.94) rotate(-.42deg) !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-panel{
+  width:min(82dvw, 500px) !important;
+  max-width:min(82dvw, 500px) !important;
+  height:142px !important;
+  min-height:142px !important;
+  z-index:10080 !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray{
+  --compact-hand-card-width:50px !important;
+  --compact-hand-card-height:70px !important;
+  --compact-hand-card-step:43px !important;
+  overflow-x:auto !important;
+  pointer-events:auto !important;
+  z-index:10082 !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card.card-detailed{
+  flex:0 0 var(--compact-hand-card-width) !important;
+  width:var(--compact-hand-card-width) !important;
+  min-width:var(--compact-hand-card-width) !important;
+  height:var(--compact-hand-card-height) !important;
+  min-height:var(--compact-hand-card-height) !important;
+  margin-left:calc(var(--compact-hand-card-step) - var(--compact-hand-card-width)) !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card:first-child,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card.card-detailed:first-child{
+  margin-left:0 !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) #accionesBtn,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-action-hub-button{
+  left:clamp(178px, 47dvw, 214px) !important;
+  top:auto !important;
+  bottom:clamp(18px, 3dvh, 32px) !important;
+  z-index:10105 !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.compact-action-hub-open .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-mobile-action-grid{
+  position:fixed !important;
+  left:clamp(8px, 2.5dvw, 18px) !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:clamp(62px, 8dvh, 86px) !important;
+  width:min(76dvw, 360px) !important;
+  max-width:min(76dvw, 360px) !important;
+  z-index:10100 !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .desktop-compact-shell{
+  width:min(52dvw, 460px) !important;
+  max-width:min(52dvw, 460px) !important;
+  transform:translateX(-1vw) scale(.98) rotate(-.45deg) !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-panel{
+  z-index:10080 !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-tray{
+  --compact-hand-card-width:56px !important;
+  --compact-hand-card-height:79px !important;
+  --compact-hand-card-step:50px !important;
+  overflow-x:auto !important;
+  overflow-y:visible !important;
+  pointer-events:auto !important;
+  z-index:10082 !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) #accionesBtn,
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-action-hub-button{
+  left:clamp(232px, 32dvw, 310px) !important;
+  top:clamp(76px, 22dvh, 112px) !important;
+  z-index:10105 !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) #compactHandCards.compact-hand-tray{
+  overflow-x:auto !important;
+  overflow-y:visible !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) #compactHandCards.compact-hand-tray > .card.card-zone-hand,
+body.story-final-colossus-engaged.story-final-colossus-mode .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) #compactHandCards.compact-hand-tray > .card.card-zone-hand.card-detailed{
+  flex:0 0 var(--compact-hand-card-width) !important;
+  width:var(--compact-hand-card-width) !important;
+  min-width:var(--compact-hand-card-width) !important;
+  max-width:var(--compact-hand-card-width) !important;
+  height:var(--compact-hand-card-height) !important;
+  min-height:var(--compact-hand-card-height) !important;
+  max-height:var(--compact-hand-card-height) !important;
+  margin-left:calc(var(--compact-hand-card-step) - var(--compact-hand-card-width)) !important;
+  transform:none !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) #compactHandCards.compact-hand-tray > .card.card-zone-hand:first-child,
+body.story-final-colossus-engaged.story-final-colossus-mode .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) #compactHandCards.compact-hand-tray > .card.card-zone-hand.card-detailed:first-child{
+  margin-left:0 !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-overlay{
+  z-index:9300 !important;
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .app{
+  position:relative !important;
+  z-index:10000 !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .story-final-colossus-boss-hud{
+  position:fixed !important;
+  top:auto !important;
+  right:max(5px, 1dvw) !important;
+  bottom:clamp(18px, 2.4dvh, 28px) !important;
+  width:min(34dvw, 138px) !important;
+  max-width:min(34dvw, 138px) !important;
+  max-height:184px !important;
+  padding:7px 6px !important;
+  border-radius:14px !important;
+  gap:4px !important;
+  z-index:10102 !important;
+  overflow:hidden !important;
+  transform:none !important;
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-landscape-mode) .story-final-colossus-boss-hud{
+  position:fixed !important;
+  top:auto !important;
+  right:max(7px, 1dvw) !important;
+  bottom:max(7px, 1.2dvh) !important;
+  width:min(25dvw, 190px) !important;
+  max-width:min(25dvw, 190px) !important;
+  max-height:min(44dvh, 178px) !important;
+  padding:7px !important;
+  z-index:10102 !important;
+  overflow:hidden !important;
+  transform:none !important;
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-boss-title{
+  font-size:.68rem !important;
+  letter-spacing:.03em !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-boss-kicker,
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-boss-phase{
+  font-size:.42rem !important;
+  letter-spacing:.08em !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-boss-readouts{
+  gap:3px !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-boss-row{
+  grid-template-columns:34px minmax(0, 1fr) 24px !important;
+  gap:4px !important;
+  font-size:.42rem !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-boss-directive,
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-boss-plates{
+  display:none !important;
+}
+
 .story-final-colossus-control-warning{
   position:fixed;
   left:50%;
@@ -32284,6 +32546,11 @@ function isStoryFinalColossusMobileLite(){
     isStoryMobileViewport()
     || isTabletTouchViewport()
     || isStoryFinalColossusTouchViewport()
+    || document.body?.classList.contains('mobile-compact-mode')
+    || document.body?.classList.contains('mobile-panorama-mode')
+    || document.body?.classList.contains('mobile-pc-compact-mode')
+    || document.body?.classList.contains('tablet-touch-portrait-mode')
+    || document.body?.classList.contains('tablet-touch-landscape-mode')
   );
 }
 
@@ -34135,10 +34402,7 @@ const TUTORIAL_SCRIPT = [
     tip: 'Primero verás subir Ataque, Defensa, Armadura y Fuel uno a uno. En compacto puedes arrastrar la carta al panel.',
     tutorialBotPrimaryAction: 'step:intro-attack-stat',
     tutorialBotPrimaryLabel: 'Seguir',
-    onEnter: () => {
-      tutorialPreparePrimerScenario('definition');
-      tutorialSchedulePrimerDefinitionAdvance();
-    },
+    onEnter: () => tutorialPreparePrimerScenario('definition'),
     panelActions: [
       {
         label: 'Entendido',
@@ -34173,9 +34437,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-defense-stat',
     title: 'Paso 3 · Corazones = Defensa',
-    body: 'Los <strong>corazones</strong> refuerzan la <strong>Defensa</strong>. Volvemos a partir de <strong>0</strong>: al montar esta <strong>6♥</strong>, la Defensa subirá justo a <strong>6</strong>.',
+    body: 'La <strong>7♠</strong> ya se queda montada. Ahora los <strong>corazones</strong> refuerzan la <strong>Defensa</strong>: al colocar esta <strong>6♥</strong>, la Defensa subirá a <strong>6</strong> sin perder el <strong>Ataque 7</strong>.',
     objective: 'Lleva <strong>6♥</strong> al panel de <strong>Defensa</strong>. En scroll también puedes seleccionarla y pulsar <strong>Modificar</strong>.',
-    tip: 'Quédate con la idea visual: corazón que entra, defensa que sube.',
+    tip: 'Quédate con esta idea: el panel acumula lo que ya montaste.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0DefenseB,
       label: '6♥ = Defensa',
@@ -34192,9 +34456,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-armor-stat',
     title: 'Paso 4 · Tréboles = Armadura',
-    body: 'Los <strong>tréboles</strong> aumentan la <strong>Armadura</strong>. También empezamos desde <strong>0</strong>: al colocar este <strong>10♣</strong>, el blindaje subirá a <strong>10</strong>.',
+    body: 'La <strong>7♠</strong> y la <strong>6♥</strong> se mantienen. Ahora los <strong>tréboles</strong> aumentan la <strong>Armadura</strong>: al colocar este <strong>10♣</strong>, el blindaje subirá a <strong>10</strong>.',
     objective: 'Lleva <strong>10♣</strong> al panel de <strong>Armadura</strong>. En scroll también puedes usar <strong>Modificar</strong>.',
-    tip: 'Los tréboles son blindaje puro. Más adelante incluso podrás reutilizar armadura como energía.',
+    tip: 'Los tréboles son blindaje puro, y lo anterior sigue contado en el panel.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0IntroArmorCard,
       label: '10♣ = Armadura',
@@ -34211,9 +34475,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-fuel-stat',
     title: 'Paso 5 · Diamantes = Combustible',
-    body: 'Los <strong>diamantes numéricos</strong> entran en <strong>Fuel</strong>. Este <strong>8♦</strong> hará que el indicador pase de <strong>0</strong> a <strong>16</strong> porque el combustible funciona como <strong>valor × 2</strong>.<br><br><strong>Pero tiene muchos más usos, ya verás.</strong>',
+    body: 'Con <strong>Ataque</strong>, <strong>Defensa</strong> y <strong>Armadura</strong> ya visibles, los <strong>diamantes numéricos</strong> entran en <strong>Fuel</strong>. Este <strong>8♦</strong> hará que el indicador pase de <strong>0</strong> a <strong>16</strong> porque el combustible funciona como <strong>valor × 2</strong>.<br><br><strong>Pero tiene muchos más usos, ya verás.</strong>',
     objective: 'Lleva <strong>8♦</strong> al panel de <strong>Fuel</strong>. En scroll también puedes seleccionarlo y pulsar <strong>Modificar</strong>.',
-    tip: 'Mira Fuel x2: aún no puedes atacar, pero ya estás viendo cómo se carga la potencia del mecha.',
+    tip: 'Mira Fuel x2: todo lo anterior se mantiene, pero aún no puedes atacar sin llegar al 100%.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0FuelA,
       label: '8♦ = Fuel',
@@ -38862,9 +39126,6 @@ function getTutorialBotStepLead(step){
 }
 
 function getTutorialBotPrimaryAction(step = tutorialGetCurrentStep()){
-  if(step?.id === 'intro-definition' && canUseMobileSpriteHud()){
-    return { action:'', label:'' };
-  }
   if(step?.tutorialBotPrimaryAction){
     return {
       action: step.tutorialBotPrimaryAction,
@@ -38923,6 +39184,7 @@ const TUTOBOT_TOP_RAIL_FRONT_STEPS = new Set([
 
 function getTutorialBotPlacement(step = tutorialGetCurrentStep()){
   if(!step?.id) return '';
+  if(step.id === 'intro-definition' && canUseMobileSpriteHud()) return '';
   if(state.attackMode || state.projectileMode || state.projectileOnlyMode || state.pendingDefense) return 'top-rail-front';
   if(TUTOBOT_TOP_RAIL_FRONT_STEPS.has(step.id)) return 'top-rail-front';
   return TUTOBOT_TOP_RAIL_STEPS.has(step.id) ? 'top-rail' : '';
@@ -38964,40 +39226,29 @@ function getTutorialBotSpeechPayload(){
       messageKey: 'greeting'
     };
   }
-  if(step?.id === 'intro-definition' && canUseMobileSpriteHud()){
-    return {
-      visible: true,
-      bubbleVisible: true,
-      sequenceOnly: false,
-      placement: getTutorialBotPlacement(step),
-      primaryAction: '',
-      primaryLabel: '',
-      sprite: tutorialBotState.currentFrame,
-      messageHtml: '1 piloto + 6 stats + palo correcto.<span class="tutorial-assistant-subline">Sin 100% no puedes atacar.</span><button type="button" class="tutorial-inline-action" data-tutorial-action="step:intro-attack-stat" onclick="event.preventDefault();event.stopPropagation();window.__pocobotInlineTutorialAction && window.__pocobotInlineTutorialAction(\'step:intro-attack-stat\');">Seguir</button>',
-      meta: `Paso ${stepNumber}/${script.length}`,
-      soundKey: `step:${tutorialSystem.stepIndex}:${step.id}`,
-      messageKey: `step:${tutorialSystem.stepIndex}:${step.id}`
-    };
-  }
   const objectiveText = step ? mobileSpriteTextFromHtml(step.objective || '') : '';
-  const leadText = step?.id === 'intro-definition' && canUseMobileSpriteHud()
+  const compactPrimerDefinitionStep = step?.id === 'intro-definition' && canUseMobileSpriteHud();
+  const leadText = compactPrimerDefinitionStep
     ? '1 piloto + 6 stats + palo correcto.'
     : getTutorialBotStepLead(step);
-  const compactPrimerObjective = step?.id === 'intro-definition' && canUseMobileSpriteHud()
-    ? 'Sin 100% no puedes atacar.'
+  const compactPrimerObjective = compactPrimerDefinitionStep
+    ? 'Sin 100% no atacas.'
     : objectiveText;
   const subline = tutorialSystem.completed
     ? 'Puedes seguir jugando libremente o reiniciar la lección cuando quieras.'
     : compactPrimerObjective;
+  const primerInlineActionHtml = compactPrimerDefinitionStep
+    ? '<span class="tutorial-assistant-inline-actions"><button type="button" data-tutorial-action="panel:0" onclick="return window.__pocobotInlineTutorialAction(\'panel:0\')">Seguir</button></span>'
+    : '';
   return {
     visible: true,
     bubbleVisible: true,
     sequenceOnly: false,
     placement: getTutorialBotPlacement(step),
-    primaryAction: panelAction.action,
-    primaryLabel: panelAction.label,
+    primaryAction: compactPrimerDefinitionStep ? '' : panelAction.action,
+    primaryLabel: compactPrimerDefinitionStep ? '' : panelAction.label,
     sprite: tutorialBotState.currentFrame,
-    messageHtml: `${mobileSpriteEscapeHtml(leadText)}${subline ? `<span class="tutorial-assistant-subline">${mobileSpriteEscapeHtml(subline)}</span>` : ''}`,
+    messageHtml: `${mobileSpriteEscapeHtml(leadText)}${subline ? `<span class="tutorial-assistant-subline">${mobileSpriteEscapeHtml(subline)}</span>` : ''}${primerInlineActionHtml}`,
     meta: tutorialSystem.completed ? 'Modo libre' : `Paso ${stepNumber}/${script.length}`,
     soundKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`,
     messageKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`
@@ -39044,7 +39295,7 @@ function getCompactMobileTutorialCopy(step){
 
   switch(step.id){
     case 'intro-definition':
-      copy.body = 'Un PoCoBOT necesita 1 piloto, 6 cartas de stats y cumplir el palo del piloto. Hasta el 100% de montaje no puede atacar.';
+      copy.body = 'Un PoCoBOT necesita 1 piloto, 6 cartas de stats y cumplir el palo del piloto. Sin 100% de montaje no puede atacar.';
       copy.objective = 'Pulsa <strong>Seguir</strong> y empezamos por las <strong>picas</strong>.';
       copy.tip = 'En móvil y PC compacto arrastrarás la carta al panel para ver el cambio al instante.';
       break;
@@ -39054,19 +39305,19 @@ function getCompactMobileTutorialCopy(step){
       copy.tip = 'Las picas siempre empujan el valor de Ataque.';
       break;
     case 'intro-defense-stat':
-      copy.body = 'Este <strong>6♥</strong> aumenta la Defensa. Partes de <strong>0</strong> y el panel debe subir a <strong>6</strong>.';
+      copy.body = 'La <strong>7♠</strong> se queda montada. Ahora este <strong>6♥</strong> añade <strong>Defensa 6</strong> sin perder el <strong>Ataque 7</strong>.';
       copy.objective = 'Arrastra <strong>6♥</strong> hasta <strong>Defensa</strong>; se montará sola al soltarla.';
-      copy.tip = 'Corazón que entra, defensa que sube.';
+      copy.tip = 'El panel ya empieza a acumular stats.';
       break;
     case 'intro-armor-stat':
-      copy.body = 'Este <strong>10♣</strong> reforzará la Armadura. Partes de <strong>0</strong> y el panel debe subir a <strong>10</strong>.';
+      copy.body = 'La <strong>7♠</strong> y la <strong>6♥</strong> siguen montadas. Ahora este <strong>10♣</strong> hará que <strong>Armadura</strong> suba a <strong>10</strong>.';
       copy.objective = 'Arrastra <strong>10♣</strong> hasta <strong>Armadura</strong>; se montará sola al soltarla.';
-      copy.tip = 'Los tréboles son blindaje puro.';
+      copy.tip = 'Los tréboles añaden blindaje sin borrar lo anterior.';
       break;
     case 'intro-fuel-stat':
-      copy.body = 'Este <strong>8♦</strong> entra en Fuel y hará que el contador suba de <strong>0</strong> a <strong>16</strong>. <strong>Pero tiene muchos más usos, ya verás.</strong>';
+      copy.body = 'Con Ataque, Defensa y Armadura ya montados, este <strong>8♦</strong> entra en Fuel y hará que el contador suba de <strong>0</strong> a <strong>16</strong>. <strong>Pero tiene muchos más usos, ya verás.</strong>';
       copy.objective = 'Arrastra <strong>8♦</strong> hasta <strong>Fuel</strong>; se montará sola al soltarla.';
-      copy.tip = 'Fuel funciona como valor × 2.';
+      copy.tip = 'Fuel funciona como valor × 2 y se suma a lo que ya ves en el panel.';
       break;
     case 'core-build':
       copy.objective = 'Toca <strong>K♠</strong>, <strong>J♦</strong> y <strong>A♦</strong> en tu mano y pulsa <strong>Modificar</strong>.';
@@ -39174,11 +39425,11 @@ function getCompactMobileTutorialFocusText(step){
     case 'intro-attack-stat':
       return 'Arrastra la pica y mira el número de Ataque: debe pasar de 0 a 7.';
     case 'intro-defense-stat':
-      return 'Arrastra el corazón y mira Defensa: debe subir justo a 6.';
+      return 'Arrastra el corazón y mira Defensa: sube a 6 mientras Ataque se queda en 7.';
     case 'intro-armor-stat':
-      return 'Arrastra el trébol y mira Armadura: debe subir justo a 10.';
+      return 'Arrastra el trébol y mira Armadura: sube a 10 sin perder Ataque ni Defensa.';
     case 'intro-fuel-stat':
-      return 'Arrastra el diamante y mira Fuel x2 en la cabecera: debe pasar a 16.';
+      return 'Arrastra el diamante y mira Fuel x2: debe pasar a 16 manteniendo todo lo anterior.';
     case 'open-attack':
       return 'Botón amarillo Acciones → Atacar. En móvil no hay que subir al panel superior.';
     case 'first-attack':
@@ -40393,6 +40644,33 @@ function syncCompactHandTraySizing(tray, cardCount){
   const mobilePanorama = document.body?.classList.contains('mobile-panorama-mode');
   const mobileCompact = document.body?.classList.contains('mobile-compact-mode');
   const mobilePcCompact = document.body?.classList.contains('mobile-pc-compact-mode');
+  const finalColossusProgress = (typeof isStoryFinalColossusCombat === 'function' && isStoryFinalColossusCombat())
+    ? state.storyMissionProgress?.finalColossusIntro
+    : null;
+  const finalColossusTouchPanel = !!finalColossusProgress?.phase2Complete
+    && (mobileCompact || mobilePanorama || mobilePcCompact || document.body.classList.contains('tablet-touch-portrait-mode') || document.body.classList.contains('tablet-touch-landscape-mode'));
+  if(finalColossusTouchPanel){
+    const resolvedCount = Math.max(1, Number(cardCount) || 0);
+    const { landscape } = getViewportProfile();
+    const availableWidth = Math.max(178, Math.floor((tray.clientWidth || tray.parentElement?.clientWidth || (landscape ? 360 : 292)) - 18));
+    const baseWidth = resolvedCount >= 15
+      ? (landscape ? 32 : 30)
+      : resolvedCount >= 10
+        ? (landscape ? 38 : 34)
+        : (landscape ? 46 : 42);
+    const cardWidth = Math.min(baseWidth, Math.max(28, availableWidth - 2));
+    const cardHeight = Math.round(cardWidth * 1.42);
+    const fittedStep = resolvedCount <= 1
+      ? cardWidth
+      : Math.floor((availableWidth - cardWidth) / Math.max(1, resolvedCount - 1));
+    const minStep = resolvedCount >= 15 ? 13 : (resolvedCount >= 10 ? 17 : 24);
+    const step = Math.max(minStep, Math.min(cardWidth, fittedStep));
+    tray.style.setProperty('--compact-hand-card-width', `${cardWidth}px`, 'important');
+    tray.style.setProperty('--compact-hand-card-height', `${cardHeight}px`, 'important');
+    tray.style.setProperty('--compact-hand-card-step', `${step}px`, 'important');
+    tray.dataset.handCount = String(cardCount || 0);
+    return;
+  }
   if(mobileCompact || mobilePanorama || mobilePcCompact){
     const { shortSide, longSide, landscape } = getViewportProfile();
     const tabletPortraitCompact = mobileCompact
@@ -46092,13 +46370,21 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
   const defenseCard = popCardFromZone(p0, 'defense', TUTORIAL_CARD_IDS.p0DefenseB);
   const introArmorCard = tutorialTakeCard(state.deck, '10', 'clubs', TUTORIAL_CARD_IDS.p0IntroArmorCard);
   const fuelCard = popCardFromZone(p0, 'hand', TUTORIAL_CARD_IDS.p0FuelA);
+  const primerStageOrder = {
+    definition: 0,
+    attack: 1,
+    defense: 2,
+    armor: 3,
+    fuel: 4
+  };
+  const stageLevel = primerStageOrder[stage] || 0;
 
   p0.core.pilot = pilot || null;
   p0.core.copilot = null;
   p0.core.booster = null;
-  p0.attack = [];
-  p0.defense = [];
-  p0.armor = [];
+  p0.attack = stageLevel >= 2 ? [introAttackCard].filter(Boolean) : [];
+  p0.defense = stageLevel >= 3 ? [defenseCard].filter(Boolean) : [];
+  p0.armor = stageLevel >= 4 ? [introArmorCard].filter(Boolean) : [];
   p0.fuel = [];
 
   if(stage === 'definition'){
@@ -46148,14 +46434,6 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
     player.flags.attackReadyPromptTurn = 0;
     player.flags.firstAttackComplete = false;
   });
-}
-
-function tutorialSchedulePrimerDefinitionAdvance(){
-  if(!canUseMobileSpriteHud()) return;
-  tutorialQueueAutoAction('TutoBOT prepara la primera carta de picas.', () => {
-    if(tutorialGetCurrentStep()?.id !== 'intro-definition') return;
-    tutorialGoToStep('intro-attack-stat');
-  }, 5200);
 }
 
 function getActiveTutorialScript(){
