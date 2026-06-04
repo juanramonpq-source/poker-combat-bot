@@ -1420,6 +1420,90 @@
       flex: 1 1 100%;
     }
 
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show {
+      top: clamp(120px, 15vh, 142px);
+      max-height: min(254px, 39vh);
+      grid-template-columns: 64px minmax(0, 1fr) 28px;
+      gap: 0 10px;
+      padding: 10px 12px;
+      border-radius: 18px;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show.has-actions {
+      max-height: min(356px, 54vh);
+      padding-bottom: 12px;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show .tutorial-bot-avatar {
+      min-height: 82px;
+      padding: 8px 5px 0;
+      border-radius: 16px;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show .tutorial-bot-avatar img {
+      max-width: 54px;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show > strong {
+      font-size: 13px;
+      line-height: 1.06;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show > span {
+      font-size: 14px;
+      line-height: 1.28;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show.has-actions .message-actions button {
+      min-height: 40px;
+      font-size: 13px;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show .tutorial-dismiss {
+      width: 28px;
+      height: 28px;
+      font-size: 15px;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show {
+      top: clamp(112px, 14vh, 132px);
+      max-height: min(308px, 47vh);
+      grid-template-columns: 66px minmax(0, 1fr) 28px;
+      gap: 0 10px;
+      padding: 10px 12px;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show.has-actions {
+      max-height: min(364px, 56vh);
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      padding-bottom: 12px;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show > strong {
+      font-size: 13px;
+      line-height: 1.08;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show > span {
+      font-size: 13px;
+      line-height: 1.26;
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .message-actions {
+      display: flex;
+      pointer-events: auto;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 236, 181, .24);
+      background: linear-gradient(180deg, rgba(9, 23, 50, .04), rgba(5, 14, 33, .82));
+    }
+
+    .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .message-actions button {
+      min-height: 40px;
+      font-size: 13px;
+      flex: 1 1 100%;
+    }
+
     .floating-message.tutorial.with-bot.is-top-rail.show .tutorial-dismiss {
       pointer-events: auto;
       width: 24px;
@@ -1461,6 +1545,68 @@
     .floating-message.tutorial.with-bot.is-sequence .message-actions button {
       min-height: 46px;
       font-size: 16px;
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show {
+      z-index: 34;
+      width: min(100%, 96vw);
+      max-width: 404px;
+      min-height: 0;
+      max-height: min(286px, 44vh);
+      justify-self: center;
+      align-self: center;
+      grid-template-columns: 68px minmax(0, 1fr) 28px;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        "avatar title dismiss"
+        "avatar body dismiss"
+        "actions actions actions";
+      gap: 0 10px;
+      padding: 12px 14px;
+      border-width: 3px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(140, 232, 255, .26), transparent 42%),
+        linear-gradient(180deg, rgba(10, 25, 52, .98), rgba(4, 12, 28, .98));
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, .46),
+        0 0 0 2px rgba(146, 226, 255, .18),
+        inset 0 0 0 1px rgba(255,255,255,.10);
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show .tutorial-bot-avatar {
+      min-height: 88px;
+      padding: 8px 5px 0;
+      border-radius: 18px;
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show .tutorial-bot-avatar img {
+      max-width: 56px;
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show > strong {
+      font-size: 14px;
+      line-height: 1.08;
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show > span {
+      font-size: 14px;
+      line-height: 1.28;
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show .message-actions {
+      display: flex;
+      pointer-events: auto;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 236, 181, .24);
+      background: linear-gradient(180deg, rgba(9, 23, 50, .04), rgba(5, 14, 33, .80));
+    }
+
+    .floating-message.tutorial.with-bot.is-primer-sheet.show .message-actions button {
+      min-height: 42px;
+      font-size: 13px;
+      flex: 1 1 100%;
     }
 
     .floating-message.tutorial.with-bot.is-intro.show {
@@ -4894,6 +5040,38 @@
         padding-bottom: 8px;
       }
 
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show {
+        top: clamp(108px, 13vh, 124px);
+        max-height: min(248px, 40vh);
+        grid-template-columns: 54px minmax(0, 1fr) 24px;
+        gap: 0 8px;
+        padding: 8px 9px;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show.has-actions {
+        max-height: min(334px, 52vh);
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show {
+        top: clamp(102px, 12vh, 118px);
+        max-height: min(294px, 46vh);
+        grid-template-columns: 58px minmax(0, 1fr) 24px;
+        gap: 0 8px;
+        padding: 8px 9px;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show.has-actions {
+        max-height: min(344px, 54vh);
+      }
+
+      .floating-message.tutorial.with-bot.is-primer-sheet.show {
+        width: min(100%, 94vw);
+        max-height: min(270px, 42vh);
+        grid-template-columns: 60px minmax(0, 1fr) 24px;
+        gap: 0 8px;
+        padding: 10px 10px;
+      }
+
       .floating-message.tutorial.with-bot.is-top-rail-front.show {
         z-index: 240;
       }
@@ -4917,6 +5095,55 @@
 
       .floating-message.tutorial.with-bot.is-top-rail.show.has-actions .message-actions button {
         min-height: 34px;
+        font-size: 12px;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show .tutorial-bot-avatar {
+        min-height: 68px;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show .tutorial-bot-avatar img {
+        max-width: 46px;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show > strong {
+        font-size: 12px;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show > span {
+        font-size: 12px;
+        line-height: 1.24;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-step.show.has-actions .message-actions button {
+        min-height: 38px;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show > strong {
+        font-size: 12px;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show > span {
+        font-size: 12px;
+        line-height: 1.24;
+      }
+
+      .floating-message.tutorial.with-bot.is-top-rail.is-primer-definition-step.show .message-actions button {
+        min-height: 38px;
+        font-size: 12px;
+      }
+
+      .floating-message.tutorial.with-bot.is-primer-sheet.show > strong {
+        font-size: 12px;
+      }
+
+      .floating-message.tutorial.with-bot.is-primer-sheet.show > span {
+        font-size: 12px;
+        line-height: 1.24;
+      }
+
+      .floating-message.tutorial.with-bot.is-primer-sheet.show .message-actions button {
+        min-height: 38px;
         font-size: 12px;
       }
 
@@ -5784,6 +6011,7 @@
       tutorialBotText: "",
       tutorialBotHtml: "",
       tutorialBotMeta: "",
+      tutorialBotStepId: "",
       tutorialBotSprite: "",
       tutorialBotPrimaryAction: "",
       tutorialBotPrimaryLabel: "",
@@ -8118,6 +8346,20 @@
         || combined.includes("hola, soy tutobot");
     }
 
+    function tutorialBotIsPrimerLesson() {
+      return [
+        "intro-definition",
+        "intro-attack-stat",
+        "intro-defense-stat",
+        "intro-armor-stat",
+        "intro-fuel-stat"
+      ].includes(state.tutorialBotStepId || "");
+    }
+
+    function tutorialBotIsPrimerDefinition() {
+      return (state.tutorialBotStepId || "") === "intro-definition";
+    }
+
     function tutorialBotShouldYieldToInteraction() {
       if (!EMBEDDED_REAL_GAME || !state.tutorial || !state.tutorialBotVisible) return false;
       if (state.tutorialBotSequenceOnly || ["intro", "greeting"].includes(state.tutorialBotMode)) return false;
@@ -8314,8 +8556,11 @@
       tutorial.classList.toggle("is-sequence", embeddedBotVisible && state.tutorialBotSequenceOnly);
       tutorial.classList.toggle("is-intro", embeddedBotVisible && state.tutorialBotMode === "intro");
       tutorial.classList.toggle("is-greeting", embeddedBotVisible && state.tutorialBotMode === "greeting");
+      tutorial.classList.toggle("is-primer-sheet", embeddedBotVisible && state.tutorialBotPlacement === "primer-sheet");
       tutorial.classList.toggle("is-top-rail", embeddedBotVisible && (state.tutorialBotPlacement || "").startsWith("top-rail"));
       tutorial.classList.toggle("is-top-rail-front", embeddedBotVisible && state.tutorialBotPlacement === "top-rail-front");
+      tutorial.classList.toggle("is-primer-step", embeddedBotVisible && tutorialBotIsPrimerLesson());
+      tutorial.classList.toggle("is-primer-definition-step", embeddedBotVisible && tutorialBotIsPrimerDefinition());
       messageStack?.classList.toggle("has-priority-tutorial", embeddedBotVisible && state.tutorialBotPlacement === "top-rail-front");
       let tutorialCopy = "";
       let tutorialHtml = "";
@@ -8722,16 +8967,38 @@
       }
     }
 
-    function callRealGameBridge(type, payload = {}) {
-      const bridge = getRealGameBridge();
-      if (!bridge || typeof bridge.handle !== "function") return false;
+    function postRealGameBridgeMessage(type, payload = {}) {
+      if (!EMBEDDED_REAL_GAME || window.parent === window) return false;
       try {
-        bridge.handle(type, payload);
+        window.parent?.postMessage?.({
+          source: "pocobot-sprite-hud",
+          type: "bridgeAction",
+          bridgeType: type,
+          payload
+        }, "*");
         return true;
-      } catch (error) {
-        toast(error?.message || "No se pudo comunicar con la partida real.");
+      } catch (_error) {
         return false;
       }
+    }
+
+    function callRealGameBridge(type, payload = {}) {
+      const bridge = getRealGameBridge();
+      if (bridge && typeof bridge.handle === "function") {
+        try {
+          bridge.handle(type, payload);
+          return true;
+        } catch (error) {
+          if (!postRealGameBridgeMessage(type, payload)) {
+            toast(error?.message || "No se pudo comunicar con la partida real.");
+            return false;
+          }
+          return true;
+        }
+      }
+      if (postRealGameBridgeMessage(type, payload)) return true;
+      toast("No se pudo comunicar con la partida real.");
+      return false;
     }
 
     function isTutorialOverlaySuppressed() {
@@ -8842,6 +9109,7 @@
       state.tutorialBotText = snapshot.tutorialBotText || "";
       state.tutorialBotHtml = snapshot.tutorialBotHtml || "";
       state.tutorialBotMeta = snapshot.tutorialBotMeta || "";
+      state.tutorialBotStepId = snapshot.tutorialBotStepId || "";
       state.tutorialBotSprite = snapshot.tutorialBotSprite || "";
       state.tutorialBotPrimaryAction = snapshot.tutorialBotPrimaryAction || "";
       state.tutorialBotPrimaryLabel = snapshot.tutorialBotPrimaryLabel || "";

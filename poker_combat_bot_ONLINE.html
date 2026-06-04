@@ -8748,6 +8748,38 @@ body.mobile-compact-mode .tutobot-dock .tutorial-assistant-meta{
 .tutobot-dock .tutorial-assistant-meta{
   font-size:.72rem;
 }
+body.tutorial-primer-intro-step .tutobot-dock-card{
+  padding:18px;
+  border-radius:30px;
+}
+body.tutorial-primer-intro-step .tutobot-dock .tutorial-assistant{
+  grid-template-columns:minmax(112px, 156px) minmax(0, 1fr);
+  gap:18px;
+}
+body.tutorial-primer-intro-step .tutobot-dock .tutorial-assistant-holo{
+  min-height:148px;
+  padding:14px 12px 0;
+  border-radius:28px;
+}
+body.tutorial-primer-intro-step .tutobot-dock .tutorial-assistant-holo img{
+  max-height:194px;
+}
+body.tutorial-primer-intro-step .tutobot-dock .tutorial-assistant-bubble{
+  padding:22px 24px 20px;
+  border-radius:26px;
+}
+body.tutorial-primer-intro-step .tutobot-dock .tutorial-assistant-message{
+  font-size:clamp(1.08rem, 1.28vw, 1.28rem);
+  line-height:1.42;
+}
+body.tutorial-primer-intro-step .tutobot-dock .tutorial-assistant-subline{
+  font-size:.9rem;
+  line-height:1.46;
+}
+body.desktop-compact-mode.tutorial-primer-intro-step .tutobot-dock{
+  top:92px;
+  width:min(860px, max(360px, calc(100vw - 380px)));
+}
 body.desktop-compact-mode .tutobot-dock{
   top:104px;
   left:50%;
@@ -28195,6 +28227,77 @@ body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-fo
   filter:brightness(1.08) saturate(1.12) !important;
 }
 
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open :is(.defense-prompt-overlay, .defense-alert-overlay, .defense-guide-bar){
+  display:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open .story-final-colossus-overlay{
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) :is(.compact-hand-panel, .compact-hand-overview, .compact-hand-overview-grid, .compact-hand-tray){
+  z-index:10120 !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) :is(.compact-hand-overview .card, .compact-hand-tray .card){
+  position:relative !important;
+  z-index:10124 !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-defense-warning.show{
+  position:fixed !important;
+  left:clamp(10px, 3dvw, 24px) !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:clamp(96px, 13dvh, 132px) !important;
+  width:min(58dvw, 340px) !important;
+  min-width:0 !important;
+  max-width:min(58dvw, 340px) !important;
+  transform:none !important;
+  z-index:10130 !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-defense-warning-actions{
+  display:grid !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-defense-warning-actions button{
+  pointer-events:auto !important;
+  z-index:10131 !important;
+}
+
+@media (orientation: landscape){
+  body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) #compactDefenseWarning.show{
+    left:clamp(380px, 52dvw, 470px) !important;
+    top:clamp(62px, 18dvh, 92px) !important;
+    right:auto !important;
+    bottom:auto !important;
+    width:min(34dvw, 292px) !important;
+    max-width:min(34dvw, 292px) !important;
+    transform:none !important;
+    z-index:10160 !important;
+    pointer-events:auto !important;
+  }
+
+  body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) #compactDefenseWarningActions{
+    display:grid !important;
+  }
+
+  body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.story-final-colossus-defense-hand-open .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) #compactDefenseWarningActions button{
+    position:relative !important;
+    min-height:36px !important;
+    pointer-events:auto !important;
+    z-index:10161 !important;
+  }
+}
+
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-action-hub-button{
   translate:-1.2vw -.8dvh !important;
   scale:.84 !important;
@@ -28278,11 +28381,11 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:
 body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-overview{
   display:block !important;
   position:absolute !important;
-  left:clamp(-216px, -24dvw, -150px) !important;
+  left:clamp(4px, 1.2dvw, 12px) !important;
   right:auto !important;
   top:clamp(6px, 2dvh, 14px) !important;
   bottom:auto !important;
-  width:min(56dvw, 460px) !important;
+  width:min(45dvw, 392px) !important;
   max-width:none !important;
   max-height:min(72dvh, 330px) !important;
   padding:9px !important;
@@ -28299,7 +28402,7 @@ body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-fo
 
 body.story-final-colossus-defense-hand-open.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-overview-grid{
   display:grid !important;
-  grid-template-columns:repeat(6, minmax(0, 1fr)) !important;
+  grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
   grid-auto-rows:68px !important;
   gap:7px 5px !important;
   align-items:center !important;
@@ -28332,6 +28435,13 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:
   visibility:visible !important;
   pointer-events:auto !important;
   filter:none !important;
+}
+
+body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.compact-action-hub-open .app:is(.mobile-compact-mode, .mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .compact-hand-tray{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  transform:none !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .desktop-compact-shell{
@@ -28677,22 +28787,23 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.table
   z-index:10180;
   width:min(760px, calc(100vw - 28px));
   padding:clamp(18px, 3.2vw, 34px);
-  border:2px solid rgba(118,245,255,.72);
+  border:2px solid rgba(255,57,62,.9);
   border-radius:24px 12px 28px 16px;
   color:#f9fdff;
   text-align:center;
   text-transform:uppercase;
   letter-spacing:.08em;
   background:
-    linear-gradient(94deg, rgba(255,255,255,.12), transparent 18% 72%, rgba(255,116,74,.14)),
-    repeating-linear-gradient(180deg, rgba(159,238,255,.09) 0 2px, transparent 2px 9px),
-    linear-gradient(180deg, rgba(7,18,42,.92), rgba(2,7,20,.96));
+    linear-gradient(94deg, rgba(255,255,255,.10), transparent 18% 68%, rgba(255,41,45,.22)),
+    repeating-linear-gradient(180deg, rgba(255,83,86,.16) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, rgba(48,6,10,.94), rgba(13,2,5,.97));
   box-shadow:
     0 0 0 2px rgba(255,255,255,.08),
     0 24px 54px rgba(0,0,0,.58),
-    0 0 48px rgba(35,216,255,.28),
+    0 0 52px rgba(255,33,40,.48),
+    0 0 20px rgba(255,214,89,.22),
     inset 0 0 0 1px rgba(255,255,255,.14),
-    inset 0 0 38px rgba(255,95,72,.12);
+    inset 0 0 42px rgba(255,33,40,.22);
   opacity:0;
   visibility:hidden;
   pointer-events:auto;
@@ -28712,16 +28823,16 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.table
   border-radius:inherit;
 }
 .story-final-colossus-control-warning::before{
-  border:1px solid rgba(255,209,126,.38);
+  border:1px solid rgba(255,80,84,.62);
   clip-path:polygon(0 12%, 63% 0, 100% 16%, 92% 100%, 18% 86%);
   transform:translate(7px, -5px) rotate(1.4deg);
   opacity:.76;
 }
 .story-final-colossus-control-warning::after{
   background:
-    linear-gradient(90deg, transparent 0 18%, rgba(255,255,255,.18) 19% 20%, transparent 21% 47%, rgba(35,216,255,.22) 48% 49%, transparent 50% 76%, rgba(255,92,72,.16) 77% 78%, transparent 79%),
-    radial-gradient(circle at 14% 34%, rgba(255,99,82,.22), transparent 18%),
-    radial-gradient(circle at 86% 64%, rgba(35,216,255,.18), transparent 22%);
+    linear-gradient(90deg, transparent 0 18%, rgba(255,247,204,.18) 19% 20%, transparent 21% 47%, rgba(255,47,51,.34) 48% 49%, transparent 50% 76%, rgba(255,181,73,.22) 77% 78%, transparent 79%),
+    radial-gradient(circle at 14% 34%, rgba(255,39,44,.34), transparent 18%),
+    radial-gradient(circle at 86% 64%, rgba(255,184,72,.18), transparent 22%);
   mix-blend-mode:screen;
   opacity:.55;
   animation:storyFinalColossusControlStatic .52s steps(2, end) infinite;
@@ -28733,10 +28844,10 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.table
   margin-bottom:12px;
   padding:5px 12px;
   border-radius:999px;
-  border:1px solid rgba(255,210,126,.58);
-  color:#ffe0ac;
-  background:rgba(40,12,10,.62);
-  font-size:clamp(.58rem, 1.25vw, .78rem);
+  border:1px solid rgba(255,233,128,.78);
+  color:#120305;
+  background:linear-gradient(180deg, #fff29b, #ffbd38 54%, #ff383d);
+  font-size:clamp(.68rem, 1.45vw, .96rem);
   font-weight:1000;
   letter-spacing:.18em;
 }
@@ -28748,15 +28859,15 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.table
   font-weight:1000;
   line-height:1.08;
   text-shadow:
-    2px 0 0 rgba(255,76,72,.5),
-    -2px 0 0 rgba(35,216,255,.5),
-    0 0 18px rgba(35,216,255,.34),
+    2px 0 0 rgba(255,205,84,.42),
+    -2px 0 0 rgba(255,24,32,.65),
+    0 0 18px rgba(255,42,48,.46),
     0 3px 0 rgba(0,0,0,.58);
 }
 .story-final-colossus-control-warning-text strong{
   display:block;
   margin-top:8px;
-  color:#fff2b8;
+  color:#ffe35b;
   font-size:1.16em;
 }
 @media (max-width: 620px){
@@ -29032,7 +29143,7 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.table
   </div>
 </div>
 <div class="story-final-colossus-control-warning" id="storyFinalColossusControlWarning" hidden role="alert" aria-live="assertive" aria-hidden="true">
-  <div class="story-final-colossus-control-warning-kicker">Panel de control dañado</div>
+  <div class="story-final-colossus-control-warning-kicker">WARNING</div>
   <p class="story-final-colossus-control-warning-text">
     El Coloso ha destrozado el panel de control, pero aún está operativo...
     <strong>¡ACABA CON ÉL!</strong>
@@ -30410,12 +30521,27 @@ const FINAL_COLOSSUS_STANDEE = 'assets/Historia/combate-final-coloso/coloso-dere
 
 const TUTOBOT_GREETING_HTML = '¡Hola, soy <strong>TutoBOT</strong>! Estoy aquí para hacerte la vida más fácil. ¿Comenzamos?';
 
+const TUTORIAL_PRIMER_INTRO_STEP_IDS = new Set([
+  'intro-definition',
+  'intro-attack-stat',
+  'intro-defense-stat',
+  'intro-armor-stat',
+  'intro-fuel-stat'
+]);
+
+const TUTORIAL_PRIMER_DRAG_STEP_IDS = new Set([
+  'intro-attack-stat',
+  'intro-defense-stat',
+  'intro-armor-stat',
+  'intro-fuel-stat'
+]);
+
 const TUTOBOT_STEP_LINES = {
-  'intro-definition': 'Primero te enseño qué define a un PoCoBOT.',
-  'intro-attack-stat': 'Empezamos por las picas: aquí nace tu ataque.',
-  'intro-defense-stat': 'Ahora verás cómo sube la defensa con corazones.',
-  'intro-armor-stat': 'Turno de los tréboles: blindaje puro.',
-  'intro-fuel-stat': 'Y ahora el combustible: los diamantes no solo sirven para una cosa.',
+  'intro-definition': 'Primero te enseño qué define a un PoCoBOT y por qué importa llegar al 100%.',
+  'intro-attack-stat': 'Empezamos por las picas: una sola carta puede encender tu ataque.',
+  'intro-defense-stat': 'Ahora verás cómo un corazón levanta la defensa desde cero.',
+  'intro-armor-stat': 'Turno de los tréboles: blindaje puro, sin distracciones.',
+  'intro-fuel-stat': 'Y ahora el combustible: un diamante carga fuel, pero luego verás que hace mucho más.',
   'core-build': 'Perfecto. Ahora montamos el núcleo completo del mecha.',
   'attack-build': 'Muy bien. Vamos a cumplir la exigencia del piloto.',
   'fuel-build': 'Carga combustible y ya tendrás el ataque listo.',
@@ -32163,12 +32289,12 @@ function isStoryFinalColossusMobileLite(){
 
 function getStoryFinalColossusSequenceTimings(){
   if(prefersReducedMotion()){
-    return { stripReveal:120, breachFade:220, standReady:300, complete:520, playCleanup:580, recoil:160 };
+    return { stripReveal:120, breachFade:220, standReady:300, complete:760, playCleanup:580, recoil:160 };
   }
   if(isStoryFinalColossusMobileLite()){
-    return { stripReveal:3300, breachFade:6900, standReady:7340, complete:9550, playCleanup:9850, recoil:880 };
+    return { stripReveal:3300, breachFade:6900, standReady:7340, complete:10480, playCleanup:9850, recoil:880 };
   }
-  return { stripReveal:5600, breachFade:9350, standReady:9820, complete:12700, playCleanup:13000, recoil:1320 };
+  return { stripReveal:5600, breachFade:9350, standReady:9820, complete:13760, playCleanup:13000, recoil:1320 };
 }
 
 function getStoryFinalColossusCurrentPhase(enemy, boss){
@@ -32546,6 +32672,8 @@ function showStoryFinalColossusControlWarning(onDone){
   document.body?.classList.add('story-final-colossus-control-warning-active');
   void warning.offsetWidth;
   warning.classList.add('show');
+  playUiSound('colossus_warning');
+  if(navigator.userActivation?.hasBeenActive) pulseVibrate([35, 45, 35, 70, 120]);
   const warningDuration = prefersReducedMotion() ? 1500 : 3900;
   storyFinalColossusControlWarningTimer = window.setTimeout(() => {
     storyFinalColossusControlWarningTimer = null;
@@ -34002,10 +34130,14 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-definition',
     title: 'Paso 1 · Qué define a un PoCoBOT',
-    body: 'Un <strong>PoCoBOT</strong> se reconoce por tres ideas muy simples: <strong>1 piloto</strong>, <strong>al menos 6 cartas en el panel de Stats</strong> y <strong>3 cartas del palo que exige ese piloto</strong>.<br><br>Tu piloto actual es <strong>K♠</strong>, así que para poder atacar necesitarás llegar a <strong>3 picas</strong> en Ataque. Vamos a verlo de forma muy visual, palo por palo.',
+    body: 'Un <strong>PoCoBOT</strong> se define por tres bases: <strong>1 piloto</strong>, <strong>al menos 6 cartas en el panel de Stats</strong> y <strong>cumplir el palo que exige ese piloto</strong>.<br><br>Pero hay una regla más: <strong>hasta que el montaje no llegue al 100%</strong>, el mecha <strong>no puede atacar</strong>. La clave está en montarlo antes que el rival. Vamos a verlo muy visual, palo por palo, empezando con el panel limpio.',
     objective: 'Pulsa <strong>Entendido</strong> y empezamos por las <strong>picas</strong>.',
-    tip: 'Primero veremos cómo suben Ataque, Defensa, Armadura y Fuel de uno en uno.',
-    onEnter: () => tutorialPreparePrimerScenario('definition'),
+    tip: 'Primero verás subir Ataque, Defensa, Armadura y Fuel uno a uno. En compacto puedes arrastrar la carta al panel.',
+    tutorialBotPrimaryAction: 'step:intro-attack-stat',
+    onEnter: () => {
+      tutorialPreparePrimerScenario('definition');
+      tutorialSchedulePrimerDefinitionAdvance();
+    },
     panelActions: [
       {
         label: 'Entendido',
@@ -34021,9 +34153,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-attack-stat',
     title: 'Paso 2 · Picas = Ataque',
-    body: 'Esta carta de <strong>picas</strong> suma <strong>Ataque</strong> puro. Ahora mismo tu panel marca <strong>7</strong> puntos; cuando montes esta <strong>7♠</strong>, el valor subirá a <strong>14</strong> y además completarás las <strong>3 picas</strong> que exige tu piloto.',
-    objective: 'Selecciona <strong>7♠</strong> de tu mano y pulsa <strong>Modificar</strong>.',
-    tip: 'Fíjate en el número de Ataque del panel: es lo importante de este paso.',
+    body: 'Esta carta de <strong>picas</strong> suma <strong>Ataque</strong> puro. Partimos de <strong>0</strong>: cuando montes esta <strong>7♠</strong>, el Ataque subirá a <strong>7</strong> de forma inmediata.',
+    objective: 'Lleva <strong>7♠</strong> al panel de <strong>Ataque</strong>. En compacto puedes arrastrarla; en scroll también vale seleccionarla y pulsar <strong>Modificar</strong>.',
+    tip: 'Quédate con esta idea: pica que entra, ataque que sube. Aún no basta para atacar porque el montaje sigue lejos del 100%.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0AttackA,
       label: '7♠ = Ataque',
@@ -34040,8 +34172,8 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-defense-stat',
     title: 'Paso 3 · Corazones = Defensa',
-    body: 'Los <strong>corazones</strong> refuerzan la <strong>Defensa</strong>. Tu panel está en <strong>5</strong>; al montar esta <strong>6♥</strong>, verás cómo salta a <strong>11</strong>.',
-    objective: 'Selecciona <strong>6♥</strong> de tu mano y pulsa <strong>Modificar</strong>.',
+    body: 'Los <strong>corazones</strong> refuerzan la <strong>Defensa</strong>. Volvemos a partir de <strong>0</strong>: al montar esta <strong>6♥</strong>, la Defensa subirá justo a <strong>6</strong>.',
+    objective: 'Lleva <strong>6♥</strong> al panel de <strong>Defensa</strong>. En scroll también puedes seleccionarla y pulsar <strong>Modificar</strong>.',
     tip: 'Quédate con la idea visual: corazón que entra, defensa que sube.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0DefenseB,
@@ -34059,9 +34191,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-armor-stat',
     title: 'Paso 4 · Tréboles = Armadura',
-    body: 'Los <strong>tréboles</strong> aumentan la <strong>Armadura</strong>. Ahora tienes <strong>6</strong>; al colocar este <strong>10♣</strong>, el panel pasará a <strong>16</strong>.',
-    objective: 'Selecciona <strong>10♣</strong> de tu mano y pulsa <strong>Modificar</strong>.',
-    tip: 'La armadura es tu reserva de protección: también puede volverse combustible con As♦.',
+    body: 'Los <strong>tréboles</strong> aumentan la <strong>Armadura</strong>. También empezamos desde <strong>0</strong>: al colocar este <strong>10♣</strong>, el blindaje subirá a <strong>10</strong>.',
+    objective: 'Lleva <strong>10♣</strong> al panel de <strong>Armadura</strong>. En scroll también puedes usar <strong>Modificar</strong>.',
+    tip: 'Los tréboles son blindaje puro. Más adelante incluso podrás reutilizar armadura como energía.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0IntroArmorCard,
       label: '10♣ = Armadura',
@@ -34078,9 +34210,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-fuel-stat',
     title: 'Paso 5 · Diamantes = Combustible',
-    body: 'Los <strong>diamantes numéricos</strong> entran en <strong>Fuel</strong>. Este <strong>8♦</strong> hará que tu indicador pase a <strong>16</strong> porque el combustible funciona como <strong>valor × 2</strong>.<br><br><strong>Pero tiene muchos más usos, ya verás.</strong>',
-    objective: 'Selecciona <strong>8♦</strong> de tu mano y pulsa <strong>Modificar</strong>.',
-    tip: 'Mira el contador Fuel x2: debe pasar de 0 a 16.',
+    body: 'Los <strong>diamantes numéricos</strong> entran en <strong>Fuel</strong>. Este <strong>8♦</strong> hará que el indicador pase de <strong>0</strong> a <strong>16</strong> porque el combustible funciona como <strong>valor × 2</strong>.<br><br><strong>Pero tiene muchos más usos, ya verás.</strong>',
+    objective: 'Lleva <strong>8♦</strong> al panel de <strong>Fuel</strong>. En scroll también puedes seleccionarlo y pulsar <strong>Modificar</strong>.',
+    tip: 'Mira Fuel x2: aún no puedes atacar, pero ya estás viendo cómo se carga la potencia del mecha.',
     primerReveal: {
       cardId: TUTORIAL_CARD_IDS.p0FuelA,
       label: '8♦ = Fuel',
@@ -35349,6 +35481,16 @@ function playUiSound(kind='tap'){
       playSample('unlock', .24, 1);
       playTone(760, .06, 'square', .018, 840);
       setTimeout(() => playTone(840, .06, 'square', .014, 940), 80);
+      break;
+    case 'colossus_warning':
+      duckMusic(980, 0.05);
+      playSample('unlock', .32, .72);
+      playNoise(.10, .026);
+      playTone(930, .12, 'square', .030, 720);
+      setTimeout(() => playTone(620, .14, 'sawtooth', .034, 500), 130);
+      setTimeout(() => playTone(930, .12, 'square', .030, 720), 310);
+      setTimeout(() => playTone(620, .16, 'sawtooth', .036, 460), 450);
+      setTimeout(() => playNoise(.12, .022), 520);
       break;
     case 'victory':
       playSample('unlock', .34, .92);
@@ -38719,6 +38861,15 @@ function getTutorialBotStepLead(step){
 }
 
 function getTutorialBotPrimaryAction(step = tutorialGetCurrentStep()){
+  if(step?.id === 'intro-definition' && canUseMobileSpriteHud()){
+    return { action:'', label:'' };
+  }
+  if(step?.tutorialBotPrimaryAction){
+    return {
+      action: step.tutorialBotPrimaryAction,
+      label: step.tutorialBotPrimaryLabel || 'Continuar'
+    };
+  }
   const actions = getResolvedTutorialPanelActions(step);
   if(!actions.length) return { action:'', label:'' };
   return {
@@ -38771,6 +38922,7 @@ const TUTOBOT_TOP_RAIL_FRONT_STEPS = new Set([
 
 function getTutorialBotPlacement(step = tutorialGetCurrentStep()){
   if(!step?.id) return '';
+  if(step.id === 'intro-definition' && canUseMobileSpriteHud()) return 'primer-sheet';
   if(state.attackMode || state.projectileMode || state.projectileOnlyMode || state.pendingDefense) return 'top-rail-front';
   if(TUTOBOT_TOP_RAIL_FRONT_STEPS.has(step.id)) return 'top-rail-front';
   return TUTOBOT_TOP_RAIL_STEPS.has(step.id) ? 'top-rail' : '';
@@ -38814,9 +38966,12 @@ function getTutorialBotSpeechPayload(){
   }
   const objectiveText = step ? mobileSpriteTextFromHtml(step.objective || '') : '';
   const leadText = getTutorialBotStepLead(step);
+  const compactPrimerObjective = step?.id === 'intro-definition' && canUseMobileSpriteHud()
+    ? 'Mira el panel limpio: en un instante empezamos por las picas.'
+    : objectiveText;
   const subline = tutorialSystem.completed
     ? 'Puedes seguir jugando libremente o reiniciar la lección cuando quieras.'
-    : objectiveText;
+    : compactPrimerObjective;
   return {
     visible: true,
     bubbleVisible: true,
@@ -38872,28 +39027,28 @@ function getCompactMobileTutorialCopy(step){
 
   switch(step.id){
     case 'intro-definition':
-      copy.body = 'TutoBOT va a enseñarte la base visual: un PoCoBOT necesita 1 piloto, al menos 6 cartas de stats y cumplir el palo que exige ese piloto.';
-      copy.objective = 'Pulsa <strong>Entendido</strong> y empezamos por las <strong>picas</strong>.';
-      copy.tip = 'Verás subir Ataque, Defensa, Armadura y Fuel uno a uno.';
+      copy.body = 'TutoBOT va a enseñarte la base visual: un PoCoBOT necesita 1 piloto, al menos 6 cartas de stats y cumplir el palo de su piloto. Hasta que el montaje no llegue al 100%, no podrá atacar.';
+      copy.objective = 'Observa el panel limpio: en seguida empezamos por las <strong>picas</strong>.';
+      copy.tip = 'En móvil y PC compacto arrastrarás la carta al panel para ver el cambio al instante.';
       break;
     case 'intro-attack-stat':
-      copy.body = 'Esta <strong>7♠</strong> suma Ataque directo. El panel debe pasar de <strong>7</strong> a <strong>14</strong>.';
-      copy.objective = 'Toca <strong>7♠</strong> y pulsa <strong>Modificar</strong>.';
+      copy.body = 'Esta <strong>7♠</strong> suma Ataque directo. Partes de <strong>0</strong> y el panel debe subir a <strong>7</strong>.';
+      copy.objective = 'Arrastra <strong>7♠</strong> hasta <strong>Ataque</strong>; se montará sola al soltarla.';
       copy.tip = 'Las picas siempre empujan el valor de Ataque.';
       break;
     case 'intro-defense-stat':
-      copy.body = 'Este <strong>6♥</strong> aumenta la Defensa. El panel debe pasar de <strong>5</strong> a <strong>11</strong>.';
-      copy.objective = 'Toca <strong>6♥</strong> y pulsa <strong>Modificar</strong>.';
+      copy.body = 'Este <strong>6♥</strong> aumenta la Defensa. Partes de <strong>0</strong> y el panel debe subir a <strong>6</strong>.';
+      copy.objective = 'Arrastra <strong>6♥</strong> hasta <strong>Defensa</strong>; se montará sola al soltarla.';
       copy.tip = 'Corazón que entra, defensa que sube.';
       break;
     case 'intro-armor-stat':
-      copy.body = 'Este <strong>10♣</strong> reforzará la Armadura. El panel debe pasar de <strong>6</strong> a <strong>16</strong>.';
-      copy.objective = 'Toca <strong>10♣</strong> y pulsa <strong>Modificar</strong>.';
+      copy.body = 'Este <strong>10♣</strong> reforzará la Armadura. Partes de <strong>0</strong> y el panel debe subir a <strong>10</strong>.';
+      copy.objective = 'Arrastra <strong>10♣</strong> hasta <strong>Armadura</strong>; se montará sola al soltarla.';
       copy.tip = 'Los tréboles son blindaje puro.';
       break;
     case 'intro-fuel-stat':
-      copy.body = 'Este <strong>8♦</strong> entra en Fuel y hará que el contador suba a <strong>16</strong>. <strong>Pero tiene muchos más usos, ya verás.</strong>';
-      copy.objective = 'Toca <strong>8♦</strong> y pulsa <strong>Modificar</strong>.';
+      copy.body = 'Este <strong>8♦</strong> entra en Fuel y hará que el contador suba de <strong>0</strong> a <strong>16</strong>. <strong>Pero tiene muchos más usos, ya verás.</strong>';
+      copy.objective = 'Arrastra <strong>8♦</strong> hasta <strong>Fuel</strong>; se montará sola al soltarla.';
       copy.tip = 'Fuel funciona como valor × 2.';
       break;
     case 'core-build':
@@ -38998,15 +39153,15 @@ function getCompactMobileTutorialFocusText(step){
   if(!step) return 'Abre Acciones para ver las jugadas disponibles y sigue las zonas iluminadas.';
   switch(step.id){
     case 'intro-definition':
-      return 'Lee la definición y pulsa Entendido para empezar la demostración.';
+      return 'Fíjate en la regla clave: sin 100% de montaje el mecha todavía no puede atacar.';
     case 'intro-attack-stat':
-      return 'Mira el valor de Ataque y verás el salto cuando entre la pica.';
+      return 'Arrastra la pica y mira el número de Ataque: debe pasar de 0 a 7.';
     case 'intro-defense-stat':
-      return 'Mira el valor de Defensa: debe subir en cuanto montes el corazón.';
+      return 'Arrastra el corazón y mira Defensa: debe subir justo a 6.';
     case 'intro-armor-stat':
-      return 'Mira el valor de Armadura: el trébol lo empuja al instante.';
+      return 'Arrastra el trébol y mira Armadura: debe subir justo a 10.';
     case 'intro-fuel-stat':
-      return 'Mira Fuel x2 en la cabecera: el diamante debe doblarse en cuanto entre.';
+      return 'Arrastra el diamante y mira Fuel x2 en la cabecera: debe pasar a 16.';
     case 'open-attack':
       return 'Botón amarillo Acciones → Atacar. En móvil no hay que subir al panel superior.';
     case 'first-attack':
@@ -39073,6 +39228,14 @@ function getCompactMobileTutorialPayload(){
     text: mobileSpriteTextFromHtml(html),
     meta: `${modeLabel} · Paso ${stepNumber}/${script.length}`
   };
+}
+
+function tutorialIsPrimerIntroStep(stepId = tutorialGetCurrentStep()?.id){
+  return TUTORIAL_PRIMER_INTRO_STEP_IDS.has(stepId || '');
+}
+
+function tutorialUsesCompactPrimerDrag(stepId = tutorialGetCurrentStep()?.id){
+  return TUTORIAL_PRIMER_DRAG_STEP_IDS.has(stepId || '');
 }
 
 function getMobileSpriteTutorialActions(step){
@@ -39215,6 +39378,7 @@ function createMobileSpriteSnapshot(){
     tutorialBotHtml: mobileTutorialBotVisible ? (tutorialBotPayload?.messageHtml || '') : '',
     tutorialBotText: mobileTutorialBotVisible ? mobileSpriteTextFromHtml(tutorialBotPayload?.messageHtml || '') : '',
     tutorialBotMeta: mobileTutorialBotVisible ? (tutorialBotPayload?.meta || '') : '',
+    tutorialBotStepId: mobileTutorialBotVisible ? (tutorialGetCurrentStep()?.id || '') : '',
     tutorialBotPlacement: mobileTutorialBotVisible ? (tutorialBotPayload?.placement || '') : '',
     tutorialBotSprite: mobileTutorialBotVisible ? toMobileSpriteAssetPath(tutorialBotPayload?.sprite || TUTOBOT_TALK_FRAMES[0]) : '',
     tutorialBotPrimaryAction: mobileTutorialBotVisible ? tutorialBotPrimaryAction : '',
@@ -39296,6 +39460,19 @@ function setMobileSpriteDraftPlacement(cardId, zone){
   const card = state.players?.[playerIdx]?.hand?.find(item => item.id === cardId);
   if(card) notifySelection(`${cardText(card)} preparado en ${zoneLabel(normalizedZone)}. Pulsa Modificar para confirmar.`);
   render();
+  if(tutorialUsesCompactPrimerDrag(tutorialGetCurrentStep()?.id)){
+    window.setTimeout(() => {
+      if(mobileSpriteDraftOwnerIdx !== playerIdx) return;
+      if(mobileSpriteDraftPlacements.get(cardId) !== normalizedZone) return;
+      if(commitMobileSpriteDraftPlacements()){
+        if((_ol.active && _ol.role === 'guest') || state.transitionLock){
+          clearMobileSpriteDraftPlacements(false);
+          render();
+        }
+      }
+    }, 150);
+    return true;
+  }
   sendMobileSpriteSnapshotSoon(0);
   return true;
 }
@@ -39460,6 +39637,10 @@ function handleMobileSpriteMenu(action){
 
 function handleMobileSpriteTutorialAction(action){
   if(!tutorialSystem.enabled) return;
+  if(typeof action === 'string' && action.startsWith('step:')){
+    tutorialGoToStep(action.slice('step:'.length));
+    return;
+  }
   if(action === 'tutobot-continue'){
     dismissTutorialBotOverlay();
     return;
@@ -39531,6 +39712,10 @@ window.addEventListener('message', event => {
   if(data.type === 'ready'){
     markMobileSpriteHudReady();
     sendMobileSpriteSnapshotSoon(0);
+    return;
+  }
+  if(data.type === 'bridgeAction' && data.bridgeType){
+    handleMobileSpriteBridge(data.bridgeType, data.payload || {});
   }
 });
 
@@ -40156,6 +40341,18 @@ function handleCompactHandDragEnd(event){
     renderCurrentDraftSurface();
     if(draggedCard){
       notifySelection(`${cardText(draggedCard)} preparado en ${getCompactDraftDropzoneMap(dragState.ownerIdx)[activeZone].label}. Pulsa Modificar para confirmarlo.`);
+    }
+    if(tutorialUsesCompactPrimerDrag(tutorialGetCurrentStep()?.id)){
+      window.setTimeout(() => {
+        if(compactDraftOwnerIdx !== dragState.ownerIdx) return;
+        if(compactDraftPlacements.get(dragState.cardId) !== activeZone) return;
+        if(!commitCompactDraftSelections()) return;
+        modifyMecha();
+        if((_ol.active && _ol.role === 'guest') || state.transitionLock){
+          clearCompactDraftPlacements(false);
+          renderDesktopCompactHud();
+        }
+      }, 150);
     }
     return;
   }
@@ -44126,6 +44323,7 @@ function render(){
   syncMobileVictoryHold();
   document.body.classList.toggle('tutorial-guided-active', tutorialIsGuided());
   document.body.classList.toggle('tutorial-guided-busy', tutorialSystem.enabled && tutorialSystem.busy);
+  document.body.classList.toggle('tutorial-primer-intro-step', tutorialSystem.enabled && tutorialIsPrimerIntroStep());
   document.body.classList.toggle(
     'tutorial-guided-freeplay',
     tutorialIsGuided() && tutorialGetCurrentStep()?.id === 'academy-short-fight'
@@ -45726,7 +45924,7 @@ function tutorialHandleStepCompletion(step){
     case 'intro-fuel-stat':
       queueTutorialPrimerStatGain(step.id);
       addToast('Fuel x2 listo', 'ok');
-      tutorialQueueAutoAction('Ya conoces la base visual. Ahora montamos un PoCoBOT completo desde cero.', () => {
+      tutorialQueueAutoAction('Ya conoces la base visual. Ahora sí: vamos a montar un PoCoBOT completo hasta llevarlo al 100%.', () => {
         tutorialGoToStep('core-build');
       }, 980);
       break;
@@ -45873,21 +46071,17 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
   if(!p0) return;
 
   const pilot = popCardFromZone(p0, 'hand', TUTORIAL_CARD_IDS.p0Pilot);
-  const attackBase = popCardFromZone(p0, 'attack', TUTORIAL_CARD_IDS.p0AttackBase);
-  const introAttackSeed = tutorialTakeCard(state.deck, '3', 'spades', TUTORIAL_CARD_IDS.p0IntroAttackSeed);
   const introAttackCard = popCardFromZone(p0, 'hand', TUTORIAL_CARD_IDS.p0AttackA);
-  const defenseBase = popCardFromZone(p0, 'defense', TUTORIAL_CARD_IDS.p0DefenseA);
   const defenseCard = popCardFromZone(p0, 'defense', TUTORIAL_CARD_IDS.p0DefenseB);
-  const armorBase = popCardFromZone(p0, 'armor', TUTORIAL_CARD_IDS.p0ArmorA);
   const introArmorCard = tutorialTakeCard(state.deck, '10', 'clubs', TUTORIAL_CARD_IDS.p0IntroArmorCard);
   const fuelCard = popCardFromZone(p0, 'hand', TUTORIAL_CARD_IDS.p0FuelA);
 
   p0.core.pilot = pilot || null;
   p0.core.copilot = null;
   p0.core.booster = null;
-  p0.attack = [attackBase, introAttackSeed].filter(Boolean);
-  p0.defense = [defenseBase].filter(Boolean);
-  p0.armor = [armorBase].filter(Boolean);
+  p0.attack = [];
+  p0.defense = [];
+  p0.armor = [];
   p0.fuel = [];
 
   if(stage === 'definition'){
@@ -45895,16 +46089,10 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
   } else if(stage === 'attack'){
     p0.hand = [introAttackCard].filter(Boolean);
   } else if(stage === 'defense'){
-    p0.attack = [attackBase, introAttackSeed, introAttackCard].filter(Boolean);
     p0.hand = [defenseCard].filter(Boolean);
   } else if(stage === 'armor'){
-    p0.attack = [attackBase, introAttackSeed, introAttackCard].filter(Boolean);
-    p0.defense = [defenseBase, defenseCard].filter(Boolean);
     p0.hand = [introArmorCard].filter(Boolean);
   } else if(stage === 'fuel'){
-    p0.attack = [attackBase, introAttackSeed, introAttackCard].filter(Boolean);
-    p0.defense = [defenseBase, defenseCard].filter(Boolean);
-    p0.armor = [armorBase, introArmorCard].filter(Boolean);
     p0.hand = [fuelCard].filter(Boolean);
   } else {
     p0.hand = [];
@@ -45928,8 +46116,8 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
   state.attackReadyPromptActive = false;
   state.firstAttackTriggered = false;
   state.log = [
-    '🎓 TutoBOT ha aislado el chasis para enseñarte cada palo por separado.',
-    '🧪 Mira cómo cambian los valores del panel cuando entra cada carta.'
+    '🎓 TutoBOT ha limpiado el panel para enseñarte cada palo por separado.',
+    '🧪 Mira cómo sube exactamente un solo stat cada vez y recuerda: sin 100% de montaje no hay ataque.'
   ];
 
   state.players.forEach(player => {
@@ -45943,6 +46131,14 @@ function tutorialPreparePrimerScenario(stage = 'definition'){
     player.flags.attackReadyPromptTurn = 0;
     player.flags.firstAttackComplete = false;
   });
+}
+
+function tutorialSchedulePrimerDefinitionAdvance(){
+  if(!canUseMobileSpriteHud()) return;
+  tutorialQueueAutoAction('TutoBOT prepara la primera carta de picas.', () => {
+    if(tutorialGetCurrentStep()?.id !== 'intro-definition') return;
+    tutorialGoToStep('intro-attack-stat');
+  }, 3400);
 }
 
 function getActiveTutorialScript(){
