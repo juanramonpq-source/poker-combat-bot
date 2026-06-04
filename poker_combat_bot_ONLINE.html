@@ -30537,7 +30537,7 @@ const TUTORIAL_PRIMER_DRAG_STEP_IDS = new Set([
 ]);
 
 const TUTOBOT_STEP_LINES = {
-  'intro-definition': 'Primero te enseño qué define a un PoCoBOT y por qué importa llegar al 100%.',
+  'intro-definition': 'Qué define a un PoCoBOT.',
   'intro-attack-stat': 'Empezamos por las picas: una sola carta puede encender tu ataque.',
   'intro-defense-stat': 'Ahora verás cómo un corazón levanta la defensa desde cero.',
   'intro-armor-stat': 'Turno de los tréboles: blindaje puro, sin distracciones.',
@@ -34134,6 +34134,7 @@ const TUTORIAL_SCRIPT = [
     objective: 'Pulsa <strong>Entendido</strong> y empezamos por las <strong>picas</strong>.',
     tip: 'Primero verás subir Ataque, Defensa, Armadura y Fuel uno a uno. En compacto puedes arrastrar la carta al panel.',
     tutorialBotPrimaryAction: 'step:intro-attack-stat',
+    tutorialBotPrimaryLabel: 'Seguir',
     onEnter: () => {
       tutorialPreparePrimerScenario('definition');
       tutorialSchedulePrimerDefinitionAdvance();
@@ -38922,7 +38923,6 @@ const TUTOBOT_TOP_RAIL_FRONT_STEPS = new Set([
 
 function getTutorialBotPlacement(step = tutorialGetCurrentStep()){
   if(!step?.id) return '';
-  if(step.id === 'intro-definition' && canUseMobileSpriteHud()) return 'primer-sheet';
   if(state.attackMode || state.projectileMode || state.projectileOnlyMode || state.pendingDefense) return 'top-rail-front';
   if(TUTOBOT_TOP_RAIL_FRONT_STEPS.has(step.id)) return 'top-rail-front';
   return TUTOBOT_TOP_RAIL_STEPS.has(step.id) ? 'top-rail' : '';
@@ -38964,10 +38964,27 @@ function getTutorialBotSpeechPayload(){
       messageKey: 'greeting'
     };
   }
+  if(step?.id === 'intro-definition' && canUseMobileSpriteHud()){
+    return {
+      visible: true,
+      bubbleVisible: true,
+      sequenceOnly: false,
+      placement: getTutorialBotPlacement(step),
+      primaryAction: '',
+      primaryLabel: '',
+      sprite: tutorialBotState.currentFrame,
+      messageHtml: '1 piloto + 6 stats + palo correcto.<span class="tutorial-assistant-subline">Sin 100% no puedes atacar.</span><button type="button" class="tutorial-inline-action" data-tutorial-action="step:intro-attack-stat" onclick="event.preventDefault();event.stopPropagation();window.__pocobotInlineTutorialAction && window.__pocobotInlineTutorialAction(\'step:intro-attack-stat\');">Seguir</button>',
+      meta: `Paso ${stepNumber}/${script.length}`,
+      soundKey: `step:${tutorialSystem.stepIndex}:${step.id}`,
+      messageKey: `step:${tutorialSystem.stepIndex}:${step.id}`
+    };
+  }
   const objectiveText = step ? mobileSpriteTextFromHtml(step.objective || '') : '';
-  const leadText = getTutorialBotStepLead(step);
+  const leadText = step?.id === 'intro-definition' && canUseMobileSpriteHud()
+    ? '1 piloto + 6 stats + palo correcto.'
+    : getTutorialBotStepLead(step);
   const compactPrimerObjective = step?.id === 'intro-definition' && canUseMobileSpriteHud()
-    ? 'Mira el panel limpio: en un instante empezamos por las picas.'
+    ? 'Sin 100% no puedes atacar.'
     : objectiveText;
   const subline = tutorialSystem.completed
     ? 'Puedes seguir jugando libremente o reiniciar la lección cuando quieras.'
@@ -39027,8 +39044,8 @@ function getCompactMobileTutorialCopy(step){
 
   switch(step.id){
     case 'intro-definition':
-      copy.body = 'TutoBOT va a enseñarte la base visual: un PoCoBOT necesita 1 piloto, al menos 6 cartas de stats y cumplir el palo de su piloto. Hasta que el montaje no llegue al 100%, no podrá atacar.';
-      copy.objective = 'Observa el panel limpio: en seguida empezamos por las <strong>picas</strong>.';
+      copy.body = 'Un PoCoBOT necesita 1 piloto, 6 cartas de stats y cumplir el palo del piloto. Hasta el 100% de montaje no puede atacar.';
+      copy.objective = 'Pulsa <strong>Seguir</strong> y empezamos por las <strong>picas</strong>.';
       copy.tip = 'En móvil y PC compacto arrastrarás la carta al panel para ver el cambio al instante.';
       break;
     case 'intro-attack-stat':
@@ -46138,7 +46155,7 @@ function tutorialSchedulePrimerDefinitionAdvance(){
   tutorialQueueAutoAction('TutoBOT prepara la primera carta de picas.', () => {
     if(tutorialGetCurrentStep()?.id !== 'intro-definition') return;
     tutorialGoToStep('intro-attack-stat');
-  }, 3400);
+  }, 5200);
 }
 
 function getActiveTutorialScript(){
