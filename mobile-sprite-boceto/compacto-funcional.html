@@ -5978,6 +5978,7 @@
     let attackReadyCueKey = "";
     let handShiftTimer = null;
     let touchDrag = null;
+    let deferredRealGameSnapshot = null;
     let suppressCardClickUntil = 0;
     let suppressTrustedTouchClickUntil = 0;
     const loadedCardAssetUrls = new Set();
@@ -8850,6 +8851,51 @@
       return true;
     }
 
+    function isAnyCardDragActive() {
+      return !!draggedCardId || !!touchDrag;
+    }
+
+    function clearDeferredRealGameSnapshot() {
+      deferredRealGameSnapshot = null;
+    }
+
+    function flushDeferredRealGameSnapshot() {
+      if (!deferredRealGameSnapshot || isAnyCardDragActive()) return false;
+      const snapshot = deferredRealGameSnapshot;
+      deferredRealGameSnapshot = null;
+      applyRealGameSnapshot(snapshot, { force: true });
+      return true;
+    }
+
+    function getTouchDragActivationDistance() {
+      return state.tutorial && /^intro-(attack|defense|armor|fuel)-stat$/.test(state.tutorialBotStepId || "")
+        ? 4
+        : 8;
+    }
+
+    function resolveDropZoneAtPoint(x, y) {
+      if (typeof x !== "number" || typeof y !== "number") return null;
+      const nodes = typeof document.elementsFromPoint === "function"
+        ? document.elementsFromPoint(x, y)
+        : [document.elementFromPoint(x, y)].filter(Boolean);
+      for (const node of nodes) {
+        const zone = node?.closest?.(".drop-zone");
+        if (zone) return zone;
+      }
+      return null;
+    }
+
+    function isZoneLegalDrop(zoneNode, cardId) {
+      const targetZone = zoneNode?.dataset?.zone;
+      if (!targetZone || targetZone === "reg" || !cardId) return false;
+      if (EMBEDDED_REAL_GAME) {
+        return getRealGameLegalZones(cardId).includes(targetZone);
+      }
+      const found = findCard(cardId);
+      if (!found || found.player !== state.players[0] || found.zone !== "hand") return false;
+      return !validatePlacement(state.players[0], found.card, targetZone);
+    }
+
     function startTouchCardDrag(event) {
       if (!isTouchPointer(event)) return;
       const cardNode = event.target.closest?.(".card");
@@ -8867,8 +8913,10 @@
         source: cardNode,
         startX: event.clientX,
         startY: event.clientY,
+        moved: false,
         active: false,
-        ghost: null
+        ghost: null,
+        lastValidZone: ""
       };
       try { cardNode.setPointerCapture(event.pointerId); } catch (error) {}
     }
@@ -8902,12 +8950,16 @@
       if (!touchDrag || event.pointerId !== touchDrag.pointerId) return;
       const dx = event.clientX - touchDrag.startX;
       const dy = event.clientY - touchDrag.startY;
-      if (!touchDrag.active && Math.hypot(dx, dy) < 8) return;
+      const movement = Math.hypot(dx, dy);
+      if (!touchDrag.active && movement < getTouchDragActivationDistance()) return;
       if (!touchDrag.active && !beginTouchCardDrag(event)) return;
       event.preventDefault();
+      touchDrag.moved = true;
       moveTouchDragGhost(event.clientX, event.clientY);
-      const hoverZone = document.elementFromPoint(event.clientX, event.clientY)?.closest(".drop-zone");
-      updateDropHover(hoverZone);
+      const hoverZone = resolveDropZoneAtPoint(event.clientX, event.clientY);
+      const legalHoverZone = isZoneLegalDrop(hoverZone, touchDrag.cardId) ? hoverZone : null;
+      if (legalHoverZone) touchDrag.lastValidZone = legalHoverZone.dataset.zone || "";
+      updateDropHover(legalHoverZone);
     }
 
     function finishTouchCardDrag(event, cancelled = false) {
@@ -8915,32 +8967,45 @@
       const drag = touchDrag;
       touchDrag = null;
       if (!drag.active) {
+        const releaseDistance = Math.hypot((event.clientX || drag.startX) - drag.startX, (event.clientY || drag.startY) - drag.startY);
         const tappedHandCard = !cancelled
           && drag.source
           && drag.source.closest("[data-hand-cards]")
-          && drag.cardId;
+          && drag.cardId
+          && (!drag.moved || releaseDistance <= 3);
         if (tappedHandCard) {
           suppressCardClickUntil = Date.now() + 250;
           closeActions();
           toggleSelected(drag.cardId);
         }
+        flushDeferredRealGameSnapshot();
         return tappedHandCard;
       }
       event.preventDefault();
       suppressCardClickUntil = Date.now() + 500;
       const dropZone = cancelled
         ? null
-        : document.elementFromPoint(event.clientX, event.clientY)?.closest(".drop-zone");
-      const targetZone = dropZone?.dataset.zone;
-      const canDrop = Boolean(targetZone && targetZone !== "reg" && dropZone.classList.contains("is-drop-valid"));
+        : resolveDropZoneAtPoint(event.clientX, event.clientY);
+      let targetZone = isZoneLegalDrop(dropZone, drag.cardId) ? dropZone.dataset.zone : "";
+      if (!targetZone && drag.lastValidZone) {
+        const legalFallback = EMBEDDED_REAL_GAME
+          ? getRealGameLegalZones(drag.cardId).includes(drag.lastValidZone)
+          : isZoneLegalDrop(document.querySelector(`.drop-zone[data-zone="${drag.lastValidZone}"]`), drag.cardId);
+        if (legalFallback) targetZone = drag.lastValidZone;
+      }
+      const canDrop = Boolean(targetZone);
       drag.ghost?.remove();
       drag.source?.classList.remove("is-touch-dragging");
       shell.classList.remove("touch-dragging");
       clearDropHints();
       if (canDrop) {
+        clearDeferredRealGameSnapshot();
         placeCard(drag.cardId, targetZone);
       } else if (!cancelled) {
         toast("Suelta la carta sobre un campo iluminado.");
+        flushDeferredRealGameSnapshot();
+      } else {
+        flushDeferredRealGameSnapshot();
       }
       return true;
     }
@@ -9111,7 +9176,12 @@
       };
     }
 
-    function applyRealGameSnapshot(snapshot = {}) {
+    function applyRealGameSnapshot(snapshot = {}, options = {}) {
+      const { force = false } = options;
+      if (!force && isAnyCardDragActive()) {
+        deferredRealGameSnapshot = snapshot;
+        return;
+      }
       state.players = (snapshot.players || []).map(normalizeBridgePlayer);
       state.currentPlayer = Number.isInteger(snapshot.currentPlayer) ? snapshot.currentPlayer : 0;
       state.internalTurn = Number.isFinite(Number(snapshot.internalTurn)) ? Number(snapshot.internalTurn) : state.internalTurn;
@@ -9396,31 +9466,36 @@
 
     document.addEventListener("drop", (event) => {
       const zone = event.target.closest(".drop-zone");
+      const cardId = event.dataTransfer.getData("text/plain") || draggedCardId;
       if (!zone) {
         clearDropHints();
         draggedCardId = null;
+        flushDeferredRealGameSnapshot();
         return;
       }
       event.preventDefault();
       if (zone.dataset.zone === "reg") {
         clearDropHints();
         draggedCardId = null;
+        flushDeferredRealGameSnapshot();
         return;
       }
-      if (!zone.classList.contains("is-drop-valid")) {
+      if (!isZoneLegalDrop(zone, cardId)) {
         clearDropHints();
         draggedCardId = null;
+        flushDeferredRealGameSnapshot();
         return;
       }
-      const cardId = event.dataTransfer.getData("text/plain") || draggedCardId;
       clearDropHints();
       draggedCardId = null;
+      clearDeferredRealGameSnapshot();
       placeCard(cardId, zone.dataset.zone);
     });
 
     document.addEventListener("dragend", () => {
       clearDropHints();
       draggedCardId = null;
+      flushDeferredRealGameSnapshot();
     });
 
     if (EMBEDDED_REAL_GAME) registerEmbeddedRealGame();
