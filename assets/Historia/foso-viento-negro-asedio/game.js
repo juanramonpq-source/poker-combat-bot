@@ -7,6 +7,7 @@ const objectiveTitle = document.getElementById("objective-title");
 const objectiveCopy = document.getElementById("objective-copy");
 const interactPrompt = document.getElementById("interact-prompt");
 const handCardsEl = document.getElementById("hand-cards");
+const handTrayEl = document.querySelector(".hand-tray");
 
 const statusThreats = document.getElementById("status-threats");
 const statusCover = document.getElementById("status-cover");
@@ -31,7 +32,7 @@ const storyExtraDeckParam = storyParams.get("story_deck_cards") || "";
 const storyRemovedDeckParam = storyParams.get("story_removed_cards") || "";
 
 const FOSO_SCENE_ID = "foso-viento-negro";
-const FOSO_PROGRESS_KEY = "pocobot-story-foso-blackwind-progress-v1";
+const FOSO_PROGRESS_KEY = "pocobot-story-foso-blackwind-progress-v2";
 const FOSO_SAVE_INTERVAL_MS = 800;
 const SUIT_SYMBOLS = {
   spades: "♠",
@@ -94,6 +95,11 @@ const world = {
   roadRadius: 56,
   edgePadding: 18,
 };
+const introGate = {
+  x: world.startX,
+  y: world.startY,
+  radius: 150,
+};
 
 const input = {
   up: false,
@@ -123,7 +129,7 @@ const player = {
 const camera = {
   x: 0,
   y: 0,
-  zoom: 1.02,
+  zoom: 1.36,
 };
 
 const coverRects = [
@@ -356,12 +362,26 @@ function constrainToPlayableRoute(x, y) {
   };
 }
 
+function constrainToIntroGate(point) {
+  if (state.signRead) return point;
+  const dx = point.x - introGate.x;
+  const dy = point.y - introGate.y;
+  const distance = Math.hypot(dx, dy);
+  if (distance <= introGate.radius) return point;
+  const ratio = introGate.radius / (distance || 1);
+  return {
+    x: introGate.x + dx * ratio,
+    y: introGate.y + dy * ratio,
+  };
+}
+
 function constrainMovementPosition(x, y) {
   const clamped = {
     x: clamp(x, world.edgePadding + player.radius, world.width - world.edgePadding - player.radius),
     y: clamp(y, world.edgePadding + player.radius, world.height - world.edgePadding - player.radius),
   };
-  return debugCollisionZones.length ? clamped : constrainToPlayableRoute(clamped.x, clamped.y);
+  const constrained = debugCollisionZones.length ? clamped : constrainToPlayableRoute(clamped.x, clamped.y);
+  return constrainToIntroGate(constrained);
 }
 
 function pointInDebugCollisionZone(point, zone) {
@@ -778,7 +798,7 @@ function buildStandaloneFosoCombatUrl(blockedBaseCards = [], blockedExtraCardIds
   if (removedDeckCards) url.searchParams.set("story_removed_cards", removedDeckCards);
   if (storyExtraDeckParam) url.searchParams.set("story_deck_cards", storyExtraDeckParam);
   if (blockedExtraCardIds.length) url.searchParams.set("story_blocked_extra_card_ids", encodeBase64Json(blockedExtraCardIds));
-  url.searchParams.set("v", "20260602-foso-battery-combat");
+  url.searchParams.set("v", "20260605-bateria-electronica-boss");
   return url.href;
 }
 
@@ -891,14 +911,16 @@ function openSignModal() {
       { text: "La mano inicial es de 7 cartas", kind: "" },
     ],
     actions: [
-      {
-        label: state.signRead ? "Seguir cruzando" : "Empezar el cruce",
-        variant: "primary",
-        onClick: () => {
-          state.signRead = true;
-          setObjective("Cruza el Foso y administra el desgaste.", "Lee cada impacto, busca cobertura y guarda las mejores cartas posibles para la bateria.");
-          closeModal();
-          saveProgress();
+	      {
+	        label: state.signRead ? "Seguir cruzando" : "Empezar el cruce",
+	        variant: "primary",
+	        onClick: () => {
+	          const wasSignRead = state.signRead;
+	          state.signRead = true;
+	          syncHandTrayState(!wasSignRead);
+	          setObjective("Cruza el Foso y administra el desgaste.", "Lee cada impacto, busca cobertura y guarda las mejores cartas posibles para la bateria.");
+	          closeModal();
+	          saveProgress();
         },
       },
     ],
@@ -983,6 +1005,29 @@ function spawnThreatVolley(threat) {
     });
   }
   state.activeThreatFlash = 0.48;
+}
+
+function getAmbientImpactPointNearPlayer() {
+  const minDistance = state.signRead ? 118 : 96;
+  const maxDistance = state.signRead ? 280 : 205;
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = minDistance + Math.random() * (maxDistance - minDistance);
+    const routePoint = getNearestRoutePoint(
+      player.x + Math.cos(angle) * distance,
+      player.y + Math.sin(angle) * distance
+    );
+    const candidate = {
+      x: clamp(routePoint.x + (Math.random() * 46 - 23), world.edgePadding, world.width - world.edgePadding),
+      y: clamp(routePoint.y + (Math.random() * 46 - 23), world.edgePadding, world.height - world.edgePadding),
+    };
+    if (Math.hypot(candidate.x - player.x, candidate.y - player.y) >= minDistance) return candidate;
+  }
+  const fallbackAngle = Math.random() * Math.PI * 2;
+  return {
+    x: clamp(player.x + Math.cos(fallbackAngle) * minDistance, world.edgePadding, world.width - world.edgePadding),
+    y: clamp(player.y + Math.sin(fallbackAngle) * minDistance, world.edgePadding, world.height - world.edgePadding),
+  };
 }
 
 function pushExplosion(x, y, radius = 86) {
@@ -1207,11 +1252,27 @@ function renderStatus() {
   renderHand();
 }
 
+function syncHandTrayState(animate = false) {
+  if (!handTrayEl) return;
+  document.body.classList.toggle("foso-hub-unlocked", state.signRead);
+  handTrayEl.classList.toggle("is-unlocked", state.signRead);
+  handTrayEl.setAttribute("aria-hidden", state.signRead ? "false" : "true");
+  if (!state.signRead || !animate) return;
+  handTrayEl.classList.remove("is-opening");
+  void handTrayEl.offsetWidth;
+  handTrayEl.classList.add("is-opening");
+  window.setTimeout(() => handTrayEl.classList.remove("is-opening"), 820);
+}
+
 function getFosoCameraZoom(width, height) {
   const portrait = height > width;
-  if (portrait && width <= 720) return 0.72;
-  if (width <= 1180 || height <= 680) return 0.92;
-  return 1.02;
+  if (portrait && width <= 720) return 1.08;
+  if (width <= 1180 || height <= 680) return 1.24;
+  // En escritorio el viewport ancho puede enseñar casi todo el mapa si el zoom es fijo.
+  // Calculamos el zoom por area visible para que la ruta se descubra por exploracion.
+  const targetVisibleWorldWidth = width >= 1800 ? 650 : 600;
+  const targetVisibleWorldHeight = 480;
+  return clamp(Math.max(width / targetVisibleWorldWidth, height / targetVisibleWorldHeight), 2.22, 3.35);
 }
 
 function resizeCanvas() {
@@ -1254,7 +1315,8 @@ function drawSoftShadow(x, y, radiusX, radiusY, opacity = 0.24) {
 }
 
 function getPerspectiveScale() {
-  return 0.74 + ((player.y - 160) / (world.height - 160)) * 0.18;
+  const depthScale = 0.74 + ((player.y - 160) / (world.height - 160)) * 0.18;
+  return depthScale * (1 / Math.max(1, camera.zoom)) * 0.94;
 }
 
 function createPlayerVisual() {
@@ -1279,7 +1341,7 @@ async function loadAssets() {
     cover: "./assets/cover-barricade.png",
     missile: "./assets/missile-artillery.png",
     batteryWorld: "./assets/battery-emplacement-world.png",
-    batteryCombat: "./assets/battery-emplacement-combat.png",
+    batteryCombat: "./assets/bateria-electronica-boss.webp",
   };
 
   const visualPromises = playerVisualFrameSources
@@ -1328,9 +1390,46 @@ function drawInteractableSign() {
   if (state.signRead) return;
   const sign = interactables.find((entry) => entry.id === "sign") || { x: 152, y: 818, scale: 0.78 };
   const scale = sign.scale || 0.78;
-  const width = 192 * scale;
-  const height = 240 * scale;
-  ctx.drawImage(assets.sign, sign.x - width * 0.5, sign.y - height + 28 * scale, width, height);
+  const time = performance.now();
+  const pulse = Math.sin(time * 0.0052) * 0.5 + 0.5;
+  const glowX = sign.x + 34 * scale;
+  const glowY = sign.y + 18 * scale;
+  const radius = 46 * scale + pulse * 8 * scale;
+
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+
+  const aura = ctx.createRadialGradient(glowX, glowY, 4, glowX, glowY, radius * 2.2);
+  aura.addColorStop(0, `rgba(255, 232, 166, ${0.36 + pulse * 0.16})`);
+  aura.addColorStop(0.34, `rgba(255, 154, 78, ${0.22 + pulse * 0.12})`);
+  aura.addColorStop(1, "rgba(255, 108, 64, 0)");
+  ctx.fillStyle = aura;
+  ctx.beginPath();
+  ctx.ellipse(glowX, glowY, radius * 2.35, radius * 0.82, -0.12, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = `rgba(255, 218, 148, ${0.36 + pulse * 0.24})`;
+  ctx.lineWidth = 2.2 * scale;
+  ctx.setLineDash([9 * scale, 8 * scale]);
+  ctx.lineDashOffset = -time * 0.018;
+  ctx.beginPath();
+  ctx.ellipse(glowX, glowY, radius * 1.36, radius * 0.48, -0.12, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+  for (let index = 0; index < 5; index += 1) {
+    const angle = time * 0.0016 + index * 1.27;
+    const sparkRadius = radius * (0.72 + Math.sin(time * 0.003 + index) * 0.14);
+    const x = glowX + Math.cos(angle) * sparkRadius * 1.32;
+    const y = glowY + Math.sin(angle) * sparkRadius * 0.46;
+    const spark = 2.2 * scale + pulse * 1.4 * scale;
+    ctx.fillStyle = `rgba(255, 242, 202, ${0.42 + pulse * 0.34})`;
+    ctx.beginPath();
+    ctx.arc(x, y, spark, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
 }
 
 function drawBatteryWorld() {
@@ -1428,9 +1527,11 @@ function drawPlayer() {
     playerVisual.draw();
     return;
   }
-  drawSoftShadow(player.x, player.y + 42, 44, 14, 0.28);
+  const visualScale = getPerspectiveScale();
+  drawSoftShadow(player.x, player.y + 42 * visualScale, 44 * visualScale, 14 * visualScale, 0.28);
   ctx.save();
   ctx.translate(player.x, player.y);
+  ctx.scale(visualScale, visualScale);
   ctx.fillStyle = "#1b2531";
   ctx.strokeStyle = "#8ee1ff";
   ctx.lineWidth = 6;
@@ -1662,19 +1763,13 @@ function updateMissiles(list, dt) {
 }
 
 function maybeSpawnAmbientMissile(dt) {
-  if (!state.signRead) return;
   ambientMissileTimer -= dt;
   if (ambientMissileTimer > 0) return;
-  ambientMissileTimer = 0.64 + Math.random() * 0.58;
-  const playerRoute = getNearestRoutePoint(
-    player.x + (Math.random() * 240 - 120),
-    player.y + (Math.random() * 220 - 110)
-  );
-  const x = playerRoute.x + (Math.random() * 64 - 32);
-  const y = playerRoute.y + (Math.random() * 64 - 32);
+  ambientMissileTimer = state.signRead ? 0.58 + Math.random() * 0.48 : 0.82 + Math.random() * 0.62;
+  const impact = getAmbientImpactPointNearPlayer();
   spawnMissile(
-    x,
-    y,
+    impact.x,
+    impact.y,
     false,
     { side: Math.random() > 0.5 ? "left" : "right", baseJitter: 0.18 + Math.random() * 0.08, instability: 0.56 + Math.random() * 0.16 }
   );
@@ -1873,6 +1968,7 @@ async function boot() {
   const restored = restoreProgress();
   if (!restored) seedNewAttempt();
   state.loaded = true;
+  syncHandTrayState(false);
   renderStatus();
   setObjective(
     state.signRead ? "Cruza el Foso y administra el desgaste." : "Busca el cartel de la Ruta Ceniza.",
