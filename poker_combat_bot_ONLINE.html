@@ -39989,7 +39989,7 @@ function setMobileSpriteDraftPlacement(cardId, zone){
   prepareDraftSelectionRotation(mobileSpriteDraftPlacements, cardId);
   mobileSpriteDraftPlacements.set(cardId, normalizedZone);
   if(compactPrimerDrag){
-    if(commitMobileSpriteDraftPlacements()) return true;
+    if(commitTutorialPrimerPlacements([[cardId, normalizedZone]], playerIdx, { clearMobileDraft: true })) return true;
     clearMobileSpriteDraftPlacements(false);
     render();
     sendMobileSpriteSnapshotSoon(0);
@@ -40038,6 +40038,63 @@ function commitMobileSpriteDraftPlacements(){
   syncMilestones(playerIdx);
   clearMobileSpriteDraftPlacements(false);
   finishModifyTurn();
+  return true;
+}
+
+function commitTutorialPrimerPlacements(entries, playerIdx, options = {}){
+  if(!Array.isArray(entries) || !entries.length) return false;
+  const player = state.players?.[playerIdx];
+  if(!player) return false;
+  const { clearMobileDraft = false, clearCompactDraft = false } = options;
+  const applied = [];
+  for(const [cardId, zone] of entries){
+    const card = removeById(player.hand, cardId);
+    if(!card) continue;
+    const result = placeCardOnBoard(player, card, zone);
+    if(!result.ok){
+      player.hand.push(card);
+      continue;
+    }
+    applied.push({ card, zone });
+  }
+  if(!applied.length){
+    if(clearMobileDraft) clearMobileSpriteDraftPlacements(false);
+    if(clearCompactDraft) clearCompactDraftPlacements(false);
+    return false;
+  }
+
+  log(`🔧 ${player.name} coloca ${applied.map(({ card, zone }) => `${cardText(card)} en ${zoneLabel(zone)}`).join(', ')}.`);
+  state.selected = [];
+  state.attackMode = false;
+  state.projectileMode = false;
+  mobileSpriteProjectileOnlyMode = false;
+  state.lastActionType = 'modify';
+  state.pendingTurnSfx = null;
+  state.transitionLock = false;
+  player.flags.lastOwnAction = 'modify';
+  syncMilestones(playerIdx);
+
+  if(clearMobileDraft) clearMobileSpriteDraftPlacements(false);
+  if(clearCompactDraft) clearCompactDraftPlacements(false);
+
+  compactTurnShowcaseSuppressUntil = Date.now() + 1900;
+  playUiSound('build');
+  triggerScreenRipple('amber');
+  pulseVibrate([12, 20, 12]);
+  triggerCompactBuildFeedback(playerIdx);
+  if(isMobileSpriteHudActive()){
+    const completeBuild = isCompleteAttackMecha(player);
+    callMobileSpriteHudFx('animateModification', {
+      playerIndex: getMobileSpriteRelativePlayerIndex(playerIdx),
+      complete: completeBuild,
+      text: completeBuild ? 'Mecha listo' : 'Montaje aplicado'
+    });
+  }
+  render();
+  if(canUseMobileSpriteHud()){
+    sendMobileSpriteSnapshot();
+    sendMobileSpriteSnapshotSoon(0);
+  }
   return true;
 }
 
@@ -40864,15 +40921,10 @@ function handleCompactHandDragEnd(event){
     prepareDraftSelectionRotation(compactDraftPlacements, dragState.cardId);
     compactDraftPlacements.set(dragState.cardId, activeZone);
     if(tutorialUsesCompactPrimerDrag(tutorialGetCurrentStep()?.id)){
-      if(!commitCompactDraftSelections()){
+      if(!commitTutorialPrimerPlacements([[dragState.cardId, activeZone]], dragState.ownerIdx, { clearCompactDraft: true })){
         clearCompactDraftPlacements(false);
         renderDesktopCompactHud();
         return;
-      }
-      modifyMecha();
-      if((_ol.active && _ol.role === 'guest') || state.transitionLock){
-        clearCompactDraftPlacements(false);
-        renderDesktopCompactHud();
       }
       return;
     }
