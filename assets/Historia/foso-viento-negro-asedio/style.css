@@ -393,11 +393,25 @@ body.foso-hub-unlocked .interact-prompt {
   backdrop-filter: blur(8px);
 }
 
+.modal-layer.is-impact-warning::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 56%, rgba(255, 238, 184, 0.72) 0 3%, rgba(255, 132, 83, 0.42) 11%, rgba(255, 72, 44, 0.16) 24%, transparent 42%),
+    radial-gradient(circle at 48% 54%, rgba(255, 204, 112, 0.2), transparent 38%);
+  mix-blend-mode: screen;
+  animation: modalImpactBlast 720ms ease-out both;
+}
+
 .modal-layer[hidden] {
   display: none;
 }
 
 .modal-card {
+  position: relative;
+  z-index: 1;
   width: min(920px, calc(100vw - 24px));
   max-height: min(84vh, 780px);
   overflow: auto;
@@ -410,6 +424,24 @@ body.foso-hub-unlocked .interact-prompt {
   box-shadow:
     0 34px 80px rgba(0, 0, 0, 0.52),
     0 0 0 1px rgba(255, 180, 107, 0.08) inset;
+}
+
+@keyframes modalImpactBlast {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+    filter: blur(12px);
+  }
+  18% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.28);
+    filter: blur(18px);
+  }
 }
 
 .modal-meta,

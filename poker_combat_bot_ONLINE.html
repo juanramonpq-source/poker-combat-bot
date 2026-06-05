@@ -1577,7 +1577,7 @@ body.victory .winner-banner.show{
   will-change:opacity, transform, filter, background-position;
 }
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breakout{
-  animation:storyFinalColossusBreakoutFrames 3.35s linear both;
+  animation:storyFinalColossusBreakoutFrames 4.25s cubic-bezier(.16,.72,.18,1) both;
 }
 .story-final-colossus-overlay.breach-fade .story-final-colossus-strip-window,
 .story-final-colossus-overlay.stand-ready .story-final-colossus-strip-window,
@@ -2349,7 +2349,7 @@ body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal
   filter:blur(5px) saturate(1.16);
 }
 body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breakout{
-  animation:storyFinalColossusMobileBreakoutFrames 3.55s linear both;
+  animation:storyFinalColossusMobileBreakoutFrames 4.35s cubic-bezier(.16,.72,.18,1) both;
 }
 body.story-final-colossus-mobile .story-final-colossus-standee{
   --colossus-final-x: 36%;
@@ -2702,74 +2702,74 @@ body.story-final-colossus-mode:not(.desktop-compact-mode):not(.mobile-compact-mo
   0%{
     opacity:0;
     background-position:0 50%;
-    clip-path:ellipse(18% 16% at 49% 52%);
-    transform:translate3d(-14%, 8%, -240px) scale(.54) rotateX(18deg) rotateZ(-7deg);
-    filter:blur(16px) brightness(.42) saturate(.68) drop-shadow(0 10px 16px rgba(0,0,0,.48));
+    clip-path:ellipse(20% 18% at 50% 52%);
+    transform:translate(-6%, 8%) scale(.46) rotate(-4deg);
+    filter:blur(14px) brightness(.42) saturate(.72) drop-shadow(0 10px 16px rgba(0,0,0,.48));
   }
-  4%, 31%{
+  10%, 34%{
     opacity:.96;
     background-position:0 50%;
-    clip-path:ellipse(28% 25% at 50% 51%);
-    transform:translate3d(-8%, 3%, -120px) scale(.78) rotateX(11deg) rotateZ(-3deg);
-    filter:blur(7px) brightness(.74) saturate(.82) drop-shadow(0 20px 22px rgba(0,0,0,.52)) drop-shadow(0 0 20px rgba(35,216,255,.2));
+    clip-path:polygon(3% 21%, 16% 7%, 42% 2%, 62% 7%, 89% 2%, 98% 21%, 96% 80%, 84% 96%, 58% 99%, 39% 91%, 17% 99%, 1% 80%);
+    transform:translate(-4%, 4%) scale(.72) rotate(-2deg);
+    filter:blur(5px) brightness(.86) saturate(.94) drop-shadow(0 18px 22px rgba(0,0,0,.5)) drop-shadow(0 0 22px rgba(35,216,255,.26));
   }
-  32%, 63%{
+  35%, 66%{
     opacity:1;
     background-position:50% 50%;
-    clip-path:polygon(0 11%, 14% 1%, 41% 0, 61% 5%, 91% 0, 100% 15%, 100% 86%, 86% 100%, 58% 100%, 38% 92%, 13% 100%, 0 86%);
-    transform:translate3d(-1%, -3%, 26px) scale(1.02) rotateX(-2deg) rotateZ(.8deg);
-    filter:brightness(1.16) saturate(1.22) drop-shadow(0 38px 34px rgba(0,0,0,.58)) drop-shadow(0 0 32px rgba(35,216,255,.3));
+    clip-path:polygon(0 11%, 13% 0, 41% 0, 61% 5%, 92% 0, 100% 15%, 100% 87%, 86% 100%, 58% 100%, 38% 92%, 13% 100%, 0 86%);
+    transform:translate(1%, -2%) scale(.98) rotate(.5deg);
+    filter:brightness(1.12) saturate(1.18) drop-shadow(0 34px 32px rgba(0,0,0,.58)) drop-shadow(0 0 34px rgba(35,216,255,.32));
   }
-  64%, 92%{
+  67%, 92%{
     opacity:1;
     background-position:100% 50%;
     clip-path:polygon(0 8%, 11% 0, 39% 0, 60% 4%, 92% 0, 100% 13%, 100% 89%, 86% 100%, 58% 100%, 37% 94%, 13% 100%, 0 88%);
-    transform:translate3d(5%, -7%, 112px) scale(1.2) rotateX(-7deg) rotateZ(2.4deg);
-    filter:brightness(1.24) saturate(1.26) drop-shadow(0 52px 44px rgba(0,0,0,.66)) drop-shadow(0 0 42px rgba(35,216,255,.36)) drop-shadow(0 0 58px rgba(255,132,72,.28));
+    transform:translate(5%, -5%) scale(1.18) rotate(2deg);
+    filter:brightness(1.22) saturate(1.24) drop-shadow(0 48px 42px rgba(0,0,0,.66)) drop-shadow(0 0 44px rgba(35,216,255,.38)) drop-shadow(0 0 56px rgba(255,132,72,.3));
   }
   100%{
-    opacity:1;
+    opacity:0;
     background-position:100% 50%;
     clip-path:polygon(0 8%, 11% 0, 39% 0, 60% 4%, 92% 0, 100% 13%, 100% 89%, 86% 100%, 58% 100%, 37% 94%, 13% 100%, 0 88%);
-    transform:translate3d(7%, -8%, 92px) scale(1.16) rotateX(-5deg) rotateZ(2deg);
-    filter:brightness(1.1) saturate(1.1) drop-shadow(0 44px 38px rgba(0,0,0,.58)) drop-shadow(0 0 32px rgba(35,216,255,.28));
+    transform:translate(7%, -6%) scale(1.24) rotate(2.6deg);
+    filter:blur(7px) brightness(.82) saturate(.88) drop-shadow(0 38px 34px rgba(0,0,0,.54));
   }
 }
 @keyframes storyFinalColossusMobileBreakoutFrames{
   0%{
     opacity:0;
     background-position:0 50%;
-    clip-path:ellipse(16% 14% at 49% 52%);
-    transform:translate3d(-23%, 12%, -240px) scale(.44) rotateX(18deg) rotateZ(-8deg);
-    filter:blur(16px) brightness(.4) saturate(.68) drop-shadow(0 12px 18px rgba(0,0,0,.5));
+    clip-path:ellipse(20% 18% at 50% 52%);
+    transform:translate(-7%, 8%) scale(.5) rotate(-4deg);
+    filter:blur(13px) brightness(.42) saturate(.72) drop-shadow(0 12px 18px rgba(0,0,0,.5));
   }
-  7%, 29%{
+  10%, 34%{
     opacity:.98;
     background-position:0 50%;
-    clip-path:ellipse(28% 24% at 50% 51%);
-    transform:translate3d(-16%, 5%, -110px) scale(.72) rotateX(10deg) rotateZ(-4deg);
-    filter:blur(7px) brightness(.78) saturate(.86) drop-shadow(0 24px 26px rgba(0,0,0,.56)) drop-shadow(0 0 24px rgba(35,216,255,.28));
+    clip-path:polygon(3% 20%, 16% 6%, 42% 2%, 62% 7%, 89% 2%, 98% 21%, 96% 80%, 84% 96%, 58% 99%, 39% 91%, 17% 99%, 1% 80%);
+    transform:translate(-4%, 4%) scale(.78) rotate(-2deg);
+    filter:blur(4px) brightness(.9) saturate(.98) drop-shadow(0 24px 26px rgba(0,0,0,.56)) drop-shadow(0 0 26px rgba(35,216,255,.32));
   }
-  30%, 61%{
+  35%, 66%{
     opacity:1;
     background-position:50% 50%;
     clip-path:polygon(0 10%, 12% 0, 40% 0, 60% 4%, 92% 0, 100% 14%, 100% 88%, 86% 100%, 58% 100%, 37% 94%, 13% 100%, 0 87%);
-    transform:translate3d(-5%, -5%, 28px) scale(.98) rotateX(-2deg) rotateZ(.6deg);
-    filter:brightness(1.18) saturate(1.24) drop-shadow(0 42px 38px rgba(0,0,0,.62)) drop-shadow(0 0 36px rgba(35,216,255,.36)) drop-shadow(0 0 40px rgba(255,132,72,.24));
+    transform:translate(0, -2%) scale(1.04) rotate(.6deg);
+    filter:brightness(1.15) saturate(1.2) drop-shadow(0 42px 38px rgba(0,0,0,.62)) drop-shadow(0 0 38px rgba(35,216,255,.38)) drop-shadow(0 0 42px rgba(255,132,72,.24));
   }
-  62%, 90%{
+  67%, 92%{
     opacity:1;
     background-position:100% 50%;
     clip-path:polygon(0 8%, 11% 0, 39% 0, 60% 4%, 92% 0, 100% 13%, 100% 89%, 86% 100%, 58% 100%, 37% 94%, 13% 100%, 0 88%);
-    transform:translate3d(6%, -10%, 112px) scale(1.14) rotateX(-8deg) rotateZ(2.8deg);
-    filter:brightness(1.25) saturate(1.28) drop-shadow(0 56px 48px rgba(0,0,0,.7)) drop-shadow(0 0 46px rgba(35,216,255,.42)) drop-shadow(0 0 62px rgba(255,132,72,.32));
+    transform:translate(5%, -6%) scale(1.24) rotate(2.4deg);
+    filter:brightness(1.25) saturate(1.28) drop-shadow(0 56px 48px rgba(0,0,0,.7)) drop-shadow(0 0 48px rgba(35,216,255,.42)) drop-shadow(0 0 64px rgba(255,132,72,.34));
   }
   100%{
-    opacity:.98;
+    opacity:0;
     background-position:100% 50%;
     clip-path:polygon(0 8%, 11% 0, 39% 0, 60% 4%, 92% 0, 100% 13%, 100% 89%, 86% 100%, 58% 100%, 37% 94%, 13% 100%, 0 88%);
-    transform:translate3d(9%, -10%, 84px) scale(1.08) rotateX(-5deg) rotateZ(2.4deg);
-    filter:brightness(1.12) saturate(1.12) drop-shadow(0 48px 42px rgba(0,0,0,.62)) drop-shadow(0 0 36px rgba(35,216,255,.3));
+    transform:translate(8%, -8%) scale(1.3) rotate(2.8deg);
+    filter:blur(7px) brightness(.82) saturate(.86) drop-shadow(0 48px 42px rgba(0,0,0,.62));
   }
 }
 @keyframes storyFinalColossusBreachShadow{
@@ -28823,43 +28823,45 @@ body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal
 }
 
 body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breakout{
-  inset:-62% -16% -86% -12% !important;
+  inset:-22% -8% -24% -8% !important;
   z-index:48 !important;
+  animation:storyFinalColossusMobileBreakoutFrames 4.35s cubic-bezier(.16,.72,.18,1) both !important;
+  background-size:300% 100% !important;
   clip-path:polygon(0 8%, 11% 0, 39% 0, 60% 4%, 92% 0, 100% 13%, 100% 89%, 86% 100%, 58% 100%, 37% 94%, 13% 100%, 0 88%) !important;
   filter:
-    drop-shadow(0 48px 42px rgba(0,0,0,.68))
-    drop-shadow(0 0 38px rgba(35,216,255,.38))
-    drop-shadow(0 0 62px rgba(255,118,68,.32)) !important;
+    drop-shadow(0 34px 34px rgba(0,0,0,.64))
+    drop-shadow(0 0 38px rgba(35,216,255,.4))
+    drop-shadow(0 0 56px rgba(255,118,68,.34)) !important;
 }
 
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breach{
-  perspective:900px !important;
-  transform-style:preserve-3d !important;
+  perspective:none !important;
+  transform-style:flat !important;
 }
 
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breach::before{
-  z-index:18 !important;
+  z-index:5 !important;
   background:
-    radial-gradient(ellipse at 50% 52%, rgba(0,0,0,.68) 0 18%, rgba(2,6,14,.34) 32%, transparent 62%),
-    radial-gradient(ellipse at 53% 51%, rgba(35,216,255,.32), transparent 38%),
-    radial-gradient(ellipse at 47% 48%, rgba(255,132,72,.28), transparent 42%) !important;
-  mix-blend-mode:multiply !important;
-  animation:storyFinalColossusScreenDent 3.55s cubic-bezier(.16,.82,.2,1) both !important;
+    radial-gradient(ellipse at 50% 52%, rgba(0,0,0,.48) 0 16%, rgba(2,6,14,.22) 34%, transparent 66%),
+    radial-gradient(ellipse at 53% 51%, rgba(35,216,255,.28), transparent 42%),
+    radial-gradient(ellipse at 47% 48%, rgba(255,132,72,.22), transparent 48%) !important;
+  mix-blend-mode:screen !important;
+  animation:storyFinalColossusBreachPulse 4.25s cubic-bezier(.16,.82,.2,1) both !important;
 }
 
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-strip-window{
-  transform-style:preserve-3d !important;
+  transform-style:flat !important;
 }
 
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-strip-window::before{
-  z-index:54 !important;
+  z-index:12 !important;
   background:
-    radial-gradient(ellipse at 50% 52%, transparent 0 34%, rgba(255,243,205,.34) 36% 38%, transparent 41%),
-    conic-gradient(from 10deg at 51% 52%, transparent 0 5%, rgba(255,238,188,.52) 6% 6.8%, transparent 7.5% 24%, rgba(35,216,255,.34) 25% 26%, transparent 27% 54%, rgba(255,112,72,.28) 55% 56%, transparent 57% 100%),
-    repeating-linear-gradient(166deg, transparent 0 18px, rgba(255,255,255,.11) 19px 20px, transparent 21px 43px) !important;
+    radial-gradient(ellipse at 50% 52%, transparent 0 35%, rgba(255,243,205,.22) 36% 38%, transparent 42%),
+    conic-gradient(from 10deg at 51% 52%, transparent 0 8%, rgba(255,238,188,.32) 9% 10%, transparent 11% 27%, rgba(35,216,255,.26) 28% 29%, transparent 30% 58%, rgba(255,112,72,.22) 59% 60%, transparent 61% 100%),
+    repeating-linear-gradient(166deg, transparent 0 24px, rgba(255,255,255,.08) 25px 26px, transparent 27px 52px) !important;
   mix-blend-mode:screen !important;
-  opacity:.88 !important;
-  animation:storyFinalColossusFrontGlass 3.55s cubic-bezier(.16,.82,.2,1) both !important;
+  opacity:.42 !important;
+  animation:none !important;
 }
 
 .story-final-colossus-breakout::before,
@@ -28872,36 +28874,23 @@ body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal
 }
 
 .story-final-colossus-breakout::before{
-  z-index:-1;
-  background:
-    radial-gradient(ellipse at 50% 58%, rgba(0,0,0,.66), transparent 46%),
-    radial-gradient(ellipse at 42% 44%, rgba(35,216,255,.22), transparent 34%);
-  filter:blur(16px);
-  transform:translate3d(-2%, 7%, -80px) scale(.82);
-  opacity:0;
+  display:none !important;
 }
 
 .story-final-colossus-breakout::after{
-  z-index:2;
-  background:
-    radial-gradient(ellipse at 50% 49%, transparent 0 28%, rgba(255,248,222,.28) 29% 30%, transparent 31%),
-    linear-gradient(100deg, transparent 0 20%, rgba(255,255,255,.22) 21% 22%, transparent 23% 58%, rgba(35,216,255,.22) 59% 60%, transparent 61%),
-    repeating-linear-gradient(28deg, transparent 0 26px, rgba(255,255,255,.12) 27px 28px, transparent 29px 64px);
-  mix-blend-mode:screen;
-  clip-path:polygon(4% 22%, 18% 9%, 42% 5%, 61% 11%, 84% 6%, 96% 21%, 91% 37%, 72% 31%, 58% 41%, 42% 33%, 23% 43%, 7% 34%);
-  opacity:0;
+  display:none !important;
 }
 
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breakout{
-  transform-style:preserve-3d !important;
+  transform-style:flat !important;
 }
 
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breakout::before{
-  animation:storyFinalColossusBackPressure 3.55s cubic-bezier(.16,.82,.2,1) both;
+  animation:none !important;
 }
 
 .story-final-colossus-overlay.play.strip-reveal .story-final-colossus-breakout::after{
-  animation:storyFinalColossusContactShards 3.55s cubic-bezier(.16,.82,.2,1) both;
+  animation:none !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .story-final-colossus-overlay{
@@ -28922,25 +28911,25 @@ body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .desk
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .story-final-colossus-standee{
-  --colossus-final-x:30% !important;
-  right:-30vw !important;
-  width:min(90vw, 860px) !important;
-  opacity:.94 !important;
+  --colossus-final-x:20% !important;
+  right:-22vw !important;
+  width:min(112vw, 960px) !important;
+  opacity:.98 !important;
   pointer-events:none !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-compact-mode .story-final-colossus-standee,
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-portrait-mode .story-final-colossus-standee{
-  --colossus-final-x:28% !important;
-  right:-35vw !important;
-  width:min(96vw, 780px) !important;
+  --colossus-final-x:18% !important;
+  right:-27vw !important;
+  width:min(122vw, 940px) !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.mobile-pc-compact-mode .story-final-colossus-standee,
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged.tablet-touch-landscape-mode .story-final-colossus-standee{
-  --colossus-final-x:24% !important;
-  right:-14vw !important;
-  width:min(82vw, 980px) !important;
+  --colossus-final-x:16% !important;
+  right:-9vw !important;
+  width:min(98vw, 1160px) !important;
 }
 
 body.story-final-colossus-mobile-panel-forced.story-final-colossus-engaged .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .desktop-compact-shell{
@@ -29175,6 +29164,61 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
   rotate:0deg !important;
   scale:1 !important;
   filter:brightness(.99) !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-rebuild-block{
+  opacity:.1 !important;
+  filter:blur(.4px) saturate(.92) brightness(.9) !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .story-final-colossus-rebuild-block::before{
+  opacity:.45 !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) .app:is(.mobile-compact-mode, .mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-portrait-mode, .tablet-touch-landscape-mode) :is(.compact-topbar, .compact-player-panel, .compact-arena-panel, .compact-hand-panel, .compact-mobile-actions-panel){
+  border-color:rgba(102,235,255,.64) !important;
+  background:
+    linear-gradient(180deg, rgba(12,38,73,.96), rgba(9,25,48,.96) 52%, rgba(8,20,42,.98)) !important;
+  box-shadow:
+    0 0 0 1px rgba(170,245,255,.26),
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    inset 0 18px 28px rgba(99,226,255,.08),
+    0 14px 24px rgba(0,0,0,.36) !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-panel{
+  width:min(84dvw, 510px) !important;
+  max-width:min(84dvw, 510px) !important;
+  height:150px !important;
+  min-height:150px !important;
+  background:
+    linear-gradient(180deg, rgba(242,248,255,.96), rgba(232,241,252,.94) 54%, rgba(214,228,246,.96)) !important;
+  box-shadow:
+    0 0 0 1px rgba(102,235,255,.34),
+    inset 0 0 0 2px rgba(255,255,255,.48),
+    0 12px 22px rgba(0,0,0,.32) !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray{
+  --compact-hand-card-width:50px !important;
+  --compact-hand-card-height:70px !important;
+  --compact-hand-card-step:44px !important;
+  min-height:84px !important;
+  padding:7px 8px 9px !important;
+  background:rgba(255,255,255,.28) !important;
+  border:1px solid rgba(28,94,148,.18) !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) #accionesBtn,
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-action-hub-button{
+  left:clamp(190px, 49dvw, 224px) !important;
+  bottom:clamp(20px, 3.4dvh, 34px) !important;
+  transform:rotate(-1.2deg) !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-landscape-mode) .app:is(.mobile-panorama-mode, .mobile-pc-compact-mode, .tablet-touch-landscape-mode) .compact-hand-panel{
+  background:
+    linear-gradient(180deg, rgba(242,248,255,.95), rgba(229,240,253,.95)) !important;
 }
 
 @keyframes storyFinalColossusScreenDent{
@@ -32806,7 +32850,7 @@ function isStoryFinalColossusMobileLite(){
 
 function getStoryFinalColossusSequenceTimings(){
   if(prefersReducedMotion()){
-    return { stripReveal:120, breachFade:220, standReady:300, complete:760, playCleanup:580, recoil:160 };
+    return { stripReveal:900, breachFade:4400, standReady:4820, complete:6400, playCleanup:6100, recoil:260 };
   }
   if(isStoryFinalColossusMobileLite()){
     return { stripReveal:3300, breachFade:6900, standReady:7340, complete:10480, playCleanup:9850, recoil:880 };

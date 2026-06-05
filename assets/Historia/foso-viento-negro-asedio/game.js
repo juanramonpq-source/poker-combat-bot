@@ -53,6 +53,9 @@ const SUIT_COLORS = {
   diamonds: "red",
 };
 const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+const NUMERIC_DIAMOND_RANKS = new Set(["2", "3", "4", "5", "6", "7", "8", "9", "10"]);
+const MISSILE_SPRITE_ROTATION_OFFSET = Math.PI * 0.5;
+const MISSILE_FLYBY_AUDIO_SRC = "./assets/missile-flyby-cc0.mp3";
 const WORLD_SCALE = {
   battleground: {
     x: 996,
@@ -286,10 +289,14 @@ let toastMessage = "";
 let toastUntil = 0;
 let redGlowPulse = 0;
 let lastExplosionSoundAt = 0;
+let lastMissileFlybySoundAt = 0;
 
 const fosoAudio = {
   context: null,
   unlocked: false,
+  missileFlybyFetchPromise: null,
+  missileFlybyDecodePromise: null,
+  missileFlybyBuffer: null,
 };
 
 const state = {
@@ -746,7 +753,25 @@ function consumeArmorLoss(amount) {
 }
 
 function canMitigateWithDiamonds() {
+  return state.hand.some(isNumericDiamondCard);
+}
+
+function canBurnWithDiamonds() {
   return state.hand.some((card) => card.suit === "diamonds");
+}
+
+function isNumericDiamondCard(card) {
+  return !!card && card.suit === "diamonds" && NUMERIC_DIAMOND_RANKS.has(card.rank);
+}
+
+function getThreatActionHighlightIds() {
+  if (state.modalCardAction === "mitigate") {
+    return state.hand.filter(isNumericDiamondCard).map((card) => card.id);
+  }
+  if (state.modalCardAction === "burn") {
+    return state.hand.filter((card) => card.suit === "diamonds").map((card) => card.id);
+  }
+  return [];
 }
 
 function describeLossReason(reason) {
@@ -798,15 +823,17 @@ function buildStandaloneFosoCombatUrl(blockedBaseCards = [], blockedExtraCardIds
   if (removedDeckCards) url.searchParams.set("story_removed_cards", removedDeckCards);
   if (storyExtraDeckParam) url.searchParams.set("story_deck_cards", storyExtraDeckParam);
   if (blockedExtraCardIds.length) url.searchParams.set("story_blocked_extra_card_ids", encodeBase64Json(blockedExtraCardIds));
-  url.searchParams.set("v", "20260605-bateria-electronica-boss");
+  url.searchParams.set("v", "20260605-foso-flyby-sfx");
   return url.href;
 }
 
 function closeModal() {
   modalLayer.hidden = true;
+  modalLayer.classList.remove("is-impact-warning");
 }
 
 function openModal(config = {}) {
+  modalLayer.classList.toggle("is-impact-warning", !!config.impactWarning);
   modalKicker.textContent = config.kicker || "";
   modalTitle.textContent = config.title || "";
   modalCopy.textContent = config.copy || "";
@@ -891,10 +918,11 @@ function buildThreatMeta(threat) {
     { text: `Impacto base: ${threat.damage}`, kind: "danger" },
     { text: `Carril: ${LANE_NAMES[threat.lane]}`, kind: "" },
     { text: `Tiempo: ${threat.eta}`, kind: "" },
-    { text: isPlayerInCover() ? "Cobertura activa: -1 al daño" : "Fuera de cobertura", kind: isPlayerInCover() ? "ok" : "danger" },
-    { text: `Pérdida real si aguantas: ${damage}`, kind: damage > 0 ? "danger" : "ok" },
-    { text: `Ataques de la salva: ${threat.missileCount || 2}`, kind: "" },
-  ];
+	    { text: isPlayerInCover() ? "Cobertura activa: -1 al daño" : "Fuera de cobertura", kind: isPlayerInCover() ? "ok" : "danger" },
+	    { text: `Pérdida real si aguantas: ${damage}`, kind: damage > 0 ? "danger" : "ok" },
+	    { text: "Defensa valida: diamantes 2-10", kind: canMitigateWithDiamonds() ? "ok" : "danger" },
+	    { text: `Ataques de la salva: ${threat.missileCount || 2}`, kind: "" },
+	  ];
 }
 
 function openSignModal() {
@@ -903,12 +931,13 @@ function openSignModal() {
   openModal({
     kicker: "Inicio del asedio",
     title: "Cartel de la Ruta Ceniza",
-    copy: "Cruza el Foso para seguir adelante. Cada diamante que gastes durante los impactos no estará disponible en el combate final contra la batería. Si absorbes golpes, perderás cartas de armadura para ese combate también.",
+    copy: "La Ruta Ceniza cruza un foso batido por artilleria. Avanza de cobertura en cobertura: cuando la bateria fije un proyectil sobre tu posicion, tendras que responder en el momento con una carta valida o aguantar el golpe.",
     meta: [
-      { text: "Objetivo: llegar hasta la batería residual", kind: "" },
-      { text: "No hay escenas de diálogo en este capítulo", kind: "ok" },
-      { text: "Puedes ampliar tu mano a 1 carta extra quemando combustible", kind: "" },
-      { text: "La mano inicial es de 7 cartas", kind: "" },
+      { text: "Objetivo: alcanzar la Bateria electronica", kind: "" },
+      { text: "Solo diamantes numericos 2-10 desvian proyectiles", kind: "ok" },
+      { text: "Ases y figuras de diamantes no sirven para defender impactos", kind: "danger" },
+      { text: "Cada carta usada o perdida queda fuera del combate final", kind: "" },
+      { text: "Puedes quemar combustible para robar 1 carta extra", kind: "" },
     ],
     actions: [
 	      {
@@ -1036,9 +1065,18 @@ function pushExplosion(x, y, radius = 86) {
   playExplosionSound(clamp(radius / 90, 0.6, 1.45), clamp(distanceToPlayer / 520, 0, 1));
 }
 
+function triggerThreatImpactCue(threat) {
+  const impactX = threat.impactX || laneTargets[threat.lane]?.x || player.x;
+  const impactY = threat.impactY || laneTargets[threat.lane]?.y || player.y;
+  const distanceToPlayer = Math.hypot(player.x - impactX, player.y - impactY);
+  playMissileFlybySound(1.08, clamp(distanceToPlayer / 620, 0, 1));
+  window.setTimeout(() => pushExplosion(impactX, impactY, 124), 260);
+  state.activeThreatFlash = 0.6;
+}
+
 function resolveThreatWithDiamond(card) {
   const threat = getThreatById(state.activeThreatId);
-  if (!threat || !card || card.suit !== "diamonds") return;
+  if (!threat || !isNumericDiamondCard(card)) return;
   const removed = removeCardFromHand(card.id);
   if (!removed) return;
   markCardBlocked(removed, "mitigate");
@@ -1088,39 +1126,46 @@ function openThreatModal(threat) {
   const preview = previewLosses.length
     ? previewLosses.map((card) => ({ text: `Se perderia ${cardLabel(card)}`, kind: "danger" }))
     : [{ text: "No perderias armadura si aguantas desde esta posicion", kind: "ok" }];
-  openModal({
-    kicker: "Impacto de artilleria",
-    title: threat.title,
-    copy: threat.copy,
-    meta: buildThreatMeta(threat),
-    preview,
-    cards: state.hand,
-    onCardClick: (card) => {
-      if (state.modalCardAction === "mitigate") resolveThreatWithDiamond(card);
-      if (state.modalCardAction === "burn") burnDiamondForDraw(card);
-    },
-    highlightIds: state.modalCardAction ? state.hand.filter((card) => card.suit === "diamonds").map((card) => card.id) : [],
-    actions: [
-      {
-        label: state.modalCardAction === "mitigate" ? "Selecciona un diamante de tu mano" : "Usar diamante",
-        variant: "primary",
-        onClick: () => {
-          if (!canMitigateWithDiamonds()) {
-            showToast("No tienes diamantes en mano ahora mismo", 1200);
-            return;
-          }
-          state.modalCardAction = "mitigate";
+	  openModal({
+	    kicker: "Impacto de artilleria",
+	    title: threat.title,
+	    copy: `${threat.copy} El proyectil ya esta cayendo: responde con un diamante numerico del 2 al 10 o aguanta el impacto y pierde armadura para el combate final.`,
+	    impactWarning: true,
+	    meta: buildThreatMeta(threat),
+	    preview,
+	    cards: state.hand,
+	    onCardClick: (card) => {
+	      if (state.modalCardAction === "mitigate") {
+	        if (!isNumericDiamondCard(card)) {
+	          showToast("Solo diamantes numericos 2-10 desvían proyectiles", 1400);
+	          return;
+	        }
+	        resolveThreatWithDiamond(card);
+	      }
+	      if (state.modalCardAction === "burn") burnDiamondForDraw(card);
+	    },
+	    highlightIds: getThreatActionHighlightIds(),
+	    actions: [
+	      {
+	        label: state.modalCardAction === "mitigate" ? "Selecciona diamante 2-10" : "Responder con diamante numerico",
+	        variant: "primary",
+	        onClick: () => {
+	          if (!canMitigateWithDiamonds()) {
+	            showToast("Necesitas un diamante numerico del 2 al 10", 1400);
+	            return;
+	          }
+	          state.modalCardAction = "mitigate";
           openThreatModal(threat);
         },
       },
-      {
-        label: state.modalCardAction === "burn" ? "Selecciona un diamante para quemarlo" : "Quemar combustible y robar",
-        variant: "secondary",
-        onClick: () => {
-          if (!canMitigateWithDiamonds()) {
-            showToast("No puedes quemar combustible sin diamantes en mano", 1200);
-            return;
-          }
+	      {
+	        label: state.modalCardAction === "burn" ? "Selecciona un diamante para quemarlo" : "Quemar combustible y robar",
+	        variant: "secondary",
+	        onClick: () => {
+	          if (!canBurnWithDiamonds()) {
+	            showToast("No puedes quemar combustible sin diamantes en mano", 1200);
+	            return;
+	          }
           state.modalCardAction = "burn";
           openThreatModal(threat);
         },
@@ -1270,9 +1315,9 @@ function getFosoCameraZoom(width, height) {
   if (width <= 1180 || height <= 680) return 1.24;
   // En escritorio el viewport ancho puede enseñar casi todo el mapa si el zoom es fijo.
   // Calculamos el zoom por area visible para que la ruta se descubra por exploracion.
-  const targetVisibleWorldWidth = width >= 1800 ? 650 : 600;
-  const targetVisibleWorldHeight = 480;
-  return clamp(Math.max(width / targetVisibleWorldWidth, height / targetVisibleWorldHeight), 2.22, 3.35);
+  const targetVisibleWorldWidth = width >= 1800 ? 740 : 690;
+  const targetVisibleWorldHeight = 540;
+  return clamp(Math.max(width / targetVisibleWorldWidth, height / targetVisibleWorldHeight), 1.98, 3.05);
 }
 
 function resizeCanvas() {
@@ -1558,16 +1603,16 @@ function drawMissile(missile) {
 
   ctx.save();
   ctx.translate(missile.x, missile.y);
-  ctx.rotate(missile.rotation);
+  ctx.rotate(missile.rotation + MISSILE_SPRITE_ROTATION_OFFSET);
   ctx.drawImage(assets.missile, -22, -22, 44, 44);
   ctx.globalAlpha = 0.42;
   ctx.fillStyle = "rgba(255, 170, 114, 0.46)";
   ctx.beginPath();
-  const tailLength = missile.scripted ? -72 : -54;
+  const tailLength = missile.scripted ? 72 : 54;
   const tailWiggle = missile.scripted ? 2 : 1.25;
-  ctx.moveTo(-12, 0);
-  ctx.lineTo(tailLength, -8 + tailWiggle);
-  ctx.lineTo(tailLength, 8 - tailWiggle);
+  ctx.moveTo(0, 14);
+  ctx.lineTo(-8 + tailWiggle, tailLength);
+  ctx.lineTo(8 - tailWiggle, tailLength);
   ctx.closePath();
   ctx.fill();
   ctx.globalAlpha = 0.4;
@@ -1730,6 +1775,7 @@ function maybeTriggerThreat() {
   state.activeThreatId = threat.id;
   state.modalCardAction = "";
   spawnThreatVolley(threat);
+  triggerThreatImpactCue(threat);
   openThreatModal(threat);
 }
 
@@ -1747,8 +1793,9 @@ function updateMissiles(list, dt) {
     const driftX = -Math.sin(missile.baseAngle) * jitter * lateralFactor;
     const driftY = Math.cos(missile.baseAngle) * jitter * lateralFactor;
     const angle = Math.atan2(travelY + driftY * 12, travelX + driftX * 12);
+    const targetAngle = Math.atan2(travelY, travelX);
     const speed = missile.speed * (1 + Math.sin(missile.life * 7) * (missile.scripted ? 0.018 : 0.03));
-    missile.rotation = angle;
+    missile.rotation = targetAngle;
     missile.x += Math.cos(angle) * speed * dt;
     missile.y += Math.sin(angle) * speed * dt;
     missile.trail.push({ x: missile.x, y: missile.y, alpha: 0.22 * (1 - clamp(missile.life / missile.maxLife, 0, 1)) });
@@ -1897,6 +1944,45 @@ function ensureFosoAudio() {
   return fosoAudio.context;
 }
 
+function preloadMissileFlybyAudio() {
+  if (fosoAudio.missileFlybyFetchPromise) return fosoAudio.missileFlybyFetchPromise;
+  fosoAudio.missileFlybyFetchPromise = fetch(MISSILE_FLYBY_AUDIO_SRC)
+    .then((response) => {
+      if (!response.ok) throw new Error(`No se pudo cargar ${MISSILE_FLYBY_AUDIO_SRC}`);
+      return response.arrayBuffer();
+    })
+    .catch(() => null);
+  return fosoAudio.missileFlybyFetchPromise;
+}
+
+function decodeAudioBuffer(context, audioData) {
+  const dataCopy = audioData.slice(0);
+  if (context.decodeAudioData.length === 1) {
+    return context.decodeAudioData(dataCopy);
+  }
+  return new Promise((resolve, reject) => {
+    context.decodeAudioData(dataCopy, resolve, reject);
+  });
+}
+
+function prepareMissileFlybyBuffer() {
+  if (fosoAudio.missileFlybyBuffer) return Promise.resolve(fosoAudio.missileFlybyBuffer);
+  if (fosoAudio.missileFlybyDecodePromise) return fosoAudio.missileFlybyDecodePromise;
+  const context = ensureFosoAudio();
+  if (!context) return Promise.resolve(null);
+  fosoAudio.missileFlybyDecodePromise = preloadMissileFlybyAudio()
+    .then((audioData) => {
+      if (!audioData) return null;
+      return decodeAudioBuffer(context, audioData);
+    })
+    .then((buffer) => {
+      fosoAudio.missileFlybyBuffer = buffer;
+      return buffer;
+    })
+    .catch(() => null);
+  return fosoAudio.missileFlybyDecodePromise;
+}
+
 function unlockFosoAudio() {
   const context = ensureFosoAudio();
   if (!context) return;
@@ -1904,6 +1990,7 @@ function unlockFosoAudio() {
     context.resume().catch(() => {});
   }
   fosoAudio.unlocked = true;
+  prepareMissileFlybyBuffer();
 }
 
 function createExplosionNoiseBuffer(context) {
@@ -1961,8 +2048,53 @@ function playExplosionSound(intensity = 1, distanceRatio = 0.5) {
   noise.stop(now + 0.78);
 }
 
+function startMissileFlybyBuffer(buffer, intensity = 1, distanceRatio = 0.5) {
+  const context = ensureFosoAudio();
+  if (!context || !fosoAudio.unlocked || !buffer) return;
+  const now = context.currentTime;
+  const closeness = clamp(1 - distanceRatio, 0.2, 1);
+  const source = context.createBufferSource();
+  const gain = context.createGain();
+  const filter = context.createBiquadFilter();
+  const pan = typeof context.createStereoPanner === "function" ? context.createStereoPanner() : null;
+
+  source.buffer = buffer;
+  source.playbackRate.setValueAtTime(0.88 + Math.random() * 0.1, now);
+  filter.type = "bandpass";
+  filter.frequency.setValueAtTime(980 + intensity * 220, now);
+  filter.Q.setValueAtTime(0.92, now);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(clamp(0.12 * intensity * closeness, 0.035, 0.18), now + 0.08);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + Math.min(buffer.duration, 3.85));
+  if (pan) {
+    pan.pan.setValueAtTime(Math.random() > 0.5 ? -0.42 : 0.42, now);
+    pan.pan.linearRampToValueAtTime(Math.random() > 0.5 ? 0.28 : -0.28, now + 1.1);
+    source.connect(filter).connect(gain).connect(pan).connect(context.destination);
+  } else {
+    source.connect(filter).connect(gain).connect(context.destination);
+  }
+  source.start(now);
+  source.stop(now + Math.min(buffer.duration, 4.1));
+}
+
+function playMissileFlybySound(intensity = 1, distanceRatio = 0.5) {
+  const nowMs = performance.now();
+  if (nowMs - lastMissileFlybySoundAt < 950) return;
+  const context = ensureFosoAudio();
+  if (!context || !fosoAudio.unlocked) return;
+  lastMissileFlybySoundAt = nowMs;
+  if (fosoAudio.missileFlybyBuffer) {
+    startMissileFlybyBuffer(fosoAudio.missileFlybyBuffer, intensity, distanceRatio);
+    return;
+  }
+  prepareMissileFlybyBuffer().then((buffer) => {
+    if (buffer) startMissileFlybyBuffer(buffer, intensity, distanceRatio);
+  });
+}
+
 async function boot() {
   resizeCanvas();
+  preloadMissileFlybyAudio();
   await loadAssets();
   applyDebugPhysicsOverrides();
   const restored = restoreProgress();
