@@ -8,7 +8,9 @@ const objectiveCopy = document.getElementById("objective-copy");
 const interactPrompt = document.getElementById("interact-prompt");
 const handCardsEl = document.getElementById("hand-cards");
 const handTrayEl = document.querySelector(".hand-tray");
+const handCopyEl = document.getElementById("hand-copy");
 
+const statusPrimaryLabel = document.getElementById("status-primary-label");
 const statusThreats = document.getElementById("status-threats");
 const statusCover = document.getElementById("status-cover");
 const statusLosses = document.getElementById("status-losses");
@@ -56,6 +58,7 @@ const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 const NUMERIC_DIAMOND_RANKS = new Set(["2", "3", "4", "5", "6", "7", "8", "9", "10"]);
 const MISSILE_SPRITE_ROTATION_OFFSET = Math.PI * 0.5;
 const MISSILE_FLYBY_AUDIO_SRC = "./assets/missile-flyby-cc0.mp3";
+const THREAT_HAND_SIZE = 7;
 const WORLD_SCALE = {
   battleground: {
     x: 996,
@@ -198,6 +201,14 @@ const interactables = [
   { id: "battery", x: 1075.0623777705343, y: 191.43350717079528, radius: 132, label: "Alcance de la bateria residual", scale: 1 },
   { id: "red-glow", x: WORLD_SCALE.redGlow.x, y: WORLD_SCALE.redGlow.y, radius: WORLD_SCALE.redGlow.radius, label: "Resplandor rojo en ruinas de metal", scale: 0.45 },
 ];
+const switchPartSpawnAnchors = [
+  { pathId: "south-loop", x: 676, y: 980 },
+  { pathId: "west-ruins", x: 238, y: 508 },
+  { pathId: "north-climb", x: 356, y: 236 },
+  { pathId: "central-break", x: 642, y: 420 },
+  { pathId: "east-curve", x: 1036, y: 562 },
+  { pathId: "east-bridge", x: 1188, y: 414 },
+];
 
 const routePaths = [
   [
@@ -311,6 +322,8 @@ const state = {
   activeThreatId: "",
   activeThreatFlash: 0,
   redGlowCollected: false,
+  batteryEncountered: false,
+  switchParts: [],
   modalMode: "",
   modalCardAction: "",
   scriptedMissiles: [],
@@ -537,6 +550,63 @@ function buildRedGlowRewardCard() {
   };
 }
 
+function getCollectedSwitchPartCount() {
+  return state.switchParts.filter((part) => part.collected).length;
+}
+
+function hasAllSwitchParts() {
+  return state.switchParts.length >= 2 && getCollectedSwitchPartCount() >= state.switchParts.length;
+}
+
+function isMissileSystemOnline() {
+  return !hasAllSwitchParts();
+}
+
+function getRemainingDeckCount() {
+  return state.drawPile.length + state.hand.length;
+}
+
+function stashThreatHandBackToDeck(options = {}) {
+  if (!state.hand.length) return;
+  state.drawPile = options.keepOrder
+    ? state.drawPile.concat(state.hand)
+    : shuffle(state.drawPile.concat(state.hand));
+  state.hand = [];
+}
+
+function redealThreatHand() {
+  stashThreatHandBackToDeck();
+  if (!state.drawPile.length) return;
+  state.drawPile = shuffle(state.drawPile);
+  drawCards(THREAT_HAND_SIZE);
+}
+
+function pickSwitchPartSpawns() {
+  const anchors = shuffle(switchPartSpawnAnchors);
+  const uniqueByPath = [];
+  const usedPathIds = new Set();
+  anchors.forEach((anchor) => {
+    if (usedPathIds.has(anchor.pathId)) return;
+    usedPathIds.add(anchor.pathId);
+    uniqueByPath.push(anchor);
+  });
+  return uniqueByPath.slice(0, 2).map((anchor, index) => ({
+    id: `switch-part-${index + 1}`,
+    x: anchor.x,
+    y: anchor.y,
+    radius: 42,
+    scale: 0.5,
+    label: "Recoger pieza del interruptor",
+    collected: false,
+    pathId: anchor.pathId,
+  }));
+}
+
+function ensureSwitchPartsAssigned() {
+  if (state.switchParts.length) return;
+  state.switchParts = pickSwitchPartSpawns();
+}
+
 function buildDebugInteractionDefaults() {
   return interactables.map((item) => ({
     id: item.id,
@@ -638,6 +708,8 @@ function saveProgress() {
     resolvedThreatIds: [...state.resolvedThreatIds],
     activeThreatId: state.activeThreatId,
     redGlowCollected: state.redGlowCollected,
+    batteryEncountered: state.batteryEncountered,
+    switchParts: state.switchParts,
     modalMode: state.modalMode,
     modalCardAction: state.modalCardAction,
     player: { x: player.x, y: player.y },
@@ -667,9 +739,27 @@ function restoreProgress() {
   state.resolvedThreatIds = new Set(saved.resolvedThreatIds || []);
   state.activeThreatId = typeof saved.activeThreatId === "string" ? saved.activeThreatId : "";
   state.redGlowCollected = !!saved.redGlowCollected;
+  state.batteryEncountered = !!saved.batteryEncountered;
+  state.switchParts = Array.isArray(saved.switchParts)
+    ? saved.switchParts
+      .filter((part) => part && typeof part.id === "string")
+      .map((part) => ({
+        id: part.id,
+        x: Number(part.x) || world.startX,
+        y: Number(part.y) || world.startY,
+        radius: Number(part.radius) || 42,
+        scale: Number(part.scale) || 0.5,
+        label: "Recoger pieza del interruptor",
+        collected: !!part.collected,
+        pathId: String(part.pathId || part.id),
+      }))
+    : [];
   state.modalMode = typeof saved.modalMode === "string" ? saved.modalMode : "";
   state.modalCardAction = typeof saved.modalCardAction === "string" ? saved.modalCardAction : "";
   state.attemptComplete = !!saved.attemptComplete;
+  if (state.batteryEncountered && !state.switchParts.length) {
+    ensureSwitchPartsAssigned();
+  }
   if (saved.player) {
     const restored = constrainMovementPosition(
       Number(saved.player.x) || world.startX,
@@ -691,6 +781,8 @@ function seedNewAttempt() {
   state.resolvedThreatIds = new Set();
   state.activeThreatId = "";
   state.redGlowCollected = false;
+  state.batteryEncountered = false;
+  state.switchParts = [];
   state.modalMode = "";
   state.modalCardAction = "";
   state.scriptedMissiles = [];
@@ -700,7 +792,6 @@ function seedNewAttempt() {
   state.attemptComplete = false;
   player.x = world.startX;
   player.y = world.startY;
-  drawCards(7);
   clearProgress();
 }
 
@@ -794,6 +885,40 @@ function setObjective(title, copy) {
   objectiveCopy.textContent = copy;
 }
 
+function updateHandCopy() {
+  if (!handCopyEl) return;
+  if (!state.signRead) {
+    handCopyEl.textContent = "Lee el cartel para activar la logica del asedio.";
+    return;
+  }
+  if (!state.activeThreatId) {
+    handCopyEl.textContent = hasAllSwitchParts()
+      ? "El sistema de misiles esta fuera de servicio. Solo importan ya las cartas que hayas perdido durante el bombardeo."
+      : "Cada impacto despliega hasta 7 cartas aleatorias del mazo vivo. Solo las cartas perdidas quedaran fuera del combate final.";
+    return;
+  }
+  handCopyEl.textContent = "Estas 7 cartas pertenecen a la salva actual. Los diamantes usados o quemados no estaran en el combate final.";
+}
+
+function updateObjectiveForFosoState() {
+  if (!state.signRead) {
+    setObjective("Busca el cartel de la Ruta Ceniza.", "Esta junto al inicio, en la esquina inferior izquierda. Acercate e interactua para leer las instrucciones.");
+    return;
+  }
+  if (hasAllSwitchParts()) {
+    setObjective("Vuelve a la bateria enemiga.", "El interruptor esta completo y los lanzamientos de misiles se han detenido. Regresa al emplazamiento para iniciar el combate final.");
+    return;
+  }
+  if (state.batteryEncountered) {
+    setObjective(
+      `Recupera el interruptor distribuido (${getCollectedSwitchPartCount()}/${Math.max(2, state.switchParts.length)})`,
+      "La bateria ha sellado sus puertas. Busca en el foso las dos piezas rojas del interruptor, reunelas y vuelve para forzar un duelo sin bombardeo."
+    );
+    return;
+  }
+  setObjective("Alcanza la bateria enemiga.", "Cruza el foso, lee los impactos que te encuentres y abre camino hasta el emplazamiento del fondo.");
+}
+
 function postFosoAction(action, payload = {}) {
   const message = {
     type: "pocobot-story-foso-action",
@@ -823,7 +948,7 @@ function buildStandaloneFosoCombatUrl(blockedBaseCards = [], blockedExtraCardIds
   if (removedDeckCards) url.searchParams.set("story_removed_cards", removedDeckCards);
   if (storyExtraDeckParam) url.searchParams.set("story_deck_cards", storyExtraDeckParam);
   if (blockedExtraCardIds.length) url.searchParams.set("story_blocked_extra_card_ids", encodeBase64Json(blockedExtraCardIds));
-  url.searchParams.set("v", "20260605-foso-flyby-sfx");
+  url.searchParams.set("v", "20260608-foso-switch-hunt");
   return url.href;
 }
 
@@ -898,6 +1023,31 @@ function getResolvedThreatCount() {
   return state.resolvedThreatIds.size;
 }
 
+function getBatteryInteractableLabel() {
+  if (hasAllSwitchParts()) return "Forzar combate directo con la bateria";
+  if (state.batteryEncountered) return "Examinar puertas selladas de la bateria";
+  return "Examinar bateria residual";
+}
+
+function getActiveInteractables() {
+  const active = [];
+  interactables.forEach((item) => {
+    if (item.id === "sign" && state.signRead) return;
+    if (item.id === "red-glow" && state.redGlowCollected) return;
+    if (item.id === "battery") {
+      active.push({ ...item, label: getBatteryInteractableLabel() });
+      return;
+    }
+    active.push(item);
+  });
+  if (state.batteryEncountered && !hasAllSwitchParts()) {
+    state.switchParts
+      .filter((part) => !part.collected)
+      .forEach((part) => active.push(part));
+  }
+  return active;
+}
+
 function isPlayerInCover() {
   return coverRects.some((rect) => (
     player.x + player.radius > rect.x
@@ -931,9 +1081,9 @@ function openSignModal() {
   openModal({
     kicker: "Inicio del asedio",
     title: "Cartel de la Ruta Ceniza",
-    copy: "La Ruta Ceniza cruza un foso batido por artilleria. Avanza de cobertura en cobertura: cuando la bateria fije un proyectil sobre tu posicion, tendras que responder en el momento con una carta valida o aguantar el golpe.",
+    copy: "La Ruta Ceniza cruza un foso batido por artilleria. Avanza hasta la bateria enemiga; cada vez que una salva te cruce, se desplegaran cartas del mazo vivo para responder al impacto o asumir el golpe.",
     meta: [
-      { text: "Objetivo: alcanzar la Bateria electronica", kind: "" },
+      { text: "Objetivo: alcanzar la bateria electronica", kind: "" },
       { text: "Solo diamantes numericos 2-10 desvian proyectiles", kind: "ok" },
       { text: "Ases y figuras de diamantes no sirven para defender impactos", kind: "danger" },
       { text: "Cada carta usada o perdida queda fuera del combate final", kind: "" },
@@ -943,13 +1093,14 @@ function openSignModal() {
 	      {
 	        label: state.signRead ? "Seguir cruzando" : "Empezar el cruce",
 	        variant: "primary",
-	        onClick: () => {
-	          const wasSignRead = state.signRead;
-	          state.signRead = true;
-	          syncHandTrayState(!wasSignRead);
-	          setObjective("Cruza el Foso y administra el desgaste.", "Lee cada impacto, busca cobertura y guarda las mejores cartas posibles para la bateria.");
-	          closeModal();
-	          saveProgress();
+        onClick: () => {
+          const wasSignRead = state.signRead;
+          state.signRead = true;
+          syncHandTrayState(!wasSignRead);
+          updateObjectiveForFosoState();
+          updateHandCopy();
+          closeModal();
+          saveProgress();
         },
       },
     ],
@@ -959,9 +1110,10 @@ function openSignModal() {
 function collectRedGlowReward() {
   if (state.redGlowCollected) return;
   state.redGlowCollected = true;
-  state.hand.push(buildRedGlowRewardCard());
+  state.drawPile = shuffle(state.drawPile.concat(buildRedGlowRewardCard()));
   showToast("Obtuviste 8 de tréboles del resplandor rojo.", 1800);
-  setObjective("Resplandor descubierto", "La cubierta oculta te da una carta táctica extra para el asedio.");
+  updateObjectiveForFosoState();
+  updateHandCopy();
   saveProgress();
 }
 
@@ -1074,6 +1226,15 @@ function triggerThreatImpactCue(threat) {
   state.activeThreatFlash = 0.6;
 }
 
+function finalizeThreatEncounter() {
+  state.activeThreatId = "";
+  state.modalCardAction = "";
+  closeModal();
+  stashThreatHandBackToDeck();
+  updateObjectiveForFosoState();
+  updateHandCopy();
+}
+
 function resolveThreatWithDiamond(card) {
   const threat = getThreatById(state.activeThreatId);
   if (!threat || !isNumericDiamondCard(card)) return;
@@ -1081,11 +1242,8 @@ function resolveThreatWithDiamond(card) {
   if (!removed) return;
   markCardBlocked(removed, "mitigate");
   state.resolvedThreatIds.add(threat.id);
-  state.activeThreatId = "";
-  state.modalCardAction = "";
   showToast(`${cardLabel(removed)} bloqueada para el combate final`, 1500);
-  setObjective("Cruza el Foso y administra el desgaste.", "La bateria ya ha registrado tu firma. Cuanto menos gastes, mejor llegas al combate.");
-  closeModal();
+  finalizeThreatEncounter();
   saveProgress();
 }
 
@@ -1107,9 +1265,7 @@ function resolveThreatByTakingImpact() {
   const effectiveDamage = getEffectiveThreatDamage(threat);
   const losses = consumeArmorLoss(effectiveDamage);
   state.resolvedThreatIds.add(threat.id);
-  state.activeThreatId = "";
-  state.modalCardAction = "";
-  closeModal();
+  finalizeThreatEncounter();
   showToast(
     effectiveDamage > 0
       ? `Perdiste ${losses.length} carta${losses.length === 1 ? "" : "s"} de armadura para el jefe`
@@ -1179,23 +1335,90 @@ function openThreatModal(threat) {
   });
 }
 
-function openBatteryLockedModal() {
+function openBatteryFirstContactModal() {
+  state.modalMode = "battery-first-contact";
   openModal({
-    kicker: "Objetivo bloqueado",
-    title: "La bateria todavia no esta al alcance",
-    copy: "Antes de poder forzar el combate final tienes que sobrevivir a todas las salvas del pasillo. Busca coberturas y deja que la bateria gaste sus correcciones de tiro.",
+    kicker: "Bateria residual",
+    title: "Intrusion detectada",
+    copy: "Intrusion detectada, puertas cerradas, interruptor distribuido. Nunca podras encontrarlo. Las piezas ya estan repartidas por el foso, bajo las mismas salvas con las que has llegado hasta aqui.",
     meta: [
-      { text: `Impactos superados: ${getResolvedThreatCount()}/${threats.length}`, kind: "" },
-      { text: "La ultima tabla de perdidas aparecera justo antes del jefe", kind: "" },
+      { text: "Objetivo nuevo: encontrar 2 piezas del interruptor", kind: "danger" },
+      { text: "Las salvas seguiran activas hasta completar el interruptor", kind: "" },
+      { text: "Solo contaran los impactos con los que realmente te cruces", kind: "ok" },
     ],
     actions: [
       {
-        label: "Volver al asedio",
+        label: "Buscar las piezas",
+        variant: "primary",
+        onClick: () => {
+          state.batteryEncountered = true;
+          ensureSwitchPartsAssigned();
+          updateObjectiveForFosoState();
+          updateHandCopy();
+          closeModal();
+          saveProgress();
+        },
+      },
+    ],
+  });
+}
+
+function openBatterySwitchProgressModal() {
+  state.modalMode = "battery-locked";
+  openModal({
+    kicker: "Objetivo bloqueado",
+    title: "Puertas selladas por interruptor distribuido",
+    copy: "La bateria ha repartido el interruptor por el foso. Recupera las dos piezas rojas brillantes y volveras a este mismo combate con la baraja reducida por lo que ya hayas perdido durante el bombardeo.",
+    meta: [
+      { text: `Piezas recuperadas: ${getCollectedSwitchPartCount()}/${Math.max(2, state.switchParts.length)}`, kind: "" },
+      { text: `Impactos resueltos hasta ahora: ${getResolvedThreatCount()}`, kind: "" },
+      { text: "Las zonas de artilleria no cruzadas ya no son obligatorias", kind: "ok" },
+    ],
+    actions: [
+      {
+        label: "Seguir buscando",
         variant: "primary",
         onClick: closeModal,
       },
     ],
   });
+}
+
+function collectSwitchPart(partId) {
+  const part = state.switchParts.find((entry) => entry.id === partId);
+  if (!part || part.collected) return;
+  part.collected = true;
+  showToast(`Recuperaste ${getCollectedSwitchPartCount()}/2 piezas del interruptor`, 1600);
+  if (hasAllSwitchParts()) {
+    state.scriptedMissiles = [];
+    state.ambientMissiles = [];
+    state.activeThreatId = "";
+    state.modalCardAction = "";
+    stashThreatHandBackToDeck();
+    updateObjectiveForFosoState();
+    updateHandCopy();
+    openModal({
+      kicker: "Interruptor recompuesto",
+      title: "Sistema de misiles desactivado",
+      copy: "Las dos piezas han encajado. La bateria ha perdido su lanzamiento remoto y ahora solo le queda resistir fuego directo. Vuelve al emplazamiento para iniciar el combate final con las cartas que hayas logrado conservar.",
+      meta: [
+        { text: `Impactos superados: ${getResolvedThreatCount()}`, kind: "" },
+        { text: `Cartas perdidas hasta ahora: ${state.lossEntries.length}`, kind: state.lossEntries.length ? "danger" : "ok" },
+        { text: `Mazo disponible para el jefe: ${getRemainingDeckCount()}`, kind: "ok" },
+      ],
+      actions: [
+        {
+          label: "Volver a la bateria",
+          variant: "primary",
+          onClick: closeModal,
+        },
+      ],
+    });
+  } else {
+    updateObjectiveForFosoState();
+    updateHandCopy();
+  }
+  saveProgress();
 }
 
 function launchFinalCombat() {
@@ -1223,14 +1446,14 @@ function openSummaryModal() {
     kind: entry.reason === "armor" ? "danger" : "",
   }));
   openModal({
-    kicker: "Asedio completado",
-    title: "Cartas bloqueadas para el combate final",
-    copy: "Estas cartas quedan fuera solo para la batalla contra la bateria. Si superas el capitulo, volveran a tu mazo de historia intactas.",
+    kicker: "Puertas abiertas",
+    title: "Balance del bombardeo antes del combate final",
+    copy: "Estas cartas quedan fuera solo para la batalla contra la bateria. Ya no importa cuantas zonas no hayas cruzado: el interruptor esta completo y el jefe se juega con este desgaste real.",
     meta: [
       { text: `Diamantes usados: ${breakdown.mitigate.length}`, kind: "" },
       { text: `Fuel quemado: ${breakdown.burn.length}`, kind: "" },
       { text: `Armadura destruida: ${breakdown.armor.length}`, kind: "danger" },
-      { text: `Mazo restante para el jefe: ${state.drawPile.length + state.hand.length}`, kind: "ok" },
+      { text: `Mazo restante para el jefe: ${getRemainingDeckCount()}`, kind: "ok" },
     ],
     preview,
     cards: cards,
@@ -1290,11 +1513,21 @@ function renderHand() {
 }
 
 function renderStatus() {
-  statusThreats.textContent = `${getResolvedThreatCount()}/${threats.length}`;
+  if (statusPrimaryLabel) {
+    if (hasAllSwitchParts()) statusPrimaryLabel.textContent = "Sistema de misiles";
+    else if (state.batteryEncountered) statusPrimaryLabel.textContent = "Piezas del interruptor";
+    else statusPrimaryLabel.textContent = "Impactos resueltos";
+  }
+  statusThreats.textContent = hasAllSwitchParts()
+    ? "OFF"
+    : state.batteryEncountered
+      ? `${getCollectedSwitchPartCount()}/${Math.max(2, state.switchParts.length)}`
+      : String(getResolvedThreatCount());
   statusCover.textContent = isPlayerInCover() ? "Si" : "No";
   statusLosses.textContent = String(state.lossEntries.length);
-  statusDeck.textContent = String(state.drawPile.length);
+  statusDeck.textContent = String(getRemainingDeckCount());
   renderHand();
+  updateHandCopy();
 }
 
 function syncHandTrayState(animate = false) {
@@ -1557,8 +1790,42 @@ function drawRedGlowMarker() {
   ctx.restore();
 }
 
+function drawSwitchPartMarkers() {
+  if (!state.batteryEncountered || hasAllSwitchParts()) return;
+  const time = performance.now();
+  state.switchParts
+    .filter((part) => !part.collected)
+    .forEach((part, index) => {
+      const pulse = Math.sin(time * 0.008 + index * 1.6) * 0.5 + 0.5;
+      const coreRadius = 11 + pulse * 3;
+      const outerRadius = 28 + pulse * 12;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const aura = ctx.createRadialGradient(part.x, part.y, 2, part.x, part.y, outerRadius);
+      aura.addColorStop(0, "rgba(255, 235, 224, 0.95)");
+      aura.addColorStop(0.24, "rgba(255, 78, 54, 0.68)");
+      aura.addColorStop(1, "rgba(255, 42, 26, 0)");
+      ctx.fillStyle = aura;
+      ctx.beginPath();
+      ctx.arc(part.x, part.y, outerRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = `rgba(255, 204, 192, ${0.34 + pulse * 0.28})`;
+      ctx.lineWidth = 2.1;
+      ctx.beginPath();
+      ctx.arc(part.x, part.y, 16 + pulse * 5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255, 248, 238, 0.96)";
+      ctx.beginPath();
+      ctx.arc(part.x, part.y, coreRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+}
+
 function drawPrompt() {
-  const item = interactables.find((entry) => entry.id === state.nearestInteractableId);
+  const item = getActiveInteractables().find((entry) => entry.id === state.nearestInteractableId);
   if (!item) {
     interactPrompt.hidden = true;
     return;
@@ -1727,8 +1994,7 @@ function movePlayer(dt) {
 function updateNearestInteractable() {
   let best = null;
   let bestDistance = Infinity;
-  interactables.forEach((item) => {
-    if (item.id === "sign" && state.signRead) return;
+  getActiveInteractables().forEach((item) => {
     const distance = Math.hypot(player.x - item.x, player.y - item.y);
     if (distance <= item.radius && distance < bestDistance) {
       best = item;
@@ -1746,8 +2012,12 @@ function handleInteract() {
     return;
   }
   if (targetId === "battery") {
-    if (getResolvedThreatCount() < threats.length) {
-      openBatteryLockedModal();
+    if (!state.batteryEncountered) {
+      openBatteryFirstContactModal();
+      return;
+    }
+    if (!hasAllSwitchParts()) {
+      openBatterySwitchProgressModal();
       return;
     }
     openSummaryModal();
@@ -1759,11 +2029,15 @@ function handleInteract() {
       return;
     }
     collectRedGlowReward();
+    return;
+  }
+  if (targetId.startsWith("switch-part-")) {
+    collectSwitchPart(targetId);
   }
 }
 
 function maybeTriggerThreat() {
-  if (!state.signRead || modalLayer.hidden === false || state.activeThreatId) return;
+  if (!state.signRead || !isMissileSystemOnline() || modalLayer.hidden === false || state.activeThreatId) return;
   const threat = threats.find((entry) => {
     if (state.resolvedThreatIds.has(entry.id)) return false;
     const triggerX = entry.triggerX || entry.impactX || laneTargets[entry.lane]?.x || player.x;
@@ -1772,6 +2046,7 @@ function maybeTriggerThreat() {
     return Math.hypot(player.x - triggerX, player.y - triggerY) <= triggerRadius;
   });
   if (!threat) return;
+  redealThreatHand();
   state.activeThreatId = threat.id;
   state.modalCardAction = "";
   spawnThreatVolley(threat);
@@ -1810,6 +2085,7 @@ function updateMissiles(list, dt) {
 }
 
 function maybeSpawnAmbientMissile(dt) {
+  if (!state.signRead || !isMissileSystemOnline()) return;
   ambientMissileTimer -= dt;
   if (ambientMissileTimer > 0) return;
   ambientMissileTimer = state.signRead ? 0.58 + Math.random() * 0.48 : 0.82 + Math.random() * 0.62;
@@ -1837,14 +2113,12 @@ function updateGame(dt) {
     handleInteract();
   }
   updateCamera();
+  updateObjectiveForFosoState();
   renderStatus();
   drawPrompt();
-  if (state.signRead && getResolvedThreatCount() >= threats.length) {
-    setObjective("Asedio superado. Busca la bateria residual.", "Acercate al emplazamiento del fondo para ver la tabla de perdidas e iniciar el combate final.");
-  }
   const battery = interactables.find((entry) => entry.id === "battery");
   const batteryReached = battery && Math.hypot(player.x - battery.x, player.y - battery.y) <= battery.radius;
-  if (state.signRead && !state.attemptComplete && getResolvedThreatCount() >= threats.length && batteryReached) {
+  if (state.signRead && !state.attemptComplete && state.batteryEncountered && hasAllSwitchParts() && batteryReached) {
     state.attemptComplete = true;
     showToast("La bateria ya esta al alcance", 1600);
     saveProgress();
@@ -1865,6 +2139,7 @@ function renderWorld(dt) {
   drawBackground();
   drawBatteryWorld();
   drawRedGlowMarker();
+  drawSwitchPartMarkers();
   state.ambientMissiles.forEach(drawMissile);
   state.scriptedMissiles.forEach(drawMissile);
   drawInteractableSign();
@@ -2102,12 +2377,8 @@ async function boot() {
   state.loaded = true;
   syncHandTrayState(false);
   renderStatus();
-  setObjective(
-    state.signRead ? "Cruza el Foso y administra el desgaste." : "Busca el cartel de la Ruta Ceniza.",
-    state.signRead
-      ? "Lee cada impacto, busca cobertura y guarda las mejores cartas posibles para la bateria."
-      : "Está junto al inicio, en la esquina inferior izquierda. Acercate e interactua para leer las instrucciones."
-  );
+  updateObjectiveForFosoState();
+  updateHandCopy();
   if (state.activeThreatId) {
     openThreatModal(getThreatById(state.activeThreatId));
   }

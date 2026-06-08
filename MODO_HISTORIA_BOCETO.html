@@ -10669,7 +10669,7 @@
 
     function buildStoryFosoExplorationUrl() {
       const targetUrl = new URL(FOSO_EXPLORATION_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260605-foso-neon-horizon');
+      targetUrl.searchParams.set('v', '20260608-foso-switch-hunt');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', 'foso');
       targetUrl.searchParams.set('story_audio', 'internal');
@@ -10715,7 +10715,7 @@
       targetUrl.searchParams.set('story_brief', 'on');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('story_standalone', '1');
-      targetUrl.searchParams.set('v', '20260605-foso-neon-horizon');
+      targetUrl.searchParams.set('v', '20260608-foso-switch-hunt');
       const remainingExtraCards = buildStoryDeckCardsParamExcludingIds(blockedExtraCardIds);
       if (remainingExtraCards) targetUrl.searchParams.set('story_deck_cards', remainingExtraCards);
       const blockedTokens = (Array.isArray(blockedBaseCards) ? blockedBaseCards : [])

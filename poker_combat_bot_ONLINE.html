@@ -245,6 +245,38 @@ body.story-embed-mode .story-mission-brief-title{
   letter-spacing:.06em;
   text-transform:uppercase;
 }
+body.story-embed-mode .story-mission-brief-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:0;
+}
+body.story-embed-mode .story-mission-brief-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,214,92,.28);
+  background:linear-gradient(180deg, rgba(55,39,8,.58), rgba(22,16,4,.78));
+  color:#fff3cc;
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+body.story-embed-mode .story-mission-brief-chip[data-tone="warning"]{
+  border-color:rgba(255,178,46,.42);
+  background:linear-gradient(180deg, rgba(74,44,9,.66), rgba(36,20,4,.84));
+  color:#ffe7b3;
+}
+body.story-embed-mode .story-mission-brief-chip[data-tone="danger"]{
+  border-color:rgba(255,94,94,.48);
+  background:linear-gradient(180deg, rgba(70,16,16,.72), rgba(34,8,8,.88));
+  color:#ffd8d8;
+  box-shadow:0 0 18px rgba(255,94,94,.12), inset 0 0 0 1px rgba(255,255,255,.05);
+}
 body.story-embed-mode .story-mission-brief-text{
   margin:0;
   color:#dceaf6;
@@ -1645,6 +1677,98 @@ body.victory .winner-banner.show{
   pointer-events:none;
   opacity:0;
   z-index:4;
+}
+.story-final-colossus-resilience-surge{
+  position:absolute;
+  left:min(12vw, 170px);
+  top:16vh;
+  z-index:10;
+  width:min(42vw, 560px);
+  padding:20px 24px 18px;
+  border:1px solid rgba(255,229,150,.48);
+  border-radius:26px 12px 30px 14px;
+  color:#f7fcff;
+  opacity:0;
+  pointer-events:none;
+  transform:translate3d(-42px, 22px, 0) scale(.82) rotate(-3.4deg);
+  filter:blur(18px) brightness(.54) saturate(.76);
+  background:
+    linear-gradient(120deg, rgba(255,245,184,.14), transparent 24% 68%, rgba(255,104,82,.18)),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.06) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, rgba(12,26,55,.92), rgba(8,14,31,.94) 52%, rgba(6,8,18,.98));
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.05),
+    inset 0 0 0 1px rgba(255,255,255,.06),
+    inset 0 0 34px rgba(35,216,255,.08),
+    0 22px 42px rgba(0,0,0,.38),
+    0 0 52px rgba(255,165,92,.16);
+  overflow:hidden;
+}
+.story-final-colossus-resilience-surge::before,
+.story-final-colossus-resilience-surge::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.story-final-colossus-resilience-surge::before{
+  background:
+    linear-gradient(96deg, transparent 0 12%, rgba(255,238,178,.26) 16% 17%, transparent 22% 44%, rgba(35,216,255,.22) 48% 49%, transparent 53% 100%);
+  mix-blend-mode:screen;
+  opacity:.22;
+}
+.story-final-colossus-resilience-surge::after{
+  inset:auto 18px 16px auto;
+  width:74px;
+  height:74px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle, rgba(255,246,180,.42) 0 12%, rgba(255,168,82,.22) 38%, transparent 72%);
+  filter:blur(4px);
+  opacity:.6;
+}
+.story-final-colossus-resilience-surge-kicker{
+  position:relative;
+  z-index:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:28px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,236,166,.7);
+  color:#120307;
+  background:linear-gradient(180deg, #fff5ba, #ffd867 58%, #ff8752);
+  font-size:clamp(.72rem, 1.25vw, .92rem);
+  font-weight:1000;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.story-final-colossus-resilience-surge-title{
+  position:relative;
+  z-index:1;
+  margin:12px 0 6px;
+  color:#fff4dc;
+  font-size:clamp(1.5rem, 3.7vw, 3rem);
+  font-weight:1000;
+  line-height:.92;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  text-shadow:
+    2px 0 0 rgba(255,208,84,.3),
+    -2px 0 0 rgba(35,216,255,.24),
+    0 0 18px rgba(255,168,82,.26),
+    0 4px 0 rgba(0,0,0,.44);
+}
+.story-final-colossus-resilience-surge-text{
+  position:relative;
+  z-index:1;
+  margin:0;
+  color:#d6f8ff;
+  font-size:clamp(.8rem, 1.5vw, 1rem);
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
 }
 .story-final-colossus-overlay.settled .story-final-colossus-rebuild-blocks{
   opacity:1;
@@ -15177,6 +15301,26 @@ body.story-argos-hack-ui{
 .compact-top-status.turn-victory{
   border-color:rgba(255,214,92,.55) !important;
   box-shadow:0 0 22px rgba(255,214,92,.16), inset 0 0 18px rgba(255,214,92,.08) !important;
+}
+
+.compact-top-resource.story-turn-limit-active{
+  border-color:rgba(255,214,92,.34) !important;
+  box-shadow:0 0 18px rgba(255,214,92,.10), inset 0 0 18px rgba(255,214,92,.06) !important;
+}
+
+.compact-top-resource.story-turn-limit-active strong{
+  color:#fff3cc !important;
+  text-shadow:0 0 12px rgba(255,214,92,.22) !important;
+}
+
+.compact-top-resource.story-turn-limit-warning{
+  border-color:rgba(255,178,46,.42) !important;
+  box-shadow:0 0 18px rgba(255,178,46,.12), inset 0 0 18px rgba(255,178,46,.06) !important;
+}
+
+.compact-top-resource.story-turn-limit-danger{
+  border-color:rgba(255,94,94,.52) !important;
+  box-shadow:0 0 20px rgba(255,94,94,.14), inset 0 0 18px rgba(255,94,94,.08) !important;
 }
 
 @media (max-width: 820px) and (orientation: portrait) and (pointer: coarse),
@@ -29387,7 +29531,7 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
     radial-gradient(circle at 14% 34%, rgba(255,39,44,.34), transparent 18%),
     radial-gradient(circle at 86% 64%, rgba(255,184,72,.18), transparent 22%);
   mix-blend-mode:screen;
-  opacity:.55;
+  opacity:.36;
   animation:storyFinalColossusControlStatic .52s steps(2, end) infinite;
 }
 .story-final-colossus-control-warning-kicker{
@@ -29423,6 +29567,237 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
   color:#ffe35b;
   font-size:1.16em;
 }
+.story-final-colossus-control-warning-subtext{
+  position:relative;
+  z-index:1;
+  margin:10px 0 0;
+  color:#ffd9c6;
+  font-size:clamp(.76rem, 1.55vw, 1rem);
+  font-weight:900;
+  letter-spacing:.14em;
+  text-shadow:0 0 12px rgba(255,54,64,.28);
+}
+.story-final-colossus-control-warning-actions{
+  position:relative;
+  z-index:1;
+  display:flex;
+  justify-content:center;
+  margin-top:18px;
+}
+.story-final-colossus-control-warning-btn{
+  min-width:min(100%, 320px);
+  min-height:54px;
+  padding:12px 22px;
+  border:1px solid rgba(255,239,163,.86);
+  border-radius:18px 12px 20px 10px;
+  color:#1f0507;
+  background:
+    linear-gradient(180deg, #fff7bc 0%, #ffd861 46%, #ff9f3b 78%, #ff4a4f 100%);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.28),
+    0 14px 28px rgba(0,0,0,.36),
+    0 0 28px rgba(255,190,82,.34),
+    inset 0 1px 0 rgba(255,255,255,.78);
+  font:inherit;
+  font-size:clamp(.84rem, 1.8vw, 1.08rem);
+  font-weight:1000;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+.story-final-colossus-control-warning-btn:hover,
+.story-final-colossus-control-warning-btn:focus-visible{
+  transform:translateY(-2px) scale(1.02);
+  filter:brightness(1.08) saturate(1.08);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.34),
+    0 18px 30px rgba(0,0,0,.4),
+    0 0 34px rgba(255,190,82,.42),
+    inset 0 1px 0 rgba(255,255,255,.86);
+  outline:none;
+}
+
+body.story-final-colossus-engaged .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  --colossus-final-x:12% !important;
+  right:min(-8vw, -96px) !important;
+  width:min(92vw, 1660px) !important;
+  opacity:1 !important;
+  transform:translate(var(--colossus-final-x), 0) scale(1.08) !important;
+  filter:drop-shadow(0 56px 44px rgba(0,0,0,.62)) drop-shadow(0 0 42px rgba(35,216,255,.16)) !important;
+}
+
+body.story-final-colossus-ruined .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  --colossus-final-x:8% !important;
+  right:min(-4vw, -44px) !important;
+  width:min(102vw, 1760px) !important;
+  transform:translate(var(--colossus-final-x), -1%) scale(1.15) !important;
+  filter:drop-shadow(0 70px 56px rgba(0,0,0,.7)) drop-shadow(0 0 56px rgba(35,216,255,.2)) !important;
+}
+
+body.story-final-colossus-ruined .story-final-colossus-boss-hud{
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+
+body.story-final-colossus-ruined .story-final-colossus-rebuild-blocks{
+  opacity:0 !important;
+}
+
+body.story-final-colossus-ruined .app{
+  max-width:none !important;
+  width:100% !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-ruined .app .desktop-compact-shell{
+  width:min(40vw, 640px) !important;
+  max-width:min(40vw, 640px) !important;
+  margin-right:auto !important;
+  transform:translate(-3.8vw, 2.2vh) rotate(-6.2deg) scale(.78) !important;
+  transform-origin:left top !important;
+  filter:brightness(.64) saturate(.74) contrast(1.08) !important;
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-ruined .app :is(.compact-topbar, .compact-player-panel, .compact-arena-panel, .compact-actions-panel, .compact-hand-panel, .compact-tutorial-panel, .compact-log-panel, .compact-mobile-actions-panel, .compact-action-hub-button, .compact-zone-card, .compact-readout, .compact-zone-cards, .compact-hand-tray, .compact-mobile-action-grid, .compact-action-grid, .compact-action-grid button, .compact-mobile-action-grid button, #compactMechaStage-0, .card){
+  pointer-events:none !important;
+  filter:brightness(.66) saturate(.76) contrast(1.08) !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.44), 0 0 0 1px rgba(255,255,255,.04) !important;
+}
+
+body.story-final-colossus-ruined .app .compact-topbar{
+  transform:translate(-24px, -22px) rotate(-7.8deg) scale(.9) !important;
+}
+
+body.story-final-colossus-ruined .app .compact-player-panel{
+  transform:translate(18px, 18px) rotate(6.2deg) scale(.88) !important;
+}
+
+body.story-final-colossus-ruined .app .compact-arena-panel{
+  transform:translate(-44px, -14px) rotate(-5.2deg) scale(.8) !important;
+}
+
+body.story-final-colossus-ruined .app .compact-hand-panel{
+  transform:translate(-12px, 34px) rotate(-8.2deg) scale(.9) !important;
+  padding-right:0 !important;
+}
+
+body.story-final-colossus-ruined .app :is(.compact-actions-panel, .compact-mobile-actions-panel, .compact-action-hub-button){
+  transform:translate(42px, 56px) rotate(11deg) scale(.74) !important;
+  opacity:.34 !important;
+}
+
+body.story-final-colossus-ruined .app #compactMechaStage-0{
+  transform:translateY(52px) translateX(-18px) scale(.62) rotate(-8deg) !important;
+  opacity:.78 !important;
+}
+
+body.story-final-colossus-ruined .app :is(.compact-rival-panel, #compactMechaStage-1, .compact-zone-card-rival){
+  opacity:0 !important;
+}
+
+body.story-final-colossus-resilience-restoring .story-final-colossus-rebuild-blocks{
+  opacity:1 !important;
+  filter:drop-shadow(0 0 24px rgba(255,188,96,.24)) drop-shadow(0 0 18px rgba(35,216,255,.16));
+}
+
+body.story-final-colossus-resilience-restoring .story-final-colossus-rebuild-block{
+  animation:storyFinalColossusRebuildBlock var(--dur) cubic-bezier(.2,.86,.18,1) var(--delay) both !important;
+  filter:brightness(1.08) saturate(1.14) !important;
+}
+
+body.story-final-colossus-resilience-restoring .story-final-colossus-overlay{
+  z-index:10130 !important;
+}
+
+body.story-final-colossus-resilience-restoring .story-final-colossus-overlay::before,
+body.story-final-colossus-resilience-restoring .story-final-colossus-overlay::after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+}
+
+body.story-final-colossus-resilience-restoring .story-final-colossus-overlay::before{
+  inset:-14% 38% -10% -14%;
+  background:
+    radial-gradient(circle at 28% 52%, rgba(255,239,176,.26), transparent 20%),
+    radial-gradient(circle at 26% 56%, rgba(255,153,84,.24), transparent 34%),
+    radial-gradient(circle at 32% 54%, rgba(35,216,255,.22), transparent 40%);
+  mix-blend-mode:screen;
+  animation:storyFinalColossusResilienceFlash 1.18s cubic-bezier(.16,.86,.18,1) both;
+}
+
+body.story-final-colossus-resilience-restoring .story-final-colossus-overlay::after{
+  inset:0;
+  background:
+    linear-gradient(112deg, rgba(255,255,255,.02) 0 14%, rgba(255,236,170,.14) 19% 20%, transparent 24% 52%, rgba(35,216,255,.10) 57% 58%, transparent 62% 100%);
+  mix-blend-mode:screen;
+  animation:storyFinalColossusResilienceSweep 1.18s cubic-bezier(.16,.86,.18,1) both;
+}
+
+body.story-final-colossus-resilience-restoring .story-final-colossus-haze{
+  opacity:1 !important;
+  filter:brightness(1.16) saturate(1.18);
+}
+
+body.story-final-colossus-resilience-restoring .story-final-colossus-resilience-surge{
+  animation:storyFinalColossusResilienceSurge 1.2s cubic-bezier(.16,.84,.18,1) both !important;
+}
+
+body.story-final-colossus-resilience-restoring .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  opacity:1 !important;
+  animation:storyFinalColossusResilienceColossus 1.24s cubic-bezier(.18,.84,.18,1) both !important;
+  filter:drop-shadow(0 46px 46px rgba(0,0,0,.6)) drop-shadow(0 0 34px rgba(35,216,255,.18)) drop-shadow(0 0 30px rgba(255,160,82,.14));
+}
+
+body.story-final-colossus-resilience-restoring .app .desktop-compact-shell{
+  animation:storyFinalColossusResilienceShell .96s cubic-bezier(.16,.84,.18,1) both !important;
+  filter:brightness(1.08) saturate(1.08) !important;
+  box-shadow:0 0 34px rgba(255,188,96,.24), 0 0 22px rgba(35,216,255,.16) !important;
+}
+
+body.story-final-colossus-resilience-restoring .app :is(.compact-topbar, .compact-player-panel, .compact-arena-panel, .compact-actions-panel, .compact-hand-panel, .compact-mobile-actions-panel, .compact-zone-card, .compact-readout, .compact-hand-tray, .card, #compactMechaStage-0){
+  animation:storyFinalColossusResilienceRecover 1.02s cubic-bezier(.16,.84,.18,1) both !important;
+}
+
+body.story-final-colossus-engaged.story-final-colossus-mobile .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  --colossus-final-x:10% !important;
+  right:-16vw !important;
+  width:min(126vw, 1120px) !important;
+}
+
+body.story-final-colossus-ruined.story-final-colossus-mobile .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  --colossus-final-x:8% !important;
+  right:-10vw !important;
+  width:min(138vw, 1220px) !important;
+}
+
+body.story-final-colossus-ruined.story-final-colossus-mobile .app .desktop-compact-shell{
+  width:min(74dvw, 470px) !important;
+  max-width:min(74dvw, 470px) !important;
+  transform:translate(-5.6vw, 3vh) rotate(-7deg) scale(.82) !important;
+}
+
+body.story-final-colossus-ruined.story-final-colossus-mobile .app .compact-hand-panel{
+  min-height:122px !important;
+}
+
+body.story-final-colossus-mobile .story-final-colossus-resilience-surge{
+  left:clamp(10px, 3.2vw, 24px);
+  top:12vh;
+  width:min(78vw, 332px);
+  padding:14px 14px 12px;
+}
+
+body.story-final-colossus-mobile .story-final-colossus-resilience-surge-title{
+  font-size:clamp(1.12rem, 6vw, 1.9rem);
+}
+
+body.story-final-colossus-mobile .story-final-colossus-resilience-surge-text{
+  font-size:clamp(.68rem, 2.8vw, .82rem);
+}
+
 @media (max-width: 620px){
   .story-final-colossus-control-warning{
     top:45%;
@@ -29433,6 +29808,11 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
   .story-final-colossus-control-warning-text{
     font-size:clamp(1rem, 5.4vw, 1.45rem);
     line-height:1.12;
+  }
+  .story-final-colossus-control-warning-btn{
+    min-height:50px;
+    font-size:.84rem;
+    letter-spacing:.12em;
   }
 }
 
@@ -29534,16 +29914,51 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
   68%{opacity:.96; transform:translate3d(-6px,5px,0) rotate(-3deg) scale(.97); filter:brightness(.94)}
   100%{opacity:1; transform:translate3d(0,0,0) rotate(0) scale(1); filter:brightness(1)}
 }
+@keyframes storyFinalColossusResilienceSurge{
+  0%{opacity:0; transform:translate3d(-44px, 24px, 0) scale(.8) rotate(-4deg); filter:blur(20px) brightness(.52) saturate(.72)}
+  16%{opacity:1; transform:translate3d(6px, -6px, 0) scale(1.05) rotate(1.8deg); filter:blur(1px) brightness(1.28) saturate(1.34)}
+  38%{opacity:1; transform:translate3d(-4px, 2px, 0) scale(.99) rotate(-.8deg); filter:brightness(1.08)}
+  72%{opacity:.94; transform:translate3d(0, 0, 0) scale(1) rotate(.2deg); filter:brightness(1.04)}
+  100%{opacity:0; transform:translate3d(20px, -8px, 0) scale(1.08) rotate(1deg); filter:blur(10px) brightness(.88)}
+}
+@keyframes storyFinalColossusResilienceFlash{
+  0%{opacity:0; transform:scale(.52) translateX(-8%); filter:blur(24px)}
+  18%{opacity:.92; transform:scale(1.02) translateX(0); filter:blur(10px)}
+  48%{opacity:.54; transform:scale(1.18) translateX(4%); filter:blur(16px)}
+  100%{opacity:0; transform:scale(1.36) translateX(8%); filter:blur(28px)}
+}
+@keyframes storyFinalColossusResilienceSweep{
+  0%{opacity:0; transform:translateX(-18%) skewX(-14deg)}
+  18%{opacity:.8; transform:translateX(-2%) skewX(-8deg)}
+  52%{opacity:.42; transform:translateX(8%) skewX(-4deg)}
+  100%{opacity:0; transform:translateX(20%) skewX(0deg)}
+}
+@keyframes storyFinalColossusResilienceShell{
+  0%{opacity:.86; transform:translate(-4vw, 2.4vh) rotate(-6deg) scale(.78); filter:brightness(.62) saturate(.7)}
+  38%{opacity:1; transform:translate(1.6vw, -.8vh) rotate(2.2deg) scale(1.03); filter:brightness(1.14) saturate(1.16)}
+  100%{opacity:1; transform:translate(0, 0) rotate(0) scale(1); filter:brightness(1)}
+}
+@keyframes storyFinalColossusResilienceColossus{
+  0%{opacity:1; transform:translate(calc(var(--colossus-final-x) + 5%), 1.6%) scale(1.04); filter:brightness(.84) saturate(.92)}
+  22%{opacity:1; transform:translate(calc(var(--colossus-final-x) + 1%), -.8%) scale(1.08); filter:brightness(1.14) saturate(1.12)}
+  58%{opacity:1; transform:translate(calc(var(--colossus-final-x) + 2%), -.2%) scale(1.03); filter:brightness(1.04) saturate(1.06)}
+  100%{opacity:1; transform:translate(var(--colossus-final-x), 0) scale(1); filter:brightness(1) saturate(1)}
+}
+@keyframes storyFinalColossusResilienceRecover{
+  0%{opacity:.34; transform:translate3d(-24px, 18px, 0) rotate(-10deg) scale(.78); filter:brightness(.56) saturate(.66)}
+  36%{opacity:1; transform:translate3d(10px, -6px, 0) rotate(3deg) scale(1.06); filter:brightness(1.14) saturate(1.18)}
+  100%{opacity:1; transform:translate3d(0, 0, 0) rotate(0) scale(1); filter:brightness(1)}
+}
 @keyframes storyFinalColossusControlWarning{
   0%{opacity:0; transform:translate(-52%, -48%) rotate(-4deg) skew(-5deg, 1deg) scale(.84); filter:blur(9px) brightness(1.5) saturate(.4)}
   8%{opacity:1; transform:translate(-49%, -51%) rotate(2.8deg) skew(3deg, -2deg) scale(1.04); filter:blur(1px) brightness(1.28) saturate(1.6)}
-  15%{opacity:.72; transform:translate(-51%, -49%) rotate(-1.8deg) skew(-8deg, 1deg) scale(.98); clip-path:polygon(0 0,100% 0,100% 38%,0 31%,0 48%,100% 52%,100% 100%,0 100%)}
+  15%{opacity:.78; transform:translate(-51%, -49%) rotate(-1.8deg) skew(-5deg, .8deg) scale(.98); filter:brightness(1.1) contrast(1.14)}
   22%{opacity:1; transform:translate(-50%, -50%) rotate(.9deg) skew(1deg, 0) scale(1); filter:contrast(1.35)}
   44%{opacity:.92; transform:translate(calc(-50% + 5px), calc(-50% - 2px)) rotate(-.8deg) skew(-2deg, .4deg)}
   55%{opacity:1; transform:translate(calc(-50% - 4px), calc(-50% + 3px)) rotate(1.4deg) skew(3deg, -1deg); filter:brightness(1.18) contrast(1.22)}
   72%{opacity:.96; transform:translate(-50%, -50%) rotate(-.5deg) scale(1)}
   88%{opacity:1; transform:translate(calc(-50% + 2px), -50%) rotate(.4deg); filter:brightness(1.06)}
-  100%{opacity:0; transform:translate(-50%, calc(-50% - 10px)) rotate(-2deg) scale(.92); filter:blur(6px) brightness(.62) saturate(.65)}
+  100%{opacity:1; transform:translate(-50%, -50%) rotate(-.35deg) scale(1); filter:brightness(1.02) contrast(1.08)}
 }
 @keyframes storyFinalColossusControlStatic{
   0%{opacity:.18; transform:translate(-10px, 2px) skew(-8deg)}
@@ -29583,6 +29998,9 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
   <div class="story-mission-brief-copy">
     <span class="story-mission-brief-kicker" id="storyMissionBriefKicker">Misión historia</span>
     <strong class="story-mission-brief-title" id="storyMissionBriefTitle">Ruta Ceniza</strong>
+    <div class="story-mission-brief-meta" id="storyMissionBriefMeta" hidden>
+      <span class="story-mission-brief-chip" id="storyMissionBriefTurnChip"></span>
+    </div>
     <p class="story-mission-brief-text" id="storyMissionBriefText">Completa el objetivo especial para volver al modo historia.</p>
   </div>
   <button class="story-embed-nav-btn" id="storyMissionBriefToggleBtn" type="button">Ocultar info</button>
@@ -29653,6 +30071,11 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
     <span class="story-final-colossus-rebuild-block block-15"></span>
     <span class="story-final-colossus-rebuild-block block-16"></span>
   </div>
+  <div class="story-final-colossus-resilience-surge" aria-hidden="true">
+    <div class="story-final-colossus-resilience-surge-kicker">RESILIENCIA</div>
+    <div class="story-final-colossus-resilience-surge-title">SISTEMA EN RECONSTRUCCION</div>
+    <p class="story-final-colossus-resilience-surge-text">Soldando panel tactico // recuperando control de combate</p>
+  </div>
   <div class="story-final-colossus-standee" aria-hidden="true">
     <img
       id="storyFinalColossusStandee"
@@ -29698,7 +30121,18 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
 <div class="story-final-colossus-control-warning" id="storyFinalColossusControlWarning" hidden role="alert" aria-live="assertive" aria-hidden="true">
   <div class="story-final-colossus-control-warning-kicker">WARNING</div>
   <p class="story-final-colossus-control-warning-text">
-    El Coloso ha destrozado el panel de control, pero aún está operativo...
+    El Coloso ha destrozado el panel de control.
+    Activa la <strong>RESILIENCIA</strong> y recompón el sistema al 90%.
+  </p>
+  <p class="story-final-colossus-control-warning-subtext">
+    Recupera el control y vuelve a luchar.
+  </p>
+  <div class="story-final-colossus-control-warning-actions">
+    <button class="story-final-colossus-control-warning-btn" id="storyFinalColossusResilienceBtn" type="button">
+      Activar resiliencia
+    </button>
+  </div>
+  <p class="story-final-colossus-control-warning-text">
     <strong>¡ACABA CON ÉL!</strong>
   </p>
 </div>
@@ -30536,7 +30970,7 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
         <strong id="compactTurnDialValue">00</strong>
       </div>
       <div class="compact-top-resource compact-top-resource-fuel">
-        <span>Mazo</span>
+        <span id="compactTopFuelLabel">Mazo</span>
         <strong id="compactTopFuelValue">0</strong>
       </div>
       <div class="compact-top-resource compact-top-resource-core">
@@ -31568,6 +32002,8 @@ let storyFinalColossusStandTimer = null;
 let storyFinalColossusBossCueTimer = null;
 let storyFinalColossusControlWarningDelayTimer = null;
 let storyFinalColossusControlWarningTimer = null;
+let storyFinalColossusResilienceTimer = null;
+let storyFinalColossusResilienceBurstTimers = [];
 
 function buildOnlineFxCue(type, playerIdx, extra={}){
   return {
@@ -32718,24 +33154,46 @@ function getStoryCampTurnsElapsed(){
   return Math.max(0, (Number(state.turnCount) || 0) - limitState.turnStartCount);
 }
 
+function getStoryCampTurnCountdown(mission = state.storyMission || STORY_MISSION_BOOT){
+  const limitState = getStoryCampTurnLimitState(mission);
+  if(!limitState) return null;
+  const elapsed = getStoryCampTurnsElapsed();
+  const remaining = Math.max(0, limitState.turnLimit - elapsed);
+  const tone = remaining <= 3 ? 'danger' : remaining <= 6 ? 'warning' : 'normal';
+  return {
+    ...limitState,
+    elapsed,
+    remaining,
+    tone
+  };
+}
+
+function formatStoryCampRemainingTurns(remaining){
+  return `${remaining} turno${remaining === 1 ? '' : 's'} restante${remaining === 1 ? '' : 's'}`;
+}
+
+function shouldUseStoryCampCompactCountdown(){
+  return !!getStoryCampTurnCountdown()
+    && STORY_EMBED_MODE
+    && isStoryMobileViewport()
+    && storyHudMode !== 'scroll';
+}
+
 function maybeFailStoryCampTurnLimit(){
-  const limitState = getStoryCampTurnLimitState();
-  if(!limitState || state.winner || state.storyMissionAnnounced) return false;
-  if(getStoryCampTurnsElapsed() < limitState.turnLimit) return false;
-  state.phase = 'Mision';
-  state.storyMissionAnnounced = true;
+  const countdown = getStoryCampTurnCountdown();
+  if(!countdown || state.winner || state.storyMissionAnnounced) return false;
+  if(countdown.elapsed < countdown.turnLimit) return false;
+  state.phase = 'Final';
   state.pendingDefense = null;
   state.selected = [];
   state.attackMode = false;
   state.projectileMode = false;
-  log(`⏱️ Placas Rojas: agotaste el margen de ${limitState.turnLimit} turnos. La calibracion se corta y toca volver a intentarlo.`);
-  addToast('Tiempo agotado: vuelve a intentarlo', 'warn');
-  broadcastStoryMissionOutcome({
-    mission: state.storyMission,
-    success: false,
-    timeout: true,
-    campReturnScene: STORY_CAMP_RETURN_SCENE || 'camp'
-  });
+  state.defenseSelectionMode = false;
+  if(!state.storyMissionProgress) state.storyMissionProgress = {};
+  state.storyMissionProgress.campTimeoutTriggered = true;
+  state.winner = state.players?.[1]?.name || getStoryTowerCombatProfile(state.storyMission)?.enemyName || 'Rival Placas Rojas';
+  triggerVictorySequence();
+  maybeFinalizeStoryMissionAfterWinner();
   return true;
 }
 
@@ -32823,6 +33281,11 @@ function ensureStoryFinalColossusBossProgress(){
 function isStoryFinalColossusEngaged(){
   const progress = ensureStoryFinalColossusProgress();
   return !!progress && !!progress.phase2Complete && !state.winner;
+}
+
+function isStoryFinalColossusResilienceRecovered(){
+  const progress = ensureStoryFinalColossusProgress();
+  return !!progress && !!progress.phase2Complete && !!progress.resilienceRecovered && !state.winner;
 }
 
 function isStoryFinalColossusTouchViewport(){
@@ -32961,7 +33424,7 @@ function syncStoryFinalColossusBossState(options = {}){
 function syncStoryFinalColossusBossHud(forceVisible = null){
   const hud = document.getElementById('storyFinalColossusBossHud');
   if(!hud) return;
-  const visible = forceVisible === null ? isStoryFinalColossusEngaged() : !!forceVisible;
+  const visible = forceVisible === null ? isStoryFinalColossusResilienceRecovered() : !!forceVisible;
   if(!visible){
     hud.hidden = true;
     hud.setAttribute('aria-hidden', 'true');
@@ -33036,7 +33499,7 @@ function storyFinalColossusTryAutoInstallFromHand(enemy, zone){
 }
 
 function applyStoryFinalColossusTurnStartRoutine(){
-  if(!isStoryFinalColossusCombat() || !isStoryFinalColossusEngaged() || state.currentPlayer !== 1 || state.winner) return false;
+  if(!isStoryFinalColossusCombat() || !isStoryFinalColossusResilienceRecovered() || state.currentPlayer !== 1 || state.winner) return false;
   const boss = syncStoryFinalColossusBossState({ announce:false });
   const enemy = state.players?.[1] || null;
   if(!boss || !enemy) return false;
@@ -33090,7 +33553,7 @@ function applyStoryFinalColossusTurnStartRoutine(){
 
 function getStoryFinalColossusAttackAdjustment(attackerIdx, defenderIdx, baseAttack){
   const adjustment = { total: baseAttack, bonus: 0, label: '' };
-  if(!baseAttack || !isStoryFinalColossusCombat() || !isStoryFinalColossusEngaged()) return adjustment;
+  if(!baseAttack || !isStoryFinalColossusCombat() || !isStoryFinalColossusResilienceRecovered()) return adjustment;
   const boss = syncStoryFinalColossusBossState({ announce:false });
   if(!boss) return adjustment;
   if(attackerIdx === 1){
@@ -33126,7 +33589,7 @@ function logStoryFinalColossusAttackAdjustment(adjustment, attackerIdx){
 }
 
 function resolveStoryFinalColossusAfterImpact(pending, totalAttack, result){
-  if(!pending || !isStoryFinalColossusCombat() || !isStoryFinalColossusEngaged()) return;
+  if(!pending || !isStoryFinalColossusCombat() || !isStoryFinalColossusResilienceRecovered()) return;
   const destroyedArmorCount = result?.destroyedArmor?.length || 0;
   const destroyedDefenseCount = result?.destroyedDefense?.length || 0;
   if(pending.defenderIndex === 1){
@@ -33170,7 +33633,10 @@ function ensureStoryFinalColossusProgress(){
       phase2Complete: false,
       stripReveal: false,
       breachFaded: false,
-      standReady: false
+      standReady: false,
+      resilienceReady: false,
+      resilienceRecovered: false,
+      resilienceRecovering: false
     };
   }
   if(typeof state.storyMissionProgress.finalColossusIntro.stripReveal !== 'boolean'){
@@ -33181,6 +33647,15 @@ function ensureStoryFinalColossusProgress(){
   }
   if(typeof state.storyMissionProgress.finalColossusIntro.standReady !== 'boolean'){
     state.storyMissionProgress.finalColossusIntro.standReady = false;
+  }
+  if(typeof state.storyMissionProgress.finalColossusIntro.resilienceReady !== 'boolean'){
+    state.storyMissionProgress.finalColossusIntro.resilienceReady = false;
+  }
+  if(typeof state.storyMissionProgress.finalColossusIntro.resilienceRecovered !== 'boolean'){
+    state.storyMissionProgress.finalColossusIntro.resilienceRecovered = false;
+  }
+  if(typeof state.storyMissionProgress.finalColossusIntro.resilienceRecovering !== 'boolean'){
+    state.storyMissionProgress.finalColossusIntro.resilienceRecovering = false;
   }
   return state.storyMissionProgress.finalColossusIntro;
 }
@@ -33221,10 +33696,10 @@ function hideStoryFinalColossusControlWarning(){
   document.body?.classList.remove('story-final-colossus-control-warning-active');
 }
 
-function showStoryFinalColossusControlWarning(onDone){
+function showStoryFinalColossusControlWarning(){
   const warning = document.getElementById('storyFinalColossusControlWarning');
+  const button = document.getElementById('storyFinalColossusResilienceBtn');
   if(!warning){
-    if(typeof onDone === 'function') onDone();
     return;
   }
   if(storyFinalColossusControlWarningTimer){
@@ -33239,15 +33714,129 @@ function showStoryFinalColossusControlWarning(onDone){
   warning.classList.add('show');
   playUiSound('colossus_warning');
   if(navigator.userActivation?.hasBeenActive) pulseVibrate([35, 45, 35, 70, 120]);
-  const warningDuration = prefersReducedMotion() ? 2600 : 6200;
-  storyFinalColossusControlWarningTimer = window.setTimeout(() => {
-    storyFinalColossusControlWarningTimer = null;
-    warning.classList.remove('show');
-    warning.hidden = true;
-    warning.setAttribute('aria-hidden', 'true');
-    document.body?.classList.remove('story-final-colossus-control-warning-active');
-    if(typeof onDone === 'function') onDone();
-  }, warningDuration);
+  if(button){
+    button.disabled = false;
+    button.textContent = 'Activar resiliencia';
+    window.setTimeout(() => button.focus({ preventScroll:true }), prefersReducedMotion() ? 40 : 120);
+  }
+}
+
+function clearStoryFinalColossusResilienceBurstTimers(){
+  if(!storyFinalColossusResilienceBurstTimers.length) return;
+  storyFinalColossusResilienceBurstTimers.forEach(timerId => window.clearTimeout(timerId));
+  storyFinalColossusResilienceBurstTimers = [];
+}
+
+function scheduleStoryFinalColossusResilienceBurst(callback, delay){
+  const timerId = window.setTimeout(() => {
+    storyFinalColossusResilienceBurstTimers = storyFinalColossusResilienceBurstTimers.filter(id => id !== timerId);
+    callback();
+  }, Math.max(0, delay));
+  storyFinalColossusResilienceBurstTimers.push(timerId);
+  return timerId;
+}
+
+function runStoryFinalColossusResilienceSpectacle(){
+  const mobileLite = isStoryFinalColossusMobileLite();
+  const reduced = prefersReducedMotion();
+  const app = document.querySelector('.app') || document.body;
+  const combatSurface = (typeof getCompactCombatSurface === 'function' && getCompactCombatSurface())
+    || document.getElementById('tacticalScreen')
+    || app;
+  const sparkTargets = Array.from(new Set([
+    document.querySelector('.compact-topbar'),
+    document.querySelector('.compact-player-panel'),
+    document.querySelector('.compact-arena-panel'),
+    document.querySelector('.compact-hand-panel'),
+    document.querySelector('.compact-mobile-actions-panel'),
+    document.querySelector('.compact-action-hub-button'),
+    document.getElementById('accionesBtn'),
+    document.getElementById('compactMechaStage-0'),
+    combatSurface
+  ].filter(Boolean)));
+  const rippleBursts = reduced ? [0, 90] : [0, 170, 410];
+  const soundBursts = reduced
+    ? [{ delay:0, kind:'alert' }, { delay:90, kind:'build' }]
+    : [{ delay:0, kind:'alert' }, { delay:120, kind:'build' }, { delay:320, kind:'alert' }, { delay:540, kind:'build' }];
+  const uiSparkBursts = reduced ? [70] : [150, 320, 520];
+
+  triggerImpactFlash('amber');
+  triggerScreenShake(mobileLite ? 'light' : 'heavy');
+  clearStoryFinalColossusResilienceBurstTimers();
+  rippleBursts.forEach((delay, index) => {
+    scheduleStoryFinalColossusResilienceBurst(() => {
+      triggerScreenRipple(index % 2 === 0 ? 'amber' : 'cyan');
+    }, delay);
+  });
+  soundBursts.forEach(({ delay, kind }) => {
+    scheduleStoryFinalColossusResilienceBurst(() => playUiSound(kind), delay);
+  });
+  sparkTargets.forEach((target, index) => {
+    scheduleStoryFinalColossusResilienceBurst(() => {
+      spawnElementSparks(target, index === sparkTargets.length - 1 ? (mobileLite ? 18 : 28) : (mobileLite ? 10 : 16), index % 3 === 1 ? 'amber' : 'cyan');
+    }, reduced ? index * 28 : 80 + index * 72);
+  });
+  if(combatSurface){
+    const rect = combatSurface.getBoundingClientRect();
+    uiSparkBursts.forEach((delay, burstIndex) => {
+      scheduleStoryFinalColossusResilienceBurst(() => {
+        spawnUiSparks(
+          rect.left + rect.width * (mobileLite ? 0.34 : 0.28) + burstIndex * rect.width * 0.05,
+          rect.top + rect.height * (mobileLite ? 0.62 : 0.56) - burstIndex * rect.height * 0.03,
+          mobileLite ? 12 : 18,
+          burstIndex % 2 ? 'amber' : 'cyan'
+        );
+      }, delay);
+    });
+  }
+  if(navigator.userActivation?.hasBeenActive){
+    pulseVibrate(reduced ? [18, 24, 28] : [20, 24, 20, 34, 22, 56, 110]);
+  }
+}
+
+function triggerStoryFinalColossusResilience(){
+  const progress = ensureStoryFinalColossusProgress();
+  if(!progress || !progress.phase2Complete || progress.resilienceRecovered || state.winner) return false;
+  const button = document.getElementById('storyFinalColossusResilienceBtn');
+  progress.resilienceReady = false;
+  progress.resilienceRecovered = true;
+  progress.resilienceRecovering = true;
+  progress.stage = 'resilience-recovering';
+  state.phase = 'Recomponiendo panel';
+  if(button){
+    button.disabled = true;
+    button.textContent = 'Reconstruyendo...';
+  }
+  hideStoryFinalColossusControlWarning();
+  if(storyFinalColossusResilienceTimer){
+    window.clearTimeout(storyFinalColossusResilienceTimer);
+    storyFinalColossusResilienceTimer = null;
+  }
+  runStoryFinalColossusResilienceSpectacle();
+  log('🛠️ RESILIENCIA activada: el sistema responde con una sobrecarga y empieza a reconstruir el panel.');
+  addToast('RESILIENCIA activada', 'warn');
+  syncStoryFinalColossusOverlay();
+  render();
+  storyFinalColossusResilienceTimer = window.setTimeout(() => {
+    storyFinalColossusResilienceTimer = null;
+    if(!isStoryFinalColossusCombat()) return;
+    const activeProgress = ensureStoryFinalColossusProgress();
+    if(!activeProgress) return;
+    activeProgress.resilienceRecovering = false;
+    activeProgress.stage = 'combat-live';
+    state.phase = 'Combate del coloso';
+    state.transitionLock = false;
+    applyStoryFinalColossusTurnStartRoutine();
+    clearStoryFinalColossusResilienceBurstTimers();
+    playUiSound('build');
+    triggerScreenRipple('amber');
+    log('🛠️ Resiliencia activada: el panel recompone el 90% del sistema y el combate vuelve a estar operativo.');
+    addToast('Panel recompuesto al 90%', 'ok');
+    addToast('El verdadero combate comienza', 'warn');
+    syncStoryFinalColossusOverlay();
+    render();
+  }, prefersReducedMotion() ? 360 : 1480);
+  return true;
 }
 
 function clearStoryFinalColossusSequence(forceHideOverlay = false){
@@ -33279,6 +33868,11 @@ function clearStoryFinalColossusSequence(forceHideOverlay = false){
     window.clearTimeout(storyFinalColossusBossCueTimer);
     storyFinalColossusBossCueTimer = null;
   }
+  if(storyFinalColossusResilienceTimer){
+    window.clearTimeout(storyFinalColossusResilienceTimer);
+    storyFinalColossusResilienceTimer = null;
+  }
+  clearStoryFinalColossusResilienceBurstTimers();
   hideStoryFinalColossusControlWarning();
   if(forceHideOverlay){
     const overlay = document.getElementById('storyFinalColossusOverlay');
@@ -33293,8 +33887,8 @@ function clearStoryFinalColossusSequence(forceHideOverlay = false){
       bossHud.setAttribute('aria-hidden', 'true');
     }
   }
-  document.body?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open');
-  document.querySelector('.app')?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open');
+  document.body?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open', 'story-final-colossus-ruined', 'story-final-colossus-resilience-restoring');
+  document.querySelector('.app')?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open', 'story-final-colossus-ruined', 'story-final-colossus-resilience-restoring');
   document.body?.classList.remove('story-final-colossus-recoiling');
   document.querySelector('.app')?.classList.remove('story-final-colossus-recoiling');
   clearStoryFinalColossusBossCueClasses();
@@ -33372,6 +33966,8 @@ function syncStoryFinalColossusOverlay(){
   const progress = ensureStoryFinalColossusProgress();
   const breaking = !!progress && !!progress.phase2Started && !progress.phase2Complete;
   const engaged = !!progress && !!progress.phase2Complete;
+  const ruined = engaged && !progress?.resilienceRecovered;
+  const resilienceRestoring = engaged && !!progress?.resilienceRecovering;
   const mobileLite = isStoryFinalColossusMobileLite();
   const mobilePanelForced = mobileLite && (
     engaged
@@ -33383,6 +33979,10 @@ function syncStoryFinalColossusOverlay(){
   document.querySelector('.app')?.classList.toggle('story-final-colossus-breaking', breaking);
   document.body?.classList.toggle('story-final-colossus-engaged', engaged);
   document.querySelector('.app')?.classList.toggle('story-final-colossus-engaged', engaged);
+  document.body?.classList.toggle('story-final-colossus-ruined', ruined);
+  document.querySelector('.app')?.classList.toggle('story-final-colossus-ruined', ruined);
+  document.body?.classList.toggle('story-final-colossus-resilience-restoring', resilienceRestoring);
+  document.querySelector('.app')?.classList.toggle('story-final-colossus-resilience-restoring', resilienceRestoring);
   document.body?.classList.toggle('story-final-colossus-mobile', mobileLite);
   document.querySelector('.app')?.classList.toggle('story-final-colossus-mobile', mobileLite);
   document.body?.classList.toggle('story-final-colossus-mobile-panel-forced', mobilePanelForced);
@@ -33398,7 +33998,7 @@ function syncStoryFinalColossusOverlay(){
   overlay.classList.toggle('breach-fade', breaking && !!progress.breachFaded);
   overlay.classList.toggle('stand-ready', (breaking && !!progress.standReady) || engaged);
   overlay.classList.toggle('settled', engaged);
-  syncStoryFinalColossusBossHud(engaged);
+  syncStoryFinalColossusBossHud(engaged && !!progress?.resilienceRecovered);
 }
 
 function forceStoryFinalColossusMobilePanelDestruction(){
@@ -33435,6 +34035,9 @@ function triggerStoryFinalColossusBreakSequence(){
   progress.stripReveal = false;
   progress.breachFaded = false;
   progress.standReady = false;
+  progress.resilienceReady = false;
+  progress.resilienceRecovered = false;
+  progress.resilienceRecovering = false;
   progress.stage = 'phase-2-breaking';
   state.phase = 'Rotura del HUD';
   state.transitionLock = true;
@@ -33510,15 +34113,17 @@ function triggerStoryFinalColossusBreakSequence(){
     progress.phase2Started = false;
     progress.phase2Complete = true;
     progress.rivalSpriteHidden = false;
+    progress.resilienceReady = true;
+    progress.resilienceRecovered = false;
+    progress.resilienceRecovering = false;
     progress.stage = 'colossus-awake';
-    state.phase = 'Panel de control roto';
+    state.phase = 'Panel de control destrozado';
     state.transitionLock = true;
     proPendingDrawBurst = null;
     hideProTurnSplash();
     hideTransientOverlays();
     ensureStoryFinalColossusEngagedHudMode();
     syncStoryFinalColossusBossState({ announce:false });
-    applyStoryFinalColossusTurnStartRoutine();
     try{
       window.scrollTo({ top:0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
     }catch(_err){
@@ -33549,20 +34154,7 @@ function triggerStoryFinalColossusBreakSequence(){
     const warningDelay = prefersReducedMotion() ? 650 : 2800;
     storyFinalColossusControlWarningDelayTimer = window.setTimeout(() => {
       storyFinalColossusControlWarningDelayTimer = null;
-      showStoryFinalColossusControlWarning(() => {
-        if(!isStoryFinalColossusCombat()) return;
-        if(state.winner){
-          state.transitionLock = false;
-          render();
-          return;
-        }
-        state.phase = 'Combate del coloso';
-        state.transitionLock = false;
-        log('📡 Telemetria de jefe activa: rompe blindaje, abre reactor y remata el nucleo antes de que la sobrecarga te aplaste.');
-        addToast('El verdadero combate comienza', 'warn');
-        syncStoryFinalColossusOverlay();
-        render();
-      });
+      showStoryFinalColossusControlWarning();
     }, warningDelay);
   }, timings.complete);
   return true;
@@ -34304,6 +34896,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
     towerSuit: STORY_TOWER_SUIT || profile.suit || '',
     campTurnLimit: mission === 'camp_resistance_trial' ? 20 : 0,
     campTurnStartCount: mission === 'camp_resistance_trial' ? state.turnCount : 0,
+    campTimeoutTriggered: false,
     finalColossusBoss: finalColossusStyle ? createStoryFinalColossusBossProgress(enemy) : null,
     finalColossusIntro: finalColossusStyle ? {
       stage: 'player-opening',
@@ -34315,7 +34908,10 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
       phase2Complete: false,
       stripReveal: false,
       breachFaded: false,
-      standReady: false
+      standReady: false,
+      resilienceReady: false,
+      resilienceRecovered: false,
+      resilienceRecovering: false
     } : null
   };
   state.log = [
@@ -34516,17 +35112,28 @@ function maybeFinalizeStoryMissionAfterWinner(){
   if(isStoryCampCombatMission(state.storyMission)){
     const profile = getStoryTowerCombatProfile(state.storyMission);
     const playerWon = state.winner === state.players[0].name;
+    const campTimedOut = !!state.storyMissionProgress?.campTimeoutTriggered;
     state.phase = 'Mision';
     state.storyMissionAnnounced = true;
     log(playerWon
       ? `🏁 Placas Rojas: ${profile?.title || 'combate'} superado.`
-      : `⚠️ Placas Rojas: ${profile?.enemyName || 'rival'} se impone.`);
-    addToast(playerWon ? 'Placas Rojas: combate superado' : 'Placas Rojas: puedes repetirlo', playerWon ? 'ok' : 'warn');
+      : campTimedOut
+        ? `⏱️ Placas Rojas: agotaste el margen de ${state.storyMissionProgress?.campTurnLimit || 20} turnos. La calibracion cuenta como derrota.`
+        : `⚠️ Placas Rojas: ${profile?.enemyName || 'rival'} se impone.`);
+    addToast(
+      playerWon
+        ? 'Placas Rojas: combate superado'
+        : campTimedOut
+          ? 'Tiempo agotado: calibración fallida'
+          : 'Placas Rojas: puedes repetirlo',
+      playerWon ? 'ok' : 'warn'
+    );
     broadcastStoryMissionOutcome({
       mission: state.storyMission,
       success: playerWon,
       winner: state.winner,
       campReturnScene: STORY_CAMP_RETURN_SCENE || (state.storyMission === 'camp_lake_drone' ? 'lake' : 'camp'),
+      ...(campTimedOut ? { timeout: true } : {}),
       reward: playerWon && state.storyMission === 'camp_resistance_trial' ? { coins: 1 } : null
     });
     return;
@@ -36549,6 +37156,7 @@ function syncStoryMissionBriefBar(){
   if(!bar) return;
   updateStoryMissionBriefPlacement(bar);
   const brief = getStoryMissionBrief();
+  const campCountdown = getStoryCampTurnCountdown();
   const mobileBocetoHudActive = STORY_EMBED_MODE && isStoryMobileViewport() && storyHudMode !== 'scroll';
   const finalColossusBriefSuppressed = isStoryFinalColossusCombat(state.storyMission || STORY_MISSION_BOOT);
   const shouldShow = !finalColossusBriefSuppressed && !mobileBocetoHudActive && STORY_BRIEF_MODE !== 'off' && STORY_EMBED_MODE && !!brief && state.gameStarted && !state.storyMissionAnnounced;
@@ -36556,10 +37164,24 @@ function syncStoryMissionBriefBar(){
   if(!shouldShow) return;
   const kicker = document.getElementById('storyMissionBriefKicker');
   const title = document.getElementById('storyMissionBriefTitle');
+  const meta = document.getElementById('storyMissionBriefMeta');
+  const turnChip = document.getElementById('storyMissionBriefTurnChip');
   const text = document.getElementById('storyMissionBriefText');
   const toggle = document.getElementById('storyMissionBriefToggleBtn');
   if(kicker) kicker.textContent = brief.kicker;
   if(title) title.textContent = brief.title;
+  if(meta && turnChip){
+    meta.hidden = !campCountdown;
+    if(campCountdown){
+      turnChip.textContent = `Calibración · ${formatStoryCampRemainingTurns(campCountdown.remaining)}`;
+      turnChip.dataset.tone = campCountdown.tone;
+      turnChip.setAttribute('aria-label', `Quedan ${campCountdown.remaining} de ${campCountdown.turnLimit} turnos`);
+    }else{
+      turnChip.textContent = '';
+      turnChip.dataset.tone = 'normal';
+      turnChip.removeAttribute('aria-label');
+    }
+  }
   if(text) text.textContent = brief.text;
   bar.classList.toggle('collapsed', storyMissionBriefCollapsed);
   if(toggle){
@@ -41555,8 +42177,27 @@ function renderDesktopCompactHud(){
   if(compactTurnDialPlayer) compactTurnDialPlayer.textContent = compactTurnIndicator.label;
   const compactTurnDialValue = document.getElementById('compactTurnDialValue');
   if(compactTurnDialValue) compactTurnDialValue.textContent = compactTurnIndicator.value;
+  const campTurnCountdown = getStoryCampTurnCountdown();
+  const useStoryCampCompactCountdown = shouldUseStoryCampCompactCountdown();
+  const compactTopFuelLabel = document.getElementById('compactTopFuelLabel');
+  const compactTopFuelResource = document.querySelector('.compact-top-resource-fuel');
+  if(compactTopFuelLabel){
+    compactTopFuelLabel.textContent = useStoryCampCompactCountdown ? 'Turnos' : 'Mazo';
+  }
   const compactTopFuelValue = document.getElementById('compactTopFuelValue');
-  if(compactTopFuelValue) compactTopFuelValue.textContent = String(getVisibleDeckCount(playerIdx));
+  if(compactTopFuelValue){
+    compactTopFuelValue.textContent = useStoryCampCompactCountdown && campTurnCountdown
+      ? `${campTurnCountdown.remaining}/${campTurnCountdown.turnLimit}`
+      : String(getVisibleDeckCount(playerIdx));
+  }
+  if(compactTopFuelResource){
+    compactTopFuelResource.classList.toggle('story-turn-limit-active', useStoryCampCompactCountdown);
+    compactTopFuelResource.classList.toggle('story-turn-limit-warning', useStoryCampCompactCountdown && campTurnCountdown?.tone === 'warning');
+    compactTopFuelResource.classList.toggle('story-turn-limit-danger', useStoryCampCompactCountdown && campTurnCountdown?.tone === 'danger');
+    compactTopFuelResource.title = useStoryCampCompactCountdown && campTurnCountdown
+      ? `Calibración: ${formatStoryCampRemainingTurns(campTurnCountdown.remaining)} de ${campTurnCountdown.turnLimit}`
+      : '';
+  }
   const compactTopCoreValue = document.getElementById('compactTopCoreValue');
   if(compactTopCoreValue){
     const fuelAttackText = sourceText('fuelToAttackValue') || '0 × 2';
@@ -43799,7 +44440,8 @@ function updateHints(){
     const openingTurn = !!intro && !intro.openingTurnComplete;
     const breaking = !!intro && !!intro.phase2Started && !intro.phase2Complete;
     const engaged = !!intro && !!intro.phase2Complete;
-    const boss = engaged ? syncStoryFinalColossusBossState({ announce:false }) : null;
+    const resilienceRecovered = !!intro && !!intro.resilienceRecovered;
+    const boss = engaged && resilienceRecovered ? syncStoryFinalColossusBossState({ announce:false }) : null;
     const bossMeta = boss ? getStoryFinalColossusBossMeta(boss.phase) : null;
     const bossHeat = boss ? Math.round(clampPercent(Number(boss.heat) || 0)) : 0;
     const bossPhaseCopy = boss && bossMeta
@@ -43811,25 +44453,31 @@ function updateHints(){
       : (breaking
         ? '💥 El coloso está rompiendo la interfaz. El combate queda bloqueado durante la irrupción.'
         : (engaged
-          ? `🤖 ${bossPhaseCopy}`
+          ? (resilienceRecovered
+            ? `🤖 ${bossPhaseCopy}`
+            : '🚨 El panel está destrozado. Pulsa RESILIENCIA para recomponer la cabina y volver a combatir.')
           : '⚠️ Lectura rival recuperada: algo enorme se está moviendo detrás del HUD.'));
     if(attackHint) attackHint.innerHTML = openingTurn
       ? 'Coloca hasta 3 cartas y prepara tu cabina. Este turno existe para que el coloso irrumpa después.'
       : (breaking
         ? 'La pantalla se parte en fragmentos y el coloso empuja desde detrás del radar rival.'
         : (engaged
-          ? (boss?.phase === 'armor'
+          ? (!resilienceRecovered
+            ? 'El coloso ya domina la derecha. El warning debe desembocar en un botón de resiliencia antes de recuperar el control.'
+            : (boss?.phase === 'armor'
             ? 'Fase de blindaje: tus ataques deben arrancar armadura antes de tocar el reactor.'
             : boss?.phase === 'reactor'
               ? 'Fase de reactor: ya no hay placas exteriores. Golpea defensa y fuerza el núcleo.'
-              : 'Fase final: el núcleo abierto recibe +2 de tus ataques, pero el coloso acelera su protocolo sísmico.')
+              : 'Fase final: el núcleo abierto recibe +2 de tus ataques, pero el coloso acelera su protocolo sísmico.'))
           : 'El coloso ya ha sido detectado. El tablero sigue operativo mientras la irrupción queda preparada.'));
     if(attackSubHint) attackSubHint.textContent = openingTurn
       ? 'Al cerrar este turno quedará armado el disparador de la rotura de interfaz para la Fase 2.'
       : (breaking
         ? 'La secuencia visual está en curso: en cuanto termine, el sprite gigante pasará a ocupar la derecha.'
         : (engaged
-          ? 'El coloso gana calor en sus turnos, roba presión extra y puede recomponer módulos desde la mano antes de actuar.'
+          ? (resilienceRecovered
+            ? 'El coloso gana calor en sus turnos, roba presión extra y puede recomponer módulos desde la mano antes de actuar.'
+            : 'El panel todavía no es jugable: el botón de resiliencia es la transición diegética entre catástrofe y combate.')
           : 'La Fase 1 ya se ha resuelto: el rival sigue oculto hasta que se complete la rotura del HUD.'));
     if(tutorialPanelTitle) tutorialPanelTitle.textContent = breaking
       ? 'Combate final · Irrupción'
@@ -43841,25 +44489,31 @@ function updateHints(){
       : (breaking
         ? 'La interfaz se rompe en directo y el coloso atraviesa el HUD. Durante esta fase el input queda bloqueado para que la irrupción se lea como un evento real.'
         : (engaged
-          ? 'El coloso ya está erguido y combate por fases: blindaje, reactor y núcleo. Cada fase conserva las reglas de cartas, pero altera presión, bonus de ataque y recompensas de brecha.'
+          ? (resilienceRecovered
+            ? 'El coloso ya está erguido y combate por fases: blindaje, reactor y núcleo. Cada fase conserva las reglas de cartas, pero altera presión, bonus de ataque y recompensas de brecha.'
+            : 'El coloso ya ha destrozado la cabina. Antes de volver a jugar, el warning debe ofrecer una activación de resiliencia que recomponga el panel casi por completo.')
           : 'El primer turno ya ha sembrado la anomalía: la lectura rival sigue vacía hasta que arranque la irrupción del coloso.'));
     if(tutorialPanelTip) tutorialPanelTip.textContent = openingTurn
       ? 'El objetivo de esta fase no es atacar: es hacer que el jugador baje la guardia y ocupe la cabina como si nada raro fuera a pasar.'
       : (breaking
         ? 'La rotura tiene que sentirse como una agresión al propio sistema, no como una simple animación decorativa.'
         : (engaged
-          ? 'Mira la telemetría del jefe: si el calor sube demasiado, su siguiente ataque gana pulso extra.'
+          ? (resilienceRecovered
+            ? 'Mira la telemetría del jefe: si el calor sube demasiado, su siguiente ataque gana pulso extra.'
+            : 'El panel puede verse casi inutilizable aquí: su propósito es vender el golpe antes de que el botón lo reordene.')
           : 'La siguiente fase ya puede concentrarse en romper la interfaz sin rehacer el arranque del combate.'));
     if(tutorialPanelObjective) tutorialPanelObjective.textContent = openingTurn
       ? 'Objetivo: consumir el primer turno del jugador con la interfaz rival vacía.'
       : (breaking
         ? 'Objetivo: ejecutar la rotura y recolocar la presencia del coloso.'
         : (engaged
-          ? (boss?.phase === 'armor'
+          ? (!resilienceRecovered
+            ? 'Objetivo: forzar el botón de resiliencia como única salida jugable.'
+            : (boss?.phase === 'armor'
             ? 'Objetivo: destruir todo el blindaje exterior.'
             : boss?.phase === 'reactor'
               ? 'Objetivo: romper suficiente defensa para abrir el núcleo.'
-              : 'Objetivo: rematar el núcleo antes de que la sobrecarga cierre el combate.')
+              : 'Objetivo: rematar el núcleo antes de que la sobrecarga cierre el combate.'))
           : 'Objetivo: preparar la irrupción visual.'));
     if(tutorialPanelStep) tutorialPanelStep.textContent = openingTurn
       ? 'Coloso · Fase 1'
@@ -43871,14 +44525,18 @@ function updateHints(){
       : (breaking
         ? 'La cámara, el ruido y las piezas de HUD tienen que reforzar que la amenaza está entrando desde detrás.'
         : (engaged
-          ? 'Juega en el lado izquierdo y lee la consola del jefe en la derecha: esa telemetría marca la fase real.'
+          ? (resilienceRecovered
+            ? 'Juega en el lado izquierdo y lee la consola del jefe en la derecha: esa telemetría marca la fase real.'
+            : 'Ahora el foco tiene que estar en el coloso. La cabina solo vuelve cuando el jugador active resiliencia.')
           : 'La lectura rival sigue anulada para reservar la primera visión del coloso a la secuencia de rotura.'));
     if(tutorialPanelStatus) tutorialPanelStatus.textContent = openingTurn
       ? 'Primer turno forzado al jugador. El sprite rival sigue oculto.'
       : (breaking
         ? 'Irrupción del coloso en curso.'
         : (engaged
-          ? `Coloso activo. Calor ${bossHeat}%. Bonus sísmico preparado: +${Math.max(getStoryFinalColossusBossMeta(boss?.phase || 'armor').attackBoost, Number(boss?.nextAttackBoost) || 0)}.`
+          ? (resilienceRecovered
+            ? `Coloso activo. Calor ${bossHeat}%. Bonus sísmico preparado: +${Math.max(getStoryFinalColossusBossMeta(boss?.phase || 'armor').attackBoost, Number(boss?.nextAttackBoost) || 0)}.`
+            : 'Panel destruido. Esperando activación de resiliencia.')
           : 'COMBATE FINAL: la Fase 2 queda preparada.'));
     return;
   }
@@ -45555,6 +46213,7 @@ document.getElementById('skipDefenseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
   skipDefense();
 });
+document.getElementById('storyFinalColossusResilienceBtn')?.addEventListener('click', triggerStoryFinalColossusResilience);
 document.getElementById('storyArgosHackGateBtn')?.addEventListener('click', resolveStoryArgosHackGate);
 document.getElementById('storyArgosHackCollapseBtn')?.addEventListener('click', () => {
   setStoryArgosHackPanelMode(storyArgosHackPanelMode === 'collapsed' ? 'open' : 'collapsed');

@@ -1552,7 +1552,7 @@ const standaloneSceneCopy = {
   trial: {
     kicker: "PoCoBOT de resistencia",
     title: "Combate controlado",
-    text: "La piloto propone una prueba controlada: demostrar criterio y priorizar velocidad. ",
+    text: "La piloto propone una prueba controlada: demostrar criterio y priorizar velocidad. Tienes 20 turnos para cerrarla; si se agotan, contará como derrota.",
     actions: [
       { label: "Iniciar combate", action: "combat-trial" },
     ],
