@@ -12,7 +12,7 @@ const EXPECTED = {
   serviceId: 'a751d925-2352-44fa-8661-7fd902d3649b',
   serviceName: 'poker-combat-bot',
   repo: 'juanramonpq-source/poker-combat-bot',
-  deploymentTriggerId: '9a088756-03f2-4cb4-8827-0a2650b55082',
+  deploymentTriggerId: 'a3a8b836-2525-44e6-b868-50540b18f869',
   customDomain: 'pocobot.online'
 };
 
