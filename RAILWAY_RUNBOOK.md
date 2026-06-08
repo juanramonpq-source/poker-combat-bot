@@ -12,7 +12,7 @@ This repo must deploy to one Railway project only.
 - Service ID: `a751d925-2352-44fa-8661-7fd902d3649b`
 - GitHub repo: `juanramonpq-source/poker-combat-bot`
 - GitHub branch: `main`
-- Deployment trigger: `9a088756-03f2-4cb4-8827-0a2650b55082`
+- Deployment trigger: `a3a8b836-2525-44e6-b868-50540b18f869`
 - Railway domain: `https://pocobot.up.railway.app/`
 - Custom domain: `https://pocobot.online/`
 - Custom domain traffic target: `3u23ystj.up.railway.app`
@@ -33,7 +33,7 @@ npm run railway:guard
 
 `npm run clean:push` syncs a whitelist of runtime files into `../codex/PoCoBOT Limpio`, commits from that clean repository, pushes `origin main`, and then runs the Railway guard. Use `npm run clean:sync` to regenerate the clean folder without pushing.
 
-Railway autodeploy is enabled for `main`, so a normal pushed commit from the clean release repo is the deployment trigger. `npm run clean:push` also runs `npm run railway:bootstrap-refresh`, which creates a fresh deployment from the last healthy bootstrap image deployment. That refresh does not use Railway builds or `railway up`; it restarts the known-good bootstrap runtime so it pulls the latest `main` from GitHub even when Railway is rejecting new builds because the workspace has hit its concurrent-build limit.
+Railway autodeploy is enabled for `main`, so a normal pushed commit from the clean release repo is the first deployment path. `npm run clean:push` now waits up to 15 minutes for that GitHub deployment to become the active healthy runtime and only falls back to `npm run railway:bootstrap-refresh` if the deploy fails or stays stuck past that timeout. That fallback does not use Railway builds or `railway up`; it restarts the known-good bootstrap runtime so it pulls the latest `main` from GitHub even when Railway is rejecting new builds because the workspace has hit its concurrent-build limit.
 
 Run `npm run railway:guard` after pushing to verify that local `HEAD` matches `origin/main`, that the Railway link points to the official project, that there is exactly one active Railway project, that GitHub autodeploy is enabled, that the custom domain is healthy, and that backup archives are excluded from deploys.
 
@@ -43,7 +43,7 @@ While Railway is rejecting builds with the concurrent-build limit, keep normal G
 npm run railway:autodeploy:off
 ```
 
-During this bootstrap recovery period, `npm run clean:push` still publishes live changes by pushing `main` and then refreshing the bootstrap deployment. Re-enable normal Railway builds only after the queue is healthy:
+During this bootstrap recovery period, `npm run clean:push` still publishes live changes by pushing `main`. If GitHub autodeploy fails or stalls, the command automatically refreshes the bootstrap deployment as a fallback. Re-enable normal Railway builds only after the queue is healthy:
 
 ```sh
 npm run railway:autodeploy:on

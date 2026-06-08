@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "clean:sync": "node scripts/sync-clean-release.js",
     "clean:push": "node scripts/push-clean-release.js",
+    "railway:await-autodeploy": "node scripts/railway-await-github-deploy.js",
     "railway:bootstrap-refresh": "node scripts/railway-bootstrap-refresh.js",
     "railway:autodeploy": "node scripts/railway-autodeploy.js",
     "railway:autodeploy:off": "node scripts/railway-autodeploy.js off",

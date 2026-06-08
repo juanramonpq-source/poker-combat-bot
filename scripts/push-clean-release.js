@@ -27,21 +27,24 @@ function runVisible(command, args, cwd) {
   });
 }
 
-function runPostPushChecks(cleanRoot) {
-  let guardPassed = true;
-
-  try {
-    runVisible('npm', ['run', 'railway:guard'], cleanRoot);
-  } catch (error) {
-    guardPassed = false;
-    console.warn('Initial Railway guard failed. Attempting bootstrap refresh before the final guard...');
-  }
-
-  runVisible('npm', ['run', 'railway:bootstrap-refresh'], cleanRoot);
+function runPostPushChecks(cleanRoot, pushedCommitHash = '') {
   runVisible('npm', ['run', 'railway:guard'], cleanRoot);
 
-  if (!guardPassed) {
-    console.log('Final Railway guard passed after bootstrap refresh.');
+  if (!pushedCommitHash) return;
+
+  let fallbackTriggered = false;
+  try {
+    runVisible('node', [path.join(__dirname, 'railway-await-github-deploy.js'), pushedCommitHash], cleanRoot);
+  } catch (error) {
+    fallbackTriggered = true;
+    console.warn('Railway GitHub autodeploy failed or stalled. Attempting bootstrap refresh...');
+    runVisible('npm', ['run', 'railway:bootstrap-refresh'], cleanRoot);
+  }
+
+  runVisible('npm', ['run', 'railway:guard'], cleanRoot);
+
+  if (fallbackTriggered) {
+    console.log('Final Railway guard passed after bootstrap refresh fallback.');
   }
 }
 
@@ -62,9 +65,10 @@ function main() {
   }
 
   runVisible('git', ['commit', '-m', message], cleanRoot);
+  const pushedCommitHash = run('git', ['rev-parse', 'HEAD'], { cwd: cleanRoot });
   runVisible('git', ['push', 'origin', manifest.branch], cleanRoot);
 
-  runPostPushChecks(cleanRoot);
+  runPostPushChecks(cleanRoot, pushedCommitHash);
 }
 
 main();
