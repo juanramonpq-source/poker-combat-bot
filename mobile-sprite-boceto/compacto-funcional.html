@@ -3484,6 +3484,10 @@
       animation: attackMonitorTubeBloom .56s cubic-bezier(.18, .82, .22, 1) both;
     }
 
+    .attack-special-popup-overlay.mirror-shot .attack-special-popup-frame {
+      transform: scaleX(-1);
+    }
+
     .attack-special-popup-frame::before {
       content: "";
       position: absolute;
@@ -6625,7 +6629,7 @@
     function hideAttackSpecialPopup() {
       window.clearTimeout(attackVideoTimer);
       attackVideoTimer = null;
-      attackSpecialOverlay?.classList.remove("show");
+      attackSpecialOverlay?.classList.remove("show", "mirror-shot");
       attackSpecialOverlay?.setAttribute("aria-hidden", "true");
       if (attackSpecialVideo) {
         attackSpecialVideo.onended = null;
@@ -6665,6 +6669,7 @@
       }
       hideAttackSpecialPopup();
       positionAttackSpecialPopup(attackerIndex);
+      attackSpecialOverlay.classList.toggle("mirror-shot", attackerIndex === 0);
       attackSpecialOverlay.classList.add("show");
       attackSpecialOverlay.setAttribute("aria-hidden", "false");
       spawnSparksFromElement(fighterNode(attackerIndex), "amber", 24);

@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <script>
     (() => {
-      const APP_SHELL_VERSION = '20260611-ios-hand-fix-1';
+      const APP_SHELL_VERSION = '20260611-ios-hand-fix-2';
       const ensureVersionedShell = (reloadPersisted = false) => {
         try {
           const url = new URL(window.location.href);
@@ -30,7 +30,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_web_icon_32.png?v=20260506-pocobot-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/pocobot_web_icon_16.png?v=20260506-pocobot-icon" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_app_icon_180.png?v=20260529-pocobot-pwa" />
-  <link rel="manifest" href="site.webmanifest?v=20260611-ios-hand-fix-1" />
+  <link rel="manifest" href="site.webmanifest?v=20260611-ios-hand-fix-2" />
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand" />
   <link rel="prefetch" href="assets/audio_01.mp3" />
   <link rel="prefetch" href="assets/audio_02.mp3" />
@@ -10168,6 +10168,9 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
 }
 .attack-special-popup-overlay.show .attack-special-popup-frame{
   animation:attackMonitorTubeBloom .56s cubic-bezier(.18, .82, .22, 1) both;
+}
+.attack-special-popup-overlay.mirror-shot .attack-special-popup-frame{
+  transform:scaleX(-1);
 }
 .attack-special-popup-frame::before{
   content:"";
@@ -32053,7 +32056,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260611-ios-hand-fix-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260611-ios-hand-fix-2';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -42760,7 +42763,7 @@ function hideAttackSpecialPopup(){
   const overlay = document.getElementById('attackSpecialPopupOverlay');
   const video = document.getElementById('attackSpecialPopupVideo');
   if(overlay){
-    overlay.classList.remove('show');
+    overlay.classList.remove('show', 'mirror-shot');
     overlay.setAttribute('aria-hidden', 'true');
   }
   if(video){
@@ -42820,6 +42823,7 @@ function showAttackSpecialPopup(attackerIdx, options={}){
 
   hideAttackSpecialPopup();
   positionAttackSpecialPopup(attackerIdx);
+  overlay.classList.toggle('mirror-shot', attackerIdx === 0);
   overlay.classList.add('show');
   overlay.setAttribute('aria-hidden', 'false');
   const sparkTarget = getCompactMechaAnchor(attackerIdx)?.target
@@ -44967,6 +44971,11 @@ function setDetailedCardImageState(hostEl, nextState){
   hostEl.classList.remove('card-image-pending', 'card-image-ready', 'card-image-failed');
   if(nextState) hostEl.classList.add(nextState);
 }
+function pruneDetailedCardFallback(hostEl){
+  if(!hostEl) return;
+  const fallback = hostEl.querySelector('.card-value-fallback');
+  if(fallback) fallback.remove();
+}
 function buildRealCardImageElement(card, hostEl=null){
   const src = getRealCardImageSrc(card);
   if(!src) return null;
@@ -44979,6 +44988,7 @@ function buildRealCardImageElement(card, hostEl=null){
   img.decoding = 'sync';
   img.draggable = false;
   img.addEventListener('load', () => {
+    pruneDetailedCardFallback(hostEl);
     setDetailedCardImageState(hostEl, 'card-image-ready');
   });
   img.addEventListener('error', () => {
@@ -44987,8 +44997,12 @@ function buildRealCardImageElement(card, hostEl=null){
   img.src = src;
   if(img.complete){
     queueMicrotask(() => {
-      if(img.naturalWidth > 0) setDetailedCardImageState(hostEl, 'card-image-ready');
-      else setDetailedCardImageState(hostEl, 'card-image-failed');
+      if(img.naturalWidth > 0){
+        pruneDetailedCardFallback(hostEl);
+        setDetailedCardImageState(hostEl, 'card-image-ready');
+      }else{
+        setDetailedCardImageState(hostEl, 'card-image-failed');
+      }
     });
   }
   return img;
