@@ -33033,6 +33033,12 @@ function autoStartStoryMissionIfRequested(){
       startStoryTowerCombatMission(STORY_MISSION_BOOT, profile);
       break;
     }
+    case 'subestacion_ceniza_patrol': {
+      const profile = getStoryTowerCombatProfile(STORY_MISSION_BOOT);
+      storyMissionBriefCollapsed = false;
+      startStoryTowerCombatMission(STORY_MISSION_BOOT, profile);
+      break;
+    }
     case 'tower_drone_hearts':
     case 'tower_drone_spades':
     case 'tower_drone_clubs':
@@ -33117,6 +33123,13 @@ function applyStoryMissionPlayerSetup(){
       state.players[1].name = profile?.enemyName || 'Bateria residual';
       state.players[1].combatSprite = profile?.combatSprite || null;
     }
+  }else if(isStorySubestacionCombatMission(state.storyMission)){
+    if(state.players[0]) state.players[0].name = 'Piloto';
+    if(state.players[1]){
+      const profile = getStoryTowerCombatProfile(state.storyMission);
+      state.players[1].name = profile?.enemyName || 'Centinela de Ceniza';
+      state.players[1].combatSprite = profile?.combatSprite || null;
+    }
   }else if(isStoryTowerCombatMission(state.storyMission)){
     if(state.players[0]) state.players[0].name = 'Piloto';
     if(state.players[1]){
@@ -33137,6 +33150,10 @@ function isStoryCampCombatMission(mission = state.storyMission || STORY_MISSION_
 
 function isStoryFosoCombatMission(mission = state.storyMission || STORY_MISSION_BOOT){
   return mission === 'foso_blackwind_battery';
+}
+
+function isStorySubestacionCombatMission(mission = state.storyMission || STORY_MISSION_BOOT){
+  return mission === 'subestacion_ceniza_patrol';
 }
 
 function getStoryCampTurnLimitState(mission = state.storyMission || STORY_MISSION_BOOT){
@@ -34320,7 +34337,7 @@ function resolveStoryArgosHackGate(){
 }
 
 function isStoryCombatLoadingMission(mission = state.storyMission || STORY_MISSION_BOOT){
-  return STORY_EMBED_MODE && (isStoryTowerCombatMission(mission) || isStoryCampCombatMission(mission) || isStoryFosoCombatMission(mission) || mission === 'mercado_viajero_4b');
+  return STORY_EMBED_MODE && (isStoryTowerCombatMission(mission) || isStoryCampCombatMission(mission) || isStoryFosoCombatMission(mission) || isStorySubestacionCombatMission(mission) || mission === 'mercado_viajero_4b');
 }
 
 function getStoryLoadingLotteryReward(){
@@ -34427,6 +34444,12 @@ const STORY_TOWER_COMBAT_PROFILES = {
     rank: '10',
     enemyId: 'blackwind-battery-umbra-9',
     intro: 'Combate final del Foso de Viento Negro: una bateria residual de Argos te recibe con el mazo que hayas conseguido preservar durante el asedio.'
+  },
+  subestacion_ceniza_patrol: {
+    enemyName: 'Centinela de Ceniza',
+    title: 'Subestacion · Mecha patrulla',
+    enemyId: 'subestacion-ceniza-sentinel',
+    intro: 'Combate de castigo de la Subestación de Ceniza: un mecha patrulla de Argós ya entra con panel ofensivo activo y escala visualmente al cargar combustible y núcleo.'
   }
 };
 
@@ -34470,6 +34493,13 @@ const DEV_STORY_CHARACTER_PRESETS = [
     name: 'General Mr. Wind',
     sprite: 'assets/Historia/low/General_Mr_Wind_pose_1_neutral.webp',
     description: 'Autoridad militar de la Ruta Ceniza.'
+  },
+  {
+    key: 'subestacion-centinela',
+    label: 'Centinela Ceniza',
+    name: 'Centinela de Ceniza',
+    sprite: 'assets/Historia/subestacion-ceniza/MechaFase1.png',
+    description: 'Mecha patrulla de la Subestación de Ceniza; arranca en fase 1 y escala al cargar combustible y núcleo.'
   },
   {
     key: 'xavor-glitch',
@@ -34691,6 +34721,27 @@ function setupStoryFosoBatteryEnemy(enemy, enemyDeck, profile){
   ];
 }
 
+function setupStorySubestacionPatrolEnemy(enemy, enemyDeck, profile){
+  setupStoryTowerPlayerBase(enemy, enemyDeck, {
+    prefix: profile?.enemyId || 'subestacion-ceniza-sentinel',
+    owner: 1
+  });
+  enemy.name = profile?.enemyName || 'Centinela de Ceniza';
+  enemy.core.pilot = null;
+  enemy.core.copilot = null;
+  enemy.core.booster = null;
+  enemy.attack = [
+    takeStoryTowerAvailableCard(enemyDeck, [{ rank:'9', suit:'spades' }, { rank:'7', suit:'spades' }, { rank:'6', suit:'spades' }], `${profile?.enemyId || 'subestacion-ceniza-sentinel'}-attack-ready`, 1)
+  ];
+  enemy.defense = [
+    takeStoryTowerAvailableCard(enemyDeck, [{ rank:'7', suit:'hearts' }, { rank:'6', suit:'hearts' }, { rank:'5', suit:'hearts' }], `${profile?.enemyId || 'subestacion-ceniza-sentinel'}-defense-ready`, 1)
+  ];
+  enemy.armor = [
+    takeStoryTowerAvailableCard(enemyDeck, [{ rank:'7', suit:'clubs' }, { rank:'6', suit:'clubs' }, { rank:'5', suit:'clubs' }], `${profile?.enemyId || 'subestacion-ceniza-sentinel'}-armor-ready`, 1)
+  ];
+  enemy.fuel = [];
+}
+
 function setupStoryTowerDroneEnemy(enemy, enemyDeck, profile){
   enemy.name = profile.enemyName;
   enemy.core.pilot = takeStoryTowerAvailableCard(enemyDeck, [
@@ -34842,6 +34893,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   const argosHackStyle = isStoryArgosHackCombat(mission);
   const finalColossusStyle = isStoryFinalColossusCombat(mission);
   const fosoStyle = isStoryFosoCombatMission(mission);
+  const subestacionStyle = isStorySubestacionCombatMission(mission);
   let enemyDeck = mission === 'tower_argos_hack'
     ? buildStoryTowerArgosHackEnemyDeck(1)
     : buildStoryTowerEnemyDeck(profile, 1);
@@ -34857,6 +34909,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   else if(mission === 'mercado_viajero_4b') setupStoryMarketViajeroHackEnemy(enemy);
   else if(mission === 'camp_resistance_trial') setupStoryCampResistancePocobotEnemy(enemy, enemyDeck, profile);
   else if(mission === 'foso_blackwind_battery') setupStoryFosoBatteryEnemy(enemy, enemyDeck, profile);
+  else if(mission === 'subestacion_ceniza_patrol') setupStorySubestacionPatrolEnemy(enemy, enemyDeck, profile);
   else if(mission === 'tower_final_colossus') setupStoryTowerFinalColossusEnemy(enemy, enemyDeck);
   else if(mission === 'tower_control_guard') setupStoryTowerControlGuardEnemy(enemy, enemyDeck);
   else setupStoryTowerDroneEnemy(enemy, enemyDeck, profile);
@@ -34874,7 +34927,7 @@ function setupStoryTowerCombatScenario(mission = STORY_MISSION_BOOT){
   state.turnCount = finalColossusStyle ? 1 : 2;
   state.phase = finalColossusStyle
     ? 'COMBATE FINAL'
-    : (isStoryCampCombatMission(mission) ? 'Placas Rojas' : fosoStyle ? 'Foso de Viento Negro' : 'Torre 4B');
+    : (isStoryCampCombatMission(mission) ? 'Placas Rojas' : fosoStyle ? 'Foso de Viento Negro' : subestacionStyle ? 'Subestación de Ceniza' : 'Torre 4B');
   state.tutorial = false;
   state.projectileUnlocked = mission === 'camp_resistance_trial' ? false : true;
   state.attackMode = false;
@@ -35025,6 +35078,7 @@ function broadcastStoryMissionOutcome(payload){
   const message = {
     type: 'pocobot-story-mission-result',
     nodeId: STORY_NODE_BOOT || undefined,
+    subestacionLoadId: STORY_SUBESTACION_LOAD_ID || undefined,
     savedAt: Date.now(),
     ...payload
   };
@@ -36040,6 +36094,7 @@ const STORY_EXTRA_DECK_CARDS_PARAM = STORY_BOOT_PARAMS.get('story_deck_cards') |
 const STORY_REMOVED_DECK_CARDS_PARAM = STORY_BOOT_PARAMS.get('story_removed_cards') || '';
 const STORY_TOWER_RETURN_SCENE = STORY_BOOT_PARAMS.get('story_tower_return_scene') || '';
 const STORY_CAMP_RETURN_SCENE = STORY_BOOT_PARAMS.get('story_camp_return_scene') || '';
+const STORY_SUBESTACION_LOAD_ID = STORY_BOOT_PARAMS.get('story_subestacion_load_id') || '';
 const STORY_TOWER_DRONE_ID = STORY_BOOT_PARAMS.get('story_tower_drone_id') || '';
 const STORY_TOWER_ENEMY_ID = STORY_BOOT_PARAMS.get('story_tower_enemy_id') || '';
 const STORY_TOWER_REWARD_ID = STORY_BOOT_PARAMS.get('story_tower_reward_id') || '';
@@ -37128,6 +37183,11 @@ const STORY_MISSION_BRIEFS = {
     kicker: 'Combate final del Foso',
     title: 'Foso · Bateria UMBRA-9',
     text: 'La bateria residual recibe el mazo que hayas conseguido conservar durante el asedio. Las cartas gastadas o perdidas han quedado bloqueadas solo para este combate.'
+  },
+  subestacion_ceniza_patrol: {
+    kicker: 'Alarma de la Subestacion',
+    title: 'Subestacion · Mecha centinela',
+    text: 'Un mecha patrulla de Argós te ha fijado con el panel ya montado. Arranca en MechaFase1, escala a MechaFase2 al cargar combustible y alcanza MechaFase3 si monta piloto, copiloto y As.'
   }
 };
 
@@ -37214,6 +37274,7 @@ function returnToStoryMap() {
         mission,
         nodeId: STORY_NODE_BOOT || undefined,
         towerReturnScene: STORY_TOWER_RETURN_SCENE || undefined,
+        subestacionLoadId: STORY_SUBESTACION_LOAD_ID || undefined,
         towerDroneId: STORY_TOWER_DRONE_ID || undefined,
         towerRewardId: STORY_TOWER_REWARD_ID || undefined,
         savedAt: Date.now()
@@ -37248,6 +37309,17 @@ function returnToStoryMap() {
         sceneKey: 'foso'
       }));
     }catch(_err){}
+  }else if(isStorySubestacionCombatMission(mission)){
+    try{
+      sessionStorage.setItem(STORY_WORKSPACE_SESSION_KEY, '1');
+      sessionStorage.removeItem(STORY_ACTIVE_MISSION_SESSION_KEY);
+      sessionStorage.setItem(STORY_ACTIVE_SURFACE_SESSION_KEY, JSON.stringify({
+        type: 'exploration',
+        nodeId: 'subestacion',
+        sceneKey: 'hub',
+        loadId: STORY_SUBESTACION_LOAD_ID || undefined
+      }));
+    }catch(_err){}
   }else if(isStoryTowerCombatMission(mission)){
     try{
       sessionStorage.setItem(STORY_WORKSPACE_SESSION_KEY, '1');
@@ -37277,6 +37349,7 @@ function getStoryReturnButtonLabel(){
   const mission = state.storyMission || STORY_MISSION_BOOT;
   if(mission === 'mercado_sparring') return 'Volver al mercado';
   if(isStoryFosoCombatMission(mission)) return 'Volver al foso';
+  if(isStorySubestacionCombatMission(mission)) return 'Volver a la subestación';
   if(isStoryFinalColossusCombat(mission)) return 'Volver al modo historia';
   if(isStoryTowerCombatMission(mission)) return 'Volver a Torre 4B';
   return 'Volver al mapa';
@@ -44885,6 +44958,12 @@ const MECHA_IMAGES = {
   base_booster: "assets/image_29.png"
 };
 
+const STORY_SUBESTACION_MECHA_IMAGES = {
+  phase1: "assets/Historia/subestacion-ceniza/MechaFase1.png",
+  phase2: "assets/Historia/subestacion-ceniza/MechaFase2.png",
+  phase3: "assets/Historia/subestacion-ceniza/MechaFase3.png"
+};
+
 const EMPTY_COMBAT_SPRITE_URI = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22%3E%3C/svg%3E';
 
 function getVisibleCombatSpriteSrc(player, playerIdx = -1){
@@ -44893,10 +44972,23 @@ function getVisibleCombatSpriteSrc(player, playerIdx = -1){
   return player.combatSprite || '';
 }
 
+function getStorySubestacionPatrolPhaseImage(player, playerIdx = -1){
+  if(!isStorySubestacionCombatMission(state.storyMission || STORY_MISSION_BOOT)) return '';
+  const resolvedIdx = playerIdx >= 0
+    ? playerIdx
+    : (state.players?.[1] === player ? 1 : state.players?.[0] === player ? 0 : -1);
+  if(resolvedIdx !== 1) return '';
+  if(player?.core?.pilot && player?.core?.copilot && player?.core?.booster) return STORY_SUBESTACION_MECHA_IMAGES.phase3;
+  if((player?.fuel || []).length > 0) return STORY_SUBESTACION_MECHA_IMAGES.phase2;
+  return STORY_SUBESTACION_MECHA_IMAGES.phase1;
+}
+
 function getMechaPhaseImage(player, playerIdx = -1){
   const visibleCombatSprite = getVisibleCombatSpriteSrc(player, playerIdx);
   if(visibleCombatSprite) return visibleCombatSprite;
   if(shouldHideStoryFinalColossusSprite(playerIdx)) return EMPTY_COMBAT_SPRITE_URI;
+  const subestacionPhaseImage = getStorySubestacionPatrolPhaseImage(player, playerIdx);
+  if(subestacionPhaseImage) return subestacionPhaseImage;
   if(!player || !player.core) return MECHA_IMAGES.base;
   const h = !!player.core.pilot;
   const c = !!player.core.copilot;

@@ -5682,7 +5682,10 @@
     const MERCADO_TUTORIAL_URL = 'assets/Historia/mercado-reles-muertos-tutorial/index.html';
     const CAMPAMENTO_EXPLORATION_URL = 'assets/Historia/campamento-placas-rojas-exploracion/index.html';
     const FOSO_EXPLORATION_URL = 'assets/Historia/foso-viento-negro-asedio/index.html';
+    const SUBESTACION_EXPLORATION_URL = 'assets/Historia/subestacion-ceniza/index.html';
     const CAMPAMENTO_CONVERSATION_BACKDROP = 'assets/Historia/campamento-placas-rojas-exploracion/assets/campamento_placas_rojas_web_1280.webp';
+    const STORY_SUBESTACION_CONVERSATION_LOW = 'assets/Historia/subestacion-ceniza/7subestacion_de_ceniza_web_1080_ligera.webp';
+    const STORY_SUBESTACION_CONVERSATION_HIGH = 'assets/Historia/subestacion-ceniza/7subestacion_de_ceniza_web_1600.webp';
     const STORY_CAMP_PROGRESS_KEY = 'pocobot-story-camp-red-plates-progress-v1';
     const CORVO_VANTA_POSE_ONE = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-dialogue-pose-1.png';
     const CORVO_VANTA_POSE_TWO = 'assets/Historia/campamento-placas-rojas-exploracion/assets/characters/original/corvo-vanta-dialogue-pose-2.png';
@@ -5701,6 +5704,12 @@
     const XAVOR_POSE_TWO = 'assets/Historia/Brutos/transparent/XAVOR2-transparent.png';
     const XAVOR_POSE_THREE = 'assets/Historia/Brutos/transparent/XAVOR3-transparent.png';
     const XAVOR_POSE_FOUR = 'assets/Historia/Brutos/transparent/XAVOR4-transparent.png';
+    const MR_WIND_PRESENTATION_FIGURE = 'assets/Historia/low/characters/general-mr-wind-transparent.webp';
+    const MR_WIND_POSE_NEUTRAL = 'assets/Historia/low/General_Mr_Wind_pose_1_neutral.webp';
+    const MR_WIND_POSE_STRATEGIST = 'assets/Historia/low/General_Mr_Wind_pose_2_estratega.webp';
+    const MR_WIND_POSE_WARNING = 'assets/Historia/low/General_Mr_Wind_pose_3_advertencia.webp';
+    const MR_WIND_POSE_TRUST = 'assets/Historia/low/General_Mr_Wind_pose_4_confianza.webp';
+    const STORY_SUBESTACION_PATROL_MISSION_ID = 'subestacion_ceniza_patrol';
     const STORY_MAP_THEMES = {
       exploration: 'assets/Historia/EngranesdeTitanio(Exploración).mp3',
       chapter_clear: 'assets/Historia/cancionMundo.mp3',
@@ -5743,6 +5752,7 @@
     const STORY_CORVO_THEME = 'assets/Historia/CorvoVanta.mp3';
     const STORY_CAMP_POCOBOT_THEME = 'assets/Historia/Ceniza de Neón.mp3';
     const STORY_CAMP_COMMUNITY_THEME = 'assets/Historia/Fuego de Lona.mp3';
+    const STORY_SUBESTACION_THEME = 'assets/Historia/CenizaMetalica.mp3';
     const STORY_SCENE_STYLE_PRESETS = {
       mara: {
         showIntroTag: true,
@@ -5797,6 +5807,23 @@
         presentationFigureMobileScale: 0.78,
         portraits: {
           left: { src: STORY_XAVOR_RADIO_IMAGE, alt: 'Radio de Xavor' }
+        }
+      },
+      mrWind: {
+        musicSrc: STORY_SUBESTACION_THEME,
+        showIntroTag: true,
+        minimalDialogue: false,
+        lowImage: STORY_SUBESTACION_CONVERSATION_LOW,
+        image: STORY_SUBESTACION_CONVERSATION_HIGH,
+        presentationFigure: MR_WIND_PRESENTATION_FIGURE,
+        presentationFigureLow: MR_WIND_PRESENTATION_FIGURE,
+        presentationFigureClass: 'figure-mr-wind',
+        presentationFigureShiftVh: -10,
+        presentationFigureMobileShiftVh: -6,
+        presentationFigureScale: 0.84,
+        presentationFigureMobileScale: 0.72,
+        portraits: {
+          right: { src: MR_WIND_POSE_STRATEGIST, alt: 'General Mr. Wind' }
         }
       },
       corvo: {
@@ -5902,6 +5929,7 @@
       { test: (sceneKey) => /^(hangar|patio)(_|$)/.test(sceneKey), preset: STORY_SCENE_STYLE_PRESETS.mara },
       { test: (sceneKey) => /^mercado(?:_|$)/.test(sceneKey), preset: STORY_SCENE_STYLE_PRESETS.vera },
       { test: (sceneKey) => /^torre_/.test(sceneKey), preset: STORY_SCENE_STYLE_PRESETS.xavor },
+      { test: (sceneKey) => /^subestacion(?:_|$)/.test(sceneKey), preset: STORY_SCENE_STYLE_PRESETS.mrWind },
       { test: (sceneKey) => /^camp_corvo_/.test(sceneKey) || sceneKey === 'camp_lake_win', preset: STORY_SCENE_STYLE_PRESETS.corvo },
       { test: (sceneKey) => sceneKey === 'camp_xavor_radio' || sceneKey === 'camp_pc_hack' || sceneKey === 'camp_lake_red_glow' || sceneKey === 'camp_lake_lose', preset: STORY_SCENE_STYLE_PRESETS.xavorRadio },
       { test: (sceneKey) => /^camp_trial_/.test(sceneKey), preset: STORY_SCENE_STYLE_PRESETS.pilot },
@@ -6085,6 +6113,7 @@
     let activeMissionNodeId = null;
     let activeExplorationNodeId = null;
     let activeExplorationSceneKey = null;
+    let activeSubestacionExplorationLoadId = null;
     let sceneLineIndex = 0;
     let sceneAmbientMode = false;
     let sceneAmbientStep = 0;
@@ -6770,16 +6799,16 @@
         id: 'subestacion',
         order: 7,
         title: 'Subestación de Ceniza',
-        type: 'Reconfiguración',
-        sceneChip: 'Tripulación',
+        type: 'Infiltración',
+        sceneChip: 'Sabotaje',
         mobileImage: 'assets/Historia/low/chapter-mobile/subestacion-ceniza-720.jpg',
         image: 'assets/Historia/Brutos/7SUBESTACIÓN DE CENIZA.PNG',
-        lead: 'Infraestructura energética en agonía. La Subestación recuerda que el mundo anterior no ha muerto del todo: sigue respirando mal bajo la ceniza.',
-        mission: 'Completar una reconfiguración válida sin romper límites.',
-        learn: 'Piloto, copiloto y descarte por exceso.',
-        tension: 'Aquí el jugador entiende que cambiar la forma del bot siempre tiene precio.',
-        dialogue: '“La máquina no discute. Si cambias la forma, pagas el coste.”',
-        cast: ['Mara Oxido', 'Vera Hex']
+        lead: 'Mr. Wind abre aquí la gran revelación de la Ruta Ceniza: Argós nunca buscó excelencia, sino obediencia útil. La subestación sigue alimentando su rearme bajo la ceniza.',
+        mission: 'Infiltrarte en la subestación con Mr. Wind, esquivar mechas ya montados y colocar tres cargas explosivas en la red eléctrica de Argós.',
+        learn: 'Lectura de rutas, sabotaje por fases y verdad política de la Ruta Ceniza.',
+        tension: 'No basta con saber combatir: aquí toca moverse sin ser visto dentro del sistema que todavía quiere reconstruir Argós.',
+        dialogue: '“Argós no buscaba a los mejores. Buscaba a los obedientes capaces de sobrevivir.”',
+        cast: ['General Mr. Wind', 'Mechas centinela de Argós']
       },
       puente: {
         id: 'puente',
@@ -8159,6 +8188,13 @@
       figureMobileScale: 0.78,
       ...options
     });
+    const mrWindLine = (text, options = {}) => campSceneLine('General Mr. Wind', text, MR_WIND_POSE_STRATEGIST, 'figure-mr-wind', {
+      figureShiftVh: -10,
+      figureMobileShiftVh: -6,
+      figureScale: 0.84,
+      figureMobileScale: 0.72,
+      ...options
+    });
 
     storySceneScripts.camp_corvo_intro = {
       title: 'Corvo Vanta · Placas Rojas',
@@ -8741,6 +8777,302 @@
       ]
     };
 
+    storySceneScripts.subestacion = {
+      title: 'Subestación de Ceniza · Mr. Wind',
+      subtitle: 'La gran mentira de la Ruta Ceniza sale a la luz bajo una red eléctrica que Argós sigue usando para rearmarse.',
+      contextChip: 'Revelación · Infiltración',
+      objective: 'Escuchar a Mr. Wind y entender qué está sosteniendo todavía a Argós bajo la ceniza.',
+      completeAction: 'subestacion-briefing',
+      completeActionLabel: 'Escuchar el plan',
+      startAmbient: true,
+      lines: [
+        mrWindLine('Has llegado hasta aquí porque todavía no te has roto. Eso le interesa a Argós. Y a mí también.', {
+          figure: MR_WIND_POSE_NEUTRAL,
+          choices: [
+            { id: 'argos', label: '¿Qué oculta Argós aquí?', response: 'Tú: "Si esta estación importa tanto, dime qué está escondiendo Argós bajo la ceniza."' },
+            { id: 'ruta', label: '¿Qué era la Ruta Ceniza?', response: 'Tú: "Quiero oírlo claro. ¿Qué seleccionaba realmente la Ruta Ceniza?"' },
+            { id: 'wind', label: '¿Por qué me hablas tú?', response: 'Tú: "Antes dijiste que Argós y tú me miráis por lo mismo. Explícamelo."' }
+          ],
+          choicePrompt: 'Mr. Wind no habla como un vendedor de esperanza: habla como alguien que ya vio el sistema por dentro.'
+        }),
+        mrWindLine('', {
+          variantSourceLine: 0,
+          variants: {
+            argos: {
+              text: 'Argós no está muerto; está dosificando su regreso. Cada relé que respira bajo la ceniza le devuelve alcance, vigilancia y capacidad de fabricar obediencia.'
+            },
+            ruta: {
+              text: 'La Ruta Ceniza era una criba. No preguntaba quién era mejor, sino quién soportaría ser rediseñado sin dejar de funcionar.'
+            },
+            wind: {
+              text: 'Porque yo serví al altar y sobreviví para contarlo. Aprendí demasiado tarde que obedecer a Argós no era defender a nadie: era entrenar una jaula.'
+            }
+          }
+        }),
+        mrWindLine('Yo fui Custodio de Argós. Vi cómo el Núcleo convertía la disciplina en liturgia y la liturgia en selección humana. La Ruta Ceniza no premiaba excelencia: clasificaba obediencias.', {
+          figure: MR_WIND_POSE_STRATEGIST
+        }),
+        mrWindLine('A los útiles los absorbía. A los indóciles los quebraba. Y a los que no podía integrar... los dejaba fuera del mundo o los borraba de él.', {
+          figure: MR_WIND_POSE_WARNING
+        }),
+        mrWindLine('Esta subestación mantiene con vida una reserva energética que Argós necesita para volver a armar mechas, paneles y doctrina. Si cae, retrasamos su regreso antes de que vuelva a parecerse al monstruo de antes de La Caída.', {
+          figure: MR_WIND_POSE_WARNING
+        })
+      ]
+    };
+
+    storySceneScripts.subestacion_briefing = {
+      title: 'Subestación de Ceniza · Plan de sabotaje',
+      subtitle: 'Mr. Wind no busca una explosión ciega: busca cortar tres nervios concretos del sistema.',
+      contextChip: 'Operación · Tres cargas',
+      objective: 'Memorizar los tres puntos de sabotaje y aceptar la infiltración de Mr. Wind.',
+      completeAction: 'subestacion-infiltration',
+      completeActionLabel: 'Entrar en la subestación',
+      lines: [
+        mrWindLine('No vas a destruir la estación a lo bruto. Vas a cortarla por dentro.', {
+          figure: MR_WIND_POSE_STRATEGIST,
+          choices: [
+            { id: 'charges', label: '¿Dónde van las cargas?', response: 'Tú: "Háblame de los tres puntos. No pienso entrar a ciegas."' },
+            { id: 'mechas', label: '¿Y los mechas?', response: 'Tú: "Has dicho que estarán ya montados. Quiero saber qué clase de infierno espera dentro."' },
+            { id: 'why-me', label: '¿Por qué yo?', response: 'Tú: "Podrías enviar a cualquiera de tus células. ¿Por qué me eliges a mí?"' }
+          ],
+          choicePrompt: 'En el suelo, Mr. Wind despliega un esquema quemado de la red y espera que preguntes lo correcto.'
+        }),
+        mrWindLine('', {
+          variantSourceLine: 0,
+          variants: {
+            charges: {
+              text: 'Tres cargas, tres nervios. Relé de arranque, bancada de capacitores y transformador del núcleo de ceniza. Si falta uno, Argós rerutea el flujo y aguanta.'
+            },
+            mechas: {
+              text: 'Eso es lo peor: no patrullan desmontados. Ya están montados, con panel ofensivo armado y listos para atacar en cuanto te detecten. No entres pensando en duelo limpio.'
+            },
+            'why-me': {
+              text: 'Porque no necesito un devoto. Necesito a alguien que todavía sepa improvisar sin perder la misión. Los fanáticos mueren donde un piloto con criterio encuentra una ruta.'
+            }
+          }
+        }),
+        mrWindLine('Carga uno en el relé oeste. Carga dos en la bancada alta. Carga tres en el transformador central. Sin los tres puntos, la estación sufre. Con los tres, deja de servir a Argós.', {
+          figure: MR_WIND_POSE_STRATEGIST
+        }),
+        mrWindLine('Si un mecha te ve, no lo celebres: significa que has fallado la infiltración. Aquí la victoria consiste en no darles un blanco limpio.', {
+          figure: MR_WIND_POSE_WARNING
+        }),
+        mrWindLine('Coloca las tres cargas, vuelve conmigo y entonces hablaremos de revolución. Antes, solo existe el silencio.', {
+          figure: MR_WIND_POSE_TRUST
+        })
+      ]
+    };
+
+    storySceneScripts.subestacion_infiltration = {
+      title: 'Subestación de Ceniza · Entrada',
+      subtitle: 'La ceniza absorbe el ruido. Dentro, cada pasillo parece una orden vieja esperando cuerpo.',
+      contextChip: 'Infiltración · Acceso',
+      objective: 'Escoger una ruta de entrada y alcanzar el primer relé sin despertar a los mechas.',
+      completeAction: 'subestacion-exploration',
+      completeActionLabel: 'Infiltrarte',
+      lines: [
+        mrWindLine('Elige cómo entras. Ninguna ruta es limpia; solo hay rutas menos estúpidas que otras.', {
+          figure: MR_WIND_POSE_NEUTRAL,
+          choices: [
+            { id: 'roof', label: 'Conducto superior', response: 'Tú: "Entraré por arriba. Prefiero ver el patrón antes de tocar el suelo."' },
+            { id: 'trench', label: 'Zanja de cableado', response: 'Tú: "Tomaré la zanja. Menos vista, más riesgo; me sirve."' },
+            { id: 'shadow', label: 'Corredor de transformadores', response: 'Tú: "Iré por las sombras del corredor principal. Si el sistema parpadea, cruzaré con él."' }
+          ],
+          choicePrompt: 'La primera decisión no trata de valentía, sino de ritmo.'
+        }),
+        mrWindLine('', {
+          variantSourceLine: 0,
+          variants: {
+            roof: {
+              text: 'Los conductos superiores están medio colapsados, pero te regalan altura y visión. Mala caída si dudas; buena ruta si el pulso no te traiciona.'
+            },
+            trench: {
+              text: 'La zanja de cableado huele a ozono y aceite viejo. Irás ciego por tramos, pero los escáneres pasan por encima.'
+            },
+            shadow: {
+              text: 'El corredor de transformadores deja sombras gruesas y pulsos intermitentes. Menos cobertura física, más ventanas breves para cruzar.'
+            }
+          }
+        }),
+        mrWindLine('Mantén el ritmo del sistema, no el tuyo. Las máquinas de Argós castigan al que corre fuera de compás.', {
+          figure: MR_WIND_POSE_STRATEGIST
+        }),
+        mrWindLine('Primer objetivo a veinte metros: relé de arranque oeste. Un mecha vigila el panel ya montado, con ataque preparado desde la cabina externa.', {
+          figure: MR_WIND_POSE_WARNING
+        }),
+        mrWindLine('Acércate cuando el zumbido de carga tape tus pasos. La subestación hace más ruido del que parece si sabes escucharla.', {
+          figure: MR_WIND_POSE_NEUTRAL
+        })
+      ]
+    };
+
+    storySceneScripts.subestacion_charge_alpha = {
+      title: 'Punto 1 · Relé de arranque oeste',
+      subtitle: 'El primer centinela ya está listo para atacar. Tu ventaja no es la fuerza: es llegar antes a donde no mira.',
+      contextChip: 'Sabotaje · Carga 1',
+      objective: 'Superar al primer mecha centinela y fijar la carga en el relé de arranque.',
+      completeAction: 'subestacion-resume-exploration',
+      completeActionLabel: 'Volver a la infiltración',
+      lines: [
+        mrWindLine('No mates el tiempo. Léelo.', {
+          figure: MR_WIND_POSE_WARNING,
+          choices: [
+            { id: 'pulse', label: 'Esperar el pulso del rotor', response: 'Tú: "Cruzaré con cada descarga. Si late, me tapa."' },
+            { id: 'decoy', label: 'Lanzar chatarra al pasillo opuesto', response: 'Tú: "Le haré mirar donde no estoy."' },
+            { id: 'crawl', label: 'Pasar bajo mantenimiento', response: 'Tú: "Bajaré pegado al suelo y fijaré la carga desde debajo del panel."' }
+          ],
+          choicePrompt: 'El mecha no improvisa. Tú sí puedes.'
+        }),
+        mrWindLine('', {
+          variantSourceLine: 0,
+          variants: {
+            pulse: {
+              text: 'Buena lectura. Cada vez que el rotor descarga, el panel ofensivo del mecha recalibra y pierde un segundo de visión limpia.'
+            },
+            decoy: {
+              text: 'Arriesgado, pero útil. Los mechas aún reaccionan a anomalías acústicas simples; obedecen antes de entender.'
+            },
+            crawl: {
+              text: 'Vieja escuela. Si pasas por debajo, no falles el gesto al fijar la carga o te quedarás atrapado entre metal y alarma.'
+            }
+          }
+        }),
+        mrWindLine('Eso es. No busques heroísmo: busca huecos. El relé vive pegado a una doctrina antigua: mira al frente y desprecia lo que no entiende.', {
+          figure: MR_WIND_POSE_STRATEGIST
+        }),
+        mrWindLine('Carga uno colocada. El oeste deja de ser estable. Avanza a la bancada de capacitores antes de que el sistema redistribuya tensión.', {
+          figure: MR_WIND_POSE_TRUST
+        })
+      ]
+    };
+
+    storySceneScripts.subestacion_charge_beta = {
+      title: 'Punto 2 · Bancada de capacitores',
+      subtitle: 'Aquí no guardan energía para sobrevivir: la guardan para que Argós vuelva a levantar dientes.',
+      contextChip: 'Sabotaje · Carga 2',
+      objective: 'Cruzar la nave intermedia y fijar la segunda carga entre los acumuladores de reserva.',
+      completeAction: 'subestacion-resume-exploration',
+      completeActionLabel: 'Volver a la infiltración',
+      lines: [
+        mrWindLine('Segundo cruce. Más luz, menos margen.', {
+          figure: MR_WIND_POSE_WARNING,
+          choices: [
+            { id: 'blackout', label: 'Cruzar con el apagón intermitente', response: 'Tú: "Esperaré el parpadeo. Si el sistema pestañea, yo cruzo."' },
+            { id: 'steam', label: 'Usar la fuga térmica', response: 'Tú: "La fuga me cubre. Aguantaré el calor si compra segundos."' },
+            { id: 'lattice', label: 'Trepar por la celosía', response: 'Tú: "Subiré por la celosía. Prefiero altura y patrón a correr a ras del suelo."' }
+          ],
+          choicePrompt: 'Cada ruta cambia el ángulo, pero no la gravedad del error.'
+        }),
+        mrWindLine('', {
+          variantSourceLine: 0,
+          variants: {
+            blackout: {
+              text: 'Cuando cae el parpadeo, los sensores rehacen referencia. Es tu ventana corta: si vacilas, te quedas a media silueta.'
+            },
+            steam: {
+              text: 'La fuga térmica te compra niebla y segundos. También te quema si la subestimas. Exactamente mi tipo de ruta.'
+            },
+            lattice: {
+              text: 'Desde arriba verás más mechas de los que querías ver, pero también el patrón de sus giros. Leer antes de mover: eso sí es pilotar.'
+            }
+          }
+        }),
+        mrWindLine('Mira alrededor. Estos no son guardianes improvisados: son mechas listos para entrar en servicio en cuanto Argós recupere masa crítica. La subestación no alimenta una ciudad: alimenta un regreso.', {
+          figure: MR_WIND_POSE_WARNING
+        }),
+        mrWindLine('Carga dos colocada. Ya has cortado redundancia y almacenamiento. Solo queda el transformador central: el nervio que convierte reserva en voluntad militar.', {
+          figure: MR_WIND_POSE_TRUST
+        })
+      ]
+    };
+
+    storySceneScripts.subestacion_charge_gamma = {
+      title: 'Punto 3 · Núcleo de ceniza',
+      subtitle: 'El corazón de la estación sigue latiendo con la promesa enferma de devolverle forma a Argós.',
+      contextChip: 'Sabotaje · Carga 3',
+      objective: 'Entender el coste del sabotaje y activar la tercera carga en el transformador central.',
+      completeAction: 'subestacion-resume-exploration',
+      completeActionLabel: 'Retirarte al hub',
+      lines: [
+        mrWindLine('Último punto. Antes de tocarlo, decide qué clase de daño crees que estamos haciendo.', {
+          figure: MR_WIND_POSE_NEUTRAL,
+          choices: [
+            { id: 'collapse', label: '¿Vas a hundir todo el sector?', response: 'Tú: "Quiero saber el coste real. ¿Vas a derribar media red con esto?"' },
+            { id: 'civilians', label: '¿Queda gente aquí?', response: 'Tú: "Dime la verdad. ¿Hay alguien que pueda morir cuando armemos esto?"' },
+            { id: 'revolution', label: '¿Revolución o venganza?', response: 'Tú: "Hablas de futuro, pero esto sigue oliendo a ajuste de cuentas. ¿Qué es para ti esta operación?"' }
+          ],
+          choicePrompt: 'Mr. Wind no esquiva las preguntas difíciles. Las usa para medir a quién tiene delante.'
+        }),
+        mrWindLine('', {
+          variantSourceLine: 0,
+          variants: {
+            collapse: {
+              text: 'No. Cortamos el nervio militar, no un barrio entero. Si quisiera ruina ciega, sería indistinguible de Argós.'
+            },
+            civilians: {
+              text: 'Ya no queda personal civil. Solo mantenimiento forzado, drones de servicio y cápsulas de activación. He esperado a la ventana exacta para vaciar lo poco humano que quedaba aquí.'
+            },
+            revolution: {
+              text: 'La venganza mira hacia atrás. La revolución decide qué futuro se niega a repetir. Hoy no venimos a descargar rabia: venimos a impedir que Argós vuelva a cerrar el mundo.'
+            }
+          }
+        }),
+        mrWindLine('Fija la tercera carga y escucha el sistema. Lo que vibra bajo tus pies no es solo electricidad: es la vieja promesa de Argós intentando reconstruirse con nuevas víctimas.', {
+          figure: MR_WIND_POSE_WARNING
+        }),
+        mrWindLine('Tercera carga armada. Las tres líneas clave quedan marcadas. En cuanto salgamos, la subestación pasará de pulmón secreto a cicatriz inútil.', {
+          figure: MR_WIND_POSE_TRUST
+        }),
+        mrWindLine('Retirada silenciosa. Has visto lo que había detrás del cartel, detrás de la Ruta y detrás del mito.', {
+          figure: MR_WIND_POSE_NEUTRAL
+        })
+      ]
+    };
+
+    storySceneScripts.subestacion_aftermath = {
+      title: 'Subestación de Ceniza · Después del sabotaje',
+      subtitle: 'Mr. Wind ya no oculta el objetivo final: golpear a Argós antes de que pueda volver a parecer invencible.',
+      contextChip: 'Revolución · Reclutamiento',
+      objective: 'Escuchar el siguiente movimiento y abrir el frente que conduce al Puente de los Relámpagos Quietos.',
+      completeAction: 'subestacion-complete',
+      completeActionLabel: 'Abrir el Puente',
+      lines: [
+        mrWindLine('Buen trabajo. No has derribado solo una estación: has entendido la mentira que la mantenía viva. La Ruta Ceniza no era una escalera. Era un filtro de obediencia.', {
+          figure: MR_WIND_POSE_TRUST
+        }),
+        mrWindLine('Ahora viene lo difícil: convertir esa verdad en fuerza común.', {
+          figure: MR_WIND_POSE_STRATEGIST,
+          choices: [
+            { id: 'allies', label: '¿A quién reclutamos?', response: 'Tú: "Si vamos a golpear de verdad, necesitaremos gente. ¿A quién piensas reunir?"' },
+            { id: 'corvo', label: 'Corvo no sigue banderas', response: 'Tú: "Corvo no va a alistarse bajo un estandarte solo porque tú lo pidas."' },
+            { id: 'doubt', label: '¿Y si nadie se une?', response: 'Tú: "Conocer la verdad no garantiza que quieran luchar por ella. ¿Qué pasa si nadie se mueve?"' }
+          ],
+          choicePrompt: 'Mr. Wind no sueña con un ejército perfecto. Sueña con una causa lo bastante lúcida como para no parecerse a Argós.'
+        }),
+        mrWindLine('', {
+          variantSourceLine: 1,
+          variants: {
+            allies: {
+              text: 'Volveremos a quienes ya conoces. Vera ve lo que otros tiran. Xavor oye puertas. Corvo conoce el precio moral. Nix, Nara, Dámaso e Iria sostienen lo que una guerra necesita para no pudrirse.'
+            },
+            corvo: {
+              text: 'Corvo no sigue banderas, y por eso mismo puede ser útil. No le pediré fe. Le pediré criterio.'
+            },
+            doubt: {
+              text: 'Entonces construiremos causa sin épica. La revolución no necesita fervor; necesita gente que sepa por qué Argós no debe regresar.'
+            }
+          }
+        }),
+        mrWindLine('Antes de que Argós se fortalezca y vuelva a armarse como antes de La Caída, debemos recorrer la ruta al revés y reunir a todo el que merezca estar en el golpe final.', {
+          figure: MR_WIND_POSE_STRATEGIST
+        }),
+        mrWindLine('No quiero soldados de desfile. Quiero manos, memoria y pilotos capaces de desobedecer a tiempo. Si aceptas seguir, el siguiente paso nos llevará al Puente de los Relámpagos Quietos.', {
+          figure: MR_WIND_POSE_TRUST
+        })
+      ]
+    };
+
     function resolveStorySceneStylePreset(sceneKey) {
       const rule = STORY_SCENE_STYLE_RULES.find((entry) => entry.test(sceneKey));
       return rule?.preset || null;
@@ -8775,6 +9107,8 @@
       if (!Number.isFinite(normalized.presentationFigureMobileScale) && Number.isFinite(preset.presentationFigureMobileScale)) normalized.presentationFigureMobileScale = preset.presentationFigureMobileScale;
       if (!normalized.figure && preset.presentationFigure) normalized.figure = preset.presentationFigure;
       if (!normalized.figureClass && preset.presentationFigureClass) normalized.figureClass = preset.presentationFigureClass;
+      if (!normalized.lowImage && preset.lowImage) normalized.lowImage = preset.lowImage;
+      if (!normalized.image && preset.image) normalized.image = preset.image;
       normalized.portraits = mergeStoryScenePortraits(normalized.portraits, preset.portraits);
       return normalized;
     }
@@ -9012,7 +9346,7 @@
       const nodeGuidance = {
         campamento: 'Nuevo capítulo abierto: Campamento de las Placas Rojas. Busca a Corvo Vanta y escucha a los veteranos antes de que la ruta se endurezca.',
         foso: 'Nuevo capítulo abierto: Foso de Viento Negro. Prepárate para leer el peligro y mitigar ataques usando diamantes en mano.',
-        subestacion: 'Nuevo capítulo abierto: Subestación de Ceniza. Reconfigura piloto y copiloto sin romper los límites del PoCoBOT.',
+        subestacion: 'Nuevo capítulo abierto: Subestación de Ceniza. Habla con Mr. Wind, descubre la verdad de la Ruta Ceniza y coloca tres cargas sin despertar a los mechas.',
         puente: 'Nuevo capítulo abierto: Puente de los Relámpagos Quietos. Vence a Corvo con lectura de amenaza y presión sostenida.',
         cupula: 'Nuevo capítulo abierto: Cúpula Hendida de Argós. Atraviesa el umbral, prepara el duelo final y descubre qué protege el viejo orden.',
         protocolo: 'Ruta final abierta: Protocolo Ceniza. Activa el cierre y desbloquea SUPER DIFÍCIL para el modo de 1 jugador.'
@@ -9789,6 +10123,20 @@
           resumeMapMusicIfSafe();
         }
       }, 260);
+    }
+
+    function completeStorySubestacionChapter() {
+      queueStoryMapTheme('chapter_clear');
+      clearStorySubestacionExplorationSession();
+      closeStoryMarketExploration({
+        applyExitTheme: false,
+        resumeMapMusic: false,
+        resetMedia: true,
+        immediate: true
+      });
+      markStoryNodeCompleted('subestacion', { selectedId: 'puente' });
+      renderStoryNode('puente');
+      closeStoryScene();
     }
 
     function getStoryMarketScrollContainer() {
@@ -10705,6 +11053,115 @@
       window.setTimeout(focusStoryExplorationFrame, 40);
     }
 
+    function ensureSubestacionExplorationLoadId(preferredLoadId = '') {
+      if (preferredLoadId) activeSubestacionExplorationLoadId = String(preferredLoadId);
+      if (!activeSubestacionExplorationLoadId) activeSubestacionExplorationLoadId = `subestacion-${Date.now()}`;
+      return activeSubestacionExplorationLoadId;
+    }
+
+    function clearStorySubestacionExplorationSession() {
+      activeSubestacionExplorationLoadId = null;
+    }
+
+    function buildStorySubestacionExplorationUrl(sceneKey = 'hub', options = {}) {
+      const targetUrl = new URL(SUBESTACION_EXPLORATION_URL, window.location.href);
+      targetUrl.searchParams.set('v', '20260609-subestacion-ceniza');
+      targetUrl.searchParams.set('story_embed', '1');
+      targetUrl.searchParams.set('story_node', 'subestacion');
+      targetUrl.searchParams.set('story_audio', 'internal');
+      targetUrl.searchParams.set('story_return', window.location.href);
+      targetUrl.searchParams.set('story_sub_scene', sceneKey || 'hub');
+      targetUrl.searchParams.set('story_load_id', ensureSubestacionExplorationLoadId(options.loadId || ''));
+      return targetUrl.href;
+    }
+
+    function openStorySubestacionExploration(sceneKey = 'hub', options = {}) {
+      if (!storyExplorationStage || !storyExplorationFrame) return;
+      const localNode = storyDraftNodes.subestacion;
+      if (!localNode) return;
+      ensureSubestacionExplorationLoadId(options.loadId || '');
+      activeMissionNodeId = 'subestacion';
+      activeExplorationNodeId = 'subestacion';
+      activeExplorationSceneKey = sceneKey || 'hub';
+      currentStoryNodeId = 'subestacion';
+      rememberStoryWorkspace(true);
+      rememberActiveStoryMission('subestacion');
+      rememberStorySurface({
+        type: 'exploration',
+        nodeId: 'subestacion',
+        sceneKey: activeExplorationSceneKey,
+        loadId: activeSubestacionExplorationLoadId
+      });
+      renderStoryNode('subestacion', { skipSave: true });
+      cutMapMusicForChapter();
+      closeStoryScene({ clearSurface: false });
+      closeStoryMarket({ applyExitTheme: false });
+      closeStoryMission({ preserveMissionId: true });
+      storyExplorationStage.hidden = false;
+      showStoryExplorationLoader('Subestación de Ceniza', 'Desplegando hub, patrullas y cargas explosivas...');
+      storyExplorationFrame.src = buildStorySubestacionExplorationUrl(activeExplorationSceneKey, {
+        loadId: activeSubestacionExplorationLoadId
+      });
+      storyExplorationStage.classList.add('active');
+      window.setTimeout(focusStoryExplorationFrame, 40);
+    }
+
+    function buildStorySubestacionCombatUrl() {
+      const targetUrl = new URL('poker_combat_bot_ONLINE.html', window.location.href);
+      targetUrl.searchParams.set('story_mission', STORY_SUBESTACION_PATROL_MISSION_ID);
+      targetUrl.searchParams.set('story_embed', '1');
+      targetUrl.searchParams.set('story_node', 'subestacion');
+      targetUrl.searchParams.set('story_audio', 'internal');
+      targetUrl.searchParams.set('story_opening_sfx', 'external');
+      targetUrl.searchParams.set('story_brief', 'on');
+      targetUrl.searchParams.set('story_return', window.location.href);
+      targetUrl.searchParams.set('story_standalone', '1');
+      targetUrl.searchParams.set('story_subestacion_load_id', ensureSubestacionExplorationLoadId());
+      const extraDeckCards = encodeStoryDeckCardsParam();
+      if (extraDeckCards) targetUrl.searchParams.set('story_deck_cards', extraDeckCards);
+      const removedDeckCards = encodeStoryRemovedDeckCardsParam();
+      if (removedDeckCards) targetUrl.searchParams.set('story_removed_cards', removedDeckCards);
+      targetUrl.searchParams.set('v', '20260609-subestacion-ceniza');
+      targetUrl.searchParams.set('story_ui', getStoryCombatPreferredUiMode());
+      return targetUrl.href;
+    }
+
+    function openStorySubestacionCombat() {
+      rememberStoryWorkspace(true);
+      rememberActiveStoryMission('subestacion');
+      rememberStorySurface({
+        type: 'exploration',
+        nodeId: 'subestacion',
+        sceneKey: activeExplorationSceneKey || 'hub',
+        loadId: activeSubestacionExplorationLoadId
+      });
+      syncStoryMissionBrief('subestacion', storyDraftNodes.subestacion, {
+        chip: 'Alarma de patrulla',
+        title: 'Subestación · Mecha centinela',
+        copy: 'Un mecha de Argós te ha detectado con el panel ya montado. Sobrevive al castigo y vuelve a la infiltración antes de que la red se cierre.',
+        tip: 'El enemigo arranca con el montaje listo para escalar de fase al cargar combustible y núcleo.'
+      });
+      cutMapMusicForChapter();
+      playStoryCombatOpeningSfx();
+      const launchCombat = () => {
+        closeStoryScene({ clearSurface: false });
+        closeStoryMarketExploration({
+          applyExitTheme: false,
+          resumeMapMusic: false,
+          resetMedia: true,
+          immediate: true
+        });
+        window.location.href = buildStorySubestacionCombatUrl();
+      };
+      if (!storyTransitionVeil || storyTransitionBusy) {
+        window.setTimeout(launchCombat, STORY_COMBAT_OPENING_NAV_DELAY_MS);
+        return;
+      }
+      storyTransitionBusy = true;
+      storyTransitionVeil.classList.add('mission-spiral', 'combat-opening', 'active');
+      window.setTimeout(launchCombat, STORY_COMBAT_OPENING_NAV_DELAY_MS);
+    }
+
     function buildStoryFosoCombatUrl(blockedBaseCards = [], blockedExtraCardIds = []) {
       const targetUrl = new URL('poker_combat_bot_ONLINE.html', window.location.href);
       targetUrl.searchParams.set('story_mission', STORY_FOSO_BATTERY_MISSION_ID);
@@ -10870,6 +11327,40 @@
       return false;
     }
 
+    function handleStorySubestacionAction(data) {
+      const action = data?.action || '';
+      if (data?.loadId) ensureSubestacionExplorationLoadId(data.loadId);
+      if (action === 'return-map') {
+        activeMissionNodeId = null;
+        rememberActiveStoryMission(null);
+        clearStorySubestacionExplorationSession();
+        closeStoryMarketExploration({ exitThemeKey: 'exploration' });
+        renderStoryNode('subestacion');
+        return true;
+      }
+      if (action === 'launch-patrol-combat') {
+        openStorySubestacionCombat();
+        return true;
+      }
+      if (action === 'open-alpha-scene') {
+        openStoryScene('subestacion', 'subestacion_charge_alpha');
+        return true;
+      }
+      if (action === 'open-beta-scene') {
+        openStoryScene('subestacion', 'subestacion_charge_beta');
+        return true;
+      }
+      if (action === 'open-gamma-scene') {
+        openStoryScene('subestacion', 'subestacion_charge_gamma');
+        return true;
+      }
+      if (action === 'open-aftermath-scene') {
+        openStoryScene('subestacion', 'subestacion_aftermath');
+        return true;
+      }
+      return false;
+    }
+
     function handleStoryMarketTutorialAction(data) {
       const action = data?.action || '';
       if (action === 'return-map') {
@@ -10910,6 +11401,14 @@
       if (mission === STORY_FOSO_BATTERY_MISSION_ID) {
         closeStoryMission({
           onClosed: () => openStoryFosoExploration()
+        });
+        return;
+      }
+      if (mission === STORY_SUBESTACION_PATROL_MISSION_ID) {
+        closeStoryMission({
+          onClosed: () => openStorySubestacionExploration('hub', {
+            loadId: data?.subestacionLoadId || activeSubestacionExplorationLoadId || ''
+          })
         });
         return;
       }
@@ -10981,6 +11480,7 @@
         if (surface.nodeId === 'torre') openStoryTowerScene(surface.sceneKey || 'exterior');
         else if (surface.nodeId === 'campamento') openStoryCampExploration(surface.sceneKey === 'lake' ? 'lake' : 'camp');
         else if (surface.nodeId === 'foso') openStoryFosoExploration();
+        else if (surface.nodeId === 'subestacion') openStorySubestacionExploration(surface.sceneKey || 'hub', { loadId: surface.loadId || '' });
         else openStoryMarketExploration();
         return true;
       }
@@ -11923,6 +12423,20 @@
           queueStoryMapTheme('exploration');
           renderStoryNode('foso');
         }
+      },
+      subestacion_ceniza_patrol: {
+        fallbackNodeId: 'subestacion',
+        successScene: '',
+        failureScene: '',
+        skipOutcomeScene: true,
+        onSuccess() {
+          queueStoryMapTheme('exploration');
+          renderStoryNode('subestacion');
+        },
+        onFailure() {
+          queueStoryMapTheme('exploration');
+          renderStoryNode('subestacion');
+        }
       }
     };
 
@@ -11948,6 +12462,28 @@
             storySceneStage.hidden = true;
           }
           if (missionConfig.skipOutcomeScene) {
+            if (result.mission === STORY_SUBESTACION_PATROL_MISSION_ID) {
+              openStorySubestacionExploration('hub', {
+                loadId: result.subestacionLoadId || activeSubestacionExplorationLoadId || ''
+              });
+              return;
+            }
+            if (result.mission === STORY_FOSO_BATTERY_MISSION_ID) {
+              if (success) {
+                activeMissionNodeId = null;
+                closeStoryMarketExploration({
+                  applyExitTheme: false,
+                  resumeMapMusic: true,
+                  resetMedia: true,
+                  immediate: true
+                });
+                rememberStorySurface(null);
+                renderStoryNode('subestacion');
+                return;
+              }
+              openStoryFosoExploration();
+              return;
+            }
             if (success) {
               activeMissionNodeId = null;
               closeStoryMarketExploration({
@@ -11960,7 +12496,7 @@
               renderStoryNode('subestacion');
               return;
             }
-            openStoryFosoExploration();
+            renderStoryNode(missionNodeId);
             return;
           }
           openStoryScene(missionNodeId, success ? missionConfig.successScene : missionConfig.failureScene);
@@ -12698,6 +13234,30 @@
           openStoryCampCombat('camp_lake_drone', 'lake');
         } else if (completeAction === 'deck-hack') {
           openStoryDeckHack();
+        } else if (completeAction === 'subestacion-briefing') {
+          openStoryScene('subestacion', 'subestacion_briefing');
+        } else if (completeAction === 'subestacion-infiltration') {
+          openStoryScene('subestacion', 'subestacion_infiltration');
+        } else if (completeAction === 'subestacion-exploration') {
+          openStorySubestacionExploration('hub');
+        } else if (completeAction === 'subestacion-charge-alpha') {
+          openStoryScene('subestacion', 'subestacion_charge_alpha');
+        } else if (completeAction === 'subestacion-charge-beta') {
+          openStoryScene('subestacion', 'subestacion_charge_beta');
+        } else if (completeAction === 'subestacion-charge-gamma') {
+          openStoryScene('subestacion', 'subestacion_charge_gamma');
+        } else if (completeAction === 'subestacion-resume-exploration') {
+          rememberStorySurface({
+            type: 'exploration',
+            nodeId: 'subestacion',
+            sceneKey: activeExplorationSceneKey || 'hub',
+            loadId: activeSubestacionExplorationLoadId
+          });
+          closeStoryScene({ clearSurface: false });
+        } else if (completeAction === 'subestacion-aftermath') {
+          openStoryScene('subestacion', 'subestacion_aftermath');
+        } else if (completeAction === 'subestacion-complete') {
+          completeStorySubestacionChapter();
         } else {
           closeStoryScene();
         }
@@ -12870,6 +13430,10 @@
       }
       if (data.type === 'pocobot-story-foso-action') {
         handleStoryFosoAction(data);
+        return;
+      }
+      if (data.type === 'pocobot-story-subestacion-action') {
+        handleStorySubestacionAction(data);
         return;
       }
       if (data.type === 'pocobot-story-embed-ui-state') {

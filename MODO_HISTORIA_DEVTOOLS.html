@@ -806,6 +806,7 @@
   </main>
 
   <script src="assets/Historia/story-collision-editor.js?v=20260520-route-editor"></script>
+  <script src="assets/Historia/subestacion-ceniza/scene-config.js?v=20260609-subestacion-ceniza"></script>
   <script>
     const STORY_PAGE = 'MODO_HISTORIA_BOCETO.html';
     const STORY_PROGRESS_SAVE_KEY = 'pocobot_story_progress_v1';
@@ -848,7 +849,7 @@
       { id:'torre', order:4, title:'Torre de Seguimiento 4B', summary:'Nodo previsto para precision y proyectil.' },
       { id:'campamento', order:5, title:'Campamento de las Placas Rojas', summary:'Evento de personaje y criterio moral.' },
       { id:'foso', order:6, title:'Foso de Viento Negro', summary:'Nodo previsto para defensa activa.' },
-      { id:'subestacion', order:7, title:'Subestacion de Ceniza', summary:'Nodo previsto para reconfiguracion de tripulacion.' },
+      { id:'subestacion', order:7, title:'Subestacion de Ceniza', summary:'Revelacion de Mr. Wind, infiltracion y sabotaje contra Argos.' },
       { id:'puente', order:8, title:'Puente de los Relampagos Quietos', summary:'Duelo tactico contra Corvo Vanta.' },
       { id:'cupula', order:9, title:'Cupula Hendida de Argos', summary:'Aproximacion final y revelacion.' },
       { id:'protocolo', order:10, title:'Protocolo Ceniza', summary:'Cierre de capitulo y desbloqueo previsto.' }
@@ -1551,6 +1552,11 @@
           { id:'t6', label:'Impacto 6 · Acceso bateria', x:1299.2475146675358, y:410.76804921773146, radius:104, scale:0.7 }
         ]
       },
+      ...window.PoCoBOTSubestacionScenes.getCollisionEditorScenes({
+        baseUrl: window.location.href,
+        returnUrl: new URL(STORY_PAGE, window.location.href).href,
+        versionTag: 'devtools-subestacion-ceniza'
+      }),
       {
         id:'tower-exterior',
         label:'Torre 4B exterior',

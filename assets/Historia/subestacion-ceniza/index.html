@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>PoCoBOT · Subestacion de Ceniza</title>
+    <link rel="stylesheet" href="./style.css?v=20260609-subestacion-ceniza" />
+  </head>
+  <body>
+    <main class="layout">
+      <button id="story-map-button" class="floating-map-button" type="button">Volver al mapa</button>
+
+      <section class="battle-shell">
+        <canvas id="game" width="1280" height="720" aria-label="Subestacion de Ceniza explorable"></canvas>
+
+        <div class="hud top-left">
+          <p class="hud-kicker">Ruta Ceniza · Capitulo 7</p>
+          <h2 id="objective-title">Infiltrate en la subestacion.</h2>
+          <p id="objective-copy">Mr. Wind quiere tres cargas limpias y cero alarmas innecesarias.</p>
+        </div>
+
+        <div class="hud top-right">
+          <div class="status-line"><span>Sala</span><strong id="status-room">Hub</strong></div>
+          <div class="status-line"><span>Cargas</span><strong id="status-charges">0/3</strong></div>
+          <div class="status-line"><span>Patrullas</span><strong id="status-patrols">0</strong></div>
+          <div class="status-line"><span>Estado</span><strong id="status-alert">Sigilo</strong></div>
+        </div>
+
+        <div id="interact-prompt" class="interact-prompt" hidden></div>
+        <div id="alert-banner" class="alert-banner" hidden>Mecha de Argos detectandote...</div>
+        <div id="toast" class="toast" hidden></div>
+      </section>
+    </main>
+
+    <audio id="substation-music" src="../CenizaMetalica.mp3" preload="auto" loop playsinline></audio>
+
+    <script src="./scene-config.js?v=20260609-subestacion-ceniza"></script>
+    <script src="../story-collision-editor.js?v=20260609-subestacion-ceniza"></script>
+    <script src="../shared-mecha-orientation/pocobot-player-visual.js?v=20260602-front-fallback"></script>
+    <script src="./game.js?v=20260609-subestacion-ceniza"></script>
+  </body>
+</html>

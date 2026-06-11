@@ -759,6 +759,17 @@
         learn: "Movimiento libre, tono del mundo y preparación de futuros eventos narrativos."
       });
     }
+    const subestacionStoryNode = nodes.find((node) => node.id === "subestacion");
+    if (subestacionStoryNode) {
+      Object.assign(subestacionStoryNode, {
+        type: "INFILTRACIÓN",
+        subtype: "SABOTAJE",
+        description: "Mr. Wind desvela aquí la gran mentira de la Ruta Ceniza: Argós nunca buscó excelencia, sino obediencia útil. La subestación sigue alimentando su rearme bajo la ceniza.",
+        mission: "Infiltrarte en la subestación, evitar mechas ya montados y colocar tres cargas explosivas en la red eléctrica de Argós.",
+        learn: "Lectura de rutas, sabotaje por fases y revelación política sobre el engaño de Argós.",
+        dialogue: "“Argós no buscaba a los mejores. Buscaba a los obedientes capaces de sobrevivir.”"
+      });
+    }
     const STORAGE_KEY = "pocobot-map-progress-v1";
 
     const mapShell = document.getElementById("mapShell");
@@ -847,7 +858,7 @@
         torre: "Nuevo capítulo abierto: Torre de Seguimiento 4B. Limpia los drones exteriores, espera a Xavor y restaura las transmisiones.",
         campamento: "Nuevo capítulo abierto: Campamento de las Placas Rojas. Busca a Corvo Vanta y escucha a los veteranos.",
         foso: "Nuevo capítulo abierto: Foso de Viento Negro. Prepárate para leer el peligro y mitigar ataques con diamantes.",
-        subestacion: "Nuevo capítulo abierto: Subestación de Ceniza. Reconfigura piloto y copiloto sin romper los límites del PoCoBOT.",
+        subestacion: "Nuevo capítulo abierto: Subestación de Ceniza. Habla con Mr. Wind, descubre la verdad de la Ruta Ceniza y coloca tres cargas sin despertar a los mechas.",
         puente: "Nuevo capítulo abierto: Puente de los Relámpagos Quietos. Vence a Corvo con lectura de amenaza y presión sostenida.",
         cupula: "Nuevo capítulo abierto: Cúpula Hendida de Argós. Atraviesa el umbral y prepara el duelo final.",
         protocolo: "Ruta final abierta: Protocolo Ceniza. Activa el cierre y desbloquea SUPER DIFÍCIL."
