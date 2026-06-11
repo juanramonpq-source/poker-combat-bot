@@ -2957,8 +2957,13 @@
     .cards .card:hover {
       z-index: 2;
       filter: brightness(1.08);
-      transform: translateY(calc((var(--hand-rise, 0px) + 14px) * -1)) rotate(var(--hand-rotate, 0deg)) scale(var(--hand-hover-scale, 1.05));
+      transform: translateY(calc((var(--hand-rise, 0px) + var(--hand-selected-lift, 10px)) * -1)) rotate(var(--hand-rotate, 0deg)) scale(var(--hand-hover-scale, 1.03));
       outline: 3px solid var(--gold);
+    }
+
+    .cards.is-expanded-hand .card.is-selected,
+    .cards.is-expanded-hand .card:hover {
+      transform: translateY(calc((var(--hand-rise, 0px) + var(--hand-selected-lift, 8px)) * -1)) rotate(var(--hand-rotate, 0deg)) scale(var(--hand-hover-scale-expanded, var(--hand-hover-scale, 1)));
     }
 
     .card.is-selected::after {
@@ -8068,7 +8073,9 @@
         cardNode.style.setProperty("--hand-rotate", "0deg");
         cardNode.style.setProperty("--hand-rise", "0px");
         cardNode.style.setProperty("--hand-scale", tabletLandscape ? "1" : ".94");
-        cardNode.style.setProperty("--hand-hover-scale", tabletLandscape ? "1.04" : "1");
+        cardNode.style.setProperty("--hand-selected-lift", tabletLandscape ? "10px" : "7px");
+        cardNode.style.setProperty("--hand-hover-scale", tabletLandscape ? "1.03" : ".96");
+        cardNode.style.setProperty("--hand-hover-scale-expanded", tabletLandscape ? "1.03" : ".96");
         return;
       }
 
@@ -8133,7 +8140,9 @@
         cardNode.style.setProperty("--hand-rotate", `${angle.toFixed(2)}deg`);
         cardNode.style.setProperty("--hand-rise", `${rise.toFixed(2)}px`);
         cardNode.style.setProperty("--hand-scale", scale.toFixed(3));
-        cardNode.style.setProperty("--hand-hover-scale", Math.min(1.02, scale + .06).toFixed(3));
+        cardNode.style.setProperty("--hand-selected-lift", tutorialPortraitLayout ? "6px" : (count > 12 ? "7px" : "8px"));
+        cardNode.style.setProperty("--hand-hover-scale", Math.min(.99, scale + .04).toFixed(3));
+        cardNode.style.setProperty("--hand-hover-scale-expanded", Math.min(.97, scale + .02).toFixed(3));
         return;
       }
       const trayWidth = tray.clientWidth || 420;
@@ -8181,7 +8190,9 @@
       cardNode.style.setProperty("--hand-rotate", `${angle.toFixed(2)}deg`);
       cardNode.style.setProperty("--hand-rise", `${rise.toFixed(2)}px`);
       cardNode.style.setProperty("--hand-scale", denseScale.toFixed(3));
-      cardNode.style.setProperty("--hand-hover-scale", Math.min(1.06, denseScale + .06).toFixed(3));
+      cardNode.style.setProperty("--hand-selected-lift", count > 12 ? "8px" : "10px");
+      cardNode.style.setProperty("--hand-hover-scale", Math.min(1.03, denseScale + .04).toFixed(3));
+      cardNode.style.setProperty("--hand-hover-scale-expanded", Math.min(1, denseScale + .02).toFixed(3));
     }
 
     function renderHand() {

@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <script>
     (() => {
-      const APP_SHELL_VERSION = '20260601-mobile-shell-v2';
+      const APP_SHELL_VERSION = '20260611-ios-hand-fix-1';
       const ensureVersionedShell = (reloadPersisted = false) => {
         try {
           const url = new URL(window.location.href);
@@ -30,7 +30,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_web_icon_32.png?v=20260506-pocobot-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/pocobot_web_icon_16.png?v=20260506-pocobot-icon" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_app_icon_180.png?v=20260529-pocobot-pwa" />
-  <link rel="manifest" href="site.webmanifest?v=20260601-mobile-shell-v2" />
+  <link rel="manifest" href="site.webmanifest?v=20260611-ios-hand-fix-1" />
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand" />
   <link rel="prefetch" href="assets/audio_01.mp3" />
   <link rel="prefetch" href="assets/audio_02.mp3" />
@@ -10594,9 +10594,17 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   position: fixed;
   inset: 0;
   background: linear-gradient(180deg, #06090f, #020407 54%, #05080d);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right))
+    max(20px, env(safe-area-inset-bottom))
+    max(14px, env(safe-area-inset-left));
   z-index: 999;
 }
 
@@ -10606,7 +10614,7 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   border-radius: 14px;
   padding: 40px;
   max-width: 500px;
-  width: 90%;
+  width: min(500px, 100%);
   box-shadow: var(--shadow);
 }
 
@@ -10744,6 +10752,45 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   background: rgba(255, 93, 52, 0.15);
   border-left-color: var(--red);
   color: #ffb3a5;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  #olLobbyScreen {
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .ol-lobby-container {
+    padding: 20px 18px 18px;
+    border-radius: 12px;
+  }
+
+  .ol-lobby-title {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+  }
+
+  .ol-lobby-subtitle {
+    font-size: 0.78rem;
+    margin-bottom: 16px;
+  }
+
+  .ol-input-group {
+    margin-bottom: 12px;
+  }
+
+  .ol-button-group {
+    margin-bottom: 10px;
+  }
+
+  #olRoomCodeDisplay {
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  #olRoomCodeSpan {
+    font-size: 1.28rem;
+  }
 }
 
 #olWaitingVeil {
@@ -31987,7 +32034,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260601-tutobot-mobile-fix-4';
+const MOBILE_SPRITE_HUD_VERSION = '20260611-ios-hand-fix-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -39478,7 +39525,15 @@ function syncDesktopHudAvailability(){
     emulateMobileMediaRules = isDevMobileVerticalHudOverride() || devMobileHorizontal || devLegacyHorizontal;
     syncDevMobilePanoramaEmulation(emulateMobileMediaRules);
   }
-  if(mobilePanoramaAvailable) mobileCompactAvailable = false;
+  const panoramaEligibleNow = mobilePanoramaAvailable && (
+    shouldUseStoryMobileCompactMode()
+    || isMobileLandscapeViewport()
+    || devHudModeOverride === 'mobile-horizontal'
+    || devHudModeOverride === 'horizontal'
+    || devHudModeOverride === 'legacy-mobile'
+    || devHudModeOverride === 'legacy-compact-horizontal'
+  );
+  if(panoramaEligibleNow) mobileCompactAvailable = false;
   if(devHudModeOverride === 'auto' && isTabletTouchViewport() && (mobileCompactAvailable || mobilePanoramaAvailable)){
     desktopAvailable = false;
   }
@@ -39496,8 +39551,8 @@ function syncDesktopHudAvailability(){
     }
   }
   const compactActive = available && desktopHudMode === 'compact';
-  const legacyMobilePanoramaActive = compactActive && mobilePanoramaAvailable && !desktopAvailable && devLegacyHorizontal;
-  const mobileLandscapeCompactActive = compactActive && mobilePanoramaAvailable && !desktopAvailable && !legacyMobilePanoramaActive;
+  const legacyMobilePanoramaActive = compactActive && panoramaEligibleNow && !desktopAvailable && devLegacyHorizontal;
+  const mobileLandscapeCompactActive = compactActive && panoramaEligibleNow && !desktopAvailable && !legacyMobilePanoramaActive;
   const mobilePanoramaActive = legacyMobilePanoramaActive;
   const mobileCompactActive = compactActive && mobileCompactAvailable && !desktopAvailable && !mobileLandscapeCompactActive;
   if(!compactActive){
