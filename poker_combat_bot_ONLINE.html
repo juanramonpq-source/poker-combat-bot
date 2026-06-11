@@ -5061,9 +5061,12 @@ button:disabled{
   border:1px solid rgba(92,113,182,.16) !important;
   background:#ffffff !important;
   box-shadow:0 3px 0 rgba(17,33,87,.10), 0 8px 12px rgba(0,0,0,.10) !important;
+  padding:0 !important;
 }
 .card-real-image{
   display:block;
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
   object-fit:contain;
@@ -5073,11 +5076,14 @@ button:disabled{
   border-radius:inherit;
   box-sizing:border-box;
   pointer-events:none;
-  position:relative;
   z-index:1;
   transform:scale(1.018);
   transform-origin:center;
   transition:opacity .12s ease;
+  opacity:0;
+}
+.card.card-detailed.card-image-ready .card-real-image{
+  opacity:1;
 }
 .card-real-image.card-real-image-safe{
   padding:1.35px;
@@ -5101,6 +5107,10 @@ button:disabled{
   font-weight:900;
   line-height:1;
   pointer-events:none;
+  transition:opacity .12s ease;
+}
+.card.card-detailed.card-image-ready .card-value-fallback{
+  opacity:0;
 }
 .card-value-fallback.is-red{color:#c82b38}
 .card-value-fallback-rank{font-size:.72rem}
@@ -5136,12 +5146,12 @@ button:disabled{
 .suit{text-align:center;font-size:1rem;font-weight:900;margin:auto 0}
 @media (max-width: 520px){
   .card-real-image{
-    padding:1px;
-    transform:none;
+    padding:0;
+    transform:scale(1.14);
   }
   .card-real-image.card-real-image-safe{
-    padding:1px;
-    transform:none;
+    padding:0;
+    transform:scale(1.09);
   }
   .card-zone-hand.card-detailed{
     width:48px !important;
@@ -13807,8 +13817,8 @@ body.mobile-panorama-mode .desktop-compact-shell.compact-hud-shake-heavy{
     touch-action:none;
   }
   .app.mobile-panorama-mode .compact-hand-tray .card-real-image{
-    padding:1px;
-    transform:none;
+    padding:0;
+    transform:scale(1.14);
   }
   .app.mobile-panorama-mode .compact-readout-strip{
     grid-template-columns:repeat(4, minmax(0, 1fr));
@@ -17823,8 +17833,17 @@ body.story-argos-hack-ui{
   }
 
   body.mobile-panorama-mode .app.mobile-panorama-mode .compact-zone-cards .card-real-image{
-    padding:1px !important;
-    transform:none !important;
+    padding:0 !important;
+    transform:scale(1.14) !important;
+  }
+
+  .app:is(.mobile-compact-mode, .mobile-pc-compact-mode) :is(.compact-hand-tray, .compact-zone-cards) .card-real-image{
+    padding:0 !important;
+    transform:scale(1.14) !important;
+  }
+
+  .app:is(.mobile-compact-mode, .mobile-pc-compact-mode) :is(.compact-hand-tray, .compact-zone-cards) .card-real-image.card-real-image-safe{
+    transform:scale(1.09) !important;
   }
 
   body.mobile-panorama-mode .app.mobile-panorama-mode .compact-empty{
@@ -44943,6 +44962,11 @@ function buildCardValueFallbackElement(card, suitInfo){
   fallback.append(top, suit, bottom);
   return fallback;
 }
+function setDetailedCardImageState(hostEl, nextState){
+  if(!hostEl) return;
+  hostEl.classList.remove('card-image-pending', 'card-image-ready', 'card-image-failed');
+  if(nextState) hostEl.classList.add(nextState);
+}
 function buildRealCardImageElement(card, hostEl=null){
   const src = getRealCardImageSrc(card);
   if(!src) return null;
@@ -44955,15 +44979,18 @@ function buildRealCardImageElement(card, hostEl=null){
   img.decoding = 'sync';
   img.draggable = false;
   img.addEventListener('load', () => {
-    if(!hostEl) return;
-    hostEl.classList.remove('card-image-pending', 'card-image-failed');
+    setDetailedCardImageState(hostEl, 'card-image-ready');
   });
   img.addEventListener('error', () => {
-    if(!hostEl) return;
-    hostEl.classList.remove('card-image-pending');
-    hostEl.classList.add('card-image-failed');
+    setDetailedCardImageState(hostEl, 'card-image-failed');
   });
   img.src = src;
+  if(img.complete){
+    queueMicrotask(() => {
+      if(img.naturalWidth > 0) setDetailedCardImageState(hostEl, 'card-image-ready');
+      else setDetailedCardImageState(hostEl, 'card-image-failed');
+    });
+  }
   return img;
 }
 function createCoreArray(player){
@@ -45928,14 +45955,14 @@ function createCardEl(card, playerIdx, zone){
   if(shouldUseCompactCardLayout()){
     div.innerHTML = buildCompactCardMarkup(card, suitInfo);
   } else {
-    div.classList.add('card-detailed', 'card-image-pending');
+    div.classList.add('card-detailed');
+    setDetailedCardImageState(div, 'card-image-pending');
     div.appendChild(buildCardValueFallbackElement(card, suitInfo));
     const realCardImage = buildRealCardImageElement(card, div);
     if(realCardImage) {
       div.appendChild(realCardImage);
     } else {
-      div.classList.remove('card-image-pending');
-      div.classList.add('card-image-failed');
+      setDetailedCardImageState(div, 'card-image-failed');
     }
   }
   if(activePlayer) div.addEventListener('click', () => {
