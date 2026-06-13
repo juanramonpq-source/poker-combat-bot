@@ -2051,6 +2051,25 @@
       overflow-wrap: anywhere;
     }
 
+    .drawer-head p.is-tutorial-guidance {
+      color: #f2fbff;
+    }
+
+    .drawer-head p .drawer-tutorial-label {
+      display: inline-block;
+      margin-right: 6px;
+      color: #9fefff;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .drawer-head p .tutorial-assistant-subline {
+      display: block;
+      margin-top: 3px;
+      color: #dff7ff;
+    }
+
     .drawer-close {
       width: 29px;
       height: 29px;
@@ -2312,6 +2331,11 @@
     .drawer-foot button.secondary {
       color: #dff7ff;
       background: linear-gradient(180deg, #0b64ad, #053462);
+    }
+
+    .drawer-foot button.is-confirm {
+      color: #fff8ea;
+      background: linear-gradient(180deg, #ff875d, #a91e0e);
     }
 
     .hand-tray {
@@ -5863,7 +5887,7 @@
       </header>
       <div class="zone-grid" data-zone-grid></div>
       <footer class="drawer-foot">
-        <button type="button" data-apply-build>Aplicar cambios</button>
+        <button type="button" data-drawer-primary>Aplicar cambios</button>
         <button class="secondary" type="button" data-action="clear">Limpiar selección</button>
       </footer>
     </section>
@@ -7112,6 +7136,14 @@
       finishPlayerTurn("modify");
     }
 
+    function handleDrawerPrimary() {
+      if (state.pendingDefense || state.attackMode || state.projectileOnlyMode) {
+        handleAction("confirm");
+        return;
+      }
+      applyBuildChanges();
+    }
+
     function syncActionFlyouts() {
       shell.classList.toggle(
         "attack-confirm-open",
@@ -8353,12 +8385,13 @@
 
       const title = document.querySelector("[data-drawer-title]");
       const subtitle = document.querySelector("[data-drawer-subtitle]");
+      const drawerTutorialHtml = getDrawerTutorialHtml(isRivalView);
       if (state.projectileOnlyMode) {
         title.textContent = "Solo proyectil";
-        subtitle.textContent = "Toca una pica numerica instalada. No necesita fuel.";
+        subtitle[drawerTutorialHtml ? "innerHTML" : "textContent"] = drawerTutorialHtml || "Toca una pica numerica instalada. No necesita fuel.";
       } else if (state.attackMode) {
         title.textContent = state.projectileMode ? "Ataque con proyectil" : "Seleccion de ataque";
-        subtitle.textContent = "Toca fuel y picas. El ataque principal no puede superar fuel x2.";
+        subtitle[drawerTutorialHtml ? "innerHTML" : "textContent"] = drawerTutorialHtml || "Toca fuel y picas. El ataque principal no puede superar fuel x2.";
       } else if (isRivalView) {
         title.textContent = `Panel de ${player.name || "tu rival"}`;
         subtitle.textContent = `Cartas visibles de ${player.name || "tu rival"}. La mano permanece oculta.`;
@@ -8366,6 +8399,8 @@
         title.textContent = "Paneles de montaje";
         subtitle.textContent = `Operaciones: ${state.pendingBuildOps}/${buildOpsLimit()}. Arrastra cartas de la mano al destino.`;
       }
+      subtitle.classList.toggle("is-tutorial-guidance", !!drawerTutorialHtml);
+      syncDrawerPrimaryButton();
     }
 
     function getTutorialActionList() {
@@ -8374,6 +8409,63 @@
 
     function getTutorialBotSprite() {
       return state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-4";
+    }
+
+    function shouldEmbedTutorialInDrawer() {
+      if (!EMBEDDED_REAL_GAME || !state.tutorial || !state.tutorialBotVisible) return false;
+      if (state.tutorialBotPlacement !== "top-rail-front") return false;
+      if (!shell?.classList?.contains("board-open")) return false;
+      return !!state.attackMode || !!state.projectileOnlyMode || !!state.pendingDefense;
+    }
+
+    function getDrawerTutorialHtml(isRivalView = false) {
+      if (isRivalView || !shouldEmbedTutorialInDrawer()) return "";
+      const bodyHtml = (state.tutorialBotHtml || "").trim();
+      if (!bodyHtml) return "";
+      const box = document.createElement("div");
+      box.innerHTML = bodyHtml;
+      const conciseHtml = box.querySelector(".tutorial-assistant-subline")?.innerHTML?.trim() || bodyHtml;
+      return `<span class="drawer-tutorial-label">TutoBOT</span> ${conciseHtml}`;
+    }
+
+    function getDrawerPrimaryState(actionStates = null) {
+      const resolvedActionStates = actionStates || (EMBEDDED_REAL_GAME && state.bridgeActions
+        ? {
+          modify: !!state.bridgeActions.modify,
+          confirm: !!state.bridgeActions.confirm,
+          defend: !!state.bridgeActions.defend
+        }
+        : null);
+      if (state.pendingDefense) {
+        return {
+          label: "Confirmar defensa",
+          enabled: resolvedActionStates ? !!resolvedActionStates.confirm : !!state.pendingDefense,
+          theme: "confirm"
+        };
+      }
+      if (state.projectileOnlyMode || state.attackMode) {
+        return {
+          label: "Confirmar ataque",
+          enabled: resolvedActionStates ? !!resolvedActionStates.confirm : true,
+          theme: "confirm"
+        };
+      }
+      return {
+        label: "Aplicar cambios",
+        enabled: resolvedActionStates ? !!resolvedActionStates.modify : !!state.pendingBuildOps,
+        theme: "build"
+      };
+    }
+
+    function syncDrawerPrimaryButton(actionStates = null) {
+      const button = document.querySelector("[data-drawer-primary]");
+      if (!button) return;
+      const config = getDrawerPrimaryState(actionStates);
+      button.textContent = config.label;
+      button.disabled = !config.enabled;
+      button.dataset.drawerPrimaryMode = config.theme;
+      button.classList.toggle("secondary", false);
+      button.classList.toggle("is-confirm", config.theme === "confirm");
     }
 
     function tutorialBotLooksLikeGreeting() {
@@ -8596,7 +8688,8 @@
       const landscape = isLandscapeLayout();
       const tutorialExternalSequenceOverlay = EMBEDDED_REAL_GAME && state.tutorialBotExternalSequenceOverlay;
       const tutorialYieldingToInteraction = tutorialBotShouldYieldToInteraction();
-      const tutorialSuppressed = isTutorialOverlaySuppressed() || tutorialYieldingToInteraction || tutorialExternalSequenceOverlay;
+      const drawerGuidanceOwnsTutorial = shouldEmbedTutorialInDrawer();
+      const tutorialSuppressed = isTutorialOverlaySuppressed() || tutorialYieldingToInteraction || tutorialExternalSequenceOverlay || drawerGuidanceOwnsTutorial;
       const embeddedBotVisible = EMBEDDED_REAL_GAME && state.tutorialBotVisible && !tutorialExternalSequenceOverlay;
       const tutorialVisible = state.tutorial && !tutorialSuppressed && (embeddedBotVisible || !landscape);
       tutorial.classList.toggle("show", tutorialVisible);
@@ -8781,6 +8874,15 @@
 	          button.disabled = !enabled;
 	        });
 	      });
+        const confirmLabel = defenseTurn
+          ? "Confirmar defensa"
+          : (state.projectileOnlyMode || state.attackMode)
+            ? "Confirmar ataque"
+            : "Confirmar";
+        document.querySelectorAll('[data-action="confirm"]').forEach((button) => {
+          button.textContent = confirmLabel;
+          button.setAttribute("aria-label", confirmLabel);
+        });
         const figuresEnabled = !!actionStates.figures;
         document.querySelectorAll("[data-figures-quick], [data-figures-hand]").forEach((button) => {
           button.hidden = !figuresEnabled;
@@ -8798,6 +8900,7 @@
             button.hidden = !visible;
           });
         });
+        syncDrawerPrimaryButton(actionStates);
 	      syncAttackReadiness();
 	    }
 
@@ -9410,7 +9513,7 @@
         render();
       }
       if (button.dataset.boardClose !== undefined) closeBoard();
-      if (button.dataset.applyBuild !== undefined) applyBuildChanges();
+      if (button.dataset.drawerPrimary !== undefined) handleDrawerPrimary();
       if (button.dataset.tab) {
         closeActions();
         closeHandOverview();

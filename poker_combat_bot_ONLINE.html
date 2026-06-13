@@ -32020,7 +32020,10 @@ function olGetCompactTurnIndicator(){
 let defenseUiCueKey = '';
 let defenseAlertTimer = null;
 let attackSpecialPopupTimer = null;
+let defenseInteractionGuardUntil = 0;
 const ATTACK_LAUNCH_DELAY_MS = 360;
+const DEFENSE_INTERACTION_GUARD_MS = 420;
+const ACADEMY_DEFENSE_INTERACTION_GUARD_MS = 680;
 const ATTACK_SPECIAL_MIN_DURATION_MS = 3200;
 const ATTACK_SPECIAL_FALLBACK_DURATION_MS = 6200;
 const ATTACK_SPECIAL_END_PAD_MS = 260;
@@ -35576,8 +35579,8 @@ const TUTORIAL_SCRIPT = [
     id: 'first-attack',
     title: 'Paso 10 · Declara tu primer ataque',
     body: 'Vas a usar <strong>8♦</strong> como combustible y <strong>4♠ + 7♠</strong> como ataque principal. El combustible se descarta al disparar; las picas del ataque principal se quedan montadas.',
-    objective: 'Selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, luego pulsa <strong>Confirmar ataque ARRIBA</strong>.',
-    tip: '8♦ te da un límite de 16 puntos; 4♠ + 7♠ = 11, así que es válido. La confirmación siempre se hace en el panel principal de arriba.',
+    objective: 'Selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, luego pulsa <strong>Confirmar ataque</strong>.',
+    tip: '8♦ te da un límite de 16 puntos; 4♠ + 7♠ = 11, así que es válido.',
     allowedButtons: ['attackModeBtn', 'confirmAttackBtn', 'clearSelectionBtn', 'cancelAttackBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
     highlightButtons: ['confirmAttackBtn'],
@@ -38640,6 +38643,20 @@ function canUseInteractiveDefenseAction(){
   if(interactiveIdx < 0) return false;
   return interactiveIdx === state.pendingDefense.defenderIndex;
 }
+function getDefenseInteractionGuardMs(){
+  return tutorialSystem.enabled && tutorialSystem.mode === 'academy'
+    ? ACADEMY_DEFENSE_INTERACTION_GUARD_MS
+    : DEFENSE_INTERACTION_GUARD_MS;
+}
+function armDefenseInteractionGuard(ms = getDefenseInteractionGuardMs()){
+  defenseInteractionGuardUntil = Date.now() + Math.max(0, ms);
+}
+function clearDefenseInteractionGuard(){
+  defenseInteractionGuardUntil = 0;
+}
+function isDefenseInteractionGuardActive(){
+  return !!state.pendingDefense && Date.now() < defenseInteractionGuardUntil;
+}
 function flattenCollectionsForInteractivePlayer(){
   const idx = getInteractivePlayerIndex();
   const p = state.players[idx];
@@ -38726,6 +38743,7 @@ function toggleSelect(id){
   // CRITICAL FIX: Allow selection during defense even if transitionLock is true
   // The defender needs to select cards to respond to the attack
   if(state.transitionLock && !state.pendingDefense) return;
+  if(state.pendingDefense && isDefenseInteractionGuardActive()) return;
 
   const all = flattenCollectionsForInteractivePlayer();
   const found = all.find(c => c.id===id);
@@ -40415,8 +40433,8 @@ function getCompactMobileTutorialCopy(step){
       copy.tip = 'En cuanto abras el ataque, podrás elegir fuel y picas.';
       break;
     case 'first-attack':
-      copy.body = 'Vas a usar <strong>8♦</strong> como combustible y <strong>4♠ + 7♠</strong> como ataque principal. En móvil, primero toca las cartas en Fuel y Ataque; después abre <strong>Acciones</strong> y confirma.';
-      copy.objective = 'Selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, abre <strong>Acciones</strong> y pulsa <strong>Confirmar ataque</strong>.';
+      copy.body = 'Vas a usar <strong>8♦</strong> como combustible y <strong>4♠ + 7♠</strong> como ataque principal. Abre el panel de ataque, toca esas cartas y termina con <strong>Confirmar ataque</strong>.';
+      copy.objective = 'Selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque; después pulsa <strong>Confirmar ataque</strong>.';
       copy.tip = '8♦ da límite 16; 4♠ + 7♠ = 11, así que el ataque es válido.';
       break;
     case 'defend':
@@ -40513,7 +40531,7 @@ function getCompactMobileTutorialFocusText(step){
     case 'first-attack':
     case 'academy-fuel-attack':
     case 'academy-armor-fuel':
-      return 'Selecciona las cartas iluminadas en el panel y confirma desde Acciones.';
+      return 'Selecciona las cartas iluminadas en el panel y pulsa Confirmar ataque.';
     case 'draw-diamond':
     case 'academy-diamond-draw':
       return 'Selecciona el diamante de la mano y usa Robar con ♦ desde Acciones.';
@@ -40991,7 +41009,7 @@ function handleMobileSpriteAction(action){
       return;
     case 'confirm':
       if(canUseInteractiveDefenseAction()){
-        confirmDefense();
+        confirmDefenseFromUser();
       }else if(canUseInteractiveTurnAction()){
         confirmAttack(!!mobileSpriteProjectileOnlyMode);
         mobileSpriteProjectileOnlyMode = false;
@@ -41002,11 +41020,11 @@ function handleMobileSpriteAction(action){
       return;
     case 'defend':
       if(!canUseInteractiveDefenseAction()) return;
-      if(state.selected.length === 1 && isNumericDiamondCard(state.selected[0])) confirmDefense();
-      else beginInteractiveDefenseSelection();
+      if(state.selected.length === 1 && isNumericDiamondCard(state.selected[0])) confirmDefenseFromUser();
+      else beginInteractiveDefenseSelectionFromUser();
       return;
     case 'skip-defense':
-      if(canUseInteractiveDefenseAction()) skipDefense();
+      if(canUseInteractiveDefenseAction()) skipDefenseFromUser();
       return;
     case 'clear':
       mobileSpriteProjectileOnlyMode = false;
@@ -43529,6 +43547,7 @@ function hideDefensePrompt(){
 }
 function beginInteractiveDefenseSelection(){
   if(!state.pendingDefense) return;
+  if(isDefenseInteractionGuardActive()) return;
   const defenderIndex = state.pendingDefense.defenderIndex;
   state.defenseSelectionMode = true;
   hideDefenseAlert();
@@ -43538,6 +43557,15 @@ function beginInteractiveDefenseSelection(){
   notifySelection('Selecciona 1 ♦ numérico de tu mano para intentar esquivar el ataque.');
   addToast('Selecciona 1 ♦ numérico para defender', 'warn');
   triggerScreenRipple('cyan');
+}
+function beginInteractiveDefenseSelectionFromUser(){
+  beginInteractiveDefenseSelection();
+}
+function confirmDefenseFromUser(){
+  confirmDefense({ source:'user' });
+}
+function skipDefenseFromUser(){
+  skipDefense({ source:'user' });
 }
 
 function maybeCueDefenseActiveUi(){
@@ -43572,7 +43600,10 @@ function runHeaderAttackSequence(attackerIdx, withProjectile, callback, options=
   scrollToTopArea('auto');
   window.setTimeout(() => scrollToTopArea('auto'), 80);
   window.setTimeout(() => scrollToTopArea('auto'), 320);
-  const completeAttack = shouldPlayCompleteAttackSpecial(attackerIdx);
+  const completeAttack = shouldPlayCompleteAttackSpecial(
+    attackerIdx,
+    typeof options.completeAttack === 'boolean' ? options.completeAttack : undefined
+  );
   playMobileSpriteAttackSequence(attackerIdx, withProjectile, {
     completeAttack,
     attackPoints: Number(options.attackPoints) || 0
@@ -43640,6 +43671,7 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
   };
   state.selected = [];
   state.defenseSelectionMode = false;
+  armDefenseInteractionGuard();
   hideDefenseAlert();
   state.phase = 'Defensa activa';
 
@@ -43784,6 +43816,7 @@ function resolveAttackAfterDefense(defenseCard){
   closeCompactMobileDrawersForCombat();
   state.transitionLock = true;
   state.defenseSelectionMode = false;
+  clearDefenseInteractionGuard();
   hideDefensePrompt();
 
   const defender = state.players[pending.defenderIndex];
@@ -43808,13 +43841,16 @@ function resolveAttackAfterDefense(defenseCard){
   state.pendingDefense = null;
   state.selected = [];
   state.phase = 'Ataque';
+  state.lastActionType = defenseCard ? 'defense' : 'skipDefense';
+  defender.flags.lastOwnAction = state.lastActionType;
   state.postAttackTopFocus = true;
   const outcomePreview = aiSimulateAttackOutcome(defender, totalAttack);
   const attacker = state.players[pending.attackerIndex];
+  const completeAttackFx = !defenseCard && !!attacker && isCompleteAttackMecha(attacker);
   const attackFxCueId = queueOnlineFxCue('attack', pending.attackerIndex, {
     defenderIdx,
     withProjectile: !!pending.withProjectile,
-    completeAttack: !!attacker && isCompleteAttackMecha(attacker),
+    completeAttack: completeAttackFx,
     attackPoints: totalAttack,
     heavyImpact: outcomePreview.destroyedDefenseCount > 0 || totalAttack >= 8,
     destroyedArmorCount: outcomePreview.destroyedArmorCount,
@@ -43845,10 +43881,15 @@ function resolveAttackAfterDefense(defenseCard){
       if(tutorialSystem.enabled) updateTutorialPhase();
       window.setTimeout(() => scrollToWinnerCup('smooth'), 180);
     }
-  }, { attackPoints: totalAttack });
+  }, {
+    attackPoints: totalAttack,
+    completeAttack: completeAttackFx
+  });
 }
 
-function confirmDefense(){
+function confirmDefense(options={}){
+  const { source = 'system' } = options;
+  if(source === 'user' && isDefenseInteractionGuardActive()) return;
   // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
   if (_ol.active && _ol.role === 'guest') {
     console.log('[ONLINE] Guest confirmDefense: sending action to Host instead of executing locally');
@@ -43874,7 +43915,9 @@ function confirmDefense(){
   }
   resolveAttackAfterDefense(defense[0]);
 }
-function skipDefense(){
+function skipDefense(options={}){
+  const { source = 'system' } = options;
+  if(source === 'user' && isDefenseInteractionGuardActive()) return;
   // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
   if (_ol.active && _ol.role === 'guest') {
     console.log('[ONLINE] Guest skipDefense: sending action to Host instead of executing locally');
@@ -45724,12 +45767,12 @@ function runSinglePlayerAiTurn(){
 }
 function queueImmediateSinglePlayerAi(){
   if(singlePlayerAi.immediateQueued || singlePlayerAi.acting) return;
-  if(!isSinglePlayerMode() || tutorialSystem.enabled || state.winner || !state.gameStarted || (state.transitionLock && !state.pendingDefense)) return;
+  if(!isSinglePlayerMode() || tutorialBlocksSinglePlayerAi() || state.winner || !state.gameStarted || (state.transitionLock && !state.pendingDefense)) return;
   if(!isAiControlledPlayer(getFocusPlayerIndex())) return;
   singlePlayerAi.immediateQueued = true;
   queueMicrotask(() => {
     singlePlayerAi.immediateQueued = false;
-    if(singlePlayerAi.acting || !isSinglePlayerMode() || tutorialSystem.enabled || state.winner || !state.gameStarted){
+    if(singlePlayerAi.acting || !isSinglePlayerMode() || tutorialBlocksSinglePlayerAi() || state.winner || !state.gameStarted){
       return;
     }
     if(!isAiControlledPlayer(getFocusPlayerIndex())){
@@ -45754,12 +45797,12 @@ function queueImmediateSinglePlayerAi(){
 }
 function scheduleSinglePlayerAi(delayOverride=null){
   clearSinglePlayerAiTimer();
-  if(!isSinglePlayerMode() || tutorialSystem.enabled || state.winner || !state.gameStarted) return;
+  if(!isSinglePlayerMode() || tutorialBlocksSinglePlayerAi() || state.winner || !state.gameStarted) return;
   if(!isAiControlledPlayer(getFocusPlayerIndex())) return;
   const delay = typeof delayOverride === 'number' ? delayOverride : (state.pendingDefense ? 220 : 320);
   singlePlayerAi.timer = window.setTimeout(() => {
     clearSinglePlayerAiTimer();
-    if(!isSinglePlayerMode() || tutorialSystem.enabled || state.winner || !state.gameStarted) return;
+    if(!isSinglePlayerMode() || tutorialBlocksSinglePlayerAi() || state.winner || !state.gameStarted) return;
     if(!isAiControlledPlayer(getFocusPlayerIndex())) return;
     if(singlePlayerAi.acting || (state.transitionLock && !state.pendingDefense)){
       scheduleSinglePlayerAi(260);
@@ -46375,31 +46418,31 @@ document.getElementById('tutorialBotOverlayCloseBtn')?.addEventListener('click',
 document.getElementById('tutorialBotOverlayBackdrop')?.addEventListener('click', dismissTutorialBotOverlay);
 document.getElementById('confirmDefenseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
-  confirmDefense();
+  confirmDefenseFromUser();
 });
 document.getElementById('defenseGuidePrimaryBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
   if(state.selected.length===1 && isNumericDiamondCard(state.selected[0])){
-    confirmDefense();
+    confirmDefenseFromUser();
   }else{
-    beginInteractiveDefenseSelection();
+    beginInteractiveDefenseSelectionFromUser();
   }
 });
 document.getElementById('defenseGuideSkipBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
-  skipDefense();
+  skipDefenseFromUser();
 });
 document.getElementById('defensePromptChooseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
-  beginInteractiveDefenseSelection();
+  beginInteractiveDefenseSelectionFromUser();
 });
 document.getElementById('defensePromptSkipBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
-  skipDefense();
+  skipDefenseFromUser();
 });
 document.getElementById('skipDefenseBtn').addEventListener('click', () => {
   if(!canUseInteractiveDefenseAction()) return;
-  skipDefense();
+  skipDefenseFromUser();
 });
 document.getElementById('storyFinalColossusResilienceBtn')?.addEventListener('click', triggerStoryFinalColossusResilience);
 document.getElementById('storyArgosHackGateBtn')?.addEventListener('click', resolveStoryArgosHackGate);
@@ -46541,13 +46584,13 @@ document.getElementById('desktopCompactShell').addEventListener('click', (event)
     if(!canUseInteractiveDefenseAction()) return;
     pulseButton(btn);
     if(btn.dataset.compactDefenseAction === 'skip'){
-      skipDefense();
+      skipDefenseFromUser();
       return;
     }
     if(state.selected.length===1 && isNumericDiamondCard(state.selected[0])){
-      confirmDefense();
+      confirmDefenseFromUser();
     }else{
-      beginInteractiveDefenseSelection();
+      beginInteractiveDefenseSelectionFromUser();
     }
     return;
   }
@@ -46663,8 +46706,8 @@ document.addEventListener('click', (event) => {
   if(defenseInlinePrimary){
     if(!canUseInteractiveDefenseAction()) return;
     pulseButton(defenseInlinePrimary);
-    if(state.selected.length===1 && isNumericDiamondCard(state.selected[0])) confirmDefense();
-    else beginInteractiveDefenseSelection();
+    if(state.selected.length===1 && isNumericDiamondCard(state.selected[0])) confirmDefenseFromUser();
+    else beginInteractiveDefenseSelectionFromUser();
     return;
   }
 
@@ -46672,7 +46715,7 @@ document.addEventListener('click', (event) => {
   if(defenseInlineSkip){
     if(!canUseInteractiveDefenseAction()) return;
     pulseButton(defenseInlineSkip);
-    skipDefense();
+    skipDefenseFromUser();
     return;
   }
 
@@ -48354,6 +48397,7 @@ function academyResetForLesson(title){
   state.pendingDefense = null;
   state.selected = [];
   state.transitionLock = false;
+  clearDefenseInteractionGuard();
   state.log = [
     `🎓 Academia PoCoBOT · ${title}`,
     '🧪 Esta fase vive solo en la juego principal y guarda el progreso en local.'
@@ -48481,6 +48525,7 @@ function academyPrepareLesson4(){
     withProjectile: false
   };
   state.selected = [];
+  armDefenseInteractionGuard(ACADEMY_DEFENSE_INTERACTION_GUARD_MS);
 }
 
 function academyPrepareLesson5(){
@@ -48741,7 +48786,7 @@ const ACADEMY_LESSONS = [
         highlightZones: ['hand-zone-0'],
         expectedAction: 'confirmDefense',
         expectedSelection: [TUTORIAL_CARD_IDS.p0DefendDiamond],
-        isComplete: () => tutorialSystem.validation.firstDefense && academySceneSettled(0),
+        isComplete: () => !state.players[0]?.hand?.some(card => card.id === TUTORIAL_CARD_IDS.p0DefendDiamond) && academySceneSettled(0),
         onComplete: () => academyCompleteActiveLesson()
       },
       academySummaryStep('Fase 4 completada')
@@ -51080,10 +51125,10 @@ function olSetupGuestButtons() {
     olSendAction({ type: 'projectileOnly', selected: state.selected.slice() });
   });
   setupHandler('confirmDefenseBtn', function() {
-    olSendAction({ type: 'confirmDefense', selected: state.selected.slice() });
+    confirmDefenseFromUser();
   });
   setupHandler('skipDefenseBtn', function() {
-    olSendAction({ type: 'skipDefense' });
+    skipDefenseFromUser();
   });
   setupHandler('clearSelectionBtn', function() {
     state.selected = [];
