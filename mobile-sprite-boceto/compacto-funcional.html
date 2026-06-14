@@ -8445,7 +8445,7 @@
       }
       if (state.projectileOnlyMode || state.attackMode) {
         return {
-          label: "Confirmar ataque",
+          label: "Confirmar",
           enabled: resolvedActionStates ? !!resolvedActionStates.confirm : true,
           theme: "confirm"
         };
@@ -8877,7 +8877,7 @@
         const confirmLabel = defenseTurn
           ? "Confirmar defensa"
           : (state.projectileOnlyMode || state.attackMode)
-            ? "Confirmar ataque"
+            ? "Confirmar"
             : "Confirmar";
         document.querySelectorAll('[data-action="confirm"]').forEach((button) => {
           button.textContent = confirmLabel;

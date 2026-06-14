@@ -115,6 +115,9 @@ const input = {
   interactQueued: false,
   pointerActive: false,
   pointerId: null,
+  pointerStartClientX: 0,
+  pointerStartClientY: 0,
+  pointerMoved: false,
   pointerX: 0,
   pointerY: 0,
 };
@@ -2170,15 +2173,72 @@ function worldPointerDirection(clientX, clientY) {
   input.pointerY = dy / length;
 }
 
+function clientToWorldPoint(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const x = (clientX - rect.left) * (viewport.width / Math.max(1, rect.width));
+  const y = (clientY - rect.top) * (viewport.height / Math.max(1, rect.height));
+  const worldX = x / camera.zoom + camera.x;
+  const worldY = y / camera.zoom + camera.y;
+  return { x: worldX, y: worldY };
+}
+
+function getInteractableAtClientPoint(clientX, clientY) {
+  const point = clientToWorldPoint(clientX, clientY);
+  let best = null;
+  let bestDistance = Infinity;
+  getActiveInteractables().forEach((item) => {
+    const distance = Math.hypot(point.x - item.x, point.y - item.y);
+    const tapRadius = Math.max(item.radius, 72);
+    if (distance <= tapRadius && distance < bestDistance) {
+      best = item;
+      bestDistance = distance;
+    }
+  });
+  return best;
+}
+
 function setPointerActive(event) {
   input.pointerActive = true;
   input.pointerId = event.pointerId;
+  input.pointerStartClientX = event.clientX;
+  input.pointerStartClientY = event.clientY;
+  input.pointerMoved = false;
   worldPointerDirection(event.clientX, event.clientY);
+  if (canvas.setPointerCapture) {
+    canvas.setPointerCapture(event.pointerId);
+  }
 }
 
-function clearPointerActive() {
+function clearPointerActive(event) {
+  if (event.pointerId !== input.pointerId) return;
+
+  const tapDistance = Math.hypot(
+    event.clientX - input.pointerStartClientX,
+    event.clientY - input.pointerStartClientY
+  );
+  input.pointerMoved ||= tapDistance > 18;
+
+  if (event.type === "pointerup" && !input.pointerMoved) {
+    const tappedInteractable = getInteractableAtClientPoint(event.clientX, event.clientY)
+      || getInteractableAtClientPoint(input.pointerStartClientX, input.pointerStartClientY);
+    const canDirectInteract = tappedInteractable
+      && Math.hypot(player.x - tappedInteractable.x, player.y - tappedInteractable.y) <= tappedInteractable.radius;
+    if (canDirectInteract) {
+      state.nearestInteractableId = tappedInteractable.id;
+      input.interactQueued = true;
+    } else if (state.nearestInteractableId) {
+      input.interactQueued = true;
+    }
+  }
+
+  if (canvas.hasPointerCapture?.(event.pointerId)) {
+    canvas.releasePointerCapture(event.pointerId);
+  }
   input.pointerActive = false;
   input.pointerId = null;
+  input.pointerStartClientX = 0;
+  input.pointerStartClientY = 0;
+  input.pointerMoved = false;
   input.pointerX = 0;
   input.pointerY = 0;
 }
@@ -2395,6 +2455,11 @@ canvas.addEventListener("pointerdown", (event) => {
 canvas.addEventListener("pointermove", (event) => {
   if (!input.pointerActive || event.pointerId !== input.pointerId) return;
   worldPointerDirection(event.clientX, event.clientY);
+  const tapDistance = Math.hypot(
+    event.clientX - input.pointerStartClientX,
+    event.clientY - input.pointerStartClientY
+  );
+  input.pointerMoved ||= tapDistance > 18;
 });
 canvas.addEventListener("pointerup", clearPointerActive);
 canvas.addEventListener("pointercancel", clearPointerActive);
