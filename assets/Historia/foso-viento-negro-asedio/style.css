@@ -21,9 +21,11 @@
 html,
 body {
   width: 100%;
+  height: 100%;
   min-height: 100%;
   margin: 0;
   overflow: hidden;
+  overscroll-behavior: none;
   touch-action: none;
   background:
     radial-gradient(circle at 20% 10%, rgba(255, 126, 93, 0.12), transparent 24%),
@@ -31,6 +33,16 @@ body {
     linear-gradient(180deg, #1a1014 0%, #0d0e13 50%, #07090d 100%);
   color: var(--text);
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+html {
+  position: fixed;
+  inset: 0;
+}
+
+body {
+  position: fixed;
+  inset: 0;
 }
 
 body,
@@ -46,6 +58,9 @@ canvas {
   width: 100vw;
   height: 100vh;
   height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 .intro-panel {
@@ -63,6 +78,8 @@ canvas {
   height: 100%;
   display: block;
   background: #050608;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 .floating-map-button {
@@ -399,7 +416,8 @@ body.foso-hub-unlocked .interact-prompt {
   padding: 18px;
   background: linear-gradient(180deg, rgba(5, 7, 10, 0.34), rgba(5, 7, 10, 0.76));
   backdrop-filter: blur(8px);
-  touch-action: auto;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 .modal-layer.is-impact-warning::before {

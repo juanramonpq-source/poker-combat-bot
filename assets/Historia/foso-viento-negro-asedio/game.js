@@ -40,6 +40,7 @@ const storyRemovedDeckParam = storyParams.get("story_removed_cards") || "";
 
 const FOSO_SCENE_ID = "foso-viento-negro";
 const FOSO_PROGRESS_KEY = "pocobot-story-foso-blackwind-progress-v2";
+const FOSO_AUDIO_STATE_KEY = "pocobot-story-foso-blackwind-audio-v1";
 const FOSO_SAVE_INTERVAL_MS = 800;
 const SUIT_SYMBOLS = {
   spades: "♠",
@@ -310,6 +311,8 @@ let toastUntil = 0;
 let redGlowPulse = 0;
 let lastExplosionSoundAt = 0;
 let lastMissileFlybySoundAt = 0;
+let lastTouchClientY = 0;
+let lastAudioStateSaveAt = 0;
 
 const fosoAudio = {
   context: null,
@@ -739,6 +742,50 @@ function clearProgress() {
   } catch (error) {}
 }
 
+function readSavedAudioState() {
+  if (!fosoMusic) return null;
+  try {
+    const parsed = JSON.parse(localStorage.getItem(FOSO_AUDIO_STATE_KEY) || "{}");
+    if (!parsed || typeof parsed !== "object") return null;
+    if (parsed.storyLoadId !== storyLoadId) return null;
+    if (!Number.isFinite(parsed.currentTime) || parsed.currentTime < 0) return null;
+    if (Date.now() - (Number(parsed.savedAt) || 0) > 30 * 60 * 1000) return null;
+    return parsed;
+  } catch (error) {
+    return null;
+  }
+}
+
+function saveAudioState(force = false) {
+  if (!fosoMusic) return;
+  const now = Date.now();
+  if (!force && now - lastAudioStateSaveAt < 950) return;
+  lastAudioStateSaveAt = now;
+  try {
+    localStorage.setItem(FOSO_AUDIO_STATE_KEY, JSON.stringify({
+      storyLoadId,
+      currentTime: Number.isFinite(fosoMusic.currentTime) ? fosoMusic.currentTime : 0,
+      duration: Number.isFinite(fosoMusic.duration) ? fosoMusic.duration : 0,
+      paused: !!fosoMusic.paused,
+      savedAt: now,
+    }));
+  } catch (error) {}
+}
+
+function restoreAudioState() {
+  const saved = readSavedAudioState();
+  if (!saved || !fosoMusic) return;
+  const duration = Number.isFinite(fosoMusic.duration) && fosoMusic.duration > 0
+    ? fosoMusic.duration
+    : Number(saved.duration) || 0;
+  const safeTime = duration > 0
+    ? Math.max(0, Math.min(duration - 0.4, saved.currentTime))
+    : Math.max(0, saved.currentTime);
+  try {
+    fosoMusic.currentTime = safeTime;
+  } catch (error) {}
+}
+
 function restoreProgress() {
   const saved = readSavedProgress();
   if (!saved) return false;
@@ -990,6 +1037,41 @@ function resetPointerState() {
 function cancelActivePointerControl() {
   releaseCanvasPointerCapture();
   resetPointerState();
+}
+
+function findScrollableFosoElement(target) {
+  let current = target instanceof Element ? target : null;
+  while (current && current !== document.body && current !== document.documentElement) {
+    const style = window.getComputedStyle(current);
+    const canScrollY = /(auto|scroll|overlay)/.test(style.overflowY);
+    if (canScrollY && current.scrollHeight > current.clientHeight + 1) return current;
+    current = current.parentElement;
+  }
+  return null;
+}
+
+function canScrollFosoElement(element, deltaY) {
+  if (!element) return false;
+  const maxScroll = Math.max(0, element.scrollHeight - element.clientHeight);
+  if (maxScroll <= 1) return false;
+  if (deltaY > 0) return element.scrollTop < maxScroll - 1;
+  if (deltaY < 0) return element.scrollTop > 1;
+  return false;
+}
+
+function blockFosoNativeGesture(event) {
+  if (!event.cancelable) return;
+  const touch = event.touches?.[0];
+  const currentY = touch ? touch.clientY : lastTouchClientY;
+  const deltaY = lastTouchClientY ? lastTouchClientY - currentY : 0;
+  lastTouchClientY = currentY;
+  const scrollable = modalLayer.hidden === false ? findScrollableFosoElement(event.target) : null;
+  if (scrollable && canScrollFosoElement(scrollable, deltaY)) return;
+  event.preventDefault();
+}
+
+function resetFosoTouchGuard(event) {
+  lastTouchClientY = event.touches?.[0]?.clientY || 0;
 }
 
 function syncUiBlockingState() {
@@ -2272,6 +2354,7 @@ function updateGame(dt) {
   if (saveTimer >= FOSO_SAVE_INTERVAL_MS) {
     saveTimer = 0;
     saveProgress();
+    saveAudioState();
   }
 }
 
@@ -2400,6 +2483,7 @@ function attemptReturnToMap() {
 
 function maybeStartMusic() {
   if (storyAudioMode !== "internal" || !fosoMusic) return;
+  if (!fosoMusic.paused && !fosoMusic.ended) return;
   const playPromise = fosoMusic.play();
   if (playPromise && typeof playPromise.catch === "function") {
     playPromise.catch(() => {});
@@ -2579,6 +2663,7 @@ async function boot() {
   if (state.activeThreatId) {
     beginThreatEncounter(getThreatById(state.activeThreatId), { skipIntro: true });
   }
+  restoreAudioState();
   maybeStartMusic();
   requestAnimationFrame(frame);
 }
@@ -2696,7 +2781,30 @@ window.addEventListener("keyup", (event) => handleKey(event, false));
 window.addEventListener("resize", resizeCanvas);
 window.visualViewport?.addEventListener?.("resize", resizeCanvas);
 window.addEventListener("orientationchange", () => window.setTimeout(resizeCanvas, 80));
-window.addEventListener("beforeunload", saveProgress);
+document.addEventListener("touchstart", resetFosoTouchGuard, { passive: true, capture: true });
+document.addEventListener("touchmove", blockFosoNativeGesture, { passive: false, capture: true });
+document.addEventListener("gesturestart", (event) => {
+  if (event.cancelable) event.preventDefault();
+}, { passive: false, capture: true });
+window.addEventListener("beforeunload", () => {
+  saveProgress();
+  saveAudioState(true);
+});
+window.addEventListener("pagehide", () => {
+  saveProgress();
+  saveAudioState(true);
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    saveProgress();
+    saveAudioState(true);
+    return;
+  }
+  restoreAudioState();
+  maybeStartMusic();
+});
+fosoMusic?.addEventListener("loadedmetadata", restoreAudioState, { once: true });
+fosoMusic?.addEventListener("timeupdate", () => saveAudioState(), { passive: true });
 window.addEventListener("pointerdown", () => {
   unlockFosoAudio();
   maybeStartMusic();
