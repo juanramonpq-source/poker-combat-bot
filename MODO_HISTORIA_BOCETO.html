@@ -10879,6 +10879,55 @@
       }, remaining);
     }
 
+    function hasLiveStoryExplorationFrame() {
+      return !!storyExplorationStage
+        && !!storyExplorationFrame
+        && !!storyExplorationFrame.src
+        && storyExplorationFrame.src !== 'about:blank'
+        && (!storyExplorationStage.hidden || storyExplorationStage.classList.contains('active'));
+    }
+
+    function getLiveStoryExplorationFrameSurface() {
+      if (!hasLiveStoryExplorationFrame()) return null;
+      try {
+        const frameUrl = new URL(storyExplorationFrame.src, window.location.href);
+        const nodeId = frameUrl.searchParams.get('story_node') || '';
+        const pathname = frameUrl.pathname || '';
+        let sceneKey = '';
+        if (nodeId === 'campamento') {
+          sceneKey = frameUrl.searchParams.get('story_camp_scene') === 'lake' ? 'lake' : 'campamento';
+        } else if (nodeId === 'subestacion') {
+          sceneKey = frameUrl.searchParams.get('story_sub_scene') || 'hub';
+        } else if (nodeId === 'torre') {
+          sceneKey = frameUrl.searchParams.get('story_tower_scene') || (
+            pathname.includes('sala-control') ? 'control'
+              : pathname.includes('interior') ? 'interior'
+              : 'exterior'
+          );
+        } else if (nodeId === 'mercado') {
+          sceneKey = 'mercado';
+        } else if (nodeId === 'foso') {
+          sceneKey = 'foso';
+        }
+        return { nodeId, sceneKey };
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function resumeStoryExplorationIfCurrent(nodeId, sceneKey = '', options = {}) {
+      if (options.forceReload) return false;
+      const liveSurface = getLiveStoryExplorationFrameSurface();
+      if (!liveSurface) return false;
+      if (liveSurface.nodeId !== nodeId) return false;
+      if (sceneKey && liveSurface.sceneKey !== sceneKey) return false;
+      storyExplorationStage.hidden = false;
+      storyExplorationStage.classList.add('active');
+      storyExplorationStage.classList.remove('loading');
+      window.setTimeout(focusStoryExplorationFrame, 40);
+      return true;
+    }
+
     function buildStoryMarketExplorationUrl() {
       const targetUrl = new URL(MERCADO_TUTORIAL_URL, window.location.href);
       targetUrl.searchParams.set('v', '20260604-market-audio-zoom');
@@ -10904,7 +10953,7 @@
       return targetUrl.href;
     }
 
-    function openStoryMarketExploration() {
+    function openStoryMarketExploration(options = {}) {
       if (!storyExplorationStage || !storyExplorationFrame) return;
       ensureStoryMarketInventory();
       markStoryMarketVisited('market-exploration-open');
@@ -10923,6 +10972,7 @@
       queueStoryMapTheme('market');
       playMapMusic();
       const targetUrl = buildStoryMarketExplorationUrl();
+      if (resumeStoryExplorationIfCurrent('mercado', 'mercado', options)) return;
       storyExplorationStage.hidden = false;
       showStoryExplorationLoader('Mercado de Relés', 'Cargando puestos, chatarra y puntos de interacción...');
       storyExplorationFrame.src = targetUrl;
@@ -11003,6 +11053,7 @@
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
 
+      if (resumeStoryExplorationIfCurrent('campamento', activeExplorationSceneKey)) return;
       storyExplorationStage.hidden = false;
       showStoryExplorationLoader(
         sceneKey === 'lake' ? 'Lago Norte de las Placas Rojas' : 'Campamento de las Placas Rojas',
@@ -11093,6 +11144,7 @@
       closeStoryScene({ clearSurface: false });
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
+      if (resumeStoryExplorationIfCurrent('foso', 'foso')) return;
       storyExplorationStage.hidden = false;
       showStoryExplorationLoader('Foso de Viento Negro', 'Desplegando pasillo, coberturas y bateria residual...');
       storyExplorationFrame.src = buildStoryFosoExplorationUrl({
@@ -11146,6 +11198,7 @@
       closeStoryScene({ clearSurface: false });
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
+      if (resumeStoryExplorationIfCurrent('subestacion', activeExplorationSceneKey)) return;
       storyExplorationStage.hidden = false;
       showStoryExplorationLoader('Subestación de Ceniza', 'Desplegando hub, patrullas y cargas explosivas...');
       storyExplorationFrame.src = buildStorySubestacionExplorationUrl(activeExplorationSceneKey, {
@@ -11852,6 +11905,7 @@
       targetUrl.searchParams.set('story_audio', 'internal');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('preserve_chapter', '1');
+      targetUrl.searchParams.set('story_tower_scene', sceneKey || 'exterior');
       targetUrl.searchParams.set('story_load_id', String(Date.now()));
       Object.entries(extraParams || {}).forEach(([key, value]) => {
         if (value === null || value === undefined || value === '') targetUrl.searchParams.delete(key);
@@ -11883,6 +11937,7 @@
         return;
       }
 
+      if (!Object.keys(extraParams || {}).length && resumeStoryExplorationIfCurrent('torre', sceneKey)) return;
       storyExplorationStage.hidden = false;
       const loaderCopy = getStoryTowerLoaderCopy(sceneKey);
       showStoryExplorationLoader(loaderCopy.title, loaderCopy.detail);
