@@ -59,6 +59,14 @@
       overflow:hidden;
       overscroll-behavior:none;
     }
+    body.story-workspace-lock{
+      height:100svh;
+      min-height:100svh;
+      height:100dvh;
+      min-height:100dvh;
+      overflow:hidden;
+      overscroll-behavior:none;
+    }
     body::before{
       content:"";
       position:fixed;
@@ -108,6 +116,28 @@
       height:100svh;
       padding:0;
       overflow:hidden;
+    }
+    body.story-workspace-lock .page-shell{
+      height:100svh;
+      min-height:100svh;
+      height:100dvh;
+      min-height:100dvh;
+      padding:0;
+      overflow:hidden;
+    }
+    body.story-workspace-lock .workspace{
+      height:100%;
+      min-height:100%;
+      overflow:hidden;
+    }
+    body.story-workspace-lock .story-playfield{
+      height:100%;
+      min-height:100%;
+      overflow:hidden;
+    }
+    body.story-workspace-lock .story-map-shell{
+      height:100%;
+      min-height:100%;
     }
 
     .title-stage,
@@ -6113,6 +6143,7 @@
     let activeMissionNodeId = null;
     let activeExplorationNodeId = null;
     let activeExplorationSceneKey = null;
+    let activeFosoExplorationLoadId = null;
     let activeSubestacionExplorationLoadId = null;
     let sceneLineIndex = 0;
     let sceneAmbientMode = false;
@@ -11015,14 +11046,24 @@
       return targetUrl.href;
     }
 
-    function buildStoryFosoExplorationUrl() {
+    function ensureFosoExplorationLoadId(preferredLoadId = '') {
+      if (preferredLoadId) activeFosoExplorationLoadId = String(preferredLoadId);
+      if (!activeFosoExplorationLoadId) activeFosoExplorationLoadId = `foso-${Date.now()}`;
+      return activeFosoExplorationLoadId;
+    }
+
+    function clearStoryFosoExplorationSession() {
+      activeFosoExplorationLoadId = null;
+    }
+
+    function buildStoryFosoExplorationUrl(options = {}) {
       const targetUrl = new URL(FOSO_EXPLORATION_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260608-foso-switch-hunt');
+      targetUrl.searchParams.set('v', '20260615-foso-stability-1');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', 'foso');
       targetUrl.searchParams.set('story_audio', 'internal');
       targetUrl.searchParams.set('story_return', window.location.href);
-      targetUrl.searchParams.set('story_load_id', String(Date.now()));
+      targetUrl.searchParams.set('story_load_id', ensureFosoExplorationLoadId(options.loadId || ''));
       const extraDeckCards = encodeStoryDeckCardsParam();
       if (extraDeckCards) targetUrl.searchParams.set('story_deck_cards', extraDeckCards);
       const removedDeckCards = encodeStoryRemovedDeckCardsParam();
@@ -11030,17 +11071,23 @@
       return targetUrl.href;
     }
 
-    function openStoryFosoExploration() {
+    function openStoryFosoExploration(options = {}) {
       if (!storyExplorationStage || !storyExplorationFrame) return;
       const localNode = storyDraftNodes.foso;
       if (!localNode) return;
+      ensureFosoExplorationLoadId(options.loadId || '');
       activeMissionNodeId = 'foso';
       activeExplorationNodeId = 'foso';
       activeExplorationSceneKey = 'foso';
       currentStoryNodeId = 'foso';
       rememberStoryWorkspace(true);
       rememberActiveStoryMission('foso');
-      rememberStorySurface({ type: 'exploration', nodeId: 'foso', sceneKey: 'foso' });
+      rememberStorySurface({
+        type: 'exploration',
+        nodeId: 'foso',
+        sceneKey: 'foso',
+        loadId: activeFosoExplorationLoadId
+      });
       renderStoryNode('foso', { skipSave: true });
       cutMapMusicForChapter();
       closeStoryScene({ clearSurface: false });
@@ -11048,7 +11095,9 @@
       closeStoryMission({ preserveMissionId: true });
       storyExplorationStage.hidden = false;
       showStoryExplorationLoader('Foso de Viento Negro', 'Desplegando pasillo, coberturas y bateria residual...');
-      storyExplorationFrame.src = buildStoryFosoExplorationUrl();
+      storyExplorationFrame.src = buildStoryFosoExplorationUrl({
+        loadId: activeFosoExplorationLoadId
+      });
       storyExplorationStage.classList.add('active');
       window.setTimeout(focusStoryExplorationFrame, 40);
     }
@@ -11172,7 +11221,8 @@
       targetUrl.searchParams.set('story_brief', 'on');
       targetUrl.searchParams.set('story_return', window.location.href);
       targetUrl.searchParams.set('story_standalone', '1');
-      targetUrl.searchParams.set('v', '20260608-foso-switch-hunt');
+      targetUrl.searchParams.set('story_foso_load_id', ensureFosoExplorationLoadId());
+      targetUrl.searchParams.set('v', '20260615-foso-stability-1');
       const remainingExtraCards = buildStoryDeckCardsParamExcludingIds(blockedExtraCardIds);
       if (remainingExtraCards) targetUrl.searchParams.set('story_deck_cards', remainingExtraCards);
       const blockedTokens = (Array.isArray(blockedBaseCards) ? blockedBaseCards : [])
@@ -11187,7 +11237,12 @@
     function openStoryFosoCombat(blockedBaseCards = [], blockedExtraCardIds = []) {
       rememberStoryWorkspace(true);
       rememberActiveStoryMission('foso');
-      rememberStorySurface({ type: 'exploration', nodeId: 'foso', sceneKey: 'foso' });
+      rememberStorySurface({
+        type: 'exploration',
+        nodeId: 'foso',
+        sceneKey: 'foso',
+        loadId: ensureFosoExplorationLoadId()
+      });
       syncStoryMissionBrief('foso', storyDraftNodes.foso, {
         chip: 'Asedio resuelto',
         title: 'Bateria residual de Argos',
@@ -11317,6 +11372,7 @@
       if (action === 'return-map') {
         activeMissionNodeId = null;
         rememberActiveStoryMission(null);
+        clearStoryFosoExplorationSession();
         closeStoryMarketExploration({ exitThemeKey: 'exploration' });
         return true;
       }
@@ -11400,7 +11456,9 @@
       }
       if (mission === STORY_FOSO_BATTERY_MISSION_ID) {
         closeStoryMission({
-          onClosed: () => openStoryFosoExploration()
+          onClosed: () => openStoryFosoExploration({
+            loadId: data?.fosoLoadId || activeFosoExplorationLoadId || ''
+          })
         });
         return;
       }
@@ -11479,7 +11537,7 @@
         }
         if (surface.nodeId === 'torre') openStoryTowerScene(surface.sceneKey || 'exterior');
         else if (surface.nodeId === 'campamento') openStoryCampExploration(surface.sceneKey === 'lake' ? 'lake' : 'camp');
-        else if (surface.nodeId === 'foso') openStoryFosoExploration();
+        else if (surface.nodeId === 'foso') openStoryFosoExploration({ loadId: surface.loadId || '' });
         else if (surface.nodeId === 'subestacion') openStorySubestacionExploration(surface.sceneKey || 'hub', { loadId: surface.loadId || '' });
         else openStoryMarketExploration();
         return true;
@@ -12471,6 +12529,7 @@
             if (result.mission === STORY_FOSO_BATTERY_MISSION_ID) {
               if (success) {
                 activeMissionNodeId = null;
+                clearStoryFosoExplorationSession();
                 closeStoryMarketExploration({
                   applyExitTheme: false,
                   resumeMapMusic: true,
@@ -12481,7 +12540,9 @@
                 renderStoryNode('subestacion');
                 return;
               }
-              openStoryFosoExploration();
+              openStoryFosoExploration({
+                loadId: result.fosoLoadId || activeFosoExplorationLoadId || ''
+              });
               return;
             }
             if (success) {
@@ -12519,7 +12580,7 @@
         rememberStoryWorkspace(true);
         rememberActiveStoryMission('torre');
         stopTitleMusic();
-        document.body.classList.remove('story-title-lock');
+        setStoryShellMode('workspace');
         titleStage.classList.add('hidden');
         workspacePanel.classList.add('active');
         renderStoryNode('torre', { skipSave: true });
@@ -12535,7 +12596,7 @@
       rememberStoryWorkspace(true);
       rememberActiveStoryMission(null);
       stopTitleMusic();
-      document.body.classList.remove('story-title-lock');
+      setStoryShellMode('workspace');
       titleStage.classList.add('hidden');
       workspacePanel.classList.add('active');
       renderStoryNode(nodeId, { skipSave: true });
@@ -12894,6 +12955,13 @@
       return true;
     }
 
+    function setStoryShellMode(mode) {
+      const showTitle = mode === 'title';
+      const showWorkspace = mode === 'workspace';
+      document.body.classList.toggle('story-title-lock', showTitle);
+      document.body.classList.toggle('story-workspace-lock', showWorkspace);
+    }
+
     function showWorkspace() {
       if (workspacePanel.classList.contains('active')) return;
       cancelTitleDualCameo();
@@ -12902,7 +12970,7 @@
       showStoryMapLoader();
       stopTitleMusic();
       runStoryTransition(() => {
-        document.body.classList.remove('story-title-lock');
+        setStoryShellMode('workspace');
         titleStage.classList.add('hidden');
         workspacePanel.classList.add('active');
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -12928,7 +12996,7 @@
       rememberStorySurface(null);
       workspacePanel.classList.remove('active');
       titleStage.classList.remove('hidden');
-      document.body.classList.add('story-title-lock');
+      setStoryShellMode('title');
       document.documentElement.style.setProperty('--enter-shift', '0px');
       document.documentElement.style.setProperty('--enter-scale', '1');
       pauseMapMusic();
@@ -12946,7 +13014,7 @@
       const pendingSurface = readStorySurfaceSession();
       const pendingMissionNodeId = getStorySessionFlag(STORY_ACTIVE_MISSION_SESSION_KEY);
       cancelTitleDualCameo();
-      document.body.classList.remove('story-title-lock');
+      setStoryShellMode('workspace');
       titleStage.classList.add('hidden');
       workspacePanel.classList.add('active');
       pauseMapMusic();

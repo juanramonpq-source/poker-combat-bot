@@ -819,6 +819,7 @@
     const STORY_DEBUG_MUSIC_KEY = 'pocobot_story_debug_music';
     const STORY_SKIP_ENEMY_COMBATS_KEY = 'pocobot_story_skip_enemy_combats_v1';
     const STORY_CAMP_PROGRESS_KEY = 'pocobot-story-camp-red-plates-progress-v1';
+    const STORY_DEVTOOLS_FOSO_LOAD_ID_KEY = 'pocobot-devtools-foso-load-id-v1';
     const STORY_CURRENCY_VERSION = 2;
     const STORY_ANCIENT_COIN_REWARD = 1;
     const STORY_VIAJERO_POST_TOWER_MISSION_ID = 'mercado_viajero_4b';
@@ -1506,7 +1507,8 @@
           url.searchParams.set('story_node', 'foso-viento-negro');
           url.searchParams.set('story_audio', 'internal');
           url.searchParams.set('story_return', new URL(STORY_PAGE, window.location.href).href);
-          url.searchParams.set('story_load_id', String(Date.now()));
+          url.searchParams.set('v', '20260615-foso-stability-1');
+          url.searchParams.set('story_load_id', ensureDevtoolsFosoLoadId());
           return url.href;
         },
         zones:[
@@ -2984,6 +2986,18 @@
         return;
       }
       sessionStorage.setItem(STORY_ACTIVE_SURFACE_SESSION_KEY, JSON.stringify(surface));
+    }
+
+    function ensureDevtoolsFosoLoadId(preferredLoadId=''){
+      if(preferredLoadId){
+        sessionStorage.setItem(STORY_DEVTOOLS_FOSO_LOAD_ID_KEY, String(preferredLoadId));
+        return String(preferredLoadId);
+      }
+      const existing = sessionStorage.getItem(STORY_DEVTOOLS_FOSO_LOAD_ID_KEY);
+      if(existing) return existing;
+      const nextId = `devtools-foso-${Date.now()}`;
+      sessionStorage.setItem(STORY_DEVTOOLS_FOSO_LOAD_ID_KEY, nextId);
+      return nextId;
     }
 
     function preparePostTowerMarket(options = {}){

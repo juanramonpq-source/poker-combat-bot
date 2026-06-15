@@ -44,6 +44,12 @@ const radioOpenSoundSrc = "../sfx/walkie_roger_beep_cc0.mp3";
 const radioMessageDurationScale = 0.5;
 const unknownRadioIntroDelay = 15;
 const xavorVanReturnArrivalDelay = 5;
+const mobileLandscapeCameraZoom = 0.92;
+const mobilePortraitCameraZoom = 0.86;
+const initialSpawnProtectionDuration = 3.4;
+const initialSpawnProtectionRadius = 128;
+const initialSpawnReleaseDistance = 92;
+const initialSpawnDroneClearance = 34;
 
 const defaultChapterState = {
   chapterFlowVersion,
@@ -211,6 +217,13 @@ const sceneSpawnPoints = {
   default: { x: 720, y: 662 },
   missionReturn: { x: 520, y: 698 },
   fromInterior: { x: 806, y: 530 },
+};
+
+const initialSpawnProtection = {
+  active: false,
+  timer: 0,
+  anchorX: player.x,
+  anchorY: player.y,
 };
 
 function placePlayerAt(point) {
@@ -756,6 +769,66 @@ const exteriorDrones = [
   combatCooldown: 0,
 }));
 
+function isPointInsideDronePatrolSafety(pointX, pointY, drone, extraClearance = 0) {
+  if (drone.defeated) {
+    return false;
+  }
+
+  const rx = Math.max(1, drone.patrolX + drone.radius + player.radius + extraClearance);
+  const ry = Math.max(1, drone.patrolY + drone.radius + player.radius + extraClearance);
+  const dx = (pointX - drone.baseX) / rx;
+  const dy = (pointY - drone.baseY) / ry;
+  if (dx * dx + dy * dy <= 1) {
+    return true;
+  }
+
+  const distanceToCurrentPosition = Math.hypot(pointX - drone.x, pointY - drone.y);
+  return distanceToCurrentPosition < player.radius + drone.radius + extraClearance;
+}
+
+function isPointSafeFromExteriorDrones(pointX, pointY, extraClearance = 0) {
+  return exteriorDrones.every((drone) =>
+    !isPointInsideDronePatrolSafety(pointX, pointY, drone, extraClearance),
+  );
+}
+
+function refreshInitialSpawnProtection() {
+  initialSpawnProtection.active = true;
+  initialSpawnProtection.timer = initialSpawnProtectionDuration;
+  initialSpawnProtection.anchorX = player.x;
+  initialSpawnProtection.anchorY = player.y;
+}
+
+function isPlayerInsideInitialSpawnBubble() {
+  if (!initialSpawnProtection.active) {
+    return false;
+  }
+
+  return Math.hypot(
+    player.x - initialSpawnProtection.anchorX,
+    player.y - initialSpawnProtection.anchorY,
+  ) <= initialSpawnProtectionRadius;
+}
+
+function updateInitialSpawnProtection(dt) {
+  if (!initialSpawnProtection.active) {
+    return;
+  }
+
+  initialSpawnProtection.timer = Math.max(0, initialSpawnProtection.timer - dt);
+  const distanceFromSpawn = Math.hypot(
+    player.x - initialSpawnProtection.anchorX,
+    player.y - initialSpawnProtection.anchorY,
+  );
+
+  if (
+    initialSpawnProtection.timer <= 0 ||
+    distanceFromSpawn >= initialSpawnReleaseDistance
+  ) {
+    initialSpawnProtection.active = false;
+  }
+}
+
 const xavorVan = {
   startX: -148,
   startY: 844,
@@ -1056,6 +1129,14 @@ function isPortraitTouchViewport() {
 }
 
 function getCameraZoom() {
+  if (isPortraitTouchViewport()) {
+    return mobilePortraitCameraZoom;
+  }
+
+  if (coarsePointerMedia.matches) {
+    return mobileLandscapeCameraZoom;
+  }
+
   return 1;
 }
 
@@ -1350,12 +1431,17 @@ function canMoveTo(nextX, nextY) {
 }
 
 function ensureSafeInitialSpawn() {
-  if (canMoveTo(player.x, player.y)) {
+  if (
+    canMoveTo(player.x, player.y) &&
+    isPointSafeFromExteriorDrones(player.x, player.y, initialSpawnDroneClearance)
+  ) {
+    refreshInitialSpawnProtection();
     snapCameraToPlayer();
     return;
   }
 
   const bases = [
+    { x: player.x, y: player.y },
     sceneSpawnPoints.default,
     sceneSpawnPoints.missionReturn,
     sceneSpawnPoints.fromInterior,
@@ -1374,6 +1460,14 @@ function ensureSafeInitialSpawn() {
     [-96, 96],
     [96, -96],
     [-96, -96],
+    [168, 0],
+    [-168, 0],
+    [0, 168],
+    [0, -168],
+    [144, 96],
+    [-144, 96],
+    [144, -96],
+    [-144, -96],
   ];
 
   for (const base of bases) {
@@ -1382,8 +1476,12 @@ function ensureSafeInitialSpawn() {
         x: base.x + dx,
         y: base.y + dy,
       };
-      if (canMoveTo(candidate.x, candidate.y)) {
+      if (
+        canMoveTo(candidate.x, candidate.y) &&
+        isPointSafeFromExteriorDrones(candidate.x, candidate.y, initialSpawnDroneClearance)
+      ) {
         placePlayerAt(candidate);
+        refreshInitialSpawnProtection();
         snapCameraToPlayer();
         return;
       }
@@ -1391,6 +1489,7 @@ function ensureSafeInitialSpawn() {
   }
 
   placePlayerAt(sceneSpawnPoints.default);
+  refreshInitialSpawnProtection();
   snapCameraToPlayer();
 }
 
@@ -1817,7 +1916,7 @@ function updateChapterActors(dt) {
       drone.y = drone.baseY + Math.sin(drone.phase * 1.7) * drone.patrolY;
 
       const distance = Math.hypot(player.x - drone.x, player.y - drone.y);
-      if (distance < player.radius + drone.radius + 5) {
+      if (distance < player.radius + drone.radius + 5 && !isPlayerInsideInitialSpawnBubble()) {
         triggerExteriorDroneCombat(drone);
       }
     }
@@ -1937,6 +2036,7 @@ function update(dt) {
 
   const speedRatio = clamp(glideSpeed / player.maxSpeed, 0, 1);
   updatePlayerVisual(dt, hasInput, speedRatio);
+  updateInitialSpawnProtection(dt);
   updateChapterActors(dt);
   emitVanArrivalSmoke(dt);
   updateSmokeParticles(dt);

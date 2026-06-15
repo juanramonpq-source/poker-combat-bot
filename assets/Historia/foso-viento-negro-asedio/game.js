@@ -17,6 +17,7 @@ const statusLosses = document.getElementById("status-losses");
 const statusDeck = document.getElementById("status-deck");
 
 const modalLayer = document.getElementById("modal-layer");
+const modalCard = modalLayer.querySelector(".modal-card");
 const modalKicker = document.getElementById("modal-kicker");
 const modalTitle = document.getElementById("modal-title");
 const modalCopy = document.getElementById("modal-copy");
@@ -24,6 +25,10 @@ const modalMeta = document.getElementById("modal-meta");
 const modalLossPreview = document.getElementById("modal-loss-preview");
 const modalCardGrid = document.getElementById("modal-card-grid");
 const modalActions = document.getElementById("modal-actions");
+const threatIntroOverlay = document.getElementById("threat-intro-overlay");
+const threatIntroKicker = document.getElementById("threat-intro-kicker");
+const threatIntroTitle = document.getElementById("threat-intro-title");
+const threatIntroCopy = document.getElementById("threat-intro-copy");
 
 const storyParams = new URLSearchParams(window.location.search);
 const storyEmbedMode = storyParams.get("story_embed") === "1";
@@ -59,6 +64,7 @@ const NUMERIC_DIAMOND_RANKS = new Set(["2", "3", "4", "5", "6", "7", "8", "9", "
 const MISSILE_SPRITE_ROTATION_OFFSET = Math.PI * 0.5;
 const MISSILE_FLYBY_AUDIO_SRC = "./assets/missile-flyby-cc0.mp3";
 const THREAT_HAND_SIZE = 7;
+const THREAT_INTRO_DURATION_MS = 980;
 const WORLD_SCALE = {
   battleground: {
     x: 996,
@@ -335,6 +341,9 @@ const state = {
   explosions: [],
   nearestInteractableId: "",
   attemptComplete: false,
+  threatIntroActive: false,
+  threatIntroSeen: false,
+  threatIntroTimerId: 0,
 };
 
 function clamp(value, min, max) {
@@ -793,6 +802,12 @@ function seedNewAttempt() {
   state.explosions = [];
   state.nearestInteractableId = "";
   state.attemptComplete = false;
+  state.threatIntroActive = false;
+  state.threatIntroSeen = false;
+  if (state.threatIntroTimerId) {
+    window.clearTimeout(state.threatIntroTimerId);
+    state.threatIntroTimerId = 0;
+  }
   player.x = world.startX;
   player.y = world.startY;
   clearProgress();
@@ -955,12 +970,44 @@ function buildStandaloneFosoCombatUrl(blockedBaseCards = [], blockedExtraCardIds
   return url.href;
 }
 
+function releaseCanvasPointerCapture(pointerId = input.pointerId) {
+  if (pointerId == null) return;
+  if (canvas.hasPointerCapture?.(pointerId)) {
+    canvas.releasePointerCapture(pointerId);
+  }
+}
+
+function resetPointerState() {
+  input.pointerActive = false;
+  input.pointerId = null;
+  input.pointerStartClientX = 0;
+  input.pointerStartClientY = 0;
+  input.pointerMoved = false;
+  input.pointerX = 0;
+  input.pointerY = 0;
+}
+
+function cancelActivePointerControl() {
+  releaseCanvasPointerCapture();
+  resetPointerState();
+}
+
+function syncUiBlockingState() {
+  const modalOpen = modalLayer.hidden === false;
+  const introOpen = threatIntroOverlay?.hidden === false;
+  document.body.classList.toggle("foso-modal-open", modalOpen);
+  document.body.classList.toggle("foso-threat-intro", introOpen);
+}
+
 function closeModal() {
   modalLayer.hidden = true;
   modalLayer.classList.remove("is-impact-warning");
+  state.modalMode = "";
+  syncUiBlockingState();
 }
 
 function openModal(config = {}) {
+  cancelActivePointerControl();
   modalLayer.classList.toggle("is-impact-warning", !!config.impactWarning);
   modalKicker.textContent = config.kicker || "";
   modalTitle.textContent = config.title || "";
@@ -997,11 +1044,58 @@ function openModal(config = {}) {
     button.type = "button";
     button.className = `modal-btn${action.variant ? ` ${action.variant}` : ""}`;
     button.textContent = action.label;
+    button.disabled = !!action.disabled;
+    if (action.title) button.title = action.title;
     button.addEventListener("click", action.onClick);
     modalActions.appendChild(button);
   });
 
+  if (modalCard) {
+    modalCard.scrollTop = 0;
+    modalCard.scrollLeft = 0;
+  }
   modalLayer.hidden = false;
+  syncUiBlockingState();
+}
+
+function hideThreatIntroOverlay() {
+  if (!threatIntroOverlay) return;
+  if (state.threatIntroTimerId) {
+    window.clearTimeout(state.threatIntroTimerId);
+    state.threatIntroTimerId = 0;
+  }
+  state.threatIntroActive = false;
+  threatIntroOverlay.hidden = true;
+  syncUiBlockingState();
+}
+
+function showThreatIntroOverlay(threat) {
+  if (!threatIntroOverlay || !threat) return false;
+  cancelActivePointerControl();
+  threatIntroKicker.textContent = "INTERFERENCIA DE ARGOS";
+  threatIntroTitle.textContent = threat.title.toUpperCase();
+  threatIntroCopy.textContent = `${threat.copy} La salva ya te ha fijado: elige diamantes o sacrifica armadura.`;
+  threatIntroOverlay.hidden = false;
+  syncUiBlockingState();
+  return true;
+}
+
+function beginThreatEncounter(threat, options = {}) {
+  if (!threat) return;
+  if (options.skipIntro || state.threatIntroSeen || !showThreatIntroOverlay(threat)) {
+    openThreatModal(threat);
+    return;
+  }
+  state.threatIntroActive = true;
+  state.threatIntroSeen = true;
+  state.threatIntroTimerId = window.setTimeout(() => {
+    state.threatIntroActive = false;
+    state.threatIntroTimerId = 0;
+    hideThreatIntroOverlay();
+    if (state.activeThreatId === threat.id) {
+      openThreatModal(getThreatById(threat.id));
+    }
+  }, THREAT_INTRO_DURATION_MS);
 }
 
 function getThreatById(id) {
@@ -1230,6 +1324,8 @@ function triggerThreatImpactCue(threat) {
 }
 
 function finalizeThreatEncounter() {
+  hideThreatIntroOverlay();
+  state.threatIntroActive = false;
   state.activeThreatId = "";
   state.modalCardAction = "";
   closeModal();
@@ -1281,50 +1377,73 @@ function resolveThreatByTakingImpact() {
 function openThreatModal(threat) {
   if (!threat) return;
   state.modalMode = "threat";
+  const canMitigate = canMitigateWithDiamonds();
+  const canBurn = canBurnWithDiamonds();
   const previewLosses = previewArmorLoss(getEffectiveThreatDamage(threat));
   const preview = previewLosses.length
     ? previewLosses.map((card) => ({ text: `Se perderia ${cardLabel(card)}`, kind: "danger" }))
     : [{ text: "No perderias armadura si aguantas desde esta posicion", kind: "ok" }];
-	  openModal({
-	    kicker: "Impacto de artilleria",
-	    title: threat.title,
-	    copy: `${threat.copy} El proyectil ya esta cayendo: responde con un diamante numerico del 2 al 10 o aguanta el impacto y pierde armadura para el combate final.`,
-	    impactWarning: true,
-	    meta: buildThreatMeta(threat),
-	    preview,
-	    cards: state.hand,
-	    onCardClick: (card) => {
-	      if (state.modalCardAction === "mitigate") {
-	        if (!isNumericDiamondCard(card)) {
-	          showToast("Solo diamantes numericos 2-10 desvían proyectiles", 1400);
-	          return;
-	        }
-	        resolveThreatWithDiamond(card);
-	      }
-	      if (state.modalCardAction === "burn") burnDiamondForDraw(card);
-	    },
-	    highlightIds: getThreatActionHighlightIds(),
-	    actions: [
-	      {
-	        label: state.modalCardAction === "mitigate" ? "Selecciona diamante 2-10" : "Responder con diamante numerico",
-	        variant: "primary",
-	        onClick: () => {
-	          if (!canMitigateWithDiamonds()) {
-	            showToast("Necesitas un diamante numerico del 2 al 10", 1400);
-	            return;
-	          }
-	          state.modalCardAction = "mitigate";
+  openModal({
+    kicker: "Impacto de artilleria",
+    title: threat.title,
+    copy: `${threat.copy} El proyectil ya esta cayendo: responde con un diamante numerico del 2 al 10 o aguanta el impacto y pierde armadura para el combate final.`,
+    impactWarning: true,
+    meta: buildThreatMeta(threat),
+    preview,
+    cards: state.hand,
+    onCardClick: (card) => {
+      if (state.modalCardAction === "mitigate") {
+        if (!isNumericDiamondCard(card)) {
+          showToast("Solo diamantes numericos 2-10 desvían proyectiles", 1400);
+          return;
+        }
+        resolveThreatWithDiamond(card);
+        return;
+      }
+      if (state.modalCardAction === "burn") {
+        if (card.suit !== "diamonds") {
+          showToast("Solo los diamantes pueden quemarse como combustible", 1300);
+          return;
+        }
+        burnDiamondForDraw(card);
+        return;
+      }
+      if (isNumericDiamondCard(card)) {
+        resolveThreatWithDiamond(card);
+        return;
+      }
+      if (card.suit === "diamonds") {
+        showToast("Usa 'Quemar combustible y robar' para gastar ese diamante", 1500);
+        return;
+      }
+      showToast("Toca un diamante 2-10 o usa una de las opciones inferiores", 1500);
+    },
+    highlightIds: getThreatActionHighlightIds(),
+    actions: [
+      {
+        label: state.modalCardAction === "mitigate" ? "Selecciona diamante 2-10" : "Responder con diamante numerico",
+        variant: "primary",
+        disabled: !canMitigate,
+        title: canMitigate ? "" : "No tienes diamantes numericos del 2 al 10 en esta salva",
+        onClick: () => {
+          if (!canMitigate) {
+            showToast("Necesitas un diamante numerico del 2 al 10", 1400);
+            return;
+          }
+          state.modalCardAction = "mitigate";
           openThreatModal(threat);
         },
       },
-	      {
-	        label: state.modalCardAction === "burn" ? "Selecciona un diamante para quemarlo" : "Quemar combustible y robar",
-	        variant: "secondary",
-	        onClick: () => {
-	          if (!canBurnWithDiamonds()) {
-	            showToast("No puedes quemar combustible sin diamantes en mano", 1200);
-	            return;
-	          }
+      {
+        label: state.modalCardAction === "burn" ? "Selecciona un diamante para quemarlo" : "Quemar combustible y robar",
+        variant: "secondary",
+        disabled: !canBurn,
+        title: canBurn ? "" : "No tienes diamantes disponibles para quemar",
+        onClick: () => {
+          if (!canBurn) {
+            showToast("No puedes quemar combustible sin diamantes en mano", 1200);
+            return;
+          }
           state.modalCardAction = "burn";
           openThreatModal(threat);
         },
@@ -1502,6 +1621,7 @@ function createCardButton(card, options = {}) {
   note.textContent = card.note || cardNote(card);
 
   button.append(rank, suit, note);
+  if (options.disabled) button.disabled = true;
   if (typeof options.onClick === "function" && !options.static) {
     button.addEventListener("click", () => options.onClick(card));
   }
@@ -2040,7 +2160,7 @@ function handleInteract() {
 }
 
 function maybeTriggerThreat() {
-  if (!state.signRead || !isMissileSystemOnline() || modalLayer.hidden === false || state.activeThreatId) return;
+  if (!state.signRead || !isMissileSystemOnline() || modalLayer.hidden === false || state.threatIntroActive || state.activeThreatId) return;
   const threat = threats.find((entry) => {
     if (state.resolvedThreatIds.has(entry.id)) return false;
     const triggerX = entry.triggerX || entry.impactX || laneTargets[entry.lane]?.x || player.x;
@@ -2054,7 +2174,7 @@ function maybeTriggerThreat() {
   state.modalCardAction = "";
   spawnThreatVolley(threat);
   triggerThreatImpactCue(threat);
-  openThreatModal(threat);
+  beginThreatEncounter(threat);
 }
 
 function updateMissiles(list, dt) {
@@ -2102,7 +2222,7 @@ function maybeSpawnAmbientMissile(dt) {
 }
 
 function updateGame(dt) {
-  if (modalLayer.hidden) movePlayer(dt);
+  if (modalLayer.hidden && !state.threatIntroActive) movePlayer(dt);
   updateNearestInteractable();
   maybeTriggerThreat();
   maybeSpawnAmbientMissile(dt);
@@ -2231,16 +2351,9 @@ function clearPointerActive(event) {
     }
   }
 
-  if (canvas.hasPointerCapture?.(event.pointerId)) {
-    canvas.releasePointerCapture(event.pointerId);
-  }
-  input.pointerActive = false;
-  input.pointerId = null;
-  input.pointerStartClientX = 0;
-  input.pointerStartClientY = 0;
-  input.pointerMoved = false;
-  input.pointerX = 0;
-  input.pointerY = 0;
+  releaseCanvasPointerCapture(event.pointerId);
+  resetPointerState();
+  if (event.cancelable) event.preventDefault();
 }
 
 function handleKey(event, active) {
@@ -2434,23 +2547,109 @@ async function boot() {
   applyDebugPhysicsOverrides();
   const restored = restoreProgress();
   if (!restored) seedNewAttempt();
+  hideThreatIntroOverlay();
+  syncUiBlockingState();
   state.loaded = true;
   syncHandTrayState(false);
   renderStatus();
   updateObjectiveForFosoState();
   updateHandCopy();
   if (state.activeThreatId) {
-    openThreatModal(getThreatById(state.activeThreatId));
+    beginThreatEncounter(getThreatById(state.activeThreatId), { skipIntro: true });
   }
   maybeStartMusic();
   requestAnimationFrame(frame);
 }
+
+function getFosoDebugState() {
+  return {
+    signRead: state.signRead,
+    activeThreatId: state.activeThreatId,
+    modalMode: state.modalMode,
+    modalCardAction: state.modalCardAction,
+    threatIntroActive: state.threatIntroActive,
+    resolvedThreatIds: [...state.resolvedThreatIds],
+    hand: state.hand.map((card) => ({
+      id: card.id,
+      rank: card.rank,
+      suit: card.suit,
+      source: card.source,
+      token: card.token,
+    })),
+    drawPileCount: state.drawPile.length,
+    blockedCount: state.lossEntries.length,
+  };
+}
+
+window.__pocobotFosoDebug = {
+  getState: getFosoDebugState,
+  forceSignRead() {
+    state.signRead = true;
+    syncHandTrayState(false);
+    updateObjectiveForFosoState();
+    updateHandCopy();
+    renderStatus();
+    closeModal();
+    return getFosoDebugState();
+  },
+  forceThreat(
+    id = threats.find((entry) => !state.resolvedThreatIds.has(entry.id))?.id || threats[0]?.id,
+    options = {}
+  ) {
+    const threat = getThreatById(id);
+    if (!threat) return null;
+    this.forceSignRead();
+    hideThreatIntroOverlay();
+    state.threatIntroActive = false;
+    if (options.intro) state.threatIntroSeen = false;
+    redealThreatHand();
+    state.activeThreatId = threat.id;
+    state.modalCardAction = "";
+    spawnThreatVolley(threat);
+    beginThreatEncounter(threat, { skipIntro: !options.intro });
+    renderStatus();
+    return getFosoDebugState();
+  },
+  reset() {
+    hideThreatIntroOverlay();
+    closeModal();
+    seedNewAttempt();
+    syncHandTrayState(false);
+    updateObjectiveForFosoState();
+    updateHandCopy();
+    renderStatus();
+    return getFosoDebugState();
+  },
+  forceBatteryFirstContact() {
+    this.forceSignRead();
+    state.batteryEncountered = false;
+    openBatteryFirstContactModal();
+    return getFosoDebugState();
+  },
+  forceBatteryLocked() {
+    this.forceSignRead();
+    state.batteryEncountered = true;
+    ensureSwitchPartsAssigned();
+    state.switchParts.forEach((part) => { part.collected = false; });
+    openBatterySwitchProgressModal();
+    return getFosoDebugState();
+  },
+  forceSummary() {
+    this.forceSignRead();
+    state.batteryEncountered = true;
+    ensureSwitchPartsAssigned();
+    state.switchParts.forEach((part) => { part.collected = true; });
+    openSummaryModal();
+    return getFosoDebugState();
+  },
+};
 
 mapButton.addEventListener("click", attemptReturnToMap);
 canvas.addEventListener("pointerdown", (event) => {
   unlockFosoAudio();
   if (modalLayer.hidden === false) return;
   setPointerActive(event);
+  if (event.cancelable) event.preventDefault();
 });
 canvas.addEventListener("pointermove", (event) => {
   if (!input.pointerActive || event.pointerId !== input.pointerId) return;
@@ -2460,6 +2659,7 @@ canvas.addEventListener("pointermove", (event) => {
     event.clientY - input.pointerStartClientY
   );
   input.pointerMoved ||= tapDistance > 18;
+  if (event.cancelable) event.preventDefault();
 });
 canvas.addEventListener("pointerup", clearPointerActive);
 canvas.addEventListener("pointercancel", clearPointerActive);

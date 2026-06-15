@@ -35150,6 +35150,7 @@ function broadcastStoryMissionOutcome(payload){
   const message = {
     type: 'pocobot-story-mission-result',
     nodeId: STORY_NODE_BOOT || undefined,
+    fosoLoadId: STORY_FOSO_LOAD_ID || undefined,
     subestacionLoadId: STORY_SUBESTACION_LOAD_ID || undefined,
     savedAt: Date.now(),
     ...payload
@@ -36166,6 +36167,7 @@ const STORY_EXTRA_DECK_CARDS_PARAM = STORY_BOOT_PARAMS.get('story_deck_cards') |
 const STORY_REMOVED_DECK_CARDS_PARAM = STORY_BOOT_PARAMS.get('story_removed_cards') || '';
 const STORY_TOWER_RETURN_SCENE = STORY_BOOT_PARAMS.get('story_tower_return_scene') || '';
 const STORY_CAMP_RETURN_SCENE = STORY_BOOT_PARAMS.get('story_camp_return_scene') || '';
+const STORY_FOSO_LOAD_ID = STORY_BOOT_PARAMS.get('story_foso_load_id') || '';
 const STORY_SUBESTACION_LOAD_ID = STORY_BOOT_PARAMS.get('story_subestacion_load_id') || '';
 const STORY_TOWER_DRONE_ID = STORY_BOOT_PARAMS.get('story_tower_drone_id') || '';
 const STORY_TOWER_ENEMY_ID = STORY_BOOT_PARAMS.get('story_tower_enemy_id') || '';
@@ -37346,6 +37348,7 @@ function returnToStoryMap() {
         mission,
         nodeId: STORY_NODE_BOOT || undefined,
         towerReturnScene: STORY_TOWER_RETURN_SCENE || undefined,
+        fosoLoadId: STORY_FOSO_LOAD_ID || undefined,
         subestacionLoadId: STORY_SUBESTACION_LOAD_ID || undefined,
         towerDroneId: STORY_TOWER_DRONE_ID || undefined,
         towerRewardId: STORY_TOWER_REWARD_ID || undefined,
@@ -37378,7 +37381,8 @@ function returnToStoryMap() {
       sessionStorage.setItem(STORY_ACTIVE_SURFACE_SESSION_KEY, JSON.stringify({
         type: 'exploration',
         nodeId: 'foso',
-        sceneKey: 'foso'
+        sceneKey: 'foso',
+        loadId: STORY_FOSO_LOAD_ID || undefined
       }));
     }catch(_err){}
   }else if(isStorySubestacionCombatMission(mission)){
