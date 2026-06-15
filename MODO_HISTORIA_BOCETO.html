@@ -5357,7 +5357,8 @@
             class="story-map-frame"
             id="storyMapFrame"
             title="Mapa interactivo inmersivo del modo historia"
-            src="pocobot_mapa_interactivo.html?immersive=1"></iframe>
+            data-map-src="pocobot_mapa_interactivo.html?immersive=1"
+            src="about:blank"></iframe>
           <div class="story-map-loader" id="storyMapLoader" role="status" aria-live="polite">
             <div class="story-map-loader-card">
               <span class="story-map-loader-kicker">Cargando escenario</span>
@@ -5713,6 +5714,8 @@
     const CAMPAMENTO_EXPLORATION_URL = 'assets/Historia/campamento-placas-rojas-exploracion/index.html';
     const FOSO_EXPLORATION_URL = 'assets/Historia/foso-viento-negro-asedio/index.html';
     const SUBESTACION_EXPLORATION_URL = 'assets/Historia/subestacion-ceniza/index.html';
+    const STORY_MAP_FRAME_URL = 'pocobot_mapa_interactivo.html?immersive=1';
+    const STORY_BLANK_FRAME_URL = 'about:blank';
     const CAMPAMENTO_CONVERSATION_BACKDROP = 'assets/Historia/campamento-placas-rojas-exploracion/assets/campamento_placas_rojas_web_1280.webp';
     const STORY_SUBESTACION_CONVERSATION_LOW = 'assets/Historia/subestacion-ceniza/7subestacion_de_ceniza_web_1080_ligera.webp';
     const STORY_SUBESTACION_CONVERSATION_HIGH = 'assets/Historia/subestacion-ceniza/7subestacion_de_ceniza_web_1600.webp';
@@ -6133,6 +6136,7 @@
     let titleDualCameoReturnTimer = null;
     let storyMapHasReportedReady = false;
     let storyMapLoaderFallbackTimer = null;
+    let storyMapFrameParked = true;
     const TITLE_DUAL_CAMEO_FIRST_DELAY_MS = 39000;
     const TITLE_DUAL_CAMEO_FIRST_DURATION_MS = 5000;
     const TITLE_DUAL_CAMEO_RETURN_GAP_MS = 3000;
@@ -9418,7 +9422,64 @@
       }
     }
 
+    function getStoryMapFrameTargetSrc() {
+      return storyMapFrame?.dataset.mapSrc || STORY_MAP_FRAME_URL;
+    }
+
+    function isBlankStoryFrameSrc(src) {
+      if (!src) return true;
+      if (src === STORY_BLANK_FRAME_URL) return true;
+      try {
+        return new URL(src, window.location.href).href === new URL(STORY_BLANK_FRAME_URL, window.location.href).href;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function isStoryMapFrameUnavailable() {
+      if (!storyMapFrame) return true;
+      return storyMapFrameParked || isBlankStoryFrameSrc(storyMapFrame.getAttribute('src') || storyMapFrame.src || '');
+    }
+
+    function activateStoryMapFrame(options = {}) {
+      if (!storyMapFrame) return;
+      const targetSrc = storyMapFrame.dataset.parkedSrc || getStoryMapFrameTargetSrc();
+      const currentSrc = storyMapFrame.getAttribute('src') || '';
+      if (!storyMapFrameParked && !isBlankStoryFrameSrc(currentSrc)) {
+        if (options.sync !== false) syncStoryMapState();
+        return;
+      }
+      storyMapFrameParked = false;
+      delete storyMapFrame.dataset.parkedSrc;
+      storyMapHasReportedReady = false;
+      if (options.showLoader !== false) showStoryMapLoader({ force: true });
+      storyMapFrame.src = targetSrc;
+    }
+
+    function parkStoryMapFrameForChapterSurface() {
+      if (!storyMapFrame) return;
+      const currentSrc = storyMapFrame.getAttribute('src') || '';
+      if (!isBlankStoryFrameSrc(currentSrc)) {
+        storyMapFrame.dataset.parkedSrc = currentSrc;
+      } else if (!storyMapFrame.dataset.parkedSrc) {
+        storyMapFrame.dataset.parkedSrc = getStoryMapFrameTargetSrc();
+      }
+      storyMapFrameParked = true;
+      storyMapHasReportedReady = false;
+      window.clearTimeout(storyMapLoaderFallbackTimer);
+      storyMapFrame.classList.remove('loaded');
+      if (!isBlankStoryFrameSrc(currentSrc)) storyMapFrame.src = STORY_BLANK_FRAME_URL;
+    }
+
+    function restoreStoryMapFrameAfterChapterSurface(options = {}) {
+      if (!storyMapFrame) return;
+      if (!options.force && !workspacePanel.classList.contains('active')) return;
+      if (!options.force && hasLiveStoryExplorationFrame()) return;
+      activateStoryMapFrame(options);
+    }
+
     function postStoryProgressToMap() {
+      if (isStoryMapFrameUnavailable()) return;
       if (!storyMapFrame || !storyMapFrame.contentWindow) return;
       storyMapFrame.contentWindow.postMessage({
         type: 'pocobot-story-map-progress',
@@ -9445,6 +9506,7 @@
     }
 
     function requestStoryMapReadyState() {
+      if (isStoryMapFrameUnavailable()) return;
       if (!storyMapFrame || !storyMapFrame.contentWindow) return;
       storyMapFrame.contentWindow.postMessage({ type: 'pocobot-story-map-ready-request' }, '*');
       window.clearTimeout(storyMapLoaderFallbackTimer);
@@ -10606,7 +10668,7 @@
       storyDeckHackSelectedIds = new Set();
       closeStoryScene({ clearSurface: false });
       closeStoryMarket({ applyExitTheme: false });
-      closeStoryMarketExploration({ applyExitTheme: false, immediate: true });
+      closeStoryMarketExploration({ applyExitTheme: false, immediate: true, restoreMapFrame: false });
       rememberStorySurface({ type: 'deck-hack', nodeId: 'campamento' });
       if (!storyDeckHackStage) return;
       renderStoryDeckHack();
@@ -10966,6 +11028,7 @@
       closeStoryScene();
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
+      parkStoryMapFrameForChapterSurface();
       activeExplorationNodeId = 'mercado';
       activeExplorationSceneKey = 'mercado';
       rememberStorySurface({ type: 'exploration', nodeId: 'mercado' });
@@ -10986,6 +11049,10 @@
         if (onClosed) onClosed();
         return;
       }
+      const shouldRestoreMapFrame = options.restoreMapFrame === true || (options.restoreMapFrame !== false && !onClosed);
+      const restoreMapFrameIfNeeded = () => {
+        if (shouldRestoreMapFrame) restoreStoryMapFrameAfterChapterSurface();
+      };
       const wasOpen = !storyExplorationStage.hidden || storyExplorationStage.classList.contains('active');
       if (wasOpen) pauseStoryExplorationMedia(!!options.resetMedia);
       if (wasOpen) {
@@ -10999,6 +11066,7 @@
       if (options.immediate) {
         storyExplorationStage.hidden = true;
         if (storyExplorationFrame && options.keepFrame !== true) storyExplorationFrame.src = 'about:blank';
+        restoreMapFrameIfNeeded();
         if (options.resumeMapMusic !== false) resumeMapMusicIfSafe();
         if (onClosed) onClosed();
         return;
@@ -11007,6 +11075,7 @@
         if (!storyExplorationStage.classList.contains('active')) {
           storyExplorationStage.hidden = true;
           if (storyExplorationFrame && options.keepFrame !== true) storyExplorationFrame.src = 'about:blank';
+          restoreMapFrameIfNeeded();
           if (options.resumeMapMusic !== false) resumeMapMusicIfSafe();
           if (onClosed) onClosed();
         }
@@ -11018,7 +11087,8 @@
         closeStoryMarketExploration({
           applyExitTheme: false,
           resumeMapMusic: false,
-          immediate: true
+          immediate: true,
+          restoreMapFrame: false
         });
         openStoryScene('mercado', sceneKey, { skipTransition: true });
       }, { variant: 'conversation' });
@@ -11052,6 +11122,7 @@
       closeStoryScene({ clearSurface: false });
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
+      parkStoryMapFrameForChapterSurface();
 
       if (resumeStoryExplorationIfCurrent('campamento', activeExplorationSceneKey)) return;
       storyExplorationStage.hidden = false;
@@ -11071,7 +11142,8 @@
           applyExitTheme: false,
           resumeMapMusic: false,
           resetMedia: true,
-          immediate: true
+          immediate: true,
+          restoreMapFrame: false
         });
         openStoryScene('campamento', sceneKey, { skipTransition: true });
       }, { variant: 'conversation' });
@@ -11144,6 +11216,7 @@
       closeStoryScene({ clearSurface: false });
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
+      parkStoryMapFrameForChapterSurface();
       if (resumeStoryExplorationIfCurrent('foso', 'foso')) return;
       storyExplorationStage.hidden = false;
       showStoryExplorationLoader('Foso de Viento Negro', 'Desplegando pasillo, coberturas y bateria residual...');
@@ -11198,6 +11271,7 @@
       closeStoryScene({ clearSurface: false });
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
+      parkStoryMapFrameForChapterSurface();
       if (resumeStoryExplorationIfCurrent('subestacion', activeExplorationSceneKey)) return;
       storyExplorationStage.hidden = false;
       showStoryExplorationLoader('Subestación de Ceniza', 'Desplegando hub, patrullas y cargas explosivas...');
@@ -11251,7 +11325,8 @@
           applyExitTheme: false,
           resumeMapMusic: false,
           resetMedia: true,
-          immediate: true
+          immediate: true,
+          restoreMapFrame: false
         });
         window.location.href = buildStorySubestacionCombatUrl();
       };
@@ -11310,7 +11385,8 @@
           applyExitTheme: false,
           resumeMapMusic: false,
           resetMedia: true,
-          immediate: true
+          immediate: true,
+          restoreMapFrame: false
         });
         window.location.href = buildStoryFosoCombatUrl(blockedBaseCards, blockedExtraCardIds);
       };
@@ -11343,7 +11419,8 @@
           applyExitTheme: false,
           resumeMapMusic: false,
           resetMedia: true,
-          immediate: true
+          immediate: true,
+          restoreMapFrame: false
         });
         window.location.href = buildStoryCampCombatUrl(mission, returnScene);
       };
@@ -11938,6 +12015,7 @@
       closeStoryScene({ clearSurface: false });
       closeStoryMarket({ applyExitTheme: false });
       closeStoryMission({ preserveMissionId: true });
+      parkStoryMapFrameForChapterSurface();
 
       const targetUrl = buildStoryTowerSceneUrl(sceneKey, extraParams);
       if (!storyExplorationFrame || !storyExplorationStage) {
@@ -12339,7 +12417,8 @@
       const renderNextNode = () => renderStoryNode('mercado');
       const closeExplorationSurface = () => closeStoryMarketExploration({
         applyExitTheme: false,
-        onClosed: renderNextNode
+        onClosed: renderNextNode,
+        restoreMapFrame: true
       });
       if (storySceneStage && storySceneStage.classList.contains('active')) {
         closeStoryScene();
@@ -12685,6 +12764,7 @@
 
     function resetStoryMapViewport() {
       if (storyMapShell) storyMapShell.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      if (isStoryMapFrameUnavailable()) return;
       try {
         if (storyMapFrame && storyMapFrame.contentWindow) {
           storyMapFrame.contentWindow.scrollTo(0, 0);
@@ -12703,6 +12783,7 @@
     }
 
     function postNodeSelectionToMap(nodeId) {
+      if (isStoryMapFrameUnavailable()) return;
       if (!storyMapFrame || !storyMapFrame.contentWindow) return;
       storyMapFrame.contentWindow.postMessage({
         type: 'pocobot-story-map-select',
@@ -13030,7 +13111,7 @@
       cancelTitleDualCameo();
       rememberStoryWorkspace(true);
       rememberStorySurface(null);
-      showStoryMapLoader();
+      restoreStoryMapFrameAfterChapterSurface({ force: true });
       stopTitleMusic();
       runStoryTransition(() => {
         setStoryShellMode('workspace');
@@ -13067,6 +13148,7 @@
       closeStoryScene();
       closeStoryMarket();
       closeStoryMarketExploration();
+      parkStoryMapFrameForChapterSurface();
       if (titleMusicUnlocked) startTitleMusic();
       scheduleTitleDualCameo();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -13083,6 +13165,9 @@
       pauseMapMusic();
       renderStoryNode(currentStoryNodeId);
       window.setTimeout(() => {
+        if (!pendingSurface || pendingSurface.type !== 'exploration') {
+          restoreStoryMapFrameAfterChapterSurface({ force: true });
+        }
         resetStoryMapViewport();
         syncStoryMapState();
         if (restoreStorySurfaceSession(pendingSurface)) return;
@@ -13575,6 +13660,7 @@
 
     if (storyMapFrame) {
       storyMapFrame.addEventListener('load', () => {
+        if (isStoryMapFrameUnavailable()) return;
         resetStoryMapViewport();
         syncStoryMapState();
         requestStoryMapReadyState();
