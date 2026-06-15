@@ -438,6 +438,37 @@ body.foso-hub-unlocked .interact-prompt {
   -webkit-overflow-scrolling: touch;
 }
 
+.modal-hero {
+  position: absolute;
+  top: -8px;
+  right: -36px;
+  width: min(42vw, 360px);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(34px, -18px, 0) rotate(7deg) scale(0.96);
+  transform-origin: 70% 18%;
+  filter:
+    drop-shadow(0 24px 38px rgba(0, 0, 0, 0.42))
+    drop-shadow(0 0 28px rgba(255, 126, 93, 0.24));
+  transition: opacity 220ms ease, transform 320ms cubic-bezier(0.18, 0.86, 0.22, 1);
+}
+
+.modal-hero-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0.52;
+}
+
+.modal-layer.is-impact-warning .modal-card {
+  padding-right: min(38vw, 318px);
+}
+
+.modal-layer.is-impact-warning .modal-hero {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotate(4deg) scale(1);
+}
+
 @keyframes modalImpactBlast {
   0% {
     opacity: 0;
@@ -581,6 +612,20 @@ body.foso-hub-unlocked .interact-prompt {
     radial-gradient(circle at 50% 50%, rgba(255, 98, 68, 0.24), transparent 34%);
   filter: blur(10px);
   animation: threatPulse 840ms ease-out infinite;
+}
+
+.threat-intro-sprite {
+  position: absolute;
+  right: clamp(-34px, -4vw, -12px);
+  bottom: clamp(-130px, -16vh, -68px);
+  width: min(48vw, 520px);
+  opacity: 0.46;
+  transform: rotate(8deg);
+  transform-origin: 62% 80%;
+  filter:
+    drop-shadow(0 30px 36px rgba(0, 0, 0, 0.52))
+    drop-shadow(0 0 42px rgba(255, 126, 93, 0.22));
+  pointer-events: none;
 }
 
 .threat-intro-noise {
@@ -831,6 +876,23 @@ body.foso-threat-intro .hand-tray {
     border-radius: 20px;
   }
 
+  .modal-layer.is-impact-warning .modal-card {
+    padding-top: 174px;
+    padding-right: 14px;
+  }
+
+  .modal-hero {
+    top: -62px;
+    right: -8px;
+    width: min(78vw, 320px);
+    opacity: 0.34;
+    transform: translate3d(0, 0, 0) rotate(10deg) scale(1);
+  }
+
+  .modal-hero-image {
+    opacity: 0.38;
+  }
+
   .modal-actions {
     position: sticky;
     bottom: -14px;
@@ -844,6 +906,14 @@ body.foso-threat-intro .hand-tray {
     width: calc(100vw - 24px);
     padding: 20px 16px;
     border-radius: 20px;
+  }
+
+  .threat-intro-sprite {
+    right: -68px;
+    bottom: -124px;
+    width: min(84vw, 360px);
+    opacity: 0.34;
+    transform: rotate(14deg);
   }
 
   .threat-intro-kicker {

@@ -1046,7 +1046,7 @@ function openModal(config = {}) {
     button.textContent = action.label;
     button.disabled = !!action.disabled;
     if (action.title) button.title = action.title;
-    button.addEventListener("click", action.onClick);
+    bindPressAction(button, action.onClick);
     modalActions.appendChild(button);
   });
 
@@ -1056,6 +1056,28 @@ function openModal(config = {}) {
   }
   modalLayer.hidden = false;
   syncUiBlockingState();
+}
+
+function bindPressAction(element, onPress) {
+  if (!element || typeof onPress !== "function") return;
+  let touchPressAt = -Infinity;
+
+  element.addEventListener("pointerup", (event) => {
+    if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+    if (element.disabled) return;
+    touchPressAt = performance.now();
+    if (event.cancelable) event.preventDefault();
+    onPress(event);
+  });
+
+  element.addEventListener("click", (event) => {
+    if (element.disabled) return;
+    if (performance.now() - touchPressAt < 700) {
+      if (event.cancelable) event.preventDefault();
+      return;
+    }
+    onPress(event);
+  });
 }
 
 function hideThreatIntroOverlay() {
@@ -1623,7 +1645,7 @@ function createCardButton(card, options = {}) {
   button.append(rank, suit, note);
   if (options.disabled) button.disabled = true;
   if (typeof options.onClick === "function" && !options.static) {
-    button.addEventListener("click", () => options.onClick(card));
+    bindPressAction(button, () => options.onClick(card));
   }
   return button;
 }
