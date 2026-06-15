@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#06090f">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/Historia/camino_pocobot_icon_192.png?v=20260506-story-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/Historia/camino_pocobot_icon_180.png?v=20260506-story-icon">
-  <link rel="manifest" href="assets/Historia/camino_pocobot.webmanifest?v=20260529-story-scope">
+  <link rel="manifest" href="assets/Historia/camino_pocobot.webmanifest?v=20260616-story-scope-root">
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand">
   <style>
     :root{
@@ -11109,7 +11109,7 @@
 
     function buildStoryFosoExplorationUrl(options = {}) {
       const targetUrl = new URL(FOSO_EXPLORATION_URL, window.location.href);
-      targetUrl.searchParams.set('v', '20260615-foso-mobile-refresh-guard-1');
+      targetUrl.searchParams.set('v', '20260616-foso-ios-stability-2');
       targetUrl.searchParams.set('story_embed', '1');
       targetUrl.searchParams.set('story_node', 'foso');
       targetUrl.searchParams.set('story_audio', 'internal');
@@ -11422,6 +11422,14 @@
 
     function handleStoryFosoAction(data) {
       const action = data?.action || '';
+      if (data?.loadId) ensureFosoExplorationLoadId(data.loadId);
+      if (action === 'exploration-ready') {
+        if (activeExplorationNodeId === 'foso' && (!data?.loadId || data.loadId === activeFosoExplorationLoadId)) {
+          hideStoryExplorationLoader();
+          window.setTimeout(focusStoryExplorationFrame, 40);
+        }
+        return true;
+      }
       if (action === 'return-map') {
         activeMissionNodeId = null;
         rememberActiveStoryMission(null);

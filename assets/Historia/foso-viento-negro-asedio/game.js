@@ -313,6 +313,8 @@ let lastExplosionSoundAt = 0;
 let lastMissileFlybySoundAt = 0;
 let lastTouchClientY = 0;
 let lastAudioStateSaveAt = 0;
+let lastCanvasCssWidth = 0;
+let lastCanvasCssHeight = 0;
 
 const fosoAudio = {
   context: null,
@@ -772,7 +774,7 @@ function saveAudioState(force = false) {
   } catch (error) {}
 }
 
-function restoreAudioState() {
+function restoreAudioState(options = {}) {
   const saved = readSavedAudioState();
   if (!saved || !fosoMusic) return;
   const duration = Number.isFinite(fosoMusic.duration) && fosoMusic.duration > 0
@@ -781,6 +783,9 @@ function restoreAudioState() {
   const safeTime = duration > 0
     ? Math.max(0, Math.min(duration - 0.4, saved.currentTime))
     : Math.max(0, saved.currentTime);
+  const currentTime = Number.isFinite(fosoMusic.currentTime) ? fosoMusic.currentTime : 0;
+  const onlyIfAhead = options.onlyIfAhead === true;
+  if (onlyIfAhead && safeTime <= currentTime + 1.2) return;
   try {
     fosoMusic.currentTime = safeTime;
   } catch (error) {}
@@ -1780,10 +1785,21 @@ function getFosoCameraZoom(width, height) {
   return clamp(Math.max(width / targetVisibleWorldWidth, height / targetVisibleWorldHeight), 1.98, 3.05);
 }
 
-function resizeCanvas() {
-  const visualViewport = window.visualViewport;
-  const width = Math.max(320, Math.round(visualViewport?.width || window.innerWidth || document.documentElement.clientWidth || canvas.width));
-  const height = Math.max(240, Math.round(visualViewport?.height || window.innerHeight || document.documentElement.clientHeight || canvas.height));
+function resizeCanvas(options = {}) {
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.max(320, Math.round(rect.width || document.documentElement.clientWidth || window.innerWidth || canvas.width));
+  const height = Math.max(240, Math.round(rect.height || document.documentElement.clientHeight || window.innerHeight || canvas.height));
+  const widthDelta = Math.abs(width - lastCanvasCssWidth);
+  const heightDelta = Math.abs(height - lastCanvasCssHeight);
+  const heightOnlyChromeShift = lastCanvasCssWidth
+    && widthDelta <= 2
+    && heightDelta > 0
+    && heightDelta < 96
+    && options.force !== true;
+  if (heightOnlyChromeShift) return;
+  if (widthDelta <= 1 && heightDelta <= 1 && options.force !== true) return;
+  lastCanvasCssWidth = width;
+  lastCanvasCssHeight = height;
   viewport.width = width;
   viewport.height = height;
   viewport.dpr = Math.max(1, window.devicePixelRatio || 1);
@@ -2647,7 +2663,7 @@ function playMissileFlybySound(intensity = 1, distanceRatio = 0.5) {
 }
 
 async function boot() {
-  resizeCanvas();
+  resizeCanvas({ force: true });
   preloadMissileFlybyAudio();
   await loadAssets();
   applyDebugPhysicsOverrides();
@@ -2664,6 +2680,7 @@ async function boot() {
     beginThreatEncounter(getThreatById(state.activeThreatId), { skipIntro: true });
   }
   restoreAudioState();
+  postFosoAction("exploration-ready", { loadId: storyLoadId });
   maybeStartMusic();
   requestAnimationFrame(frame);
 }
@@ -2780,7 +2797,7 @@ window.addEventListener("keydown", (event) => {
 window.addEventListener("keyup", (event) => handleKey(event, false));
 window.addEventListener("resize", resizeCanvas);
 window.visualViewport?.addEventListener?.("resize", resizeCanvas);
-window.addEventListener("orientationchange", () => window.setTimeout(resizeCanvas, 80));
+window.addEventListener("orientationchange", () => window.setTimeout(() => resizeCanvas({ force: true }), 80));
 document.addEventListener("touchstart", resetFosoTouchGuard, { passive: true, capture: true });
 document.addEventListener("touchmove", blockFosoNativeGesture, { passive: false, capture: true });
 document.addEventListener("gesturestart", (event) => {
@@ -2800,10 +2817,10 @@ document.addEventListener("visibilitychange", () => {
     saveAudioState(true);
     return;
   }
-  restoreAudioState();
+  restoreAudioState({ onlyIfAhead: true });
   maybeStartMusic();
 });
-fosoMusic?.addEventListener("loadedmetadata", restoreAudioState, { once: true });
+fosoMusic?.addEventListener("loadedmetadata", () => restoreAudioState({ onlyIfAhead: true }), { once: true });
 fosoMusic?.addEventListener("timeupdate", () => saveAudioState(), { passive: true });
 window.addEventListener("pointerdown", () => {
   unlockFosoAudio();

@@ -57,7 +57,7 @@ canvas {
 .layout {
   width: 100vw;
   height: 100vh;
-  height: 100dvh;
+  height: 100svh;
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: none;

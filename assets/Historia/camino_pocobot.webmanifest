@@ -3,7 +3,7 @@
   "short_name": "Camino PoCoBOT",
   "description": "Modo historia de PoCoBOT: Ruta Ceniza.",
   "id": "/MODO_HISTORIA_BOCETO.html",
-  "scope": "/MODO_HISTORIA",
+  "scope": "/",
   "icons": [
     {
       "src": "camino_pocobot_icon_192.png?v=20260506-story-icon",
