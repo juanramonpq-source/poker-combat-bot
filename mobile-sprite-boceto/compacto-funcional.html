@@ -2018,6 +2018,11 @@
       pointer-events: auto;
     }
 
+    .phone-shell.board-open .tab-bar,
+    .phone-shell.board-open .tab-sprite {
+      pointer-events: none;
+    }
+
     .phone-shell.rival-view .board-drawer {
       grid-template-rows: auto minmax(0, 1fr);
     }
@@ -7137,7 +7142,11 @@
     }
 
     function handleDrawerPrimary() {
-      if (state.pendingDefense || state.attackMode || state.projectileOnlyMode) {
+      if (state.pendingDefense) {
+        handleAction("defend");
+        return;
+      }
+      if (state.attackMode || state.projectileOnlyMode) {
         handleAction("confirm");
         return;
       }

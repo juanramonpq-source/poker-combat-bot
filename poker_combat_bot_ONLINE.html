@@ -1626,16 +1626,18 @@ body.victory .winner-banner.show{
   filter:blur(18px) brightness(.55) saturate(.7);
 }
 .story-final-colossus-standee{
-  --colossus-final-x: 18%;
+  --colossus-final-x: 15%;
   position:absolute;
-  right:min(-16vw, -220px);
+  right:min(-12vw, -170px);
   bottom:-8vh;
-  width:min(78vw, 1520px);
-  max-width:1540px;
+  width:min(84vw, 1620px);
+  max-width:1660px;
   max-height:min(168vh, 2060px);
   opacity:0;
   transform:translate(calc(var(--colossus-final-x) + 16%), 4%) scale(.78) scaleY(1.28);
   filter:drop-shadow(0 44px 40px rgba(0,0,0,.56)) drop-shadow(0 0 34px rgba(35,216,255,.10));
+  -webkit-mask-image:linear-gradient(90deg, transparent 0 5%, rgba(0,0,0,.16) 12%, #000 22%, #000 100%);
+  mask-image:linear-gradient(90deg, transparent 0 5%, rgba(0,0,0,.16) 12%, #000 22%, #000 100%);
 }
 .story-final-colossus-standee img{
   display:block;
@@ -2003,8 +2005,8 @@ body.story-final-colossus-engaged .app{
   overflow:hidden;
 }
 body.story-final-colossus-engaged .app .desktop-compact-shell{
-  width:min(52vw, 860px);
-  max-width:min(52vw, 860px);
+  width:min(48vw, 760px);
+  max-width:min(48vw, 760px);
   margin-right:auto;
   overflow:visible;
 }
@@ -2162,7 +2164,7 @@ body.story-final-colossus-engaged #compactMechaStage-1{
   transform:scale(.7);
 }
 body.story-final-colossus-engaged .compact-hand-panel{
-  padding-right:min(14vw, 220px) !important;
+  padding-right:min(6vw, 72px) !important;
   transform:translate(-8px, 16px) rotate(-1.3deg);
   transform-origin:left top;
   animation:storyFinalColossusRebuildHand 1.54s cubic-bezier(.16,.82,.2,1) both;
@@ -2476,12 +2478,14 @@ body.story-final-colossus-mobile .story-final-colossus-overlay.play.strip-reveal
   animation:storyFinalColossusMobileBreakoutFrames 4.35s cubic-bezier(.16,.72,.18,1) both;
 }
 body.story-final-colossus-mobile .story-final-colossus-standee{
-  --colossus-final-x: 36%;
-  right:-36vw;
-  width:min(84vw, 760px);
-  max-width:760px;
+  --colossus-final-x: 28%;
+  right:-28vw;
+  width:min(94vw, 860px);
+  max-width:860px;
   bottom:-4vh;
   filter:drop-shadow(0 28px 28px rgba(0,0,0,.46));
+  -webkit-mask-image:linear-gradient(90deg, transparent 0 12%, rgba(0,0,0,.2) 20%, #000 34%, #000 100%);
+  mask-image:linear-gradient(90deg, transparent 0 12%, rgba(0,0,0,.2) 20%, #000 34%, #000 100%);
 }
 body.story-final-colossus-mobile .story-final-colossus-overlay.stand-ready .story-final-colossus-standee{
   animation-duration:1.72s;
@@ -2504,9 +2508,9 @@ body.story-final-colossus-mobile .story-final-colossus-overlay.play .story-final
   animation-duration:2.9s;
 }
 body.story-final-colossus-mode:not(.desktop-compact-mode):not(.mobile-compact-mode):not(.mobile-pc-compact-mode):not(.mobile-panorama-mode) .story-final-colossus-standee{
-  --colossus-final-x: 8%;
-  right:max(-10vw, -150px);
-  width:min(82vw, 1480px);
+  --colossus-final-x: 7%;
+  right:max(-6vw, -90px);
+  width:min(90vw, 1600px);
 }
 @keyframes storyFinalColossusMobileBridgeBreak{
   0%{opacity:1; transform:translate3d(0,0,0) scale(1); filter:brightness(1) saturate(1)}
@@ -3774,9 +3778,9 @@ body.story-final-colossus-mode:not(.desktop-compact-mode):not(.mobile-compact-mo
 
 @media (max-width:1100px){
   .story-final-colossus-standee{
-    --colossus-final-x: 24%;
-    width:min(62vw, 920px);
-    right:-28vw;
+    --colossus-final-x: 18%;
+    width:min(70vw, 1080px);
+    right:-21vw;
     bottom:-12vh;
     max-height:min(114vh, 1280px);
   }
@@ -3787,8 +3791,8 @@ body.story-final-colossus-mode:not(.desktop-compact-mode):not(.mobile-compact-mo
     min-width:260px;
   }
   body.story-final-colossus-engaged .app .desktop-compact-shell{
-    width:min(58vw, 760px);
-    max-width:min(58vw, 760px);
+    width:min(54vw, 700px);
+    max-width:min(54vw, 700px);
   }
   body.story-final-colossus-engaged .app .desktop-compact-main{
     grid-template-columns:minmax(206px, .58fr) minmax(0, 1fr);
@@ -3806,12 +3810,12 @@ body.story-final-colossus-mode:not(.desktop-compact-mode):not(.mobile-compact-mo
     width:min(96vw, 760px);
   }
   .story-final-colossus-standee{
-    --colossus-final-x: 34%;
-    width:min(78vw, 700px);
-    right:-38vw;
+    --colossus-final-x: 24%;
+    width:min(92vw, 820px);
+    right:-28vw;
     bottom:-4vh;
     max-height:min(108vh, 980px);
-    max-width:780px;
+    max-width:860px;
   }
   .story-final-colossus-boss-hud{
     right:10px;
@@ -29687,20 +29691,260 @@ body.story-final-colossus-engaged.story-final-colossus-mode:is(.mobile-panorama-
   outline:none;
 }
 
+.story-final-colossus-command-panel{
+  position:fixed;
+  left:clamp(14px, 2.4vw, 28px);
+  bottom:clamp(14px, 2.6vh, 26px);
+  z-index:10160;
+  width:min(420px, calc(45vw - 24px));
+  padding:16px 16px 14px;
+  border:1px solid rgba(255,198,109,.38);
+  border-radius:22px 14px 24px 14px;
+  color:#f8fbff;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.08), transparent 28%),
+    linear-gradient(180deg, rgba(15,28,52,.96), rgba(8,14,30,.98));
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.08),
+    0 18px 44px rgba(0,0,0,.42),
+    0 0 40px rgba(35,216,255,.12),
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    inset 0 0 26px rgba(255,162,82,.08);
+  backdrop-filter:blur(6px);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(18px) rotate(-1deg) scale(.98);
+  transition:opacity .28s ease, transform .28s ease, visibility .28s ease;
+}
+
+.story-final-colossus-command-panel::before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border:1px solid rgba(255,220,145,.1);
+  border-radius:16px 10px 18px 10px;
+  pointer-events:none;
+}
+
+body.story-final-colossus-command-mode .story-final-colossus-command-panel{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateY(0) rotate(-1deg) scale(1);
+}
+
+.story-final-colossus-command-kicker{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 10px;
+  border-radius:999px;
+  color:#0f1b34;
+  background:linear-gradient(180deg, #fff0a0, #ffba42 62%, #ff7847);
+  font-size:.7rem;
+  font-weight:1000;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+.story-final-colossus-command-title{
+  margin-top:10px;
+  color:#fff0c6;
+  font-family:"Arial Narrow","Avenir Next Condensed","Trebuchet MS",sans-serif;
+  font-size:clamp(1.16rem, 1.9vw, 1.5rem);
+  font-weight:1000;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+.story-final-colossus-command-text,
+.story-final-colossus-command-note{
+  margin:10px 0 0;
+  font-size:.84rem;
+  line-height:1.42;
+}
+
+.story-final-colossus-command-text{
+  color:#edf7ff;
+}
+
+.story-final-colossus-command-note{
+  color:#c6d9ea;
+  font-size:.74rem;
+  letter-spacing:.03em;
+}
+
+.story-final-colossus-command-meters{
+  display:grid;
+  gap:8px;
+  margin-top:14px;
+}
+
+.story-final-colossus-command-row{
+  display:grid;
+  grid-template-columns:78px minmax(0, 1fr) 54px;
+  align-items:center;
+  gap:8px;
+  color:#e9f3ff;
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.story-final-colossus-command-bar{
+  position:relative;
+  display:block;
+  height:14px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(3,9,21,.7);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.story-final-colossus-command-bar > span{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:0%;
+  border-radius:inherit;
+  background:linear-gradient(90deg, #5de7ff, #ffe68d);
+  box-shadow:0 0 16px rgba(93,231,255,.28);
+  transition:width .28s ease;
+}
+
+.story-final-colossus-command-bar-cadence > span{
+  background:linear-gradient(90deg, #6cf6c7, #7dd1ff 68%, #fff3a8);
+}
+
+.story-final-colossus-command-bar-burn > span{
+  background:linear-gradient(90deg, #ff7f4d, #ff5c68 52%, #ffe27c);
+}
+
+.story-final-colossus-command-actions{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+  margin-top:14px;
+}
+
+.story-final-colossus-command-btn{
+  min-height:48px;
+  padding:10px 12px;
+  border:1px solid rgba(152,218,255,.28);
+  border-radius:16px 10px 18px 10px;
+  color:#eef8ff;
+  background:
+    linear-gradient(180deg, rgba(62,123,198,.92), rgba(21,70,131,.96));
+  box-shadow:
+    0 8px 18px rgba(0,0,0,.24),
+    inset 0 0 0 1px rgba(255,255,255,.12),
+    inset 0 10px 16px rgba(141,215,255,.08);
+  font:inherit;
+  font-size:.8rem;
+  font-weight:1000;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:transform .18s ease, filter .18s ease, opacity .18s ease;
+}
+
+.story-final-colossus-command-btn.primary{
+  background:linear-gradient(180deg, rgba(255,232,131,.96), rgba(255,174,66,.94) 52%, rgba(192,90,18,.95));
+  color:#1d1205;
+}
+
+.story-final-colossus-command-btn.danger{
+  background:linear-gradient(180deg, rgba(255,165,108,.95), rgba(255,79,78,.95) 52%, rgba(108,14,24,.96));
+}
+
+.story-final-colossus-command-btn.subtle{
+  background:linear-gradient(180deg, rgba(148,176,208,.9), rgba(80,101,128,.94));
+}
+
+.story-final-colossus-command-btn:hover,
+.story-final-colossus-command-btn:focus-visible{
+  transform:translateY(-1px) scale(1.01);
+  filter:brightness(1.06);
+  outline:none;
+}
+
+.story-final-colossus-command-btn:disabled{
+  opacity:.46;
+  cursor:not-allowed;
+  filter:saturate(.62);
+  transform:none;
+}
+
+body.story-final-colossus-command-mode .compact-actions-panel,
+body.story-final-colossus-command-mode .compact-mobile-actions-panel,
+body.story-final-colossus-command-mode .compact-rival-panel{
+  display:none !important;
+}
+
+body.story-final-colossus-command-mode .compact-action-hub-button,
+body.story-final-colossus-command-mode #accionesBtn{
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+body.story-final-colossus-command-mode .app .desktop-compact-bottom{
+  grid-template-columns:minmax(0, 1fr) !important;
+}
+
+body.story-final-colossus-command-mode .compact-hand-panel{
+  opacity:.96;
+  filter:brightness(1.02) saturate(1.04);
+}
+
+body.story-final-colossus-command-mode .compact-hand-panel .card,
+body.story-final-colossus-command-mode .compact-hand-overview .card{
+  cursor:default !important;
+}
+
+body.story-final-colossus-mobile.story-final-colossus-command-mode:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .story-final-colossus-command-panel{
+  left:10px;
+  right:auto;
+  bottom:10px;
+  width:min(42dvw, 340px);
+}
+
+body.story-final-colossus-mobile.story-final-colossus-command-mode:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .story-final-colossus-command-actions{
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+}
+
+body.story-final-colossus-mobile.story-final-colossus-command-mode:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  --colossus-final-x:-.8% !important;
+  right:2vw !important;
+  bottom:-4.2vh !important;
+  width:min(168vw, 1540px) !important;
+  transform:translate(var(--colossus-final-x), -1.4%) scale(1.18) !important;
+}
+
+body.story-final-colossus-mobile.story-final-colossus-command-mode:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .app .desktop-compact-shell{
+  width:min(72dvw, 432px) !important;
+  max-width:min(72dvw, 432px) !important;
+  transform:translate(-4.2vw, .5dvh) scale(.91) rotate(-1.2deg) !important;
+}
+
+body.story-final-colossus-mobile.story-final-colossus-command-mode:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .app :is(.compact-topbar, .compact-player-panel, .compact-arena-panel, .compact-hand-panel, .compact-mobile-actions-panel){
+  max-width:68dvw !important;
+}
+
 body.story-final-colossus-engaged .story-final-colossus-overlay.settled .story-final-colossus-standee{
-  --colossus-final-x:12% !important;
-  right:min(-8vw, -96px) !important;
-  width:min(92vw, 1660px) !important;
+  --colossus-final-x:9% !important;
+  right:min(-2vw, -18px) !important;
+  width:min(102vw, 1840px) !important;
   opacity:1 !important;
-  transform:translate(var(--colossus-final-x), 0) scale(1.08) !important;
-  filter:drop-shadow(0 56px 44px rgba(0,0,0,.62)) drop-shadow(0 0 42px rgba(35,216,255,.16)) !important;
+  transform:translate(var(--colossus-final-x), -.8%) scale(1.12) !important;
+  filter:drop-shadow(0 62px 48px rgba(0,0,0,.66)) drop-shadow(0 0 48px rgba(35,216,255,.18)) !important;
 }
 
 body.story-final-colossus-ruined .story-final-colossus-overlay.settled .story-final-colossus-standee{
-  --colossus-final-x:8% !important;
-  right:min(-4vw, -44px) !important;
-  width:min(102vw, 1760px) !important;
-  transform:translate(var(--colossus-final-x), -1%) scale(1.15) !important;
+  --colossus-final-x:6% !important;
+  right:min(1vw, 10px) !important;
+  width:min(110vw, 1940px) !important;
+  transform:translate(var(--colossus-final-x), -1.2%) scale(1.18) !important;
   filter:drop-shadow(0 70px 56px rgba(0,0,0,.7)) drop-shadow(0 0 56px rgba(35,216,255,.2)) !important;
 }
 
@@ -29830,16 +30074,138 @@ body.story-final-colossus-resilience-restoring .app :is(.compact-topbar, .compac
   animation:storyFinalColossusResilienceRecover 1.02s cubic-bezier(.16,.84,.18,1) both !important;
 }
 
+body.story-final-colossus-operational .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  --colossus-final-x:5.6% !important;
+  right:min(-2vw, -22px) !important;
+  width:min(110vw, 1940px) !important;
+  opacity:1 !important;
+  transform:translate(var(--colossus-final-x), -1.35%) scale(1.16) !important;
+  filter:drop-shadow(0 74px 58px rgba(0,0,0,.72)) drop-shadow(0 0 66px rgba(35,216,255,.22)) !important;
+}
+
+body.story-final-colossus-operational .app{
+  max-width:none !important;
+  width:100% !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-operational .app .desktop-compact-shell{
+  position:relative !important;
+  z-index:10024 !important;
+  width:min(45vw, 700px) !important;
+  max-width:min(45vw, 700px) !important;
+  margin-right:auto !important;
+  transform:translate(-1.9vw, 1.1vh) rotate(-1deg) scale(.95) !important;
+  transform-origin:left top !important;
+  filter:brightness(.98) saturate(1.02) !important;
+}
+
+body.story-final-colossus-operational .app .desktop-compact-main{
+  grid-template-columns:minmax(198px, .56fr) minmax(0, 1fr) !important;
+  gap:calc(var(--compact-gap) + 1px) !important;
+}
+
+body.story-final-colossus-operational .app .desktop-compact-bottom{
+  grid-template-columns:minmax(220px, .62fr) minmax(0, 1fr) !important;
+  gap:calc(var(--compact-gap) - 1px) !important;
+}
+
+body.story-final-colossus-operational:not(.story-final-colossus-mobile) .compact-log-panel,
+body.story-final-colossus-operational:not(.story-final-colossus-mobile) .compact-tutorial-panel,
+body.story-final-colossus-operational:not(.story-final-colossus-mobile) .compact-mobile-actions-panel{
+  display:none !important;
+}
+
+body.story-final-colossus-operational .app :is(.compact-topbar, .compact-player-panel, .compact-arena-panel, .compact-actions-panel, .compact-hand-panel, .compact-mobile-actions-panel, .compact-zone-card, .compact-readout, .compact-zone-cards, .compact-hand-tray, .compact-action-grid, .compact-mobile-action-grid, .compact-action-hub-button, #accionesBtn, #compactMechaStage-0, .card){
+  position:relative !important;
+  z-index:10026 !important;
+  pointer-events:auto !important;
+}
+
+body.story-final-colossus-operational .compact-topbar{
+  transform:translate(2px, -6px) rotate(-1deg) !important;
+}
+
+body.story-final-colossus-operational .compact-player-panel{
+  transform:translate(8px, 10px) rotate(-1.2deg) !important;
+}
+
+body.story-final-colossus-operational .compact-arena-panel{
+  transform:translate(-10px, 8px) rotate(.9deg) !important;
+}
+
+body.story-final-colossus-operational .compact-actions-panel{
+  transform:translate(10px, -6px) rotate(.7deg) !important;
+}
+
+body.story-final-colossus-operational .compact-hand-panel{
+  padding-right:10px !important;
+  transform:translate(-4px, 11px) rotate(-1deg) !important;
+  min-height:154px !important;
+  background:
+    linear-gradient(180deg, rgba(246,250,255,.96), rgba(231,240,252,.95) 54%, rgba(215,228,246,.97)) !important;
+  box-shadow:
+    0 0 0 1px rgba(102,235,255,.24),
+    inset 0 0 0 1px rgba(255,255,255,.68),
+    inset 0 0 28px rgba(255,148,82,.08),
+    0 16px 28px rgba(0,0,0,.3) !important;
+}
+
+body.story-final-colossus-operational .compact-hand-tray{
+  --compact-hand-card-width:56px !important;
+  --compact-hand-card-height:80px !important;
+  --compact-hand-card-step:42px !important;
+  min-height:90px !important;
+  padding:8px 8px 10px !important;
+  overflow-x:auto !important;
+  overflow-y:visible !important;
+  scroll-snap-type:x proximity;
+  background:rgba(255,255,255,.26) !important;
+  border:1px solid rgba(25,92,148,.16) !important;
+}
+
+body.story-final-colossus-operational .compact-hand-tray > .card.card-zone-hand,
+body.story-final-colossus-operational .compact-hand-tray > .card.card-zone-hand.card-detailed{
+  flex:0 0 var(--compact-hand-card-width) !important;
+  width:var(--compact-hand-card-width) !important;
+  min-width:var(--compact-hand-card-width) !important;
+  max-width:var(--compact-hand-card-width) !important;
+  height:var(--compact-hand-card-height) !important;
+  min-height:var(--compact-hand-card-height) !important;
+  max-height:var(--compact-hand-card-height) !important;
+  margin-left:calc(var(--compact-hand-card-step) - var(--compact-hand-card-width)) !important;
+  scroll-snap-align:start;
+}
+
+body.story-final-colossus-operational .compact-hand-tray > .card.card-zone-hand:first-child,
+body.story-final-colossus-operational .compact-hand-tray > .card.card-zone-hand.card-detailed:first-child{
+  margin-left:0 !important;
+}
+
+body.story-final-colossus-operational .compact-action-hub-button,
+body.story-final-colossus-operational #accionesBtn{
+  z-index:10034 !important;
+}
+
+body.story-final-colossus-operational #compactMechaStage-0{
+  transform:translateY(22px) scale(.69) rotate(-1.2deg) !important;
+  opacity:.98 !important;
+}
+
+body.story-final-colossus-operational #player-panel-0{
+  transform:scale(.88) !important;
+}
+
 body.story-final-colossus-engaged.story-final-colossus-mobile .story-final-colossus-overlay.settled .story-final-colossus-standee{
-  --colossus-final-x:10% !important;
-  right:-16vw !important;
-  width:min(126vw, 1120px) !important;
+  --colossus-final-x:8% !important;
+  right:-10vw !important;
+  width:min(136vw, 1240px) !important;
 }
 
 body.story-final-colossus-ruined.story-final-colossus-mobile .story-final-colossus-overlay.settled .story-final-colossus-standee{
-  --colossus-final-x:8% !important;
-  right:-10vw !important;
-  width:min(138vw, 1220px) !important;
+  --colossus-final-x:6% !important;
+  right:-4vw !important;
+  width:min(146vw, 1320px) !important;
 }
 
 body.story-final-colossus-ruined.story-final-colossus-mobile .app .desktop-compact-shell{
@@ -29867,6 +30233,187 @@ body.story-final-colossus-mobile .story-final-colossus-resilience-surge-text{
   font-size:clamp(.68rem, 2.8vw, .82rem);
 }
 
+body.story-final-colossus-operational.story-final-colossus-mobile .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  --colossus-final-x:2.6% !important;
+  right:-4vw !important;
+  width:min(152vw, 1400px) !important;
+  transform:translate(var(--colossus-final-x), -.5%) scale(1.1) !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  --colossus-final-x:1.2% !important;
+  right:1vw !important;
+  bottom:-5.2vh !important;
+  width:min(158vw, 1460px) !important;
+  transform:translate(var(--colossus-final-x), -1.1%) scale(1.14) !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app{
+  position:relative !important;
+  z-index:10010 !important;
+  overflow:visible !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app .desktop-compact-shell{
+  position:relative !important;
+  z-index:10024 !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .desktop-compact-shell{
+  width:min(76dvw, 460px) !important;
+  max-width:min(76dvw, 460px) !important;
+  transform:translate(-2vw, .8dvh) scale(.93) rotate(-.8deg) !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) :is(.compact-topbar, .compact-player-panel, .compact-arena-panel, .compact-hand-panel, .compact-mobile-actions-panel){
+  max-width:72dvw !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-player-panel{
+  translate:-.35vw 0 !important;
+  scale:.97 !important;
+  rotate:-.5deg !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-arena-panel{
+  translate:-.35vw 0 !important;
+  scale:.98 !important;
+  rotate:.45deg !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-panel{
+  width:min(76dvw, 460px) !important;
+  max-width:min(76dvw, 460px) !important;
+  min-height:156px !important;
+  height:156px !important;
+  translate:0 -.2dvh !important;
+  rotate:-.7deg !important;
+  padding-right:6px !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray{
+  --compact-hand-card-width:46px !important;
+  --compact-hand-card-height:66px !important;
+  --compact-hand-card-step:38px !important;
+  min-height:82px !important;
+  overflow-x:auto !important;
+  overflow-y:visible !important;
+  padding:6px 7px 9px !important;
+  scroll-snap-type:x proximity;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card,
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card.card-detailed{
+  flex:0 0 var(--compact-hand-card-width) !important;
+  width:var(--compact-hand-card-width) !important;
+  min-width:var(--compact-hand-card-width) !important;
+  height:var(--compact-hand-card-height) !important;
+  min-height:var(--compact-hand-card-height) !important;
+  margin-left:calc(var(--compact-hand-card-step) - var(--compact-hand-card-width)) !important;
+  scroll-snap-align:start;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card:first-child,
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-hand-tray .card.card-detailed:first-child{
+  margin-left:0 !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) #accionesBtn,
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-compact-mode, .tablet-touch-portrait-mode) .compact-action-hub-button{
+  left:clamp(164px, 44dvw, 210px) !important;
+  bottom:clamp(16px, 2.8dvh, 28px) !important;
+  transform:rotate(-1.8deg) !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .desktop-compact-shell{
+  width:min(52dvw, 500px) !important;
+  max-width:min(52dvw, 500px) !important;
+  transform:translateX(-1.8vw) scale(.97) rotate(-.8deg) !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .story-final-colossus-overlay.settled .story-final-colossus-standee{
+  --colossus-final-x:.8% !important;
+  right:-2vw !important;
+  width:min(158vw, 1460px) !important;
+  transform:translate(var(--colossus-final-x), -.65%) scale(1.12) !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-topbar-actions{
+  display:none !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-mobile-actions-panel{
+  min-height:54px !important;
+  padding:0 !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-mode-tabs button{
+  height:50px !important;
+  min-height:50px !important;
+  font-size:15px !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-panel{
+  min-height:154px !important;
+  height:154px !important;
+  rotate:-.6deg !important;
+  padding-right:4px !important;
+  background:
+    linear-gradient(180deg, rgba(244,249,255,.97), rgba(230,239,251,.95) 54%, rgba(214,226,242,.97)) !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-overview{
+  display:none !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-hand-tray{
+  --compact-hand-card-width:39px !important;
+  --compact-hand-card-height:56px !important;
+  --compact-hand-card-step:39px !important;
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:flex-end !important;
+  justify-content:flex-start !important;
+  gap:2px !important;
+  min-height:70px !important;
+  overflow-x:auto !important;
+  overflow-y:visible !important;
+  padding:7px 8px 11px !important;
+  touch-action:pan-x manipulation !important;
+  -webkit-overflow-scrolling:touch !important;
+  scroll-snap-type:x proximity;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) #compactHandCards.compact-hand-tray{
+  display:flex !important;
+  grid-template-columns:none !important;
+  grid-template-rows:none !important;
+  align-items:flex-end !important;
+  justify-content:flex-start !important;
+  gap:2px !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) #compactHandCards.compact-hand-tray > .card,
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) #compactHandCards.compact-hand-tray > .card.card-detailed{
+  flex:0 0 var(--compact-hand-card-width) !important;
+  width:var(--compact-hand-card-width) !important;
+  min-width:var(--compact-hand-card-width) !important;
+  max-width:var(--compact-hand-card-width) !important;
+  height:var(--compact-hand-card-height) !important;
+  min-height:var(--compact-hand-card-height) !important;
+  max-height:var(--compact-hand-card-height) !important;
+  margin:0 !important;
+  transform:none !important;
+  scroll-snap-align:start !important;
+}
+
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) #accionesBtn,
+body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobile-pc-compact-mode, .mobile-panorama-mode, .tablet-touch-landscape-mode) .compact-action-hub-button{
+  left:clamp(176px, 22dvw, 236px) !important;
+  top:clamp(72px, 19dvh, 98px) !important;
+  transform:rotate(-1.3deg) !important;
+}
+
 @media (max-width: 620px){
   .story-final-colossus-control-warning{
     top:45%;
@@ -29882,6 +30429,27 @@ body.story-final-colossus-mobile .story-final-colossus-resilience-surge-text{
     min-height:50px;
     font-size:.84rem;
     letter-spacing:.12em;
+  }
+  .story-final-colossus-command-panel{
+    left:10px;
+    right:10px;
+    bottom:10px;
+    width:auto;
+    max-width:none;
+    padding:14px 12px 12px;
+    transform:translateY(12px) rotate(-.6deg) scale(.98);
+  }
+  .story-final-colossus-command-actions{
+    grid-template-columns:1fr;
+  }
+  .story-final-colossus-command-btn{
+    min-height:46px;
+    font-size:.76rem;
+  }
+  .story-final-colossus-command-row{
+    grid-template-columns:72px minmax(0, 1fr) 48px;
+    gap:6px;
+    font-size:.66rem;
   }
 }
 
@@ -30203,6 +30771,41 @@ body.story-final-colossus-mobile .story-final-colossus-resilience-surge-text{
   </div>
   <p class="story-final-colossus-control-warning-text">
     <strong>¡ACABA CON ÉL!</strong>
+  </p>
+</div>
+<div class="story-final-colossus-command-panel" id="storyFinalColossusCommandPanel" hidden aria-hidden="true">
+  <div class="story-final-colossus-command-kicker">Panel de emergencia</div>
+  <div class="story-final-colossus-command-title">Asalto de resiliencia</div>
+  <p class="story-final-colossus-command-text" id="storyFinalColossusCommandText">
+    El panel táctico apenas aguanta. Dispara para calentar el blindaje y refuerza cuando el coloso devuelva el golpe.
+  </p>
+  <div class="story-final-colossus-command-meters">
+    <div class="story-final-colossus-command-row">
+      <span>Integridad</span>
+      <i class="story-final-colossus-command-bar" aria-hidden="true"><span id="storyFinalColossusCommandIntegrityBar"></span></i>
+      <strong id="storyFinalColossusCommandIntegrityValue">0%</strong>
+    </div>
+    <div class="story-final-colossus-command-row">
+      <span>Cadencia</span>
+      <i class="story-final-colossus-command-bar story-final-colossus-command-bar-cadence" aria-hidden="true"><span id="storyFinalColossusCommandCadenceBar"></span></i>
+      <strong id="storyFinalColossusCommandCadenceValue">0</strong>
+    </div>
+    <div class="story-final-colossus-command-row">
+      <span>Sobrecarga</span>
+      <i class="story-final-colossus-command-bar story-final-colossus-command-bar-burn" aria-hidden="true"><span id="storyFinalColossusCommandBurnBar"></span></i>
+      <strong id="storyFinalColossusCommandBurnValue">0%</strong>
+    </div>
+  </div>
+  <div class="story-final-colossus-command-actions">
+    <button class="story-final-colossus-command-btn primary" id="storyFinalColossusProjectileBtn" type="button">Disparar proyectil</button>
+    <button class="story-final-colossus-command-btn" id="storyFinalColossusReinforceBtn" type="button">Reforzar panel</button>
+    <button class="story-final-colossus-command-btn danger" id="storyFinalColossusBurnBtn" type="button">Quemar armadura</button>
+    <button class="story-final-colossus-command-btn danger" id="storyFinalColossusMeltdownBtn" type="button" hidden>QUEMARLO TODO</button>
+    <button class="story-final-colossus-command-btn danger" id="storyFinalColossusSacrificeBtn" type="button" hidden>Aceptar sacrificio</button>
+    <button class="story-final-colossus-command-btn subtle" id="storyFinalColossusDelayBtn" type="button" hidden>No todavía</button>
+  </div>
+  <p class="story-final-colossus-command-note" id="storyFinalColossusCommandNote">
+    La primera ronda de montaje define cuanta cadencia, sobrecarga e integridad has conseguido conservar.
   </p>
 </div>
 <div class="story-argos-hack-gate" id="storyArgosHackGate" hidden role="dialog" aria-modal="true" aria-labelledby="storyArgosHackGateTitle" aria-describedby="storyArgosHackGateText">
@@ -31610,7 +32213,7 @@ const TUTOBOT_STEP_LINES = {
   'figure-burst': 'Convierte esas figuras extra en cartas nuevas.',
   'pass-turn': 'Ahora practicamos cómo pasar turno sin perder el ritmo.',
   'swap-card': 'Vamos a sustituir una pieza del panel.',
-  'projectile': 'Último truco: añade un proyectil para cerrar la lección.',
+  'projectile': 'Último truco: remata con Modo proyectil y cierra la lección.',
   summary: 'Muy bien. Ya controlas el ciclo básico de PoCoBOT.'
 };
 
@@ -32076,6 +32679,7 @@ let storyFinalColossusControlWarningDelayTimer = null;
 let storyFinalColossusControlWarningTimer = null;
 let storyFinalColossusResilienceTimer = null;
 let storyFinalColossusResilienceBurstTimers = [];
+let storyFinalColossusCommandTimers = [];
 
 function buildOnlineFxCue(type, playerIdx, extra={}){
   return {
@@ -33322,6 +33926,41 @@ const STORY_FINAL_COLOSSUS_BOSS_PHASE_META = {
   }
 };
 
+const STORY_FINAL_COLOSSUS_COMPANION_RESCUE_BEATS = [
+  {
+    name: 'Mara Oxido',
+    toast: 'Mara entra en escena',
+    log: '🚀 Mara Oxido cruza el humo a maxima velocidad y desvía la descarga que iba a tragarte entero.',
+    tone: 'warn',
+    sound: 'projectile',
+    ripple: 'amber'
+  },
+  {
+    name: 'Corvo Vanta',
+    toast: 'Corvo fija al coloso',
+    log: '🛡️ Corvo Vanta se engancha a una pata del coloso y la bloquea con una ráfaga de anclaje brutal.',
+    tone: 'warn',
+    sound: 'attack',
+    ripple: 'cyan'
+  },
+  {
+    name: 'Iria',
+    toast: 'Iria abre el nucleo',
+    log: '🛰️ Iria pinta el nucleo con lectura termica desde retaguardia: el punto letal por fin se queda inmovil.',
+    tone: 'danger',
+    sound: 'build',
+    ripple: 'cyan'
+  },
+  {
+    name: 'Nara',
+    toast: 'Nara te saca vivo',
+    log: '🫀 Nara toma el canal interno: "Ni se te ocurra morir ahora. Te cubrimos nosotros."',
+    tone: 'ok',
+    sound: 'defense',
+    ripple: 'amber'
+  }
+];
+
 function getStoryFinalColossusBossMeta(phase){
   return STORY_FINAL_COLOSSUS_BOSS_PHASE_META[phase] || STORY_FINAL_COLOSSUS_BOSS_PHASE_META.armor;
 }
@@ -33335,6 +33974,8 @@ function createStoryFinalColossusBossProgress(enemy = null){
     phaseIndex: 1,
     armorMax,
     defenseMax,
+    armorValue: armorMax,
+    defenseValue: defenseMax,
     vitalMax: armorMax + defenseMax,
     heat: 12,
     turnsAwake: 0,
@@ -33342,7 +33983,49 @@ function createStoryFinalColossusBossProgress(enemy = null){
     nextAttackBoost: 0,
     rewardsGranted: {},
     phaseShiftCount: 0,
-    lastImpactTurn: -1
+    lastImpactTurn: -1,
+    special: null
+  };
+}
+
+function createStoryFinalColossusCommandProgress(player = null){
+  const safePlayer = player && typeof player === 'object'
+    ? player
+    : { core:{ pilot:null, copilot:null, booster:null }, attack:[], defense:[], armor:[], fuel:[], hand:[] };
+  const coreCount = createCoreArray(safePlayer).filter(Boolean).length;
+  const attackValue = sumCards(safePlayer.attack || []);
+  const defenseValue = sumCards(safePlayer.defense || []);
+  const armorValue = sumCards(safePlayer.armor || []);
+  const fuelValue = sumCards(safePlayer.fuel || []);
+  const handCount = safePlayer.hand?.length || 0;
+  return {
+    active: false,
+    initializedFromMount: true,
+    turnCounter: 0,
+    playerActions: 0,
+    panelIntegrity: clampPercent(56 + coreCount * 6 + defenseValue * 2 + armorValue * 2),
+    barrageLevel: Math.max(2, Math.min(8, 2 + Math.floor((attackValue + fuelValue) / 8))),
+    burnCharge: clampPercent(26 + fuelValue * 7 + attackValue * 2 + handCount * 2 + coreCount * 5),
+    resolve: clampPercent(38 + coreCount * 11 + defenseValue * 3 + armorValue * 2),
+    pressure: 0,
+    reinforceCount: 0,
+    projectileCount: 0,
+    burnCount: 0,
+    emergencyRestartUsed: false,
+    meltdownUnlocked: false,
+    meltdownUsed: false,
+    sacrificeOffered: false,
+    sacrificePrompt: false,
+    sacrificeDeclined: false,
+    alliesIncoming: false,
+    alliesArrived: false,
+    completed: false,
+    playerWon: false,
+    lastEnemyText: '',
+    lastActionKind: '',
+    lastActionSummary: '',
+    currentText: 'El panel tactico apenas aguanta. Dispara para calentar el blindaje y refuerza cuando el coloso te devuelva el golpe.',
+    noteText: 'La primera ronda de montaje define cuanta cadencia, sobrecarga e integridad has conseguido conservar.'
   };
 }
 
@@ -33363,8 +34046,398 @@ function ensureStoryFinalColossusBossProgress(){
   if(!Number.isFinite(Number(boss.defenseMax)) || Number(boss.defenseMax) <= 0){
     boss.defenseMax = Math.max(1, sumCards(enemy?.defense || []));
   }
+  if(!Number.isFinite(Number(boss.armorValue))){
+    boss.armorValue = Math.max(0, Number(boss.armorMax) || 0);
+  }
+  if(!Number.isFinite(Number(boss.defenseValue))){
+    boss.defenseValue = Math.max(0, Number(boss.defenseMax) || 0);
+  }
   boss.vitalMax = Math.max(1, Number(boss.armorMax || 0) + Number(boss.defenseMax || 0));
   return boss;
+}
+
+function ensureStoryFinalColossusCommandProgress(forceCreate = false){
+  if(!isStoryFinalColossusCombat()) return null;
+  const boss = ensureStoryFinalColossusBossProgress();
+  if(!boss) return null;
+  if(forceCreate && (!boss.special || typeof boss.special !== 'object')){
+    boss.special = createStoryFinalColossusCommandProgress(state.players?.[0] || null);
+  }
+  return boss.special || null;
+}
+
+function isStoryFinalColossusCommandModeActive(){
+  const special = ensureStoryFinalColossusCommandProgress(false);
+  return !!special && !!special.active && !special.completed && isStoryFinalColossusResilienceRecovered() && !state.winner;
+}
+
+function getStoryFinalColossusBossValues(enemy, boss){
+  const commandMode = isStoryFinalColossusCommandModeActive();
+  return {
+    armorValue: commandMode
+      ? Math.max(0, Number(boss?.armorValue) || 0)
+      : sumCards(enemy?.armor || []),
+    defenseValue: commandMode
+      ? Math.max(0, Number(boss?.defenseValue) || 0)
+      : sumCards(enemy?.defense || [])
+  };
+}
+
+function getStoryFinalColossusCommandObjective(special, boss){
+  if(!special) return '';
+  if(special.alliesIncoming){
+    return 'Mantén el rumbo. Tus compañeros ya están entrando en la refriega para rematar al coloso.';
+  }
+  if(special.sacrificePrompt){
+    return 'El núcleo está expuesto. Puedes lanzarte contra él o aguantar unos segundos más para abrir una brecha todavía mayor.';
+  }
+  if(special.sacrificeOffered){
+    return 'La trayectoria de sacrificio ya es viable. Si lo ves claro, acepta el choque final contra el núcleo.';
+  }
+  if(special.meltdownUnlocked && !special.meltdownUsed){
+    return 'La consola ya admite QUEMARLO TODO. Si lo haces, abrirás el núcleo a costa de dejar la cabina al límite.';
+  }
+  if((boss?.phase || 'armor') === 'armor'){
+    return 'Sube la cadencia con proyectiles y acumula sobrecarga. Cuando el blindaje hierva, podrás quemar sus placas.';
+  }
+  if((boss?.phase || 'armor') === 'reactor'){
+    return 'El blindaje ya cede. Ahora alterna proyectiles y quemaduras para fracturar el reactor central.';
+  }
+  return 'El núcleo está delante. Cada ráfaga cuenta y el coloso está a un paso de romperlo todo contigo dentro.';
+}
+
+function syncStoryFinalColossusCommandUnlocks(options = {}){
+  const special = ensureStoryFinalColossusCommandProgress(false);
+  const boss = ensureStoryFinalColossusBossProgress();
+  if(!special || !boss) return;
+  const announce = !!options.announce;
+  if(!special.meltdownUnlocked && (special.turnCounter >= 4 || boss.phase !== 'armor' || (Number(boss.heat) || 0) >= 72)){
+    special.meltdownUnlocked = true;
+    if(announce){
+      log('☢️ El panel roto propone una orden extrema: QUEMARLO TODO. Puedes volcar combustible, calor y módulos en una sola descarga.');
+      addToast('Orden QUEMARLO TODO desbloqueada', 'danger');
+      playUiSound('colossus_warning');
+    }
+  }
+  if(!special.sacrificeOffered && boss.phase === 'core' && (special.meltdownUsed || special.turnCounter >= 6 || (Number(boss.defenseValue) || 0) <= Math.max(3, Math.round((boss.defenseMax || 1) * .18)))){
+    special.sacrificeOffered = true;
+    special.sacrificePrompt = true;
+    if(announce){
+      log('☠️ El panel te ofrece la solución final: estrellarte contra el núcleo del coloso.');
+      addToast('Decisión final disponible', 'danger');
+      playUiSound('alert');
+    }
+  }
+  special.currentText = getStoryFinalColossusCommandObjective(special, boss);
+  special.noteText = `Integridad ${Math.round(Number(special.panelIntegrity) || 0)}% · Cadencia ${special.barrageLevel} · Sobrecarga ${Math.round(Number(special.burnCharge) || 0)}%`;
+}
+
+function applyStoryFinalColossusScriptedDamage(amount, options = {}){
+  const boss = ensureStoryFinalColossusBossProgress();
+  if(!boss) return { armorDamage:0, defenseDamage:0, remaining:0 };
+  let remaining = Math.max(0, Number(amount) || 0);
+  let armorDamage = 0;
+  let defenseDamage = 0;
+  const allowDefense = options.allowDefense !== false;
+  if((Number(boss.armorValue) || 0) > 0){
+    armorDamage = Math.min(Number(boss.armorValue) || 0, remaining);
+    boss.armorValue = Math.max(0, (Number(boss.armorValue) || 0) - armorDamage);
+    remaining -= armorDamage;
+  }
+  if(allowDefense && remaining > 0 && (Number(boss.armorValue) || 0) <= 0){
+    defenseDamage = Math.min(Number(boss.defenseValue) || 0, remaining);
+    boss.defenseValue = Math.max(0, (Number(boss.defenseValue) || 0) - defenseDamage);
+    remaining -= defenseDamage;
+  }
+  boss.vitalValue = Math.max(0, (Number(boss.armorValue) || 0) + (Number(boss.defenseValue) || 0));
+  return { armorDamage, defenseDamage, remaining };
+}
+
+function finalizeStoryFinalColossusCommandOutcome(playerWon, summary, tone = 'ok'){
+  const boss = ensureStoryFinalColossusBossProgress();
+  const special = ensureStoryFinalColossusCommandProgress(false);
+  clearStoryFinalColossusCommandTimers();
+  if(special){
+    special.active = false;
+    special.completed = true;
+    special.playerWon = !!playerWon;
+    special.sacrificePrompt = false;
+    special.sacrificeOffered = false;
+  }
+  if(boss){
+    if(playerWon){
+      boss.armorValue = 0;
+      boss.defenseValue = 0;
+      boss.heat = 100;
+    }
+    boss.vitalValue = Math.max(0, (Number(boss.armorValue) || 0) + (Number(boss.defenseValue) || 0));
+  }
+  state.transitionLock = false;
+  state.pendingDefense = null;
+  state.attackMode = false;
+  state.projectileMode = false;
+  state.selected = [];
+  state.phase = 'Final';
+  state.winner = playerWon
+    ? (state.players?.[0]?.name || 'Piloto')
+    : (state.players?.[1]?.name || 'Coloso de Argos');
+  log(summary);
+  addToast(playerWon ? 'Coloso neutralizado' : 'El coloso sobrevive', tone);
+  triggerVictorySequence();
+  maybeFinalizeStoryMissionAfterWinner();
+  render();
+  window.setTimeout(() => scrollToWinnerCup('smooth'), 180);
+}
+
+function clearStoryFinalColossusCommandTimers(){
+  if(!storyFinalColossusCommandTimers.length) return;
+  storyFinalColossusCommandTimers.forEach(timerId => window.clearTimeout(timerId));
+  storyFinalColossusCommandTimers = [];
+}
+
+function scheduleStoryFinalColossusCommandTimer(callback, delay){
+  const timerId = window.setTimeout(() => {
+    storyFinalColossusCommandTimers = storyFinalColossusCommandTimers.filter(id => id !== timerId);
+    callback();
+  }, Math.max(0, delay));
+  storyFinalColossusCommandTimers.push(timerId);
+  return timerId;
+}
+
+function runStoryFinalColossusCompanionRescueSequence(){
+  const boss = ensureStoryFinalColossusBossProgress();
+  const special = ensureStoryFinalColossusCommandProgress(false);
+  if(!boss || !special || special.alliesIncoming || special.completed) return false;
+  special.alliesIncoming = true;
+  special.sacrificePrompt = false;
+  special.currentText = 'El vector de sacrificio entra en curso... pero no estás solo.';
+  special.noteText = 'Bloqueando mandos secundarios. Mantén la cabina un instante más.';
+  state.phase = 'Sacrificio';
+  state.transitionLock = true;
+  clearStoryFinalColossusCommandTimers();
+  log('☠️ Aceptas el sacrificio y apuntas el mecha directamente al núcleo del coloso.');
+  addToast('Vector de sacrificio aceptado', 'danger');
+  playUiSound('alert');
+  triggerScreenShake(isStoryFinalColossusMobileLite() ? 'light' : 'heavy');
+  triggerScreenRipple('amber');
+  cueStoryFinalColossusBoss('stomp');
+  STORY_FINAL_COLOSSUS_COMPANION_RESCUE_BEATS.forEach((beat, index) => {
+    scheduleStoryFinalColossusCommandTimer(() => {
+      log(beat.log);
+      addToast(beat.toast, beat.tone);
+      if(beat.sound) playUiSound(beat.sound);
+      if(beat.ripple) triggerScreenRipple(beat.ripple);
+      cueStoryFinalColossusBoss(index >= 2 ? 'phase' : 'hit');
+      render();
+    }, 620 + index * 760);
+  });
+  scheduleStoryFinalColossusCommandTimer(() => {
+    special.alliesIncoming = false;
+    special.alliesArrived = true;
+    special.currentText = 'Tus compañeros sujetan al coloso contigo dentro. El golpe final ya no exige tu muerte.';
+    special.noteText = 'La vieja red de la aventura responde al fin como una sola unidad.';
+    boss.armorValue = 0;
+    boss.defenseValue = 0;
+    boss.heat = 100;
+    syncStoryFinalColossusBossState({ announce:true });
+    addToast('Golpe letal conjunto', 'ok');
+    playUiSound('build');
+    triggerScreenRipple('cyan');
+    render();
+  }, 620 + STORY_FINAL_COLOSSUS_COMPANION_RESCUE_BEATS.length * 760);
+  scheduleStoryFinalColossusCommandTimer(() => {
+    finalizeStoryFinalColossusCommandOutcome(
+      true,
+      '🏁 El núcleo del coloso colapsa cuando tus compañeros aparecen a tiempo. El sacrificio queda abortado y el golpe final lo dais juntos.',
+      'ok'
+    );
+  }, 620 + STORY_FINAL_COLOSSUS_COMPANION_RESCUE_BEATS.length * 760 + 860);
+  return true;
+}
+
+function resolveStoryFinalColossusCommandEnemyPressure(actionKind){
+  const boss = ensureStoryFinalColossusBossProgress();
+  const special = ensureStoryFinalColossusCommandProgress(false);
+  if(!boss || !special || special.completed) return false;
+  special.turnCounter += 1;
+  special.playerActions += 1;
+  const basePressure = boss.phase === 'armor' ? 10 : boss.phase === 'reactor' ? 14 : 18;
+  const ramp = Math.min(10, Math.floor(special.turnCounter / 2));
+  const mitigation = actionKind === 'reinforce' ? 8 : actionKind === 'meltdown' ? -5 : 0;
+  const pressure = Math.max(6, basePressure + ramp - mitigation);
+  special.pressure = pressure;
+  special.panelIntegrity = clampPercent((Number(special.panelIntegrity) || 0) - pressure);
+  special.resolve = clampPercent((Number(special.resolve) || 0) + (actionKind === 'reinforce' ? 6 : 2) - Math.ceil(pressure / 4));
+  special.burnCharge = clampPercent((Number(special.burnCharge) || 0) + (actionKind === 'projectile' ? 12 : actionKind === 'burn' ? 6 : 5));
+  if(actionKind === 'projectile' && special.projectileCount % 2 === 0){
+    special.barrageLevel = Math.min(9, Number(special.barrageLevel || 0) + 1);
+  }else if(actionKind === 'reinforce' && special.reinforceCount >= 2){
+    special.barrageLevel = Math.min(9, Number(special.barrageLevel || 0) + 1);
+  }
+  boss.heat = clampPercent((Number(boss.heat) || 0) + (actionKind === 'projectile' ? 11 : actionKind === 'burn' ? 7 : 4));
+  special.lastEnemyText = boss.phase === 'core'
+    ? `El coloso descarga el núcleo contra la cabina y te arranca ${pressure}% de integridad.`
+    : boss.phase === 'reactor'
+      ? `El reactor late como un martillo y descoloca el panel: pierdes ${pressure}% de integridad.`
+      : `El blindaje te devuelve una onda sísmica. El panel cede ${pressure}% mientras todo tiembla.`;
+  log(`💢 ${special.lastEnemyText}`);
+  addToast(`Presión del coloso: -${pressure}%`, 'warn');
+  cueStoryFinalColossusBoss('stomp');
+  if((Number(special.panelIntegrity) || 0) <= 0){
+    if(!special.emergencyRestartUsed){
+      special.emergencyRestartUsed = true;
+      special.panelIntegrity = 24;
+      special.resolve = clampPercent((Number(special.resolve) || 0) + 14);
+      log('🛠️ La resiliencia evita el colapso total por última vez. El panel sigue vivo de puro milagro.');
+      addToast('Último milagro de resiliencia', 'danger');
+      playUiSound('build');
+    }else{
+      finalizeStoryFinalColossusCommandOutcome(
+        false,
+        '⚠️ La cabina colapsa antes de abrir una brecha suficiente. El coloso sobrevive a la ofensiva final.',
+        'danger'
+      );
+      return true;
+    }
+  }
+  syncStoryFinalColossusBossState({ announce:true });
+  syncStoryFinalColossusCommandUnlocks({ announce:true });
+  if(special.sacrificeOffered && !special.alliesIncoming && (boss.phase === 'core' || special.meltdownUsed)){
+    special.sacrificePrompt = true;
+    state.phase = 'Decisión final';
+  }else{
+    state.phase = 'Asalto de resiliencia';
+  }
+  render();
+  return true;
+}
+
+function triggerStoryFinalColossusCommandAction(kind){
+  if(!isStoryFinalColossusCommandModeActive()) return false;
+  const boss = ensureStoryFinalColossusBossProgress();
+  const special = ensureStoryFinalColossusCommandProgress(false);
+  if(!boss || !special || special.alliesIncoming || special.completed) return false;
+  if(kind === 'delay-sacrifice'){
+    special.sacrificePrompt = false;
+    special.sacrificeDeclined = true;
+    special.currentText = 'Aguantas un poco más. Exprime otra salva antes de jugártelo todo en una sola trayectoria.';
+    special.noteText = 'La consola mantiene abierta la ruta de sacrificio, pero de momento sigues vivo y al mando.';
+    state.phase = 'Asalto de resiliencia';
+    render();
+    return true;
+  }
+  if(kind === 'confirm-sacrifice'){
+    if(!special.sacrificeOffered) return false;
+    return runStoryFinalColossusCompanionRescueSequence();
+  }
+  let summary = '';
+  if(kind === 'projectile'){
+    const damage = Math.max(4, Number(special.barrageLevel || 0) + (boss.phase === 'core' ? 3 : boss.phase === 'reactor' ? 2 : 1));
+    const result = applyStoryFinalColossusScriptedDamage(damage, { allowDefense:true });
+    special.projectileCount += 1;
+    special.lastActionKind = kind;
+    special.lastActionSummary = `Proyectil de emergencia ${damage}`;
+    boss.heat = clampPercent((Number(boss.heat) || 0) + 12);
+    summary = `🚀 Disparas un proyectil de emergencia por ${damage}. El blindaje pierde ${result.armorDamage} y el reactor ${result.defenseDamage}.`;
+    addToast(`Proyectil +${damage}`, 'warn');
+    playUiSound('projectile');
+    cueStoryFinalColossusBoss('hit');
+  }else if(kind === 'reinforce'){
+    const restored = 12 + Math.max(2, Math.floor((Number(special.resolve) || 0) / 18));
+    special.reinforceCount += 1;
+    special.panelIntegrity = clampPercent((Number(special.panelIntegrity) || 0) + restored);
+    special.resolve = clampPercent((Number(special.resolve) || 0) + 10);
+    special.burnCharge = clampPercent((Number(special.burnCharge) || 0) + 8);
+    special.lastActionKind = kind;
+    special.lastActionSummary = `Refuerzo de ${restored}%`;
+    summary = `🛠️ Reatas placas, vuelves a soldar mandos y recuperas ${restored}% de integridad en el panel.`;
+    addToast(`Panel +${restored}%`, 'ok');
+    playUiSound('build');
+    triggerScreenRipple('cyan');
+  }else if(kind === 'burn'){
+    if((Number(special.burnCharge) || 0) < 34){
+      addToast('Aún no hay sobrecarga suficiente', 'warn');
+      notifySelection('Necesitas más sobrecarga. Sube la cadencia con proyectiles o estabiliza el panel para cargar otra vez.');
+      return false;
+    }
+    const damage = boss.phase === 'armor'
+      ? 9 + Math.floor((Number(special.barrageLevel) || 0) / 2)
+      : 7 + Math.floor((Number(special.barrageLevel) || 0) / 2);
+    const result = applyStoryFinalColossusScriptedDamage(damage, { allowDefense: boss.phase !== 'armor' });
+    special.burnCount += 1;
+    special.burnCharge = clampPercent((Number(special.burnCharge) || 0) - 28);
+    special.panelIntegrity = clampPercent((Number(special.panelIntegrity) || 0) - 4);
+    special.lastActionKind = kind;
+    special.lastActionSummary = `Quemadura de ${damage}`;
+    boss.heat = clampPercent((Number(boss.heat) || 0) + 18);
+    summary = `🔥 Abres válvulas y quemas el blindaje. Arrancas ${result.armorDamage} de armadura y ${result.defenseDamage} del reactor.`;
+    addToast('Blindaje en llamas', 'danger');
+    playUiSound('attack');
+    triggerScreenRipple('amber');
+    cueStoryFinalColossusBoss('phase');
+  }else if(kind === 'meltdown'){
+    if(!special.meltdownUnlocked || special.meltdownUsed){
+      return false;
+    }
+    const damage = Math.max(12, Math.round((boss.vitalMax || 1) * .42));
+    const result = applyStoryFinalColossusScriptedDamage(damage, { allowDefense:true });
+    special.meltdownUsed = true;
+    special.burnCharge = clampPercent((Number(special.burnCharge) || 0) + 16);
+    special.panelIntegrity = clampPercent((Number(special.panelIntegrity) || 0) - 16);
+    special.lastActionKind = kind;
+    special.lastActionSummary = `Volcado total ${damage}`;
+    boss.heat = 100;
+    summary = `☢️ Lo vuelcas todo. El pulso extremo arranca ${result.armorDamage} de armadura y ${result.defenseDamage} del reactor, dejando el núcleo casi desnudo.`;
+    addToast('QUEMARLO TODO', 'danger');
+    playUiSound('colossus_warning');
+    triggerScreenShake(isStoryFinalColossusMobileLite() ? 'light' : 'heavy');
+    cueStoryFinalColossusBoss('phase');
+  }else{
+    return false;
+  }
+  log(summary);
+  syncStoryFinalColossusBossState({ announce:true });
+  syncStoryFinalColossusCommandUnlocks({ announce:true });
+  if(kind === 'meltdown' && boss.phase === 'core'){
+    special.sacrificeOffered = true;
+    special.sacrificePrompt = true;
+    state.phase = 'Decisión final';
+    special.currentText = 'El núcleo ha quedado expuesto del todo. La consola te ofrece estrellarte contra él.';
+    special.noteText = 'Aceptar el sacrificio parece letal... pero la historia todavía no ha dicho su última palabra.';
+    render();
+    return true;
+  }
+  return resolveStoryFinalColossusCommandEnemyPressure(kind);
+}
+
+function activateStoryFinalColossusCommandMode(){
+  if(!isStoryFinalColossusCombat() || state.winner) return false;
+  const boss = ensureStoryFinalColossusBossProgress();
+  const special = ensureStoryFinalColossusCommandProgress(true);
+  if(!boss || !special) return false;
+  if(special.active && !special.completed) return false;
+  clearStoryFinalColossusCommandTimers();
+  special.active = true;
+  special.completed = false;
+  special.alliesIncoming = false;
+  special.alliesArrived = false;
+  special.sacrificePrompt = false;
+  special.sacrificeOffered = false;
+  special.playerWon = false;
+  state.currentPlayer = 0;
+  state.pendingDefense = null;
+  state.defenseSelectionMode = false;
+  state.attackMode = false;
+  state.projectileMode = false;
+  state.selected = [];
+  state.transitionLock = false;
+  state.phase = 'Asalto de resiliencia';
+  syncStoryFinalColossusBossState({ announce:false });
+  syncStoryFinalColossusCommandUnlocks({ announce:false });
+  syncStoryFinalColossusOverlay();
+  log('🧭 El panel entra en MODO DE EMERGENCIA. A partir de ahora el combate final se resuelve con órdenes simples: disparar, reforzar, quemar blindaje y sobrevivir.');
+  addToast('Modo de emergencia del coloso', 'warn');
+  return true;
 }
 
 function isStoryFinalColossusEngaged(){
@@ -33411,8 +34484,7 @@ function getStoryFinalColossusSequenceTimings(){
 }
 
 function getStoryFinalColossusCurrentPhase(enemy, boss){
-  const armorValue = sumCards(enemy?.armor || []);
-  const defenseValue = sumCards(enemy?.defense || []);
+  const { armorValue, defenseValue } = getStoryFinalColossusBossValues(enemy, boss);
   if(armorValue > 0) return 'armor';
   if(defenseValue <= 0) return 'core';
   const defensePct = defenseValue / Math.max(1, Number(boss?.defenseMax) || defenseValue || 1);
@@ -33496,8 +34568,11 @@ function syncStoryFinalColossusBossState(options = {}){
   if(!enemy || !boss) return boss;
   const previousPhase = boss.phase || 'armor';
   const nextPhase = getStoryFinalColossusCurrentPhase(enemy, boss);
-  boss.armorValue = sumCards(enemy.armor || []);
-  boss.defenseValue = sumCards(enemy.defense || []);
+  const preserveResolvedBossState = !!boss.special?.completed && !!boss.special?.playerWon;
+  if(!isStoryFinalColossusCommandModeActive() && !preserveResolvedBossState){
+    boss.armorValue = sumCards(enemy.armor || []);
+    boss.defenseValue = sumCards(enemy.defense || []);
+  }
   boss.vitalValue = boss.armorValue + boss.defenseValue;
   boss.phase = nextPhase;
   boss.phaseIndex = getStoryFinalColossusPhaseIndex(nextPhase);
@@ -33526,9 +34601,10 @@ function syncStoryFinalColossusBossHud(forceVisible = null){
     hud.setAttribute('aria-hidden', 'true');
     return;
   }
+  syncStoryFinalColossusCommandUnlocks({ announce:false });
   const meta = getStoryFinalColossusBossMeta(boss.phase);
-  const armorValue = sumCards(enemy.armor || []);
-  const defenseValue = sumCards(enemy.defense || []);
+  const special = ensureStoryFinalColossusCommandProgress(false);
+  const { armorValue, defenseValue } = getStoryFinalColossusBossValues(enemy, boss);
   const armorPct = clampPercent((armorValue / Math.max(1, boss.armorMax)) * 100);
   const defensePct = clampPercent((defenseValue / Math.max(1, boss.defenseMax)) * 100);
   const heatPct = clampPercent(Number(boss.heat) || 0);
@@ -33546,7 +34622,7 @@ function syncStoryFinalColossusBossHud(forceVisible = null){
   const defenseValueEl = document.getElementById('storyFinalColossusBossDefenseValue');
   const heatValueEl = document.getElementById('storyFinalColossusBossHeatValue');
   if(phaseEl) phaseEl.textContent = `${meta.chip} · ${meta.label}`;
-  if(directiveEl) directiveEl.textContent = meta.directive;
+  if(directiveEl) directiveEl.textContent = special?.active ? (special.currentText || meta.directive) : meta.directive;
   if(armorBar) armorBar.style.width = `${armorPct.toFixed(1)}%`;
   if(defenseBar) defenseBar.style.width = `${defensePct.toFixed(1)}%`;
   if(heatBar) heatBar.style.width = `${heatPct.toFixed(1)}%`;
@@ -33558,6 +34634,63 @@ function syncStoryFinalColossusBossHud(forceVisible = null){
     if(!plate) return;
     plate.classList.toggle('online', boss.phaseIndex >= idx);
   });
+}
+
+function syncStoryFinalColossusCommandPanel(){
+  const panel = document.getElementById('storyFinalColossusCommandPanel');
+  if(!panel) return;
+  let special = ensureStoryFinalColossusCommandProgress(false);
+  if(isStoryFinalColossusResilienceRecovered() && (!special || !special.active) && !state.winner){
+    activateStoryFinalColossusCommandMode();
+    special = ensureStoryFinalColossusCommandProgress(false);
+  }
+  const active = !!special && !!special.active && !special.completed && !state.winner;
+  panel.hidden = !active;
+  panel.setAttribute('aria-hidden', active ? 'false' : 'true');
+  if(!active) return;
+  const boss = syncStoryFinalColossusBossState({ announce:false });
+  syncStoryFinalColossusCommandUnlocks({ announce:false });
+  const textEl = document.getElementById('storyFinalColossusCommandText');
+  const noteEl = document.getElementById('storyFinalColossusCommandNote');
+  const integrityBar = document.getElementById('storyFinalColossusCommandIntegrityBar');
+  const integrityValue = document.getElementById('storyFinalColossusCommandIntegrityValue');
+  const cadenceBar = document.getElementById('storyFinalColossusCommandCadenceBar');
+  const cadenceValue = document.getElementById('storyFinalColossusCommandCadenceValue');
+  const burnBar = document.getElementById('storyFinalColossusCommandBurnBar');
+  const burnValue = document.getElementById('storyFinalColossusCommandBurnValue');
+  const projectileBtn = document.getElementById('storyFinalColossusProjectileBtn');
+  const reinforceBtn = document.getElementById('storyFinalColossusReinforceBtn');
+  const burnBtn = document.getElementById('storyFinalColossusBurnBtn');
+  const meltdownBtn = document.getElementById('storyFinalColossusMeltdownBtn');
+  const sacrificeBtn = document.getElementById('storyFinalColossusSacrificeBtn');
+  const delayBtn = document.getElementById('storyFinalColossusDelayBtn');
+  if(textEl) textEl.textContent = special.currentText || getStoryFinalColossusCommandObjective(special, boss);
+  if(noteEl) noteEl.textContent = special.noteText || '';
+  if(integrityBar) integrityBar.style.width = `${clampPercent(Number(special.panelIntegrity) || 0).toFixed(1)}%`;
+  if(integrityValue) integrityValue.textContent = `${Math.round(Number(special.panelIntegrity) || 0)}%`;
+  if(cadenceBar) cadenceBar.style.width = `${clampPercent(((Number(special.barrageLevel) || 0) / 9) * 100).toFixed(1)}%`;
+  if(cadenceValue) cadenceValue.textContent = `x${Number(special.barrageLevel) || 0}`;
+  if(burnBar) burnBar.style.width = `${clampPercent(Number(special.burnCharge) || 0).toFixed(1)}%`;
+  if(burnValue) burnValue.textContent = `${Math.round(Number(special.burnCharge) || 0)}%`;
+  const busy = !!state.transitionLock || !!special.alliesIncoming;
+  if(projectileBtn) projectileBtn.disabled = busy;
+  if(reinforceBtn) reinforceBtn.disabled = busy;
+  if(burnBtn) burnBtn.disabled = busy || (Number(special.burnCharge) || 0) < 34;
+  if(meltdownBtn){
+    meltdownBtn.hidden = !special.meltdownUnlocked;
+    meltdownBtn.disabled = busy || !!special.meltdownUsed;
+    meltdownBtn.textContent = special.meltdownUsed ? 'QUEMADO' : 'QUEMARLO TODO';
+  }
+  if(sacrificeBtn){
+    sacrificeBtn.hidden = !special.sacrificeOffered;
+    sacrificeBtn.disabled = busy;
+    sacrificeBtn.textContent = special.sacrificePrompt ? 'Sí, sacrificio' : 'Aceptar sacrificio';
+  }
+  if(delayBtn){
+    delayBtn.hidden = !special.sacrificeOffered;
+    delayBtn.disabled = busy;
+    delayBtn.textContent = special.sacrificePrompt ? 'No todavía' : 'Seguir atacando';
+  }
 }
 
 function storyFinalColossusTryAutoInstallFromHand(enemy, zone){
@@ -33588,7 +34721,7 @@ function storyFinalColossusTryAutoInstallFromHand(enemy, zone){
 }
 
 function applyStoryFinalColossusTurnStartRoutine(){
-  if(!isStoryFinalColossusCombat() || !isStoryFinalColossusResilienceRecovered() || state.currentPlayer !== 1 || state.winner) return false;
+  if(!isStoryFinalColossusCombat() || !isStoryFinalColossusResilienceRecovered() || isStoryFinalColossusCommandModeActive() || state.currentPlayer !== 1 || state.winner) return false;
   const boss = syncStoryFinalColossusBossState({ announce:false });
   const enemy = state.players?.[1] || null;
   if(!boss || !enemy) return false;
@@ -33642,7 +34775,7 @@ function applyStoryFinalColossusTurnStartRoutine(){
 
 function getStoryFinalColossusAttackAdjustment(attackerIdx, defenderIdx, baseAttack){
   const adjustment = { total: baseAttack, bonus: 0, label: '' };
-  if(!baseAttack || !isStoryFinalColossusCombat() || !isStoryFinalColossusResilienceRecovered()) return adjustment;
+  if(!baseAttack || !isStoryFinalColossusCombat() || !isStoryFinalColossusResilienceRecovered() || isStoryFinalColossusCommandModeActive()) return adjustment;
   const boss = syncStoryFinalColossusBossState({ announce:false });
   if(!boss) return adjustment;
   if(attackerIdx === 1){
@@ -33678,7 +34811,7 @@ function logStoryFinalColossusAttackAdjustment(adjustment, attackerIdx){
 }
 
 function resolveStoryFinalColossusAfterImpact(pending, totalAttack, result){
-  if(!pending || !isStoryFinalColossusCombat() || !isStoryFinalColossusResilienceRecovered()) return;
+  if(!pending || !isStoryFinalColossusCombat() || !isStoryFinalColossusResilienceRecovered() || isStoryFinalColossusCommandModeActive()) return;
   const destroyedArmorCount = result?.destroyedArmor?.length || 0;
   const destroyedDefenseCount = result?.destroyedDefense?.length || 0;
   if(pending.defenderIndex === 1){
@@ -33913,15 +35046,15 @@ function triggerStoryFinalColossusResilience(){
     if(!activeProgress) return;
     activeProgress.resilienceRecovering = false;
     activeProgress.stage = 'combat-live';
-    state.phase = 'Combate del coloso';
+    state.phase = 'Asalto de resiliencia';
     state.transitionLock = false;
-    applyStoryFinalColossusTurnStartRoutine();
+    activateStoryFinalColossusCommandMode();
     clearStoryFinalColossusResilienceBurstTimers();
     playUiSound('build');
     triggerScreenRipple('amber');
-    log('🛠️ Resiliencia activada: el panel recompone el 90% del sistema y el combate vuelve a estar operativo.');
+    log('🛠️ Resiliencia activada: el panel recompone el 90% del sistema y pasa a un modo de combate de emergencia mucho más simple.');
     addToast('Panel recompuesto al 90%', 'ok');
-    addToast('El verdadero combate comienza', 'warn');
+    addToast('Modo de emergencia activado', 'warn');
     syncStoryFinalColossusOverlay();
     render();
   }, prefersReducedMotion() ? 360 : 1480);
@@ -33961,6 +35094,7 @@ function clearStoryFinalColossusSequence(forceHideOverlay = false){
     window.clearTimeout(storyFinalColossusResilienceTimer);
     storyFinalColossusResilienceTimer = null;
   }
+  clearStoryFinalColossusCommandTimers();
   clearStoryFinalColossusResilienceBurstTimers();
   hideStoryFinalColossusControlWarning();
   if(forceHideOverlay){
@@ -33975,9 +35109,14 @@ function clearStoryFinalColossusSequence(forceHideOverlay = false){
       bossHud.hidden = true;
       bossHud.setAttribute('aria-hidden', 'true');
     }
+    const commandPanel = document.getElementById('storyFinalColossusCommandPanel');
+    if(commandPanel){
+      commandPanel.hidden = true;
+      commandPanel.setAttribute('aria-hidden', 'true');
+    }
   }
-  document.body?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open', 'story-final-colossus-ruined', 'story-final-colossus-resilience-restoring');
-  document.querySelector('.app')?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open', 'story-final-colossus-ruined', 'story-final-colossus-resilience-restoring');
+  document.body?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open', 'story-final-colossus-ruined', 'story-final-colossus-operational', 'story-final-colossus-resilience-restoring', 'story-final-colossus-command-mode');
+  document.querySelector('.app')?.classList.remove('story-final-colossus-mode', 'story-final-colossus-breaking', 'story-final-colossus-engaged', 'story-final-colossus-mobile', 'story-final-colossus-mobile-panel-forced', 'story-final-colossus-defense-hand-open', 'story-final-colossus-ruined', 'story-final-colossus-operational', 'story-final-colossus-resilience-restoring', 'story-final-colossus-command-mode');
   document.body?.classList.remove('story-final-colossus-recoiling');
   document.querySelector('.app')?.classList.remove('story-final-colossus-recoiling');
   clearStoryFinalColossusBossCueClasses();
@@ -34056,7 +35195,9 @@ function syncStoryFinalColossusOverlay(){
   const breaking = !!progress && !!progress.phase2Started && !progress.phase2Complete;
   const engaged = !!progress && !!progress.phase2Complete;
   const ruined = engaged && !progress?.resilienceRecovered;
+  const operational = engaged && !!progress?.resilienceRecovered && !progress?.resilienceRecovering;
   const resilienceRestoring = engaged && !!progress?.resilienceRecovering;
+  const commandMode = operational && isStoryFinalColossusCommandModeActive();
   const mobileLite = isStoryFinalColossusMobileLite();
   const mobilePanelForced = mobileLite && (
     engaged
@@ -34070,8 +35211,12 @@ function syncStoryFinalColossusOverlay(){
   document.querySelector('.app')?.classList.toggle('story-final-colossus-engaged', engaged);
   document.body?.classList.toggle('story-final-colossus-ruined', ruined);
   document.querySelector('.app')?.classList.toggle('story-final-colossus-ruined', ruined);
+  document.body?.classList.toggle('story-final-colossus-operational', operational);
+  document.querySelector('.app')?.classList.toggle('story-final-colossus-operational', operational);
   document.body?.classList.toggle('story-final-colossus-resilience-restoring', resilienceRestoring);
   document.querySelector('.app')?.classList.toggle('story-final-colossus-resilience-restoring', resilienceRestoring);
+  document.body?.classList.toggle('story-final-colossus-command-mode', commandMode);
+  document.querySelector('.app')?.classList.toggle('story-final-colossus-command-mode', commandMode);
   document.body?.classList.toggle('story-final-colossus-mobile', mobileLite);
   document.querySelector('.app')?.classList.toggle('story-final-colossus-mobile', mobileLite);
   document.body?.classList.toggle('story-final-colossus-mobile-panel-forced', mobilePanelForced);
@@ -35644,10 +36789,10 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'projectile',
-    title: 'Paso 16 · Remate final y uso opcional del proyectil',
-    body: 'Ahora sí: tu primer ataque completo ya ha desbloqueado los <strong>proyectiles</strong>. La regla importante es esta: el <strong>combustible</strong> solo limita el <strong>ataque principal</strong>; el <strong>proyectil</strong> te deja añadir <strong>1 pica numérica extra</strong>, y esa carta <strong>siempre se descarta</strong>.<br><br>En este cierre tienes <strong>7♣</strong> como combustible desde Armadura gracias al <strong>A♦</strong>, así que tu límite principal es <strong>14</strong>.<br><br><strong>Opción A · Ataque normal:</strong> usa <strong>7♣ + 4♠ + 7♠</strong> y confirma arriba.<br><br><strong>Opción B · Ataque con todo:</strong> si quieres meter también la <strong>8♠</strong>, activa <strong>Modo proyectil</strong> y ataca con <strong>7♣ + 4♠ + 7♠</strong> como ataque principal y <strong>8♠</strong> como proyectil.',
-    objective: 'Gana la partida con una de estas dos opciones finales: <strong>ataque normal</strong> con <strong>7♣ + 4♠ + 7♠</strong> o <strong>ataque con todo</strong> usando <strong>Modo proyectil</strong> con <strong>7♣ + 4♠ + 7♠ + 8♠</strong>.',
-    tip: 'Usa proyectil solo cuando quieras añadir una pica extra que ya no cabe dentro del límite del combustible principal.',
+    title: 'Paso 16 · Remate final con proyectil',
+    body: 'Ahora sí: tu primer ataque completo ya ha desbloqueado los <strong>proyectiles</strong>. La regla importante es esta: el <strong>combustible</strong> solo limita el <strong>ataque principal</strong>; el <strong>proyectil</strong> te deja añadir <strong>1 pica numérica extra</strong>, y esa carta <strong>siempre se descarta</strong>.<br><br>En este cierre tienes <strong>7♣</strong> como combustible desde Armadura gracias al <strong>A♦</strong>, así que tu límite principal es <strong>14</strong>. Con solo <strong>7♣ + 4♠ + 7♠</strong> dejarías al instructor con vida, así que el remate correcto es activar <strong>Modo proyectil</strong> y sumar también la <strong>8♠</strong>.',
+    objective: 'Activa <strong>Modo proyectil</strong> y gana la partida con <strong>7♣</strong> como combustible, <strong>4♠ + 7♠</strong> como ataque principal y <strong>8♠</strong> como proyectil.',
+    tip: 'Aquí el proyectil no es opcional: es la pica extra que te permite borrar el último <strong>7♥</strong> del instructor.',
     allowedButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0SwapArmor, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA, TUTORIAL_CARD_IDS.p0AttackB],
     highlightButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn'],
@@ -38635,7 +39780,7 @@ function getInteractivePlayerIndex(){
   return focusIdx;
 }
 function canUseInteractiveTurnAction(){
-  if(storyArgosHackGateActive || state.winner || state.pendingDefense || state.transitionLock) return false;
+  if(storyArgosHackGateActive || state.winner || state.pendingDefense || state.transitionLock || isStoryFinalColossusCommandModeActive()) return false;
   const interactiveIdx = getInteractivePlayerIndex();
   if(interactiveIdx < 0) return false;
   return interactiveIdx === state.currentPlayer;
@@ -38746,6 +39891,7 @@ function zoneLabel(zone){
 function toggleSelect(id){
   // CRITICAL FIX: Allow selection during defense even if transitionLock is true
   // The defender needs to select cards to respond to the attack
+  if(isStoryFinalColossusCommandModeActive() && !state.pendingDefense) return;
   if(state.transitionLock && !state.pendingDefense) return;
   if(state.pendingDefense && isDefenseInteractionGuardActive()) return;
 
@@ -45922,6 +47068,7 @@ function render(){
 
   updateButtons();
   renderDesktopCompactHud();
+  syncStoryFinalColossusCommandPanel();
   syncDefenseGuideBar();
   syncTutorialVisualTargets();
   maybeCelebrateTutorialPrimerStatGain();
@@ -46088,7 +47235,8 @@ function updateButtons(){
   if(!state.players || state.players.length === 0) return;
   const hasWinner = !!state.winner;
   const inDefense = !!state.pendingDefense;
-  const locked = !!state.transitionLock || storyArgosHackGateActive;
+  const finalColossusCommandMode = isStoryFinalColossusCommandModeActive();
+  const locked = !!state.transitionLock || storyArgosHackGateActive || finalColossusCommandMode;
   const cpuOwnsCurrentContext = isSinglePlayerMode() && getInteractivePlayerIndex() < 0;
   const saveSupport = getSaveSupportState();
   const player = state.players[state.currentPlayer] || { hand:[], attack:[] };
@@ -46097,7 +47245,7 @@ function updateButtons(){
   const tutorialModifyEnabled = tutorialAllowsButton('actionAddBtn') && canModifySelection();
   const hasDraftSelection = hasActiveDraftPlacement();
 
-  markButtonEnabled('actionAddBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('actionAddBtn') && canModifySelection());
+  markButtonEnabled('actionAddBtn', !finalColossusCommandMode && !cpuOwnsCurrentContext && tutorialAllowsButton('actionAddBtn') && canModifySelection());
   markButtonEnabled('attackModeBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('attackModeBtn') && !locked && !hasWinner && !inDefense && canAttackMain, canAttackMain && !state.attackMode && tutorialAllowsButton('attackModeBtn') && !cpuOwnsCurrentContext);
   markButtonEnabled('actionDrawDiamondBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('actionDrawDiamondBtn') && !locked && canDrawDiamondNow());
   markButtonEnabled('actionPassBtn', !cpuOwnsCurrentContext && tutorialAllowsButton('actionPassBtn') && !locked && canPassNow());
@@ -46449,6 +47597,24 @@ document.getElementById('skipDefenseBtn').addEventListener('click', () => {
   skipDefenseFromUser();
 });
 document.getElementById('storyFinalColossusResilienceBtn')?.addEventListener('click', triggerStoryFinalColossusResilience);
+document.getElementById('storyFinalColossusProjectileBtn')?.addEventListener('click', () => {
+  triggerStoryFinalColossusCommandAction('projectile');
+});
+document.getElementById('storyFinalColossusReinforceBtn')?.addEventListener('click', () => {
+  triggerStoryFinalColossusCommandAction('reinforce');
+});
+document.getElementById('storyFinalColossusBurnBtn')?.addEventListener('click', () => {
+  triggerStoryFinalColossusCommandAction('burn');
+});
+document.getElementById('storyFinalColossusMeltdownBtn')?.addEventListener('click', () => {
+  triggerStoryFinalColossusCommandAction('meltdown');
+});
+document.getElementById('storyFinalColossusSacrificeBtn')?.addEventListener('click', () => {
+  triggerStoryFinalColossusCommandAction('confirm-sacrifice');
+});
+document.getElementById('storyFinalColossusDelayBtn')?.addEventListener('click', () => {
+  triggerStoryFinalColossusCommandAction('delay-sacrifice');
+});
 document.getElementById('storyArgosHackGateBtn')?.addEventListener('click', resolveStoryArgosHackGate);
 document.getElementById('storyArgosHackCollapseBtn')?.addEventListener('click', () => {
   setStoryArgosHackPanelMode(storyArgosHackPanelMode === 'collapsed' ? 'open' : 'collapsed');
@@ -47357,8 +48523,7 @@ function tutorialIsStepComplete(stepId){
       return tutorialSystem.validation.firstAttackMade
         && state.projectileUnlocked
         && !state.pendingDefense
-        && !state.transitionLock
-        && state.lastActionType === 'attack';
+        && !state.transitionLock;
     case 'defend':
       return !state.pendingDefense && state.currentPlayer===0 && !p0.hand.some(card => card.id===TUTORIAL_CARD_IDS.p0DefendDiamond);
     case 'draw-diamond':
@@ -50009,6 +51174,14 @@ function devLoadTutorialPreset(key){
       removeById(state.players[0].hand, TUTORIAL_CARD_IDS.p0DrawDiamond);
       state.currentPlayer = 0;
       state.phase = 'Turno';
+      {
+        const spentArmor = popCardFromZone(state.players[0], 'armor', TUTORIAL_CARD_IDS.p0ArmorA);
+        if(spentArmor) state.discard.push(spentArmor);
+        const upgradedArmor = removeById(state.tutorialRiggedDraws, TUTORIAL_CARD_IDS.p0SwapArmor)
+          || tutorialPullCardFromAnyPlayerZone(state.players[0], TUTORIAL_CARD_IDS.p0SwapArmor)
+          || tutorialTakeCard(state.deck, '7', 'clubs', TUTORIAL_CARD_IDS.p0SwapArmor);
+        if(upgradedArmor) state.players[0].armor.push(upgradedArmor);
+      }
       state.players[1].armor = [];
       state.projectileUnlocked = true;
       tutorialGoToStep('projectile', { renderNow:false });
