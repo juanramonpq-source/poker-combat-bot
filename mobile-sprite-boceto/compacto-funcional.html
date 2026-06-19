@@ -2023,6 +2023,15 @@
       pointer-events: none;
     }
 
+    .phone-shell.board-open .combat-screen {
+      pointer-events: none;
+    }
+
+    .phone-shell.board-open .board-drawer,
+    .phone-shell.board-open .board-drawer * {
+      pointer-events: auto;
+    }
+
     .phone-shell.rival-view .board-drawer {
       grid-template-rows: auto minmax(0, 1fr);
     }
@@ -6045,6 +6054,8 @@
       projectileOnlyMode: false,
       projectileUnlocked: false,
       tutorial: false,
+      tutorialBusy: false,
+      tutorialMaskHand: false,
       musicOn: false,
       pendingDefense: null,
       pendingBuildOps: 0,
@@ -8252,6 +8263,17 @@
         document.querySelector("[data-hand-count]").textContent = `0/${MAX_HAND_SIZE}`;
         return;
       }
+      const maskTutorialHand = EMBEDDED_REAL_GAME && state.tutorial && state.tutorialMaskHand;
+      if (maskTutorialHand) {
+        tray.style.setProperty("--hand-count", 0);
+        tray.classList.remove("is-expanded-hand");
+        document.querySelector("[data-hand-count]").textContent = `0/${MAX_HAND_SIZE}`;
+        document.querySelector("[data-hand-overview-toggle]")?.setAttribute("aria-expanded", "false");
+        document.querySelectorAll("[data-hand-shift]").forEach((button) => {
+          button.disabled = true;
+        });
+        return;
+      }
       const handCards = getRenderedHandCards(player);
       const visibleLimit = getTutorialPortraitVisibleHandLimit();
       tray.style.setProperty("--hand-count", handCards.length);
@@ -9320,6 +9342,8 @@
       state.projectileOnlyMode = !!snapshot.projectileOnlyMode;
       state.projectileUnlocked = !!snapshot.projectileUnlocked;
       state.tutorial = !!snapshot.tutorial;
+      state.tutorialBusy = !!snapshot.tutorialBusy;
+      state.tutorialMaskHand = !!snapshot.tutorialMaskHand;
       state.musicOn = !!snapshot.musicOn;
       state.pendingDefense = snapshot.pendingDefense || null;
       state.winner = snapshot.winner || null;
@@ -9350,6 +9374,10 @@
       state.tutorialBotDismissAction = snapshot.tutorialBotDismissAction || "";
       state.argosHack = snapshot.argosHack && snapshot.argosHack.active ? snapshot.argosHack : null;
       state.log = Array.isArray(snapshot.log) ? snapshot.log.slice(0, 60) : [];
+      if (state.attackMode || state.projectileOnlyMode || state.pendingDefense) {
+        state.activeTab = "mecha";
+        shell.classList.add("board-open");
+      }
       render();
       maybeShowFirstTurnNotice(snapshot.firstTurnNoticeKey || "", snapshot.firstTurnNoticeText || FIRST_TURN_NOTICE_TEXT);
     }

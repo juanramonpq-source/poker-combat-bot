@@ -32130,6 +32130,7 @@ const tutorialSystem = {
   advancing: false,
   primerScenarioReady: false,
   primerCardCache: {},
+  mobileHudHandMask: false,
   validation: {
     pilotPlaced: false,
     copilotPlaced: false,
@@ -41842,6 +41843,7 @@ function createMobileSpriteSnapshot(){
   const attackSelection = getAttackSelection();
   const guidance = getMobileSpriteGuidanceText();
   const tutorialBotPayload = getTutorialBotSpeechPayload();
+  const currentStepId = tutorialGetCurrentStep()?.id || '';
   const tutorialBotMessageKey = tutorialBotPayload?.messageKey || '';
   const tutorialBotDismissed = !!tutorialBotMessageKey && tutorialBotState.panelDismissedKey === tutorialBotMessageKey;
   const tutorialBotMode = tutorialBotState.introActive
@@ -41850,13 +41852,15 @@ function createMobileSpriteSnapshot(){
   const tutorialBotSequenceOnly = !!tutorialBotPayload?.sequenceOnly;
   const tutorialBotExternalSequenceOverlay = tutorialBotUsesCharacter()
     && tutorialBotSequenceOnly
-    && shouldUseStandaloneTutorialBotSequenceOverlay();
+    && shouldUseStandaloneTutorialBotSequenceOverlay()
+    && (!currentStepId || currentStepId === 'intro-definition');
   const tutorialBotBubbleVisible = !!tutorialBotPayload?.bubbleVisible;
   const tutorialBotPrimaryAction = tutorialBotPayload?.primaryAction || (tutorialBotMode === 'greeting' ? 'tutobot-continue' : '');
   const tutorialBotPrimaryLabel = tutorialBotPayload?.primaryLabel || (tutorialBotMode === 'greeting' ? 'Entendido' : '');
   const mobileTutorialBotVisible = !!tutorialBotPayload?.visible
     && !tutorialBotExternalSequenceOverlay
     && (tutorialBotSequenceOnly ? !tutorialBotState.overlayDismissed : !tutorialBotDismissed);
+  const tutorialMaskHand = !!(tutorialSystem.enabled && tutorialSystem.mobileHudHandMask);
   return {
     players: [cloneMobileSpritePlayer(viewIdx), cloneMobileSpritePlayer(rivalIdx)],
     currentPlayer,
@@ -41870,6 +41874,8 @@ function createMobileSpriteSnapshot(){
     projectileOnlyMode: !!mobileSpriteProjectileOnlyMode,
     projectileUnlocked: !!state.projectileUnlocked,
     tutorial: !!state.tutorial || !!tutorialSystem.enabled,
+    tutorialBusy: !!tutorialSystem.busy,
+    tutorialMaskHand,
     musicOn: !!state.soundOn,
     pendingDefense: getMobileSpritePendingDefense(viewIdx, rivalIdx),
     winner: state.winner || null,
@@ -48215,6 +48221,7 @@ function syncTutorialVisualTargets(){
 function tutorialQueueAutoAction(statusText, callback, delay = 780){
   if(tutorialSystem.autoTimer) window.clearTimeout(tutorialSystem.autoTimer);
   tutorialSystem.busy = true;
+  tutorialSystem.mobileHudHandMask = true;
   tutorialSystem.statusText = statusText;
   tutorialSystem.completionLock = false;
   tutorialSystem.autoTimer = window.setTimeout(() => {
@@ -48230,10 +48237,22 @@ function tutorialSetStep(index, options = {}){
   tutorialSystem.stepIndex = index;
   tutorialSystem.completed = index === activeScript.length - 1;
   tutorialSystem.busy = false;
+  tutorialSystem.mobileHudHandMask = false;
   tutorialSystem.statusText = '';
   tutorialSystem.completionLock = false;
   if(clearSelection) state.selected = [];
   const step = activeScript[index] || null;
+  if(
+    tutorialBotUsesCharacter()
+    && step?.id
+    && step.id !== 'intro-definition'
+    && (tutorialBotState.introActive || tutorialBotState.greetingActive || !tutorialBotState.greetingDone)
+  ){
+    clearTutorialBotTimers();
+    tutorialBotState.introActive = false;
+    tutorialBotState.greetingActive = false;
+    tutorialBotState.greetingDone = true;
+  }
   tutorialPrimerRevealState.pendingStepId = step?.primerReveal ? step.id : '';
   if(step && typeof step.onEnter === 'function'){
     step.onEnter(step, options);
