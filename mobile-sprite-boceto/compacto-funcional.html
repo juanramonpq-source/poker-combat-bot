@@ -9084,6 +9084,20 @@
       return true;
     }
 
+    function activateTouchBoardCardTap(event) {
+      if (!isTouchPointer(event)) return false;
+      const cardNode = event.target.closest?.(".card[data-card-id]");
+      if (!cardNode || cardNode.disabled) return false;
+      if (cardNode.closest("[data-hand-cards]")) return false;
+      event.preventDefault();
+      event.stopPropagation();
+      closeActions();
+      closeTopMenu();
+      toggleSelected(cardNode.dataset.cardId);
+      suppressTrustedTouchClickUntil = Date.now() + 420;
+      return true;
+    }
+
     function activateTouchControl(event) {
       if (!isTouchPointer(event)) return false;
       if (activateTouchTutorialHandTap(event)) return true;
@@ -9441,6 +9455,10 @@
         return;
       }
       if (maybeHandleDirectTutorialControl(event)) {
+        clearPressedButtons();
+        return;
+      }
+      if (activateTouchBoardCardTap(event)) {
         clearPressedButtons();
         return;
       }

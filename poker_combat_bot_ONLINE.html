@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <script>
     (() => {
-      const APP_SHELL_VERSION = '20260618-mobile-selection-fix-1';
+      const APP_SHELL_VERSION = '20260626-mobile-attack-touch-fix-1';
       const ensureVersionedShell = (reloadPersisted = false) => {
         try {
           const url = new URL(window.location.href);
@@ -30,7 +30,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_web_icon_32.png?v=20260506-pocobot-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/pocobot_web_icon_16.png?v=20260506-pocobot-icon" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_app_icon_180.png?v=20260529-pocobot-pwa" />
-  <link rel="manifest" href="site.webmanifest?v=20260618-mobile-selection-fix-1" />
+  <link rel="manifest" href="site.webmanifest?v=20260626-mobile-attack-touch-fix-1" />
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand" />
   <link rel="prefetch" href="assets/audio_01.mp3" />
   <link rel="prefetch" href="assets/audio_02.mp3" />
@@ -32207,7 +32207,7 @@ const TUTOBOT_STEP_LINES = {
   'core-build': 'Perfecto. Ahora montamos el núcleo completo del mecha.',
   'attack-build': 'Muy bien. Vamos a cumplir la exigencia del piloto.',
   'fuel-build': 'Carga combustible y ya tendrás el ataque listo.',
-  'open-attack': 'Pulsa Abrir Ataque y seguimos.',
+  'open-attack': 'Pulsa Acciones y luego Atacar para abrir el disparo.',
   'first-attack': 'Hora del primer disparo. Marca fuel y picas.',
   'defend': 'Atención: te atacan. Vamos a esquivarlo con un diamante.',
   'draw-diamond': 'Recarga tu mano usando un diamante.',
@@ -32663,7 +32663,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260618-mobile-selection-fix-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260626-mobile-attack-touch-fix-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -36715,7 +36715,7 @@ const TUTORIAL_SCRIPT = [
     id: 'open-attack',
     title: 'Paso 9 · Entra en modo ataque',
     body: 'Tu mecha ya cumple la condición del piloto. Ahora abre la consola de ataque para elegir combustible y cartas de daño.',
-    objective: 'Pulsa <strong>Abrir Ataque</strong>.',
+    objective: 'Pulsa <strong>Acciones</strong> y luego <strong>Atacar</strong>.',
     tip: 'En cuanto abras el ataque, podrás elegir combustible y cartas de daño.',
     allowedButtons: ['attackModeBtn', 'clearSelectionBtn'],
     allowedCardIds: [],
@@ -41580,7 +41580,7 @@ function getCompactMobileTutorialCopy(step){
       break;
     case 'open-attack':
       copy.body = 'Tu mecha ya cumple la condición del piloto. Abre la selección de ataque para elegir combustible y cartas de daño.';
-      copy.objective = 'Pulsa <strong>Abrir Ataque</strong>.';
+      copy.objective = 'Pulsa <strong>Acciones</strong> y luego <strong>Atacar</strong>.';
       copy.tip = 'En cuanto abras el ataque, podrás elegir fuel y picas.';
       break;
     case 'first-attack':
@@ -48596,6 +48596,9 @@ function tutorialRunOpponentPass(nextStepIndex, statusText){
     log(`🎓 ${opponent.name} te devuelve el turno para continuar la práctica.`);
     addToast(`${opponent.name} cede el turno`, 'ok');
     advanceTurn();
+    const nextStep = getActiveTutorialScript()[nextStepIndex] || null;
+    if(nextStep?.id === 'pass-turn') tutorialPreparePassTurnHand();
+    if(nextStep?.id === 'swap-card') tutorialPrepareSwapCardHand();
     tutorialSetStep(nextStepIndex);
   }, 1250);
 }
@@ -48804,6 +48807,49 @@ function tutorialPullCardFromAnyPlayerZone(player, cardId){
     if(card) return card;
   }
   return null;
+}
+
+function tutorialTakeOrCreateCard(rank, suit, cardId){
+  return removeById(state.tutorialRiggedDraws || [], cardId)
+    || tutorialPullCardFromAnyPlayerZone(state.players?.[0], cardId)
+    || tutorialPullCardFromAnyPlayerZone(state.players?.[1], cardId)
+    || removeById(state.deck || [], cardId)
+    || (() => {
+      const deckIdx = (state.deck || []).findIndex(card => card.rank === rank && card.suit === suit);
+      if(deckIdx >= 0){
+        const card = state.deck.splice(deckIdx, 1)[0];
+        card.id = cardId;
+        return card;
+      }
+      return { id:cardId, rank, suit, value:rankValue(rank) };
+    })();
+}
+
+function tutorialEnsureHandCardsFirst(cards = []){
+  const player = state.players?.[0];
+  if(!player) return;
+  const ensured = cards
+    .map(([rank, suit, cardId]) => tutorialTakeOrCreateCard(rank, suit, cardId))
+    .filter(Boolean);
+  const ensuredIds = new Set(ensured.map(card => card.id));
+  player.hand = [
+    ...ensured,
+    ...(player.hand || []).filter(card => !ensuredIds.has(card.id))
+  ];
+  state.selected = [];
+}
+
+function tutorialPreparePassTurnHand(){
+  tutorialEnsureHandCardsFirst([
+    ['10', 'hearts', TUTORIAL_CARD_IDS.p0PassHeart],
+    ['8', 'clubs', TUTORIAL_CARD_IDS.p0PassClub]
+  ]);
+}
+
+function tutorialPrepareSwapCardHand(){
+  tutorialEnsureHandCardsFirst([
+    ['7', 'clubs', TUTORIAL_CARD_IDS.p0SwapArmor]
+  ]);
 }
 
 function tutorialEnsurePrimerCard(player, rank, suit, cardId){
@@ -49939,7 +49985,7 @@ const ACADEMY_LESSONS = [
         id: 'academy-fuel-attack',
         title: 'Fase 3 · Atacar con combustible',
         body: 'Lanza tu primer ataque usando fuel y picas.',
-        objective: 'Pulsa <strong>Atacar</strong> o <strong>Abrir ataque</strong>, selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, y termina con <strong>Confirmar ataque</strong>.',
+        objective: 'Pulsa <strong>Acciones</strong> y luego <strong>Atacar</strong>, selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, y termina con <strong>Confirmar ataque</strong>.',
         tip: 'El fuel no daña: marca el límite del ataque principal x2.',
         allowedButtons: ['attackModeBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
