@@ -32213,7 +32213,7 @@ const TUTOBOT_STEP_LINES = {
   'draw-diamond': 'Recarga tu mano usando un diamante.',
   'figure-burst': 'Convierte esas figuras extra en cartas nuevas.',
   'pass-turn': 'Ahora practicamos cómo pasar turno sin perder el ritmo.',
-  'swap-card': 'Vamos a sustituir una pieza del panel.',
+  'swap-card': 'Vamos a mejorar una estadística del Mecha.',
   'projectile': 'Último truco: remata con Modo proyectil y cierra la lección.',
   summary: 'Muy bien. Ya controlas el ciclo básico de PoCoBOT.'
 };
@@ -36747,9 +36747,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'draw-diamond',
     title: 'Paso 12 · Roba con diamantes',
-    body: 'Los diamantes también funcionan como motor de robo. Si descartas uno de la mano, robas tantas cartas como marque su valor. Esta acción se lanza desde el <strong>panel principal de arriba</strong>.',
-    objective: 'Selecciona <strong>2♦</strong> de tu mano y pulsa <strong>Robar con ♦ ARRIBA</strong>.',
-    tip: 'No puedes usar esta acción en dos turnos propios seguidos. Si te desplazas, recuerda que el panel principal está arriba.',
+    body: 'Los diamantes también funcionan como motor de robo. Si descartas uno de la mano, robas tantas cartas como marque su valor. Esta acción se lanza dentro del menú de <strong>ACCIONES</strong>.',
+    objective: 'Selecciona <strong>2♦</strong> de tu mano y pulsa <strong>Robar con ♦</strong> dentro del menú de <strong>ACCIONES</strong>.',
+    tip: 'No puedes usar esta acción en dos turnos propios seguidos. Si no ves el botón directo, abre <strong>ACCIONES</strong>.',
     allowedButtons: ['actionDrawDiamondBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0DrawDiamond],
     highlightButtons: ['actionDrawDiamondBtn'],
@@ -36758,7 +36758,7 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'figure-burst',
     title: 'Paso 13 · Aprovecha las figuras extra',
-    body: 'Te han salido dos figuras nuevas en la mano. Como ya tienes <strong>piloto</strong> y <strong>copiloto</strong> montados, ahora puedes activar la táctica <strong>2 Figuras → 4</strong>.<br><br>Descartarás esas dos figuras y robarás <strong>4 cartas</strong>. Es una forma muy útil de reciclar mano cuando el mecha ya está estable.',
+    body: 'Te han salido dos figuras nuevas en la mano. Siempre que tengas tu panel con <strong>piloto</strong> y <strong>copiloto</strong>, puedes deshacerte de <strong>2 figuras sobrantes</strong> a cambio de <strong>4 cartas</strong>.<br><br>Como ya cumples esa condición, activa la táctica <strong>2 Figuras → 4</strong> para reciclar la mano.',
     objective: 'Pulsa <strong>2 Figuras → 4</strong> en tu panel.',
     tip: 'Esta acción está en el panel del jugador, no arriba. Solo aparece cuando ya tienes piloto, copiloto y al menos 2 figuras en la mano.',
     allowedButtons: ['quickFigureDrawBtn'],
@@ -36769,8 +36769,8 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'pass-turn',
     title: 'Paso 14 · Aprende a pasar turno',
-    body: 'Si no puedes o no quieres hacer nada útil, estás obligado a usar <strong>Pasar</strong> desde el panel principal de arriba y descartar <strong>2 cartas</strong> de la mano.<br><br>Si te quedara menos de 2, descartarías las que tuvieras. Aquí vamos a practicarlo de forma explícita.',
-    objective: 'Selecciona <strong>10♥</strong> y <strong>8♣</strong> de tu mano y pulsa <strong>Pasar ARRIBA</strong>.',
+    body: 'Si no puedes o no quieres hacer nada útil, estás obligado a usar <strong>Pasar</strong> desde el menú de <strong>ACCIONES</strong> y descartar <strong>2 cartas</strong> de la mano.<br><br>Si te quedara menos de 2, descartarías las que tuvieras. Aquí vamos a practicarlo de forma explícita.',
+    objective: 'Selecciona <strong>10♥</strong> y <strong>8♣</strong> de tu mano y pulsa <strong>Pasar</strong> dentro del menú de <strong>ACCIONES</strong>.',
     tip: 'Pasar turno no es “no hacer nada”: siempre implica descartar para ceder la iniciativa.',
     allowedButtons: ['actionPassBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0PassHeart, TUTORIAL_CARD_IDS.p0PassClub],
@@ -36780,9 +36780,9 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'swap-card',
     title: 'Paso 15 · Sustituye una carta del panel',
-    body: 'Modificar no solo coloca cartas: también permite <strong>sustituir</strong> una pieza del panel por otra de tu mano. Si eliges una carta de la mano y una del panel del mismo tipo natural, la antigua va al descarte y la nueva ocupa su sitio.<br><br>El mismo principio sirve para cambiar un <strong>piloto</strong>, un <strong>copiloto</strong> o un <strong>booster</strong>, pero aquí vamos a practicarlo con una carta de módulo.',
-    objective: 'Selecciona <strong>7♣</strong> de tu mano y <strong>6♣</strong> de tu panel de Armadura, luego pulsa <strong>Modificar</strong>.',
-    tip: 'En esta práctica vas a renovar una carta del panel, no a añadir una nueva.',
+    body: 'Modificar no solo coloca cartas: también permite <strong>sustituir</strong> una pieza del panel por otra mejor de tu mano. Aquí no estamos cambiando por cambiar: vamos a mejorar las <strong>estadísticas del Mecha</strong>.<br><br>Si sustituyes el <strong>6♣</strong> de Armadura por el <strong>7♣</strong>, la carta antigua va al descarte, la nueva ocupa su sitio y el blindaje del Mecha sube.',
+    objective: 'Selecciona <strong>7♣</strong> de tu mano y <strong>6♣</strong> de tu panel de Armadura, luego pulsa <strong>Modificar</strong> para mejorar la Armadura.',
+    tip: 'Sustituir una carta del panel sirve para mejorar estadísticas ya montadas sin añadir una ranura nueva.',
     allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0SwapArmor, TUTORIAL_CARD_IDS.p0ArmorA],
     highlightButtons: ['actionAddBtn'],
@@ -41598,15 +41598,17 @@ function getCompactMobileTutorialCopy(step){
       copy.tip = 'No puedes usar este robo en dos turnos propios seguidos.';
       break;
     case 'figure-burst':
+      copy.body = 'Siempre que tengas tu panel con <strong>piloto</strong> y <strong>copiloto</strong>, puedes deshacerte de <strong>2 figuras sobrantes</strong> a cambio de <strong>4 cartas</strong>. Ahora ya cumples esa condición.';
       copy.objective = 'Pulsa <strong>2 Figuras → 4</strong>. Si no aparece como botón directo, abre <strong>Acciones</strong>.';
       copy.tip = 'La acción solo se activa cuando ya tienes piloto, copiloto y al menos 2 figuras en mano.';
       break;
     case 'pass-turn':
-      copy.body = 'Si no puedes o no quieres hacer nada útil, usa <strong>Pasar</strong> desde <strong>Acciones</strong> y descarta <strong>2 cartas</strong> de la mano. Si te quedara menos de 2, descartarías las que tuvieras.';
-      copy.objective = 'Selecciona <strong>10♥</strong> y <strong>8♣</strong>, abre <strong>Acciones</strong> y pulsa <strong>Pasar</strong>.';
+      copy.body = 'Si no puedes o no quieres hacer nada útil, usa <strong>Pasar</strong> dentro del menú de <strong>ACCIONES</strong> y descarta <strong>2 cartas</strong> de la mano. Si te quedara menos de 2, descartarías las que tuvieras.';
+      copy.objective = 'Selecciona <strong>10♥</strong> y <strong>8♣</strong>, abre el menú de <strong>ACCIONES</strong> y pulsa <strong>Pasar</strong>.';
       copy.tip = 'Pasar turno no es “no hacer nada”: siempre implica descartar para ceder la iniciativa.';
       break;
     case 'swap-card':
+      copy.body = 'Ahora vas a mejorar una estadística del Mecha: sustituye el <strong>6♣</strong> de Armadura por el <strong>7♣</strong> de tu mano para subir el blindaje.';
       copy.objective = 'Selecciona <strong>7♣</strong> de tu mano y <strong>6♣</strong> en Armadura; después pulsa <strong>Modificar</strong>.';
       copy.tip = 'En móvil puedes tocar la carta ya montada del panel para marcar la sustitución.';
       break;
@@ -41692,7 +41694,7 @@ function getCompactMobileTutorialFocusText(step){
     case 'pass-turn':
     case 'academy-pass-two-cards':
     case 'academy-pass-one-card':
-      return 'Marca las cartas de la mano y usa Pasar desde Acciones.';
+      return 'Marca las cartas de la mano y usa Pasar dentro del menú de ACCIONES.';
     case 'projectile':
     case 'academy-projectile-only':
     case 'academy-projectile-combo':
