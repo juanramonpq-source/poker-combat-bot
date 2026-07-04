@@ -6124,6 +6124,18 @@
       argosHack: null
     };
 
+    const TUTORIAL_BOT_TALK_FRAMES = [
+      "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-4",
+      "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-02.png?v=20260601-tutobot-mobile-fix-4",
+      "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-03.png?v=20260601-tutobot-mobile-fix-4",
+      "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-04.png?v=20260601-tutobot-mobile-fix-4",
+      "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-05.png?v=20260601-tutobot-mobile-fix-4",
+      "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-06.png?v=20260601-tutobot-mobile-fix-4"
+    ];
+    const TUTORIAL_BOT_TALK_FRAME_DELAY = 140;
+    let tutorialBotLocalFrameIndex = 0;
+    let tutorialBotLocalFrameTimer = null;
+
     function makeCard(rank, suit, idSuffix = "") {
       return {
         id: `${rank}-${suit}-${idSuffix || Math.random().toString(36).slice(2, 8)}`,
@@ -8474,7 +8486,43 @@
     }
 
     function getTutorialBotSprite() {
-      return state.tutorialBotSprite || "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-4";
+      return state.tutorialBotSprite || TUTORIAL_BOT_TALK_FRAMES[0];
+    }
+
+    function shouldRunTutorialBotLocalTalkLoop() {
+      return EMBEDDED_REAL_GAME
+        && !!state.tutorial
+        && !!state.tutorialBotVisible
+        && !!state.tutorialBotBubbleVisible
+        && !state.tutorialBotExternalSequenceOverlay
+        && state.tutorialBotMode !== "intro";
+    }
+
+    function getAnimatedTutorialBotSprite() {
+      if (!shouldRunTutorialBotLocalTalkLoop()) return getTutorialBotSprite();
+      return TUTORIAL_BOT_TALK_FRAMES[tutorialBotLocalFrameIndex % TUTORIAL_BOT_TALK_FRAMES.length] || getTutorialBotSprite();
+    }
+
+    function updateVisibleTutorialBotSprites() {
+      const spriteSrc = getAnimatedTutorialBotSprite();
+      document.querySelectorAll("[data-tutorial-bot-avatar], .drawer-tutobot-avatar img").forEach((img) => {
+        if (img.getAttribute("src") !== spriteSrc) img.src = spriteSrc;
+      });
+    }
+
+    function syncTutorialBotLocalAnimation() {
+      const shouldAnimate = shouldRunTutorialBotLocalTalkLoop();
+      if (shouldAnimate && !tutorialBotLocalFrameTimer) {
+        tutorialBotLocalFrameTimer = window.setInterval(() => {
+          tutorialBotLocalFrameIndex = (tutorialBotLocalFrameIndex + 1) % TUTORIAL_BOT_TALK_FRAMES.length;
+          updateVisibleTutorialBotSprites();
+        }, TUTORIAL_BOT_TALK_FRAME_DELAY);
+      } else if (!shouldAnimate && tutorialBotLocalFrameTimer) {
+        window.clearInterval(tutorialBotLocalFrameTimer);
+        tutorialBotLocalFrameTimer = null;
+        tutorialBotLocalFrameIndex = 0;
+      }
+      updateVisibleTutorialBotSprites();
     }
 
     function escapeAttribute(value = "") {
@@ -8499,7 +8547,7 @@
       const box = document.createElement("div");
       box.innerHTML = bodyHtml;
       const conciseHtml = box.querySelector(".tutorial-assistant-subline")?.innerHTML?.trim() || bodyHtml;
-      const spriteSrc = escapeAttribute(getTutorialBotSprite());
+      const spriteSrc = escapeAttribute(getAnimatedTutorialBotSprite());
       return `<span class="drawer-tutobot-inline"><span class="drawer-tutobot-avatar" aria-hidden="true"><img src="${spriteSrc}" alt=""></span><span class="drawer-tutobot-copy"><span class="drawer-tutorial-label">TutoBOT</span>${conciseHtml}</span></span>`;
     }
 
@@ -8796,11 +8844,11 @@
           ? (state.tutorialBotTitle || "TutoBOT")
           : (state.bridgeTutorialTitle || state.bridgeTutorialMeta || "Tutorial activo");
         if (tutorialAvatar) {
-          const spriteSrc = getTutorialBotSprite();
+          const spriteSrc = getAnimatedTutorialBotSprite();
           if (tutorialAvatar.getAttribute("src") !== spriteSrc) tutorialAvatar.src = spriteSrc;
             tutorialAvatar.onerror = () => {
               tutorialAvatar.onerror = null;
-            tutorialAvatar.src = "../assets/Historia/tutorial-robot-animacion/frames/tutorial-robot-talk-01.png?v=20260601-tutobot-mobile-fix-4";
+            tutorialAvatar.src = TUTORIAL_BOT_TALK_FRAMES[0];
           };
         }
         if (tutorialDismiss) {
@@ -9001,6 +9049,7 @@
 	      renderMessages();
 	      renderActions();
       renderHackMode();
+      syncTutorialBotLocalAnimation();
 	    }
 
     function isTouchPointer(event) {
