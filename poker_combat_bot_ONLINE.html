@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <script>
     (() => {
-      const APP_SHELL_VERSION = '20260704-tutobot-full-animation-1';
+      const APP_SHELL_VERSION = '20260707-turn-actions-five-1';
       const ensureVersionedShell = (reloadPersisted = false) => {
         try {
           const url = new URL(window.location.href);
@@ -30,7 +30,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_web_icon_32.png?v=20260506-pocobot-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/pocobot_web_icon_16.png?v=20260506-pocobot-icon" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_app_icon_180.png?v=20260529-pocobot-pwa" />
-  <link rel="manifest" href="site.webmanifest?v=20260704-tutobot-full-animation-1" />
+  <link rel="manifest" href="site.webmanifest?v=20260707-turn-actions-five-1" />
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand" />
   <link rel="prefetch" href="assets/audio_01.mp3" />
   <link rel="prefetch" href="assets/audio_02.mp3" />
@@ -32362,7 +32362,7 @@ const TUTORIAL_PHASES = [
   {
     phase: 12,
     title: '¡Ya Lo Sabes Todo!',
-    content: 'Ahora conoces las mecánicas principales:\n\n📚 RESUMEN DE TURNO:\n• PANEL abre el panel de Stats.\n• Modificar coloca hasta 2 cartas en Stats, o intercambia una carta de la mano por otra del panel. En el primer turno puedes colocar 3.\n• Atacar permite ataque normal, solo proyectil o ataque + proyectil.\n• Pasar descarta 2 cartas.\n• Robar con ♦ descarta 1 diamante numérico para robar cartas por su valor.\n• 2 Figuras → 4 descarta dos figuras sobrantes para robar 4 cartas.\n\n📚 RESUMEN DE DIAMANTES (♦):\n• Fuel: permite ataques de picas con la regla valor x2\n• Defensa activa (mano): resta su valor completo al daño cuando te atacan\n• Robo (mano): descarta 1 ♦ numérico de tu mano para robar más cartas del mazo\n• As♦: permite usar ♣ armadura del panel como combustible\n\n🚀 PROYECTILES: Tras el primer ataque completo de la partida, puedes descartar 1 carta numérica de picas del módulo Ataque para disparar sin combustible. Los ases no pueden usarse como proyectil.\n\n¡Continúa jugando libremente!',
+    content: 'Ahora conoces las mecánicas principales:\n\n📚 RESUMEN DE TURNO:\n• PANEL abre el panel de Stats y NO gasta turno.\n• En tu turno eliges 1 de estas 5 acciones:\n• Modificar: coloca hasta 2 cartas en Stats, o intercambia una carta de la mano por otra del panel. En el primer turno puedes colocar 3.\n• Atacar: ataque normal, solo proyectil o ataque + proyectil.\n• Pasar: descarta 2 cartas.\n• Robar con ♦: descarta 1 diamante numérico para robar cartas por su valor.\n• 2 Figuras → 4: descarta dos figuras sobrantes para robar 4 cartas.\n\n📚 RESUMEN DE DIAMANTES (♦):\n• Fuel: permite ataques de picas con la regla valor x2\n• Defensa activa (mano): resta su valor completo al daño cuando te atacan\n• Robo (mano): descarta 1 ♦ numérico de tu mano para robar más cartas del mazo\n• As♦: permite usar ♣ armadura del panel como combustible\n\n🚀 PROYECTILES: Tras el primer ataque completo de la partida, puedes descartar 1 carta numérica de picas del módulo Ataque para disparar sin combustible. Los ases no pueden usarse como proyectil.\n\n¡Continúa jugando libremente!',
     hint: 'Pro tip: combina ataque normal + proyectil para maximizar el daño. ¡Sé estratégico!'
   }
 ];
@@ -32665,7 +32665,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260704-tutobot-full-animation-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260707-turn-actions-five-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -36683,7 +36683,7 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'turn-actions',
     title: 'Paso 6 · Qué puedes hacer en tu turno',
-    body: 'Antes de montar el mecha completo, graba esta chuleta de cabina:<br><br><strong>PANEL</strong> abre tu <strong>panel de Stats</strong>, donde están tus cartas montadas.<br><strong>Modificar</strong> permite colocar hasta <strong>2 cartas</strong> en Stats por turno, o <strong>sustituir</strong> una carta del panel por otra de la mano. En el primer turno puedes colocar hasta <strong>3</strong>.<br><strong>Atacar</strong> permite ataque normal, solo proyectil o ataque más proyectil.<br><strong>Pasar</strong> descarta <strong>2 cartas</strong> y cede el turno.<br><strong>Robar con ♦</strong> descarta <strong>1 diamante numérico</strong> de la mano para robar tantas cartas como su valor.<br><strong>2 Figuras → 4</strong> descarta dos figuras sobrantes para robar cuatro cartas.',
+    body: 'Antes de montar el mecha completo, graba esta chuleta de cabina.<br><br><strong>PANEL</strong> abre tu <strong>panel de Stats</strong> para ver Núcleo, Ataque, Defensa, Armadura y Fuel. <strong>No gasta turno</strong>: puedes consultarlo cuando lo necesites.<br><br>En tu turno eliges <strong>1 de estas 5 acciones</strong>:<br><strong>1. Modificar:</strong> coloca hasta <strong>2 cartas</strong> en Stats, o <strong>sustituye</strong> una carta del panel por otra de la mano. En el primer turno puedes colocar hasta <strong>3</strong>.<br><strong>2. Atacar:</strong> ataque normal, <strong>solo proyectil</strong> o <strong>ataque + proyectil</strong>.<br><strong>3. Pasar:</strong> descarta <strong>2 cartas</strong> y cede el turno.<br><strong>4. Robar con ♦:</strong> descarta <strong>1 diamante numérico</strong> de la mano para robar tantas cartas como su valor.<br><strong>5. 2 Figuras → 4:</strong> descarta dos figuras sobrantes para robar cuatro cartas.',
     objective: 'Pulsa <strong>Entendido</strong>. Después usaremos el panel de Stats para montar el núcleo real.',
     tip: 'Idea clave: el panel de Stats no es decorado; es el taller donde se construye y mejora el PoCoBOT.',
     tutorialBotPrimaryAction: 'step:core-build',
@@ -41423,6 +41423,33 @@ function getTutorialBotStepLead(step){
   return TUTOBOT_STEP_LINES[step.id] || step.title || 'Vamos paso a paso.';
 }
 
+function getTutorialBotStepDetailHtml(step){
+  switch(step?.id){
+    case 'intro-fuel-stat':
+      return 'Los diamantes son combustible. En Fuel su valor se dobla: <strong>8♦</strong> cuenta como <strong>16</strong> para sostener picas al atacar.';
+    case 'turn-actions':
+      return '<strong>PANEL no gasta turno:</strong> solo abre tus Stats para consultar o preparar cambios.<br><br><strong>En tu turno eliges 1 de estas 5 acciones:</strong><br><strong>1.</strong> <strong>Modificar</strong>: colocar o sustituir hasta <strong>2 cartas</strong>; el primer turno permite <strong>3</strong>.<br><strong>2.</strong> <strong>Atacar</strong>: normal, solo proyectil o ataque + proyectil.<br><strong>3.</strong> <strong>Pasar</strong>: descartas <strong>2 cartas</strong>.<br><strong>4.</strong> <strong>Robar con ♦</strong>: descartas <strong>1 diamante numérico</strong> y robas su valor.<br><strong>5.</strong> <strong>2 Figuras → 4</strong>: cambias dos figuras sobrantes por <strong>4 cartas</strong>.';
+    case 'fuel-build':
+      return 'Regla clave: el combustible permite usar picas por el doble de su valor. Por ejemplo, <strong>4♦</strong> permite atacar con hasta <strong>8 puntos</strong> de picas.';
+    case 'attack-briefing':
+      return 'Atacas con <strong>picas</strong>. El combustible sostiene ese ataque en proporción <strong>2 a 1</strong>: <strong>4♦</strong> sostiene hasta <strong>8</strong> puntos de picas. Puedes usar tantas picas como quieras si su suma cabe dentro de <strong>Fuel ×2</strong>.';
+    case 'first-attack':
+      return 'Ahora lo haces de verdad: <strong>8♦ × 2 = 16</strong>, así que puede sostener <strong>4♠ + 7♠ = 11</strong>. El fuel se descarta; las picas del ataque principal se quedan montadas.';
+    case 'draw-diamond':
+      return 'Los diamantes en mano también sirven para robar: descarta <strong>1 diamante numérico</strong> y robas tantas cartas como indique su valor.';
+    case 'figure-burst':
+      return 'Si tu panel ya tiene <strong>piloto</strong> y <strong>copiloto</strong>, puedes descartar <strong>2 figuras sobrantes</strong> de la mano para robar <strong>4 cartas</strong>.';
+    case 'pass-turn':
+      return 'Pasar turno se hace desde <strong>ACCIONES</strong> y cuesta descartar <strong>2 cartas</strong> de la mano. Si tienes menos de 2, descartas las que tengas.';
+    case 'swap-card':
+      return 'Modificar también permite sustituir una carta del panel por otra de la mano. Aquí cambias una armadura peor por otra mejor para subir la estadística del Mecha.';
+    case 'projectile':
+      return 'Un proyectil dispara <strong>1 pica</strong> sin gastar combustible, pero esa pica va al descarte. También puedes combinar: fuel para dos picas de ataque principal y una tercera pica como proyectil extra.';
+    default:
+      return '';
+  }
+}
+
 function getTutorialBotPrimaryAction(step = tutorialGetCurrentStep()){
   if(step?.tutorialBotPrimaryAction){
     return {
@@ -41539,9 +41566,11 @@ function getTutorialBotSpeechPayload(){
   const subline = tutorialSystem.completed
     ? 'Puedes seguir jugando libremente o reiniciar la lección cuando quieras.'
     : compactPrimerObjective;
+  const richDetailHtml = tutorialSystem.completed ? '' : getTutorialBotStepDetailHtml(step);
   const primerInlineActionHtml = compactPrimerDefinitionStep
     ? '<span class="tutorial-assistant-inline-actions"><button type="button" data-tutorial-action="panel:0" onclick="return window.__pocobotInlineTutorialAction(\'panel:0\')">Seguir</button></span>'
     : '';
+  const sublineHtml = richDetailHtml || mobileSpriteEscapeHtml(subline);
   return {
     visible: true,
     bubbleVisible: true,
@@ -41550,7 +41579,7 @@ function getTutorialBotSpeechPayload(){
     primaryAction: compactPrimerDefinitionStep ? '' : panelAction.action,
     primaryLabel: compactPrimerDefinitionStep ? '' : panelAction.label,
     sprite: tutorialBotState.currentFrame,
-    messageHtml: `${mobileSpriteEscapeHtml(leadText)}${subline ? `<span class="tutorial-assistant-subline">${mobileSpriteEscapeHtml(subline)}</span>` : ''}${primerInlineActionHtml}`,
+    messageHtml: `${mobileSpriteEscapeHtml(leadText)}${sublineHtml ? `<span class="tutorial-assistant-subline">${sublineHtml}</span>` : ''}${primerInlineActionHtml}`,
     meta: tutorialSystem.completed ? 'Modo libre' : `Paso ${stepNumber}/${script.length}`,
     soundKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`,
     messageKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`
@@ -41637,9 +41666,9 @@ function getCompactMobileTutorialCopy(step){
       copy.tip = 'El contador Fuel x2 se actualizará en la cabecera en cuanto el diamante quede montado.';
       break;
     case 'turn-actions':
-      copy.body = 'Chuleta rápida: <strong>PANEL</strong> abre tus Stats. En tu turno puedes <strong>Modificar</strong> para colocar o intercambiar cartas, <strong>Atacar</strong>, <strong>Pasar</strong>, <strong>Robar con 1♦</strong> o usar <strong>2 Figuras → 4</strong>.';
+      copy.body = '<strong>PANEL no gasta turno:</strong> abre tus Stats para mirar el mecha.<br><br><strong>En tu turno eliges 1 de estas 5 acciones:</strong><br><strong>1.</strong> <strong>Modificar</strong>: colocar o sustituir cartas.<br><strong>2.</strong> <strong>Atacar</strong>: normal, solo proyectil o ataque + proyectil.<br><strong>3.</strong> <strong>Pasar</strong>: descartar 2 cartas.<br><strong>4.</strong> <strong>Robar con ♦</strong>: descartar 1 diamante numérico y robar su valor.<br><strong>5.</strong> <strong>2 Figuras → 4</strong>: cambiar dos figuras sobrantes por 4 cartas.';
       copy.objective = 'Pulsa <strong>Entendido</strong> y montamos el núcleo completo.';
-      copy.tip = 'Modificar coloca hasta 2 cartas por turno, salvo el primer turno que permite 3.';
+      copy.tip = 'Regla de montaje: Modificar coloca hasta 2 cartas por turno, salvo el primer turno que permite 3.';
       break;
     case 'attack-briefing':
       copy.body = 'Regla de disparo: atacas con <strong>picas ♠</strong>, pero el ataque principal necesita <strong>fuel</strong>. El fuel vale <strong>2 a 1</strong>: un <strong>4♦</strong> permite usar hasta <strong>8</strong> puntos de picas.';

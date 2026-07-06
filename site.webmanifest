@@ -3,7 +3,7 @@
   "short_name": "PoCoBOT",
   "description": "Combate retro de mechas con estrategia de poker.",
   "id": "/poker_combat_bot_ONLINE.html",
-  "start_url": "/poker_combat_bot_ONLINE.html?appv=20260704-tutobot-full-animation-1",
+  "start_url": "/poker_combat_bot_ONLINE.html?appv=20260707-turn-actions-five-1",
   "scope": "/",
   "icons": [
     {
