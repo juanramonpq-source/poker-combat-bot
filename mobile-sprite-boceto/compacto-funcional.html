@@ -8486,7 +8486,10 @@
     }
 
     function getTutorialBotSprite() {
-      return state.tutorialBotSprite || TUTORIAL_BOT_TALK_FRAMES[0];
+      const sprite = String(state.tutorialBotSprite || "").trim();
+      if (!sprite || sprite === "undefined" || sprite === "null") return TUTORIAL_BOT_TALK_FRAMES[0];
+      if (sprite.startsWith("assets/")) return `../${sprite}`;
+      return sprite;
     }
 
     function shouldRunTutorialBotLocalTalkLoop() {
@@ -8503,7 +8506,11 @@
 
     function updateVisibleTutorialBotSprites() {
       const spriteSrc = getAnimatedTutorialBotSprite();
-      document.querySelectorAll("[data-tutorial-bot-avatar], .drawer-tutobot-avatar img").forEach((img) => {
+      document.querySelectorAll("[data-tutorial-bot-avatar], [data-drawer-tutorial-bot-avatar], .drawer-tutobot-avatar img").forEach((img) => {
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = TUTORIAL_BOT_TALK_FRAMES[0];
+        };
         if (img.getAttribute("src") !== spriteSrc) img.src = spriteSrc;
       });
     }
@@ -8546,7 +8553,7 @@
       box.innerHTML = bodyHtml;
       const conciseHtml = box.querySelector(".tutorial-assistant-subline")?.innerHTML?.trim() || bodyHtml;
       const spriteSrc = escapeAttribute(getAnimatedTutorialBotSprite());
-      return `<span class="drawer-tutobot-inline"><span class="drawer-tutobot-avatar" aria-hidden="true"><img src="${spriteSrc}" alt=""></span><span class="drawer-tutobot-copy"><span class="drawer-tutorial-label">TutoBOT</span>${conciseHtml}</span></span>`;
+      return `<span class="drawer-tutobot-inline"><span class="drawer-tutobot-avatar" aria-hidden="true"><img data-drawer-tutorial-bot-avatar src="${spriteSrc}" alt="" onerror="this.onerror=null;this.src='${escapeAttribute(TUTORIAL_BOT_TALK_FRAMES[0])}'"></span><span class="drawer-tutobot-copy"><span class="drawer-tutorial-label">TutoBOT</span>${conciseHtml}</span></span>`;
     }
 
     function getDrawerPrimaryState(actionStates = null) {
