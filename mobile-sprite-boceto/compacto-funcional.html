@@ -1341,6 +1341,12 @@
         inset 0 0 0 1px rgba(255,255,255,.10);
     }
 
+    .floating-message.tutorial.with-bot.is-sequence.is-greeting.show {
+      min-height: 0;
+      grid-template-rows: auto auto auto;
+      align-content: center;
+    }
+
     .floating-message.tutorial.with-bot.is-top-rail.show {
       position: fixed;
       z-index: 32;
@@ -1700,6 +1706,14 @@
       margin-top: 8px;
     }
 
+    .floating-message.tutorial.with-bot .message-actions:empty,
+    .floating-message.tutorial.with-bot .message-actions[hidden] {
+      display: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+    }
+
     .tutorial-dismiss {
       display: none;
     }
@@ -1729,6 +1743,10 @@
     .floating-message.tutorial span {
       min-height: 0;
       max-height: 100%;
+    }
+
+    .floating-message.tutorial.with-bot > span:empty {
+      display: none;
     }
 
     .floating-message.tutorial .message-actions button {
