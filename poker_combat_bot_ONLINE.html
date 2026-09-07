@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <script>
     (() => {
-      const APP_SHELL_VERSION = '20260906-tutorial-two-phases-3';
+      const APP_SHELL_VERSION = '20260907-tutorial-practice-core-1';
       const ensureVersionedShell = (reloadPersisted = false) => {
         try {
           const url = new URL(window.location.href);
@@ -30,7 +30,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/pocobot_web_icon_32.png?v=20260506-pocobot-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/pocobot_web_icon_16.png?v=20260506-pocobot-icon" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pocobot_app_icon_180.png?v=20260529-pocobot-pwa" />
-  <link rel="manifest" href="site.webmanifest?v=20260906-tutorial-two-phases-3" />
+  <link rel="manifest" href="site.webmanifest?v=20260907-tutorial-practice-core-1" />
   <link rel="stylesheet" href="assets/pentonui-games/pentonui-brand.css?v=20260518-studio-brand" />
   <link rel="prefetch" href="assets/audio_01.mp3" />
   <link rel="prefetch" href="assets/audio_02.mp3" />
@@ -32209,8 +32209,12 @@ const TUTOBOT_STEP_LINES = {
   'intro-defense-stat': 'Ahora verás cómo un corazón levanta la defensa desde cero.',
   'intro-armor-stat': 'Turno de los tréboles: blindaje puro, sin distracciones.',
   'intro-fuel-stat': 'Y ahora el combustible: un diamante carga fuel, pero luego verás que hace mucho más.',
-  'core-build': 'Perfecto. Ahora montamos el núcleo: piloto, copiloto y booster.',
+  'pilot-practice': 'Vamos a encender el núcleo colocando primero al piloto.',
   'attack-build': 'Muy bien. El piloto de picas pide tres picas instaladas.',
+  'copilot-practice': 'Ahora verás cómo un copiloto amplía un módulo de dos a tres cartas.',
+  'ace-practice': 'El as lleva esa ampliación un paso más: de tres a cuatro cartas.',
+  'diamond-copilot-swap': 'Cambiamos al copiloto de diamantes para descubrir su flexibilidad.',
+  'diamond-booster-swap': 'Terminamos el núcleo con el As de diamantes y su función especial.',
   'fuel-build': 'Carga combustible: los diamantes dan energía para poder atacar con picas.',
   'combat-phases': 'Todo combate se entiende mejor si lo dividimos en dos fases.',
   'build-requirements': 'Primero vamos a descubrir qué necesita un mecha para llegar al 100%.',
@@ -32222,6 +32226,7 @@ const TUTOBOT_STEP_LINES = {
   'first-attack-spades': 'Segundo paso del ataque: elige las picas que harán daño.',
   'first-attack': 'Ataque preparado. Solo falta confirmarlo.',
   'defend': 'Atención: te atacan. Usa un diamante de la mano como defensa activa.',
+  'rearm-briefing': 'Además de atacar, tendrás que rearmarte con cartas nuevas.',
   'draw-diamond-select': 'Primero elige el diamante que vas a cambiar por cartas.',
   'draw-diamond': 'Diamante preparado. Ahora ejecuta el robo desde Acciones.',
   'figure-burst': 'Convierte figuras sobrantes en cartas nuevas.',
@@ -32229,6 +32234,7 @@ const TUTOBOT_STEP_LINES = {
   'pass-turn': 'Las dos cartas están marcadas. Ahora cede el turno.',
   'swap-card': 'Vamos a mejorar una estadística del Mecha.',
   'rank-rules': 'Antes del remate, aclaremos pilotos, copilotos y ases.',
+  'projectile-only-briefing': 'Si falta combustible, todavía puedes lanzar una ofensiva rápida.',
   'projectile-open': 'Remate final: abre el ataque y activa Modo proyectil.',
   'projectile-fuel': 'Primero prepara combustible usando la armadura y el As de diamantes.',
   'projectile-main': 'Ahora elige las picas del ataque principal.',
@@ -32682,7 +32688,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260906-tutorial-two-phases-3';
+const MOBILE_SPRITE_HUD_VERSION = '20260907-tutorial-practice-core-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -36526,6 +36532,8 @@ const TUTORIAL_CARD_IDS = {
   p0Pilot: 'tut-p0-pilot',
   p0Copilot: 'tut-p0-copilot',
   p0Booster: 'tut-p0-booster',
+  p0CapacityCopilot: 'tut-p0-capacity-copilot',
+  p0CapacityBooster: 'tut-p0-capacity-booster',
   p0IntroAttackSeed: 'tut-p0-intro-attack-seed',
   p0IntroArmorCard: 'tut-p0-intro-armor-card',
   p0AttackBase: 'tut-p0-attack-base',
@@ -36759,17 +36767,17 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'capacity-rules',
-    title: 'Paso 9 · Copilotos, ases y límites',
-    body: '<strong>Copiloto:</strong> permite tener hasta <strong>3 cartas de su palo</strong> en el módulo correspondiente. Un copiloto ♠ amplía Ataque, uno ♥ Defensa y uno ♣ Armadura.<br><br><strong>Copiloto ♦:</strong> es flexible y permite ampliar a 3 cartas <strong>cualquiera de esos tres módulos</strong>: Ataque, Defensa o Armadura.<br><br><strong>Ases:</strong> A♠, A♥ y A♣ permiten llegar hasta <strong>4 cartas de su palo</strong>. El <strong>A♦</strong> es especial: permite quemar Armadura ♣ y usarla como combustible.<br><br><strong>Fuel no tiene límite de cartas</strong>: puedes acumular tantos diamantes numéricos como consigas.',
-    objective: 'Pulsa <strong>Entendido</strong>. Ya podemos montar un PoCoBOT real aplicando estas reglas.',
-    tip: 'Figura ♦: solo puede ser copiloto, nunca piloto principal. A♦ no amplía un módulo; transforma Armadura en fuel de emergencia.',
-    tutorialBotPrimaryAction: 'step:core-build',
-    tutorialBotPrimaryLabel: 'Entendido',
+    title: 'Paso 9 · Los límites también se montan',
+    body: 'Los módulos empiezan con espacio para <strong>2 cartas</strong>, pero las piezas del Núcleo pueden ampliar ese límite.<br><br>Lo veremos sobre el propio panel, sin memorizar teoría: primero un <strong>piloto</strong>, después un <strong>copiloto</strong> que elevará un módulo de <strong>2 a 3</strong>, y por último un <strong>as</strong> que lo llevará de <strong>3 a 4</strong>.<br><br>Más tarde cambiaremos esas piezas por sus versiones de diamantes para aprender sus reglas especiales.',
+    objective: 'Pulsa <strong>Practicar</strong>. Empezaremos colocando únicamente el piloto.',
+    tip: 'Mira los contadores MAX del panel tras cada cambio: serán la prueba visual de que el límite ha aumentado.',
+    tutorialBotPrimaryAction: 'step:pilot-practice',
+    tutorialBotPrimaryLabel: 'Practicar',
     panelActions: [
       {
-        label: 'Entendido',
+        label: 'Practicar',
         kind: 'primary',
-        onClick: () => tutorialGoToStep('core-build')
+        onClick: () => tutorialGoToStep('pilot-practice')
       }
     ],
     allowedButtons: ['clearSelectionBtn'],
@@ -36778,14 +36786,15 @@ const TUTORIAL_SCRIPT = [
     highlightZones: ['core-zone-0', 'module-box-attack-0', 'module-box-defense-0', 'module-box-armor-0', 'fuel-zone-0']
   },
   {
-    id: 'core-build',
-    title: 'Paso 10 · Monta el núcleo',
-    body: 'Ya conoces la estructura. Ahora montamos un <strong>PoCoBOT completo</strong>. El núcleo tiene tres piezas: una <strong>figura</strong> como piloto, otra figura como <strong>copiloto</strong> y un <strong>as</strong> como booster.<br><br>En esta práctica: <strong>K♠</strong> será el piloto, <strong>J♦</strong> será el copiloto y <strong>A♦</strong> será el booster. El J♦ podrá ampliar a 3 cartas Ataque, Defensa o Armadura. El A♦ no amplía un módulo: permitirá usar <strong>Armadura ♣</strong> como combustible de emergencia.',
-    objective: 'Selecciona <strong>K♠</strong>, <strong>J♦</strong> y <strong>A♦</strong> de tu mano y pulsa <strong>Modificar</strong>.',
-    tip: 'Si no ves el núcleo o los módulos, pulsa <strong>PANEL</strong>: ahí está el taller del mecha.',
+    id: 'pilot-practice',
+    title: 'Paso 10 · Coloca el piloto',
+    body: 'El <strong>piloto</strong> despierta el mecha y determina su requisito de montaje. Colocaremos un <strong>K♠</strong>: al hacerlo, el módulo de Ataque mostrará capacidad para <strong>3 picas</strong> y el montaje exigirá completar esas tres cartas de su palo.',
+    objective: 'Pulsa <strong>PANEL</strong> si necesitas abrir los Stats. Selecciona solo el <strong>K♠</strong> de la mano y pulsa <strong>Modificar</strong>.',
+    tip: 'Después de colocarlo, mira Ataque: el límite base 2 pasa a 3 y aparece la condición del piloto.',
     onEnter: () => tutorialPreparePracticeScenario(),
     allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
-    allowedCardIds: [TUTORIAL_CARD_IDS.p0Pilot, TUTORIAL_CARD_IDS.p0Copilot, TUTORIAL_CARD_IDS.p0Booster],
+    allowedCardIds: [TUTORIAL_CARD_IDS.p0Pilot],
+    expectedSelection: [TUTORIAL_CARD_IDS.p0Pilot],
     highlightButtons: ['actionAddBtn'],
     highlightZones: ['hand-zone-0', 'core-zone-0']
   },
@@ -36801,8 +36810,56 @@ const TUTORIAL_SCRIPT = [
     highlightZones: ['hand-zone-0', 'module-box-attack-0']
   },
   {
+    id: 'copilot-practice',
+    title: 'Paso 12 · Amplía con un copiloto',
+    body: 'Tu panel ya está al <strong>100%</strong>, pero todavía puede mejorar. Antes de tocar el núcleo, Defensa admite <strong>2 cartas</strong>. Al colocar un <strong>J♥</strong> como copiloto, su palo ampliará Defensa y el contador cambiará a <strong>3 MAX</strong>.',
+    objective: 'Selecciona solo el <strong>J♥</strong> de tu mano y pulsa <strong>Modificar</strong>. Después observa el nuevo límite de Defensa.',
+    tip: 'El copiloto amplía su propio palo a 3, pero no sustituye la condición de montaje que marcó el piloto.',
+    allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
+    allowedCardIds: [TUTORIAL_CARD_IDS.p0CapacityCopilot],
+    expectedSelection: [TUTORIAL_CARD_IDS.p0CapacityCopilot],
+    highlightButtons: ['actionAddBtn'],
+    highlightZones: ['hand-zone-0', 'core-zone-0', 'module-box-defense-0']
+  },
+  {
+    id: 'ace-practice',
+    title: 'Paso 13 · Amplía con un as',
+    body: 'Defensa ya muestra <strong>3 MAX</strong> gracias al copiloto. Ahora añade un <strong>A♥</strong> como booster: los ases de picas, corazones o tréboles elevan su módulo hasta <strong>4 cartas</strong>. Verás Defensa pasar de <strong>3 a 4 MAX</strong>.',
+    objective: 'Selecciona solo el <strong>A♥</strong> de tu mano y pulsa <strong>Modificar</strong>. Mira cómo cambia el límite de Defensa.',
+    tip: 'Copiloto = hasta 3 cartas de su palo. As = hasta 4 cartas de su palo.',
+    allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
+    allowedCardIds: [TUTORIAL_CARD_IDS.p0CapacityBooster],
+    expectedSelection: [TUTORIAL_CARD_IDS.p0CapacityBooster],
+    highlightButtons: ['actionAddBtn'],
+    highlightZones: ['hand-zone-0', 'core-zone-0', 'module-box-defense-0']
+  },
+  {
+    id: 'diamond-copilot-swap',
+    title: 'Paso 14 · Prueba el copiloto de diamantes',
+    body: 'El copiloto normal amplía <strong>su propio palo</strong>. Una figura de diamantes funciona distinto: no puede ser piloto principal, pero como <strong>copiloto ♦</strong> permite ampliar a 3 el módulo que lo necesite entre Ataque, Defensa o Armadura.',
+    objective: 'Selecciona el <strong>J♦</strong> de tu mano y el <strong>J♥</strong> del núcleo. Pulsa <strong>Modificar</strong> para sustituir el copiloto.',
+    tip: 'El cambio conserva el resto del mecha. Solo se sustituye la pieza del hueco Copiloto.',
+    allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
+    allowedCardIds: [TUTORIAL_CARD_IDS.p0Copilot, TUTORIAL_CARD_IDS.p0CapacityCopilot],
+    expectedSelection: [TUTORIAL_CARD_IDS.p0Copilot, TUTORIAL_CARD_IDS.p0CapacityCopilot],
+    highlightButtons: ['actionAddBtn'],
+    highlightZones: ['hand-zone-0', 'core-zone-0', 'module-box-attack-0', 'module-box-defense-0', 'module-box-armor-0']
+  },
+  {
+    id: 'diamond-booster-swap',
+    title: 'Paso 15 · Prueba el As de diamantes',
+    body: 'El <strong>A♥</strong> ampliaba Defensa a 4. El <strong>A♦</strong> es la excepción: no amplía ningún módulo. Su poder es permitir que una carta de <strong>Armadura ♣</strong> se queme y se use como combustible de emergencia.',
+    objective: 'Selecciona el <strong>A♦</strong> de tu mano y el <strong>A♥</strong> del núcleo. Pulsa <strong>Modificar</strong> para sustituir el booster.',
+    tip: 'Más adelante usarás de verdad esta habilidad: una armadura se convertirá en fuel y después irá al descarte.',
+    allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
+    allowedCardIds: [TUTORIAL_CARD_IDS.p0Booster, TUTORIAL_CARD_IDS.p0CapacityBooster],
+    expectedSelection: [TUTORIAL_CARD_IDS.p0Booster, TUTORIAL_CARD_IDS.p0CapacityBooster],
+    highlightButtons: ['actionAddBtn'],
+    highlightZones: ['hand-zone-0', 'core-zone-0', 'module-box-armor-0', 'fuel-zone-0']
+  },
+  {
     id: 'fuel-build',
-    title: 'Paso 12 · Carga combustible',
+    title: 'Paso 16 · Carga combustible',
     body: 'Ahora falta energía para disparar. Los diamantes numéricos colocados en <strong>Fuel</strong> son el <strong>combustible</strong> que permite usar tus <strong>picas</strong> para atacar.<br><br>La regla es <strong>valor total de Fuel × 2</strong> = límite máximo de ataque con picas. Ejemplo: <strong>4♦</strong> de combustible permite usar hasta <strong>8</strong> puntos de picas.',
     objective: 'Abre <strong>PANEL</strong> si hace falta. Selecciona <strong>8♦</strong> y pulsa <strong>Modificar</strong> para cargar combustible.',
     tip: 'Primero instalas cañones con picas; después cargas energía con diamantes.',
@@ -36813,7 +36870,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'attack-briefing',
-    title: 'Paso 13 · Cómo se alimenta un ataque',
+    title: 'Paso 17 · Cómo se alimenta un ataque',
     body: 'Antes de tocar botones, lee el disparo así:<br><br><strong>1.</strong> Se ataca con <strong>picas ♠</strong>: esas cartas son el daño.<br><strong>2.</strong> Para sostener ese ataque necesitas <strong>combustible</strong>.<br><strong>3.</strong> El combustible vale <strong>2 a 1</strong>: una carta de fuel con valor <strong>4</strong> permite usar hasta <strong>8 puntos</strong> de ataque de picas.<br><br>Puedes seleccionar <strong>tantas picas como quieras</strong> siempre que la suma no supere tu límite de <strong>Fuel ×2</strong>. Ejemplo visual: <strong>4♦ = límite 8</strong>, así que permite usar <strong>3♠ + 5♠ = 8</strong>. Si intentas atacar con <strong>11</strong> puntos de picas, necesitas que el límite llegue al menos a <strong>11</strong>.',
     objective: 'Pulsa <strong>Entendido</strong>. Después abriremos <strong>Acciones → Atacar</strong> y lo haremos de verdad.',
     tip: 'En el siguiente ataque usarás 8♦: como 8×2 = 16, permite usar 4♠ + 7♠ = 11.',
@@ -36833,7 +36890,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'open-attack',
-    title: 'Paso 14 · Entra en modo ataque',
+    title: 'Paso 18 · Entra en modo ataque',
     body: 'Tu mecha ya cumple la condición del piloto y tiene fuel suficiente. Si necesitas mirar tus cartas montadas, pulsa <strong>PANEL</strong>: ahí está el panel de Stats. Ahora abre la consola de ataque: elegirás <strong>qué combustible activa el disparo</strong> y <strong>qué picas hacen daño</strong>.',
     objective: 'Pulsa <strong>Acciones</strong> y luego <strong>Atacar</strong>.',
     tip: 'En cuanto abras el ataque, podrás elegir combustible y cartas de daño.',
@@ -36844,7 +36901,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'first-attack-fuel',
-    title: 'Paso 15 · Elige el combustible',
+    title: 'Paso 19 · Elige el combustible',
     body: 'Dentro del panel de ataque siempre se prepara la jugada en este orden: <strong>primero el combustible</strong> y después las picas.<br><br>Usaremos <strong>8♦</strong>. Su valor se duplica: <strong>8 × 2 = 16</strong>, así que podrá sostener hasta 16 puntos de ataque.',
     objective: 'Toca únicamente el <strong>8♦</strong> de la zona <strong>Fuel</strong>. No pulses Confirmar todavía.',
     tip: 'Paso 1 de 3: combustible. La carta quedará iluminada y TutoBOT te pedirá las picas.',
@@ -36859,7 +36916,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'first-attack-spades',
-    title: 'Paso 16 · Elige las picas',
+    title: 'Paso 20 · Elige las picas',
     body: 'El combustible ya está marcado. Ahora elige las cartas que harán daño en el <strong>ataque principal</strong>.<br><br>Selecciona <strong>4♠ + 7♠ = 11</strong>. Como 11 no supera el límite 16 de tu combustible, la jugada es válida.',
     objective: 'Sin quitar el <strong>8♦</strong>, toca <strong>4♠</strong> y <strong>7♠</strong> en Ataque. Deja el <strong>8♠</strong> sin seleccionar.',
     tip: 'Paso 2 de 3: picas. Puedes usar tantas como quieras mientras su suma no supere Fuel ×2.',
@@ -36874,7 +36931,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'first-attack',
-    title: 'Paso 17 · Confirma el ataque',
+    title: 'Paso 21 · Confirma el ataque',
     body: 'La jugada ya está completa: <strong>8♦</strong> aporta 16 de límite y <strong>4♠ + 7♠</strong> suman 11 de daño.<br><br>Al confirmar, el <strong>8♦</strong> se gastará y pasará al descarte. Las picas del ataque principal seguirán instaladas en tu panel.',
     objective: 'Pulsa <strong>Confirmar ataque</strong>. No necesitas seleccionar nada más.',
     tip: 'Paso 3 de 3: confirmar. La animación del ataque se mostrará con el panel cerrado.',
@@ -36887,7 +36944,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'defend',
-    title: 'Paso 18 · Defensa activa',
+    title: 'Paso 22 · Defensa activa',
     body: 'El instructor te devuelve el golpe. Ojo con esta diferencia: la <strong>Defensa</strong> de corazones es una estadística montada, pero la <strong>defensa activa</strong> se hace con <strong>1 diamante numérico de tu mano</strong> para recortar el daño antes del impacto.',
     objective: 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>.',
     tip: 'El diamante de defensa se descarta y reduce el daño por su valor completo.',
@@ -36897,8 +36954,28 @@ const TUTORIAL_SCRIPT = [
     highlightZones: ['hand-zone-0']
   },
   {
+    id: 'rearm-briefing',
+    title: 'Paso 23 · Rearma tu mano',
+    body: 'Además de atacar, también necesitarás <strong>rearmarte</strong> y conseguir cartas nuevas. Para ello puedes usar los <strong>diamantes numéricos que tengas en la mano</strong>: los descartas a cambio de cartas del mazo.<br><br>El valor del diamante indica cuántas cartas robas. Por ejemplo, descartar un <strong>2♦</strong> permite robar <strong>2 cartas</strong>. Primero se selecciona el diamante y después se ejecuta <strong>ACCIONES → Robar con ♦</strong>.',
+    objective: 'Pulsa <strong>Practicar robo</strong>. Lo haremos en dos gestos claros.',
+    tip: 'Un diamante montado en Fuel alimenta ataques; un diamante de la mano también puede descartarse para rearmarte.',
+    tutorialBotPrimaryAction: 'step:draw-diamond-select',
+    tutorialBotPrimaryLabel: 'Practicar robo',
+    panelActions: [
+      {
+        label: 'Practicar robo',
+        kind: 'primary',
+        onClick: () => tutorialGoToStep('draw-diamond-select')
+      }
+    ],
+    allowedButtons: ['clearSelectionBtn'],
+    allowedCardIds: [],
+    highlightButtons: [],
+    highlightZones: ['hand-zone-0']
+  },
+  {
     id: 'draw-diamond-select',
-    title: 'Paso 19 · Elige el diamante para robar',
+    title: 'Paso 24 · Elige el diamante para robar',
     body: 'Los diamantes de la <strong>mano</strong> también sirven para robar cartas. Primero eliges uno; después ejecutas la acción desde <strong>ACCIONES</strong>.<br><br>El número indica cuántas cartas recibirás: al gastar <strong>2♦</strong>, robarás <strong>2 cartas</strong>.',
     objective: 'Toca únicamente el <strong>2♦</strong> de tu mano. Todavía no abras ningún panel.',
     tip: 'Paso 1 de 2: marcar el diamante. Cuando quede iluminado, TutoBOT te indicará el botón exacto.',
@@ -36913,7 +36990,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'draw-diamond',
-    title: 'Paso 20 · Ejecuta el robo',
+    title: 'Paso 25 · Ejecuta el robo',
     body: 'El <strong>2♦</strong> ya está seleccionado. Ahora debes indicar qué quieres hacer con él: abre el menú amarillo <strong>ACCIONES</strong> y elige <strong>Robar con ♦</strong>.',
     objective: 'Pulsa <strong>ACCIONES</strong> y después <strong>Robar con ♦</strong>. Recibirás 2 cartas y el 2♦ irá al descarte.',
     tip: 'Paso 2 de 2: ejecutar. Seleccionar la carta no basta; la acción se confirma desde ACCIONES.',
@@ -36926,7 +37003,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'figure-burst',
-    title: 'Paso 21 · Aprovecha las figuras extra',
+    title: 'Paso 26 · Aprovecha las figuras extra',
     body: 'Te han salido dos figuras nuevas en la mano. Las figuras son <strong>J</strong>, <strong>Q</strong> y <strong>K</strong>: sirven para piloto y copiloto, pero si ya tienes esos huecos cubiertos pueden sobrar.<br><br>Siempre que tengas tu panel con <strong>piloto</strong> y <strong>copiloto</strong>, puedes deshacerte de <strong>2 figuras sobrantes</strong> a cambio de <strong>4 cartas</strong>. Como ya cumples esa condición, activa la táctica <strong>2 Figuras → 4</strong> para reciclar la mano.',
     objective: 'Aquí no tienes que marcar cartas: pulsa <strong>2 Figuras → 4</strong> y el juego descartará automáticamente las dos figuras sobrantes de la mano.',
     tip: 'No sacrifica piloto ni copiloto; solo usa dos figuras que estén en la mano.',
@@ -36937,7 +37014,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'pass-turn-select',
-    title: 'Paso 22 · Elige qué vas a descartar',
+    title: 'Paso 27 · Elige qué vas a descartar',
     body: 'Para pasar turno hay que descartar <strong>2 cartas de la mano</strong>. En una partida normal puedes elegir dos cualesquiera.<br><br>En este ejemplo guiado usaremos exactamente <strong>10♥</strong> y <strong>8♣</strong>, para que quede claro qué cartas desaparecerán.',
     objective: 'Toca <strong>10♥</strong> y <strong>8♣</strong> en tu mano. No pulses Pasar hasta que las dos estén iluminadas.',
     tip: 'Paso 1 de 2: elegir los descartes. Fuera del tutorial podrás escoger otras dos cartas.',
@@ -36952,7 +37029,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'pass-turn',
-    title: 'Paso 23 · Confirma que pasas turno',
+    title: 'Paso 28 · Confirma que pasas turno',
     body: '<strong>10♥</strong> y <strong>8♣</strong> ya están marcadas. Para ceder la iniciativa, abre el menú <strong>ACCIONES</strong> y pulsa <strong>Pasar</strong>.',
     objective: 'Pulsa <strong>ACCIONES</strong> y después <strong>Pasar</strong>. Las dos cartas elegidas irán al descarte.',
     tip: 'Paso 2 de 2: ejecutar. Si tuvieras menos de 2 cartas, descartarías las que te quedaran.',
@@ -36965,7 +37042,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'swap-card',
-    title: 'Paso 24 · Sustituye una carta del panel',
+    title: 'Paso 29 · Sustituye una carta del panel',
     body: 'Modificar no solo coloca cartas: también permite <strong>sustituir</strong> una pieza del <strong>panel de Stats</strong> por otra mejor de tu mano. Si no lo ves, pulsa <strong>PANEL</strong> para abrirlo. Aquí no estamos cambiando por cambiar: vamos a mejorar las <strong>estadísticas del Mecha</strong>.<br><br>Si sustituyes el <strong>6♣</strong> de Armadura por el <strong>7♣</strong>, la carta antigua va al descarte, la nueva ocupa su sitio y el blindaje del Mecha sube.',
     objective: 'Pulsa <strong>PANEL</strong> si el panel de Stats está cerrado. Selecciona <strong>7♣</strong> de tu mano y <strong>6♣</strong> de tu panel de Armadura, luego pulsa <strong>Modificar</strong> para mejorar la Armadura.',
     tip: 'Sustituir una carta del panel sirve para mejorar estadísticas ya montadas sin añadir una ranura nueva.',
@@ -36976,17 +37053,17 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'rank-rules',
-    title: 'Paso 25 · Repaso antes del ataque combinado',
+    title: 'Paso 30 · Repaso del núcleo',
     body: 'Antes del remate, aplica lo aprendido a tu núcleo actual:<br><br><strong>K♠ piloto:</strong> exigió 3 picas para alcanzar el 100%.<br><strong>J♦ copiloto:</strong> permite tener hasta 3 cartas en Ataque, Defensa o Armadura.<br><strong>A♦ booster:</strong> no amplía un módulo a 4; permite quemar una carta de Armadura ♣ y usarla como combustible.<br><br>Con un as de picas, corazones o tréboles, el módulo de ese palo podría tener hasta <strong>4 cartas</strong>. Fuel sigue sin límite de cartas.',
     objective: 'Pulsa <strong>Entendido</strong>. Después haremos el remate con <strong>7♣</strong> de Armadura usado como fuel gracias al <strong>A♦</strong>.',
     tip: 'Idea clave: el A♦ convierte armadura de tréboles en combustible de emergencia, pero esa armadura se descarta al disparar.',
-    tutorialBotPrimaryAction: 'step:projectile-open',
+    tutorialBotPrimaryAction: 'step:projectile-only-briefing',
     tutorialBotPrimaryLabel: 'Entendido',
     panelActions: [
       {
         label: 'Entendido',
         kind: 'primary',
-        onClick: () => tutorialGoToStep('projectile-open')
+        onClick: () => tutorialGoToStep('projectile-only-briefing')
       }
     ],
     allowedButtons: ['clearSelectionBtn'],
@@ -36995,8 +37072,28 @@ const TUTORIAL_SCRIPT = [
     highlightZones: ['core-zone-0', 'module-box-armor-0', 'fuel-zone-0']
   },
   {
+    id: 'projectile-only-briefing',
+    title: 'Paso 31 · Ataque urgente sin combustible',
+    body: 'Si no tienes combustible suficiente y necesitas lanzar una ofensiva rápida, puedes usar <strong>Solo proyectil</strong>.<br><br>Seleccionas <strong>una carta numérica de picas</strong> del módulo Ataque y la disparas sin gastar Fuel. Su valor se suma como daño, pero la carta se desprende del mecha y pasa al <strong>descarte</strong> tras el ataque.<br><br>No lo confundas con <strong>Modo proyectil</strong>: ese modo añade una pica extra a un ataque normal que sí lleva combustible.',
+    objective: 'Pulsa <strong>Ver ataque combinado</strong>. Practicaremos cómo unir fuel, ataque principal y una pica proyectil.',
+    tip: 'Solo proyectil = 1 pica, 0 fuel, la pica se pierde. Modo proyectil = ataque normal con fuel + 1 pica extra que también se pierde.',
+    tutorialBotPrimaryAction: 'step:projectile-open',
+    tutorialBotPrimaryLabel: 'Ver ataque combinado',
+    panelActions: [
+      {
+        label: 'Ver ataque combinado',
+        kind: 'primary',
+        onClick: () => tutorialGoToStep('projectile-open')
+      }
+    ],
+    allowedButtons: ['clearSelectionBtn'],
+    allowedCardIds: [],
+    highlightButtons: [],
+    highlightZones: ['module-box-attack-0', 'fuel-zone-0']
+  },
+  {
     id: 'projectile-open',
-    title: 'Paso 26 · Activa el ataque combinado',
+    title: 'Paso 32 · Activa el ataque combinado',
     body: 'Ahora combinarás un ataque normal con una pica extra disparada como proyectil.<br><br>Primero abre <strong>ACCIONES → Atacar</strong>. Ya dentro del ataque, activa <strong>Modo proyectil</strong>. No selecciones cartas hasta que ese modo esté encendido.',
     objective: 'Pulsa <strong>ACCIONES</strong>, luego <strong>Atacar</strong> y después <strong>Modo proyectil</strong>.',
     tip: 'El modo proyectil permite añadir una pica extra que no necesita combustible, pero esa carta se pierde.',
@@ -37010,7 +37107,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'projectile-fuel',
-    title: 'Paso 27 · Elige combustible de emergencia',
+    title: 'Paso 33 · Elige combustible de emergencia',
     body: 'Tu <strong>A♦</strong> permite usar una carta de <strong>Armadura ♣</strong> como combustible. Por eso puedes seleccionar el <strong>7♣</strong>: al atacar se quemará, irá al descarte y dará un límite de <strong>7 × 2 = 14</strong>.',
     objective: 'Toca únicamente el <strong>7♣</strong> de Armadura. Todavía no selecciones picas.',
     tip: 'Paso 1 de 3 cartas: combustible. Sin A♦, los tréboles no podrían usarse de esta forma.',
@@ -37025,7 +37122,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'projectile-main',
-    title: 'Paso 28 · Elige el ataque principal',
+    title: 'Paso 34 · Elige el ataque principal',
     body: 'El <strong>7♣</strong> ya aporta un límite de 14. Ahora selecciona <strong>4♠ + 7♠ = 11</strong> como ataque principal. Esas picas caben dentro del combustible y no se perderán.',
     objective: 'Mantén marcado el <strong>7♣</strong> y toca <strong>4♠</strong> y <strong>7♠</strong>. No selecciones aún el <strong>8♠</strong>.',
     tip: 'Paso 2 de 3: ataque normal. 11 de picas cabe dentro del límite 14.',
@@ -37040,7 +37137,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'projectile-extra',
-    title: 'Paso 29 · Añade el proyectil',
+    title: 'Paso 35 · Añade el proyectil',
     body: 'Ahora añade <strong>8♠</strong> como última pica. Como activaste Modo proyectil, esa última carta se dispara fuera del límite de combustible: suma daño extra, pero se perderá y pasará al descarte.',
     objective: 'Sin quitar las cartas anteriores, toca <strong>8♠</strong>. Debe quedar seleccionada la última.',
     tip: 'Paso 3 de 3: proyectil. Solo esta pica extra se descartará después del ataque.',
@@ -37055,7 +37152,7 @@ const TUTORIAL_SCRIPT = [
   },
   {
     id: 'projectile',
-    title: 'Paso 30 · Confirma el ataque combinado',
+    title: 'Paso 36 · Confirma el ataque combinado',
     body: 'Todo está preparado: <strong>7♣</strong> funciona como fuel gracias al <strong>A♦</strong>; <strong>4♠ + 7♠</strong> forman el ataque principal; y <strong>8♠</strong> es el proyectil extra.<br><br>Al confirmar, el 7♣ y el 8♠ irán al descarte. Las dos picas del ataque principal permanecerán instaladas.',
     objective: 'Pulsa <strong>Confirmar ataque</strong>. No selecciones ninguna carta más.',
     tip: 'La secuencia completa ha sido: Acciones → Atacar → Modo proyectil → fuel → picas principales → pica proyectil → Confirmar.',
@@ -41658,7 +41755,17 @@ function getTutorialBotStepDetailHtml(step){
     case 'improve-mecha':
       return 'Al llegar al 100% ya puedes atacar, pero puedes seguir usando <strong>Modificar</strong> en turnos posteriores para añadir o sustituir cartas y mejorar el mecha.';
     case 'capacity-rules':
-      return '<strong>Copiloto:</strong> hasta 3 cartas de su palo; si es ♦, cualquier módulo. <strong>A♠/A♥/A♣:</strong> hasta 4 de su palo. <strong>A♦:</strong> Armadura como fuel. <strong>Fuel:</strong> sin límite de cartas.';
+      return 'Los módulos parten de <strong>2 MAX</strong>. Practicarás cómo el piloto y el copiloto amplían a <strong>3</strong>, y cómo un as de palo amplía a <strong>4</strong>.';
+    case 'pilot-practice':
+      return 'Coloca solo <strong>K♠</strong> como piloto. Ataque pasará de <strong>2 a 3 MAX</strong> y el montaje exigirá completar esas tres picas.';
+    case 'copilot-practice':
+      return 'Coloca solo <strong>J♥</strong> como copiloto. Defensa debe cambiar de <strong>2 a 3 MAX</strong>.';
+    case 'ace-practice':
+      return 'Coloca solo <strong>A♥</strong> como booster. Defensa debe cambiar de <strong>3 a 4 MAX</strong>.';
+    case 'diamond-copilot-swap':
+      return 'Sustituye <strong>J♥</strong> por <strong>J♦</strong>. El copiloto ♦ puede ampliar a 3 Ataque, Defensa o Armadura según lo necesite el mecha.';
+    case 'diamond-booster-swap':
+      return 'Sustituye <strong>A♥</strong> por <strong>A♦</strong>. Ya no amplía a 4: ahora permite quemar Armadura ♣ como combustible.';
     case 'fuel-build':
       return 'Regla clave: el combustible permite usar picas por el doble de su valor. Por ejemplo, <strong>4♦</strong> permite atacar con hasta <strong>8 puntos</strong> de picas.';
     case 'attack-briefing':
@@ -41669,6 +41776,8 @@ function getTutorialBotStepDetailHtml(step){
       return '<strong>2.</strong> Mantén el <strong>8♦</strong> y toca <strong>4♠ + 7♠</strong>. Suman 11, así que caben dentro del límite 16. Deja 8♠ sin marcar.';
     case 'first-attack':
       return '<strong>3.</strong> La jugada ya está preparada. Pulsa <strong>Confirmar ataque</strong>. El 8♦ se descarta; las picas principales se quedan montadas.';
+    case 'rearm-briefing':
+      return 'Para <strong>rearmarte</strong>, descarta un diamante numérico de la mano y roba tantas cartas como indique su valor. La ruta es <strong>seleccionar ♦ → ACCIONES → Robar con ♦</strong>.';
     case 'draw-diamond-select':
       return '<strong>1.</strong> Toca solo el <strong>2♦</strong> de tu mano. Su valor indica que robarás <strong>2 cartas</strong>.';
     case 'draw-diamond':
@@ -41683,6 +41792,8 @@ function getTutorialBotStepDetailHtml(step){
       return 'Modificar también permite sustituir una carta del panel por otra de la mano. Aquí cambias una armadura peor por otra mejor para subir la estadística del Mecha.';
     case 'rank-rules':
       return '<strong>K♠:</strong> exige 3 picas. <strong>J♦:</strong> permite 3 cartas en cualquier módulo. <strong>A♦:</strong> quema Armadura ♣ como fuel. Los otros ases permiten 4 cartas de su palo; Fuel no tiene límite.';
+    case 'projectile-only-briefing':
+      return '<strong>Solo proyectil:</strong> dispara 1 pica numérica sin consumir fuel; esa pica pasa al descarte. <strong>Modo proyectil:</strong> añade una pica extra a un ataque normal con fuel.';
     case 'projectile-open':
       return '<strong>1.</strong> Pulsa <strong>ACCIONES → Atacar → Modo proyectil</strong>. Así podrás combinar ataque normal y una pica extra.';
     case 'projectile-fuel':
@@ -41723,14 +41834,19 @@ const TUTOBOT_TOP_RAIL_STEPS = new Set([
   'build-requirements',
   'improve-mecha',
   'capacity-rules',
-  'core-build',
+  'pilot-practice',
   'attack-build',
+  'copilot-practice',
+  'ace-practice',
+  'diamond-copilot-swap',
+  'diamond-booster-swap',
   'fuel-build',
   'attack-briefing',
   'open-attack',
   'first-attack-fuel',
   'first-attack-spades',
   'first-attack',
+  'rearm-briefing',
   'draw-diamond-select',
   'draw-diamond',
   'figure-burst',
@@ -41738,6 +41854,7 @@ const TUTOBOT_TOP_RAIL_STEPS = new Set([
   'pass-turn',
   'swap-card',
   'rank-rules',
+  'projectile-only-briefing',
   'projectile-open',
   'projectile-fuel',
   'projectile-main',
@@ -41763,12 +41880,19 @@ const TUTOBOT_TOP_RAIL_FRONT_STEPS = new Set([
   'build-requirements',
   'improve-mecha',
   'capacity-rules',
+  'pilot-practice',
+  'copilot-practice',
+  'ace-practice',
+  'diamond-copilot-swap',
+  'diamond-booster-swap',
   'attack-briefing',
   'first-attack-fuel',
   'first-attack-spades',
   'first-attack',
   'defend',
+  'rearm-briefing',
   'rank-rules',
+  'projectile-only-briefing',
   'projectile-open',
   'projectile-fuel',
   'projectile-main',
@@ -41920,10 +42044,10 @@ function getCompactMobileTutorialCopy(step){
       copy.objective = 'Arrastra <strong>8♦</strong> hasta <strong>Fuel</strong>; se montará sola al soltarla.';
       copy.tip = 'Fuel funciona como valor × 2 y se suma a lo que ya ves en el panel.';
       break;
-    case 'core-build':
-      copy.body = 'Ahora montas el núcleo: <strong>K♠</strong> será piloto, <strong>J♦</strong> copiloto y <strong>A♦</strong> booster. Los ases van al booster; el <strong>A♦</strong> permite usar <strong>Armadura ♣</strong> como fuel.';
-      copy.objective = 'Toca <strong>K♠</strong>, <strong>J♦</strong> y <strong>A♦</strong> en tu mano y pulsa <strong>Modificar</strong>.';
-      copy.tip = 'Pulsa <strong>PANEL</strong> para abrir tus Stats. <strong>Modificar</strong> aplica los cambios al panel.';
+    case 'pilot-practice':
+      copy.body = 'Coloca <strong>K♠</strong> como piloto. Verás Ataque pasar de <strong>2 a 3 MAX</strong> y aparecerá la exigencia de reunir tres picas.';
+      copy.objective = 'Toca solo <strong>K♠</strong> y pulsa <strong>Modificar</strong>.';
+      copy.tip = 'Abre <strong>PANEL</strong> para ver el núcleo y el cambio del límite.';
       break;
     case 'attack-build':
       copy.body = 'Tu piloto es de <strong>♠</strong>, así que necesitas <strong>3 picas</strong> instaladas para poder atacar. Ya hay una <strong>4♠</strong>; añade <strong>7♠</strong> y <strong>8♠</strong>.';
@@ -41951,9 +42075,29 @@ function getCompactMobileTutorialCopy(step){
       copy.tip = 'Más picas = Ataque; corazones = Defensa; tréboles = Armadura.';
       break;
     case 'capacity-rules':
-      copy.body = '<strong>Copiloto:</strong> permite 3 cartas de su palo; si es ♦, puede ampliar Ataque, Defensa o Armadura. <strong>A♠/A♥/A♣:</strong> permiten 4 cartas de su palo. <strong>A♦:</strong> usa Armadura como fuel.';
-      copy.objective = 'Pulsa <strong>Entendido</strong> y montamos el núcleo.';
-      copy.tip = '<strong>Fuel no tiene límite de cartas.</strong> Una figura ♦ solo puede ser copiloto.';
+      copy.body = 'Los módulos empiezan en <strong>2 MAX</strong>. Ahora verás en el panel cómo piloto y copiloto amplían a 3 y un as amplía a 4.';
+      copy.objective = 'Pulsa <strong>Practicar</strong> y coloca primero el piloto.';
+      copy.tip = 'Mira el número MAX después de cada cambio.';
+      break;
+    case 'copilot-practice':
+      copy.body = 'Defensa admite 2 cartas. El <strong>J♥</strong> como copiloto hará que cambie a <strong>3 MAX</strong>.';
+      copy.objective = 'Toca solo <strong>J♥</strong> y pulsa <strong>Modificar</strong>.';
+      copy.tip = 'El copiloto amplía su palo, pero no cambia la condición del piloto.';
+      break;
+    case 'ace-practice':
+      copy.body = 'Defensa ya está en 3 MAX. El <strong>A♥</strong> como booster la llevará a <strong>4 MAX</strong>.';
+      copy.objective = 'Toca solo <strong>A♥</strong> y pulsa <strong>Modificar</strong>.';
+      copy.tip = 'Los ases de ♠, ♥ y ♣ permiten hasta 4 cartas de su palo.';
+      break;
+    case 'diamond-copilot-swap':
+      copy.body = 'Una figura ♦ no puede ser piloto. Como copiloto, permite ampliar a 3 el módulo que lo necesite.';
+      copy.objective = 'Marca <strong>J♦</strong> en la mano y <strong>J♥</strong> en el núcleo; pulsa <strong>Modificar</strong>.';
+      copy.tip = 'Solo se sustituye el copiloto; el resto del panel permanece igual.';
+      break;
+    case 'diamond-booster-swap':
+      copy.body = 'El <strong>A♦</strong> no amplía a 4. Permite quemar una carta de Armadura ♣ y usarla como fuel.';
+      copy.objective = 'Marca <strong>A♦</strong> en la mano y <strong>A♥</strong> en el núcleo; pulsa <strong>Modificar</strong>.';
+      copy.tip = 'Más adelante practicarás esta conversión de Armadura en combustible.';
       break;
     case 'attack-briefing':
       copy.body = 'Regla de disparo: atacas con <strong>picas ♠</strong>, pero el ataque principal necesita <strong>fuel</strong>. El fuel vale <strong>2 a 1</strong>: un <strong>4♦</strong> permite usar hasta <strong>8</strong> puntos de picas.';
@@ -41984,6 +42128,11 @@ function getCompactMobileTutorialCopy(step){
       copy.body = 'Te atacan. La Defensa de corazones es un stat, pero aquí usarás <strong>defensa activa</strong>: descartar <strong>1 diamante de la mano</strong> para reducir daño.';
       copy.objective = 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>. Si no lo ves directo, abre <strong>Acciones</strong>.';
       copy.tip = 'El diamante usado se descarta y reduce daño por su valor completo.';
+      break;
+    case 'rearm-briefing':
+      copy.body = 'Además de atacar, necesitas <strong>rearmarte</strong>. Descarta un diamante numérico de la mano para robar tantas cartas como indique su valor.';
+      copy.objective = 'Pulsa <strong>Practicar robo</strong>. Después harás: seleccionar 2♦ → ACCIONES → Robar con ♦.';
+      copy.tip = 'Un 2♦ descartado permite robar 2 cartas del mazo.';
       break;
     case 'draw-diamond-select':
       copy.body = '<strong>Paso 1:</strong> elige el diamante de la mano que quieres gastar. Su número indica cuántas cartas robarás.';
@@ -42019,6 +42168,11 @@ function getCompactMobileTutorialCopy(step){
       copy.body = '<strong>Repaso:</strong> K♠ exigió 3 picas; J♦ permite 3 cartas en cualquier módulo; A♦ permite quemar Armadura como fuel. Los otros ases permiten 4 cartas de su palo.';
       copy.objective = 'Pulsa <strong>Entendido</strong>. Ahora usarás el <strong>A♦</strong> para convertir <strong>7♣</strong> de Armadura en combustible.';
       copy.tip = 'Una figura ♦ no puede ser piloto principal: solo copiloto.';
+      break;
+    case 'projectile-only-briefing':
+      copy.body = 'Si falta fuel, <strong>Solo proyectil</strong> dispara 1 pica numérica sin combustible. Esa pica suma daño, pero se pierde y va al descarte.';
+      copy.objective = 'Pulsa <strong>Ver ataque combinado</strong>. Después añadirás una pica proyectil a un ataque normal.';
+      copy.tip = 'Solo proyectil usa 0 fuel. Modo proyectil combina fuel + picas principales + 1 pica extra.';
       break;
     case 'projectile-open':
       copy.body = '<strong>Paso 1:</strong> prepara un ataque normal con una pica extra como proyectil.';
@@ -42114,7 +42268,17 @@ function getCompactMobileTutorialFocusText(step){
     case 'improve-mecha':
       return 'Tras el 100% puedes seguir usando Modificar para mejorar Ataque, Defensa y Armadura.';
     case 'capacity-rules':
-      return 'Copiloto amplía a 3; as de palo amplía a 4; A♦ usa Armadura como fuel; Fuel no tiene límite.';
+      return 'Módulo base 2 MAX; piloto o copiloto pueden ampliarlo a 3; un as de palo puede llevarlo a 4.';
+    case 'pilot-practice':
+      return 'Coloca K♠ y mira Ataque: debe cambiar de 2 a 3 MAX y pedir tres picas.';
+    case 'copilot-practice':
+      return 'Coloca J♥ y mira Defensa: debe cambiar de 2 a 3 MAX.';
+    case 'ace-practice':
+      return 'Coloca A♥ y mira Defensa: debe cambiar de 3 a 4 MAX.';
+    case 'diamond-copilot-swap':
+      return 'Sustituye J♥ por J♦: marca una carta en la mano y la otra en el núcleo.';
+    case 'diamond-booster-swap':
+      return 'Sustituye A♥ por A♦: marca una carta en la mano y la otra en el núcleo.';
     case 'attack-briefing':
       return 'Picas = daño. Fuel x2 = límite. Un 4 de fuel sostiene hasta 8 puntos de picas.';
     case 'open-attack':
@@ -42125,6 +42289,8 @@ function getCompactMobileTutorialFocusText(step){
       return 'Paso 2: mantén 8♦ y toca 4♠ + 7♠. Deja 8♠ sin marcar.';
     case 'first-attack':
       return 'Paso 3: la selección está lista. Pulsa Confirmar ataque.';
+    case 'rearm-briefing':
+      return 'Rearmarse: descarta un diamante de la mano y roba tantas cartas como marque su valor.';
     case 'academy-fuel-attack':
     case 'academy-armor-fuel':
       return 'Selecciona las cartas iluminadas en el panel y pulsa Confirmar ataque.';
@@ -42154,6 +42320,8 @@ function getCompactMobileTutorialFocusText(step){
       return 'Paso 5: pulsa Confirmar ataque.';
     case 'rank-rules':
       return 'K♠ exigió 3 picas; J♦ amplía cualquier módulo a 3; A♦ permite quemar Armadura ♣ como fuel.';
+    case 'projectile-only-briefing':
+      return 'Solo proyectil: una pica, cero fuel y esa pica va al descarte tras causar daño.';
     case 'academy-projectile-only':
     case 'academy-projectile-combo':
       return 'Acciones concentra Atacar, Modo proyectil, Solo proyectil y Confirmar ataque.';
@@ -48518,8 +48686,12 @@ function tutorialExpectedAction(stepId){
     case 'intro-defense-stat':
     case 'intro-armor-stat':
     case 'intro-fuel-stat':
-    case 'core-build':
+    case 'pilot-practice':
     case 'attack-build':
+    case 'copilot-practice':
+    case 'ace-practice':
+    case 'diamond-copilot-swap':
+    case 'diamond-booster-swap':
     case 'fuel-build':
       return 'modify';
     case 'open-attack':
@@ -48557,10 +48729,18 @@ function tutorialExpectedSelection(stepId){
       return [TUTORIAL_CARD_IDS.p0IntroArmorCard];
     case 'intro-fuel-stat':
       return [TUTORIAL_CARD_IDS.p0FuelA];
-    case 'core-build':
-      return [TUTORIAL_CARD_IDS.p0Pilot, TUTORIAL_CARD_IDS.p0Copilot, TUTORIAL_CARD_IDS.p0Booster];
+    case 'pilot-practice':
+      return [TUTORIAL_CARD_IDS.p0Pilot];
     case 'attack-build':
       return [TUTORIAL_CARD_IDS.p0AttackA, TUTORIAL_CARD_IDS.p0AttackB];
+    case 'copilot-practice':
+      return [TUTORIAL_CARD_IDS.p0CapacityCopilot];
+    case 'ace-practice':
+      return [TUTORIAL_CARD_IDS.p0CapacityBooster];
+    case 'diamond-copilot-swap':
+      return [TUTORIAL_CARD_IDS.p0Copilot, TUTORIAL_CARD_IDS.p0CapacityCopilot];
+    case 'diamond-booster-swap':
+      return [TUTORIAL_CARD_IDS.p0Booster, TUTORIAL_CARD_IDS.p0CapacityBooster];
     case 'fuel-build':
       return [TUTORIAL_CARD_IDS.p0FuelA];
     case 'first-attack':
@@ -48928,8 +49108,11 @@ function playTutorialPrimerReveal(step){
     layer.classList.add('show');
   });
 
-  const launchDelay = prefersReducedMotion() ? 120 : 620;
-  const finishDelay = launchDelay + (prefersReducedMotion() ? 180 : 560);
+  // Keep the card explanation on screen long enough to read before the drop.
+  // The next tutorial step still waits for the player to place the card.
+  const revealCopyLength = `${step.primerReveal.label || ''} ${step.primerReveal.subtitle || ''}`.trim().length;
+  const launchDelay = Math.max(4800, Math.min(7000, revealCopyLength * 58));
+  const finishDelay = launchDelay + (prefersReducedMotion() ? 260 : 680);
   const palette = step.primerReveal.tone === 'fuel'
     ? 'amber'
     : step.primerReveal.tone === 'defense'
@@ -48989,13 +49172,19 @@ function tutorialIsStepComplete(stepId){
       return p0.armor.some(card => card.id===TUTORIAL_CARD_IDS.p0IntroArmorCard);
     case 'intro-fuel-stat':
       return p0.fuel.some(card => card.id===TUTORIAL_CARD_IDS.p0FuelA);
-    case 'core-build':
-      return !!p0?.core?.pilot && p0.core.pilot.id===TUTORIAL_CARD_IDS.p0Pilot
-        && !!p0.core.copilot && p0.core.copilot.id===TUTORIAL_CARD_IDS.p0Copilot
-        && !!p0.core.booster && p0.core.booster.id===TUTORIAL_CARD_IDS.p0Booster;
+    case 'pilot-practice':
+      return !!p0?.core?.pilot && p0.core.pilot.id===TUTORIAL_CARD_IDS.p0Pilot;
     case 'attack-build':
       return p0.attack.some(card => card.id===TUTORIAL_CARD_IDS.p0AttackA)
         && p0.attack.some(card => card.id===TUTORIAL_CARD_IDS.p0AttackB);
+    case 'copilot-practice':
+      return !!p0?.core?.copilot && p0.core.copilot.id===TUTORIAL_CARD_IDS.p0CapacityCopilot;
+    case 'ace-practice':
+      return !!p0?.core?.booster && p0.core.booster.id===TUTORIAL_CARD_IDS.p0CapacityBooster;
+    case 'diamond-copilot-swap':
+      return !!p0?.core?.copilot && p0.core.copilot.id===TUTORIAL_CARD_IDS.p0Copilot;
+    case 'diamond-booster-swap':
+      return !!p0?.core?.booster && p0.core.booster.id===TUTORIAL_CARD_IDS.p0Booster;
     case 'fuel-build':
       return p0.fuel.some(card => card.id===TUTORIAL_CARD_IDS.p0FuelA);
     case 'open-attack':
@@ -49132,13 +49321,33 @@ function tutorialHandleStepCompletion(step){
       tutorialGoToStep('capacity-rules');
       break;
     case 'capacity-rules':
-      tutorialGoToStep('core-build');
+      tutorialGoToStep('pilot-practice');
       break;
-    case 'core-build':
-      tutorialRunOpponentPass(tutorialGetStepIndex('attack-build'), 'El instructor comprueba el núcleo y te deja seguir con el montaje.');
+    case 'pilot-practice':
+      addToast('Ataque ampliado: 3 MAX', 'ok');
+      queueFx('module-box-attack-0', 'zone-pulse');
+      tutorialRunOpponentPass(tutorialGetStepIndex('attack-build'), 'Piloto conectado. Mira cómo Ataque admite tres picas y cumple ahora su condición.');
       break;
     case 'attack-build':
-      tutorialRunOpponentPass(tutorialGetStepIndex('fuel-build'), 'Buen trabajo. Ahora toca cargar combustible.');
+      tutorialRunOpponentPass(tutorialGetStepIndex('copilot-practice'), 'Montaje al 100%. Ahora ampliarás Defensa con un copiloto.');
+      break;
+    case 'copilot-practice':
+      addToast('Defensa ampliada: 3 MAX', 'ok');
+      queueFx('module-box-defense-0', 'zone-pulse');
+      tutorialRunOpponentPass(tutorialGetStepIndex('ace-practice'), 'Defensa ya admite tres cartas. Ahora el as llevará ese límite a cuatro.');
+      break;
+    case 'ace-practice':
+      addToast('Defensa ampliada: 4 MAX', 'ok');
+      queueFx('module-box-defense-0', 'zone-pulse');
+      tutorialRunOpponentPass(tutorialGetStepIndex('diamond-copilot-swap'), 'Has visto el límite 4. Ahora aprenderás la excepción del copiloto de diamantes.');
+      break;
+    case 'diamond-copilot-swap':
+      addToast('Copiloto ♦: ampliación flexible', 'ok');
+      tutorialRunOpponentPass(tutorialGetStepIndex('diamond-booster-swap'), 'Copiloto de diamantes conectado. Falta descubrir el As de diamantes.');
+      break;
+    case 'diamond-booster-swap':
+      addToast('A♦: Armadura puede ser fuel', 'ok');
+      tutorialRunOpponentPass(tutorialGetStepIndex('fuel-build'), 'Núcleo especial listo. Ahora toca cargar combustible normal.');
       break;
     case 'fuel-build':
       tutorialRunOpponentPass(tutorialGetStepIndex('attack-briefing'), 'Sistema cargado. Antes de disparar, TutoBOT te enseña cómo se alimenta un ataque.');
@@ -49150,7 +49359,7 @@ function tutorialHandleStepCompletion(step){
       tutorialRunOpponentCounterAttack();
       break;
     case 'defend':
-      tutorialGoToStep('draw-diamond-select');
+      tutorialGoToStep('rearm-briefing');
       break;
     case 'draw-diamond':
       tutorialRunOpponentPass(tutorialGetStepIndex('figure-burst'), 'Reabastécete y prepárate para terminar el ejercicio con un proyectil.');
@@ -49165,7 +49374,7 @@ function tutorialHandleStepCompletion(step){
       tutorialRunOpponentPass(tutorialGetStepIndex('rank-rules'), 'Antes del remate, TutoBOT aclara pilotos, copilotos, ases y el As de diamantes.');
       break;
     case 'rank-rules':
-      tutorialGoToStep('projectile-open');
+      tutorialGoToStep('projectile-only-briefing');
       break;
     case 'projectile':
       addToast('Tutorial completado', 'ok');
@@ -49189,6 +49398,8 @@ function tutorialPreparePracticeScenario(){
 
   p0.hand = [
     tutorialTakeCard(deck, 'K', 'spades', TUTORIAL_CARD_IDS.p0Pilot),
+    tutorialTakeCard(deck, 'J', 'hearts', TUTORIAL_CARD_IDS.p0CapacityCopilot),
+    tutorialTakeCard(deck, 'A', 'hearts', TUTORIAL_CARD_IDS.p0CapacityBooster),
     tutorialTakeCard(deck, 'J', 'diamonds', TUTORIAL_CARD_IDS.p0Copilot),
     tutorialTakeCard(deck, 'A', 'diamonds', TUTORIAL_CARD_IDS.p0Booster),
     tutorialTakeCard(deck, '7', 'spades', TUTORIAL_CARD_IDS.p0AttackA),
@@ -49208,7 +49419,7 @@ function tutorialPreparePracticeScenario(){
     tutorialTakeCard(deck, 'K', 'clubs', 'tut-p1-hand-a'),
     tutorialTakeCard(deck, 'Q', 'spades', 'tut-p1-hand-b')
   ];
-  p1.core.pilot = tutorialTakeCard(deck, 'J', 'hearts', TUTORIAL_CARD_IDS.p1Pilot);
+  p1.core.pilot = tutorialTakeCard(deck, 'K', 'hearts', TUTORIAL_CARD_IDS.p1Pilot);
   p1.core.copilot = tutorialTakeCard(deck, 'Q', 'clubs', TUTORIAL_CARD_IDS.p1Copilot);
   p1.core.booster = tutorialTakeCard(deck, 'A', 'clubs', TUTORIAL_CARD_IDS.p1Booster);
   p1.attack = [
@@ -51377,8 +51588,12 @@ const DEV_TUTORIAL_PRESETS = [
   { key:'intro-defense-stat', label:'Tutorial · Corazones = Defensa' },
   { key:'intro-armor-stat', label:'Tutorial · Tréboles = Armadura' },
   { key:'intro-fuel-stat', label:'Tutorial · Diamantes = Fuel' },
-  { key:'core-build', label:'Tutorial · Núcleo' },
+  { key:'pilot-practice', label:'Tutorial · Piloto y límite 3' },
   { key:'attack-build', label:'Tutorial · Ataque' },
+  { key:'copilot-practice', label:'Tutorial · Copiloto y límite 3' },
+  { key:'ace-practice', label:'Tutorial · As y límite 4' },
+  { key:'diamond-copilot-swap', label:'Tutorial · Copiloto ♦' },
+  { key:'diamond-booster-swap', label:'Tutorial · As ♦' },
   { key:'fuel-build', label:'Tutorial · Fuel' },
   { key:'attack-briefing', label:'Tutorial · Regla ataque' },
   { key:'open-attack', label:'Tutorial · Abrir ataque' },
@@ -51628,20 +51843,36 @@ function devSetupTutorialPreset(){
   tutorialPreparePracticeScenario();
 }
 
-function devTutorialApplyCoreBuild(){
+function devTutorialApplyPilotBuild(){
   devTutorialMoveCard('hand', 'core-pilot', TUTORIAL_CARD_IDS.p0Pilot);
-  devTutorialMoveCard('hand', 'core-copilot', TUTORIAL_CARD_IDS.p0Copilot);
-  devTutorialMoveCard('hand', 'core-booster', TUTORIAL_CARD_IDS.p0Booster);
 }
 
 function devTutorialApplyAttackBuild(){
-  devTutorialApplyCoreBuild();
+  devTutorialApplyPilotBuild();
   devTutorialMoveCard('hand', 'attack', TUTORIAL_CARD_IDS.p0AttackA);
   devTutorialMoveCard('hand', 'attack', TUTORIAL_CARD_IDS.p0AttackB);
 }
 
-function devTutorialApplyFuelBuild(){
+function devTutorialApplyCapacityDemo(){
   devTutorialApplyAttackBuild();
+  devTutorialMoveCard('hand', 'core-copilot', TUTORIAL_CARD_IDS.p0CapacityCopilot);
+  devTutorialMoveCard('hand', 'core-booster', TUTORIAL_CARD_IDS.p0CapacityBooster);
+}
+
+function devTutorialApplyDiamondCore(){
+  devTutorialApplyCapacityDemo();
+  const player = state.players[0];
+  if(player.core.copilot) state.discard.push(player.core.copilot);
+  if(player.core.booster) state.discard.push(player.core.booster);
+  player.core.copilot = null;
+  player.core.booster = null;
+  devTutorialMoveCard('hand', 'core-copilot', TUTORIAL_CARD_IDS.p0Copilot);
+  devTutorialMoveCard('hand', 'core-booster', TUTORIAL_CARD_IDS.p0Booster);
+  setBestFlexTargets(player);
+}
+
+function devTutorialApplyFuelBuild(){
+  devTutorialApplyDiamondCore();
   devTutorialMoveCard('hand', 'fuel', TUTORIAL_CARD_IDS.p0FuelA);
 }
 
@@ -51688,15 +51919,38 @@ function devLoadTutorialPreset(key){
     case 'intro-fuel-stat':
       tutorialGoToStep('intro-fuel-stat', { renderNow:false });
       break;
-    case 'core-build':
-      tutorialGoToStep('core-build', { renderNow:false });
+    case 'pilot-practice':
+      tutorialGoToStep('pilot-practice', { renderNow:false });
       break;
     case 'attack-build':
-      devTutorialApplyCoreBuild();
+      devTutorialApplyPilotBuild();
       tutorialGoToStep('attack-build', { renderNow:false });
       break;
-    case 'fuel-build':
+    case 'copilot-practice':
       devTutorialApplyAttackBuild();
+      tutorialGoToStep('copilot-practice', { renderNow:false });
+      break;
+    case 'ace-practice':
+      devTutorialApplyAttackBuild();
+      devTutorialMoveCard('hand', 'core-copilot', TUTORIAL_CARD_IDS.p0CapacityCopilot);
+      tutorialGoToStep('ace-practice', { renderNow:false });
+      break;
+    case 'diamond-copilot-swap':
+      devTutorialApplyCapacityDemo();
+      tutorialGoToStep('diamond-copilot-swap', { renderNow:false });
+      break;
+    case 'diamond-booster-swap':
+      devTutorialApplyCapacityDemo();
+      {
+        const player = state.players[0];
+        if(player.core.copilot) state.discard.push(player.core.copilot);
+        player.core.copilot = null;
+        devTutorialMoveCard('hand', 'core-copilot', TUTORIAL_CARD_IDS.p0Copilot);
+      }
+      tutorialGoToStep('diamond-booster-swap', { renderNow:false });
+      break;
+    case 'fuel-build':
+      devTutorialApplyDiamondCore();
       tutorialGoToStep('fuel-build', { renderNow:false });
       break;
     case 'attack-briefing':

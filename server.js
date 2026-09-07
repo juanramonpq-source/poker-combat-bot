@@ -3,7 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const crypto = require('crypto');
 
-const APP_RELEASE_VERSION = '20260906-tutorial-two-phases-3';
+const APP_RELEASE_VERSION = '20260907-tutorial-practice-core-1';
 const MAIN_GAME_PATH = '/poker_combat_bot_ONLINE.html';
 
 const app = express();
