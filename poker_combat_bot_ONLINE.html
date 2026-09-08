@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <script>
     (() => {
-      const APP_SHELL_VERSION = '20260907-tutorial-practice-core-1';
+      const APP_SHELL_VERSION = '20260909-tutorial-capacity-clarity-1';
       const ensureVersionedShell = (reloadPersisted = false) => {
         try {
           const url = new URL(window.location.href);
@@ -5570,6 +5570,30 @@ button:disabled{
   }
 }
 .zone-pulse{animation:zonePulse .8s ease}
+.tutorial-capacity-upgrade{
+  position:relative;
+  z-index:1;
+  animation:tutorialCapacityUpgrade 1.8s cubic-bezier(.22,.82,.28,1) both;
+}
+.tutorial-capacity-upgrade::after{
+  content:attr(data-tutorial-upgrade);
+  position:absolute;
+  top:8px;
+  right:10px;
+  z-index:8;
+  padding:4px 7px;
+  border:1px solid rgba(187,255,213,.92);
+  border-radius:999px;
+  background:rgba(6,70,48,.94);
+  box-shadow:0 0 18px rgba(73,255,168,.7);
+  color:#e9fff1;
+  font-size:.66rem;
+  font-weight:1000;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  pointer-events:none;
+  animation:tutorialCapacityBadge 1.8s ease both;
+}
 .zone-draw{animation:drawPulse .8s ease}
 .damage-shake{animation:damageShake .55s ease}
 .damage-flash::after{
@@ -5580,6 +5604,17 @@ button:disabled{
   0%{box-shadow:0 0 0 rgba(35,216,255,0);transform:scale(1)}
   30%{box-shadow:0 0 16px rgba(35,216,255,.22);transform:scale(1.01)}
   100%{box-shadow:0 0 0 rgba(35,216,255,0);transform:scale(1)}
+}
+@keyframes tutorialCapacityUpgrade{
+  0%{box-shadow:0 0 0 rgba(78,255,171,0);filter:brightness(1);transform:scale(1)}
+  24%{box-shadow:0 0 0 3px rgba(104,255,190,.42),0 0 34px rgba(64,255,165,.72);filter:brightness(1.34);transform:scale(1.025)}
+  60%{box-shadow:0 0 0 2px rgba(104,255,190,.3),0 0 23px rgba(64,255,165,.48);filter:brightness(1.14);transform:scale(1.012)}
+  100%{box-shadow:0 0 0 rgba(78,255,171,0);filter:brightness(1);transform:scale(1)}
+}
+@keyframes tutorialCapacityBadge{
+  0%,12%{opacity:0;transform:translateY(7px) scale(.88)}
+  25%,72%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(-5px) scale(.96)}
 }
 @keyframes drawPulse{
   0%{box-shadow:0 0 0 rgba(255,178,46,0);transform:scale(1)}
@@ -32211,14 +32246,14 @@ const TUTOBOT_STEP_LINES = {
   'intro-fuel-stat': 'Y ahora el combustible: un diamante carga fuel, pero luego verás que hace mucho más.',
   'pilot-practice': 'Vamos a encender el núcleo colocando primero al piloto.',
   'attack-build': 'Muy bien. El piloto de picas pide tres picas instaladas.',
-  'copilot-practice': 'Ahora verás cómo un copiloto amplía un módulo de dos a tres cartas.',
-  'ace-practice': 'El as lleva esa ampliación un paso más: de tres a cuatro cartas.',
+  'copilot-practice': 'Ahora coloca el copiloto y pulsa Modificar para ampliar un módulo de dos a tres cartas.',
+  'ace-practice': 'Ahora coloca el as y pulsa Modificar: llevará esa ampliación de tres a cuatro cartas.',
   'diamond-copilot-swap': 'Cambiamos al copiloto de diamantes para descubrir su flexibilidad.',
   'diamond-booster-swap': 'Terminamos el núcleo con el As de diamantes y su función especial.',
   'fuel-build': 'Carga combustible: los diamantes dan energía para poder atacar con picas.',
   'combat-phases': 'Todo combate se entiende mejor si lo dividimos en dos fases.',
   'build-requirements': 'Primero vamos a descubrir qué necesita un mecha para llegar al 100%.',
-  'improve-mecha': 'Llegar al 100% abre el ataque, pero el montaje puede seguir mejorando.',
+  'improve-mecha': 'Llegar al 100% abre el ataque, pero cada turno de montaje tiene una regla sencilla.',
   'capacity-rules': 'Copilotos, ases y Fuel cambian cuánto puedes montar.',
   'attack-briefing': 'Antes de disparar, vamos a leer el ataque como pilotos.',
   'open-attack': 'Pulsa Acciones y luego Atacar para abrir el disparo.',
@@ -32688,7 +32723,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260907-tutorial-practice-core-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260909-tutorial-capacity-clarity-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -36748,7 +36783,7 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'improve-mecha',
     title: 'Paso 8 · El montaje continúa',
-    body: 'Llegar al <strong>100%</strong> no cierra el taller. La fase de Ataque ya está disponible, pero en turnos posteriores puedes seguir usando <strong>Modificar</strong> para añadir o sustituir cartas y hacer más fuerte al mecha.<br><br>Más picas aumentan el <strong>Ataque</strong>, más corazones la <strong>Defensa</strong> y más tréboles la <strong>Armadura</strong>. También puedes añadir un <strong>copiloto</strong> y un <strong>as</strong> para ampliar la capacidad del panel.',
+    body: 'Llegar al <strong>100%</strong> no cierra el taller. La fase de Ataque ya está disponible, pero puedes seguir usando <strong>Modificar</strong> para mejorar el mecha.<br><br><strong>En cada turno elige una sola opción de montaje:</strong> colocar hasta <strong>2 cartas</strong> en el panel, o <strong>intercambiar 1 carta</strong> de tu mano por otra del panel. Son alternativas: si intercambias, ese es tu único cambio de Stats ese turno. <strong>Solo en el primer turno</strong> puedes colocar hasta <strong>3 cartas</strong>.<br><br>Más picas aumentan el <strong>Ataque</strong>, más corazones la <strong>Defensa</strong> y más tréboles la <strong>Armadura</strong>. También puedes añadir un <strong>copiloto</strong> y un <strong>as</strong> para ampliar la capacidad del panel.',
     objective: 'Pulsa <strong>Entendido</strong>. Ahora veremos qué permite colocar el copiloto.',
     tip: 'Desbloquear el ataque es el comienzo de la segunda fase, no el final de las mejoras.',
     tutorialBotPrimaryAction: 'step:capacity-rules',
@@ -36812,8 +36847,8 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'copilot-practice',
     title: 'Paso 12 · Amplía con un copiloto',
-    body: 'Tu panel ya está al <strong>100%</strong>, pero todavía puede mejorar. Antes de tocar el núcleo, Defensa admite <strong>2 cartas</strong>. Al colocar un <strong>J♥</strong> como copiloto, su palo ampliará Defensa y el contador cambiará a <strong>3 MAX</strong>.',
-    objective: 'Selecciona solo el <strong>J♥</strong> de tu mano y pulsa <strong>Modificar</strong>. Después observa el nuevo límite de Defensa.',
+    body: 'Tu panel ya está al <strong>100%</strong>, pero todavía puede mejorar. Antes de tocar el núcleo, Defensa admite <strong>2 cartas</strong>. Al colocar un <strong>J♥</strong> como copiloto y pulsar <strong>Modificar</strong>, su palo ampliará Defensa y el contador cambiará a <strong>3 MAX</strong>.',
+    objective: 'Selecciona solo el <strong>J♥</strong> de tu mano y pulsa <strong>Modificar</strong>. Verás el brillo verde y el salto de <strong>2 a 3 MAX</strong> en Defensa.',
     tip: 'El copiloto amplía su propio palo a 3, pero no sustituye la condición de montaje que marcó el piloto.',
     allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0CapacityCopilot],
@@ -36824,8 +36859,8 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'ace-practice',
     title: 'Paso 13 · Amplía con un as',
-    body: 'Defensa ya muestra <strong>3 MAX</strong> gracias al copiloto. Ahora añade un <strong>A♥</strong> como booster: los ases de picas, corazones o tréboles elevan su módulo hasta <strong>4 cartas</strong>. Verás Defensa pasar de <strong>3 a 4 MAX</strong>.',
-    objective: 'Selecciona solo el <strong>A♥</strong> de tu mano y pulsa <strong>Modificar</strong>. Mira cómo cambia el límite de Defensa.',
+    body: 'Defensa ya muestra <strong>3 MAX</strong> gracias al copiloto. Ahora añade un <strong>A♥</strong> como booster y pulsa <strong>Modificar</strong>: los ases de picas, corazones o tréboles elevan su módulo hasta <strong>4 cartas</strong>.',
+    objective: 'Selecciona solo el <strong>A♥</strong> de tu mano y pulsa <strong>Modificar</strong>. Verás el brillo verde y el salto de <strong>3 a 4 MAX</strong> en Defensa.',
     tip: 'Copiloto = hasta 3 cartas de su palo. As = hasta 4 cartas de su palo.',
     allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
     allowedCardIds: [TUTORIAL_CARD_IDS.p0CapacityBooster],
@@ -41753,15 +41788,15 @@ function getTutorialBotStepDetailHtml(step){
     case 'build-requirements':
       return '<strong>Para llegar al 100%:</strong> 1 piloto + 6 cartas entre Ataque, Defensa y Armadura, con al menos una en cada módulo + 3 cartas del palo del piloto.';
     case 'improve-mecha':
-      return 'Al llegar al 100% ya puedes atacar, pero puedes seguir usando <strong>Modificar</strong> en turnos posteriores para añadir o sustituir cartas y mejorar el mecha.';
+      return 'Al llegar al 100% ya puedes atacar. Con <strong>Modificar</strong>, cada turno eliges: colocar hasta <strong>2 cartas</strong> (solo <strong>3</strong> en el primer turno) o <strong>intercambiar 1 carta</strong> de tu mano por otra del panel.';
     case 'capacity-rules':
       return 'Los módulos parten de <strong>2 MAX</strong>. Practicarás cómo el piloto y el copiloto amplían a <strong>3</strong>, y cómo un as de palo amplía a <strong>4</strong>.';
     case 'pilot-practice':
       return 'Coloca solo <strong>K♠</strong> como piloto. Ataque pasará de <strong>2 a 3 MAX</strong> y el montaje exigirá completar esas tres picas.';
     case 'copilot-practice':
-      return 'Coloca solo <strong>J♥</strong> como copiloto. Defensa debe cambiar de <strong>2 a 3 MAX</strong>.';
+      return 'Coloca solo <strong>J♥</strong> como copiloto y pulsa <strong>Modificar</strong>. Defensa cambiará con brillo verde de <strong>2 a 3 MAX</strong>.';
     case 'ace-practice':
-      return 'Coloca solo <strong>A♥</strong> como booster. Defensa debe cambiar de <strong>3 a 4 MAX</strong>.';
+      return 'Coloca solo <strong>A♥</strong> como booster y pulsa <strong>Modificar</strong>. Defensa cambiará con brillo verde de <strong>3 a 4 MAX</strong>.';
     case 'diamond-copilot-swap':
       return 'Sustituye <strong>J♥</strong> por <strong>J♦</strong>. El copiloto ♦ puede ampliar a 3 Ataque, Defensa o Armadura según lo necesite el mecha.';
     case 'diamond-booster-swap':
@@ -42070,7 +42105,7 @@ function getCompactMobileTutorialCopy(step){
       copy.tip = 'Ejemplo: un piloto ♠ exige 3 picas en Ataque.';
       break;
     case 'improve-mecha':
-      copy.body = 'El 100% desbloquea el ataque, pero puedes seguir mejorando el mecha con <strong>Modificar</strong>: añade o sustituye cartas y monta copiloto y as.';
+      copy.body = 'El 100% desbloquea el ataque, pero puedes seguir mejorando el mecha con <strong>Modificar</strong>. En cada turno eliges: colocar hasta <strong>2 cartas</strong>, o <strong>intercambiar 1</strong> de tu mano por otra del panel. Solo en el <strong>primer turno</strong> puedes colocar <strong>3</strong>.';
       copy.objective = 'Pulsa <strong>Entendido</strong> y vemos cómo amplían el panel.';
       copy.tip = 'Más picas = Ataque; corazones = Defensa; tréboles = Armadura.';
       break;
@@ -42080,13 +42115,13 @@ function getCompactMobileTutorialCopy(step){
       copy.tip = 'Mira el número MAX después de cada cambio.';
       break;
     case 'copilot-practice':
-      copy.body = 'Defensa admite 2 cartas. El <strong>J♥</strong> como copiloto hará que cambie a <strong>3 MAX</strong>.';
-      copy.objective = 'Toca solo <strong>J♥</strong> y pulsa <strong>Modificar</strong>.';
+      copy.body = 'Defensa admite 2 cartas. El <strong>J♥</strong> como copiloto la llevará a <strong>3 MAX</strong> al pulsar <strong>Modificar</strong>.';
+      copy.objective = 'Toca solo <strong>J♥</strong> y pulsa <strong>Modificar</strong>. Mira el brillo verde: Defensa sube de 2 a 3 MAX.';
       copy.tip = 'El copiloto amplía su palo, pero no cambia la condición del piloto.';
       break;
     case 'ace-practice':
-      copy.body = 'Defensa ya está en 3 MAX. El <strong>A♥</strong> como booster la llevará a <strong>4 MAX</strong>.';
-      copy.objective = 'Toca solo <strong>A♥</strong> y pulsa <strong>Modificar</strong>.';
+      copy.body = 'Defensa ya está en 3 MAX. El <strong>A♥</strong> como booster la llevará a <strong>4 MAX</strong> al pulsar <strong>Modificar</strong>.';
+      copy.objective = 'Toca solo <strong>A♥</strong> y pulsa <strong>Modificar</strong>. Mira el brillo verde: Defensa sube de 3 a 4 MAX.';
       copy.tip = 'Los ases de ♠, ♥ y ♣ permiten hasta 4 cartas de su palo.';
       break;
     case 'diamond-copilot-swap':
@@ -42266,15 +42301,15 @@ function getCompactMobileTutorialFocusText(step){
     case 'build-requirements':
       return '100% = piloto + 6 cartas entre los tres módulos + 3 cartas del palo del piloto.';
     case 'improve-mecha':
-      return 'Tras el 100% puedes seguir usando Modificar para mejorar Ataque, Defensa y Armadura.';
+      return 'Modificar: en cada turno coloca hasta 2 cartas, o intercambia solo 1. En el primer turno puedes colocar 3.';
     case 'capacity-rules':
       return 'Módulo base 2 MAX; piloto o copiloto pueden ampliarlo a 3; un as de palo puede llevarlo a 4.';
     case 'pilot-practice':
       return 'Coloca K♠ y mira Ataque: debe cambiar de 2 a 3 MAX y pedir tres picas.';
     case 'copilot-practice':
-      return 'Coloca J♥ y mira Defensa: debe cambiar de 2 a 3 MAX.';
+      return 'Coloca J♥, pulsa Modificar y mira Defensa: brillará al pasar de 2 a 3 MAX.';
     case 'ace-practice':
-      return 'Coloca A♥ y mira Defensa: debe cambiar de 3 a 4 MAX.';
+      return 'Coloca A♥, pulsa Modificar y mira Defensa: brillará al pasar de 3 a 4 MAX.';
     case 'diamond-copilot-swap':
       return 'Sustituye J♥ por J♦: marca una carta en la mano y la otra en el núcleo.';
     case 'diamond-booster-swap':
@@ -48609,6 +48644,38 @@ function tutorialResolveHighlightZoneIds(zoneId){
   return Array.from(new Set([zoneId, ...(TUTORIAL_ZONE_ALIASES[zoneId] || [])]));
 }
 
+function celebrateTutorialCapacityUpgrade(zoneId, label){
+  const visualZone = zoneId.includes('attack') ? 'attack' : zoneId.includes('defense') ? 'defense' : 'armor';
+  const applyUpgradeCue = () => {
+    tutorialResolveHighlightZoneIds(zoneId)
+      .filter(id => id !== 'compactMechaStage-0')
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.dataset.tutorialUpgrade = label;
+        pulseElementClass(el, 'tutorial-capacity-upgrade', 1860);
+      });
+  };
+
+  applyUpgradeCue();
+  window.requestAnimationFrame(applyUpgradeCue);
+  window.setTimeout(applyUpgradeCue, 72);
+  queueFx(zoneId, 'zone-pulse');
+  triggerScreenRipple('cyan');
+
+  if(isMobileSpriteHudActive()){
+    sendMobileSpriteSnapshotSoon(0);
+    window.setTimeout(() => {
+      callMobileSpriteHudFx('animateModification', {
+        zone: visualZone,
+        playerIndex: 0,
+        complete: false,
+        text: label
+      });
+    }, 90);
+  }
+}
+
 function tutorialResolveHighlightButtonIds(buttonId){
   return Array.from(new Set([buttonId, ...(TUTORIAL_BUTTON_ALIASES[buttonId] || [])]));
 }
@@ -49324,21 +49391,21 @@ function tutorialHandleStepCompletion(step){
       tutorialGoToStep('pilot-practice');
       break;
     case 'pilot-practice':
-      addToast('Ataque ampliado: 3 MAX', 'ok');
-      queueFx('module-box-attack-0', 'zone-pulse');
+      addToast('Ataque ampliado: 2 → 3 MAX', 'ok');
+      celebrateTutorialCapacityUpgrade('module-box-attack-0', 'Ataque 2 → 3 MAX');
       tutorialRunOpponentPass(tutorialGetStepIndex('attack-build'), 'Piloto conectado. Mira cómo Ataque admite tres picas y cumple ahora su condición.');
       break;
     case 'attack-build':
       tutorialRunOpponentPass(tutorialGetStepIndex('copilot-practice'), 'Montaje al 100%. Ahora ampliarás Defensa con un copiloto.');
       break;
     case 'copilot-practice':
-      addToast('Defensa ampliada: 3 MAX', 'ok');
-      queueFx('module-box-defense-0', 'zone-pulse');
+      addToast('Defensa ampliada: 2 → 3 MAX', 'ok');
+      celebrateTutorialCapacityUpgrade('module-box-defense-0', 'Defensa 2 → 3 MAX');
       tutorialRunOpponentPass(tutorialGetStepIndex('ace-practice'), 'Defensa ya admite tres cartas. Ahora el as llevará ese límite a cuatro.');
       break;
     case 'ace-practice':
-      addToast('Defensa ampliada: 4 MAX', 'ok');
-      queueFx('module-box-defense-0', 'zone-pulse');
+      addToast('Defensa ampliada: 3 → 4 MAX', 'ok');
+      celebrateTutorialCapacityUpgrade('module-box-defense-0', 'Defensa 3 → 4 MAX');
       tutorialRunOpponentPass(tutorialGetStepIndex('diamond-copilot-swap'), 'Has visto el límite 4. Ahora aprenderás la excepción del copiloto de diamantes.');
       break;
     case 'diamond-copilot-swap':
