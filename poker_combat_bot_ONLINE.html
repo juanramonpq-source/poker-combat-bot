@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <script>
     (() => {
-      const APP_SHELL_VERSION = '20260909-tutorial-capacity-clarity-1';
+      const APP_SHELL_VERSION = '20260909-academy-refresh-1';
       const ensureVersionedShell = (reloadPersisted = false) => {
         try {
           const url = new URL(window.location.href);
@@ -32275,6 +32275,41 @@ const TUTOBOT_STEP_LINES = {
   'projectile-main': 'Ahora elige las picas del ataque principal.',
   'projectile-extra': 'Por último, añade una pica como proyectil.',
   'projectile': 'El ataque combinado está preparado. Confírmalo.',
+  'academy-definition': 'Vamos a construir tu primer PoCoBOT y a entender cuándo puede atacar.',
+  'academy-turn-rules': 'Antes de tocar cartas, fijemos qué gasta turno y qué no.',
+  'academy-pilot-choice': 'El piloto despierta el mecha y define su especialidad.',
+  'academy-attack-briefing': 'Primero entendemos la energía; después hacemos el disparo.',
+  'academy-attack-open': 'Paso uno: abre la consola desde ACCIONES.',
+  'academy-attack-fuel': 'Paso dos: elige la energía del ataque.',
+  'academy-attack-spades': 'Paso tres: añade las picas que harán daño.',
+  'academy-fuel-attack': 'Paso cuatro: confirma el ataque ya preparado.',
+  'academy-active-defense': 'Ahora te atacan: responde con un diamante de la mano.',
+  'academy-copilot-place': 'El copiloto ampliará visualmente el límite de su palo.',
+  'academy-booster-place': 'El as vuelve a ampliar ese módulo, ahora hasta cuatro cartas.',
+  'academy-diamond-core-rules': 'Diamantes en el núcleo tienen reglas especiales.',
+  'academy-diamond-draw-select': 'Para rearmarte, empieza eligiendo el diamante que descartarás.',
+  'academy-diamond-draw': 'El diamante ya está marcado: ejecuta el robo desde ACCIONES.',
+  'academy-figure-burst': 'También puedes reciclar dos figuras sobrantes por cuatro cartas.',
+  'academy-pass-two-select': 'Pasar comienza eligiendo qué dos cartas vas a descartar.',
+  'academy-pass-two-cards': 'Las dos cartas están listas: ejecuta Pasar desde ACCIONES.',
+  'academy-pass-one-card': 'Con una sola carta puedes pasar descartando la que tengas.',
+  'academy-swap-upgrade': 'Vamos a mejorar Ataque con un intercambio de una sola carta.',
+  'academy-core-swap': 'Cambiar el piloto reordena las condiciones del mecha.',
+  'academy-armor-fuel-briefing': 'El As de diamantes convierte blindaje en energía de emergencia.',
+  'academy-armor-fuel-open': 'Abre el ataque antes de elegir la armadura que quemarás.',
+  'academy-armor-fuel-select': 'Elige primero el trébol que actuará como combustible.',
+  'academy-armor-fuel-spades': 'Ahora añade las picas que caben en ese límite.',
+  'academy-armor-fuel': 'Ataque preparado: solo falta confirmarlo.',
+  'academy-projectile-only-briefing': 'Sin fuel suficiente todavía puedes lanzar una ofensiva rápida.',
+  'academy-projectile-only-open': 'Abre la consola para preparar un proyectil sin combustible.',
+  'academy-projectile-only': 'Elige una pica: hará daño y después se descartará.',
+  'academy-projectile-combo-open': 'Ahora combinaremos un ataque normal con un proyectil extra.',
+  'academy-projectile-combo-mode': 'Activa el modo que reserva la última pica como proyectil.',
+  'academy-projectile-combo-fuel': 'Primero carga la energía del ataque principal.',
+  'academy-projectile-combo-main': 'Después elige la pica que sí sostiene el combustible.',
+  'academy-projectile-combo-extra': 'Añade al final la pica que saldrá disparada.',
+  'academy-projectile-combo': 'El combo está listo: confirma el disparo.',
+  'academy-short-fight': 'Ya tienes todas las piezas. Ahora pilota una partida completa.',
   summary: 'Muy bien. Ya controlas el ciclo básico de PoCoBOT.'
 };
 
@@ -32723,7 +32758,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260909-tutorial-capacity-clarity-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260909-academy-refresh-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -36619,7 +36654,6 @@ const ACADEMY_CERTIFICATE_ASSETS = {
   mecha: 'assets/image_27.png'
 };
 const ACADEMY_CARD_IDS = {
-  lesson5Defense: 'academy-l5-defense',
   lesson6FigureA: 'academy-l6-figure-a',
   lesson6FigureB: 'academy-l6-figure-b',
   lesson7Pass: 'academy-l7-pass',
@@ -41561,7 +41595,7 @@ function clearTutorialBotTimers(){
 }
 
 function tutorialBotUsesCharacter(){
-  return tutorialSystem.enabled && tutorialSystem.mode === 'summary';
+  return tutorialSystem.enabled && (tutorialSystem.mode === 'summary' || tutorialSystem.mode === 'academy');
 }
 
 function tutorialBotBlocksInput(){
@@ -41586,7 +41620,7 @@ function syncTutorialBotDom(payload = getTutorialBotSpeechPayload()){
   const panelDismissed = !!messageKey && tutorialBotState.panelDismissedKey === messageKey;
   const standaloneMobileSequenceOverlay = !!payload?.sequenceOnly && shouldUseStandaloneTutorialBotSequenceOverlay();
   const mobileSpriteOwnsPresentation = canUseMobileSpriteHud() && (
-    (!payload?.sequenceOnly && document.body?.classList.contains('mobile-compact-mode'))
+    !payload?.sequenceOnly
     || (!!payload?.sequenceOnly && !standaloneMobileSequenceOverlay)
   );
   const overlayActive = !mobileSpriteOwnsPresentation && active && !!payload?.sequenceOnly && !tutorialBotState.overlayDismissed;
@@ -41840,11 +41874,22 @@ function getTutorialBotStepDetailHtml(step){
     case 'projectile':
       return '<strong>5.</strong> Todo está listo. Pulsa <strong>Confirmar ataque</strong> para disparar el ataque combinado.';
     default:
+      if(tutorialSystem.mode === 'academy' && step){
+        const body = step.body || '';
+        const objective = step.objective || '';
+        return `${body}${objective ? `<br><br><strong>Haz esto:</strong> ${objective}` : ''}`;
+      }
       return '';
   }
 }
 
 function getTutorialBotPrimaryAction(step = tutorialGetCurrentStep()){
+  if(tutorialSystem.mode === 'academy' && step?.id === 'academy-summary'){
+    return {
+      action: academyAllLessonsCompleted() ? 'academy-show-certificate' : 'academy-next-lesson',
+      label: academyAllLessonsCompleted() ? 'Ver carnet' : 'Seguir a Siguiente Lección'
+    };
+  }
   if(step?.tutorialBotPrimaryAction){
     return {
       action: step.tutorialBotPrimaryAction,
@@ -41896,14 +41941,40 @@ const TUTOBOT_TOP_RAIL_STEPS = new Set([
   'projectile-extra',
   'projectile',
   'academy-fuel-attack',
+  'academy-definition',
+  'academy-turn-rules',
+  'academy-pilot-choice',
+  'academy-attack-briefing',
+  'academy-attack-open',
+  'academy-attack-fuel',
+  'academy-attack-spades',
   'academy-active-defense',
+  'academy-copilot-place',
+  'academy-booster-place',
+  'academy-diamond-core-rules',
+  'academy-diamond-draw-select',
   'academy-diamond-draw',
   'academy-figure-burst',
+  'academy-pass-two-select',
   'academy-pass-two-cards',
   'academy-pass-one-card',
+  'academy-swap-upgrade',
+  'academy-core-swap',
+  'academy-armor-fuel-briefing',
+  'academy-armor-fuel-open',
+  'academy-armor-fuel-select',
+  'academy-armor-fuel-spades',
   'academy-armor-fuel',
+  'academy-projectile-only-briefing',
+  'academy-projectile-only-open',
   'academy-projectile-only',
-  'academy-projectile-combo'
+  'academy-projectile-combo-open',
+  'academy-projectile-combo-mode',
+  'academy-projectile-combo-fuel',
+  'academy-projectile-combo-main',
+  'academy-projectile-combo-extra',
+  'academy-projectile-combo',
+  'academy-short-fight'
 ]);
 
 const TUTOBOT_TOP_RAIL_FRONT_STEPS = new Set([
@@ -41934,9 +42005,23 @@ const TUTOBOT_TOP_RAIL_FRONT_STEPS = new Set([
   'projectile-extra',
   'projectile',
   'academy-fuel-attack',
+  'academy-attack-open',
+  'academy-attack-fuel',
+  'academy-attack-spades',
   'academy-active-defense',
+  'academy-armor-fuel-briefing',
+  'academy-armor-fuel-open',
+  'academy-armor-fuel-select',
+  'academy-armor-fuel-spades',
   'academy-armor-fuel',
+  'academy-projectile-only-briefing',
+  'academy-projectile-only-open',
   'academy-projectile-only',
+  'academy-projectile-combo-open',
+  'academy-projectile-combo-mode',
+  'academy-projectile-combo-fuel',
+  'academy-projectile-combo-main',
+  'academy-projectile-combo-extra',
   'academy-projectile-combo'
 ]);
 
@@ -42234,48 +42319,6 @@ function getCompactMobileTutorialCopy(step){
       copy.objective = 'Pulsa <strong>Confirmar ataque</strong>.';
       copy.tip = 'Se descartarán el 7♣ usado como fuel y el 8♠ disparado como proyectil.';
       break;
-    case 'academy-fuel-attack':
-      copy.objective = 'Pulsa <strong>Atacar</strong>, marca <strong>8♦ + 4♠ + 7♠</strong> y confirma.';
-      copy.tip = 'Fuel x2 marca el límite del ataque principal.';
-      break;
-    case 'academy-active-defense':
-      copy.body = 'Reduce el ataque con una defensa activa.';
-      copy.objective = 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>.';
-      copy.tip = 'Solo vale 1 diamante numérico de la mano.';
-      break;
-    case 'academy-diamond-draw':
-      copy.body = 'Convierte un diamante numérico en robo.';
-      copy.objective = 'Selecciona <strong>2♦</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Robar con ♦</strong>.';
-      copy.tip = 'No puedes robar con ♦ en dos turnos propios seguidos.';
-      break;
-    case 'academy-figure-burst':
-      copy.body = 'Recicla figuras sobrantes para ganar mano.';
-      copy.objective = 'Pulsa <strong>2 Figuras → 4</strong>.';
-      copy.tip = 'Con piloto y copiloto, 2 figuras extra roban 4 cartas.';
-      break;
-    case 'academy-pass-two-cards':
-    case 'academy-pass-one-card':
-      copy.objective = step.id === 'academy-pass-two-cards'
-        ? 'Selecciona las <strong>2 cartas</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Pasar</strong>.'
-        : 'Selecciona la <strong>única carta</strong> de tu mano, abre <strong>Acciones</strong> y pulsa <strong>Pasar</strong>.';
-      copy.tip = step.id === 'academy-pass-two-cards'
-        ? 'Pasar descarta 2 cartas y cede la iniciativa.'
-        : 'Si no tienes 2 cartas, descarta lo que tengas.';
-      break;
-    case 'academy-armor-fuel':
-      copy.objective = 'Ataca con <strong>6♣</strong> como fuel y <strong>4♠ + 7♠</strong>; confirma.';
-      copy.tip = 'El As♦ permite usar armadura como fuel; esa armadura se descartará tras el ataque.';
-      break;
-    case 'academy-projectile-only':
-      copy.body = 'Dispara una pica como proyectil sin gastar fuel. No gastas combustible, pero esa pica se descarta.';
-      copy.objective = 'Pulsa <strong>Atacar</strong>, marca <strong>7♠</strong> y usa <strong>Solo proyectil</strong>.';
-      copy.tip = 'Solo proyectil descarta una pica numérica montada.';
-      break;
-    case 'academy-projectile-combo':
-      copy.body = 'Combina ataque principal y proyectil para rematar: el fuel sostiene dos picas y la pica extra sale disparada como proyectil.';
-      copy.objective = 'Activa <strong>Modo proyectil</strong>, marca fuel y picas, y deja la pica proyectil para el final.';
-      copy.tip = 'La última pica marcada sale libre de fuel.';
-      break;
     default:
       break;
   }
@@ -42326,14 +42369,30 @@ function getCompactMobileTutorialFocusText(step){
       return 'Paso 3: la selección está lista. Pulsa Confirmar ataque.';
     case 'rearm-briefing':
       return 'Rearmarse: descarta un diamante de la mano y roba tantas cartas como marque su valor.';
+    case 'academy-attack-open':
+    case 'academy-armor-fuel-open':
+    case 'academy-projectile-only-open':
+    case 'academy-projectile-combo-open':
+      return 'Pulsa ACCIONES y después Atacar.';
+    case 'academy-attack-fuel':
+      return 'Paso 2: toca solo 8♦. Dará un límite de 16.';
+    case 'academy-attack-spades':
+      return 'Paso 3: mantén 8♦ y añade 4♠ + 7♠.';
     case 'academy-fuel-attack':
     case 'academy-armor-fuel':
-      return 'Selecciona las cartas iluminadas en el panel y pulsa Confirmar ataque.';
+    case 'academy-projectile-combo':
+      return 'La selección está lista. Pulsa Confirmar ataque.';
+    case 'academy-armor-fuel-select':
+      return 'Paso 2: toca solo 6♣ como fuel gracias al A♦.';
+    case 'academy-armor-fuel-spades':
+      return 'Paso 3: mantén 6♣ y añade 4♠ + 7♠.';
     case 'draw-diamond-select':
       return 'Paso 1: toca solo el 2♦ de la mano.';
     case 'draw-diamond':
     case 'academy-diamond-draw':
       return 'Paso 2: pulsa ACCIONES y después Robar con ♦.';
+    case 'academy-diamond-draw-select':
+      return 'Paso 1: toca solo el 2♦ de tu mano.';
     case 'figure-burst':
     case 'academy-figure-burst':
       return 'Busca 2 Figuras → 4 como botón directo o dentro de Acciones.';
@@ -42343,6 +42402,8 @@ function getCompactMobileTutorialFocusText(step){
     case 'academy-pass-two-cards':
     case 'academy-pass-one-card':
       return 'Paso 2: pulsa ACCIONES y después Pasar.';
+    case 'academy-pass-two-select':
+      return 'Paso 1: toca las dos cartas de la mano. Después abrirás ACCIONES.';
     case 'projectile-open':
       return 'Paso 1: ACCIONES → Atacar → Modo proyectil.';
     case 'projectile-fuel':
@@ -42357,9 +42418,16 @@ function getCompactMobileTutorialFocusText(step){
       return 'K♠ exigió 3 picas; J♦ amplía cualquier módulo a 3; A♦ permite quemar Armadura ♣ como fuel.';
     case 'projectile-only-briefing':
       return 'Solo proyectil: una pica, cero fuel y esa pica va al descarte tras causar daño.';
+    case 'academy-projectile-combo-mode':
+      return 'Paso 2: pulsa Modo proyectil.';
+    case 'academy-projectile-combo-fuel':
+      return 'Paso 3: toca solo el 4♦ de Fuel. Dará un límite de 8.';
+    case 'academy-projectile-combo-main':
+      return 'Paso 4: mantén el fuel y toca 4♠.';
+    case 'academy-projectile-combo-extra':
+      return 'Paso 5: añade 8♠ la última; será el proyectil.';
     case 'academy-projectile-only':
-    case 'academy-projectile-combo':
-      return 'Acciones concentra Atacar, Modo proyectil, Solo proyectil y Confirmar ataque.';
+      return 'Selecciona 7♠ y pulsa Solo proyectil. No usa fuel.';
     default:
       return tutorialBuildFocusText(step);
   }
@@ -42870,8 +42938,16 @@ function handleMobileSpriteMenu(action){
   }
 }
 
+let lastMobileSpriteTutorialActionKey = '';
+let lastMobileSpriteTutorialActionAt = 0;
+
 function handleMobileSpriteTutorialAction(action){
   if(!tutorialSystem.enabled) return;
+  const actionKey = `${tutorialSystem.lessonId || tutorialSystem.mode}:${action || ''}`;
+  const now = Date.now();
+  if(actionKey === lastMobileSpriteTutorialActionKey && now - lastMobileSpriteTutorialActionAt < 700) return;
+  lastMobileSpriteTutorialActionKey = actionKey;
+  lastMobileSpriteTutorialActionAt = now;
   if(typeof action === 'string' && action.startsWith('step:')){
     tutorialGoToStep(action.slice('step:'.length));
     return;
@@ -50389,7 +50465,7 @@ function academyResetForLesson(title){
   clearDefenseInteractionGuard();
   state.log = [
     `🎓 Academia PoCoBOT · ${title}`,
-    '🧪 Esta fase vive solo en la juego principal y guarda el progreso en local.'
+    '🎯 Ejercicio del Carnet: el progreso se guarda automáticamente.'
   ];
   state.academyOverlayLessonId = null;
   academyRefreshPlayers();
@@ -50519,16 +50595,16 @@ function academyPrepareLesson4(){
 
 function academyPrepareLesson5(){
   tutorialPreparePracticeScenario();
-  academyResetForLesson('Fase 5 · Copiloto y ventajas');
+  academyResetForLesson('Fase 5 · Copilotos y ases');
   const cadet = state.players[0];
   academyMoveCard(cadet, 'hand', 'core-pilot', TUTORIAL_CARD_IDS.p0Pilot);
+  cadet.core.copilot = null;
   cadet.core.booster = null;
   cadet.fuel = [];
   cadet.hand = [
-    cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0Copilot),
-    academyTakeCard('3', 'hearts', ACADEMY_CARD_IDS.lesson5Defense)
+    cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0CapacityCopilot),
+    cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0CapacityBooster)
   ].filter(Boolean);
-  cadet.fuel = [];
   academyRefreshPlayers();
 }
 
@@ -50574,6 +50650,7 @@ function academyPrepareLesson8(){
   tutorialPreparePracticeScenario();
   academyResetForLesson('Fase 8 · Intercambiar para mejorar');
   const cadet = state.players[0];
+  const instructor = state.players[1];
   cadet.core.pilot = cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0Pilot) || null;
   cadet.core.copilot = academyTakeCard('K', 'diamonds', ACADEMY_CARD_IDS.lesson8Copilot);
   cadet.core.booster = cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0Booster) || null;
@@ -50589,9 +50666,11 @@ function academyPrepareLesson8(){
   ].filter(Boolean);
   cadet.armor = [cadet.armor.find(card => card.id === TUTORIAL_CARD_IDS.p0ArmorA)].filter(Boolean);
   cadet.fuel = [];
+  const pilotSwap = popCardFromZone(instructor, 'core-pilot', TUTORIAL_CARD_IDS.p1Pilot);
+  if(pilotSwap) pilotSwap.id = ACADEMY_CARD_IDS.lesson8PilotSwap;
   cadet.hand = [
     cadet.hand.find(card => card.id === TUTORIAL_CARD_IDS.p0AttackB),
-    academyTakeCard('K', 'hearts', ACADEMY_CARD_IDS.lesson8PilotSwap)
+    pilotSwap
   ].filter(Boolean);
   state.turnCount = 1;
   academyRefreshPlayers();
@@ -50627,7 +50706,9 @@ function academyPrepareLesson10(){
     smallFuel.id = ACADEMY_CARD_IDS.lesson10Fuel;
     pushCardToZone(cadet, 'fuel', smallFuel);
   }
-  cadet.core.pilot = academyTakeCard('K', 'hearts', ACADEMY_CARD_IDS.lesson10Pilot);
+  const lessonPilot = popCardFromZone(instructor, 'core-pilot', TUTORIAL_CARD_IDS.p1Pilot);
+  if(lessonPilot) lessonPilot.id = ACADEMY_CARD_IDS.lesson10Pilot;
+  cadet.core.pilot = lessonPilot;
   cadet.defense.push(academyTakeCard('3', 'hearts', ACADEMY_CARD_IDS.lesson10DefenseExtra));
   cadet.hand = [];
 
@@ -50670,18 +50751,18 @@ const ACADEMY_LESSONS = [
   {
     id: 'academy-1',
     phase: 1,
-    title: 'Qué Es Un Mecha',
-    description: 'Definición clara del PoCoBOT: núcleo, mínimo de stats y lectura básica por palos.',
-    chips: ['Definición', 'Núcleo'],
-    successText: 'La base conceptual ya queda fijada: un mecha no es un montón de cartas, sino un chasis con núcleo, módulos y condiciones mínimas de combate.',
+    title: 'Tu Primer PoCoBOT',
+    description: 'Descubre las fases de montaje y ataque, y qué necesita el mecha para llegar al 100%.',
+    chips: ['Montaje', '100%'],
+    successText: 'Ya conoces el objetivo del montaje y la diferencia entre consultar el panel y gastar una acción del turno.',
     prepare: academyPrepareLesson1,
     script: [
       {
         id: 'academy-definition',
-        title: 'Fase 1 · Qué es un mecha',
-        body: 'Entiende el mapa base: <strong>núcleo</strong>, <strong>piloto</strong> y módulos de <strong>♠ Ataque</strong>, <strong>♥ Defensa</strong>, <strong>♣ Armadura</strong> y <strong>♦ Fuel</strong>.',
+        title: 'Fase 1 · Montaje y ataque',
+        body: 'Un <strong>PoCoBOT</strong> es un mecha construido con cartas. Primero vive una fase de <strong>montaje</strong>; al llegar al <strong>100%</strong> desbloquea la fase de <strong>ataque</strong>.<br><br>Para alcanzar el 100% necesita <strong>1 piloto</strong>, al menos <strong>6 cartas</strong> entre Ataque, Defensa y Armadura, una carta en cada módulo y <strong>3 cartas del palo del piloto</strong>. Algo de Fuel te permitirá disparar después.',
         objective: 'Pulsa <strong>Entendido</strong>.',
-        tip: 'Un PoCoBOT necesita núcleo y estadísticas para combatir.',
+        tip: 'PANEL abre las estadísticas cuando quieras y no gasta turno.',
         allowedButtons: ['clearSelectionBtn'],
         allowedCardIds: [],
         highlightButtons: [],
@@ -50695,7 +50776,23 @@ const ACADEMY_LESSONS = [
           }
         ],
         isComplete: () => tutorialSystem.validation.academyDefinitionAck,
-        onComplete: () => academyCompleteActiveLesson()
+        onComplete: () => tutorialGoToStep('academy-turn-rules')
+      },
+      {
+        id: 'academy-turn-rules',
+        title: 'Fase 1 · Tu acción de montaje',
+        body: 'El botón <strong>PANEL</strong> solo abre las Stats y <strong>no gasta turno</strong>. Cuando eliges <strong>Modificar</strong>, en ese turno puedes hacer una de estas dos cosas: colocar hasta <strong>2 cartas</strong> nuevas, o <strong>intercambiar 1 carta</strong> de la mano por otra ya montada.<br><br>Solo en el primer turno puedes colocar hasta <strong>3 cartas</strong>.',
+        objective: 'Pulsa <strong>Listo para montar</strong>.',
+        tip: 'Añadir cartas e intercambiar una carta son alternativas, no se combinan en el mismo turno.',
+        allowedButtons: ['clearSelectionBtn'],
+        allowedCardIds: [],
+        highlightButtons: [],
+        highlightZones: ['core-zone-0', 'module-box-attack-0', 'module-box-defense-0', 'module-box-armor-0'],
+        panelActions: [{
+          label: 'Listo para montar',
+          kind: 'primary',
+          onClick: academyCompleteActiveLesson
+        }]
       },
       academySummaryStep('Fase 1 completada')
     ]
@@ -50704,17 +50801,17 @@ const ACADEMY_LESSONS = [
     id: 'academy-2',
     phase: 2,
     title: 'Elegir Piloto',
-    description: 'Aprende que el piloto es un limitante y que el copiloto actúa como ventaja para abrir un tercer hueco.',
+    description: 'Coloca un piloto y observa cómo impone tres cartas de su palo y amplía ese módulo.',
     chips: ['Piloto', 'Restricción'],
-    successText: 'Ya queda clara la diferencia: el piloto impone una condición de combate y el copiloto concede flexibilidad extra al módulo de su palo.',
+    successText: 'El piloto ya está claro: exige tres cartas de su palo y amplía ese módulo de 2 a 3 MAX.',
     prepare: academyPrepareLesson2,
     script: [
       {
         id: 'academy-pilot-choice',
         title: 'Fase 2 · Elegir piloto',
-        body: 'Fija un piloto de <strong>♠</strong> para orientar el mecha a ataque.',
+        body: 'El <strong>piloto</strong> define la especialidad del mecha. Un piloto de picas exige montar <strong>3 picas</strong> y amplía Ataque de <strong>2 a 3 MAX</strong>.',
         objective: 'Selecciona <strong>K♠</strong> y pulsa <strong>Modificar</strong> para fijar un mecha ofensivo.',
-        tip: 'El piloto obliga a reunir 3 cartas de su palo para combatir.',
+        tip: 'Mira el límite de Ataque justo después de pulsar Modificar.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0Pilot],
         highlightButtons: ['actionAddBtn'],
@@ -50722,7 +50819,10 @@ const ACADEMY_LESSONS = [
         expectedAction: 'modify',
         expectedSelection: [TUTORIAL_CARD_IDS.p0Pilot],
         isComplete: () => state.players[0]?.core?.pilot?.id === TUTORIAL_CARD_IDS.p0Pilot && academySceneSettled(1),
-        onComplete: () => academyCompleteActiveLesson()
+        onComplete: () => {
+          celebrateTutorialCapacityUpgrade('module-box-attack-0', 'Ataque 2 → 3 MAX');
+          tutorialQueueAutoAction('Ataque se amplía de 2 a 3 MAX y el piloto ya exige tres picas.', academyCompleteActiveLesson, 1500);
+        }
       },
       academySummaryStep('Fase 2 completada')
     ]
@@ -50731,25 +50831,79 @@ const ACADEMY_LESSONS = [
     id: 'academy-3',
     phase: 3,
     title: 'Atacar Con Fuel',
-    description: 'Un ataque principal existe porque un combustible lo habilita y marca el límite total de picas.',
+    description: 'Aprende el ataque normal en cuatro decisiones: abrir, cargar fuel, elegir picas y confirmar.',
     chips: ['Fuel', 'Ataque'],
     successText: 'La relación clave ya está vista: el fuel es combustible y permite usar picas hasta el límite valor ×2.',
     prepare: academyPrepareLesson3,
     script: [
       {
-        id: 'academy-fuel-attack',
-        title: 'Fase 3 · Atacar con combustible',
-        body: 'Lanza tu primer ataque usando fuel y picas.',
-        objective: 'Pulsa <strong>Acciones</strong> y luego <strong>Atacar</strong>, selecciona <strong>8♦</strong> en Fuel y <strong>4♠ + 7♠</strong> en Ataque, y termina con <strong>Confirmar ataque</strong>.',
-        tip: 'El fuel permite atacar con picas: su valor cuenta x2 para fijar el límite.',
-        allowedButtons: ['attackModeBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
-        allowedCardIds: [TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
-        highlightButtons: ['attackModeBtn', 'confirmAttackBtn'],
+        id: 'academy-attack-briefing',
+        title: 'Fase 3 · Cómo funciona el ataque',
+        body: 'Las <strong>picas</strong> hacen daño y el <strong>combustible</strong> les da energía. El fuel sostiene el doble de su valor: un <strong>4 de combustible</strong> permite usar hasta <strong>8 puntos de picas</strong>.<br><br>Puedes usar tantas cartas de picas como quieras, siempre que su suma no supere <strong>Fuel ×2</strong>.',
+        objective: 'Pulsa <strong>Practicar ataque</strong>.',
+        tip: 'El combustible se descarta al atacar; las picas del ataque principal permanecen montadas.',
+        allowedButtons: ['clearSelectionBtn'],
+        allowedCardIds: [],
+        highlightButtons: [],
         highlightZones: ['fuel-zone-0', 'module-box-attack-0'],
-        expectedAction: () => state.attackMode ? 'confirmAttack' : 'attackMode',
+        panelActions: [{ label:'Practicar ataque', kind:'primary', onClick:() => tutorialGoToStep('academy-attack-open') }]
+      },
+      {
+        id: 'academy-attack-open',
+        title: 'Fase 3 · Abre la consola',
+        body: '<strong>Paso 1.</strong> Todas las formas de atacar empiezan en el menú de jugadas.',
+        objective: 'Pulsa <strong>ACCIONES</strong> y después <strong>Atacar</strong>.',
+        tip: 'Se abrirá el panel donde escogerás primero energía y después daño.',
+        allowedButtons: ['attackModeBtn'],
+        allowedCardIds: [],
+        highlightButtons: ['attackModeBtn'],
+        highlightZones: [],
+        expectedAction: 'attackMode',
+        isComplete: () => state.attackMode,
+        onComplete: () => tutorialGoToStep('academy-attack-fuel', { clearSelection:false })
+      },
+      {
+        id: 'academy-attack-fuel',
+        title: 'Fase 3 · Elige combustible',
+        body: '<strong>Paso 2.</strong> El <strong>8♦</strong> ofrece un límite de <strong>16 puntos</strong> de picas.',
+        objective: 'Selecciona solo el <strong>8♦</strong> de Fuel. No confirmes todavía.',
+        tip: 'Primero se decide cuánta energía tendrá el ataque.',
+        allowedButtons: ['clearSelectionBtn', 'cancelAttackBtn'],
+        allowedCardIds: [TUTORIAL_CARD_IDS.p0FuelA],
+        highlightButtons: [],
+        highlightZones: ['fuel-zone-0'],
+        expectedSelection: [TUTORIAL_CARD_IDS.p0FuelA],
+        isComplete: () => tutorialSelectionMatches([TUTORIAL_CARD_IDS.p0FuelA]),
+        onComplete: () => tutorialGoToStep('academy-attack-spades', { clearSelection:false })
+      },
+      {
+        id: 'academy-attack-spades',
+        title: 'Fase 3 · Elige las picas',
+        body: '<strong>Paso 3.</strong> <strong>4♠ + 7♠ = 11</strong>, así que caben dentro del límite 16 que aporta el 8♦.',
+        objective: 'Mantén el <strong>8♦</strong> seleccionado y añade <strong>4♠ + 7♠</strong>.',
+        tip: 'Puedes usar cualquier número de picas si la suma cabe en el límite de fuel.',
+        allowedButtons: ['clearSelectionBtn', 'cancelAttackBtn'],
+        allowedCardIds: [TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
+        highlightButtons: [],
+        highlightZones: ['fuel-zone-0', 'module-box-attack-0'],
+        expectedSelection: [TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
+        isComplete: () => tutorialSelectionMatches([TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA]),
+        onComplete: () => tutorialGoToStep('academy-fuel-attack', { clearSelection:false })
+      },
+      {
+        id: 'academy-fuel-attack',
+        title: 'Fase 3 · Confirma el ataque',
+        body: '<strong>Paso 4.</strong> La energía y las picas ya están preparadas.',
+        objective: 'Pulsa <strong>Confirmar ataque</strong>.',
+        tip: 'El 8♦ se descartará y las picas principales seguirán en Ataque.',
+        allowedButtons: ['confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
+        allowedCardIds: [TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
+        highlightButtons: ['confirmAttackBtn'],
+        highlightZones: ['fuel-zone-0', 'module-box-attack-0'],
+        expectedAction: 'confirmAttack',
         expectedSelection: [TUTORIAL_CARD_IDS.p0FuelA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
         isComplete: () => tutorialSystem.validation.academyFuelAttackUsed && academySceneSettled(1),
-        onComplete: () => academyCompleteActiveLesson()
+        onComplete: academyCompleteActiveLesson
       },
       academySummaryStep('Fase 3 completada')
     ]
@@ -50766,7 +50920,7 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-active-defense',
         title: 'Fase 4 · Defensa activa',
-        body: 'Reduce un ataque enemigo con una defensa activa.',
+        body: 'Cuando te atacan puedes usar <strong>1 diamante numérico de la mano</strong> como defensa activa. Reduce el daño por todo su valor y después se descarta; no es combustible.',
         objective: 'Selecciona <strong>3♦</strong> de tu mano y pulsa <strong>Confirmar defensa</strong>.',
         tip: 'Solo 1 diamante numérico de la mano puede defender.',
         allowedButtons: ['confirmDefenseBtn', 'clearSelectionBtn'],
@@ -50784,43 +50938,59 @@ const ACADEMY_LESSONS = [
   {
     id: 'academy-5',
     phase: 5,
-    title: 'Copiloto Y Ventajas',
-    description: 'Coloca un copiloto y usa su ventaja para abrir un hueco extra en el módulo adecuado.',
-    chips: ['Copiloto', 'Flex'],
-    successText: 'Ya se ve el valor del copiloto: no solo rellena núcleo, también cambia la capacidad táctica del mecha.',
+    title: 'Copilotos Y Ases',
+    description: 'Comprueba visualmente cómo un copiloto amplía a 3 y un as amplía a 4 el módulo de su palo.',
+    chips: ['Copiloto', 'As'],
+    successText: 'Ya distingues las ampliaciones normales y las excepciones de diamantes del núcleo.',
     prepare: academyPrepareLesson5,
     script: [
       {
         id: 'academy-copilot-place',
         title: 'Fase 5 · Coloca copiloto',
-        body: 'Monta un copiloto para abrir una ventaja de módulo.',
-        objective: 'Selecciona <strong>J♦</strong> y pulsa <strong>Modificar</strong> para montar el copiloto.',
-        tip: 'El copiloto no limita: ayuda a ampliar capacidad.',
+        body: 'Un <strong>copiloto</strong> no impone una condición: permite montar <strong>3 cartas de su palo</strong>. El J♥ ampliará Defensa de 2 a 3 MAX.',
+        objective: 'Selecciona <strong>J♥</strong> y pulsa explícitamente <strong>Modificar</strong>.',
+        tip: 'Observa el brillo verde y el nuevo límite de Defensa.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
-        allowedCardIds: [TUTORIAL_CARD_IDS.p0Copilot],
+        allowedCardIds: [TUTORIAL_CARD_IDS.p0CapacityCopilot],
         highlightButtons: ['actionAddBtn'],
         highlightZones: ['hand-zone-0', 'core-zone-0'],
         expectedAction: 'modify',
-        expectedSelection: [TUTORIAL_CARD_IDS.p0Copilot],
-        isComplete: () => state.players[0]?.core?.copilot?.id === TUTORIAL_CARD_IDS.p0Copilot && academySceneSettled(1),
-        onComplete: () => academyRunOpponentPass(1, 'El instructor deja claro el hueco extra que te concede el copiloto.', () => {
-          state.selected = [];
-        })
+        expectedSelection: [TUTORIAL_CARD_IDS.p0CapacityCopilot],
+        isComplete: () => state.players[0]?.core?.copilot?.id === TUTORIAL_CARD_IDS.p0CapacityCopilot && academySceneSettled(1),
+        onComplete: () => {
+          celebrateTutorialCapacityUpgrade('module-box-defense-0', 'Defensa 2 → 3 MAX');
+          academyRunOpponentPass(tutorialGetStepIndex('academy-booster-place'), 'Defensa se amplía de 2 a 3 MAX. Ahora comprobarás el as.', () => { state.selected = []; });
+        }
       },
       {
-        id: 'academy-copilot-advantage',
-        title: 'Fase 5 · Aprovecha la ventaja',
-        body: 'Usa el hueco extra del copiloto para reforzar defensa.',
-        objective: 'Selecciona <strong>3♥</strong> y pulsa <strong>Modificar</strong> para llevar defensa a 3.',
-        tip: 'El copiloto ♦ presta su ventaja al módulo que lo necesite.',
+        id: 'academy-booster-place',
+        title: 'Fase 5 · Coloca un as',
+        body: 'Un <strong>as</strong> normal va al espacio Booster y permite montar <strong>4 cartas de su palo</strong>. El A♥ ampliará Defensa de 3 a 4 MAX.',
+        objective: 'Selecciona <strong>A♥</strong> y pulsa explícitamente <strong>Modificar</strong>.',
+        tip: 'El límite de Defensa volverá a crecer con un brillo verde.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
-        allowedCardIds: [ACADEMY_CARD_IDS.lesson5Defense],
+        allowedCardIds: [TUTORIAL_CARD_IDS.p0CapacityBooster],
         highlightButtons: ['actionAddBtn'],
         highlightZones: ['hand-zone-0', 'module-box-defense-0'],
         expectedAction: 'modify',
-        expectedSelection: [ACADEMY_CARD_IDS.lesson5Defense],
-        isComplete: () => state.players[0]?.defense?.some(card => card.id === ACADEMY_CARD_IDS.lesson5Defense) && academySceneSettled(1),
-        onComplete: () => academyCompleteActiveLesson()
+        expectedSelection: [TUTORIAL_CARD_IDS.p0CapacityBooster],
+        isComplete: () => state.players[0]?.core?.booster?.id === TUTORIAL_CARD_IDS.p0CapacityBooster && academySceneSettled(1),
+        onComplete: () => {
+          celebrateTutorialCapacityUpgrade('module-box-defense-0', 'Defensa 3 → 4 MAX');
+          academyRunOpponentPass(tutorialGetStepIndex('academy-diamond-core-rules'), 'Defensa se amplía de 3 a 4 MAX. Falta conocer las excepciones de diamantes.', () => { state.selected = []; });
+        }
+      },
+      {
+        id: 'academy-diamond-core-rules',
+        title: 'Fase 5 · Excepciones de diamantes',
+        body: 'Las figuras de diamantes <strong>no pueden ser piloto principal</strong>. Como copiloto, un <strong>J♦</strong> permite tener 3 cartas en el módulo que elijas: Ataque, Defensa o Armadura.<br><br>El <strong>A♦</strong> no amplía a 4: permite quemar Armadura ♣ como combustible. El módulo Fuel no tiene límite de cartas.',
+        objective: 'Pulsa <strong>Entendido</strong>.',
+        tip: 'J♦ aporta flexibilidad; A♦ transforma blindaje en energía.',
+        allowedButtons: ['clearSelectionBtn'],
+        allowedCardIds: [],
+        highlightButtons: [],
+        highlightZones: ['core-zone-0', 'fuel-zone-0'],
+        panelActions: [{ label:'Entendido', kind:'primary', onClick:academyCompleteActiveLesson }]
       },
       academySummaryStep('Fase 5 completada')
     ]
@@ -50835,11 +51005,25 @@ const ACADEMY_LESSONS = [
     prepare: academyPrepareLesson6,
     script: [
       {
+        id: 'academy-diamond-draw-select',
+        title: 'Fase 6 · Elige el diamante',
+        body: 'Además de atacar, necesitarás <strong>rearmarte</strong>. Puedes descartar un diamante numérico de la mano para robar tantas cartas como indique su valor.',
+        objective: 'Selecciona solo el <strong>2♦</strong>. Todavía no abras ACCIONES.',
+        tip: 'El número del diamante indica cuántas cartas recibirás.',
+        allowedButtons: ['clearSelectionBtn'],
+        allowedCardIds: [TUTORIAL_CARD_IDS.p0DrawDiamond],
+        highlightButtons: [],
+        highlightZones: ['hand-zone-0'],
+        expectedSelection: [TUTORIAL_CARD_IDS.p0DrawDiamond],
+        isComplete: () => tutorialSelectionMatches([TUTORIAL_CARD_IDS.p0DrawDiamond]),
+        onComplete: () => tutorialGoToStep('academy-diamond-draw', { clearSelection:false })
+      },
+      {
         id: 'academy-diamond-draw',
-        title: 'Fase 6 · Roba con diamantes',
-        body: 'Convierte un diamante numérico en robo de cartas.',
-        objective: 'Selecciona <strong>2♦</strong> de tu mano y pulsa <strong>Robar con ♦</strong>.',
-        tip: 'No puedes robar con ♦ en dos turnos propios seguidos.',
+        title: 'Fase 6 · Ejecuta el robo',
+        body: 'El <strong>2♦</strong> ya está marcado. Ahora ejecuta el cambio desde el menú de jugadas.',
+        objective: 'Pulsa <strong>ACCIONES</strong> y después <strong>Robar con ♦</strong>.',
+        tip: 'El 2♦ irá al descarte y recibirás 2 cartas.',
         allowedButtons: ['actionDrawDiamondBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0DrawDiamond],
         highlightButtons: ['actionDrawDiamondBtn'],
@@ -50847,16 +51031,16 @@ const ACADEMY_LESSONS = [
         expectedAction: 'drawWithDiamond',
         expectedSelection: [TUTORIAL_CARD_IDS.p0DrawDiamond],
         isComplete: () => !state.players[0]?.hand?.some(card => card.id === TUTORIAL_CARD_IDS.p0DrawDiamond) && state.lastActionType === 'diamondDraw' && academySceneSettled(1),
-        onComplete: () => academyRunOpponentPass(1, 'Ahora toca reciclar el exceso de figuras para que la mano respire.', () => {
+        onComplete: () => academyRunOpponentPass(tutorialGetStepIndex('academy-figure-burst'), 'Ahora toca reciclar el exceso de figuras para que la mano respire.', () => {
           state.selected = [];
         })
       },
       {
         id: 'academy-figure-burst',
         title: 'Fase 6 · Exceso de figuras',
-        body: 'Recicla figuras sobrantes para ganar mano.',
-        objective: 'Pulsa <strong>2 Figuras → 4</strong>.',
-        tip: 'Con piloto y copiloto, 2 figuras extra se cambian por 4 cartas.',
+        body: 'Si tu panel ya tiene <strong>piloto y copiloto</strong>, puedes descartar <strong>2 figuras sobrantes</strong> para robar <strong>4 cartas</strong>.',
+        objective: 'Pulsa <strong>ACCIONES</strong> y después <strong>2 Figuras → 4</strong>.',
+        tip: 'El ejercicio usa las dos figuras preparadas en tu mano.',
         allowedButtons: ['quickFigureDrawBtn'],
         allowedCardIds: [],
         highlightButtons: ['quickFigureDrawBtn'],
@@ -50878,11 +51062,25 @@ const ACADEMY_LESSONS = [
     prepare: academyPrepareLesson7,
     script: [
       {
+        id: 'academy-pass-two-select',
+        title: 'Fase 7 · Elige qué descartar',
+        body: 'Pasar turno cuesta descartar <strong>2 cartas de la mano</strong>. En una partida normal puedes elegir dos cartas cualesquiera.',
+        objective: 'En este ejemplo, selecciona las <strong>2 cartas</strong> disponibles. Todavía no pulses Pasar.',
+        tip: 'Primero se eligen las cartas; después se ejecuta la acción.',
+        allowedButtons: ['clearSelectionBtn'],
+        allowedCardIds: [TUTORIAL_CARD_IDS.p0DefendDiamond, TUTORIAL_CARD_IDS.p0DrawDiamond],
+        highlightButtons: [],
+        highlightZones: ['hand-zone-0'],
+        expectedSelection: [TUTORIAL_CARD_IDS.p0DefendDiamond, TUTORIAL_CARD_IDS.p0DrawDiamond],
+        isComplete: () => tutorialSelectionMatches([TUTORIAL_CARD_IDS.p0DefendDiamond, TUTORIAL_CARD_IDS.p0DrawDiamond]),
+        onComplete: () => tutorialGoToStep('academy-pass-two-cards', { clearSelection:false })
+      },
+      {
         id: 'academy-pass-two-cards',
-        title: 'Fase 7 · Pasar descartando 2 cartas',
-        body: 'Practica pasar turno con el coste normal.',
-        objective: 'Selecciona las <strong>2 cartas</strong> de tu mano y pulsa <strong>Pasar</strong>.',
-        tip: 'Pasar descarta 2 cartas y cede la iniciativa.',
+        title: 'Fase 7 · Ejecuta Pasar',
+        body: 'Las dos cartas ya están marcadas.',
+        objective: 'Pulsa <strong>ACCIONES</strong> y después <strong>Pasar</strong>.',
+        tip: 'Las cartas se descartan y la iniciativa pasa al rival.',
         allowedButtons: ['actionPassBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0DefendDiamond, TUTORIAL_CARD_IDS.p0DrawDiamond],
         highlightButtons: ['actionPassBtn'],
@@ -50890,7 +51088,7 @@ const ACADEMY_LESSONS = [
         expectedAction: 'passTurn',
         expectedSelection: [TUTORIAL_CARD_IDS.p0DefendDiamond, TUTORIAL_CARD_IDS.p0DrawDiamond],
         isComplete: () => state.lastActionType === 'pass' && state.players[0]?.hand?.length === 0 && academySceneSettled(1),
-        onComplete: () => academyRunOpponentPass(1, 'El instructor te devuelve el turno para practicar el caso de una sola carta.', () => {
+        onComplete: () => academyRunOpponentPass(tutorialGetStepIndex('academy-pass-one-card'), 'El instructor te devuelve el turno para practicar el caso de una sola carta.', () => {
           state.selected = [];
         })
       },
@@ -50898,7 +51096,7 @@ const ACADEMY_LESSONS = [
         id: 'academy-pass-one-card',
         title: 'Fase 7 · Pasar con una sola carta',
         body: 'Practica pasar cuando solo queda una carta.',
-        objective: 'Selecciona la <strong>única carta</strong> de tu mano y pulsa <strong>Pasar</strong>.',
+        objective: 'Selecciona la <strong>única carta</strong>, pulsa <strong>ACCIONES</strong> y después <strong>Pasar</strong>.',
         tip: 'Si no tienes 2 cartas, puedes pasar descartando lo que tengas.',
         allowedButtons: ['actionPassBtn', 'clearSelectionBtn'],
         allowedCardIds: () => state.players[0]?.hand?.length ? [state.players[0].hand[0].id] : [],
@@ -50924,9 +51122,9 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-swap-upgrade',
         title: 'Fase 8 · Mejorar un módulo',
-        body: 'Sustituye una carta montada por otra mejor.',
+        body: 'En un turno puedes <strong>intercambiar solo 1 carta</strong> del panel por 1 de la mano, en lugar de añadir cartas nuevas. Aquí mejorarás Ataque de 4 a 8.',
         objective: 'Selecciona <strong>8♠</strong> de tu mano y <strong>4♠</strong> del panel; pulsa <strong>Modificar</strong>.',
-        tip: 'Modificar también sirve para intercambiar cartas ya colocadas.',
+        tip: 'No puedes combinar este intercambio con colocar dos cartas en el mismo turno.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
         allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
         highlightButtons: ['actionAddBtn'],
@@ -50936,7 +51134,10 @@ const ACADEMY_LESSONS = [
         isComplete: () => state.players[0]?.attack?.some(card => card.id === TUTORIAL_CARD_IDS.p0AttackB)
           && !state.players[0]?.attack?.some(card => card.id === TUTORIAL_CARD_IDS.p0AttackBase)
           && academySceneSettled(1),
-        onComplete: () => academyRunOpponentPass(1, 'El instructor te devuelve el turno para que cambies una pieza del núcleo y veas cómo se reordena el mecha.', () => {
+        onComplete: () => {
+          addToast('Ataque mejora: 4 → 8', 'ok');
+          queueFx('module-box-attack-0', 'zone-pulse');
+          academyRunOpponentPass(tutorialGetStepIndex('academy-core-swap'), 'El instructor te devuelve el turno para que cambies una pieza del núcleo y veas cómo se reordena el mecha.', () => {
           const cadet = state.players[0];
           cadet.hand = cadet.hand.filter(card => {
             if(card.id === ACADEMY_CARD_IDS.lesson8PilotSwap) return true;
@@ -50947,12 +51148,13 @@ const ACADEMY_LESSONS = [
           state.projectileMode = false;
           state.selected = [];
           academyRefreshPlayers();
-        })
+          });
+        }
       },
       {
         id: 'academy-core-swap',
         title: 'Fase 8 · Cambiar el piloto',
-        body: 'Cambia el piloto y observa cómo se recalcula el mecha.',
+        body: 'Cambiar el piloto también es un intercambio único. Al hacerlo cambia el palo obligatorio y el juego recalcula los límites del mecha.',
         objective: 'Selecciona <strong>K♥</strong> de tu mano y el <strong>K♠</strong> del núcleo, luego pulsa <strong>Modificar</strong>.',
         tip: 'Si un módulo se pasa de capacidad, cae la carta sobrante de menor valor.',
         allowedButtons: ['actionAddBtn', 'clearSelectionBtn'],
@@ -50979,19 +51181,46 @@ const ACADEMY_LESSONS = [
     prepare: academyPrepareLesson9,
     script: [
       {
-        id: 'academy-armor-fuel',
-        title: 'Fase 9 · As♦ y armadura como fuel',
-        body: 'El <strong>As♦</strong> es el booster raro: no amplía un módulo, pero permite quemar <strong>Armadura ♣</strong> como combustible. Esa carta de armadura funciona como fuel normal: <strong>valor × 2</strong>.',
-        objective: 'Ataca con <strong>6♣</strong> como fuel y <strong>4♠ + 7♠</strong>; pulsa <strong>Confirmar ataque</strong>.',
-        tip: '6♣ como fuel sostiene hasta 12 puntos de picas; después se descarta porque la has usado como energía.',
-        allowedButtons: ['attackModeBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
-        allowedCardIds: [TUTORIAL_CARD_IDS.p0ArmorA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
-        highlightButtons: ['attackModeBtn', 'confirmAttackBtn'],
-        highlightZones: ['module-box-armor-0', 'module-box-attack-0'],
-        expectedAction: () => state.attackMode ? 'confirmAttack' : 'attackMode',
+        id: 'academy-armor-fuel-briefing',
+        title: 'Fase 9 · La excepción del A♦',
+        body: 'El <strong>A♦</strong> no amplía módulos. Su poder especial permite <strong>quemar una carta de Armadura ♣ como combustible</strong>. Su valor también cuenta ×2 y la carta se descarta al atacar.',
+        objective: 'Pulsa <strong>Practicar con armadura</strong>.',
+        tip: 'Sin A♦, los tréboles no pueden usarse como fuel.',
+        allowedButtons: ['clearSelectionBtn'], allowedCardIds: [], highlightButtons: [],
+        highlightZones: ['core-zone-0', 'module-box-armor-0'],
+        panelActions: [{ label:'Practicar con armadura', kind:'primary', onClick:() => tutorialGoToStep('academy-armor-fuel-open') }]
+      },
+      {
+        id: 'academy-armor-fuel-open', title: 'Fase 9 · Abre el ataque',
+        body: '<strong>Paso 1.</strong> Abre la consola de ataque desde el menú de jugadas.',
+        objective: 'Pulsa <strong>ACCIONES → Atacar</strong>.', tip: 'Después elegirás el trébol que vas a quemar.',
+        allowedButtons: ['attackModeBtn'], allowedCardIds: [], highlightButtons: ['attackModeBtn'], highlightZones: [],
+        expectedAction: 'attackMode', isComplete: () => state.attackMode,
+        onComplete: () => tutorialGoToStep('academy-armor-fuel-select', { clearSelection:false })
+      },
+      {
+        id: 'academy-armor-fuel-select', title: 'Fase 9 · Quema armadura',
+        body: '<strong>Paso 2.</strong> Gracias al A♦, el <strong>6♣</strong> puede dar un límite de <strong>12 puntos</strong> de picas.',
+        objective: 'Selecciona solo el <strong>6♣</strong> de Armadura.', tip: 'La carta se perderá porque se transforma en energía.',
+        allowedButtons: ['clearSelectionBtn', 'cancelAttackBtn'], allowedCardIds: [TUTORIAL_CARD_IDS.p0ArmorA], highlightButtons: [], highlightZones: ['module-box-armor-0'],
+        expectedSelection: [TUTORIAL_CARD_IDS.p0ArmorA], isComplete: () => tutorialSelectionMatches([TUTORIAL_CARD_IDS.p0ArmorA]),
+        onComplete: () => tutorialGoToStep('academy-armor-fuel-spades', { clearSelection:false })
+      },
+      {
+        id: 'academy-armor-fuel-spades', title: 'Fase 9 · Añade las picas',
+        body: '<strong>Paso 3.</strong> <strong>4♠ + 7♠ = 11</strong>, dentro del límite 12 del 6♣.',
+        objective: 'Mantén el <strong>6♣</strong> y añade <strong>4♠ + 7♠</strong>.', tip: 'El A♦ solo cambia qué carta aporta fuel; la proporción sigue siendo 2 a 1.',
+        allowedButtons: ['clearSelectionBtn', 'cancelAttackBtn'], allowedCardIds: [TUTORIAL_CARD_IDS.p0ArmorA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA], highlightButtons: [], highlightZones: ['module-box-armor-0', 'module-box-attack-0'],
         expectedSelection: [TUTORIAL_CARD_IDS.p0ArmorA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
-        isComplete: () => tutorialSystem.validation.academyArmorFuelUsed && academySceneSettled(1),
-        onComplete: () => academyCompleteActiveLesson()
+        isComplete: () => tutorialSelectionMatches([TUTORIAL_CARD_IDS.p0ArmorA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA]),
+        onComplete: () => tutorialGoToStep('academy-armor-fuel', { clearSelection:false })
+      },
+      {
+        id: 'academy-armor-fuel', title: 'Fase 9 · Confirma', body: '<strong>Paso 4.</strong> El ataque está preparado.',
+        objective: 'Pulsa <strong>Confirmar ataque</strong>.', tip: 'El 6♣ se descartará como combustible.',
+        allowedButtons: ['confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'], allowedCardIds: [TUTORIAL_CARD_IDS.p0ArmorA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA], highlightButtons: ['confirmAttackBtn'], highlightZones: ['module-box-armor-0', 'module-box-attack-0'],
+        expectedAction: 'confirmAttack', expectedSelection: [TUTORIAL_CARD_IDS.p0ArmorA, TUTORIAL_CARD_IDS.p0AttackBase, TUTORIAL_CARD_IDS.p0AttackA],
+        isComplete: () => tutorialSystem.validation.academyArmorFuelUsed && academySceneSettled(1), onComplete: academyCompleteActiveLesson
       },
       academySummaryStep('Fase 9 completada')
     ]
@@ -51006,41 +51235,63 @@ const ACADEMY_LESSONS = [
     prepare: academyPrepareLesson10,
     script: [
       {
-        id: 'academy-projectile-only',
-        title: 'Fase 10 · Solo proyectil',
-        body: 'Dispara una pica como proyectil sin gastar fuel. Es útil cuando quieres hacer daño aunque no puedas o no quieras pagar combustible, pero esa pica se pierde.',
-        objective: 'Pulsa <strong>Atacar</strong>, selecciona <strong>7♠</strong> y usa <strong>Solo proyectil</strong>.',
-        tip: 'Solo proyectil descarta una pica numérica montada.',
-        allowedButtons: ['attackModeBtn', 'projectileOnlyBtn', 'clearSelectionBtn'],
-        allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackA],
-        highlightButtons: ['attackModeBtn', 'projectileOnlyBtn'],
-        highlightZones: ['module-box-attack-0'],
-        expectedAction: () => state.attackMode ? 'projectileOnly' : 'attackMode',
-        expectedSelection: [TUTORIAL_CARD_IDS.p0AttackA],
-        isComplete: () => tutorialSystem.validation.academyProjectileOnlyUsed && academySceneSettled(1),
-        onComplete: () => academyRunOpponentPass(1, 'Buen disparo. Ahora activa el combo final con ataque normal más proyectil.', () => {
-          state.attackMode = false;
-          state.projectileMode = false;
-          state.selected = [];
-        })
+        id: 'academy-projectile-only-briefing', title: 'Fase 10 · Ataque urgente',
+        body: 'Si no tienes suficiente combustible pero necesitas atacar, <strong>Solo proyectil</strong> dispara <strong>1 pica numérica</strong> sin gastar fuel. Hace daño, pero esa pica se descarta.',
+        objective: 'Pulsa <strong>Practicar proyectil</strong>.', tip: 'Es una ofensiva rápida de una sola carta.',
+        allowedButtons: ['clearSelectionBtn'], allowedCardIds: [], highlightButtons: [], highlightZones: ['module-box-attack-0'],
+        panelActions: [{ label:'Practicar proyectil', kind:'primary', onClick:() => tutorialGoToStep('academy-projectile-only-open') }]
       },
       {
-        id: 'academy-projectile-combo',
-        title: 'Fase 10 · Ataque normal + proyectil',
-        body: 'Combina ataque principal y proyectil para rematar: primero el fuel sostiene las picas del ataque principal; después una pica extra sale como proyectil y se descarta.',
-        objective: 'Activa <strong>Modo proyectil</strong>, marca fuel y picas, y deja la pica proyectil como daño extra fuera del límite de fuel.',
-        tip: 'Piensa en dos carriles: fuel sostiene el ataque principal; proyectil dispara una pica adicional que se pierde.',
-        allowedButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn', 'cancelAttackBtn', 'clearSelectionBtn'],
-        allowedCardIds: [ACADEMY_CARD_IDS.lesson10Fuel, TUTORIAL_CARD_IDS.p0AttackB, TUTORIAL_CARD_IDS.p0AttackBase],
-        highlightButtons: ['attackModeBtn', 'toggleProjectileBtn', 'confirmAttackBtn'],
-        highlightZones: ['fuel-zone-0', 'module-box-attack-0'],
-        expectedAction: () => {
-          if(!state.attackMode) return 'attackMode';
-          if(!state.projectileMode) return 'toggleProjectile';
-          return 'confirmAttack';
-        },
-        isComplete: () => tutorialSystem.validation.academyProjectileComboUsed && state.winner === state.players[0]?.name && academySceneSettled(),
-        onComplete: () => academyCompleteActiveLesson()
+        id: 'academy-projectile-only-open', title: 'Fase 10 · Abre el ataque', body: '<strong>Paso 1.</strong> Entra en la consola de ataque.',
+        objective: 'Pulsa <strong>ACCIONES → Atacar</strong>.', tip: 'No seleccionarás combustible.',
+        allowedButtons: ['attackModeBtn'], allowedCardIds: [], highlightButtons: ['attackModeBtn'], highlightZones: [],
+        expectedAction: 'attackMode', isComplete: () => state.attackMode,
+        onComplete: () => tutorialGoToStep('academy-projectile-only', { clearSelection:false })
+      },
+      {
+        id: 'academy-projectile-only', title: 'Fase 10 · Solo proyectil',
+        body: '<strong>Paso 2.</strong> Elige una única pica y dispárala sin fuel.',
+        objective: 'Selecciona <strong>7♠</strong> y pulsa <strong>Solo proyectil</strong>.', tip: 'El 7♠ hará daño y pasará al descarte.',
+        allowedButtons: ['projectileOnlyBtn', 'clearSelectionBtn'], allowedCardIds: [TUTORIAL_CARD_IDS.p0AttackA], highlightButtons: ['projectileOnlyBtn'], highlightZones: ['module-box-attack-0'],
+        expectedAction: 'projectileOnly', expectedSelection: [TUTORIAL_CARD_IDS.p0AttackA],
+        isComplete: () => tutorialSystem.validation.academyProjectileOnlyUsed && academySceneSettled(1),
+        onComplete: () => academyRunOpponentPass(tutorialGetStepIndex('academy-projectile-combo-open'), 'Buen disparo. Ahora combinarás ataque normal y un proyectil extra.', () => { state.attackMode = false; state.projectileMode = false; state.selected = []; })
+      },
+      {
+        id: 'academy-projectile-combo-open', title: 'Fase 10 · Ataque combinado', body: '<strong>Paso 1.</strong> Abre de nuevo el ataque.',
+        objective: 'Pulsa <strong>ACCIONES → Atacar</strong>.', tip: 'Ahora sí usarás fuel, ataque principal y proyectil.',
+        allowedButtons: ['attackModeBtn'], allowedCardIds: [], highlightButtons: ['attackModeBtn'], highlightZones: [], expectedAction:'attackMode', isComplete:()=>state.attackMode,
+        onComplete:()=>tutorialGoToStep('academy-projectile-combo-mode',{clearSelection:false})
+      },
+      {
+        id:'academy-projectile-combo-mode', title:'Fase 10 · Activa el modo', body:'<strong>Paso 2.</strong> El modo proyectil reserva la última pica elegida como disparo extra.',
+        objective:'Pulsa <strong>Modo proyectil</strong>.', tip:'Esa pica extra no consume fuel, pero se descartará.',
+        allowedButtons:['toggleProjectileBtn','cancelAttackBtn'], allowedCardIds:[], highlightButtons:['toggleProjectileBtn'], highlightZones:[], expectedAction:'toggleProjectile', isComplete:()=>state.projectileMode,
+        onComplete:()=>tutorialGoToStep('academy-projectile-combo-fuel',{clearSelection:false})
+      },
+      {
+        id:'academy-projectile-combo-fuel', title:'Fase 10 · Carga fuel', body:'<strong>Paso 3.</strong> Elige primero la energía del ataque principal.',
+        objective:'Selecciona solo el <strong>4♦</strong> de Fuel.', tip:'Dará un límite de 8 puntos para la pica principal.',
+        allowedButtons:['clearSelectionBtn','cancelAttackBtn'], allowedCardIds:[ACADEMY_CARD_IDS.lesson10Fuel], highlightButtons:[], highlightZones:['fuel-zone-0'], expectedSelection:[ACADEMY_CARD_IDS.lesson10Fuel],
+        isComplete:()=>tutorialSelectionMatches([ACADEMY_CARD_IDS.lesson10Fuel]), onComplete:()=>tutorialGoToStep('academy-projectile-combo-main',{clearSelection:false})
+      },
+      {
+        id:'academy-projectile-combo-main', title:'Fase 10 · Ataque principal', body:'<strong>Paso 4.</strong> El 4♠ cabe dentro del límite 8 del combustible.',
+        objective:'Mantén el fuel y selecciona <strong>4♠</strong>.', tip:'Esta pica permanece montada tras el ataque.',
+        allowedButtons:['clearSelectionBtn','cancelAttackBtn'], allowedCardIds:[ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase], highlightButtons:[], highlightZones:['fuel-zone-0','module-box-attack-0'], expectedSelection:[ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase],
+        isComplete:()=>tutorialSelectionMatches([ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase]), onComplete:()=>tutorialGoToStep('academy-projectile-combo-extra',{clearSelection:false})
+      },
+      {
+        id:'academy-projectile-combo-extra', title:'Fase 10 · Proyectil extra', body:'<strong>Paso 5.</strong> La última pica será el proyectil que se suma fuera del límite de fuel.',
+        objective:'Añade ahora el <strong>8♠</strong>.', tip:'El 8♠ hará daño extra y se descartará.',
+        allowedButtons:['clearSelectionBtn','cancelAttackBtn'], allowedCardIds:[ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase,TUTORIAL_CARD_IDS.p0AttackB], highlightButtons:[], highlightZones:['fuel-zone-0','module-box-attack-0'], expectedSelection:[ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase,TUTORIAL_CARD_IDS.p0AttackB],
+        isComplete:()=>tutorialSelectionMatches([ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase,TUTORIAL_CARD_IDS.p0AttackB]), onComplete:()=>tutorialGoToStep('academy-projectile-combo',{clearSelection:false})
+      },
+      {
+        id:'academy-projectile-combo', title:'Fase 10 · Confirma el combo', body:'<strong>Paso 6.</strong> Fuel sostiene 4♠ y 8♠ sale como proyectil extra.',
+        objective:'Pulsa <strong>Confirmar ataque</strong>.', tip:'Se descartarán el fuel y el 8♠ proyectil.',
+        allowedButtons:['confirmAttackBtn','cancelAttackBtn','clearSelectionBtn'], allowedCardIds:[ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase,TUTORIAL_CARD_IDS.p0AttackB], highlightButtons:['confirmAttackBtn'], highlightZones:['fuel-zone-0','module-box-attack-0'], expectedAction:'confirmAttack', expectedSelection:[ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase,TUTORIAL_CARD_IDS.p0AttackB],
+        isComplete:()=>tutorialSystem.validation.academyProjectileComboUsed && state.winner === state.players[0]?.name && academySceneSettled(), onComplete:academyCompleteActiveLesson
       },
       academySummaryStep('Fase 10 completada')
     ]
@@ -51051,15 +51302,15 @@ const ACADEMY_LESSONS = [
     title: 'Combate Completo',
     description: 'Aplica lo aprendido en una partida real contra la CPU fácil, desde el montaje hasta el final.',
     chips: ['Aplicación', 'Carnet'],
-    successText: 'La academia queda cerrada tras ganar una partida completa: ya puedes imprimir tu carnet PoCoBOT personalizado desde esta build local.',
+    successText: 'La academia queda cerrada tras ganar una partida completa: ya puedes abrir, descargar o imprimir tu carnet PoCoBOT personalizado.',
     prepare: academyPrepareLesson11,
     script: [
       {
         id: 'academy-short-fight',
         title: 'Fase 11 · Combate completo',
-        body: 'Cierra la academia ganando una partida completa.',
+        body: 'Aplica todo el ciclo en una partida real: abre <strong>PANEL</strong> cuando necesites consultar las Stats, monta hasta el 100% y elige una sola acción en cada turno. Modificar permite colocar hasta 2 cartas o intercambiar 1; luego podrás atacar, robar, pasar o reciclar figuras según tu mano.',
         objective: 'Monta tu mecha y gana la partida contra el instructor.',
-        tip: 'Ganas cuando el rival se queda sin defensa de corazones.',
+        tip: 'PANEL no gasta turno. Ganas cuando el rival se queda sin defensa de corazones.',
         allowedButtons: [],
         allowedCardIds: null,
         highlightButtons: [],
@@ -51193,15 +51444,7 @@ function showAcademyLessonOverlay(lesson){
   title.textContent = lesson.title;
   body.textContent = lesson.successText;
   nextBtn.textContent = academyAllLessonsCompleted() ? 'Ver carnet' : 'Seguir a Siguiente Lección';
-  nextBtn.onclick = () => {
-    overlay.hidden = true;
-    if(academyAllLessonsCompleted()){
-      showAcademyCertificate();
-      return;
-    }
-    if(nextLessonId) startAcademyLesson(nextLessonId);
-    else academyReturnToMenu();
-  };
+  nextBtn.dataset.nextAcademyLesson = nextLessonId || '';
   overlay.hidden = false;
 }
 
@@ -51257,6 +51500,10 @@ function startAcademyLesson(lessonId){
   tutorialSystem.script = lesson.script;
   tutorialSystem.cards = { ...TUTORIAL_CARD_IDS };
   academySystem.activeLessonId = lesson.id;
+  preloadTutorialBotAssets();
+  resetTutorialBotState();
+  tutorialBotState.greetingDone = true;
+  setTutorialBotFrameMode('talk');
   tutorialSetStep(0, { renderNow:false });
 
   hideIntroScreen();
@@ -51395,6 +51642,20 @@ document.getElementById('academyCertificatePreviewBtn').addEventListener('click'
 document.getElementById('academyOverlayMenuBtn').addEventListener('click', () => {
   playUiSound('tap');
   academyReturnToMenu();
+});
+
+document.addEventListener('click', event => {
+  const nextBtn = event.target?.closest?.('#academyOverlayNextBtn');
+  if(!nextBtn) return;
+  playUiSound('tap');
+  academyHideOverlay('academyLessonOverlay');
+  if(academyAllLessonsCompleted()){
+    showAcademyCertificate();
+    return;
+  }
+  const nextLessonId = nextBtn.dataset.nextAcademyLesson || academyGetNextLessonId(tutorialSystem.lessonId);
+  if(nextLessonId) startAcademyLesson(nextLessonId);
+  else academyReturnToMenu();
 });
 
 document.getElementById('academyPrintBtn').addEventListener('click', () => {

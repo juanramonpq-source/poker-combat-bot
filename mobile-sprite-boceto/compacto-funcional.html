@@ -9571,6 +9571,7 @@
         return;
       }
       if (maybeHandleDirectTutorialControl(event)) {
+        suppressTrustedTouchClickUntil = Date.now() + 650;
         clearPressedButtons();
         return;
       }
