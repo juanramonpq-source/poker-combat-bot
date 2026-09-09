@@ -1774,6 +1774,37 @@
       border-top: 1px solid rgba(255, 236, 181, .2);
     }
 
+    .tutorial-route-progress {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+      padding: 6px 8px;
+      border: 1px solid rgba(109, 229, 255, .28);
+      border-radius: 10px;
+      background: rgba(2, 14, 34, .5);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .tutorial-route-progress .route-stage { color: #8299b0; }
+    .tutorial-route-progress .route-stage.done { color: #6ff3c8; }
+    .tutorial-route-progress .route-stage.active { color: #fff0a3; text-shadow: 0 0 8px rgba(255, 213, 80, .55); }
+    .tutorial-route-progress .route-arrow { color: #4d708f; }
+
+    [data-action].tutorial-next-action:not(:disabled) {
+      outline: 3px solid rgba(255, 239, 143, .96);
+      outline-offset: 3px;
+      filter: brightness(1.12) saturate(1.14);
+      animation: tutorialNextActionPulse .82s ease-in-out infinite;
+    }
+
+    @keyframes tutorialNextActionPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 2px rgba(255, 213, 76, .48), 0 0 18px rgba(255, 190, 45, .28); }
+      50% { transform: scale(1.045); box-shadow: 0 0 0 4px rgba(255, 239, 143, .9), 0 0 30px rgba(255, 190, 45, .48); }
+    }
+
     .floating-message.alert span {
       font-size: 13px;
       font-weight: 800;
@@ -6109,6 +6140,7 @@
       tutorial: false,
       tutorialBusy: false,
       tutorialMaskHand: false,
+      tutorialNextActions: [],
       musicOn: false,
       pendingDefense: null,
       pendingBuildOps: 0,
@@ -9018,6 +9050,7 @@
 	      Object.entries(actionStates).forEach(([action, enabled]) => {
 	        document.querySelectorAll(`[data-action="${action}"]`).forEach((button) => {
 	          button.disabled = !enabled;
+	          button.classList.toggle("tutorial-next-action", enabled && state.tutorialNextActions.includes(action));
 	        });
 	      });
         const confirmLabel = defenseTurn
@@ -9474,6 +9507,7 @@
       state.tutorial = !!snapshot.tutorial;
       state.tutorialBusy = !!snapshot.tutorialBusy;
       state.tutorialMaskHand = !!snapshot.tutorialMaskHand;
+      state.tutorialNextActions = Array.isArray(snapshot.tutorialNextActions) ? snapshot.tutorialNextActions : [];
       state.musicOn = !!snapshot.musicOn;
       state.pendingDefense = snapshot.pendingDefense || null;
       state.winner = snapshot.winner || null;

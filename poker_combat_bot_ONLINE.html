@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <script>
     (() => {
-      const APP_SHELL_VERSION = '20260909-academy-refresh-1';
+      const APP_SHELL_VERSION = '20260909-tutorial-guidance-1';
       const ensureVersionedShell = (reloadPersisted = false) => {
         try {
           const url = new URL(window.location.href);
@@ -9308,6 +9308,34 @@ body.academy-guided .tutorial-panel-status{
   box-shadow:0 0 0 2px rgba(255,178,46,.48), 0 0 22px rgba(255,178,46,.18);
   animation:tutorialPulse 1.2s ease-in-out infinite;
 }
+.tutorial-button-focus.tutorial-next-action{
+  z-index:3;
+  outline:3px solid rgba(255,238,145,.96);
+  outline-offset:4px;
+  filter:brightness(1.12) saturate(1.15);
+  animation:tutorialNextActionPulse .82s ease-in-out infinite;
+}
+.tutorial-route-progress{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  flex-wrap:wrap;
+  margin-top:9px;
+  padding:7px 9px;
+  border:1px solid rgba(117,229,255,.24);
+  border-radius:10px;
+  background:rgba(3,18,38,.48);
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.02em;
+}
+.tutorial-route-progress .route-stage{ color:#8298ad; }
+.tutorial-route-progress .route-stage.done{ color:#67f4c8; }
+.tutorial-route-progress .route-stage.active{
+  color:#fff1a8;
+  text-shadow:0 0 10px rgba(255,218,95,.45);
+}
+.tutorial-route-progress .route-arrow{ color:#4b6c88; }
 .tutorial-primer-emphasis{
   animation:tutorialPrimerEmphasis .78s cubic-bezier(.18,.88,.22,1);
 }
@@ -9452,6 +9480,10 @@ body.tutorial-guided-active.tutorial-guided-busy .tutorial-panel{
 @keyframes tutorialPulse{
   0%,100%{ box-shadow:0 0 0 2px rgba(255,178,46,.42), 0 0 18px rgba(255,178,46,.16); }
   50%{ box-shadow:0 0 0 3px rgba(255,178,46,.7), 0 0 28px rgba(255,178,46,.28); }
+}
+@keyframes tutorialNextActionPulse{
+  0%,100%{ transform:translateY(0) scale(1); box-shadow:0 0 0 3px rgba(255,220,91,.54), 0 0 24px rgba(255,187,44,.3); }
+  50%{ transform:translateY(-2px) scale(1.035); box-shadow:0 0 0 5px rgba(255,239,151,.9), 0 0 38px rgba(255,187,44,.52); }
 }
 @keyframes tutorialPrimerEmphasis{
   0%{
@@ -32171,6 +32203,8 @@ const tutorialSystem = {
   primerScenarioReady: false,
   primerCardCache: {},
   mobileHudHandMask: false,
+  stepCheckpoint: null,
+  restoringCheckpoint: false,
   validation: {
     pilotPlaced: false,
     copilotPlaced: false,
@@ -32310,6 +32344,9 @@ const TUTOBOT_STEP_LINES = {
   'academy-projectile-combo-extra': 'Añade al final la pica que saldrá disparada.',
   'academy-projectile-combo': 'El combo está listo: confirma el disparo.',
   'academy-short-fight': 'Ya tienes todas las piezas. Ahora pilota una partida completa.',
+  'academy-final-build-check': 'Comprobación rápida: ¿qué necesita el mecha para abrir el ataque?',
+  'academy-final-turn-check': 'Ahora distingue una consulta libre de una acción de turno.',
+  'academy-final-attack-check': 'Última comprobación: ordena mentalmente el disparo completo.',
   summary: 'Muy bien. Ya controlas el ciclo básico de PoCoBOT.'
 };
 
@@ -32758,7 +32795,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260909-academy-refresh-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260909-tutorial-guidance-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -41974,6 +42011,9 @@ const TUTOBOT_TOP_RAIL_STEPS = new Set([
   'academy-projectile-combo-main',
   'academy-projectile-combo-extra',
   'academy-projectile-combo',
+  'academy-final-build-check',
+  'academy-final-turn-check',
+  'academy-final-attack-check',
   'academy-short-fight'
 ]);
 
@@ -42022,7 +42062,10 @@ const TUTOBOT_TOP_RAIL_FRONT_STEPS = new Set([
   'academy-projectile-combo-fuel',
   'academy-projectile-combo-main',
   'academy-projectile-combo-extra',
-  'academy-projectile-combo'
+  'academy-projectile-combo',
+  'academy-final-build-check',
+  'academy-final-turn-check',
+  'academy-final-attack-check'
 ]);
 
 function getTutorialBotPlacement(step = tutorialGetCurrentStep()){
@@ -42031,6 +42074,35 @@ function getTutorialBotPlacement(step = tutorialGetCurrentStep()){
   if(state.attackMode || state.projectileMode || state.projectileOnlyMode || state.pendingDefense) return 'top-rail-front';
   if(TUTOBOT_TOP_RAIL_FRONT_STEPS.has(step.id)) return 'top-rail-front';
   return TUTOBOT_TOP_RAIL_STEPS.has(step.id) ? 'top-rail' : '';
+}
+
+const TUTORIAL_ROUTE_PROGRESS = {
+  'open-attack': [['Abrir', 'active'], ['Fuel', ''], ['Picas', ''], ['Confirmar', '']],
+  'first-attack-fuel': [['Abrir', 'done'], ['Fuel', 'active'], ['Picas', ''], ['Confirmar', '']],
+  'first-attack-spades': [['Abrir', 'done'], ['Fuel', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'first-attack': [['Abrir', 'done'], ['Fuel', 'done'], ['Picas', 'done'], ['Confirmar', 'active']],
+  'academy-attack-open': [['Abrir', 'active'], ['Fuel', ''], ['Picas', ''], ['Confirmar', '']],
+  'academy-attack-fuel': [['Abrir', 'done'], ['Fuel', 'active'], ['Picas', ''], ['Confirmar', '']],
+  'academy-attack-spades': [['Abrir', 'done'], ['Fuel', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'academy-fuel-attack': [['Abrir', 'done'], ['Fuel', 'done'], ['Picas', 'done'], ['Confirmar', 'active']],
+  'academy-armor-fuel-open': [['Abrir', 'active'], ['Armadura', ''], ['Picas', ''], ['Confirmar', '']],
+  'academy-armor-fuel-select': [['Abrir', 'done'], ['Armadura', 'active'], ['Picas', ''], ['Confirmar', '']],
+  'academy-armor-fuel-spades': [['Abrir', 'done'], ['Armadura', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'academy-armor-fuel': [['Abrir', 'done'], ['Armadura', 'done'], ['Picas', 'done'], ['Confirmar', 'active']],
+  'academy-projectile-only-open': [['Abrir', 'active'], ['Pica', ''], ['Disparar', '']],
+  'academy-projectile-only': [['Abrir', 'done'], ['Pica', 'active'], ['Disparar', 'active']],
+  'academy-projectile-combo-open': [['Abrir', 'active'], ['Modo', ''], ['Fuel', ''], ['Picas', ''], ['Confirmar', '']],
+  'academy-projectile-combo-mode': [['Abrir', 'done'], ['Modo', 'active'], ['Fuel', ''], ['Picas', ''], ['Confirmar', '']],
+  'academy-projectile-combo-fuel': [['Abrir', 'done'], ['Modo', 'done'], ['Fuel', 'active'], ['Picas', ''], ['Confirmar', '']],
+  'academy-projectile-combo-main': [['Abrir', 'done'], ['Modo', 'done'], ['Fuel', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'academy-projectile-combo-extra': [['Abrir', 'done'], ['Modo', 'done'], ['Fuel', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'academy-projectile-combo': [['Abrir', 'done'], ['Modo', 'done'], ['Fuel', 'done'], ['Picas', 'done'], ['Confirmar', 'active']]
+};
+
+function getTutorialRouteProgressHtml(step = tutorialGetCurrentStep()){
+  const route = TUTORIAL_ROUTE_PROGRESS[step?.id];
+  if(!route) return '';
+  return `<div class="tutorial-route-progress" aria-label="Progreso del ataque">${route.map(([label, status], index) => `${index ? '<span class="route-arrow">→</span>' : ''}<span class="route-stage ${status}">${mobileSpriteEscapeHtml(label)}${status === 'done' ? ' ✓' : ''}</span>`).join('')}</div>`;
 }
 
 function getTutorialBotSpeechPayload(){
@@ -42093,7 +42165,7 @@ function getTutorialBotSpeechPayload(){
     primaryAction: compactPrimerDefinitionStep ? '' : panelAction.action,
     primaryLabel: compactPrimerDefinitionStep ? '' : panelAction.label,
     sprite: tutorialBotState.currentFrame,
-    messageHtml: `${mobileSpriteEscapeHtml(leadText)}${sublineHtml ? `<span class="tutorial-assistant-subline">${sublineHtml}</span>` : ''}${primerInlineActionHtml}`,
+    messageHtml: `${mobileSpriteEscapeHtml(leadText)}${sublineHtml ? `<span class="tutorial-assistant-subline">${sublineHtml}</span>` : ''}${getTutorialRouteProgressHtml(step)}${primerInlineActionHtml}`,
     meta: tutorialSystem.completed ? 'Modo libre' : `Paso ${stepNumber}/${script.length}`,
     soundKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`,
     messageKey: tutorialSystem.completed ? 'summary' : `step:${tutorialSystem.stepIndex}:${step?.id || 'ready'}`
@@ -42463,7 +42535,7 @@ function getCompactMobileTutorialPayload(){
   const statusHtml = !academyCompact && statusText && normalizeTutorialLine(statusText) !== normalizeTutorialLine(copy.tip)
     ? `<div class="tutorial-status"><strong>Estado:</strong> ${mobileSpriteEscapeHtml(statusText)}</div>`
     : '';
-  const html = [bodyHtml, objectiveHtml, tipHtml, focusHtml, statusHtml].filter(Boolean).join('');
+  const html = [bodyHtml, objectiveHtml, getTutorialRouteProgressHtml(step), tipHtml, focusHtml, statusHtml].filter(Boolean).join('');
   const modeLabel = tutorialSystem.mode === 'academy'
     ? `Carnet PoCoBOT${lesson ? ` · Fase ${lesson.phase}/${ACADEMY_LESSONS.length}` : ''}`
     : 'Tutorial guiado';
@@ -42592,6 +42664,12 @@ function createMobileSpriteSnapshot(){
     && !tutorialBotExternalSequenceOverlay
     && (tutorialBotSequenceOnly ? !tutorialBotState.overlayDismissed : !tutorialBotDismissed);
   const tutorialMaskHand = !!(tutorialSystem.enabled && tutorialSystem.mobileHudHandMask);
+  const tutorialNextActions = (tutorialGetCurrentStep()?.highlightButtons || []).map(buttonId => ({
+    actionAddBtn: 'modify', attackModeBtn: 'attack-mode', quickFigureDrawBtn: 'figures',
+    confirmAttackBtn: 'confirm', confirmDefenseBtn: 'defend', skipDefenseBtn: 'skip-defense',
+    actionDrawDiamondBtn: 'draw', actionPassBtn: 'pass', toggleProjectileBtn: 'projectile',
+    projectileOnlyBtn: 'projectile-only', clearSelectionBtn: 'clear'
+  })[buttonId]).filter(Boolean);
   return {
     players: [cloneMobileSpritePlayer(viewIdx), cloneMobileSpritePlayer(rivalIdx)],
     currentPlayer,
@@ -42607,6 +42685,7 @@ function createMobileSpriteSnapshot(){
     tutorial: !!state.tutorial || !!tutorialSystem.enabled,
     tutorialBusy: !!tutorialSystem.busy,
     tutorialMaskHand,
+    tutorialNextActions,
     musicOn: !!state.soundOn,
     pendingDefense: getMobileSpritePendingDefense(viewIdx, rivalIdx),
     winner: state.winner || null,
@@ -46363,6 +46442,61 @@ function academyAcknowledgeDefinitionStep(){
   updateTutorialPhase();
 }
 
+function captureTutorialStepCheckpoint(step = tutorialGetCurrentStep()){
+  if(!tutorialSystem.enabled || !step || tutorialSystem.busy || state.pendingDefense) return;
+  const stateSnapshot = JSON.parse(JSON.stringify(state, (key, value) => {
+    if(['audioCtx', 'bgmMenu', 'bgm1', 'bgm2'].includes(key)) return undefined;
+    if(typeof value === 'function') return undefined;
+    if(typeof HTMLElement !== 'undefined' && value instanceof HTMLElement) return undefined;
+    return value;
+  }));
+  tutorialSystem.stepCheckpoint = {
+    stepIndex: tutorialSystem.stepIndex,
+    stepId: step.id,
+    state: stateSnapshot,
+    validation: JSON.parse(JSON.stringify(tutorialSystem.validation))
+  };
+}
+
+function canRepeatCurrentTutorialStep(step = tutorialGetCurrentStep()){
+  if(!tutorialSystem.enabled || !tutorialSystem.stepCheckpoint || !step) return false;
+  if(tutorialSystem.busy || tutorialSystem.completed || state.pendingDefense) return false;
+  if(step.id === 'academy-summary' || step.id === 'summary') return false;
+  return tutorialSystem.stepCheckpoint.stepId === step.id;
+}
+
+function repeatCurrentTutorialStep(){
+  const checkpoint = tutorialSystem.stepCheckpoint;
+  const step = tutorialGetCurrentStep();
+  if(!checkpoint || !step || checkpoint.stepId !== step.id) return;
+  if(tutorialSystem.autoTimer) window.clearTimeout(tutorialSystem.autoTimer);
+  tutorialSystem.autoTimer = null;
+  tutorialSystem.restoringCheckpoint = true;
+  const audioState = {
+    audioCtx: state.audioCtx,
+    bgmMenu: state.bgmMenu,
+    bgm1: state.bgm1,
+    bgm2: state.bgm2,
+    soundOn: state.soundOn
+  };
+  Object.assign(state, JSON.parse(JSON.stringify(checkpoint.state)), audioState);
+  tutorialSystem.validation = JSON.parse(JSON.stringify(checkpoint.validation));
+  tutorialSystem.stepIndex = checkpoint.stepIndex;
+  tutorialSystem.completed = false;
+  tutorialSystem.busy = false;
+  tutorialSystem.mobileHudHandMask = false;
+  tutorialSystem.statusText = 'Paso restaurado. Sigue de nuevo la indicación resaltada.';
+  tutorialSystem.completionLock = false;
+  clearCompactDraftPlacements(false);
+  clearMobileSpriteDraftPlacements(false);
+  resetTutorialPrimerReveal({ clearPending:false });
+  tutorialBotState.panelDismissedKey = '';
+  tutorialBotState.lastMessageKey = '';
+  tutorialSystem.restoringCheckpoint = false;
+  addToast('Paso restaurado', 'ok');
+  render();
+}
+
 function getResolvedTutorialPanelActions(step){
   const actions = Array.isArray(step?.panelActions) ? [...step.panelActions] : [];
   if(step?.id === 'academy-definition' && !actions.length && !tutorialSystem.validation.academyDefinitionAck){
@@ -46370,6 +46504,13 @@ function getResolvedTutorialPanelActions(step){
       label: 'Entendido',
       kind: 'primary',
       onClick: academyAcknowledgeDefinitionStep
+    });
+  }
+  if(canRepeatCurrentTutorialStep(step)){
+    actions.push({
+      label: 'Repetir este paso',
+      kind: 'secondary',
+      onClick: repeatCurrentTutorialStep
     });
   }
   return actions;
@@ -46447,7 +46588,7 @@ function updateHints(){
       tutorialPanel.classList.remove('hint-faded');
     }
     if(tutorialPanelTitle) tutorialPanelTitle.textContent = step ? step.title : 'Tutorial guiado';
-    if(tutorialPanelText) tutorialPanelText.innerHTML = step ? step.body : 'Preparando escenario guiado.';
+    if(tutorialPanelText) tutorialPanelText.innerHTML = step ? `${step.body || ''}${getTutorialRouteProgressHtml(step)}` : 'Preparando escenario guiado.';
     if(tutorialPanelTip) tutorialPanelTip.textContent = step ? step.tip : 'Sigue las instrucciones paso a paso.';
     if(tutorialPanelObjective) tutorialPanelObjective.innerHTML = step
       ? (tutorialSystem.mode === 'academy' ? step.objective : `<strong>Objetivo actual:</strong> ${step.objective}`)
@@ -48691,6 +48832,8 @@ function resetTutorialSession(){
   tutorialSystem.cards = { ...TUTORIAL_CARD_IDS };
   tutorialSystem.primerScenarioReady = false;
   tutorialSystem.primerCardCache = {};
+  tutorialSystem.stepCheckpoint = null;
+  tutorialSystem.restoringCheckpoint = false;
   Object.keys(tutorialSystem.validation).forEach(key => {
     tutorialSystem.validation[key] = false;
   });
@@ -48972,6 +49115,7 @@ function syncTutorialVisualTargets(){
   document.querySelectorAll('.tutorial-focus').forEach(el => el.classList.remove('tutorial-focus'));
   document.querySelectorAll('.tutorial-zone-focus').forEach(el => el.classList.remove('tutorial-zone-focus'));
   document.querySelectorAll('.tutorial-button-focus').forEach(el => el.classList.remove('tutorial-button-focus'));
+  document.querySelectorAll('.tutorial-next-action').forEach(el => el.classList.remove('tutorial-next-action'));
 
   if(!tutorialSystem.enabled) return;
   const step = tutorialGetCurrentStep();
@@ -48986,10 +49130,13 @@ function syncTutorialVisualTargets(){
       if(el) el.classList.add('tutorial-zone-focus');
     });
   });
-  (step.highlightButtons || []).forEach(id => {
+  (step.highlightButtons || []).forEach((id, index) => {
     tutorialResolveHighlightButtonIds(id).forEach(targetId => {
       const el = document.getElementById(targetId);
-      if(el) el.classList.add('tutorial-button-focus');
+      if(el){
+        el.classList.add('tutorial-button-focus');
+        if(index === 0) el.classList.add('tutorial-next-action');
+      }
     });
     if(id==='actionAddBtn'){
       document.querySelectorAll(`.quick-modify-btn[data-quick-modify="${state.currentPlayer}"]`).forEach(btn => btn.classList.add('tutorial-button-focus'));
@@ -49042,6 +49189,7 @@ function tutorialSetStep(index, options = {}){
   if(step && typeof step.onEnter === 'function'){
     step.onEnter(step, options);
   }
+  if(!tutorialSystem.restoringCheckpoint) captureTutorialStepCheckpoint(step);
   if(renderNow) render();
 }
 
@@ -50747,6 +50895,17 @@ function academyPrepareLesson11(){
   academyRefreshPlayers();
 }
 
+function academyAnswerFinalCheck(correct, nextStepId, successText){
+  if(!correct){
+    addToast('Casi. Revisa la explicación y prueba otra respuesta.', 'warn');
+    playUiSound('error');
+    return;
+  }
+  addToast(successText, 'ok');
+  playUiSound('confirm');
+  tutorialGoToStep(nextStepId);
+}
+
 const ACADEMY_LESSONS = [
   {
     id: 'academy-1',
@@ -51305,6 +51464,51 @@ const ACADEMY_LESSONS = [
     successText: 'La academia queda cerrada tras ganar una partida completa: ya puedes abrir, descargar o imprimir tu carnet PoCoBOT personalizado.',
     prepare: academyPrepareLesson11,
     script: [
+      {
+        id: 'academy-final-build-check',
+        title: 'Fase 11 · Prueba rápida 1/3',
+        body: 'Antes del combate libre, comprueba que sabes cuándo termina el montaje.',
+        objective: 'Elige qué necesita un PoCoBOT para llegar al <strong>100%</strong>.',
+        tip: 'Piensa en el núcleo, el total de cartas y el palo que exige el piloto.',
+        allowedButtons: ['clearSelectionBtn'],
+        allowedCardIds: [],
+        highlightButtons: [],
+        highlightZones: ['core-zone-0', 'module-box-attack-0', 'module-box-defense-0', 'module-box-armor-0'],
+        panelActions: [
+          { label:'Piloto + 6 Stats + condición de palo', kind:'primary', onClick:() => academyAnswerFinalCheck(true, 'academy-final-turn-check', 'Montaje comprendido') },
+          { label:'Solo reunir 6 cartas', kind:'secondary', onClick:() => academyAnswerFinalCheck(false) }
+        ]
+      },
+      {
+        id: 'academy-final-turn-check',
+        title: 'Fase 11 · Prueba rápida 2/3',
+        body: 'Ya estás al mando. Algunas decisiones consumen el turno y una consulta importante no lo hace.',
+        objective: '¿Qué puedes abrir cuando quieras <strong>sin gastar turno</strong>?',
+        tip: 'Ahí consultas el núcleo, los módulos y el combustible.',
+        allowedButtons: ['clearSelectionBtn'],
+        allowedCardIds: [],
+        highlightButtons: [],
+        highlightZones: [],
+        panelActions: [
+          { label:'PANEL de Stats', kind:'primary', onClick:() => academyAnswerFinalCheck(true, 'academy-final-attack-check', 'Consulta libre comprendida') },
+          { label:'ACCIONES', kind:'secondary', onClick:() => academyAnswerFinalCheck(false) }
+        ]
+      },
+      {
+        id: 'academy-final-attack-check',
+        title: 'Fase 11 · Prueba rápida 3/3',
+        body: 'Última comprobación antes de dejarte pilotar sin instrucciones carta por carta.',
+        objective: 'Elige el orden correcto de un <strong>ataque normal</strong>.',
+        tip: 'El combustible sostiene hasta el doble de su valor en picas.',
+        allowedButtons: ['clearSelectionBtn'],
+        allowedCardIds: [],
+        highlightButtons: [],
+        highlightZones: ['fuel-zone-0', 'module-box-attack-0'],
+        panelActions: [
+          { label:'ACCIONES → Atacar → Fuel → Picas → Confirmar', kind:'primary', onClick:() => academyAnswerFinalCheck(true, 'academy-short-fight', 'Secuencia de ataque comprendida') },
+          { label:'Picas → PANEL → Pasar', kind:'secondary', onClick:() => academyAnswerFinalCheck(false) }
+        ]
+      },
       {
         id: 'academy-short-fight',
         title: 'Fase 11 · Combate completo',
