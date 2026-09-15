@@ -10838,6 +10838,18 @@ body.dev-mobile-panorama-emulation .attack-special-popup-overlay{
   color: var(--ok);
   letter-spacing: 0.1em;
   font-family: 'Courier New', monospace;
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+  cursor: text;
+}
+
+#olCopyRoomCodeBtn {
+  width: auto;
+  min-width: 150px;
+  margin-top: 9px;
+  padding: 8px 14px;
+  font-size: 0.78rem;
 }
 
 #olStatus {
@@ -31323,6 +31335,7 @@ body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobil
     <div id="olRoomCodeDisplay" class="ol-hidden">
       <span id="olRoomCodeLabel">Comparte este código con tu rival:</span>
       <div id="olRoomCodeSpan">----</div>
+      <button id="olCopyRoomCodeBtn" class="ol-button ol-secondary" type="button">Copiar código</button>
     </div>
 
     <div class="ol-button-group">
@@ -32808,7 +32821,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260915-figure-guide-target-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260915-lower-hand-help-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -54107,6 +54120,35 @@ function olSetStatus(msg, isError) {
   el.classList.remove('ol-hidden');
 }
 
+async function olCopyRoomCode(){
+  const codeNode = document.getElementById('olRoomCodeSpan');
+  const button = document.getElementById('olCopyRoomCodeBtn');
+  const code = (codeNode?.textContent || '').trim();
+  if(!code || code === '----') return;
+  let copied = false;
+  if(navigator.clipboard?.writeText && window.isSecureContext){
+    try{
+      await navigator.clipboard.writeText(code);
+      copied = true;
+    }catch(_err){}
+  }
+  if(!copied && codeNode){
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(codeNode);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    try{ copied = document.execCommand('copy'); }catch(_err){}
+  }
+  if(copied){
+    if(button) button.textContent = 'Copiado';
+    olSetStatus(`Código ${code} copiado. Envíalo a tu rival.`);
+    window.setTimeout(() => { if(button) button.textContent = 'Copiar código'; }, 1600);
+  }else{
+    olSetStatus('Código seleccionado. Mantén pulsado y elige Copiar.');
+  }
+}
+
 // Botón ONLINE en el menú principal
 console.log('[DEBUG] Registrando listener para olEnterBtn');
 var olEnterBtnElement = document.getElementById('olEnterBtn');
@@ -54165,6 +54207,8 @@ document.getElementById('olJoinRoomBtn').addEventListener('click', function() {
 });
 
 document.getElementById('olLoadRoomBtn').addEventListener('click', requestOnlineLobbyLoadGame);
+
+document.getElementById('olCopyRoomCodeBtn').addEventListener('click', olCopyRoomCode);
 
 document.getElementById('olBackBtn').addEventListener('click', returnToMainMenu);
 

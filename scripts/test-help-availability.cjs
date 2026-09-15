@@ -66,6 +66,7 @@ for(const engine of [chromium,webkit]) test(`${engine.name()} panel question but
    const handBounds=await hud.locator('[data-hand-overview-toggle]').boundingBox();
    const helpBounds=await button.boundingBox();
    assert.ok(helpBounds.x>=handBounds.x+handBounds.width,'Question is to the right of Mano');
+   if(size.width>size.height) assert.ok(helpBounds.y>=handBounds.y-1,'Question sits below the Panel row and aligns with Mano');
    assert.equal(await hud.locator('[data-hand-overview-toggle]').evaluate(el=>el.scrollWidth<=el.clientWidth),true,'Mano label fits');
    const actionBounds=await hud.locator('[data-action-toggle]').boundingBox();
    assert.ok(helpBounds.x+helpBounds.width<=actionBounds.x || helpBounds.y+helpBounds.height<=actionBounds.y,'Help and Actions do not overlap');
