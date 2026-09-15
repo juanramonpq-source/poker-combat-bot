@@ -6035,17 +6035,32 @@
       font: inherit;
       cursor: pointer;
     }
-    .drawer-head { grid-template-columns: minmax(0, 1fr) 44px auto; }
-    .drawer-help {
+    .hand-help {
+      flex: 0 0 44px;
       width: 44px; height: 44px; padding: 0; border: 2px solid #ffe9aa; border-radius: 50%;
       color: #10273b; background: linear-gradient(#fff0ae, #ffc842 70%, #d89216);
       box-shadow: 0 3px 0 #75470d, 0 0 9px #ffdf6b55;
       font: 900 26px/1 system-ui, sans-serif; cursor: pointer; pointer-events: auto;
     }
-    .drawer-help:focus-visible { outline: 3px solid #74fff2; outline-offset: 3px; }
-    .drawer-help:active { transform: translateY(1px); }
+    .hand-help:focus-visible { outline: 3px solid #74fff2; outline-offset: 3px; }
+    .hand-help:active { transform: translateY(1px); }
     @media (orientation: landscape) and (max-height: 900px) {
-      .landscape-mecha-strip { padding-right: 90px; }
+      .hand-tray header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 44px auto;
+        gap: 4px;
+      }
+      .hand-tray header .hand-title-button {
+        min-width: 0;
+        padding: 5px 4px;
+        font-size: clamp(14px, 1.8vw, 22px);
+        white-space: nowrap;
+      }
+      .hand-tray header .action-hub { position: relative; inset: auto; }
+    }
+    @media (orientation: landscape) and (max-width: 740px) {
+      .hand-tray header .actions-button { min-width: 74px; padding: 5px 4px; font-size: 11px; }
+      .hand-tray header .actions-button::before, .hand-tray header .actions-button::after { display: none; }
     }
     .reference-dialog {
       width: min(640px, calc(100vw - 24px));
@@ -6216,7 +6231,6 @@
           <h2 data-drawer-title>Paneles de montaje</h2>
           <p data-drawer-subtitle>Arrastra cartas de la mano a núcleo, ataque, defensa, armadura o fuel.</p>
         </div>
-        <button class="drawer-help" type="button" data-reference="help" data-panel-help aria-label="¿Qué puedo hacer en esta jugada?" title="¿Qué puedo hacer en esta jugada?">?</button>
         <button class="drawer-close" type="button" data-board-close aria-label="Cerrar panel">×</button>
       </header>
       <div class="zone-grid" data-zone-grid></div>
@@ -6230,6 +6244,7 @@
     <section class="hand-tray" aria-label="Mano">
       <header>
         <button class="hand-title-button" type="button" data-hand-overview-toggle aria-expanded="false">▱ Mano</button>
+        <button class="hand-help" type="button" data-reference="help" data-panel-help aria-label="¿Qué puedo hacer en esta jugada?" title="¿Qué puedo hacer en esta jugada?">?</button>
         <div class="action-hub" aria-label="Acciones de partida">
           <button class="actions-button" type="button" data-action-toggle aria-expanded="false">Acciones</button>
           <div class="action-wheel" role="menu">
@@ -9563,6 +9578,7 @@
       touchDrag.ghost = makeTouchDragGhost(touchDrag.source);
       touchDrag.source.classList.add("is-touch-dragging");
       touchDrag.active = true;
+      if (touchDrag.fromOverview) closeHandOverview();
       moveTouchDragGhost(event.clientX, event.clientY);
       return true;
     }
@@ -9615,7 +9631,7 @@
     function startTouchCardDrag(event) {
       if (!isTouchPointer(event)) return;
       const cardNode = event.target.closest?.(".card");
-      if (!cardNode || !cardNode.closest("[data-hand-cards]") || cardNode.disabled) return;
+      if (!cardNode || !cardNode.closest("[data-hand-cards], [data-hand-overview-cards]") || cardNode.disabled) return;
       const cardId = cardNode.dataset.cardId;
       const found = cardId ? findCard(cardId) : null;
       if (!found || found.player !== state.players[0] || found.zone !== "hand") return;
@@ -9627,6 +9643,7 @@
         pointerId: event.pointerId,
         cardId,
         source: cardNode,
+        fromOverview: !!cardNode.closest("[data-hand-overview-cards]"),
         startX: event.clientX,
         startY: event.clientY,
         moved: false,
@@ -9700,15 +9717,17 @@
         const releaseDistance = Math.hypot((event.clientX || drag.startX) - drag.startX, (event.clientY || drag.startY) - drag.startY);
         const tappedHandCard = !cancelled
           && drag.source
-          && drag.source.closest("[data-hand-cards]")
+          && drag.source.closest("[data-hand-cards], [data-hand-overview-cards]")
           && drag.cardId
           && (!drag.moved || releaseDistance <= 3);
         if (tappedHandCard) {
-          suppressCardClickUntil = Date.now() + 250;
+          event.preventDefault();
           closeActions();
           toggleSelected(drag.cardId);
         }
         flushDeferredRealGameSnapshot();
+        // Start the click guard after the parent has rendered, including on slow devices.
+        if (tappedHandCard) suppressCardClickUntil = Date.now() + 420;
         return tappedHandCard;
       }
       event.preventDefault();
@@ -9717,7 +9736,7 @@
         ? null
         : resolveDropZoneAtPoint(event.clientX, event.clientY);
       let targetZone = isZoneLegalDrop(dropZone, drag.cardId) ? dropZone.dataset.zone : "";
-      if (!targetZone && drag.lastValidZone) {
+      if (!cancelled && !drag.fromOverview && !targetZone && drag.lastValidZone) {
         const legalFallback = EMBEDDED_REAL_GAME
           ? getRealGameLegalZones(drag.cardId).includes(drag.lastValidZone)
           : isZoneLegalDrop(document.querySelector(`.drop-zone[data-zone="${drag.lastValidZone}"]`), drag.cardId);
@@ -10054,16 +10073,16 @@
       if (button?.dataset.helpGuide) { startHelpGuide(button.dataset.helpGuide); return; }
       if (event.target.closest('[data-reference-dialog]')) return;
       const overviewCard = event.target.closest(".hand-overview .card[data-card-id]");
+      if (button?.dataset.cardId && Date.now() < suppressCardClickUntil) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       if (overviewCard && shell.classList.contains("hand-overview-open")) {
         event.preventDefault();
         event.stopPropagation();
         closeActions();
         toggleSelected(overviewCard.dataset.cardId);
-        return;
-      }
-      if (button?.dataset.cardId && Date.now() < suppressCardClickUntil) {
-        event.preventDefault();
-        event.stopPropagation();
         return;
       }
       if (
@@ -10187,6 +10206,7 @@
       event.dataTransfer.setData("text/plain", draggedCardId);
       event.dataTransfer.effectAllowed = "move";
       updateDropHints(draggedCardId);
+      if (card.closest("[data-hand-overview-cards]")) closeHandOverview();
     });
 
     document.addEventListener("dragover", (event) => {

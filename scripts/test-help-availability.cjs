@@ -53,17 +53,25 @@ for(const engine of [chromium,webkit]) test(`${engine.name()} panel question but
  try{
   const page=await browser.newPage({viewport:{width:393,height:790},hasTouch:true,isMobile:true,reducedMotion:'reduce'});page.setDefaultTimeout(20000);
   await page.goto(`${base}/poker_combat_bot_ONLINE.html`);await page.waitForFunction(()=>window.__pocobotDev);
-  await page.evaluate(()=>{__pocobotDev.boot();__pocobotDev.setSoundEnabled(false);__pocobotDev.setViewportMode('mobile-vertical');state.players[0].flags.figureBurstPromptShown=true;render();});
+  await page.evaluate(()=>{__pocobotDev.boot();__pocobotDev.setSoundEnabled(false);__pocobotDev.setViewportMode('mobile-vertical');state.players[0].flags.figureBurstPromptShown=true;state.players[0].hand=['spades','hearts','clubs'].flatMap(suit=>['2','3','4','5','J','Q'].map(rank=>devMakeCard(rank,suit)));render();});
   const hud=page.frameLocator('#mobileSpriteBridgeFrame');
-  for(const size of [{width:375,height:667},{width:393,height:790},{width:768,height:1024},{width:844,height:390},{width:1024,height:768}]){
+  for(const size of [{width:375,height:667},{width:393,height:790},{width:768,height:1024},{width:667,height:375},{width:844,height:390},{width:1024,height:768}]){
    await page.setViewportSize(size);
    if(!await hud.locator('.phone-shell').evaluate(el=>el.classList.contains('board-open')))await hud.locator('[data-tab="mecha"]').tap();
    await page.waitForTimeout(250); // Let the panel's opening transform finish before measuring hit targets.
    const button=hud.locator('[data-panel-help]');assert.equal(await button.count(),1);
    assert.equal(await button.textContent(),'?');
+   assert.equal(await button.evaluate(el=>el.previousElementSibling?.hasAttribute('data-hand-overview-toggle')),true,'Help follows Mano');
+   assert.equal(await hud.locator('.drawer-head [data-panel-help]').count(),0);
+   const handBounds=await hud.locator('[data-hand-overview-toggle]').boundingBox();
+   const helpBounds=await button.boundingBox();
+   assert.ok(helpBounds.x>=handBounds.x+handBounds.width,'Question is to the right of Mano');
+   assert.equal(await hud.locator('[data-hand-overview-toggle]').evaluate(el=>el.scrollWidth<=el.clientWidth),true,'Mano label fits');
+   const actionBounds=await hud.locator('[data-action-toggle]').boundingBox();
+   assert.ok(helpBounds.x+helpBounds.width<=actionBounds.x || helpBounds.y+helpBounds.height<=actionBounds.y,'Help and Actions do not overlap');
    const bounds=await button.evaluate(el=>{const r=el.getBoundingClientRect();const overlap=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;return {width:r.width,height:r.height,uncovered:el.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)),collisions:[...document.querySelectorAll('.zone-grid,.fuel-dock,.drawer-foot,[data-board-close]')].filter(x=>overlap(r,x.getBoundingClientRect())).length};});
-   assert.ok(bounds.width>=44&&bounds.height>=44);assert.ok(bounds.uncovered);assert.equal(bounds.collisions,0);
    await page.screenshot({path:`test-results/help-availability-20260915/${engine.name()}-question-${size.width}.png`});
+   assert.ok(bounds.width>=44&&bounds.height>=44);assert.ok(bounds.uncovered,`${size.width}: help covered by ${await button.evaluate(el=>{const r=el.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.outerHTML.slice(0,240);})}`);assert.equal(bounds.collisions,0);
    const before=await page.evaluate(()=>JSON.stringify({players:state.players,selected:state.selected,turn:state.turnCount}));
    await button.tap();await hud.locator('[data-help-blocked]').waitFor();
    assert.equal(await hud.locator('[data-reference-dialog]').evaluate(el=>el.open),true);
