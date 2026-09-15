@@ -80,6 +80,33 @@ for(const engine of [chromium,webkit]) test(`${engine.name()} panel question but
   }
  }finally{await browser.close();}
 });
+
+for(const engine of [chromium,webkit]) test(`${engine.name()} figure exchange guide highlights its visible button`,async()=>{
+ const browser=await engine.launch();
+ try{
+  const page=await browser.newPage({viewport:{width:393,height:790},hasTouch:true,isMobile:true,reducedMotion:'reduce'});page.setDefaultTimeout(20000);
+  await page.goto(`${base}/poker_combat_bot_ONLINE.html`);await page.waitForFunction(()=>window.__pocobotDev);
+  await page.evaluate(()=>{
+   __pocobotDev.boot();__pocobotDev.setSoundEnabled(false);__pocobotDev.setViewportMode('mobile-vertical');
+   state.transitionLock=false;state.players[0].flags.figureBurstPromptShown=true;
+   state.players[0].hand=[devMakeCard('J','spades'),devMakeCard('Q','hearts'),devMakeCard('4','diamonds')];render();
+  });
+  const hud=page.frameLocator('#mobileSpriteBridgeFrame');
+  for(const size of [{width:393,height:790},{width:844,height:390}]){
+   await page.setViewportSize(size);
+   if(await hud.locator('[data-menu-toggle]').isVisible()) await hud.locator('[data-menu-toggle]').tap();
+   await hud.locator('[data-reference="help"]:visible').first().tap();
+   const figures=hud.locator('[data-help-option="figures"]');
+   await figures.locator('summary').tap();await figures.locator('[data-help-guide]').tap();
+   assert.equal(await hud.locator('.phone-shell').evaluate(el=>el.classList.contains('actions-open')),false,'Guide keeps Actions closed');
+   const highlighted=hud.locator('[data-action="figures"].help-next-target:visible');
+   assert.ok(await highlighted.count()>0,'Visible figure exchange button is highlighted');
+   assert.equal(await highlighted.first().evaluate(el=>{const r=el.getBoundingClientRect();return r.top>=0&&r.left>=0&&r.bottom<=innerHeight&&r.right<=innerWidth&&el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),true,'Highlighted button is on screen and reachable');
+   await hud.locator('[data-panel-help]').tap();await hud.locator('[data-reference-close]').tap();
+  }
+ }finally{await browser.close();}
+});
+
 for(const engine of [chromium,webkit]) test(`${engine.name()} attack help requires enough installed fuel`,async()=>{
  const browser=await engine.launch();try{
   const page=await browser.newPage();await page.goto(`${base}/poker_combat_bot_ONLINE.html`);await page.waitForFunction(()=>window.__pocobotDev);

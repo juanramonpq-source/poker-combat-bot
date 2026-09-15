@@ -9195,7 +9195,7 @@
       const selectors = {
         hand:'[data-hand-cards]', 'hand-diamonds':'[data-hand-cards] .card, .hand-overview .card',
         fuel:'.zone-fuel .card, .zone-armor .card', attack:'.zone-attack .card',
-        modify:'[data-drawer-primary]'
+        modify:'[data-drawer-primary]', figures:'[data-figures-hand], [data-figures-quick]'
       };
       if (state.pendingDefense?.defenderIndex === 0) {
         selectors.defend = selectors.confirm = '[data-defense-popup].show [data-defense-action="confirm"]';

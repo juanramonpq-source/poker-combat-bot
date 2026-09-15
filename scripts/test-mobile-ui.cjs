@@ -65,7 +65,7 @@ for (const engine of [chromium, webkit]) {
       await page.evaluate(()=>{state.players[0].hand=[]; render();});
       assert.equal(await page.evaluate(()=>getInGameHelpPayload(0).options.find(o=>o.id==='pass').available),true);
       await page.evaluate(()=>{state.players[0].hand=[devMakeCard('4','diamonds')]; state.transitionLock=true; state.pendingDefense={attackerIndex:1,defenderIndex:0,totalAttack:12}; render();});
-      assert.deepEqual(await page.evaluate(()=>getInGameHelpPayload(0).options.map(o=>o.id)),['defend','skip-defense','log']);
+      assert.deepEqual(await page.evaluate(()=>getInGameHelpPayload(0).options.map(o=>o.id)),['defend','skip-defense']);
       await hud.locator('[data-menu-toggle]').tap(); await hud.locator('.top-menu [data-reference="help"]').tap();
       await hud.locator('[data-help-option="defend"] summary').tap();
       assert.match(await hud.locator('[data-help-option="defend"]').textContent(),/12/);
