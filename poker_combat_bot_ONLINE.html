@@ -32808,7 +32808,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260915-mobile-layout-touch-2';
+const MOBILE_SPRITE_HUD_VERSION = '20260915-mobile-help-tablet-3';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -42615,9 +42615,74 @@ function getMobileSpriteTutorialPayload(){
   };
 }
 
+// Read-only advice shared by normal gameplay and the mobile reference sheet.
+// Guided lessons retain their own objectives and validation.
+function getInGameHelpPayload(viewIdx = getMobileSpritePlayerIndex()){
+  const player = state.players?.[viewIdx];
+  if(!player) return { title:'Preparando partida', text:'Espera a que se repartan las cartas.', topics:[] };
+  const stats = playerStatsList(player);
+  const pilot = player.core.pilot;
+  const missing = [];
+  if(!pilot || !isFigureCard(pilot) || pilot.suit === 'diamonds') missing.push('un piloto J, Q o K de ♠, ♥ o ♣');
+  if(stats.length < 6) missing.push(`${6 - stats.length} carta(s) más entre ataque, defensa y armadura`);
+  for(const [zone, label] of [['attack','ataque ♠'], ['defense','defensa ♥'], ['armor','armadura ♣']]){
+    if(!player[zone].length) missing.push(`al menos 1 carta de ${label}`);
+  }
+  if(pilot && pilot.suit !== 'diamonds' && countSuit(stats, pilot.suit) < 3){
+    missing.push(`${3 - countSuit(stats, pilot.suit)} carta(s) más del palo del piloto en los módulos`);
+  }
+  const limits = getModuleLimits(player);
+  const ready = canPlayerOpenMainAttack(player, viewIdx);
+  const selected = getAttackSelection();
+  const capacity = `Mano: ${player.hand.length}/${MAX_HAND_SIZE}. Las cartas robadas que excedan ${MAX_HAND_SIZE} irán al descarte.`;
+  let title = ready ? 'Mecha preparado' : 'Qué falta para atacar';
+  let text = ready
+    ? 'Abre Acciones → Atacar. Selecciona combustible instalado y después picas del panel; revisa Fuel ×2 antes de confirmar.'
+    : `Te falta: ${missing.join('; ')}. Abre Mi mecha para montarlo.`;
+  let tip = `Puedes modificar hasta ${getModifyOpsLimit()} cartas en este turno. Aplicar cambios confirma el montaje y termina tu turno.`;
+  if(state.winner){
+    title = 'Fin de partida'; text = 'Consulta el Registro para revisar los últimos movimientos y el resultado del combate.';
+  }else if(state.pendingDefense){
+    const pending = state.pendingDefense;
+    title = pending.defenderIndex === viewIdx ? 'Te están atacando' : 'El rival decide su defensa';
+    text = pending.defenderIndex === viewIdx
+      ? `Ataque entrante: ${pending.totalAttack}. Elige un ♦ numérico (2–10) de tu mano y confirma: resta su valor al ataque. También puedes pulsar No defender.`
+      : `Ataque enviado: ${pending.totalAttack}. Espera a que el rival use un diamante o acepte el impacto.`;
+    tip = 'La defensa utiliza un diamante de la mano, no del panel de combustible. El As no sirve para esta respuesta.';
+  }else if(state.currentPlayer !== viewIdx || state.transitionLock){
+    title = 'Espera a que termine la jugada';
+    text = 'Puedes consultar esta ayuda y el Registro mientras se resuelve la acción. La interfaz habilitará tus acciones cuando corresponda.';
+  }else if(mobileSpriteProjectileOnlyMode){
+    title = 'Disparo de proyectil'; text = 'Selecciona una pica numérica instalada y confirma el disparo. No consume combustible; la pica disparada se descarta.';
+  }else if(state.attackMode){
+    title = 'Calcula este ataque';
+    text = `Combustible seleccionado: ${selected.fuelValue} × 2 = ${selected.limit}. Picas del ataque principal: ${selected.mainValue}. `;
+    text += !selected.fuelCards.length ? 'Selecciona primero combustible instalado.'
+      : !selected.mainAttackCards.length ? 'Ahora selecciona las picas que quieres usar.'
+      : selected.mainValue > selected.limit ? `Superas el límite en ${selected.mainValue - selected.limit}: añade combustible o desmarca picas.`
+      : 'El ataque principal cabe dentro del límite de combustible. Revisa la selección y pulsa Confirmar.';
+    tip = state.projectileMode
+      ? `La última pica seleccionada es el proyectil (${selected.projectileValue}); va separado del límite Fuel ×2 y se descarta al dispararlo.`
+      : 'Solo se consume el combustible seleccionado. Limpiar selección desmarca las cartas sin gastarlas.';
+  }else if(mobileSpriteDraftPlacements.size && mobileSpriteDraftOwnerIdx === viewIdx){
+    title = 'Montaje pendiente';
+    text = `Tienes ${mobileSpriteDraftPlacements.size}/${getModifyOpsLimit()} cambio(s) preparados. Revisa sus destinos y pulsa Aplicar cambios. Limpiar selección cancela el borrador.`;
+  }
+  const topics = [
+    { title:'Montar y desbloquear el ataque', text:`Necesitas piloto J/Q/K de ♠, ♥ o ♣; 6 cartas entre ataque, defensa y armadura; al menos 1 en cada módulo y 3 del palo del piloto. ${ready ? 'Tu mecha cumple las condiciones de ataque de esta partida.' : `Ahora falta: ${missing.join('; ')}.`} Arrastra desde la mano al destino iluminado. Modificar o Aplicar cambios confirma hasta ${getModifyOpsLimit()} cambios y termina el turno.` },
+    { title:'Capacidad, núcleo y combustible', text:`Límites actuales: ataque ${limits.attack.max}, defensa ${limits.defense.max}, armadura ${limits.armor.max}. El piloto, el copiloto y el As de boost determinan las ampliaciones; consulta los contadores de cada panel. Los ♦ numéricos se instalan como combustible. ${hasDiamondBoosterArmorFuel(player) ? 'Tu boost ♦ permite consumir armadura como combustible; hacerlo reduce tu protección.' : 'El combustible instalado se usa para el ataque, no para robar ni para la defensa activa.'}` },
+    { title:'Fuel ×2 y proyectiles', text:`Suma el valor del combustible seleccionado y multiplícalo por 2: ese es el máximo de las picas del ataque principal. Por ejemplo, fuel 4 permite hasta 8 de ataque. El combustible seleccionado se consume. ${state.projectileUnlocked ? 'Los proyectiles ya están desbloqueados.' : 'Los proyectiles se desbloquean después del primer ataque completo.'} En modo proyectil, la última pica seleccionada se dispara aparte y se descarta. Solo proyectil no necesita fuel.` },
+    { title:'Defender un ataque', text:'Al recibir un ataque, puedes gastar exactamente un ♦ numérico (2–10) de la mano para reducir el ataque por su valor. Pulsa Elegir 1♦, toca la carta y confirma la defensa, o elige No defender. El As no sirve como defensa activa.' },
+    { title:'Robar y cambiar 2 figuras por 4 cartas', text:`Para robar, selecciona un ♦ numérico de la mano y pulsa Robar: gastas la carta y robas tantas como su valor, hasta agotar el mazo. No puedes repetir este robo en dos turnos propios seguidos. ${player.flags.lastOwnAction === 'diamondDraw' ? 'Ya lo usaste en tu turno anterior.' : ''} Con piloto, copiloto y al menos 2 figuras en la mano, 2 Figuras → 4 Cartas descarta automáticamente las dos primeras J/Q/K de tu mano y roba hasta 4. Ambas acciones terminan el turno. ${capacity}` },
+    { title:'Pasar, cancelar y revisar la partida', text:`Para pasar, selecciona ${Math.min(2, player.hand.length)} carta(s) de la mano y pulsa Pasar: se descartan y termina tu turno. Limpiar selección permite empezar de nuevo antes de confirmar. Registro completo muestra los últimos 20 eventos, con el más reciente primero. Abrir o cerrar esta ayuda no juega cartas ni reinicia la partida; el rival puede seguir resolviendo su turno.` }
+  ];
+  return { title, text, tip, meta:capacity, html:'', actions:[], topics };
+}
+
 function getMobileSpriteGuidanceText(){
   const guidedTutorial = getMobileSpriteTutorialPayload();
   if(guidedTutorial) return guidedTutorial;
+  if(state.tutorial && !state.storyMission) return getInGameHelpPayload();
   const tutorialTitle = document.getElementById('compactTutorialBoxTitle')?.textContent?.trim() || '';
   const tutorialText = document.getElementById('compactTutorialBoxText')?.textContent?.trim() || '';
   const tutorialMeta = document.getElementById('compactTutorialBoxMeta')?.textContent?.trim() || '';
@@ -42712,6 +42777,7 @@ function createMobileSpriteSnapshot(){
     bridgeTutorialHtml: tutorialBotExternalSequenceOverlay ? '' : (guidance.html || ''),
     bridgeTutorialMeta: tutorialBotExternalSequenceOverlay ? '' : guidance.meta,
     bridgeTutorialActions: tutorialBotExternalSequenceOverlay ? [] : (guidance.actions || []),
+    inGameHelp: getInGameHelpPayload(viewIdx),
     tutorialBotVisible: mobileTutorialBotVisible,
     tutorialBotMode,
     tutorialBotSequenceOnly,
@@ -46897,18 +46963,19 @@ function updateHints(){
     return;
   }
 
-  const stepText = tutorialSteps[Math.min(state.tutorialStep, tutorialSteps.length-1)];
+  const liveHelp = getInGameHelpPayload();
+  const stepText = liveHelp.text;
   if(mainHint) mainHint.innerHTML = `🎓 ${stepText}`;
   if(attackHint) attackHint.innerHTML = stepText;
   if(attackSubHint) attackSubHint.textContent = hasDiamondBoosterArmorFuel(state.players[state.currentPlayer] || {}) ? `${getArmorFuelBoosterLabel(state.players[state.currentPlayer] || {})} activo: puedes consumir ♣ armadura como combustible, pero no amplía ningún módulo.` : 'La consola se ilumina solo cuando una acción es legal.';
-  if(tutorialPanelTitle) tutorialPanelTitle.textContent = 'Tutorial activo';
+  if(tutorialPanelTitle) tutorialPanelTitle.textContent = liveHelp.title;
   if(tutorialPanelText) tutorialPanelText.textContent = stepText;
-  if(tutorialPanelTip) tutorialPanelTip.textContent = hasDiamondBoosterArmorFuel(state.players[state.currentPlayer] || {}) ? `${getArmorFuelBoosterLabel(state.players[state.currentPlayer] || {})} activo: puedes consumir ♣ armadura como combustible, pero eso puede desmontar parte del mecha tras el disparo.` : 'Consejo clave: hasta que el cuadro de bloqueo del piloto no deje de estar en rojo, ese mecha no podrá iniciar el combate.';
+  if(tutorialPanelTip) tutorialPanelTip.textContent = liveHelp.tip;
   if(tutorialPanelObjective) tutorialPanelObjective.textContent = 'Objetivo: interpretar la situación del tablero y elegir una acción legal.';
-  if(tutorialPanelStep) tutorialPanelStep.textContent = `Ayuda ${Math.min(state.tutorialStep + 1, tutorialSteps.length)}/${tutorialSteps.length}`;
+  if(tutorialPanelStep) tutorialPanelStep.textContent = 'Ayuda de esta jugada';
   if(tutorialPanelMode) tutorialPanelMode.textContent = 'Contextual';
   if(tutorialPanelMeterFill) tutorialPanelMeterFill.style.width = `${tutorialGetContextualProgressPercent()}%`;
-  if(tutorialPanelFocus) tutorialPanelFocus.textContent = 'Usa estas ayudas como brújula visual: no bloquean acciones, solo priorizan lo importante.';
+  if(tutorialPanelFocus) tutorialPanelFocus.textContent = liveHelp.meta;
   if(tutorialPanelStatus) tutorialPanelStatus.textContent = 'Estas ayudas no bloquean acciones: solo te orientan.';
 }
 

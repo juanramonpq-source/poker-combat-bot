@@ -24,6 +24,94 @@ async function withPage(engine, viewport, run) {
 }
 
 for (const engine of [chromium, webkit]) {
+  test(`${engine.name()} live help follows the game and preserves the turn`, async () => {
+    await withPage(engine, { width: 820, height: 1180 }, async page => {
+      await page.goto(`${baseURL}/poker_combat_bot_ONLINE.html`);
+      await page.waitForFunction(() => !!window.__pocobotDev);
+      await page.evaluate(() => {
+        window.__pocobotDev.boot();
+        window.__pocobotDev.setSoundEnabled(false);
+        window.__pocobotDev.setViewportMode('mobile-vertical');
+        state.tutorial = true;
+        state.transitionLock = false;
+        state.players[0].hand = createDeck().slice(0, 18);
+        render();
+      });
+      const hud = page.frameLocator('#mobileSpriteBridgeFrame');
+      await hud.locator('[data-hand-cards] .card').first().waitFor();
+      const help = await page.evaluate(() => getInGameHelpPayload(0));
+      assert.match(help.text, /Te falta:/);
+      assert.doesNotMatch(JSON.stringify(help), /\[object Object\]|undefined/);
+      await hud.locator('[data-menu-toggle]').tap();
+      await hud.locator('.top-menu [data-reference="help"]').tap();
+      await hud.locator('[data-reference-dialog]').waitFor({ state: 'visible' });
+      const before = await page.evaluate(() => JSON.stringify({ players:state.players, selected:state.selected, turn:state.turnCount, deck:state.deck, discard:state.discard }));
+      await hud.locator('[data-help-topics] summary').filter({ hasText: 'Fuel ×2' }).tap();
+      assert.equal(await hud.locator('[data-help-topics] details').filter({ hasText: 'Fuel ×2' }).evaluate(el => el.open), true, 'First tap opens a help topic immediately');
+      await hud.locator('[data-reference-close]').tap();
+      assert.equal(await page.evaluate(() => JSON.stringify({ players:state.players, selected:state.selected, turn:state.turnCount, deck:state.deck, discard:state.discard })), before);
+      await page.evaluate(() => {
+        state.players[0].attack.push(devMakeCard('10', 'spades'));
+        state.attackMode = true;
+        state.selected = [{...state.players[0].fuel[0], zone:'fuel'}, {...state.players[0].attack.at(-1), zone:'attack'}];
+        render();
+      });
+      await page.waitForFunction(() => document.getElementById('mobileSpriteBridgeFrame').contentDocument.querySelector('[data-tutorial-text]').textContent.includes('Superas el límite en 2'));
+      await page.evaluate(() => {
+        state.attackMode = false;
+        state.selected = [];
+        state.pendingDefense = { attackerIndex:1, defenderIndex:0, totalAttack:12 };
+        render();
+      });
+      assert.match(await page.evaluate(() => getInGameHelpPayload(0).text), /Ataque entrante: 12/);
+      await page.evaluate(() => { state.pendingDefense = null; state.tutorial = false; render(); });
+      await hud.locator('[data-menu-toggle]').tap();
+      await hud.locator('.top-menu [data-reference="help"]').tap();
+      assert.match(await hud.locator('[data-help-now]').textContent(), /Acciones/);
+      fs.mkdirSync('test-results/mobile-help-20260915', { recursive: true });
+      await page.screenshot({ path:`test-results/mobile-help-20260915/${engine.name()}-help-tablet.png` });
+      await hud.locator('[data-reference-close]').tap();
+      if (!await hud.locator('.phone-shell').evaluate(el => el.classList.contains('board-open'))) await hud.locator('[data-tab="mecha"]').tap();
+      await page.waitForTimeout(250);
+      await page.screenshot({ path:`test-results/mobile-help-20260915/${engine.name()}-tablet-portrait.png` });
+      await page.setViewportSize({ width:393, height:790 });
+      await page.waitForTimeout(300);
+      await page.screenshot({ path:`test-results/mobile-help-20260915/${engine.name()}-phone-portrait.png` });
+    });
+  });
+  for (const viewport of [{ width: 393, height: 790 }, { width: 768, height: 1024 }, { width: 820, height: 1180 }]) {
+    test(`${engine.name()} portrait help layout ${viewport.width}: hand controls, tablet and readable register`, async () => {
+      await withPage(engine, viewport, async page => {
+        await page.evaluate(() => {
+          while (state.players[0].hand.length < 18) drawCard(state.players[0], false);
+          state.log = Array.from({ length: 20 }, (_, i) => `Evento ${i + 1}: el rival sustituye combustible y prepara su siguiente ataque. Texto completo del movimiento.`);
+          render();
+          document.querySelector('[data-figures-hand]').hidden = false;
+          shell.classList.add('board-open');
+        });
+        await page.waitForTimeout(250);
+        const bounds = await page.evaluate(() => {
+          const rect = s => document.querySelector(s).getBoundingClientRect();
+          return {
+            fullWidth: rect('.phone-shell').width >= innerWidth - 2,
+            fullHeight: rect('.phone-shell').height >= innerHeight - 2,
+            figuresAbove: rect('.floating-figures-button').bottom < rect('.floating-modify-button').top,
+            clearCards: [...document.querySelectorAll('[data-hand-cards] .card')].every(c => c.getBoundingClientRect().top > rect('.floating-modify-button').bottom),
+            actionsClear: [...document.querySelectorAll('[data-hand-cards] .card')].every(c => c.getBoundingClientRect().top > rect('[data-action-toggle]').bottom)
+          };
+        });
+        assert.deepEqual(bounds, { fullWidth: true, fullHeight: true, figuresAbove: true, clearCards: true, actionsClear: true });
+        await page.locator('.zone-reg [data-reference="log"]').tap();
+        await page.locator('[data-reference-dialog]').waitFor({ state: 'visible' });
+        const body = page.locator('[data-reference-body]');
+        assert.match(await body.textContent(), /Evento 20/);
+        await body.evaluate(el => { el.scrollTop = el.scrollHeight; });
+        assert.equal(await body.evaluate(el => el.scrollHeight - el.scrollTop <= el.clientHeight + 2), true);
+        await page.locator('[data-reference-close]').tap();
+        assert.equal(await page.locator('.phone-shell').evaluate(el => el.classList.contains('board-open')), true);
+      });
+    });
+  }
   for (const viewport of [{ width: 393, height: 790 }, { width: 375, height: 667 }, { width: 844, height: 390 }, { width: 1024, height: 768 }]) {
     test(`${engine.name()} fuel remains fully visible above the buttons at ${viewport.width}`, async () => {
       await withPage(engine, viewport, async page => {

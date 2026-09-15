@@ -4013,7 +4013,7 @@
       }
     }
 
-    @media (max-width: 520px), (max-height: 900px) {
+    @media (orientation: portrait), (max-height: 900px) {
       html,
       body {
         width: 100%;
@@ -5871,6 +5871,96 @@
       86% { transform: translate(-3px, 2px); }
       87% { transform: translate(2px, 1px); }
     }
+    /* Controls occupy space in the hand instead of floating over its cards. */
+    @media (orientation: portrait) {
+      .hand-tray { padding-top: 10px; }
+      .hand-controls {
+        position: relative;
+        z-index: 18;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: stretch;
+        gap: 8px;
+        width: max-content;
+        max-width: 62%;
+        min-height: 82px;
+        margin: 0 10px 16px auto;
+      }
+      .hand-controls button { position: static; min-height: 34px; }
+      .hand-count-badge { top: 26px; }
+      .hand-tray header .action-hub { left: 20px; right: auto; top: 80px; }
+      .phone-shell.actions-open .hand-tray header .action-hub,
+      .phone-shell.attack-confirm-open .hand-tray header .action-hub { left: auto; right: -2px; top: 165px; }
+    }
+    @media (orientation: landscape) and (max-height: 900px) {
+      .hand-controls { display: none; }
+    }
+    @media (orientation: portrait) and (min-width: 600px) {
+      .phone-shell { padding: 16px 22px; }
+      .brand-plate { width: min(470px, 74vw); height: 110px; }
+      .brand-plate img { width: 500px; top: -58px; }
+      .meter-pill { min-height: 58px; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; }
+      .meter-pill small { font-size: 15px; }
+      .metric-icon { width: 28px; height: 34px; font-size: 22px; }
+      .meter-pill strong { font-size: 26px; }
+      .mecha-phase-live { width: 280px; height: 310px; }
+      .stats-card { font-size: 17px; padding: 12px; }
+      .stats-card p, .stats-card strong, .fighter header { font-size: 17px; }
+      .hand-title-button { font-size: 22px; }
+      .floating-message.tutorial { font-size: 16px; }
+      .top-menu-toggle { width: 56px; height: 56px; }
+      .menu-button { min-height: 40px; font-size: 15px; }
+      .board-drawer { left: 22px; right: 22px; padding: 16px; }
+      .drawer-head h2 { font-size: 26px; }
+      .drawer-head p, .zone-title, .zone-title b { font-size: 17px; }
+      .zone-grid, .zone-grid.is-rival { grid-template-rows: max-content max-content max-content; gap: 10px; }
+      .zone-cards .card, .core-slot .card, .zone-cards[data-card-count="4"] .card { width: 66px; height: 96px; flex-basis: 66px; }
+      .zone-grid .panel-zone, .zone-grid .drop-zone { grid-template-rows: auto auto; }
+      .zone-grid .zone-cards { min-height: min-content; align-items: flex-start; }
+      .zone-grid .core-slot { display: block; }
+      .drawer-foot button, .hand-controls button { min-height: 44px; font-size: 17px; }
+      .cards, .cards.is-expanded-hand { --hand-card-width: 76px; --hand-card-height: 111px; height: 206px; }
+      .hand-controls { margin-bottom: 20px; }
+    }
+    .zone-reg .zone-cards { overflow: visible; min-height: 0; }
+    .zone-reg .empty-zone {
+      display: block;
+      overflow: visible;
+      font: 12px/1.4 system-ui, sans-serif;
+      overflow-wrap: anywhere;
+    }
+    .reference-link {
+      border: 1px solid #74fff2;
+      border-radius: 7px;
+      padding: 5px 7px;
+      background: #123d59;
+      color: #fff2bd;
+      font: inherit;
+      cursor: pointer;
+    }
+    .reference-dialog {
+      width: min(640px, calc(100vw - 24px));
+      max-height: calc(100dvh - 24px);
+      padding: 0;
+      border: 2px solid #58cddf;
+      border-radius: 18px;
+      background: #0c2238;
+      color: #e8f5ff;
+      box-shadow: 0 12px 48px #000a;
+      font: 16px/1.5 system-ui, sans-serif;
+    }
+    .reference-dialog[open] { display: flex; flex-direction: column; }
+    .reference-dialog::backdrop { background: #0009; }
+    .reference-dialog header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #58cddf55; }
+    .reference-dialog h2 { margin: 0; flex: 1; font: bold 20px/1.2 system-ui, sans-serif; }
+    .reference-dialog button { min-height: 44px; }
+    .reference-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 16px; }
+    .reference-body p { margin: 0 0 14px; overflow-wrap: anywhere; }
+    .reference-body details { padding: 12px 0; border-top: 1px solid #58cddf55; }
+    .reference-body summary { cursor: pointer; color: #ffe09b; font-weight: bold; }
+    .reference-body details p { margin: 12px 0 0; }
+    .reference-body .register-entry { padding-bottom: 12px; border-bottom: 1px solid #58cddf33; }
   </style>
 </head>
 <body>
@@ -5893,6 +5983,8 @@
       <button class="menu-button" type="button" data-menu="load">Cargar</button>
       <button class="menu-button on" type="button" data-menu="music">Música OFF</button>
       <button class="menu-button" type="button" data-menu="tutorial">Tutorial OFF</button>
+      <button class="menu-button" type="button" data-reference="help">Ayuda de esta jugada</button>
+      <button class="menu-button" type="button" data-reference="log">Registro completo</button>
     </nav>
 
     <section class="status-strip" aria-label="Estado superior">
@@ -5941,6 +6033,7 @@
           <button class="tutorial-dismiss" type="button" data-tutorial-dismiss aria-label="Ocultar TutoBOT">✕</button>
           <span data-tutorial-text></span>
           <div class="message-actions" data-tutorial-actions></div>
+          <button class="reference-link" type="button" data-reference="help">Consultar ayuda</button>
         </article>
         <article class="floating-message alert" data-alert-message>
           <strong data-alert-title></strong>
@@ -6030,8 +6123,10 @@
         </div>
       </header>
       <strong class="hand-count-badge" data-hand-count>0/18</strong>
-      <button class="hand-figures-button floating-figures-button" type="button" data-action="figures" data-figures-hand hidden>2 Figuras → 4 Cartas</button>
-      <button class="hand-modify-button floating-modify-button" type="button" data-action="modify">Modificar</button>
+      <div class="hand-controls">
+        <button class="hand-figures-button floating-figures-button" type="button" data-action="figures" data-figures-hand hidden>2 Figuras → 4 Cartas</button>
+        <button class="hand-modify-button floating-modify-button" type="button" data-action="modify">Modificar</button>
+      </div>
       <div class="hand-overview" data-hand-overview aria-label="Mano completa">
         <div class="hand-overview-grid" data-hand-overview-cards></div>
       </div>
@@ -6053,6 +6148,10 @@
 
     <div class="toast" data-toast></div>
   </main>
+  <dialog class="reference-dialog" data-reference-dialog aria-labelledby="reference-title">
+    <header><h2 id="reference-title">Ayuda de esta jugada</h2><button class="reference-link" type="button" data-reference-close>Volver al juego</button></header>
+    <div class="reference-body" data-reference-body></div>
+  </dialog>
 
   <script>
     const EMBEDDED_REAL_GAME = new URLSearchParams(window.location.search).get("embedded") === "1";
@@ -8254,12 +8353,13 @@
         return;
       }
 
-      const cardWidth = window.matchMedia("(orientation: landscape) and (max-height: 900px)").matches
+      const tabletPortrait = window.matchMedia("(orientation: portrait) and (min-width: 600px)").matches;
+      const cardWidth = tabletPortrait ? 76 : window.matchMedia("(orientation: landscape) and (max-height: 900px)").matches
         ? 48
         : window.matchMedia("(max-height: 760px)").matches
           ? 50
           : 54;
-      const cardHeight = window.matchMedia("(max-height: 760px)").matches ? 73 : 79;
+      const cardHeight = tabletPortrait ? 111 : window.matchMedia("(max-height: 760px)").matches ? 73 : 79;
       if (shouldUseExpandedPortraitHand(count)) {
         const tutorialPortraitLayout = shouldUseTutorialPortraitHandLayout(count);
         const rows = 2;
@@ -8272,10 +8372,10 @@
         const narrow = window.innerWidth <= 430 || trayWidth <= 390;
         const leftGuard = tutorialPortraitLayout
           ? (narrow ? 16 : 20)
-          : (row === 0 ? (narrow ? 86 : 78) : (narrow ? 18 : 22));
+          : (narrow ? 18 : 22);
         const rightGuard = tutorialPortraitLayout
           ? (narrow ? 16 : 20)
-          : (row === 0 ? (narrow ? 118 : 132) : (narrow ? 18 : 22));
+          : (narrow ? 18 : 22);
         const scale = tutorialPortraitLayout
           ? (count > 8 ? .78 : .82)
           : (count > 15 ? .82 : count > 12 ? .86 : .92);
@@ -8528,7 +8628,8 @@
 
       const reg = document.createElement("article");
       reg.className = "panel-zone zone-reg";
-      reg.innerHTML = `<header class="zone-title"><span>REG</span><b>${state.log.length}</b></header><div class="zone-cards"><div class="empty-zone">${state.log.slice(0, 6).join("<br>") || "Sin eventos"}</div></div>`;
+      reg.innerHTML = `<header class="zone-title"><button class="reference-link" type="button" data-reference="log" aria-label="Abrir registro completo">Registro ↗</button><b>${state.log.length}</b></header><div class="zone-cards"><div class="empty-zone"></div></div>`;
+      reg.querySelector('.empty-zone').textContent = state.log[0] || 'Sin eventos';
 
       grid.append(core, attackZone, defenseZone, armorZone);
       if (!isRivalView && !compactBoard) grid.append(reg);
@@ -8809,12 +8910,66 @@
       }
 
       box.append(title, lines);
+      const reference = document.createElement('button');
+      reference.type = 'button';
+      reference.className = 'reference-link';
+      reference.dataset.reference = state.tutorial ? 'help' : 'log';
+      reference.textContent = state.tutorial ? 'Consultar ayuda' : 'Registro completo';
+      box.append(reference);
       if (state.tutorial && getTutorialActionList().length) {
         const actions = document.createElement("div");
         actions.className = "guidance-actions message-actions";
         renderTutorialActionButtons(actions);
         box.appendChild(actions);
       }
+    }
+
+    function openReference(kind) {
+      const dialog = document.querySelector('[data-reference-dialog]');
+      dialog.dataset.kind = kind;
+      closeTopMenu();
+      renderReference(true);
+      if (!dialog.open) dialog.showModal();
+    }
+
+    function renderReference(rebuild = false) {
+      const dialog = document.querySelector('[data-reference-dialog]');
+      if (!dialog || (!dialog.open && !rebuild)) return;
+      const body = dialog.querySelector('[data-reference-body]');
+      const isLog = dialog.dataset.kind === 'log';
+      document.getElementById('reference-title').textContent = isLog ? 'Registro completo' : 'Ayuda de esta jugada';
+      if (isLog) {
+        // Keep a stable reading position until the player reopens the register.
+        if (!rebuild) return;
+        body.replaceChildren();
+        for (const entry of state.log.length ? state.log : ['Sin eventos registrados.']) {
+          const line = document.createElement('p');
+          line.className = 'register-entry';
+          line.textContent = entry;
+          body.append(line);
+        }
+      } else {
+        const help = state.inGameHelp || { title:state.bridgeTutorialTitle || 'Tu turno', text:state.bridgeTutorialText || 'Arrastra cartas al panel de montaje o abre Acciones para elegir una jugada.', topics:[] };
+        if (rebuild) {
+          body.innerHTML = '<h3 data-help-now-title></h3><p data-help-now></p><p data-help-tip></p><div data-help-topics></div>';
+          const topics = body.querySelector('[data-help-topics]');
+          for (const topic of help.topics || []) {
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            const text = document.createElement('p');
+            summary.textContent = topic.title;
+            text.textContent = topic.text;
+            details.append(summary, text);
+            topics.append(details);
+          }
+        }
+        body.querySelector('[data-help-now-title]').textContent = help.title;
+        body.querySelector('[data-help-now]').textContent = help.text;
+        body.querySelector('[data-help-tip]').textContent = help.tip || '';
+        // Update live numbers without closing the topic the player is reading.
+        body.querySelectorAll('details p').forEach((el, index) => { el.textContent = help.topics?.[index]?.text || ''; });
+      }
+      if (rebuild) body.scrollTop = 0;
     }
 
     function selectedDefenseDiamond(defender) {
@@ -9128,6 +9283,7 @@
 	      renderMessages();
 	      renderActions();
       renderHackMode();
+      renderReference();
       syncTutorialBotLocalAnimation();
 	    }
 
@@ -9505,6 +9661,7 @@
       state.bridgeTutorialText = snapshot.bridgeTutorialText || "";
       state.bridgeTutorialHtml = snapshot.bridgeTutorialHtml || "";
       state.bridgeTutorialMeta = snapshot.bridgeTutorialMeta || "";
+      state.inGameHelp = snapshot.inGameHelp || null;
       state.bridgeTutorialActions = Array.isArray(snapshot.bridgeTutorialActions) ? snapshot.bridgeTutorialActions : [];
       state.tutorialBotVisible = !!snapshot.tutorialBotVisible;
       state.tutorialBotMode = snapshot.tutorialBotMode || "";
@@ -9633,7 +9790,8 @@
     document.addEventListener("blur", clearPressedButtons, true);
 
     document.addEventListener("click", (event) => {
-      if (event.isTrusted && Date.now() < suppressTrustedTouchClickUntil) {
+      const nativeReferenceControl = event.target.closest('[data-reference-dialog]') && !event.target.closest('button');
+      if (event.isTrusted && !nativeReferenceControl && Date.now() < suppressTrustedTouchClickUntil) {
         event.preventDefault();
         event.stopPropagation();
         return;
@@ -9641,6 +9799,9 @@
       if (maybeHandleDirectTutorialControl(event)) return;
       const button = visibleControlButtonAt(event);
       const zone = event.target.closest(".drop-zone");
+      if (button?.dataset.reference) { openReference(button.dataset.reference); return; }
+      if (button?.hasAttribute('data-reference-close')) { document.querySelector('[data-reference-dialog]').close(); return; }
+      if (event.target.closest('[data-reference-dialog]')) return;
       const overviewCard = event.target.closest(".hand-overview .card[data-card-id]");
       if (overviewCard && shell.classList.contains("hand-overview-open")) {
         event.preventDefault();
