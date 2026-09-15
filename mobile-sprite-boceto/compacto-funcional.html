@@ -2041,7 +2041,7 @@
       top: clamp(104px, 13vh, 116px);
       bottom: clamp(194px, 25vh, 210px);
       display: grid;
-      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
       gap: 7px;
       padding: 9px;
       border: 4px solid #06172a;
@@ -2082,7 +2082,7 @@
     }
 
     .phone-shell.rival-view .board-drawer {
-      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr) auto;
     }
 
     .phone-shell.rival-view .drawer-foot {
@@ -2183,23 +2183,22 @@
       min-height: 0;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-template-rows: minmax(94px, auto) minmax(72px, auto) minmax(72px, auto) minmax(92px, auto);
+      grid-template-rows: minmax(94px, auto) minmax(72px, auto) minmax(72px, auto);
       grid-template-areas:
         "core core"
         "attack defense"
-        "armor reg"
-        "fuel fuel";
+        "armor reg";
       gap: 6px;
       overflow: auto;
       padding-right: 2px;
     }
 
     .zone-grid.is-rival {
-      grid-template-rows: minmax(94px, auto) minmax(72px, auto) minmax(92px, auto);
+      grid-template-rows: minmax(94px, auto) minmax(72px, auto) minmax(72px, auto);
       grid-template-areas:
         "core core"
         "attack defense"
-        "armor fuel";
+        "armor armor";
     }
 
     .panel-zone,
@@ -2855,7 +2854,8 @@
       z-index: 22;
       left: 8px;
       right: 8px;
-      bottom: calc(100% - 16px);
+      /* Keep the expanded cards above the protruding Mano toggle. */
+      bottom: calc(100% + 24px);
       max-height: 232px;
       padding: 10px;
       border: 3px solid #09254a;
@@ -3136,6 +3136,22 @@
     .zone-cards .card.is-selected {
       outline: 3px solid var(--gold);
       transform: translateY(-3px);
+    }
+
+    /* Fuel has its own intrinsic-height row, outside the scrolling modules.
+       Its cards wrap completely; the footer starts after the entire panel. */
+    .fuel-dock .zone-fuel {
+      grid-area: auto;
+      grid-template-rows: auto auto;
+      min-height: 0;
+    }
+
+    .fuel-dock .zone-fuel .zone-cards {
+      min-height: 0;
+      align-items: flex-start;
+      align-content: flex-start;
+      padding: 4px 3px;
+      overflow: visible;
     }
 
     .card.is-readonly {
@@ -4068,6 +4084,11 @@
       .board-drawer {
         left: 10px;
         right: 10px;
+        /* Anchor to the combat/tabs rows, below the full status strip and above
+           the hand's protruding title. Only the card zones scroll when needed. */
+        grid-row: 3 / 5;
+        top: 0;
+        bottom: 24px;
       }
     }
 
@@ -4867,11 +4888,12 @@
       .side-arrow.right { right: -10px; }
 
       .board-drawer {
+        grid-row: auto;
         top: 5px;
         bottom: 5px;
         left: calc(var(--land-left) + 10px);
         right: calc(var(--land-hand) + 10px);
-        grid-template-rows: 58px minmax(0, 1fr) auto;
+        grid-template-rows: 58px minmax(0, 1fr) auto auto;
         gap: 5px;
         padding: 6px;
         border-width: 3px;
@@ -4990,23 +5012,21 @@
 
       .zone-grid {
         grid-template-columns: repeat(6, minmax(0, 1fr));
-        grid-template-rows: minmax(78px, .82fr) minmax(94px, 1fr) minmax(82px, .86fr);
+        grid-template-rows: minmax(78px, .82fr) minmax(94px, 1fr);
         grid-template-areas:
           "core core core defense defense defense"
-          "attack attack attack armor armor armor"
-          "fuel fuel fuel fuel fuel fuel";
+          "attack attack attack armor armor armor";
         grid-auto-rows: auto;
         gap: 6px;
-        overflow: hidden;
+        overflow: auto;
       }
 
       .zone-grid.is-rival {
         grid-template-columns: repeat(6, minmax(0, 1fr));
-        grid-template-rows: minmax(78px, .82fr) minmax(94px, 1fr) minmax(82px, .86fr);
+        grid-template-rows: minmax(78px, .82fr) minmax(94px, 1fr);
         grid-template-areas:
           "core core core defense defense defense"
-          "attack attack attack armor armor armor"
-          "fuel fuel fuel fuel fuel fuel";
+          "attack attack attack armor armor armor";
       }
 
       .zone-grid .core-slots {
@@ -5984,6 +6004,7 @@
         <button class="drawer-close" type="button" data-board-close aria-label="Cerrar panel">×</button>
       </header>
       <div class="zone-grid" data-zone-grid></div>
+      <div class="fuel-dock" data-fuel-dock></div>
       <footer class="drawer-foot">
         <button type="button" data-drawer-primary>Aplicar cambios</button>
         <button class="secondary" type="button" data-action="clear">Limpiar selección</button>
@@ -8464,9 +8485,11 @@
       const player = isRivalView ? state.players[1] : state.players[0];
       const compactBoard = isLandscapeLayout();
       const grid = document.querySelector("[data-zone-grid]");
+      const fuelDock = document.querySelector("[data-fuel-dock]");
       shell.classList.toggle("rival-view", isRivalView);
       grid.classList.toggle("is-rival", isRivalView);
       grid.innerHTML = "";
+      fuelDock.replaceChildren();
       if (!player) return;
 
       const core = document.createElement("article");
@@ -8509,7 +8532,7 @@
 
       grid.append(core, attackZone, defenseZone, armorZone);
       if (!isRivalView && !compactBoard) grid.append(reg);
-      grid.append(fuelZone);
+      fuelDock.append(fuelZone);
 
       const title = document.querySelector("[data-drawer-title]");
       const subtitle = document.querySelector("[data-drawer-subtitle]");
@@ -9327,49 +9350,11 @@
       document.querySelectorAll("button.is-pressing").forEach((button) => button.classList.remove("is-pressing"));
     }
 
-    function effectiveZIndex(node) {
-      let current = node;
-      let z = 0;
-      while (current && current !== document.body) {
-        const value = Number.parseInt(getComputedStyle(current).zIndex, 10);
-        if (Number.isFinite(value)) z = Math.max(z, value);
-        current = current.parentElement;
-      }
-      return z;
-    }
-
-    function pointInsideRect(x, y, rect, padX = 0, padY = 0) {
-      return x >= rect.left - padX
-        && x <= rect.right + padX
-        && y >= rect.top - padY
-        && y <= rect.bottom + padY;
-    }
-
     function visibleControlButtonAt(event) {
-      const direct = event.target.closest?.("button") || null;
-      if (direct?.classList?.contains("card")) return direct;
-      if (!isLandscapeLayout() || typeof event.clientX !== "number" || typeof event.clientY !== "number") return direct;
-
-      const x = event.clientX;
-      const y = event.clientY;
-      const candidates = Array.from(document.querySelectorAll("button:not(.card)"))
-        .filter((button) => {
-          if (button.disabled) return false;
-          const style = getComputedStyle(button);
-          if (style.visibility === "hidden" || style.display === "none" || Number(style.opacity) <= 0.02) return false;
-          const rect = button.getBoundingClientRect();
-          return rect.width > 0 && rect.height > 0 && pointInsideRect(x, y, rect, 10, 16);
-        })
-        .map((button) => ({ button, rect: button.getBoundingClientRect(), z: effectiveZIndex(button) }))
-        .sort((a, b) => {
-          const strictA = pointInsideRect(x, y, a.rect) ? 1 : 0;
-          const strictB = pointInsideRect(x, y, b.rect) ? 1 : 0;
-          if (strictA !== strictB) return strictB - strictA;
-          if (a.z !== b.z) return b.z - a.z;
-          return (a.rect.width * a.rect.height) - (b.rect.width * b.rect.height);
-        });
-
-      return candidates[0]?.button || direct;
+      // Use the browser's hit target, including for keyboard and button.click().
+      // Synthetic clicks have coordinates (0, 0); re-hit-testing them in landscape
+      // used to select the brand plate and switch the game to classic scroll.
+      return event.target.closest?.("button") || null;
     }
 
     function getRealGameBridge() {
@@ -9561,6 +9546,26 @@
       } else {
         window.parent?.postMessage?.({ source: "pocobot-sprite-hud", type: "ready" }, "*");
       }
+      // Keep the parent's victory decoration outside the visible fuel panel,
+      // including when cards wrap, panels close, or the device rotates.
+      let lastLayout = "";
+      const reportPanelLayout = () => {
+        const layout = {
+          open: shell.classList.contains("board-open"),
+          statusBottom: document.querySelector(".status-strip").getBoundingClientRect().bottom,
+          fuelTop: document.querySelector("[data-fuel-dock]").getBoundingClientRect().top
+        };
+        const key = JSON.stringify(layout);
+        if (key === lastLayout) return;
+        lastLayout = key;
+        callRealGameBridge("panelLayout", layout);
+      };
+      const layoutObserver = new ResizeObserver(reportPanelLayout);
+      for (const node of [shell, document.querySelector("[data-fuel-dock]"), document.querySelector(".status-strip")]) {
+        layoutObserver.observe(node);
+      }
+      new MutationObserver(reportPanelLayout).observe(shell, { attributes: true, attributeFilter: ["class"] });
+      document.querySelector(".board-drawer").addEventListener("transitionend", reportPanelLayout);
     }
 
     window.addEventListener("message", (event) => {

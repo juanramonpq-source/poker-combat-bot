@@ -4388,6 +4388,19 @@ body.victory .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-caption{
   box-shadow:0 0 30px rgba(255,214,92,.24), 0 0 36px rgba(116,255,242,.16), inset 0 0 18px rgba(255,255,255,.08);
   animation:mobileVictoryCaptionHold 2.6s ease-in-out infinite;
 }
+@media (orientation:portrait){
+  body.victory.mobile-sprite-hud-active .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-caption{
+    /* Keep the celebration beside the trophy, clear of the montage controls. */
+    top:50%;
+  }
+  body.victory.mobile-sprite-hud-active.mobile-sprite-board-open .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-caption{
+    top:calc(var(--sprite-fuel-top) - 24px);
+  }
+  body.victory.mobile-sprite-hud-active.mobile-sprite-board-open .mobile-pro-fx-layer.victory-hold .mobile-pro-fx-trophy{
+    top:calc((var(--sprite-status-bottom) + var(--sprite-fuel-top) - 48px) / 2);
+    font-size:min(clamp(5.4rem, 22vw, 10rem), max(24px, calc(var(--sprite-fuel-top) - var(--sprite-status-bottom) - 80px)));
+  }
+}
 @keyframes mobileFxLayerFade{
   0%{opacity:0}
   8%,78%{opacity:1}
@@ -32795,7 +32808,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260909-tutorial-guidance-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260915-mobile-layout-touch-2';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -43065,6 +43078,14 @@ function handleMobileSpriteTutorialAction(action){
 }
 
 function handleMobileSpriteBridge(type, payload={}){
+  if(type === 'panelLayout'){
+    if(!Number.isFinite(payload.statusBottom) || !Number.isFinite(payload.fuelTop)) return;
+    const offset = document.getElementById('mobileSpriteBridgeFrame')?.getBoundingClientRect().top || 0;
+    document.body.style.setProperty('--sprite-status-bottom', `${offset + payload.statusBottom}px`);
+    document.body.style.setProperty('--sprite-fuel-top', `${offset + payload.fuelTop}px`);
+    document.body.classList.toggle('mobile-sprite-board-open', payload.open === true);
+    return;
+  }
   if(type === 'menu') handleMobileSpriteMenu(payload.action);
   if(type === 'action') handleMobileSpriteAction(payload.action);
   if(type === 'tutorialAction') handleMobileSpriteTutorialAction(payload.action);

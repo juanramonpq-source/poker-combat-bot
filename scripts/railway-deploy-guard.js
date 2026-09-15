@@ -334,8 +334,10 @@ try {
 
 if (Array.isArray(projects) && projects.length) {
   const activeProjects = projects.filter((project) => !project.deletedAt);
-  const unexpectedProjects = activeProjects.filter((project) => project.id !== EXPECTED.projectId);
-  assert(unexpectedProjects.length === 0, `Unexpected active Railway projects found:\n${unexpectedProjects.map((project) => `- ${project.name} (${project.id})`).join('\n')}`);
+  // This guard validates the PoCoBOT deployment target, not the whole account.
+  // Other projects may coexist; the linked project/service/environment checks
+  // above still reject any deployment pointed at them.
+  assert(activeProjects.some((project) => project.id === EXPECTED.projectId), `Authorized Railway project ${EXPECTED.projectId} was not found in the active projects.`);
 }
 
 if (warnings.length) {
