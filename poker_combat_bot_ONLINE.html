@@ -30701,6 +30701,20 @@ body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobil
   100%{opacity:.62; transform:translate(12px, -3px) skew(7deg)}
 }
 </style>
+<style>
+.button-grid .turn-help-button { grid-column: 1 / -1; }
+.turn-help-button { white-space: normal; line-height: 1.35; padding: 10px 14px; }
+#desktopTurnHelpDialog { width: min(640px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); box-sizing: border-box; overflow: auto; padding: 22px; border: 2px solid #64ecf5; border-radius: 18px; background: #102337; color: #f3f8ff; font: 16px/1.5 system-ui, sans-serif; }
+#desktopTurnHelpDialog::backdrop { background: #020914bf; }
+#desktopTurnHelpDialog header { display: flex; align-items: flex-start; gap: 16px; }
+#desktopTurnHelpDialog h2 { margin: 0; flex: 1; font-size: 23px; }
+#desktopTurnHelpDialog button { white-space: normal; }
+#desktopTurnHelpDialog details { margin: 10px 0; padding: 12px; border: 1px solid #548798; border-radius: 10px; background: #17364b; }
+#desktopTurnHelpDialog summary { cursor: pointer; font-weight: 700; }
+#desktopTurnHelpDialog summary:focus-visible { outline: 3px solid #ffcf68; outline-offset: 3px; }
+#desktopTurnHelpDialog li { margin: 7px 0; }
+.desktop-help-target { outline: 4px solid #ffe078 !important; outline-offset: 4px; box-shadow: 0 0 22px #ffe078 !important; }
+</style>
 </head>
 <body class="intro-active">
 
@@ -31616,6 +31630,7 @@ body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobil
         <div class="frame button-bay">
           <div class="tiny-label">Consola</div>
           <div class="button-grid">
+            <button class="primary turn-help-button" id="desktopTurnHelpBtn" type="button" aria-haspopup="dialog" aria-controls="desktopTurnHelpDialog">? ¿Qué puedo hacer en este turno?</button>
             <button class="primary" id="newGameBtn">Nueva partida</button>
             <button id="toggleTutorialBtn">Tutorial ON</button>
             <button id="debugToggleBtn">DEBUG ON</button>
@@ -32003,6 +32018,7 @@ body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobil
             </button>
           </div>
           <div class="compact-hand-metrics">
+            <button class="primary turn-help-button" data-desktop-turn-help type="button" aria-haspopup="dialog" aria-controls="desktopTurnHelpDialog">? ¿Qué puedo hacer en este turno?</button>
             <span class="compact-hand-chip">Deck <strong id="compactDeckCount">0</strong></span>
             <span class="compact-hand-chip">Discard <strong id="compactDiscardCount">0</strong></span>
             <span class="compact-hand-chip compact-hand-chip-wide" id="compactCapacityText">0 cartas · MAXIMO 18</span>
@@ -42647,6 +42663,105 @@ function getMobileSpriteTutorialPayload(){
 
 // Read-only advice shared by normal gameplay and the mobile reference sheet.
 // Guided lessons retain their own objectives and validation.
+function getDesktopTurnHelpPayload(){
+  const viewIdx = getDesktopCompactPlayerIndex();
+  const payload = getInGameHelpPayload(viewIdx);
+  const pcText = text => text.replaceAll('Acciones → ', '').replaceAll('Aplicar cambios', 'Modificar').replaceAll('Pulsa Atacar', 'Pulsa Abrir ataque').replaceAll('Pulsa Elegir 1♦ y elige', 'Elige').replaceAll('Pulsa Elegir 1♦.', 'Selecciona un diamante de la mano.');
+  const draft = compactDraftOwnerIdx === viewIdx && compactDraftPlacements.size > 0;
+  return {...payload, options:(payload.options || []).map(item => {
+    const option = {...item, steps:item.steps.map(pcText), next:{...item.next, text:pcText(item.next.text)}};
+    if(option.id === 'projectile'){
+      const selected = state.selected.filter(card => card.zone === 'attack' && isPlayableProjectileCard(card));
+      option.steps = ['Selecciona exactamente una pica numérica instalada en Ataque.', 'Pulsa Solo proyectil para dispararla. No consume combustible.', 'La pica disparada se descarta y termina tu turno.'];
+      option.next = selected.length === 1 ? {target:'projectile-only', text:'Pulsa Solo proyectil para disparar la pica seleccionada.'} : {target:'attack', text:'Selecciona exactamente una pica numérica del panel de Ataque.'};
+    }
+    if(option.id === 'build' && draft) option.next = {target:'modify', text:'Revisa las cartas preparadas y pulsa Modificar.'};
+    if(option.id === 'clear' && draft){ option.available = true; option.reason = ''; }
+    return option;
+  })};
+}
+
+function renderDesktopTurnHelp(){
+  const dialog = document.getElementById('desktopTurnHelpDialog');
+  if(!dialog?.open) return;
+  const payload = getDesktopTurnHelpPayload();
+  const signature = JSON.stringify(payload);
+  if(dialog.dataset.payload === signature) return;
+  dialog.dataset.payload = signature;
+  const openTopics = new Set([...dialog.querySelectorAll('details[open]')].map(el => el.dataset.topic));
+  const focusedTopic = document.activeElement?.closest('[data-topic]')?.dataset.topic;
+  const focusedGuide = document.activeElement?.hasAttribute('data-pc-help-guide');
+  const content = dialog.querySelector('[data-pc-help-content]');
+  content.replaceChildren();
+  const addText = (parent, tag, text) => { const el = document.createElement(tag); el.textContent = text; parent.append(el); return el; };
+  addText(content, 'p', payload.meta || payload.text);
+  const available = document.createElement('section'); available.dataset.pcHelpAvailable = ''; content.append(available);
+  const blocked = document.createElement('details'); blocked.dataset.topic = 'blocked'; blocked.open = openTopics.has('blocked');
+  addText(blocked, 'summary', 'Qué NO puedo hacer TODAVÍA');
+  for(const option of payload.options){
+    const topic = document.createElement('details'); topic.dataset.topic = option.id; topic.open = openTopics.has(option.id);
+    addText(topic, 'summary', option.title);
+    if(option.reason) addText(topic, 'p', option.reason);
+    const steps = document.createElement('ol'); topic.append(steps);
+    option.steps.forEach(step => addText(steps, 'li', step));
+    if(option.available){
+      const guide = addText(topic, 'button', 'Mostrar dónde'); guide.type = 'button'; guide.dataset.pcHelpGuide = option.id;
+      guide.addEventListener('click', () => guideDesktopTurnHelp(option.id));
+    }
+    (option.available ? available : blocked).append(topic);
+  }
+  if(!available.childElementCount) addText(available, 'p', payload.text || 'Ahora no tienes acciones disponibles.');
+  if(blocked.childElementCount > 1) content.append(blocked);
+  if(focusedTopic) content.querySelector(`[data-topic="${focusedTopic}"] > ${focusedGuide ? 'button' : 'summary'}`)?.focus({preventScroll:true});
+}
+
+function openDesktopTurnHelp(){
+  let dialog = document.getElementById('desktopTurnHelpDialog');
+  if(!dialog){
+    dialog = document.createElement('dialog'); dialog.id = 'desktopTurnHelpDialog'; dialog.setAttribute('aria-labelledby', 'desktopTurnHelpTitle');
+    dialog.innerHTML = '<header><h2 id="desktopTurnHelpTitle">¿Qué puedo hacer en este turno?</h2><button type="button" data-pc-help-close aria-label="Cerrar ayuda">Cerrar</button></header><div data-pc-help-content></div>';
+    document.body.append(dialog);
+    dialog.querySelector('[data-pc-help-close]').addEventListener('click', () => dialog.close());
+  }
+  dialog.dataset.payload = '';
+  if(!dialog.open) dialog.showModal();
+  renderDesktopTurnHelp();
+}
+
+function guideDesktopTurnHelp(id){
+  const option = getDesktopTurnHelpPayload().options.find(item => item.id === id && item.available);
+  if(!option){ renderDesktopTurnHelp(); return; }
+  document.getElementById('desktopTurnHelpDialog').close();
+  const idx = getDesktopCompactPlayerIndex();
+  const selectors = {
+    hand:`#compactHandCards, #hand-${idx}`,
+    'hand-diamonds':`#compactHandCards, #hand-${idx}`,
+    defend:`#compactHandCards, #hand-${idx}`,
+    fuel:`#compactPlayerFuelZone, #fuel-zone-${idx}`,
+    attack:`#compactPlayerAttackZone, #module-box-attack-${idx}`,
+    modify:'#compactActionAddBtn, #actionAddBtn',
+    figures:`#compactFigureBurstBtn, [data-quick-figure="${idx}"]`,
+    'attack-mode':'#compactAttackModeBtn, #attackModeBtn',
+    projectile:'#compactProjectileBtn, #toggleProjectileBtn',
+    'projectile-only':'#compactProjectileOnlyBtn, #projectileOnlyBtn',
+    draw:'#compactActionDrawBtn, #actionDrawDiamondBtn', pass:'#compactPassBtn, #actionPassBtn',
+    clear:'#compactClearBtn, #clearSelectionBtn',
+    confirm:state.pendingDefense ? '#compactConfirmDefenseBtn, #confirmDefenseBtn' : '#compactConfirmAttackBtn, #confirmAttackBtn',
+    'skip-defense':'#compactSkipDefenseBtn, #skipDefenseBtn'
+  };
+  const target = [...document.querySelectorAll(selectors[option.next.target] || selectors.hand)].find(el => el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden');
+  document.querySelectorAll('.desktop-help-target').forEach(el => el.classList.remove('desktop-help-target'));
+  if(target){
+    target.scrollIntoView({block:'center', behavior:'instant'});
+    target.classList.add('desktop-help-target');
+    window.setTimeout(() => target.classList.remove('desktop-help-target'), 6500);
+  }
+  addToast(option.next.text, 'ok');
+}
+
+document.getElementById('desktopTurnHelpBtn').addEventListener('click', openDesktopTurnHelp);
+document.querySelectorAll('[data-desktop-turn-help]').forEach(button => button.addEventListener('click', openDesktopTurnHelp));
+
 function getInGameHelpPayload(viewIdx = getMobileSpritePlayerIndex()){
   const player = state.players?.[viewIdx];
   if(!player) return { title:'Preparando partida', text:'Espera a que se repartan las cartas.', topics:[] };
@@ -48162,6 +48277,7 @@ function render(){
   updateButtons();
   renderDesktopCompactHud();
   syncStoryFinalColossusCommandPanel();
+  renderDesktopTurnHelp();
   syncDefenseGuideBar();
   syncTutorialVisualTargets();
   maybeCelebrateTutorialPrimerStatGain();
