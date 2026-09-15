@@ -5871,27 +5871,63 @@
       86% { transform: translate(-3px, 2px); }
       87% { transform: translate(2px, 1px); }
     }
-    /* Controls occupy space in the hand instead of floating over its cards. */
+    /* Keep the original compact hand; its upper-right corner holds both controls. */
     @media (orientation: portrait) {
-      .hand-tray { padding-top: 10px; }
       .hand-controls {
-        position: relative;
+        position: absolute;
         z-index: 18;
+        top: -18px;
+        right: 22px;
         display: flex;
         flex-direction: column;
-        justify-content: flex-end;
-        align-items: stretch;
-        gap: 8px;
-        width: max-content;
-        max-width: 62%;
-        min-height: 82px;
-        margin: 0 10px 16px auto;
+        gap: 6px;
+        width: 136px;
       }
-      .hand-controls button { position: static; min-height: 34px; }
-      .hand-count-badge { top: 26px; }
-      .hand-tray header .action-hub { left: 20px; right: auto; top: 80px; }
-      .phone-shell.actions-open .hand-tray header .action-hub,
-      .phone-shell.attack-confirm-open .hand-tray header .action-hub { left: auto; right: -2px; top: 165px; }
+      .hand-controls:has([data-figures-hand][hidden]) { top: 10px; }
+      .hand-controls button { position: static; min-height: 30px; padding: 5px 7px; }
+      .hand-tray header { bottom: 0; align-items: flex-start; pointer-events: none; }
+      .hand-tray header .hand-title-button, .hand-tray header .action-hub { pointer-events: auto; }
+      .hand-tray header .action-hub { top: auto; bottom: 12px; right: -2px; left: auto; }
+      .zone-grid, .zone-grid.is-rival {
+        grid-template-rows: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+        overflow: hidden;
+      }
+      .zone-grid .panel-zone, .zone-grid .drop-zone, .zone-grid .core-slot {
+        min-height: 0;
+        grid-template-rows: auto minmax(0, 1fr);
+        padding: 4px;
+      }
+      .board-drawer { gap: 5px; padding: 7px; }
+      .core-slots { min-height: 0; }
+      .zone-grid .core-slot { padding: 3px; }
+      .zone-grid .zone-cards { min-height: 0; height: 100%; align-items: flex-start; overflow: hidden; }
+      .zone-grid .zone-cards .card {
+        height: min(55px, 100%);
+        width: auto;
+        max-width: 38px;
+        min-height: 0;
+        flex: 0 0 auto;
+        aspect-ratio: 38 / 55;
+        padding: 0;
+      }
+      .zone-grid .zone-reg .empty-zone { min-height: 0; overflow: hidden; font-size: 10px; padding: 4px; }
+      .zone-reg .reference-link { padding: 2px 4px; }
+    }
+    @media (orientation: portrait) and (max-width: 599px) {
+      .zone-fuel .zone-cards:has(.card:nth-child(6)) { gap: 3px; }
+      .zone-fuel .zone-cards:has(.card:nth-child(6)) .card { width: 30px; height: 44px; flex-basis: 30px; }
+    }
+    @media (orientation: portrait) and (max-height: 720px) {
+      .brand-plate { height: 52px; }
+      .brand-plate img { width: 254px; top: -29px; }
+      .hand-tray { padding-top: 24px; }
+      .cards, .cards.is-expanded-hand { height: 110px; }
+      .zone-grid, .zone-grid.is-rival { gap: 4px; grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); }
+      .board-drawer { gap: 4px; }
+      .fuel-dock .zone-fuel .zone-cards { padding-block: 2px; }
+      .zone-grid .panel-zone, .zone-grid .drop-zone { padding: 3px; gap: 2px; }
+      .zone-grid .core-panel > .zone-title { display: none; }
+      .drawer-head p { font-size: 10px; line-height: 1.1; }
     }
     @media (orientation: landscape) and (max-height: 900px) {
       .hand-controls { display: none; }
@@ -5914,14 +5950,13 @@
       .board-drawer { left: 22px; right: 22px; padding: 16px; }
       .drawer-head h2 { font-size: 26px; }
       .drawer-head p, .zone-title, .zone-title b { font-size: 17px; }
-      .zone-grid, .zone-grid.is-rival { grid-template-rows: max-content max-content max-content; gap: 10px; }
+      .zone-grid, .zone-grid.is-rival { gap: 8px; }
       .zone-cards .card, .core-slot .card, .zone-cards[data-card-count="4"] .card { width: 66px; height: 96px; flex-basis: 66px; }
-      .zone-grid .panel-zone, .zone-grid .drop-zone { grid-template-rows: auto auto; }
-      .zone-grid .zone-cards { min-height: min-content; align-items: flex-start; }
-      .zone-grid .core-slot { display: block; }
+      .zone-grid .zone-cards .card { width: auto; height: min(96px, 100%); max-width: 66px; flex-basis: auto; }
+
       .drawer-foot button, .hand-controls button { min-height: 44px; font-size: 17px; }
-      .cards, .cards.is-expanded-hand { --hand-card-width: 76px; --hand-card-height: 111px; height: 206px; }
-      .hand-controls { margin-bottom: 20px; }
+      .cards, .cards.is-expanded-hand { --hand-card-width: 76px; --hand-card-height: 111px; height: 176px; }
+      .hand-controls { width: 190px; }
     }
     .zone-reg .zone-cards { overflow: visible; min-height: 0; }
     .zone-reg .empty-zone {
@@ -8372,10 +8407,10 @@
         const narrow = window.innerWidth <= 430 || trayWidth <= 390;
         const leftGuard = tutorialPortraitLayout
           ? (narrow ? 16 : 20)
-          : (narrow ? 18 : 22);
+          : (row === 0 ? (narrow ? 86 : 78) : (narrow ? 18 : 22));
         const rightGuard = tutorialPortraitLayout
           ? (narrow ? 16 : 20)
-          : (narrow ? 18 : 22);
+          : (row === 0 ? (tabletPortrait ? 222 : 158) : (narrow ? 18 : 22));
         const scale = tutorialPortraitLayout
           ? (count > 8 ? .78 : .82)
           : (count > 15 ? .82 : count > 12 ? .86 : .92);
@@ -8409,7 +8444,7 @@
           ? Math.max(0, 3 - Math.abs(col - mid) * .5)
           : Math.max(0, (count > 15 ? 5 : 7) - Math.abs(col - mid) * .9);
         cardNode.style.left = `${Math.max(0, centerX - (cardWidth / 2)).toFixed(2)}px`;
-        cardNode.style.top = `${(topBase + row * rowStep).toFixed(2)}px`;
+        cardNode.style.top = `${(topBase + row * rowStep + (tutorialPortraitLayout ? 0 : 12)).toFixed(2)}px`;
         cardNode.style.zIndex = String(10 + row * cardsPerRow + col);
         tray.style.setProperty("--fan-overlap", "0px");
         cardNode.style.setProperty("--hand-rotate", `${angle.toFixed(2)}deg`);

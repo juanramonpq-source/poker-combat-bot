@@ -24,6 +24,49 @@ async function withPage(engine, viewport, run) {
 }
 
 for (const engine of [chromium, webkit]) {
+  for (const viewport of [{width:393,height:790}, {width:375,height:667}, {width:768,height:1024}, {width:820,height:1180}]) {
+    test(`${engine.name()} all portrait panels visible at ${viewport.width}`, async () => {
+      await withPage(engine, viewport, async page => {
+        for (const [hand, fuel] of [[4,1], [10,4], [18,9]]) {
+          await page.evaluate(({hand,fuel}) => {
+            const deck=createDeck();
+            const player=state.players[0];
+            player.core={pilot:deck.find(c=>c.rank==='J'&&c.suit==='spades'),copilot:deck.find(c=>c.rank==='Q'&&c.suit==='hearts'),booster:deck.find(c=>c.rank==='A'&&c.suit==='clubs')};
+            for(const [zone,suit] of [['attack','spades'],['defense','hearts'],['armor','clubs']]) player[zone]=deck.filter(c=>c.suit===suit && Number(c.rank)>=2 && Number(c.rank)<=10).slice(0,3);
+            state.players[0].hand = createDeck().slice(0,hand);
+            state.players[0].fuel = createDeck().filter(isNumericDiamond).slice(0,fuel);
+            state.log = ['El rival sustituye combustible y prepara su siguiente ataque. Consulta el registro completo para leer todos los movimientos.'];
+            render(); shell.classList.add('board-open');
+          }, {hand,fuel});
+          await page.waitForTimeout(250);
+          const issues = await page.evaluate(() => {
+            const issues=[];
+            const grid=document.querySelector('[data-zone-grid]');
+            if(grid.scrollTop !== 0) issues.push('Modules require scrolling');
+            for(const selector of ['.core-panel','.zone-attack','.zone-defense','.zone-armor','.zone-reg','.zone-fuel']) {
+              const el=document.querySelector(selector), r=el.getBoundingClientRect();
+              const title=el.querySelector('.zone-title').getBoundingClientRect();
+              if(title.bottom > r.bottom - 2) issues.push(selector+' title clipped');
+              for(const y of [r.top+3,r.bottom-3]) {
+                if(!el.contains(document.elementFromPoint(r.left+r.width/2,y))) issues.push(selector+' obscured');
+              }
+              for(const card of el.querySelectorAll('.card')) {
+                const c=card.getBoundingClientRect();
+                if(c.height < 22 || !card.contains(document.elementFromPoint(c.left+c.width/2,c.top+c.height/2))) issues.push(selector+' installed card unusable');
+              }
+            }
+            const tray=document.querySelector('.hand-tray').getBoundingClientRect();
+            const action=document.querySelector('[data-action-toggle]').getBoundingClientRect();
+            if(action.left < tray.left+tray.width/2 || action.top < tray.top+tray.height*.6) issues.push('Actions must be bottom right');
+            if(innerWidth < 600 && tray.height > 225) issues.push('Hand grew beyond its original height');
+            return issues;
+          });
+          assert.deepEqual(issues, [], `hand=${hand}, fuel=${fuel}`);
+        }
+        await page.screenshot({path:`test-results/mobile-panels-20260915/${engine.name()}-${viewport.width}.png`});
+      });
+    });
+  }
   test(`${engine.name()} live help follows the game and preserves the turn`, async () => {
     await withPage(engine, { width: 820, height: 1180 }, async page => {
       await page.goto(`${baseURL}/poker_combat_bot_ONLINE.html`);
@@ -96,11 +139,14 @@ for (const engine of [chromium, webkit]) {
             fullWidth: rect('.phone-shell').width >= innerWidth - 2,
             fullHeight: rect('.phone-shell').height >= innerHeight - 2,
             figuresAbove: rect('.floating-figures-button').bottom < rect('.floating-modify-button').top,
-            clearCards: [...document.querySelectorAll('[data-hand-cards] .card')].every(c => c.getBoundingClientRect().top > rect('.floating-modify-button').bottom),
-            actionsClear: [...document.querySelectorAll('[data-hand-cards] .card')].every(c => c.getBoundingClientRect().top > rect('[data-action-toggle]').bottom)
+            clearCards: [...document.querySelectorAll('[data-hand-cards] .card')].every(c => {
+              const r=c.getBoundingClientRect(), b=rect('.floating-modify-button');
+              return r.top >= b.bottom || r.right <= b.left || r.left >= b.right || r.bottom <= b.top;
+            }),
+            actionsBottomRight: rect('[data-action-toggle]').left > rect('.hand-tray').left + rect('.hand-tray').width / 2
           };
         });
-        assert.deepEqual(bounds, { fullWidth: true, fullHeight: true, figuresAbove: true, clearCards: true, actionsClear: true });
+        assert.deepEqual(bounds, { fullWidth: true, fullHeight: true, figuresAbove: true, clearCards: true, actionsBottomRight: true });
         await page.locator('.zone-reg [data-reference="log"]').tap();
         await page.locator('[data-reference-dialog]').waitFor({ state: 'visible' });
         const body = page.locator('[data-reference-body]');
