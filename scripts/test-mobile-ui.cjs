@@ -12,6 +12,7 @@ async function withPage(engine, viewport, run) {
   try {
     const page = await browser.newPage({ viewport, hasTouch: true, isMobile: true, reducedMotion: 'reduce' });
     page.setDefaultTimeout(5000);
+    page.setDefaultNavigationTimeout(30000);
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(hudURL);
@@ -24,6 +25,46 @@ async function withPage(engine, viewport, run) {
 }
 
 for (const engine of [chromium, webkit]) {
+  for(const viewport of [{width:393,height:790}, {width:375,height:667}, {width:768,height:1024}]) {
+    test(`${engine.name()} portrait card columns at ${viewport.width}`, async () => {
+      await withPage(engine, viewport, async page => {
+        for(const count of [0,1,2,3,4]) {
+          await page.evaluate(count => {
+            const deck=createDeck(), player=state.players[0];
+            player.core={pilot:count?deck.find(c=>c.rank==='J'&&c.suit==='spades'):null,copilot:count?deck.find(c=>c.rank==='Q'&&c.suit==='hearts'):null,booster:count?deck.find(c=>c.rank==='A'&&c.suit==='clubs'):null};
+            for(const [zone,suit] of [['attack','spades'],['defense','hearts'],['armor','clubs']]) player[zone]=deck.filter(c=>c.suit===suit && Number(c.rank)>=2).slice(0,count);
+            render(); shell.classList.add('board-open');
+          },count);
+          await page.waitForTimeout(250);
+          const problems=await page.evaluate(() => {
+            const problems=[];
+            for(const box of document.querySelectorAll('.core-slot, .zone-attack, .zone-defense, .zone-armor')) {
+              const title=box.querySelector('.zone-title'), cards=box.querySelector('.zone-cards');
+              const t=title.getBoundingClientRect(), c=cards.getBoundingClientRect();
+              if(c.left < t.right-1) problems.push('Cards must sit to the right of the label');
+              if(!box.classList.contains('core-slot')) {
+                const label=title.querySelector('span').getBoundingClientRect(), counter=title.querySelector('b');
+                const capacity=counter.getBoundingClientRect(), panel=box.getBoundingClientRect();
+                if(capacity.top < label.bottom) problems.push('Capacity must sit below module name');
+                if(capacity.bottom > panel.bottom-2 || !counter.contains(document.elementFromPoint(capacity.left+capacity.width/2,capacity.top+capacity.height/2))) problems.push('Capacity is clipped or obscured');
+                if(!/^\d+\/\d+$/.test(counter.textContent)) problems.push('Capacity format must be current/max');
+              }
+              for(const card of cards.querySelectorAll('.card')) {
+                const r=card.getBoundingClientRect();
+                const minimumHeight = cards.querySelectorAll('.card').length <= 2 ? Math.min(c.height-1,32) : 22;
+                if(r.height < minimumHeight) problems.push('Installed card is too small');
+                if(r.left<c.left-1 || r.right>c.right+1 || r.top<c.top-1 || r.bottom>c.bottom+1) problems.push('Card spills outside its allocated area');
+                if(!card.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2))) problems.push('Card is not touchable');
+              }
+            }
+            return problems;
+          });
+          assert.deepEqual(problems,[],`Installed cards per module: ${count}`);
+        }
+        await page.screenshot({path:`test-results/mobile-card-columns-20260915/${engine.name()}-${viewport.width}.png`});
+      });
+    });
+  }
   for (const viewport of [{width:393,height:790}, {width:375,height:667}, {width:768,height:1024}, {width:820,height:1180}]) {
     test(`${engine.name()} all portrait panels visible at ${viewport.width}`, async () => {
       await withPage(engine, viewport, async page => {

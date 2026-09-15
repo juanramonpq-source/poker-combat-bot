@@ -5927,6 +5927,7 @@
       .fuel-dock .zone-fuel .zone-cards { padding-block: 2px; }
       .zone-grid .panel-zone, .zone-grid .drop-zone { padding: 3px; gap: 2px; }
       .zone-grid .core-panel > .zone-title { display: none; }
+      .zone-grid .core-panel { grid-template-rows: minmax(0, 1fr); }
       .drawer-head p { font-size: 10px; line-height: 1.1; }
     }
     @media (orientation: landscape) and (max-height: 900px) {
@@ -5957,6 +5958,56 @@
       .drawer-foot button, .hand-controls button { min-height: 44px; font-size: 17px; }
       .cards, .cards.is-expanded-hand { --hand-card-width: 76px; --hand-card-height: 111px; height: 176px; }
       .hand-controls { width: 190px; }
+    }
+    /* Portrait cards share a row with their labels, using the full panel height. */
+    @media (orientation: portrait) {
+      .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) {
+        grid-template-columns: minmax(62px, .85fr) minmax(0, 1.15fr);
+        grid-template-rows: minmax(0, 1fr);
+        gap: 4px;
+      }
+      .zone-grid .core-slot { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) > .zone-title {
+        min-width: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 5px;
+        font-size: 11px;
+      }
+      .zone-grid .core-slot > .zone-title { font-size: 10px; }
+      .zone-grid :is(.zone-attack, .zone-defense, .zone-armor) > .zone-title span { white-space: nowrap; }
+      .zone-grid :is(.zone-attack, .zone-defense, .zone-armor) > .zone-title b { font-size: 14px; }
+      .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) > .zone-cards {
+        container-type: size;
+        display: grid;
+        grid-template-columns: repeat(var(--zone-card-count, 1), minmax(0, 1fr));
+        gap: 3px;
+        min-width: 0;
+        height: 100%;
+        align-items: center;
+        justify-items: center;
+      }
+      .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) > .zone-cards .card {
+        height: min(100cqh, calc((100cqw - (var(--zone-card-count, 1) - 1) * 3px) / var(--zone-card-count, 1) * 55 / 38));
+        width: auto;
+        max-width: none;
+        aspect-ratio: 38 / 55;
+      }
+      .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) .empty-zone {
+        min-height: 0;
+        height: 100%;
+        font-size: 9px;
+      }
+    }
+    @media (orientation: portrait) and (max-width: 399px) {
+      .zone-grid :is(.zone-attack, .zone-defense, .zone-armor) > .zone-title { font-size: 10px; }
+    }
+    @media (orientation: portrait) and (min-width: 600px) {
+      .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) > .zone-title { font-size: 15px; }
+      .zone-grid :is(.zone-attack, .zone-defense, .zone-armor) > .zone-title b { font-size: 20px; }
     }
     .zone-reg .zone-cards { overflow: visible; min-height: 0; }
     .zone-reg .empty-zone {
@@ -8547,6 +8598,7 @@
     function fillZoneCards(container, cards, emptyText = "Arrastra aqui", context = "zone") {
       container.innerHTML = "";
       container.dataset.cardCount = String(cards.length || 0);
+      container.style.setProperty('--zone-card-count', String(Math.max(1, cards.length)));
       if (cards.length) {
         cards.forEach((card) => container.appendChild(makeCardNode(card, context)));
       } else {
@@ -8637,7 +8689,7 @@
         makeCoreSlot("booster", "Boost", player.core.booster, "A", isRivalView)
       );
 
-      const moduleMeta = (zone) => compactBoard
+      const moduleMeta = (zone) => (compactBoard || !isLandscapeLayout())
         ? `${player[zone].length}/${moduleLimit(player, zone)}`
         : `${player[zone].length}/${moduleLimit(player, zone)} max`;
       const suitTitle = (zone, icon, title) => `<i class="zone-suit suit-${zone}" aria-hidden="true">${icon}</i>${title}`;
