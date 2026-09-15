@@ -32808,7 +32808,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260915-hand-overview-drag-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260915-compact-help-and-focused-actions-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -42686,8 +42686,8 @@ function getInGameHelpPayload(viewIdx = getMobileSpritePlayerIndex()){
     text = `Tienes ${mobileSpriteDraftPlacements.size}/${getModifyOpsLimit()} cambio(s) preparados. Revisa sus destinos y pulsa Aplicar cambios. Limpiar selección cancela el borrador.`;
   }
   const options = getInGameHelpOptions(viewIdx, { ready, missing, selected });
-  const availableActions = options.filter(option => option.available && option.id !== 'log');
-  const actionSummary = availableActions.length ? `Puedes: ${availableActions.map(option => option.title.toLowerCase()).join(' · ')}.` : 'Puedes consultar el Registro.';
+  const availableActions = options.filter(option => option.available);
+  const actionSummary = availableActions.length ? `Puedes: ${availableActions.map(option => option.title.toLowerCase()).join(' · ')}.` : 'Ahora no tienes acciones disponibles.';
   // Keep prerequisites in the lower disclosure, with current actions always first.
   if(!state.attackMode && !state.pendingDefense && !state.winner && state.currentPlayer === viewIdx && !state.transitionLock && !mobileSpriteDraftPlacements.size) text = '';
   title = '¿Qué puedo hacer en esta jugada?';
@@ -42708,15 +42708,14 @@ function getInGameHelpOptions(viewIdx, { ready, missing, selected }){
     const explanation = id !== 'log' && waiting ? `${waiting}${reason ? ` ${reason}` : ''}` : reason;
     return {id, title, available:!explanation, reason:explanation, steps, next:{target, text:instruction}};
   };
-  const log = option('log', 'Consultar el Registro', '', ['Abre el Registro completo.', 'Lee los movimientos, del más reciente al más antiguo.'], 'log', 'Abre el Registro completo.');
-  if(state.winner) return [log];
+  if(state.winner) return [];
   const handDiamonds = player.hand.filter(isNumericDiamondCard);
   const selectedDiamond = state.selected.find(c => c.zone === 'hand' && isNumericDiamondCard(c));
   if(state.pendingDefense?.defenderIndex === viewIdx){
     return [
       option('defend', 'Defenderme con un diamante', handDiamonds.length ? '' : 'No tienes un ♦ numérico en la mano.',
         [`Recibes ${state.pendingDefense.totalAttack} de ataque. Pulsa Elegir 1♦.`, 'Selecciona un ♦ de valor 2–10 de tu mano: resta ese valor al ataque.', 'Pulsa Confirmar defensa. El diamante se gasta.'], selectedDiamond ? 'confirm' : 'defend', selectedDiamond ? 'Pulsa Confirmar defensa.' : 'Pulsa Elegir 1♦ y elige un diamante de la mano.'),
-      option('skip-defense', 'Aceptar el ataque sin defenderme', '', ['Pulsa No defender.', 'El juego resuelve el impacto sin gastar un diamante.'], 'skip-defense', 'Pulsa No defender para aceptar el impacto.'), log
+      option('skip-defense', 'Aceptar el ataque sin defenderme', '', ['Pulsa No defender.', 'El juego resuelve el impacto sin gastar un diamante.'], 'skip-defense', 'Pulsa No defender para aceptar el impacto.')
     ];
   }
   const draft = mobileSpriteDraftOwnerIdx === viewIdx ? mobileSpriteDraftPlacements.size : 0;
@@ -42775,7 +42774,7 @@ function getInGameHelpOptions(viewIdx, { ready, missing, selected }){
     option('pass','Pasar mi turno','',
       requiredPass ? [`Selecciona ${requiredPass} carta(s) de tu mano.`, 'Pulsa Acciones → Pasar.', 'Esas cartas se descartan y termina tu turno.'] : ['Tu mano está vacía: no tienes que seleccionar cartas.', 'Pulsa Acciones → Pasar para terminar el turno sin descartar.'], handSelected === requiredPass ? 'pass' : 'hand', handSelected === requiredPass ? (requiredPass ? 'Pulsa Pasar para descartar la selección.' : 'Pulsa Pasar para terminar tu turno.') : `Selecciona ${requiredPass} carta(s) de tu mano.`),
     option('clear','Limpiar mi selección',state.selected.length || draft ? '' : 'Todavía no hay cartas seleccionadas ni cambios preparados.',
-      ['Pulsa Limpiar selección.', 'Se desmarcan las cartas y se cancela el montaje pendiente. No se gastan cartas ni termina tu turno.'], 'clear','Pulsa Limpiar selección.'), log
+      ['Pulsa Limpiar selección.', 'Se desmarcan las cartas y se cancela el montaje pendiente. No se gastan cartas ni termina tu turno.'], 'clear','Pulsa Limpiar selección.')
   ];
 }
 

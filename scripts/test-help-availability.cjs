@@ -30,7 +30,7 @@ for(const engine of [chromium,webkit]) test(`${engine.name()} available actions 
   await page.evaluate(()=>{state.players[0].attack.push(devMakeCard('10','spades'));render();});
   await hud.locator('[data-help-available] [data-help-option="attack"]').waitFor();
   assert.equal(await hud.locator('[data-help-option="draw"]').evaluate(e=>e.open),true);
-  assert.deepEqual(await hud.locator('[data-help-available] [data-help-option]').evaluateAll(els=>els.map(e=>e.dataset.helpOption)),['build','attack','draw','pass','log']);
+  assert.deepEqual(await hud.locator('[data-help-available] [data-help-option]').evaluateAll(els=>els.map(e=>e.dataset.helpOption)),['build','attack','draw','pass']);
   await page.evaluate(()=>{state.players[0].hand=[];render();});
   await hud.locator('[data-help-blocked-topics] [data-help-option="draw"]').waitFor({state:'attached'});
   assert.equal(await hud.locator('[data-help-option="draw"]').evaluate(e=>e.open),false);
@@ -41,8 +41,8 @@ for(const engine of [chromium,webkit]) test(`${engine.name()} available actions 
    assert.equal(await hud.locator('[data-reference-dialog]').evaluate(el=>{const r=el.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight+1;}),true);
   }
   await page.evaluate(()=>{state.transitionLock=true;render();});
-  await page.waitForFunction(()=>document.getElementById('mobileSpriteBridgeFrame').contentDocument.querySelectorAll('[data-help-available] [data-help-option]').length===1);
-  assert.deepEqual(await hud.locator('[data-help-available] [data-help-option]').evaluateAll(els=>els.map(e=>e.dataset.helpOption)),['log']);
+  await page.waitForFunction(()=>document.getElementById('mobileSpriteBridgeFrame').contentDocument.querySelectorAll('[data-help-available] [data-help-option]').length===0);
+  assert.equal(await hud.locator('[data-help-option="log"]').count(),0,'Registro remains accessible outside contextual help');
   assert.match(await hud.locator('[data-help-option="pass"] .help-reason').textContent(),/turno|rival/);
   assert.deepEqual(errors,[]);
  }finally{await browser.close();}
@@ -71,7 +71,7 @@ for(const engine of [chromium,webkit]) test(`${engine.name()} panel question but
    assert.ok(helpBounds.x+helpBounds.width<=actionBounds.x || helpBounds.y+helpBounds.height<=actionBounds.y,'Help and Actions do not overlap');
    const bounds=await button.evaluate(el=>{const r=el.getBoundingClientRect();const overlap=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;return {width:r.width,height:r.height,uncovered:el.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)),collisions:[...document.querySelectorAll('.zone-grid,.fuel-dock,.drawer-foot,[data-board-close]')].filter(x=>overlap(r,x.getBoundingClientRect())).length};});
    await page.screenshot({path:`test-results/help-availability-20260915/${engine.name()}-question-${size.width}.png`});
-   assert.ok(bounds.width>=44&&bounds.height>=44);assert.ok(bounds.uncovered,`${size.width}: help covered by ${await button.evaluate(el=>{const r=el.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.outerHTML.slice(0,240);})}`);assert.equal(bounds.collisions,0);
+   assert.ok(bounds.width>=36&&bounds.width<=38&&bounds.height>=36&&bounds.height<=38);assert.ok(bounds.uncovered,`${size.width}: help covered by ${await button.evaluate(el=>{const r=el.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.outerHTML.slice(0,240);})}`);assert.equal(bounds.collisions,0);
    const before=await page.evaluate(()=>JSON.stringify({players:state.players,selected:state.selected,turn:state.turnCount}));
    await button.tap();await hud.locator('[data-help-blocked]').waitFor();
    assert.equal(await hud.locator('[data-reference-dialog]').evaluate(el=>el.open),true);
