@@ -6044,6 +6044,10 @@
     }
     .hand-help:focus-visible { outline: 3px solid #74fff2; outline-offset: 3px; }
     .hand-help:active { transform: translateY(1px); }
+    @media (orientation: portrait) {
+      .hand-tray header .hand-help { transform: translateY(7px); }
+      .hand-tray header .hand-help:active { transform: translateY(8px); }
+    }
     @media (orientation: landscape) and (max-height: 900px) {
       .hand-tray header {
         display: grid;

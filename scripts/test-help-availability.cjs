@@ -57,6 +57,13 @@ for(const engine of [chromium,webkit]) test(`${engine.name()} panel question but
   const hud=page.frameLocator('#mobileSpriteBridgeFrame');
   for(const size of [{width:375,height:667},{width:393,height:790},{width:768,height:1024},{width:667,height:375},{width:844,height:390},{width:1024,height:768}]){
    await page.setViewportSize(size);
+   if(size.width<size.height){
+    const panelBounds=await hud.locator('[data-tab="mecha"]').boundingBox();
+    const handBounds=await hud.locator('[data-hand-overview-toggle]').boundingBox();
+    const helpBounds=await hud.locator('[data-panel-help]').boundingBox();
+    assert.ok(helpBounds.y>=handBounds.y+6,'Portrait question sits lower than Mano');
+    assert.ok(helpBounds.y>=panelBounds.y+panelBounds.height+7,'Portrait question clears the Panel tab');
+   }
    if(!await hud.locator('.phone-shell').evaluate(el=>el.classList.contains('board-open')))await hud.locator('[data-tab="mecha"]').tap();
    await page.waitForTimeout(250); // Let the panel's opening transform finish before measuring hit targets.
    const button=hud.locator('[data-panel-help]');assert.equal(await button.count(),1);
