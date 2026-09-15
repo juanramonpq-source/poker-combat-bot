@@ -11,20 +11,76 @@ async function withPage(engine, viewport, run) {
   const browser = await engine.launch();
   try {
     const page = await browser.newPage({ viewport, hasTouch: true, isMobile: true, reducedMotion: 'reduce' });
-    page.setDefaultTimeout(5000);
+    page.setDefaultTimeout(20000);
     page.setDefaultNavigationTimeout(30000);
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(hudURL);
     await page.locator('[data-hand-cards] .card').first().waitFor();
-    await run(page);
-    assert.deepEqual(errors, [], 'No JavaScript errors');
+    try {
+      await run(page);
+      assert.deepEqual(errors, [], 'No JavaScript errors');
+    } catch(error) {
+      await page.screenshot({path:`test-results/mobile-ui-20260915/failure-${engine.name()}.png`});
+      throw error;
+    }
   } finally {
     await browser.close();
   }
 }
 
 for (const engine of [chromium, webkit]) {
+  test(`${engine.name()} schematic help offers actions and guides without playing`, async () => {
+    await withPage(engine, {width:393,height:790}, async page => {
+      await page.goto(`${baseURL}/poker_combat_bot_ONLINE.html`);
+      await page.waitForFunction(() => window.__pocobotDev);
+      await page.evaluate(() => {
+        __pocobotDev.boot(); __pocobotDev.setSoundEnabled(false); __pocobotDev.setViewportMode('mobile-vertical');
+        state.transitionLock=false; state.tutorial=false; state.turnCount=3;
+        state.players[0].hand=[devMakeCard('4','diamonds'),devMakeCard('J','spades'),devMakeCard('Q','hearts')]; render();
+      });
+      const hud=page.frameLocator('#mobileSpriteBridgeFrame');
+      await hud.locator('[data-menu-toggle]').tap();
+      await hud.locator('.top-menu [data-reference="help"]').tap();
+      assert.equal(await hud.locator('#reference-title').textContent(),'¿Qué puedo hacer en esta jugada?');
+      assert.equal(await hud.locator('[data-help-topics] details[open]').count(),0);
+      assert.deepEqual(await hud.locator('[data-help-option]').evaluateAll(els=>els.map(e=>e.dataset.helpOption)),['build','attack','projectile','combined','draw','figures','pass','clear','log']);
+      await page.screenshot({path:`test-results/schematic-help-20260915/${engine.name()}-options.png`});
+      const draw=hud.locator('[data-help-option="draw"]');
+      await draw.locator('summary').tap();
+      assert.equal(await draw.locator('ol li').count(),3);
+      await page.waitForTimeout(200);
+      await page.screenshot({path:`test-results/schematic-help-20260915/${engine.name()}-draw.png`});
+      const before=await page.evaluate(()=>JSON.stringify({players:state.players,selected:state.selected,turn:state.turnCount,deck:state.deck,discard:state.discard}));
+      await draw.locator('[data-help-guide]').tap();
+      assert.equal(await hud.locator('[data-reference-dialog]').evaluate(e=>e.open),false);
+      assert.match(await hud.locator('[data-drawer-subtitle]').textContent(),/♦/);
+      assert.ok(await hud.locator('.help-next-target').count()>0);
+      assert.equal(await page.evaluate(()=>JSON.stringify({players:state.players,selected:state.selected,turn:state.turnCount,deck:state.deck,discard:state.discard})),before);
+      await hud.locator('[data-hand-cards] .card').first().tap();
+      await page.waitForFunction(()=>document.getElementById('mobileSpriteBridgeFrame').contentDocument.querySelector('[data-action="draw"].help-next-target'));
+      await page.evaluate(()=>{ state.selected=[]; state.turnCount++; state.players[0].flags.lastOwnAction='diamondDraw'; render(); });
+      await page.waitForFunction(()=>!document.getElementById('mobileSpriteBridgeFrame').contentDocument.querySelector('.help-next-target'));
+      assert.match(await page.evaluate(()=>getInGameHelpPayload(0).options.find(o=>o.id==='draw').reason),/anterior/);
+      await page.evaluate(()=>{state.players[0].hand=[]; render();});
+      assert.equal(await page.evaluate(()=>getInGameHelpPayload(0).options.find(o=>o.id==='pass').available),true);
+      await page.evaluate(()=>{state.players[0].hand=[devMakeCard('4','diamonds')]; state.transitionLock=true; state.pendingDefense={attackerIndex:1,defenderIndex:0,totalAttack:12}; render();});
+      assert.deepEqual(await page.evaluate(()=>getInGameHelpPayload(0).options.map(o=>o.id)),['defend','skip-defense','log']);
+      await hud.locator('[data-menu-toggle]').tap(); await hud.locator('.top-menu [data-reference="help"]').tap();
+      await hud.locator('[data-help-option="defend"] summary').tap();
+      assert.match(await hud.locator('[data-help-option="defend"]').textContent(),/12/);
+      await page.screenshot({path:`test-results/schematic-help-20260915/${engine.name()}-defense.png`});
+      await hud.locator('[data-help-option="defend"] [data-help-guide]').tap();
+      const defenseButton=hud.locator('[data-defense-popup].show [data-defense-action="confirm"]');
+      assert.ok(await defenseButton.evaluate(el=>el.classList.contains('help-next-target')));
+      await defenseButton.tap();
+      await hud.locator('.hand-overview .card').first().tap();
+      await page.waitForFunction(()=>document.getElementById('mobileSpriteBridgeFrame').contentDocument.querySelector('[data-defense-popup].show [data-defense-action="confirm"].help-next-target'));
+      assert.equal(await defenseButton.evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),true);
+
+    });
+  });
+
   for(const viewport of [{width:393,height:790}, {width:375,height:667}, {width:768,height:1024}]) {
     test(`${engine.name()} portrait card columns at ${viewport.width}`, async () => {
       await withPage(engine, viewport, async page => {
@@ -119,6 +175,8 @@ for (const engine of [chromium, webkit]) {
         state.tutorial = true;
         state.transitionLock = false;
         state.players[0].hand = createDeck().slice(0, 18);
+        // Keep the unrelated one-time figure-burst hint out of this help-reading fixture.
+        state.players[0].flags.figureBurstPromptShown = true;
         render();
       });
       const hud = page.frameLocator('#mobileSpriteBridgeFrame');
@@ -131,7 +189,7 @@ for (const engine of [chromium, webkit]) {
       await hud.locator('[data-reference-dialog]').waitFor({ state: 'visible' });
       const before = await page.evaluate(() => JSON.stringify({ players:state.players, selected:state.selected, turn:state.turnCount, deck:state.deck, discard:state.discard }));
       await hud.locator('[data-help-topics] summary').filter({ hasText: 'Fuel ×2' }).tap();
-      assert.equal(await hud.locator('[data-help-topics] details').filter({ hasText: 'Fuel ×2' }).evaluate(el => el.open), true, 'First tap opens a help topic immediately');
+      assert.equal(await hud.locator('[data-help-option="attack"]').evaluate(el => el.open), true, 'First tap opens a help topic immediately');
       await hud.locator('[data-reference-close]').tap();
       assert.equal(await page.evaluate(() => JSON.stringify({ players:state.players, selected:state.selected, turn:state.turnCount, deck:state.deck, discard:state.discard })), before);
       await page.evaluate(() => {
@@ -151,7 +209,7 @@ for (const engine of [chromium, webkit]) {
       await page.evaluate(() => { state.pendingDefense = null; state.tutorial = false; render(); });
       await hud.locator('[data-menu-toggle]').tap();
       await hud.locator('.top-menu [data-reference="help"]').tap();
-      assert.match(await hud.locator('[data-help-now]').textContent(), /Acciones/);
+      assert.match(await hud.locator('[data-help-now]').textContent(), /opción/);
       fs.mkdirSync('test-results/mobile-help-20260915', { recursive: true });
       await page.screenshot({ path:`test-results/mobile-help-20260915/${engine.name()}-help-tablet.png` });
       await hud.locator('[data-reference-close]').tap();

@@ -6046,6 +6046,16 @@
     .reference-body details { padding: 12px 0; border-top: 1px solid #58cddf55; }
     .reference-body summary { cursor: pointer; color: #ffe09b; font-weight: bold; }
     .reference-body details p { margin: 12px 0 0; }
+    .reference-body summary { min-height: 44px; user-select: none; -webkit-user-select: none; }
+    .reference-body summary small { display: block; padding-left: 20px; color: #a8d5df; font-size: 12px; font-weight: normal; }
+    .reference-body ol { padding-left: 24px; }
+    .reference-body li { margin: 10px 0; }
+    .reference-body .help-reason { color: #ffd596; white-space: pre-line; }
+    .reference-body button:disabled { opacity: .45; }
+    .help-next-target { outline: 3px solid #ffe269 !important; outline-offset: -3px; box-shadow: 0 0 10px #ffe269 !important; }
+    .drawer-head p.is-action-guide { color: #ffe269; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .reference-body [data-lesson-objective] { color: #ffe09b; font-weight: bold; }
+    .reference-body h3 { margin: 18px 0 8px; font-size: 17px; }
     .reference-body .register-entry { padding-bottom: 12px; border-bottom: 1px solid #58cddf33; }
   </style>
 </head>
@@ -6069,7 +6079,7 @@
       <button class="menu-button" type="button" data-menu="load">Cargar</button>
       <button class="menu-button on" type="button" data-menu="music">Música OFF</button>
       <button class="menu-button" type="button" data-menu="tutorial">Tutorial OFF</button>
-      <button class="menu-button" type="button" data-reference="help">Ayuda de esta jugada</button>
+      <button class="menu-button" type="button" data-reference="help">¿Qué puedo hacer en esta jugada?</button>
       <button class="menu-button" type="button" data-reference="log">Registro completo</button>
     </nav>
 
@@ -6235,7 +6245,7 @@
     <div class="toast" data-toast></div>
   </main>
   <dialog class="reference-dialog" data-reference-dialog aria-labelledby="reference-title">
-    <header><h2 id="reference-title">Ayuda de esta jugada</h2><button class="reference-link" type="button" data-reference-close>Volver al juego</button></header>
+    <header><h2 id="reference-title">¿Qué puedo hacer en esta jugada?</h2><button class="reference-link" type="button" data-reference-close>Volver al juego</button></header>
     <div class="reference-body" data-reference-body></div>
   </dialog>
 
@@ -7486,7 +7496,9 @@
       render();
     }
 
-    function closeBoard() {
+    function closeBoard({ preserveHelpGuide = false } = {}) {
+      if (!preserveHelpGuide) activeHelpGuide = null;
+      document.querySelectorAll(".help-next-target").forEach(el => el.classList.remove("help-next-target"));
       shell.classList.remove("board-open");
     }
 
@@ -8075,8 +8087,20 @@
         if (["attack-mode", "projectile", "projectile-only", "confirm"].includes(action)) {
           openBoard("mecha");
         }
+        const choosingDefenseCard = action === 'defend' && state.pendingDefense
+          && !selectedDefenseDiamond(state.players[state.pendingDefense.defenderIndex]);
         hideTutorialForGameAction(action);
         callRealGameBridge("action", { action });
+        if (choosingDefenseCard) {
+          defensePopupSuppressedKey = defensePopupKey();
+          closeBoard({ preserveHelpGuide:true });
+          closeActions();
+          shell.classList.add('hand-overview-open');
+          document.querySelector('[data-hand-overview-toggle]')?.setAttribute('aria-expanded','true');
+          renderDefensePopup();
+          renderHelpGuide();
+          return;
+        }
         if (["modify", "confirm", "defend", "skip-defense"].includes(action)) {
           closePanelsForCombatFx();
           return;
@@ -9011,7 +9035,10 @@
       }
     }
 
+    let activeHelpGuide = null;
+
     function openReference(kind) {
+      if(kind === 'help' && state.tutorialLesson) kind = 'lesson';
       const dialog = document.querySelector('[data-reference-dialog]');
       dialog.dataset.kind = kind;
       closeTopMenu();
@@ -9024,8 +9051,20 @@
       if (!dialog || (!dialog.open && !rebuild)) return;
       const body = dialog.querySelector('[data-reference-body]');
       const isLog = dialog.dataset.kind === 'log';
-      document.getElementById('reference-title').textContent = isLog ? 'Registro completo' : 'Ayuda de esta jugada';
-      if (isLog) {
+      document.getElementById('reference-title').textContent = isLog ? 'Registro completo' : '¿Qué puedo hacer en esta jugada?';
+      if (dialog.dataset.kind === 'lesson') {
+        const lesson = state.tutorialLesson;
+        document.getElementById('reference-title').textContent = lesson?.title || 'Ejercicio finalizado';
+        if(rebuild || body.dataset.lessonId !== lesson?.id){
+          body.dataset.lessonId = lesson?.id || '';
+          body.innerHTML = '<p data-lesson-progress></p><h3>Qué tienes que hacer</h3><p data-lesson-objective></p><h3>Cómo funciona</h3><div data-lesson-body></div><h3>Pista</h3><p data-lesson-tip></p>';
+          body.querySelector('[data-lesson-progress]').textContent = lesson?.progress || '';
+          body.querySelector('[data-lesson-objective]').textContent = lesson?.objective || 'Vuelve al juego para continuar.';
+          body.querySelector('[data-lesson-body]').innerHTML = lesson?.body || '';
+          body.querySelector('[data-lesson-tip]').textContent = lesson?.tip || '';
+          body.scrollTop = 0;
+        }
+      } else if (isLog) {
         // Keep a stable reading position until the player reopens the register.
         if (!rebuild) return;
         body.replaceChildren();
@@ -9036,27 +9075,90 @@
           body.append(line);
         }
       } else {
-        const help = state.inGameHelp || { title:state.bridgeTutorialTitle || 'Tu turno', text:state.bridgeTutorialText || 'Arrastra cartas al panel de montaje o abre Acciones para elegir una jugada.', topics:[] };
-        if (rebuild) {
-          body.innerHTML = '<h3 data-help-now-title></h3><p data-help-now></p><p data-help-tip></p><div data-help-topics></div>';
+        const help = state.inGameHelp || {};
+        const options = help.options || [];
+        const signature = options.map(option => option.id).join(',');
+        if (rebuild || body.dataset.helpSignature !== signature) {
+          body.dataset.helpSignature = signature;
+          body.innerHTML = '<p data-help-now>Elige una opción. Te indicamos los pasos y dónde tocar.</p><div data-help-topics></div>';
           const topics = body.querySelector('[data-help-topics]');
-          for (const topic of help.topics || []) {
+          for (const option of options) {
             const details = document.createElement('details');
-            const summary = document.createElement('summary');
-            const text = document.createElement('p');
-            summary.textContent = topic.title;
-            text.textContent = topic.text;
-            details.append(summary, text);
+            details.dataset.helpOption = option.id;
+            details.innerHTML = '<summary><span></span><small></small></summary><p class="help-reason"></p><ol></ol><button type="button" class="reference-link" data-help-guide>Mostrar dónde</button>';
+            details.querySelector('[data-help-guide]').dataset.helpGuide = option.id;
+            details.addEventListener('toggle', () => {
+              if (details.open) {
+                topics.querySelectorAll('details').forEach(other => { if (other !== details) other.open = false; });
+                requestAnimationFrame(() => {
+                  if (details.open) body.scrollTop += details.getBoundingClientRect().top - body.getBoundingClientRect().top - 8;
+                });
+              }
+            });
             topics.append(details);
           }
+          if (!options.length) body.querySelector('[data-help-now]').textContent = 'La ayuda de jugadas está disponible dentro de una partida.';
         }
-        body.querySelector('[data-help-now-title]').textContent = help.title;
-        body.querySelector('[data-help-now]').textContent = help.text;
-        body.querySelector('[data-help-tip]').textContent = help.tip || '';
-        // Update live numbers without closing the topic the player is reading.
-        body.querySelectorAll('details p').forEach((el, index) => { el.textContent = help.topics?.[index]?.text || ''; });
+        if (options.length === 1 && options[0].id === 'log') body.querySelector('[data-help-now]').textContent = state.winner
+          ? 'Partida terminada. Puedes revisar el Registro.'
+          : 'Espera a que termine la jugada. Puedes consultar el Registro.';
+        for (const option of options) {
+          const details = [...body.querySelectorAll('[data-help-option]')].find(el => el.dataset.helpOption === option.id);
+          details.querySelector('summary span').textContent = option.title;
+          details.querySelector('summary small').textContent = option.available ? 'Disponible' : 'Qué me falta';
+          details.querySelector('.help-reason').textContent = (option.reason || '').replace('Te falta: ', 'Te falta:\n• ').replaceAll('; ', '\n• ');
+          details.querySelector('.help-reason').hidden = !option.reason;
+          const list = details.querySelector('ol');
+          if (list.children.length !== option.steps.length) list.replaceChildren(...option.steps.map(() => document.createElement('li')));
+          option.steps.forEach((step,index) => { list.children[index].textContent = step; });
+          details.querySelector('[data-help-guide]').disabled = !option.available;
+          details.querySelector('[data-help-guide]').textContent = option.id === 'log' ? 'Abrir Registro' : 'Mostrar dónde';
+        }
       }
       if (rebuild) body.scrollTop = 0;
+    }
+
+    function startHelpGuide(id) {
+      const option = state.inGameHelp?.options?.find(option => option.id === id);
+      if (!option?.available) return;
+      if (id === 'log') { openReference('log'); return; }
+      activeHelpGuide = { id, contextKey:state.inGameHelp.contextKey };
+      document.querySelector('[data-reference-dialog]').close();
+      closeActions();
+      openBoard('mecha');
+    }
+
+    function renderHelpGuide() {
+      document.querySelectorAll('.help-next-target').forEach(el => el.classList.remove('help-next-target'));
+      const subtitle = document.querySelector('[data-drawer-subtitle]');
+      subtitle.classList.remove('is-action-guide');
+      if (!activeHelpGuide) return;
+      const option = state.inGameHelp?.options?.find(option => option.id === activeHelpGuide.id);
+      if (!option?.available || activeHelpGuide.contextKey !== state.inGameHelp.contextKey) { activeHelpGuide = null; return; }
+      subtitle.textContent = option.next.text;
+      subtitle.classList.add('is-action-guide');
+      let target = option.next.target;
+      if (state.pendingDefense?.defenderIndex === 0 && target === 'defend' && defensePopupSuppressedKey === defensePopupKey()) target = 'hand-diamonds';
+      const selectors = {
+        hand:'[data-hand-cards]', 'hand-diamonds':'[data-hand-cards] .card, .hand-overview .card',
+        fuel:'.zone-fuel .card, .zone-armor .card', attack:'.zone-attack .card',
+        modify:'[data-drawer-primary]'
+      };
+      if (state.pendingDefense?.defenderIndex === 0) {
+        selectors.defend = selectors.confirm = '[data-defense-popup].show [data-defense-action="confirm"]';
+        selectors['skip-defense'] = '[data-defense-popup].show [data-defense-action="skip"]';
+      }
+      if (!selectors[target]) {
+        shell.classList.add('actions-open');
+        syncActionFlyouts();
+        document.querySelector('[data-action-toggle]')?.setAttribute('aria-expanded','true');
+      }
+      document.querySelectorAll(selectors[target] || `[data-action="${target}"]`).forEach(el => {
+        if (target === 'hand-diamonds' && !isNumericDiamond(findCard(el.dataset.cardId)?.card || {})) return;
+        // Armor is fuel only when the current boost grants that ability.
+        if (target === 'fuel' && el.closest('.zone-armor') && state.players[0]?.core?.booster?.suit !== 'diamonds') return;
+        if (!el.disabled && !el.hidden) el.classList.add('help-next-target');
+      });
     }
 
     function selectedDefenseDiamond(defender) {
@@ -9110,6 +9212,7 @@
         defend.type = "button";
         defend.textContent = selected ? "Confirmar defensa" : "Elegir 1♦";
         defend.dataset.defenseAction = "confirm";
+        defend.disabled = EMBEDDED_REAL_GAME && !state.bridgeActions?.defend;
         actions.appendChild(defend);
       }
       const skip = document.createElement("button");
@@ -9117,6 +9220,7 @@
       skip.className = "secondary";
       skip.textContent = "No defender";
       skip.dataset.defenseAction = "skip";
+      skip.disabled = EMBEDDED_REAL_GAME && !state.bridgeActions?.["skip-defense"];
       actions.appendChild(skip);
     }
 
@@ -9270,6 +9374,9 @@
     }
 
 	    function renderActions() {
+      document.querySelectorAll('[data-reference="help"]').forEach(button => {
+        button.textContent = state.tutorialLesson ? 'Leer este paso' : button.closest('.top-menu') ? '¿Qué puedo hacer en esta jugada?' : 'Consultar ayuda';
+      });
       document.querySelectorAll(".tab-sprite").forEach((button) => {
         button.classList.toggle("is-active", button.dataset.tab === state.activeTab);
       });
@@ -9371,6 +9478,7 @@
 	      renderActions();
       renderHackMode();
       renderReference();
+      renderHelpGuide();
       syncTutorialBotLocalAnimation();
 	    }
 
@@ -9749,6 +9857,7 @@
       state.bridgeTutorialHtml = snapshot.bridgeTutorialHtml || "";
       state.bridgeTutorialMeta = snapshot.bridgeTutorialMeta || "";
       state.inGameHelp = snapshot.inGameHelp || null;
+      state.tutorialLesson = snapshot.tutorialLesson || null;
       state.bridgeTutorialActions = Array.isArray(snapshot.bridgeTutorialActions) ? snapshot.bridgeTutorialActions : [];
       state.tutorialBotVisible = !!snapshot.tutorialBotVisible;
       state.tutorialBotMode = snapshot.tutorialBotMode || "";
@@ -9767,7 +9876,7 @@
       state.tutorialBotDismissAction = snapshot.tutorialBotDismissAction || "";
       state.argosHack = snapshot.argosHack && snapshot.argosHack.active ? snapshot.argosHack : null;
       state.log = Array.isArray(snapshot.log) ? snapshot.log.slice(0, 60) : [];
-      if (state.attackMode || state.projectileOnlyMode || state.pendingDefense) {
+      if (state.attackMode || state.projectileOnlyMode || (state.pendingDefense && !shell.classList.contains("hand-overview-open"))) {
         state.activeTab = "mecha";
         shell.classList.add("board-open");
       }
@@ -9876,8 +9985,13 @@
     }, true);
     document.addEventListener("blur", clearPressedButtons, true);
 
+    let referencePointerStartedInside = false;
+    document.addEventListener('pointerdown', event => {
+      referencePointerStartedInside = !!event.target.closest('[data-reference-dialog]');
+    }, { capture:true, passive:true });
+
     document.addEventListener("click", (event) => {
-      const nativeReferenceControl = event.target.closest('[data-reference-dialog]') && !event.target.closest('button');
+      const nativeReferenceControl = referencePointerStartedInside && event.target.closest('[data-reference-dialog]') && !event.target.closest('button');
       if (event.isTrusted && !nativeReferenceControl && Date.now() < suppressTrustedTouchClickUntil) {
         event.preventDefault();
         event.stopPropagation();
@@ -9888,6 +10002,7 @@
       const zone = event.target.closest(".drop-zone");
       if (button?.dataset.reference) { openReference(button.dataset.reference); return; }
       if (button?.hasAttribute('data-reference-close')) { document.querySelector('[data-reference-dialog]').close(); return; }
+      if (button?.dataset.helpGuide) { startHelpGuide(button.dataset.helpGuide); return; }
       if (event.target.closest('[data-reference-dialog]')) return;
       const overviewCard = event.target.closest(".hand-overview .card[data-card-id]");
       if (overviewCard && shell.classList.contains("hand-overview-open")) {
@@ -9994,7 +10109,7 @@
       if (button.dataset.cardId) toggleSelected(button.dataset.cardId);
       if (button.dataset.defenseAction === "confirm") {
         defensePopupSuppressedKey = defensePopupKey();
-        closeBoard();
+        closeBoard({ preserveHelpGuide:true });
         closeActions();
         shell.classList.add("hand-overview-open");
         document.querySelector("[data-hand-overview-toggle]")?.setAttribute("aria-expanded", "true");

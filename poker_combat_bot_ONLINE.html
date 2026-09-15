@@ -32808,7 +32808,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260915-mobile-card-columns-5';
+const MOBILE_SPRITE_HUD_VERSION = '20260915-tutorial-safety-7';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -36730,7 +36730,7 @@ const TUTORIAL_SCRIPT = [
   {
     id: 'intro-definition',
     title: 'Paso 1 · Qué define a un PoCoBOT',
-    body: 'Un <strong>PoCoBOT</strong> es un mecha hecho con cartas: el <strong>piloto</strong> lo despierta, las <strong>estadísticas</strong> le dan cuerpo y el <strong>palo del piloto</strong> marca su especialidad.<br><br>El botón <strong>PANEL</strong> abre el <strong>panel de Stats</strong>: ahí se ven y se gestionan <strong>Ataque</strong>, <strong>Defensa</strong>, <strong>Armadura</strong>, <strong>Fuel</strong> y <strong>Núcleo</strong>.<br><br>Para quedar listo necesita <strong>1 piloto</strong>, <strong>al menos 6 cartas en el panel de Stats</strong> y <strong>cumplir el palo que exige ese piloto</strong>. Hasta que el montaje no llegue al <strong>100%</strong>, el mecha <strong>no puede atacar</strong>. Vamos a construirlo poco a poco para verlo cobrar vida.',
+    body: 'Un <strong>PoCoBOT</strong> es un mecha hecho con cartas: el <strong>piloto</strong> lo despierta, las <strong>estadísticas</strong> le dan cuerpo y el <strong>palo del piloto</strong> marca su especialidad.<br><br>El botón <strong>PANEL</strong> abre el <strong>panel de Stats</strong>: ahí se ven y se gestionan <strong>Ataque</strong>, <strong>Defensa</strong>, <strong>Armadura</strong>, <strong>Fuel</strong> y <strong>Núcleo</strong>.<br><br>Para quedar listo necesita <strong>1 piloto</strong>, <strong>al menos 6 cartas entre Ataque, Defensa y Armadura</strong>, <strong>al menos una en cada módulo</strong> y <strong>3 del palo del piloto</strong>. Hasta que el montaje no llegue al <strong>100%</strong>, el mecha <strong>no puede atacar</strong>. Vamos a construirlo poco a poco para verlo cobrar vida.',
     objective: 'Pulsa <strong>Entendido</strong> y empezamos por las <strong>picas</strong> con el panel limpio.',
     tip: 'Verás subir Ataque, Defensa, Armadura y Fuel uno a uno. Puedes llevar cada carta al panel arrastrándola o seleccionándola y pulsando <strong>Modificar</strong>.',
     tutorialBotPrimaryAction: 'step:intro-attack-stat',
@@ -37286,7 +37286,7 @@ const TUTORIAL_SCRIPT = [
     id: 'summary',
     title: 'Tutorial completado',
     body: 'Ya has practicado el ciclo esencial completo: abrir <strong>PANEL</strong> para leer el <strong>panel de Stats</strong>, <strong>montaje</strong>, <strong>combustible</strong>, <strong>ataque</strong>, <strong>defensa</strong>, <strong>robo con diamantes</strong>, <strong>proyectiles</strong>, <strong>pasar turno</strong>, <strong>2 figuras → 4 cartas</strong> y <strong>sustitución de cartas del panel</strong>.<br><br>Recuerda la chuleta de turno: puedes colocar o intercambiar cartas con <strong>Modificar</strong>, atacar, pasar descartando 2, robar descartando 1 diamante numérico o reciclar 2 figuras por 4 cartas.<br><br>Con esto ya puedes leer el tablero base de PoCoBOT sin depender del azar puro.',
-    objective: 'Puedes seguir jugando esta partida libremente o iniciar una nueva desde la consola.',
+    objective: 'Vuelve al menú principal para jugar una partida o continuar con el Carnet PoCoBOT. Nueva partida repite este tutorial.',
     tip: 'Si quieres repetir la lección, vuelve a pulsar el botón TUTORIAL desde la portada.',
     allowedButtons: [],
     allowedCardIds: null,
@@ -40225,7 +40225,18 @@ function coreSelectionTargets(card, player){
     if(!player.core.copilot) options.push('core-copilot');
   }
   if(isAceCard(card) && !player.core.booster) options.push('core-booster');
-  return options;
+  const requiredSlot = tutorialRequiredCoreSlot(card);
+  return requiredSlot ? options.filter(zone => zone === requiredSlot) : options;
+}
+function tutorialRequiredCoreSlot(card){
+  if(!tutorialIsGuided()) return null;
+  const destinations = {
+    'pilot-practice':'core-pilot', 'academy-pilot-choice':'core-pilot', 'academy-core-swap':'core-pilot',
+    'copilot-practice':'core-copilot', 'academy-copilot-place':'core-copilot', 'diamond-copilot-swap':'core-copilot',
+    'ace-practice':'core-booster', 'academy-booster-place':'core-booster', 'diamond-booster-swap':'core-booster'
+  };
+  return (tutorialExpectedSelection(tutorialGetCurrentStep()?.id) || []).includes(card?.id)
+    ? destinations[tutorialGetCurrentStep()?.id] || null : null;
 }
 function allowedModuleTargets(card, player){
   console.log('[DEBUG-TARGETS] allowedModuleTargets for:', card.rank + card.suit);
@@ -41601,7 +41612,7 @@ function getMobileSpriteActionStates(viewIdx){
   const defenseTurn = canUseInteractiveDefenseAction() && state.pendingDefense?.defenderIndex === viewIdx;
   const hasDraft = mobileSpriteDraftOwnerIdx === viewIdx && mobileSpriteDraftPlacements.size > 0;
   const attackReady = playerTurn && player && canPlayerOpenMainAttack(player, viewIdx);
-  return {
+  const actions = {
     modify: playerTurn && (hasDraft || canModifySelection()),
     draw: playerTurn && canDrawDiamondNow(),
     figures: playerTurn && hasFigureBurstCondition(player),
@@ -41614,6 +41625,12 @@ function getMobileSpriteActionStates(viewIdx){
     'skip-defense': defenseTurn,
     clear: playerTurn || defenseTurn || hasDraft || state.selected.length > 0
   };
+  const tutorialButtons = {modify:'actionAddBtn',draw:'actionDrawDiamondBtn',figures:'quickFigureDrawBtn',
+    'attack-mode':'attackModeBtn',projectile:'toggleProjectileBtn','projectile-only':'projectileOnlyBtn',
+    confirm:defenseTurn ? 'confirmDefenseBtn' : mobileSpriteProjectileOnlyMode ? 'projectileOnlyBtn' : 'confirmAttackBtn',
+    pass:defenseTurn ? 'skipDefenseBtn' : 'actionPassBtn',defend:'confirmDefenseBtn','skip-defense':'skipDefenseBtn',clear:'clearSelectionBtn'};
+  for(const [action,button] of Object.entries(tutorialButtons)) actions[action] = !!actions[action] && tutorialAllowsButton(button);
+  return actions;
 }
 
 function mobileSpriteTextFromHtml(html=''){
@@ -42668,15 +42685,72 @@ function getInGameHelpPayload(viewIdx = getMobileSpritePlayerIndex()){
     title = 'Montaje pendiente';
     text = `Tienes ${mobileSpriteDraftPlacements.size}/${getModifyOpsLimit()} cambio(s) preparados. Revisa sus destinos y pulsa Aplicar cambios. Limpiar selección cancela el borrador.`;
   }
-  const topics = [
-    { title:'Montar y desbloquear el ataque', text:`Necesitas piloto J/Q/K de ♠, ♥ o ♣; 6 cartas entre ataque, defensa y armadura; al menos 1 en cada módulo y 3 del palo del piloto. ${ready ? 'Tu mecha cumple las condiciones de ataque de esta partida.' : `Ahora falta: ${missing.join('; ')}.`} Arrastra desde la mano al destino iluminado. Modificar o Aplicar cambios confirma hasta ${getModifyOpsLimit()} cambios y termina el turno.` },
-    { title:'Capacidad, núcleo y combustible', text:`Límites actuales: ataque ${limits.attack.max}, defensa ${limits.defense.max}, armadura ${limits.armor.max}. El piloto, el copiloto y el As de boost determinan las ampliaciones; consulta los contadores de cada panel. Los ♦ numéricos se instalan como combustible. ${hasDiamondBoosterArmorFuel(player) ? 'Tu boost ♦ permite consumir armadura como combustible; hacerlo reduce tu protección.' : 'El combustible instalado se usa para el ataque, no para robar ni para la defensa activa.'}` },
-    { title:'Fuel ×2 y proyectiles', text:`Suma el valor del combustible seleccionado y multiplícalo por 2: ese es el máximo de las picas del ataque principal. Por ejemplo, fuel 4 permite hasta 8 de ataque. El combustible seleccionado se consume. ${state.projectileUnlocked ? 'Los proyectiles ya están desbloqueados.' : 'Los proyectiles se desbloquean después del primer ataque completo.'} En modo proyectil, la última pica seleccionada se dispara aparte y se descarta. Solo proyectil no necesita fuel.` },
-    { title:'Defender un ataque', text:'Al recibir un ataque, puedes gastar exactamente un ♦ numérico (2–10) de la mano para reducir el ataque por su valor. Pulsa Elegir 1♦, toca la carta y confirma la defensa, o elige No defender. El As no sirve como defensa activa.' },
-    { title:'Robar y cambiar 2 figuras por 4 cartas', text:`Para robar, selecciona un ♦ numérico de la mano y pulsa Robar: gastas la carta y robas tantas como su valor, hasta agotar el mazo. No puedes repetir este robo en dos turnos propios seguidos. ${player.flags.lastOwnAction === 'diamondDraw' ? 'Ya lo usaste en tu turno anterior.' : ''} Con piloto, copiloto y al menos 2 figuras en la mano, 2 Figuras → 4 Cartas descarta automáticamente las dos primeras J/Q/K de tu mano y roba hasta 4. Ambas acciones terminan el turno. ${capacity}` },
-    { title:'Pasar, cancelar y revisar la partida', text:`Para pasar, selecciona ${Math.min(2, player.hand.length)} carta(s) de la mano y pulsa Pasar: se descartan y termina tu turno. Limpiar selección permite empezar de nuevo antes de confirmar. Registro completo muestra los últimos 20 eventos, con el más reciente primero. Abrir o cerrar esta ayuda no juega cartas ni reinicia la partida; el rival puede seguir resolviendo su turno.` }
+  const options = getInGameHelpOptions(viewIdx, { ready, missing, selected });
+  return { title, text, tip, meta:capacity, html:'', actions:[], options,
+    contextKey:`${state.turnCount}:${state.currentPlayer}:${state.pendingDefense?.defenderIndex ?? ''}:${state.winner || ''}` };
+
+}
+
+// These descriptions guide the player; choosing one never executes a game action.
+function getInGameHelpOptions(viewIdx, { ready, missing, selected }){
+  const player = state.players[viewIdx];
+  const option = (id, title, reason, steps, target, instruction) => ({
+    id, title, available:!reason, reason, steps, next:{ target, text:instruction }
+  });
+  const log = option('log', 'Consultar el Registro', '', ['Abre el Registro completo.', 'Lee los movimientos, del más reciente al más antiguo.'], 'log', 'Abre el Registro completo.');
+  if(state.winner) return [log];
+  const handDiamonds = player.hand.filter(isNumericDiamondCard);
+  const selectedDiamond = state.selected.find(c => c.zone === 'hand' && isNumericDiamondCard(c));
+  if(state.pendingDefense){
+    if(state.pendingDefense.defenderIndex !== viewIdx) return [log];
+    return [
+      option('defend', 'Defenderme con un diamante', handDiamonds.length ? '' : 'No tienes un ♦ numérico en la mano.',
+        [`Recibes ${state.pendingDefense.totalAttack} de ataque. Pulsa Elegir 1♦.`, 'Selecciona un ♦ de valor 2–10 de tu mano: resta ese valor al ataque.', 'Pulsa Confirmar defensa. El diamante se gasta.'], selectedDiamond ? 'confirm' : 'defend', selectedDiamond ? 'Pulsa Confirmar defensa.' : 'Pulsa Elegir 1♦ y elige un diamante de la mano.'),
+      option('skip-defense', 'Aceptar el ataque sin defenderme', '', ['Pulsa No defender.', 'El juego resuelve el impacto sin gastar un diamante.'], 'skip-defense', 'Pulsa No defender para aceptar el impacto.'), log
+    ];
+  }
+  if(state.transitionLock || state.currentPlayer !== viewIdx || !canUseInteractiveTurnAction()) return [log];
+  const draft = mobileSpriteDraftOwnerIdx === viewIdx ? mobileSpriteDraftPlacements.size : 0;
+  const hasFuel = player.fuel.some(isNumericDiamondCard) || (hasDiamondBoosterArmorFuel(player) && player.armor.length > 0);
+  const attackReason = !ready ? `Te falta: ${missing.join('; ')}.` : !hasFuel ? 'Necesitas combustible instalado.' : '';
+  const attackNext = !state.attackMode ? ['attack-mode','Pulsa Atacar.']
+    : !selected.fuelCards.length ? ['fuel','Selecciona combustible instalado.']
+    : !selected.mainAttackCards.length ? ['attack','Selecciona las picas que usarás.']
+    : selected.mainValue > selected.limit ? ['fuel',`Superas Fuel ×2 en ${selected.mainValue-selected.limit}: ajusta las cartas.`]
+    : ['confirm','Revisa el ataque y pulsa Confirmar.'];
+  const projectileReason = !state.projectileUnlocked ? 'Se desbloquea después del primer ataque completo.'
+    : !canPlayerFireProjectileOnly(player, viewIdx) ? 'Necesitas una pica numérica instalada y un mecha apto para disparar.' : '';
+  const drawReason = player.flags.lastOwnAction === 'diamondDraw' ? 'Ya robaste con un diamante en tu turno anterior.'
+    : !handDiamonds.length ? 'Necesitas un ♦ numérico (2–10) en la mano.' : '';
+  const handSelected = state.selected.filter(c => c.zone === 'hand').length;
+  const requiredPass = Math.min(2,player.hand.length);
+  const modifySteps = [
+    'Arrastra una carta de la mano al panel iluminado. Puedes instalarla o sustituir otra.',
+    `Puedes preparar hasta ${getModifyOpsLimit()} cambios. Para cambiar una instalada, selecciónala junto a otra de la mano y pulsa Modificar.`,
+    'Revisa el montaje y pulsa Aplicar cambios. Termina tu turno.'
   ];
-  return { title, text, tip, meta:capacity, html:'', actions:[], topics };
+  return [
+    option('build','Montar o modificar mi mecha',player.hand.length ? '' : 'Necesitas una carta en la mano para montar o sustituir.',modifySteps,(draft || canModifySelection()) ? 'modify' : 'hand',draft ? 'Revisa los cambios y pulsa Aplicar cambios.' : canModifySelection() ? 'Pulsa Modificar y elige el destino.' : 'Arrastra una carta de la mano al panel iluminado.'),
+    option('attack','Atacar con combustible (Fuel ×2)',attackReason,
+      ['Pulsa Acciones → Atacar.', 'Selecciona combustible y picas: la suma de picas no puede superar el valor del combustible ×2.', 'Pulsa Confirmar. Se gasta el combustible seleccionado y termina tu turno.'],...attackNext),
+    option('projectile','Disparar solo un proyectil',projectileReason,
+      ['Pulsa Acciones → Solo proyectil.', 'Selecciona una pica numérica instalada. No necesita combustible.', 'Pulsa Confirmar. La pica disparada se descarta y termina tu turno.'],
+      !mobileSpriteProjectileOnlyMode ? 'projectile-only' : state.selected.length ? 'confirm' : 'attack',
+      !mobileSpriteProjectileOnlyMode ? 'Pulsa Solo proyectil.' : state.selected.length ? 'Pulsa Confirmar para disparar.' : 'Selecciona una pica numérica instalada.'),
+    option('combined','Atacar y añadir un proyectil',attackReason || projectileReason,
+      ['Pulsa Atacar y activa Modo proyectil.', 'Selecciona combustible y picas. La última pica será el proyectil y va fuera del límite Fuel ×2.', 'Pulsa Confirmar. Se gastan el combustible y la pica del proyectil; termina tu turno.'],
+      !state.attackMode ? 'attack-mode' : !state.projectileMode ? 'projectile' : attackNext[0],
+      !state.attackMode ? 'Pulsa Atacar.' : !state.projectileMode ? 'Activa Modo proyectil.' : attackNext[1]),
+    option('draw','Robar cartas con un diamante',drawReason,
+      ['Selecciona un ♦ numérico (2–10) de tu mano.', 'Pulsa Acciones → Robar: robas tantas cartas como su valor, mientras quede mazo.', `El diamante se gasta y termina tu turno. Máximo ${MAX_HAND_SIZE} en la mano; el exceso se descarta.`],
+      selectedDiamond ? 'draw' : 'hand-diamonds', selectedDiamond ? 'Pulsa Robar para gastar el diamante seleccionado.' : 'Selecciona un ♦ de valor 2–10 de tu mano.'),
+    option('figures','Cambiar 2 figuras por 4 cartas',hasFigureBurstCondition(player) ? '' : 'Necesitas piloto, copiloto y al menos 2 figuras J/Q/K en la mano.',
+      ['Pulsa 2 Figuras → 4 Cartas.', 'Se descartan automáticamente las dos primeras figuras de tu mano.', `Robas hasta 4 cartas y termina tu turno. Máximo ${MAX_HAND_SIZE} en la mano.`], 'figures','Pulsa 2 Figuras → 4 Cartas.'),
+    option('pass','Pasar mi turno','',
+      requiredPass ? [`Selecciona ${requiredPass} carta(s) de tu mano.`, 'Pulsa Acciones → Pasar.', 'Esas cartas se descartan y termina tu turno.'] : ['Tu mano está vacía: no tienes que seleccionar cartas.', 'Pulsa Acciones → Pasar para terminar el turno sin descartar.'], handSelected === requiredPass ? 'pass' : 'hand', handSelected === requiredPass ? (requiredPass ? 'Pulsa Pasar para descartar la selección.' : 'Pulsa Pasar para terminar tu turno.') : `Selecciona ${requiredPass} carta(s) de tu mano.`),
+    option('clear','Limpiar mi selección',state.selected.length || draft ? '' : 'Todavía no hay cartas seleccionadas ni cambios preparados.',
+      ['Pulsa Limpiar selección.', 'Se desmarcan las cartas y se cancela el montaje pendiente. No se gastan cartas ni termina tu turno.'], 'clear','Pulsa Limpiar selección.'), log
+  ];
 }
 
 function getMobileSpriteGuidanceText(){
@@ -42778,6 +42852,14 @@ function createMobileSpriteSnapshot(){
     bridgeTutorialMeta: tutorialBotExternalSequenceOverlay ? '' : guidance.meta,
     bridgeTutorialActions: tutorialBotExternalSequenceOverlay ? [] : (guidance.actions || []),
     inGameHelp: getInGameHelpPayload(viewIdx),
+    tutorialLesson: tutorialSystem.enabled && !academyLessonUsesLiveOpponent() && tutorialGetCurrentStep() ? {
+      id:tutorialGetCurrentStep().id,
+      title:tutorialGetCurrentStep().title,
+      objective:mobileSpriteTextFromHtml(tutorialGetCurrentStep().objective),
+      body:tutorialGetCurrentStep().body || '',
+      tip:mobileSpriteTextFromHtml(tutorialGetCurrentStep().tip),
+      progress:`Paso ${tutorialSystem.stepIndex + 1} de ${getActiveTutorialScript().length}`
+    } : null,
     tutorialBotVisible: mobileTutorialBotVisible,
     tutorialBotMode,
     tutorialBotSequenceOnly,
@@ -42899,6 +42981,8 @@ function commitMobileSpriteDraftPlacements(){
     const bi = player.hand.findIndex(card => card.id === b[0]);
     return ai - bi;
   });
+  const draftSelection = entries.map(([id]) => ({...player.hand.find(card => card.id === id), zone:'hand'}));
+  if(!tutorialValidateAction('modify', draftSelection)) return false;
   for(const [cardId, zone] of entries){
     const legalZones = getMobileSpriteDraftLegalZones(cardId).map(normalizeMobileSpriteZone);
     if(!legalZones.includes(zone)){
@@ -43029,7 +43113,7 @@ function handleMobileSpriteAction(action){
       if(!canUseInteractiveTurnAction()) return;
       if(!tutorialValidateAction('attackMode')) return;
       if(state.pendingDefense || !canPlayerOpenMainAttack(state.players[state.currentPlayer], state.currentPlayer)) return;
-      state.attackMode = !state.attackMode;
+      state.attackMode = tutorialIsGuided() && !academyLessonUsesLiveOpponent() ? true : !state.attackMode;
       if(!state.attackMode){
         state.projectileMode = false;
         state.selected = [];
@@ -43037,15 +43121,17 @@ function handleMobileSpriteAction(action){
       render();
       return;
     case 'projectile':
+      if(!tutorialValidateAction('toggleProjectile')) return;
       mobileSpriteProjectileOnlyMode = false;
       if(!canUseInteractiveTurnAction()) return;
       if(state.pendingDefense || !canPlayerOpenMainAttack(state.players[state.currentPlayer], state.currentPlayer) || !state.projectileUnlocked || !state.players[state.currentPlayer].attack.some(isPlayableProjectileCard)) return;
       state.attackMode = true;
-      state.projectileMode = !state.projectileMode;
+      state.projectileMode = tutorialIsGuided() && !academyLessonUsesLiveOpponent() ? true : !state.projectileMode;
       render();
       return;
     case 'projectile-only':
       if(!canUseInteractiveTurnAction() || !canProjectileOnlyNow()) return;
+      if(tutorialIsGuided() && !academyLessonUsesLiveOpponent()){ confirmAttack(true); return; }
       mobileSpriteProjectileOnlyMode = true;
       state.attackMode = true;
       state.projectileMode = false;
@@ -43101,13 +43187,14 @@ let lastMobileSpriteTutorialActionAt = 0;
 
 function handleMobileSpriteTutorialAction(action){
   if(!tutorialSystem.enabled) return;
-  const actionKey = `${tutorialSystem.lessonId || tutorialSystem.mode}:${action || ''}`;
+  const step = tutorialGetCurrentStep();
+  const actionKey = `${tutorialSystem.lessonId || tutorialSystem.mode}:${step?.id}:${action || ''}`;
   const now = Date.now();
   if(actionKey === lastMobileSpriteTutorialActionKey && now - lastMobileSpriteTutorialActionAt < 700) return;
   lastMobileSpriteTutorialActionKey = actionKey;
   lastMobileSpriteTutorialActionAt = now;
   if(typeof action === 'string' && action.startsWith('step:')){
-    tutorialGoToStep(action.slice('step:'.length));
+    if(action === step?.tutorialBotPrimaryAction) tutorialGoToStep(action.slice('step:'.length));
     return;
   }
   if(action === 'tutobot-continue'){
@@ -45252,52 +45339,38 @@ function triggerModifyFeedbackSequence(playerIdx, callback){
 }
 
 function finishModifyTurn(){
+  const generation = tutorialSessionGeneration;
   state.tutorialStep = Math.max(state.tutorialStep, 3);
   state.lastActionType = 'modify';
   state.pendingTurnSfx = 'turn_build';
   state.players[state.currentPlayer].flags.lastOwnAction = 'modify';
   state.transitionLock = true;
   const onlineFxCueId = queueOnlineFxCue('modify', state.currentPlayer);
-
-  let callbackExecuted = false;
-
-  // Safety timeout: if callback doesn't execute in 3 seconds, force it
-  const safetyTimeout = window.setTimeout(() => {
-    if (!callbackExecuted) {
-      if(_ol.active) console.log('[ONLINE] finishModifyTurn SAFETY TIMEOUT: forcing advanceTurn after 3 seconds');
-      clearOnlineFxCue(onlineFxCueId);
-      state.transitionLock = false;
-      advanceTurn();
-    }
-  }, 3000);
-
-  // IMPORTANT: Do NOT render() before showMechaUpdateShowcase - it destroys the elements!
-  // Instead, render() is called inside the callback after animation completes
-  triggerModifyFeedbackSequence(state.currentPlayer, () => {
-    if(callbackExecuted) return; // Safety: don't execute twice
-    callbackExecuted = true;
+  let finished = false;
+  let safetyTimeout;
+  const finish = () => {
+    if(finished || generation !== tutorialSessionGeneration) return;
+    finished = true;
     window.clearTimeout(safetyTimeout);
     clearOnlineFxCue(onlineFxCueId);
-
-    if(_ol.active) console.log('[ONLINE] finishModifyTurn callback: showMechaUpdateShowcase completed');
-    render(); // Render AFTER the showcase animation
-    const promptPlayer = state.projectilePromptPlayer;
-    if(promptPlayer === state.currentPlayer){
-      showProjectileUnlockedPrompt(promptPlayer, () => {
-        if(_ol.active) console.log('[ONLINE] finishModifyTurn callback: showProjectileUnlockedPrompt completed, calling advanceTurn');
-        state.projectilePromptPlayer = null;
-        state.transitionLock = false;
-        advanceTurn();
-      });
-    } else {
-      if(_ol.active) console.log('[ONLINE] finishModifyTurn callback: no projectile prompt, calling advanceTurn');
+    render();
+    let advanced = false;
+    const advance = () => {
+      if(advanced || generation !== tutorialSessionGeneration) return;
+      advanced = true;
+      state.projectilePromptPlayer = null;
       state.transitionLock = false;
       advanceTurn();
-    }
-  });
+    };
+    if(state.projectilePromptPlayer === state.currentPlayer) showProjectileUnlockedPrompt(state.currentPlayer, advance);
+    else advance();
+  };
+  safetyTimeout = window.setTimeout(finish, 3000);
+  triggerModifyFeedbackSequence(state.currentPlayer, finish);
 }
 
 function drawWithTwoFigures(){
+  if(!tutorialValidateAction('quickFigureDraw')) return;
   // CRITICAL FIX: If Guest is playing online, send action to Host instead of executing locally
   if (_ol.active && _ol.role === 'guest') {
     console.log('[ONLINE] Guest drawWithTwoFigures: sending action to Host instead of executing locally');
@@ -45653,6 +45726,7 @@ function maybeCueDefenseActiveUi(){
 }
 
 function runHeaderAttackSequence(attackerIdx, withProjectile, callback, options={}){
+  const generation = tutorialSessionGeneration;
   state.transitionLock = true;
   if(!state.firstAttackTriggered){
     switchToBattleMusic();
@@ -45671,10 +45745,11 @@ function runHeaderAttackSequence(attackerIdx, withProjectile, callback, options=
   });
   let launched = false;
   const launchAttack = () => {
-    if(launched) return;
+    if(launched || generation !== tutorialSessionGeneration) return;
     launched = true;
     triggerAttackLaunchFeedback(attackerIdx, withProjectile, { completeAttack });
     window.setTimeout(() => {
+      if(generation !== tutorialSessionGeneration) return;
       state.transitionLock = false;
       if(callback) callback();
     }, ATTACK_RESOLVE_AFTER_LAUNCH_MS);
@@ -45736,8 +45811,8 @@ function beginDefenseWindow(totalAttack, withProjectile=false){
   hideDefenseAlert();
   state.phase = 'Defensa activa';
 
-  if(tutorialIsGuided() && tutorialStepId === 'projectile' && defenderIndex === 1){
-    log(`🎓 ${defender.name} decide no defenderse para cerrar la práctica final.`);
+  if(tutorialIsGuided() && tutorialBlocksSinglePlayerAi() && defenderIndex === 1){
+    log(`🎓 ${defender.name} deja pasar el ataque para continuar el ejercicio.`);
     addToast('El instructor no se defiende', 'warn');
     resolveAttackAfterDefense(null);
     return;
@@ -45780,18 +45855,7 @@ function confirmAttack(projectileOnly=false){
     return notifySelection('Tu mecha aún no puede realizar un ataque principal.');
   }
 
-  // Tutorial: Mark first attack
-  if(tutorialSystem.enabled && !tutorialSystem.validation.firstAttackMade){
-    tutorialSystem.validation.firstAttackMade = true;
-  }
-
   const sel = getAttackSelection();
-  if(tutorialSystem.enabled){
-    if(projectileOnly) tutorialSystem.validation.academyProjectileOnlyUsed = true;
-    if(!projectileOnly && sel.fuel.length > 0 && !sel.armorFuel.length) tutorialSystem.validation.academyFuelAttackUsed = true;
-    if(!projectileOnly && sel.armorFuel.length > 0) tutorialSystem.validation.academyArmorFuelUsed = true;
-    if(!projectileOnly && state.projectileMode && !!sel.projectile) tutorialSystem.validation.academyProjectileComboUsed = true;
-  }
   let mainValue = sel.mainValue;
   let projectile = sel.projectile;
   let projectileValue = sel.projectileValue;
@@ -45810,6 +45874,18 @@ function confirmAttack(projectileOnly=false){
         : 'Selecciona combustible del panel para habilitar el ataque.'));
     if(mainValue > sel.limit) return notifySelection(`Has seleccionado ${mainValue} puntos de ataque, pero el combustible solo habilita ${sel.limit}.`);
     if(mainValue===0 && !projectile) return notifySelection('Selecciona picas numéricas para el ataque principal o 1 carta numérica de picas como proyectil.');
+  }
+
+  // Tutorial: Mark first attack
+  if(tutorialSystem.enabled && !tutorialSystem.validation.firstAttackMade){
+    tutorialSystem.validation.firstAttackMade = true;
+  }
+
+  if(tutorialSystem.enabled){
+    if(projectileOnly) tutorialSystem.validation.academyProjectileOnlyUsed = true;
+    if(!projectileOnly && sel.fuel.length > 0 && !sel.armorFuel.length) tutorialSystem.validation.academyFuelAttackUsed = true;
+    if(!projectileOnly && sel.armorFuel.length > 0) tutorialSystem.validation.academyArmorFuelUsed = true;
+    if(!projectileOnly && state.projectileMode && !!sel.projectile) tutorialSystem.validation.academyProjectileComboUsed = true;
   }
 
   if(state.storyMission === 'patio_duel' && attackerIdx === 0){
@@ -45874,6 +45950,7 @@ function confirmAttack(projectileOnly=false){
 }
 
 function resolveAttackAfterDefense(defenseCard){
+  const generation = tutorialSessionGeneration;
   const pending = state.pendingDefense;
   if(!pending) return;
   closeAttackPanelForImpactPreview();
@@ -45934,7 +46011,7 @@ function resolveAttackAfterDefense(defenseCard){
     render();
     if(!state.winner){
       window.setTimeout(() => {
-        if(!state.winner){
+        if(generation === tutorialSessionGeneration && !state.winner){
           state.transitionLock = false;
           advanceTurn();
         }
@@ -45988,6 +46065,7 @@ function skipDefense(options={}){
     return;
   }
 
+  if(tutorialIsGuided() && state.pendingDefense?.defenderIndex === 0 && !tutorialValidateAction('skipDefense')) return;
   pulseButton('skipDefenseBtn');
   if(state.transitionLock && !state.pendingDefense) return;
   if(!state.pendingDefense) return;
@@ -46547,12 +46625,13 @@ function captureTutorialStepCheckpoint(step = tutorialGetCurrentStep()){
 
 function canRepeatCurrentTutorialStep(step = tutorialGetCurrentStep()){
   if(!tutorialSystem.enabled || !tutorialSystem.stepCheckpoint || !step) return false;
-  if(tutorialSystem.busy || tutorialSystem.completed || state.pendingDefense) return false;
+  if(tutorialSystem.busy || tutorialSystem.completed || state.pendingDefense || state.transitionLock) return false;
   if(step.id === 'academy-summary' || step.id === 'summary') return false;
   return tutorialSystem.stepCheckpoint.stepId === step.id;
 }
 
 function repeatCurrentTutorialStep(){
+  if(!canRepeatCurrentTutorialStep()) return;
   const checkpoint = tutorialSystem.stepCheckpoint;
   const step = tutorialGetCurrentStep();
   if(!checkpoint || !step || checkpoint.stepId !== step.id) return;
@@ -48494,7 +48573,7 @@ document.getElementById('attackModeBtn').addEventListener('click', () => {
   if(!canUseInteractiveTurnAction()) return;
   if(!tutorialValidateAction('attackMode')) return;
   if(state.pendingDefense || !canPlayerOpenMainAttack(state.players[state.currentPlayer], state.currentPlayer)) return;
-  state.attackMode = !state.attackMode;
+  state.attackMode = tutorialIsGuided() && !academyLessonUsesLiveOpponent() ? true : !state.attackMode;
   if(!state.attackMode){
     state.projectileMode = false;
     state.selected = [];
@@ -48512,12 +48591,14 @@ document.getElementById('cancelAttackBtn').addEventListener('click', () => {
   state.attackMode = false;
   state.projectileMode = false;
   state.selected = [];
+  mobileSpriteProjectileOnlyMode = false;
+  if(tutorialRestartAttackExercise()) return;
   render();
 });
 document.getElementById('toggleProjectileBtn').addEventListener('click', () => {
-  if(!canUseInteractiveTurnAction()) return;
+  if(!canUseInteractiveTurnAction() || !tutorialValidateAction('toggleProjectile')) return;
   if(state.pendingDefense || !canPlayerOpenMainAttack(state.players[state.currentPlayer], state.currentPlayer) || !state.projectileUnlocked || !state.players[state.currentPlayer].attack.some(isPlayableProjectileCard)) return;
-  state.projectileMode = !state.projectileMode;
+  state.projectileMode = tutorialIsGuided() && !academyLessonUsesLiveOpponent() ? true : !state.projectileMode;
   render();
 });
 document.getElementById('confirmAttackBtn').addEventListener('click', () => {
@@ -48870,9 +48951,10 @@ document.addEventListener('click', (event) => {
     const owner = Number(attackBtn.dataset.quickAttack);
     if(owner !== state.currentPlayer || isAiControlledPlayer(owner) || state.transitionLock || state.pendingDefense || state.winner) return;
     if(!canPlayerOpenMainAttack(state.players[owner], owner)) return;
+    if(!tutorialValidateAction('attackMode')) return;
     pulseButton(attackBtn);
     state.attackMode = true;
-    state.projectileMode = false;
+    if(!tutorialIsGuided() || academyLessonUsesLiveOpponent()) state.projectileMode = false;
     // No limpiar la selección: si el jugador ya ha marcado combustible y picas,
     // esa selección debe mantenerse al subir al panel superior de ataque.
     render();
@@ -48901,7 +48983,9 @@ document.addEventListener('click', (event) => {
 });
 
 // ===== TUTORIAL SYSTEM FUNCTIONS =====
+let tutorialSessionGeneration = 0;
 function resetTutorialSession(){
+  tutorialSessionGeneration += 1;
   if(tutorialSystem.autoTimer){
     window.clearTimeout(tutorialSystem.autoTimer);
     tutorialSystem.autoTimer = null;
@@ -48999,6 +49083,20 @@ function getModifyOpsLimit(){
   const stepId = tutorialGetCurrentStep()?.id;
   if(tutorialSystem.enabled && stepId === 'academy-core-swap') return Math.max(baseLimit, 3);
   return baseLimit;
+}
+
+function tutorialRestartAttackExercise(){
+  if(!tutorialIsGuided() || tutorialGetCurrentStep()?.id === 'academy-short-fight') return false;
+  const steps = getActiveTutorialScript();
+  for(let index=tutorialSystem.stepIndex; index>=0; index--){
+    const step = steps[index];
+    if(tutorialExpectedAction(step.id) === 'attackMode' || step.id === 'projectile-open'){
+      tutorialSetStep(index);
+      addToast('Ataque reiniciado. Sigue los pasos desde Atacar.', 'ok');
+      return true;
+    }
+  }
+  return false;
 }
 
 function tutorialTakeCard(deck, rank, suit, customId){
@@ -49142,10 +49240,22 @@ function tutorialValidateAction(actionKey, selectedCards = state.selected){
 
   const step = tutorialGetCurrentStep();
   if(!step) return true;
+  const actionButton = {
+    modify:'actionAddBtn', attackMode:'attackModeBtn', confirmAttack:'confirmAttackBtn',
+    projectileOnly:'projectileOnlyBtn', toggleProjectile:'toggleProjectileBtn',
+    drawWithDiamond:'actionDrawDiamondBtn', quickFigureDraw:'quickFigureDrawBtn',
+    passTurn:'actionPassBtn', confirmDefense:'confirmDefenseBtn', skipDefense:'skipDefenseBtn'
+  }[actionKey];
+  if(actionButton && !tutorialAllowsButton(actionButton)){
+    notifySelection(step.objective.replace(/<[^>]+>/g, ''));
+    addToast('Este paso usa la acción resaltada', 'warn');
+    return false;
+  }
   const isProjectileComboLesson = step.id === 'academy-projectile-combo';
   const comboWarning = 'Usa ataque combinando proyectil con ataque.';
 
-  if(step.id==='first-attack' && actionKey==='attackMode') return true;
+  if(actionKey === 'attackMode' && state.attackMode) return true;
+  if(actionKey === 'toggleProjectile') return true;
 
   const expectedAction = tutorialExpectedAction(step.id);
   if(expectedAction && expectedAction !== actionKey){
@@ -49155,7 +49265,6 @@ function tutorialValidateAction(actionKey, selectedCards = state.selected){
     ){
       notifySelection(comboWarning.toUpperCase());
       addToast(comboWarning, 'warn');
-      restartCurrentGuidedSession();
       return false;
     }
     notifySelection(step.objective.replace(/<[^>]+>/g, ''));
@@ -49178,7 +49287,6 @@ function tutorialValidateAction(actionKey, selectedCards = state.selected){
     if(isProjectileComboLesson && actionKey === 'confirmAttack'){
       notifySelection(comboWarning.toUpperCase());
       addToast(comboWarning, 'warn');
-      restartCurrentGuidedSession();
       return false;
     }
     notifySelection(step.objective.replace(/<[^>]+>/g, ''));
@@ -49191,11 +49299,17 @@ function tutorialValidateAction(actionKey, selectedCards = state.selected){
     if(!state.projectileMode || !sel.projectile){
       notifySelection(comboWarning.toUpperCase());
       addToast(comboWarning, 'warn');
-      restartCurrentGuidedSession();
       return false;
     }
   }
 
+  if(actionKey === 'confirmAttack' && state.projectileMode && expectedSelection){
+    const expectedProjectile = expectedSelection.filter(id => selectedCards.some(card => card.id === id && card.zone === 'attack')).at(-1);
+    if(expectedProjectile && getAttackSelection().projectile?.id !== expectedProjectile){
+      notifySelection('La última pica seleccionada debe ser el proyectil indicado. Desmárcala y selecciónala al final.');
+      return false;
+    }
+  }
   return true;
 }
 
@@ -49757,7 +49871,7 @@ function tutorialHandleStepCompletion(step){
       break;
     case 'projectile':
       addToast('Tutorial completado', 'ok');
-      log('🎓 Tutorial guiado completado. El modo libre queda desbloqueado en esta misma partida.');
+      log('🎓 Tutorial guiado completado. Vuelve al menú principal para jugar una partida o continuar con el Carnet PoCoBOT.');
       tutorialSetStep(getActiveTutorialScript().length - 1, { clearSelection:false });
       break;
     default:
@@ -50686,7 +50800,7 @@ function academyRefreshPlayers(){
 function academySetCadetNames(){
   if(!state.players || state.players.length < 2) return;
   state.players[0].name = academyGetCandidateName('Cadete');
-  state.players[1].name = 'Instructor';
+  state.players[1].name = state.players[0].name === 'Instructor' ? 'Instructor PoCoBOT' : 'Instructor';
 }
 
 function academyResetForLesson(title){
@@ -51538,7 +51652,7 @@ const ACADEMY_LESSONS = [
         id:'academy-projectile-combo', title:'Fase 10 · Confirma el combo', body:'<strong>Paso 6.</strong> Fuel sostiene 4♠ y 8♠ sale como proyectil extra.',
         objective:'Pulsa <strong>Confirmar ataque</strong>.', tip:'Se descartarán el fuel y el 8♠ proyectil.',
         allowedButtons:['confirmAttackBtn','cancelAttackBtn','clearSelectionBtn'], allowedCardIds:[ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase,TUTORIAL_CARD_IDS.p0AttackB], highlightButtons:['confirmAttackBtn'], highlightZones:['fuel-zone-0','module-box-attack-0'], expectedAction:'confirmAttack', expectedSelection:[ACADEMY_CARD_IDS.lesson10Fuel,TUTORIAL_CARD_IDS.p0AttackBase,TUTORIAL_CARD_IDS.p0AttackB],
-        isComplete:()=>tutorialSystem.validation.academyProjectileComboUsed && state.winner === state.players[0]?.name && academySceneSettled(), onComplete:academyCompleteActiveLesson
+        isComplete:()=>tutorialSystem.validation.academyProjectileComboUsed && state.winner === state.players[0]?.name && state.players[1].defense.length === 0 && state.players[0].defense.length > 0 && academySceneSettled(), onComplete:academyCompleteActiveLesson
       },
       academySummaryStep('Fase 10 completada')
     ]
@@ -51570,7 +51684,7 @@ const ACADEMY_LESSONS = [
       {
         id: 'academy-final-turn-check',
         title: 'Fase 11 · Prueba rápida 2/3',
-        body: 'Ya estás al mando. Algunas decisiones consumen el turno y una consulta importante no lo hace.',
+        body: 'Consultar paneles o abrir ACCIONES no gasta turno. El turno se consume al ejecutar una jugada.',
         objective: '¿Qué puedes abrir cuando quieras <strong>sin gastar turno</strong>?',
         tip: 'Ahí consultas el núcleo, los módulos y el combustible.',
         allowedButtons: ['clearSelectionBtn'],
@@ -51579,7 +51693,7 @@ const ACADEMY_LESSONS = [
         highlightZones: [],
         panelActions: [
           { label:'PANEL de Stats', kind:'primary', onClick:() => academyAnswerFinalCheck(true, 'academy-final-attack-check', 'Consulta libre comprendida') },
-          { label:'ACCIONES', kind:'secondary', onClick:() => academyAnswerFinalCheck(false) }
+          { label:'Confirmar un ataque', kind:'secondary', onClick:() => academyAnswerFinalCheck(false) }
         ]
       },
       {
@@ -51607,7 +51721,7 @@ const ACADEMY_LESSONS = [
         allowedCardIds: null,
         highlightButtons: [],
         highlightZones: [],
-        isComplete: () => state.winner === state.players[0]?.name && academySceneSettled(),
+        isComplete: () => state.winner === state.players[0]?.name && state.players[1].defense.length === 0 && state.players[0].defense.length > 0 && academySceneSettled(),
         onComplete: () => academyCompleteActiveLesson()
       },
       academySummaryStep('Fase 11 completada')
