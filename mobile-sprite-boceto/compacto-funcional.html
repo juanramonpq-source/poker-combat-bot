@@ -44,6 +44,16 @@
       font-family: "Arial Narrow", "Avenir Next Condensed", "Impact", sans-serif;
       letter-spacing: 0;
       overflow-x: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* Touch play uses taps and card drags; text selection only belongs to text fields. */
+    input,
+    textarea,
+    [contenteditable="true"] {
+      -webkit-user-select: text;
+      user-select: text;
     }
 
     button {
@@ -6025,6 +6035,18 @@
       font: inherit;
       cursor: pointer;
     }
+    .drawer-head { grid-template-columns: minmax(0, 1fr) 44px auto; }
+    .drawer-help {
+      width: 44px; height: 44px; padding: 0; border: 2px solid #ffe9aa; border-radius: 50%;
+      color: #10273b; background: linear-gradient(#fff0ae, #ffc842 70%, #d89216);
+      box-shadow: 0 3px 0 #75470d, 0 0 9px #ffdf6b55;
+      font: 900 26px/1 system-ui, sans-serif; cursor: pointer; pointer-events: auto;
+    }
+    .drawer-help:focus-visible { outline: 3px solid #74fff2; outline-offset: 3px; }
+    .drawer-help:active { transform: translateY(1px); }
+    @media (orientation: landscape) and (max-height: 900px) {
+      .landscape-mecha-strip { padding-right: 90px; }
+    }
     .reference-dialog {
       width: min(640px, calc(100vw - 24px));
       max-height: calc(100dvh - 24px);
@@ -6052,6 +6074,10 @@
     .reference-body li { margin: 10px 0; }
     .reference-body .help-reason { color: #ffd596; white-space: pre-line; }
     .reference-body button:disabled { opacity: .45; }
+    .reference-body [data-help-blocked] { margin-top: 20px; padding: 14px; border: 1px solid #e9b96c88; border-radius: 12px; background: #ffd59608; }
+    .reference-body [data-help-blocked] > summary { line-height: 1.4; }
+    .reference-body [data-help-blocked-topics] { padding-left: 6px; }
+    .reference-body [data-help-option] [hidden] { display: none; }
     .help-next-target { outline: 3px solid #ffe269 !important; outline-offset: -3px; box-shadow: 0 0 10px #ffe269 !important; }
     .drawer-head p.is-action-guide { color: #ffe269; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .reference-body [data-lesson-objective] { color: #ffe09b; font-weight: bold; }
@@ -6190,6 +6216,7 @@
           <h2 data-drawer-title>Paneles de montaje</h2>
           <p data-drawer-subtitle>Arrastra cartas de la mano a núcleo, ataque, defensa, armadura o fuel.</p>
         </div>
+        <button class="drawer-help" type="button" data-reference="help" data-panel-help aria-label="¿Qué puedo hacer en esta jugada?" title="¿Qué puedo hacer en esta jugada?">?</button>
         <button class="drawer-close" type="button" data-board-close aria-label="Cerrar panel">×</button>
       </header>
       <div class="zone-grid" data-zone-grid></div>
@@ -9080,7 +9107,7 @@
         const signature = options.map(option => option.id).join(',');
         if (rebuild || body.dataset.helpSignature !== signature) {
           body.dataset.helpSignature = signature;
-          body.innerHTML = '<p data-help-now>Elige una opción. Te indicamos los pasos y dónde tocar.</p><div data-help-topics></div>';
+          body.innerHTML = '<p data-help-now>Elige una opción disponible. Te indicamos los pasos y dónde tocar.</p><div data-help-topics><section data-help-available aria-label="Acciones disponibles"></section><details data-help-blocked><summary>Qué NO puedo hacer TODAVÍA<small data-help-blocked-count></small></summary><div data-help-blocked-topics></div><p data-help-blocked-empty>No hay acciones bloqueadas en este momento.</p></details></div>';
           const topics = body.querySelector('[data-help-topics]');
           for (const option of options) {
             const details = document.createElement('details');
@@ -9089,7 +9116,7 @@
             details.querySelector('[data-help-guide]').dataset.helpGuide = option.id;
             details.addEventListener('toggle', () => {
               if (details.open) {
-                topics.querySelectorAll('details').forEach(other => { if (other !== details) other.open = false; });
+                topics.querySelectorAll('[data-help-option]').forEach(other => { if (other !== details) other.open = false; });
                 requestAnimationFrame(() => {
                   if (details.open) body.scrollTop += details.getBoundingClientRect().top - body.getBoundingClientRect().top - 8;
                 });
@@ -9099,16 +9126,27 @@
           }
           if (!options.length) body.querySelector('[data-help-now]').textContent = 'La ayuda de jugadas está disponible dentro de una partida.';
         }
-        if (options.length === 1 && options[0].id === 'log') body.querySelector('[data-help-now]').textContent = state.winner
+        const blockedCount = options.filter(option => !option.available).length;
+        body.querySelector('[data-help-blocked-count]').textContent = `${blockedCount} ${blockedCount === 1 ? 'acción pendiente' : 'acciones pendientes'}`;
+        body.querySelector('[data-help-blocked-empty]').hidden = blockedCount > 0;
+        body.querySelector('[data-help-now]').textContent = options.length ? 'Elige una opción disponible. Te indicamos los pasos y dónde tocar.' : 'La ayuda de jugadas está disponible dentro de una partida.';
+        if (options.filter(option => option.available).every(option => option.id === 'log') && options.length) body.querySelector('[data-help-now]').textContent = state.winner
           ? 'Partida terminada. Puedes revisar el Registro.'
           : 'Espera a que termine la jugada. Puedes consultar el Registro.';
+        const groupPositions = { available:0, blocked:0 };
         for (const option of options) {
           const details = [...body.querySelectorAll('[data-help-option]')].find(el => el.dataset.helpOption === option.id);
+          const destination = body.querySelector(option.available ? '[data-help-available]' : '[data-help-blocked-topics]');
+          const position = groupPositions[option.available ? 'available' : 'blocked']++;
+          if(details.parentElement !== destination) details.open = false;
+          if(destination.children[position] !== details) destination.insertBefore(details, destination.children[position] || null);
           details.querySelector('summary span').textContent = option.title;
-          details.querySelector('summary small').textContent = option.available ? 'Disponible' : 'Qué me falta';
+          details.querySelector('summary small').textContent = option.available ? 'Ver pasos' : 'Qué me falta';
           details.querySelector('.help-reason').textContent = (option.reason || '').replace('Te falta: ', 'Te falta:\n• ').replaceAll('; ', '\n• ');
           details.querySelector('.help-reason').hidden = !option.reason;
           const list = details.querySelector('ol');
+          list.hidden = !option.available;
+          details.querySelector('[data-help-guide]').hidden = !option.available;
           if (list.children.length !== option.steps.length) list.replaceChildren(...option.steps.map(() => document.createElement('li')));
           option.steps.forEach((step,index) => { list.children[index].textContent = step; });
           details.querySelector('[data-help-guide]').disabled = !option.available;
@@ -9375,6 +9413,11 @@
 
 	    function renderActions() {
       document.querySelectorAll('[data-reference="help"]').forEach(button => {
+        if(button.hasAttribute('data-panel-help')){
+          button.setAttribute('aria-label', state.tutorialLesson ? 'Leer la ayuda de este paso' : '¿Qué puedo hacer en esta jugada?');
+          button.title = button.getAttribute('aria-label');
+          return;
+        }
         button.textContent = state.tutorialLesson ? 'Leer este paso' : button.closest('.top-menu') ? '¿Qué puedo hacer en esta jugada?' : 'Consultar ayuda';
       });
       document.querySelectorAll(".tab-sprite").forEach((button) => {
@@ -9935,6 +9978,12 @@
       if (!button || button.disabled) return;
       button.classList.add("is-pressing");
     }, { passive: true });
+
+    document.addEventListener("selectstart", (event) => {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest("input, textarea, [contenteditable=\"true\"]")) return;
+      event.preventDefault();
+    });
 
     document.addEventListener("pointerdown", (event) => {
       if (

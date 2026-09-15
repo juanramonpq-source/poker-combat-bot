@@ -44,7 +44,7 @@ for (const engine of [chromium, webkit]) {
       await hud.locator('.top-menu [data-reference="help"]').tap();
       assert.equal(await hud.locator('#reference-title').textContent(),'¿Qué puedo hacer en esta jugada?');
       assert.equal(await hud.locator('[data-help-topics] details[open]').count(),0);
-      assert.deepEqual(await hud.locator('[data-help-option]').evaluateAll(els=>els.map(e=>e.dataset.helpOption)),['build','attack','projectile','combined','draw','figures','pass','clear','log']);
+      assert.deepEqual(await hud.locator('[data-help-option]').evaluateAll(els=>els.map(e=>e.dataset.helpOption)),await page.evaluate(()=>{const options=getInGameHelpPayload(0).options;return [...options.filter(o=>o.available),...options.filter(o=>!o.available)].map(o=>o.id);}));
       await page.screenshot({path:`test-results/schematic-help-20260915/${engine.name()}-options.png`});
       const draw=hud.locator('[data-help-option="draw"]');
       await draw.locator('summary').tap();
@@ -182,13 +182,15 @@ for (const engine of [chromium, webkit]) {
       const hud = page.frameLocator('#mobileSpriteBridgeFrame');
       await hud.locator('[data-hand-cards] .card').first().waitFor();
       const help = await page.evaluate(() => getInGameHelpPayload(0));
-      assert.match(help.text, /Te falta:/);
+      assert.match(help.title, /Qué puedo hacer/);
+      assert.match(help.options.find(option=>option.id==='attack').reason, /Te falta:/);
       assert.doesNotMatch(JSON.stringify(help), /\[object Object\]|undefined/);
       await hud.locator('[data-menu-toggle]').tap();
       await hud.locator('.top-menu [data-reference="help"]').tap();
       await hud.locator('[data-reference-dialog]').waitFor({ state: 'visible' });
       const before = await page.evaluate(() => JSON.stringify({ players:state.players, selected:state.selected, turn:state.turnCount, deck:state.deck, discard:state.discard }));
-      await hud.locator('[data-help-topics] summary').filter({ hasText: 'Fuel ×2' }).tap();
+      await hud.locator('[data-help-blocked] > summary').tap();
+      await hud.locator('[data-help-option="attack"] summary').tap();
       assert.equal(await hud.locator('[data-help-option="attack"]').evaluate(el => el.open), true, 'First tap opens a help topic immediately');
       await hud.locator('[data-reference-close]').tap();
       assert.equal(await page.evaluate(() => JSON.stringify({ players:state.players, selected:state.selected, turn:state.turnCount, deck:state.deck, discard:state.discard })), before);

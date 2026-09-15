@@ -32808,7 +32808,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260915-tutorial-safety-7';
+const MOBILE_SPRITE_HUD_VERSION = '20260915-help-availability-8';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -42686,6 +42686,12 @@ function getInGameHelpPayload(viewIdx = getMobileSpritePlayerIndex()){
     text = `Tienes ${mobileSpriteDraftPlacements.size}/${getModifyOpsLimit()} cambio(s) preparados. Revisa sus destinos y pulsa Aplicar cambios. Limpiar selección cancela el borrador.`;
   }
   const options = getInGameHelpOptions(viewIdx, { ready, missing, selected });
+  const availableActions = options.filter(option => option.available && option.id !== 'log');
+  const actionSummary = availableActions.length ? `Puedes: ${availableActions.map(option => option.title.toLowerCase()).join(' · ')}.` : 'Puedes consultar el Registro.';
+  // Keep prerequisites in the lower disclosure, with current actions always first.
+  if(!state.attackMode && !state.pendingDefense && !state.winner && state.currentPlayer === viewIdx && !state.transitionLock && !mobileSpriteDraftPlacements.size) text = '';
+  title = '¿Qué puedo hacer en esta jugada?';
+  text = `${actionSummary}${text ? `\n${text}` : ''}`;
   return { title, text, tip, meta:capacity, html:'', actions:[], options,
     contextKey:`${state.turnCount}:${state.currentPlayer}:${state.pendingDefense?.defenderIndex ?? ''}:${state.winner || ''}` };
 
@@ -42694,34 +42700,54 @@ function getInGameHelpPayload(viewIdx = getMobileSpritePlayerIndex()){
 // These descriptions guide the player; choosing one never executes a game action.
 function getInGameHelpOptions(viewIdx, { ready, missing, selected }){
   const player = state.players[viewIdx];
-  const option = (id, title, reason, steps, target, instruction) => ({
-    id, title, available:!reason, reason, steps, next:{ target, text:instruction }
-  });
+  const waiting = state.pendingDefense && state.pendingDefense.defenderIndex !== viewIdx
+    ? 'Espera a que el rival termine su defensa.'
+    : !state.pendingDefense && (state.transitionLock || state.currentPlayer !== viewIdx || !canUseInteractiveTurnAction())
+      ? 'Espera a que termine la jugada y llegue tu turno.' : '';
+  const option = (id, title, reason, steps, target, instruction) => {
+    const explanation = id !== 'log' && waiting ? `${waiting}${reason ? ` ${reason}` : ''}` : reason;
+    return {id, title, available:!explanation, reason:explanation, steps, next:{target, text:instruction}};
+  };
   const log = option('log', 'Consultar el Registro', '', ['Abre el Registro completo.', 'Lee los movimientos, del más reciente al más antiguo.'], 'log', 'Abre el Registro completo.');
   if(state.winner) return [log];
   const handDiamonds = player.hand.filter(isNumericDiamondCard);
   const selectedDiamond = state.selected.find(c => c.zone === 'hand' && isNumericDiamondCard(c));
-  if(state.pendingDefense){
-    if(state.pendingDefense.defenderIndex !== viewIdx) return [log];
+  if(state.pendingDefense?.defenderIndex === viewIdx){
     return [
       option('defend', 'Defenderme con un diamante', handDiamonds.length ? '' : 'No tienes un ♦ numérico en la mano.',
         [`Recibes ${state.pendingDefense.totalAttack} de ataque. Pulsa Elegir 1♦.`, 'Selecciona un ♦ de valor 2–10 de tu mano: resta ese valor al ataque.', 'Pulsa Confirmar defensa. El diamante se gasta.'], selectedDiamond ? 'confirm' : 'defend', selectedDiamond ? 'Pulsa Confirmar defensa.' : 'Pulsa Elegir 1♦ y elige un diamante de la mano.'),
       option('skip-defense', 'Aceptar el ataque sin defenderme', '', ['Pulsa No defender.', 'El juego resuelve el impacto sin gastar un diamante.'], 'skip-defense', 'Pulsa No defender para aceptar el impacto.'), log
     ];
   }
-  if(state.transitionLock || state.currentPlayer !== viewIdx || !canUseInteractiveTurnAction()) return [log];
   const draft = mobileSpriteDraftOwnerIdx === viewIdx ? mobileSpriteDraftPlacements.size : 0;
   const hasFuel = player.fuel.some(isNumericDiamondCard) || (hasDiamondBoosterArmorFuel(player) && player.armor.length > 0);
-  const attackReason = !ready ? `Te falta: ${missing.join('; ')}.` : !hasFuel ? 'Necesitas combustible instalado.' : '';
+  const fuelBudget = 2 * (sumCards(player.fuel.filter(isNumericDiamondCard)) + (hasDiamondBoosterArmorFuel(player) ? sumCards(player.armor) : 0));
+  const lowestAttack = Math.min(...player.attack.filter(isPlayableProjectileCard).map(card => card.value));
+  const attackMissing = [
+    ...(!ready ? missing : []), ...(!hasFuel ? ['combustible instalado'] : []),
+    ...(hasFuel && Number.isFinite(lowestAttack) && lowestAttack > fuelBudget ? [`más combustible: el instalado permite ${fuelBudget} de ataque y tu pica más baja vale ${lowestAttack}`] : [])
+  ];
+  const attackReason = attackMissing.length ? `Te falta: ${attackMissing.join('; ')}.` : '';
   const attackNext = !state.attackMode ? ['attack-mode','Pulsa Atacar.']
     : !selected.fuelCards.length ? ['fuel','Selecciona combustible instalado.']
     : !selected.mainAttackCards.length ? ['attack','Selecciona las picas que usarás.']
     : selected.mainValue > selected.limit ? ['fuel',`Superas Fuel ×2 en ${selected.mainValue-selected.limit}: ajusta las cartas.`]
     : ['confirm','Revisa el ataque y pulsa Confirmar.'];
-  const projectileReason = !state.projectileUnlocked ? 'Se desbloquea después del primer ataque completo.'
-    : !canPlayerFireProjectileOnly(player, viewIdx) ? 'Necesitas una pica numérica instalada y un mecha apto para disparar.' : '';
-  const drawReason = player.flags.lastOwnAction === 'diamondDraw' ? 'Ya robaste con un diamante en tu turno anterior.'
-    : !handDiamonds.length ? 'Necesitas un ♦ numérico (2–10) en la mano.' : '';
+  const projectileMissing = [
+    ...(!state.projectileUnlocked ? ['que se complete el primer ataque para desbloquear los proyectiles'] : []),
+    ...(!player.attack.some(isPlayableProjectileCard) ? ['una pica numérica instalada'] : []),
+    ...(!playerCanAttack(player) && !storyMissionAllowsLooseProjectile(viewIdx) ? missing : [])
+  ];
+  const projectileReason = projectileMissing.length ? `Te falta: ${[...new Set(projectileMissing)].join('; ')}.` : '';
+  const figureMissing = [
+    ...(!player.core.pilot ? ['un piloto instalado'] : []),
+    ...(!player.core.copilot ? ['un copiloto instalado'] : []),
+    ...(countHandFigures(player) < 2 ? [`${2-countHandFigures(player)} ${countHandFigures(player) === 1 ? 'figura' : 'figuras'} J/Q/K más en la mano`] : [])
+  ];
+  const drawReason = [
+    ...(player.flags.lastOwnAction === 'diamondDraw' ? ['Ya robaste con un diamante en tu turno anterior: realiza otra acción antes de volver a usar este robo.'] : []),
+    ...(!handDiamonds.length ? ['Necesitas un ♦ numérico (2–10) en la mano.'] : [])
+  ].join(' ');
   const handSelected = state.selected.filter(c => c.zone === 'hand').length;
   const requiredPass = Math.min(2,player.hand.length);
   const modifySteps = [
@@ -42737,14 +42763,14 @@ function getInGameHelpOptions(viewIdx, { ready, missing, selected }){
       ['Pulsa Acciones → Solo proyectil.', 'Selecciona una pica numérica instalada. No necesita combustible.', 'Pulsa Confirmar. La pica disparada se descarta y termina tu turno.'],
       !mobileSpriteProjectileOnlyMode ? 'projectile-only' : state.selected.length ? 'confirm' : 'attack',
       !mobileSpriteProjectileOnlyMode ? 'Pulsa Solo proyectil.' : state.selected.length ? 'Pulsa Confirmar para disparar.' : 'Selecciona una pica numérica instalada.'),
-    option('combined','Atacar y añadir un proyectil',attackReason || projectileReason,
+    option('combined','Atacar y añadir un proyectil',attackMissing.length || projectileMissing.length ? `Te falta: ${[...new Set([...attackMissing, ...projectileMissing])].join('; ')}.` : '',
       ['Pulsa Atacar y activa Modo proyectil.', 'Selecciona combustible y picas. La última pica será el proyectil y va fuera del límite Fuel ×2.', 'Pulsa Confirmar. Se gastan el combustible y la pica del proyectil; termina tu turno.'],
       !state.attackMode ? 'attack-mode' : !state.projectileMode ? 'projectile' : attackNext[0],
       !state.attackMode ? 'Pulsa Atacar.' : !state.projectileMode ? 'Activa Modo proyectil.' : attackNext[1]),
     option('draw','Robar cartas con un diamante',drawReason,
       ['Selecciona un ♦ numérico (2–10) de tu mano.', 'Pulsa Acciones → Robar: robas tantas cartas como su valor, mientras quede mazo.', `El diamante se gasta y termina tu turno. Máximo ${MAX_HAND_SIZE} en la mano; el exceso se descarta.`],
       selectedDiamond ? 'draw' : 'hand-diamonds', selectedDiamond ? 'Pulsa Robar para gastar el diamante seleccionado.' : 'Selecciona un ♦ de valor 2–10 de tu mano.'),
-    option('figures','Cambiar 2 figuras por 4 cartas',hasFigureBurstCondition(player) ? '' : 'Necesitas piloto, copiloto y al menos 2 figuras J/Q/K en la mano.',
+    option('figures','Cambiar 2 figuras por 4 cartas',figureMissing.length ? `Te falta: ${figureMissing.join('; ')}.` : '',
       ['Pulsa 2 Figuras → 4 Cartas.', 'Se descartan automáticamente las dos primeras figuras de tu mano.', `Robas hasta 4 cartas y termina tu turno. Máximo ${MAX_HAND_SIZE} en la mano.`], 'figures','Pulsa 2 Figuras → 4 Cartas.'),
     option('pass','Pasar mi turno','',
       requiredPass ? [`Selecciona ${requiredPass} carta(s) de tu mano.`, 'Pulsa Acciones → Pasar.', 'Esas cartas se descartan y termina tu turno.'] : ['Tu mano está vacía: no tienes que seleccionar cartas.', 'Pulsa Acciones → Pasar para terminar el turno sin descartar.'], handSelected === requiredPass ? 'pass' : 'hand', handSelected === requiredPass ? (requiredPass ? 'Pulsa Pasar para descartar la selección.' : 'Pulsa Pasar para terminar tu turno.') : `Selecciona ${requiredPass} carta(s) de tu mano.`),
