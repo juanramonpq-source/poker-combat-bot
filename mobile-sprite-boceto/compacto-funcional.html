@@ -7689,6 +7689,11 @@
       document.querySelector("[data-action-toggle]")?.setAttribute("aria-expanded", "false");
     }
 
+    function closeActionsForCardSelection() {
+      if ((state.attackMode || state.projectileOnlyMode) && state.currentPlayer === 0 && !state.pendingDefense && !state.winner) return;
+      closeActions();
+    }
+
     function closeTopMenu() {
       shell.classList.remove("menu-open");
       document.querySelector("[data-menu-toggle]")?.setAttribute("aria-expanded", "false");
@@ -9823,7 +9828,7 @@
       if (!cardNode || cardNode.disabled) return false;
       event.preventDefault();
       event.stopPropagation();
-      closeActions();
+      closeActionsForCardSelection();
       closeTopMenu();
       toggleSelected(cardNode.dataset.cardId);
       suppressTrustedTouchClickUntil = Date.now() + 420;
@@ -9837,7 +9842,7 @@
       if (cardNode.closest("[data-hand-cards]")) return false;
       event.preventDefault();
       event.stopPropagation();
-      closeActions();
+      closeActionsForCardSelection();
       closeTopMenu();
       toggleSelected(cardNode.dataset.cardId);
       suppressTrustedTouchClickUntil = Date.now() + 420;
@@ -9885,7 +9890,7 @@
           && (!drag.moved || releaseDistance <= 3);
         if (tappedHandCard) {
           event.preventDefault();
-          closeActions();
+          closeActionsForCardSelection();
           toggleSelected(drag.cardId);
         }
         flushDeferredRealGameSnapshot();
@@ -10254,7 +10259,7 @@
       if (overviewCard && shell.classList.contains("hand-overview-open")) {
         event.preventDefault();
         event.stopPropagation();
-        closeActions();
+        closeActionsForCardSelection();
         toggleSelected(overviewCard.dataset.cardId);
         return;
       }
@@ -10279,7 +10284,7 @@
         return;
       }
       if (!button) {
-        if (!event.target.closest(".action-hub")) closeActions();
+        if (!event.target.closest(".action-hub")) closeActionsForCardSelection();
         return;
       }
       if (button.dataset.hackContinue !== undefined) {
