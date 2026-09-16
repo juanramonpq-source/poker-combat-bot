@@ -10,6 +10,7 @@ const routes=process.argv.slice(2);if(!routes.length)routes.push('guided',...Arr
  try{
  await page.goto(`${baseURL}/poker_combat_bot_ONLINE.html`);await page.waitForFunction(()=>window.__pocobotDev);
  await page.evaluate(()=>{__pocobotDev.boot();__pocobotDev.setSoundEnabled(false);__pocobotDev.setViewportMode('mobile-vertical');});
+ if(process.env.POCOBOT_REPEAT_STEPS==='1') await page.evaluate(()=>{window.repeatTutorialSteps=true;window.repeatedTutorialSteps=new Set();});
  for(const route of routes){
   await page.evaluate(route=>{if(route==='guided')startTutorialMode();else {if(!academyIsLessonUnlocked(route))throw Error('Lesson remains locked: '+route);startAcademyLesson(route);}},route);
   let lastStep='',lastProgress=Date.now(),routeReached=false;
@@ -21,6 +22,16 @@ const routes=process.argv.slice(2);if(!routes.length)routes.push('guided',...Arr
     if(step.id==='academy-short-fight')return {...info,freeCombat:true};
     if(tutorialBotBlocksInput()){handleMobileSpriteTutorialAction('tutobot-continue');return {...info,did:'continue narration'};}
     if(tutorialSystem.busy || (state.transitionLock && !state.pendingDefense) || state.pendingDefense?.defenderIndex===1)return info;
+    const repeatKey=`${tutorialSystem.lessonId || tutorialSystem.mode}:${step.id}`;
+    if(window.repeatTutorialSteps && canRepeatCurrentTutorialStep() && !window.repeatedTutorialSteps.has(repeatKey)){
+      window.repeatedTutorialSteps.add(repeatKey);
+      const checkpoint=tutorialSystem.stepCheckpoint;
+      handleMobileSpriteTutorialAction('repeat-step');
+      // Rendering recalculates vitalMax; compare the restored gameplay state.
+      const gameplayPlayers=players=>JSON.stringify(players,(key,value)=>key==='vitalMax'?undefined:value);
+      if(tutorialGetCurrentStep().id!==step.id || gameplayPlayers(state.players)!==gameplayPlayers(checkpoint.state.players)) return {...info,error:'Repeat did not restore the exercise'};
+      return {...info,did:'repeat step'};
+    }
     const panels=(step.panelActions || []);
     if(panels.length){handleMobileSpriteTutorialAction('panel:0');return {...info,did:'read / answer'};}
     const expected=tutorialExpectedSelection(step.id) || [];

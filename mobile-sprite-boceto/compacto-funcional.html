@@ -6068,6 +6068,54 @@
       .hand-tray header .actions-button { min-width: 74px; padding: 5px 4px; font-size: 11px; }
       .hand-tray header .actions-button::before, .hand-tray header .actions-button::after { display: none; }
     }
+    /* TutoBOT uses a header, a scrollable reading area and a separate control row. */
+    .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) {
+      position: fixed;
+      top: var(--tutorial-top, 160px) !important;
+      left: 12px !important;
+      right: auto !important;
+      width: min(620px, calc(100vw - 24px)) !important;
+      min-height: 0 !important;
+      max-height: var(--tutorial-height, 45dvh) !important;
+      grid-template-columns: 42px minmax(0, 1fr) 30px !important;
+      grid-template-rows: auto minmax(48px, auto) auto !important;
+      grid-template-areas: "avatar title dismiss" "body body body" "controls controls controls" !important;
+      gap: 8px !important;
+      padding: 10px !important;
+      pointer-events: auto !important;
+      z-index: 220;
+      background: #0b2139;
+    }
+    .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) .tutorial-bot-avatar {
+      min-height: 0; height: 38px; padding: 0; background: none;
+    }
+    .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) .tutorial-bot-avatar img { width: 36px; max-width: 36px; }
+    .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) > strong { font-size: 16px; align-self: center; }
+    .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) > [data-tutorial-text] {
+      min-height: 48px; max-height: none; overflow-y: auto; overflow-x: hidden;
+      font: 15px/1.4 system-ui, sans-serif; white-space: normal; touch-action: pan-y;
+      overscroll-behavior: contain; padding-right: 6px;
+    }
+    [data-tutorial-text] .tutorial-assistant-subline { margin-top: 8px; font: inherit; line-height: inherit; }
+    .tutorial-controls { grid-area: controls; display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+    .phone-shell [data-tutorial-message] .tutorial-controls .message-actions {
+      display: flex; flex: 1 1 140px; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; background: none;
+    }
+    .phone-shell [data-tutorial-message] .tutorial-controls button {
+      min-height: 40px; padding: 8px; font-size: 13px; line-height: 1.25; white-space: normal;
+    }
+    .tutorial-controls > .reference-link { flex: 1 1 130px; min-width: 130px; }
+    .phone-shell .drawer-head p.is-tutorial-guidance { max-height: 72px; overflow-y: auto; font-size: 14px; line-height: 1.3; touch-action: pan-y; }
+    .phone-shell [data-tutorial-message].is-intro .tutorial-controls { display: none; }
+    .card.tutorial-card-cue::after {
+      opacity: 1; border: 3px solid #ffd84d;
+      box-shadow: inset 0 0 0 2px #563600, 0 0 10px #ffdb59;
+      animation: tutorialCardGlow 1.4s ease-in-out infinite;
+    }
+    .card.tutorial-card-cue.is-selected::after { border-color: #63ffe0; animation: none; }
+    .tutorial-zone-cue { outline: 3px solid #ffd84d; outline-offset: -4px; }
+    @keyframes tutorialCardGlow { 50% { box-shadow: inset 0 0 0 2px #563600, 0 0 18px #fff2a0; } }
+    @media (prefers-reduced-motion: reduce) { .card.tutorial-card-cue::after { animation: none; } }
     .reference-dialog {
       width: min(640px, calc(100vw - 24px));
       max-height: calc(100dvh - 24px);
@@ -6175,8 +6223,10 @@
           <strong data-tutorial-title>Tutorial activo</strong>
           <button class="tutorial-dismiss" type="button" data-tutorial-dismiss aria-label="Ocultar TutoBOT">✕</button>
           <span data-tutorial-text></span>
-          <div class="message-actions" data-tutorial-actions></div>
-          <button class="reference-link" type="button" data-reference="help">Consultar ayuda</button>
+          <div class="tutorial-controls">
+            <div class="message-actions" data-tutorial-actions></div>
+            <button class="reference-link" type="button" data-reference="help">Leer este paso</button>
+          </div>
         </article>
         <article class="floating-message alert" data-alert-message>
           <strong data-alert-title></strong>
@@ -8388,6 +8438,10 @@
       const button = document.createElement("button");
       button.type = "button";
       button.className = "card";
+      if(context !== "readonly" && state.tutorialVisualCues?.cardIds?.includes(card.id)){
+        button.classList.add("tutorial-card-cue");
+        button.setAttribute("aria-label", `${cardText(card)}. Carta indicada en este paso.`);
+      }
       const imgSrc = cardAsset(card);
       const imageIsCached = loadedCardAssetUrls.has(imgSrc);
       if (!imageIsCached) button.classList.add("card-image-pending");
@@ -8808,7 +8862,7 @@
         subtitle.textContent = `Cartas visibles de ${player.name || "tu rival"}. La mano permanece oculta.`;
       } else {
         title.textContent = "Paneles de montaje";
-        subtitle.textContent = `Operaciones: ${state.pendingBuildOps}/${buildOpsLimit()}. Arrastra cartas de la mano al destino.`;
+        subtitle[drawerTutorialHtml ? "innerHTML" : "textContent"] = drawerTutorialHtml || `Operaciones: ${state.pendingBuildOps}/${buildOpsLimit()}. Arrastra cartas de la mano al destino.`;
       }
       subtitle.classList.toggle("is-tutorial-guidance", !!drawerTutorialHtml);
       syncDrawerPrimaryButton();
@@ -8873,9 +8927,8 @@
 
     function shouldEmbedTutorialInDrawer() {
       if (!EMBEDDED_REAL_GAME || !state.tutorial || !state.tutorialBotVisible) return false;
-      if (state.tutorialBotPlacement !== "top-rail-front") return false;
       if (!shell?.classList?.contains("board-open")) return false;
-      return !!state.attackMode || !!state.projectileOnlyMode || !!state.pendingDefense;
+      return !!state.tutorialLesson && !state.tutorialBotSequenceOnly;
     }
 
     function getDrawerTutorialHtml(isRivalView = false) {
@@ -8884,7 +8937,9 @@
       if (!bodyHtml) return "";
       const box = document.createElement("div");
       box.innerHTML = bodyHtml;
-      const conciseHtml = box.querySelector(".tutorial-assistant-subline")?.innerHTML?.trim() || bodyHtml;
+      const conciseHtml = state.tutorialLesson?.objective
+        ? escapeAttribute(state.tutorialLesson.objective)
+        : box.querySelector(".tutorial-assistant-subline")?.innerHTML?.trim() || bodyHtml;
       const spriteSrc = escapeAttribute(getAnimatedTutorialBotSprite());
       return `<span class="drawer-tutobot-inline"><span class="drawer-tutobot-avatar" aria-hidden="true"><img data-drawer-tutorial-bot-avatar src="${spriteSrc}" alt="" onerror="this.onerror=null;this.src='${escapeAttribute(TUTORIAL_BOT_TALK_FRAMES[0])}'"></span><span class="drawer-tutobot-copy"><span class="drawer-tutorial-label">TutoBOT</span>${conciseHtml}</span></span>`;
     }
@@ -9021,7 +9076,7 @@
 
     function maybeHandleDirectTutorialControl(event) {
       const rawTarget = event.target?.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
-      const directTutorialButton = rawTarget?.closest?.("[data-tutorial-action], [data-tutorial-dismiss], button[data-tutorial-action]");
+      const directTutorialButton = rawTarget?.closest?.("button[data-tutorial-action], button[data-tutorial-dismiss]");
       if (!directTutorialButton) return false;
       event.preventDefault();
       event.stopPropagation();
@@ -9112,6 +9167,13 @@
           body.querySelector('[data-lesson-tip]').textContent = lesson?.tip || '';
           body.scrollTop = 0;
         }
+        let repeat = body.querySelector('[data-tutorial-action="repeat-step"]');
+        if(!repeat){
+          repeat = document.createElement('button'); repeat.type = 'button';
+          repeat.dataset.tutorialAction = 'repeat-step'; repeat.textContent = 'Repetir este paso';
+          body.appendChild(repeat);
+        }
+        repeat.hidden = !state.tutorialCanRepeat;
       } else if (isLog) {
         // Keep a stable reading position until the player reopens the register.
         if (!rebuild) return;
@@ -9308,11 +9370,7 @@
       tutorial.classList.toggle("is-top-rail-front", embeddedBotVisible && state.tutorialBotPlacement === "top-rail-front");
       tutorial.classList.toggle("is-primer-step", embeddedBotVisible && tutorialBotIsPrimerLesson());
       tutorial.classList.toggle("is-primer-definition-step", embeddedBotVisible && tutorialBotIsPrimerDefinition());
-      if (embeddedBotVisible && tutorialBotIsPrimerDefinition() && state.tutorialBotMode === "step") {
-        tutorial.dataset.tutorialAction = "panel:0";
-      } else {
-        delete tutorial.dataset.tutorialAction;
-      }
+      delete tutorial.dataset.tutorialAction;
       messageStack?.classList.toggle("has-priority-tutorial", embeddedBotVisible && state.tutorialBotPlacement === "top-rail-front");
       let tutorialCopy = "";
       let tutorialHtml = "";
@@ -9533,6 +9591,19 @@
       if (hackCopy) hackCopy.textContent = hack.message || "Argos ha tomado el panel tactico.";
     }
 
+    function renderTutorialCuesAndLayout() {
+      const cues = state.tutorialVisualCues || {zones:[]};
+      document.querySelectorAll('[data-zone]').forEach(el => el.classList.toggle('tutorial-zone-cue', state.activeTab !== 'rival' && cues.zones.includes(el.dataset.zone)));
+      document.querySelector('[data-tab="mecha"]')?.classList.toggle('tutorial-zone-cue', cues.zones.some(zone => zone !== 'hand') && !shell.classList.contains('board-open'));
+      const tutorial = document.querySelector('[data-tutorial-message]');
+      if(!tutorial || !tutorial.classList.contains('with-bot')) return;
+      if(tutorial.parentElement !== shell) shell.appendChild(tutorial);
+      const top = document.querySelector('.status-strip').getBoundingClientRect().bottom + 8;
+      const handTop = document.querySelector('.hand-tray').getBoundingClientRect().top;
+      const available = isLandscapeLayout() ? innerHeight - top - 12 : handTop - top - 30;
+      tutorial.style.setProperty('--tutorial-top', `${top}px`);
+      tutorial.style.setProperty('--tutorial-height', `${Math.max(160, Math.min(available, innerHeight * .55))}px`);
+    }
 	    function render() {
 	      renderStats();
 	      renderMechas();
@@ -9540,6 +9611,7 @@
 	      renderBoard();
 	      renderMessages();
 	      renderActions();
+      renderTutorialCuesAndLayout();
       renderHackMode();
       renderReference();
       renderHelpGuide();
@@ -9912,6 +9984,16 @@
       state.tutorialBusy = !!snapshot.tutorialBusy;
       state.tutorialMaskHand = !!snapshot.tutorialMaskHand;
       state.tutorialNextActions = Array.isArray(snapshot.tutorialNextActions) ? snapshot.tutorialNextActions : [];
+      state.tutorialVisualCues = snapshot.tutorialVisualCues || {cardIds:[], zones:[]};
+      state.tutorialCanRepeat = !!snapshot.tutorialCanRepeat;
+      if(state.tutorialReplayRevision !== undefined && state.tutorialReplayRevision !== snapshot.tutorialReplayRevision){
+        tutorialHiddenUntil = 0;
+        defensePopupSuppressedKey = '';
+        document.querySelector('[data-reference-dialog]')?.close();
+        closeActions();
+        closeHandOverview();
+      }
+      state.tutorialReplayRevision = snapshot.tutorialReplayRevision;
       state.musicOn = !!snapshot.musicOn;
       state.pendingDefense = snapshot.pendingDefense || null;
       state.winner = snapshot.winner || null;

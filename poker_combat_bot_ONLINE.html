@@ -32837,7 +32837,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260915-portrait-hand-help-2';
+const MOBILE_SPRITE_HUD_VERSION = '20260916-tutorial-readable-retry-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -41995,7 +41995,7 @@ function getTutorialBotPrimaryAction(step = tutorialGetCurrentStep()){
   const actions = getResolvedTutorialPanelActions(step);
   if(!actions.length) return { action:'', label:'' };
   return {
-    action: 'panel:0',
+    action: actions[0].id || 'panel:0',
     label: actions[0].label || 'Continuar'
   };
 }
@@ -42629,7 +42629,7 @@ function getMobileSpriteTutorialActions(step){
   getResolvedTutorialPanelActions(step).forEach((action, index) => {
     if(action?.label){
       actions.push({
-        id: `panel:${index}`,
+        id: action.id || `panel:${index}`,
         label: action.label,
         kind: action.kind || 'primary'
       });
@@ -42943,6 +42943,25 @@ function getMobileSpriteGuidanceText(){
   };
 }
 
+function getTutorialVisualCues(){
+  const step = tutorialGetCurrentStep();
+  if(!tutorialIsGuided() || !step) return {cardIds:[], zones:[]};
+  const ids = new Set(tutorialResolveAllowedCardIds(step) || tutorialExpectedSelection(step.id) || []);
+  if(tutorialExpectedAction(step.id) === 'quickFigureDraw'){
+    state.players[0].hand.filter(isFigureCard).slice(0, 2).forEach(card => ids.add(card.id));
+  }
+  const zones = new Set();
+  for(const id of step.highlightZones || []){
+    const zone = {'hand-zone-0':'hand', 'module-box-attack-0':'attack', 'module-box-defense-0':'defense', 'module-box-armor-0':'armor', 'fuel-zone-0':'fuel'}[id];
+    if(zone) zones.add(zone);
+  }
+  if((step.highlightZones || []).includes('core-zone-0')){
+    const coreTargets = [...ids].flatMap(id => getMobileSpriteDraftLegalZones(id)).filter(zone => ['pilot','copilot','booster'].includes(zone));
+    (coreTargets.length ? coreTargets : ['pilot','copilot','booster']).forEach(zone => zones.add(zone));
+  }
+  return {cardIds:[...ids], zones:[...zones]};
+}
+
 function createMobileSpriteSnapshot(){
   const viewIdx = getMobileSpritePlayerIndex();
   const rivalIdx = getDesktopCompactRivalIndex(viewIdx);
@@ -42991,6 +43010,9 @@ function createMobileSpriteSnapshot(){
     tutorialBusy: !!tutorialSystem.busy,
     tutorialMaskHand,
     tutorialNextActions,
+    tutorialVisualCues: getTutorialVisualCues(),
+    tutorialReplayRevision,
+    tutorialCanRepeat: canRepeatCurrentTutorialStep(),
     musicOn: !!state.soundOn,
     pendingDefense: getMobileSpritePendingDefense(viewIdx, rivalIdx),
     winner: state.winner || null,
@@ -43337,6 +43359,7 @@ function handleMobileSpriteMenu(action){
 
 let lastMobileSpriteTutorialActionKey = '';
 let lastMobileSpriteTutorialActionAt = 0;
+let tutorialReplayRevision = 0;
 
 function handleMobileSpriteTutorialAction(action){
   if(!tutorialSystem.enabled) return;
@@ -43346,6 +43369,10 @@ function handleMobileSpriteTutorialAction(action){
   if(actionKey === lastMobileSpriteTutorialActionKey && now - lastMobileSpriteTutorialActionAt < 700) return;
   lastMobileSpriteTutorialActionKey = actionKey;
   lastMobileSpriteTutorialActionAt = now;
+  if(action === 'repeat-step'){
+    repeatCurrentTutorialStep();
+    return;
+  }
   if(typeof action === 'string' && action.startsWith('step:')){
     if(action === step?.tutorialBotPrimaryAction) tutorialGoToStep(action.slice('step:'.length));
     return;
@@ -46761,7 +46788,7 @@ function academyAcknowledgeDefinitionStep(){
 }
 
 function captureTutorialStepCheckpoint(step = tutorialGetCurrentStep()){
-  if(!tutorialSystem.enabled || !step || tutorialSystem.busy || state.pendingDefense) return;
+  if(!tutorialSystem.enabled || !step || tutorialSystem.busy || academyLessonUsesLiveOpponent()) return;
   const stateSnapshot = JSON.parse(JSON.stringify(state, (key, value) => {
     if(['audioCtx', 'bgmMenu', 'bgm1', 'bgm2'].includes(key)) return undefined;
     if(typeof value === 'function') return undefined;
@@ -46772,13 +46799,15 @@ function captureTutorialStepCheckpoint(step = tutorialGetCurrentStep()){
     stepIndex: tutorialSystem.stepIndex,
     stepId: step.id,
     state: stateSnapshot,
+    projectileOnlyMode: mobileSpriteProjectileOnlyMode,
     validation: JSON.parse(JSON.stringify(tutorialSystem.validation))
   };
 }
 
 function canRepeatCurrentTutorialStep(step = tutorialGetCurrentStep()){
   if(!tutorialSystem.enabled || !tutorialSystem.stepCheckpoint || !step) return false;
-  if(tutorialSystem.busy || tutorialSystem.completed || state.pendingDefense || state.transitionLock) return false;
+  if(tutorialSystem.busy || tutorialSystem.completed || state.transitionLock || academyLessonUsesLiveOpponent()) return false;
+  if(state.pendingDefense && state.pendingDefense.defenderIndex !== 0) return false;
   if(step.id === 'academy-summary' || step.id === 'summary') return false;
   return tutorialSystem.stepCheckpoint.stepId === step.id;
 }
@@ -46799,6 +46828,10 @@ function repeatCurrentTutorialStep(){
     soundOn: state.soundOn
   };
   Object.assign(state, JSON.parse(JSON.stringify(checkpoint.state)), audioState);
+  mobileSpriteProjectileOnlyMode = !!checkpoint.projectileOnlyMode;
+  tutorialSessionGeneration += 1;
+  tutorialReplayRevision += 1;
+  clearDefenseInteractionGuard();
   tutorialSystem.validation = JSON.parse(JSON.stringify(checkpoint.validation));
   tutorialSystem.stepIndex = checkpoint.stepIndex;
   tutorialSystem.completed = false;
@@ -46827,6 +46860,7 @@ function getResolvedTutorialPanelActions(step){
   }
   if(canRepeatCurrentTutorialStep(step)){
     actions.push({
+      id: 'repeat-step',
       label: 'Repetir este paso',
       kind: 'secondary',
       onClick: repeatCurrentTutorialStep
@@ -49477,7 +49511,7 @@ function syncTutorialVisualTargets(){
   const step = tutorialGetCurrentStep();
   if(!step) return;
 
-  (tutorialResolveAllowedCardIds(step) || []).forEach(cardId => {
+  getTutorialVisualCues().cardIds.forEach(cardId => {
     document.querySelectorAll(`[data-card-id="${cardId}"]`).forEach(el => el.classList.add('tutorial-focus'));
   });
   (step.highlightZones || []).forEach(id => {
