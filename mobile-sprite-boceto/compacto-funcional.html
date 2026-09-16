@@ -9722,6 +9722,7 @@
       touchDrag.ghost = makeTouchDragGhost(touchDrag.source);
       touchDrag.source.classList.add("is-touch-dragging");
       touchDrag.active = true;
+      temporarilyHideTutorialOverlay();
       if (touchDrag.fromOverview) closeHandOverview();
       moveTouchDragGhost(event.clientX, event.clientY);
       return true;
@@ -9958,7 +9959,7 @@
     }
 
     function isTutorialOverlaySuppressed() {
-      return state.tutorial && Date.now() < tutorialHiddenUntil;
+      return state.tutorial && (Date.now() < tutorialHiddenUntil || !!touchDrag?.active || !!draggedCardId);
     }
 
     function temporarilyHideTutorialOverlay(duration = 2200) {
@@ -10357,6 +10358,7 @@
         return;
       }
       draggedCardId = card.dataset.cardId;
+      temporarilyHideTutorialOverlay();
       event.dataTransfer.setData("text/plain", draggedCardId);
       event.dataTransfer.effectAllowed = "move";
       updateDropHints(draggedCardId);

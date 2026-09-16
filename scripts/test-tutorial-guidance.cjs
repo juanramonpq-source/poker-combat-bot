@@ -18,6 +18,23 @@ async function game(engine,run,slowFrames=false){
  }finally{await browser.close();}
 }
 for(const engine of [chromium,webkit]){
+ test(`${engine.name()} TutoBOT hides when dragging begins and stays hidden until release`,()=>game(engine,async(page,hud)=>{
+  await page.evaluate(()=>{startTutorialMode();tutorialGoToStep('intro-attack-stat');});
+  await page.waitForTimeout(6000);
+  const result=await hud.locator('[data-hand-cards] .card').first().evaluate(async card=>{
+   const r=card.getBoundingClientRect();
+   const send=(type,x,y)=>card.dispatchEvent(new PointerEvent(type,{bubbles:true,pointerId:7,pointerType:'touch',clientX:x,clientY:y}));
+   send('pointerdown',r.x+15,r.y+15);
+   send('pointermove',r.x+15,r.y-10);
+   const box=document.querySelector('[data-tutorial-message]');
+   const hidden=!box.classList.contains('show');
+   await new Promise(resolve=>setTimeout(resolve,2600));
+   const stillHidden=!box.classList.contains('show');
+   send('pointercancel',r.x+15,r.y-10);
+   return {hidden,stillHidden};
+  });
+  assert.deepEqual(result,{hidden:true,stillHidden:true});
+ }));
  test(`${engine.name()} compact animated TutoBOT offers Ampliar without repeat controls`,()=>game(engine,async(page,hud)=>{
   await page.evaluate(()=>{startTutorialMode();tutorialGoToStep('intro-attack-stat');});
   const box=hud.locator('[data-tutorial-message]');
