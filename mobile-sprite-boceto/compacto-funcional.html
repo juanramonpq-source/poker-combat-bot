@@ -6019,6 +6019,46 @@
       .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) > .zone-title { font-size: 15px; }
       .zone-grid :is(.zone-attack, .zone-defense, .zone-armor) > .zone-title b { font-size: 20px; }
     }
+    /* Tablet panels size cards from the space available, rather than phone pixels. */
+    @media (orientation: landscape) and (min-height: 621px) and (max-height: 900px) {
+      .zone-grid :is(.core-panel, .core-slot, .zone-attack, .zone-defense, .zone-armor) {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        min-height: 0;
+      }
+      .zone-grid .core-slots { min-height: 0; }
+      .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) > .zone-cards {
+        container-type: size;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 0;
+        min-width: 0;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        padding: 4px;
+      }
+      .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) > .zone-cards .card {
+        --single-row-width: min(calc(100cqh * 38 / 55), calc((100cqw - (var(--zone-card-count) - 1) * 6px) / var(--zone-card-count)));
+        width: var(--single-row-width);
+        height: auto;
+        max-width: 100%;
+        flex: none;
+        aspect-ratio: 38 / 55;
+        padding: 0;
+      }
+      .zone-grid :is(.core-slot, .zone-attack, .zone-defense, .zone-armor) > .zone-cards:is([data-card-count="3"], [data-card-count="4"]) .card {
+        width: max(var(--single-row-width), min(calc((100cqw - 6px) / 2), calc((100cqh - 6px) / 2 * 38 / 55)));
+      }
+      .fuel-dock .zone-fuel .zone-cards { gap: 6px; flex-wrap: wrap; }
+      .fuel-dock .zone-fuel .card {
+        width: clamp(44px, 5.5vw, 64px);
+        height: auto;
+        aspect-ratio: 38 / 55;
+        flex: 0 0 clamp(44px, 5.5vw, 64px);
+      }
+    }
     .zone-reg .zone-cards { overflow: visible; min-height: 0; }
     .zone-reg .empty-zone {
       display: block;
