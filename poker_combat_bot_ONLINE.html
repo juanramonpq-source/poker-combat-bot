@@ -32837,7 +32837,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260916-tablet-panel-cards-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260916-compact-tutobot-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -46856,14 +46856,6 @@ function getResolvedTutorialPanelActions(step){
       label: 'Entendido',
       kind: 'primary',
       onClick: academyAcknowledgeDefinitionStep
-    });
-  }
-  if(canRepeatCurrentTutorialStep(step)){
-    actions.push({
-      id: 'repeat-step',
-      label: 'Repetir este paso',
-      kind: 'secondary',
-      onClick: repeatCurrentTutorialStep
     });
   }
   return actions;

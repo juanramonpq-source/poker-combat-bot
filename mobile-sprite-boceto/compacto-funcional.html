@@ -6112,13 +6112,14 @@
     .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) {
       position: fixed;
       top: var(--tutorial-top, 160px) !important;
-      left: 12px !important;
+      left: var(--tutorial-left, 12px) !important;
       right: auto !important;
-      width: min(620px, calc(100vw - 24px)) !important;
+      width: var(--tutorial-width, min(620px, calc(100vw - 24px))) !important;
       min-height: 0 !important;
+      height: auto !important;
       max-height: var(--tutorial-height, 45dvh) !important;
-      grid-template-columns: 42px minmax(0, 1fr) 30px !important;
-      grid-template-rows: auto minmax(48px, auto) auto !important;
+      grid-template-columns: 80px minmax(0, 1fr) 30px !important;
+      grid-template-rows: 64px minmax(48px, auto) auto !important;
       grid-template-areas: "avatar title dismiss" "body body body" "controls controls controls" !important;
       gap: 8px !important;
       padding: 10px !important;
@@ -6127,26 +6128,29 @@
       background: #0b2139;
     }
     .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) .tutorial-bot-avatar {
-      min-height: 0; height: 38px; padding: 0; background: none;
+      min-height: 0 !important; height: 64px !important; padding: 0 !important; background: none;
+      align-items: flex-end;
     }
-    .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) .tutorial-bot-avatar img { width: 36px; max-width: 36px; }
-    .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) > strong { font-size: 16px; align-self: center; }
+    .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) .tutorial-bot-avatar img { width: 80px !important; max-width: 80px !important; flex: 0 0 80px; }
+    .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) > strong { font-size: 16px !important; align-self: center; }
     .phone-shell [data-tutorial-message].with-bot.show:not(.is-intro) > [data-tutorial-text] {
       min-height: 48px; max-height: none; overflow-y: auto; overflow-x: hidden;
-      font: 15px/1.4 system-ui, sans-serif; white-space: normal; touch-action: pan-y;
+      font: 15px/1.4 system-ui, sans-serif !important; white-space: normal; touch-action: pan-y;
       overscroll-behavior: contain; padding-right: 6px;
     }
     [data-tutorial-text] .tutorial-assistant-subline { margin-top: 8px; font: inherit; line-height: inherit; }
     .tutorial-controls { grid-area: controls; display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
     .phone-shell [data-tutorial-message] .tutorial-controls .message-actions {
-      display: flex; flex: 1 1 140px; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; background: none;
+      display: flex; flex: 1 1 140px; flex-wrap: wrap; gap: 8px; margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important;
     }
+    .phone-shell [data-tutorial-message] .tutorial-controls .message-actions:empty { display: none; }
     .phone-shell [data-tutorial-message] .tutorial-controls button {
       min-height: 40px; padding: 8px; font-size: 13px; line-height: 1.25; white-space: normal;
     }
     .tutorial-controls > .reference-link { flex: 1 1 130px; min-width: 130px; }
     .phone-shell .drawer-head p.is-tutorial-guidance { max-height: 72px; overflow-y: auto; font-size: 14px; line-height: 1.3; touch-action: pan-y; }
     .phone-shell [data-tutorial-message].is-intro .tutorial-controls { display: none; }
+    .phone-shell.menu-open [data-tutorial-message] { visibility: hidden; pointer-events: none !important; }
     .card.tutorial-card-cue::after {
       opacity: 1; border: 3px solid #ffd84d;
       box-shadow: inset 0 0 0 2px #563600, 0 0 10px #ffdb59;
@@ -6265,7 +6269,7 @@
           <span data-tutorial-text></span>
           <div class="tutorial-controls">
             <div class="message-actions" data-tutorial-actions></div>
-            <button class="reference-link" type="button" data-reference="help">Leer este paso</button>
+            <button class="reference-link" type="button" data-reference="help">Ampliar</button>
           </div>
         </article>
         <article class="floating-message alert" data-alert-message>
@@ -9207,13 +9211,6 @@
           body.querySelector('[data-lesson-tip]').textContent = lesson?.tip || '';
           body.scrollTop = 0;
         }
-        let repeat = body.querySelector('[data-tutorial-action="repeat-step"]');
-        if(!repeat){
-          repeat = document.createElement('button'); repeat.type = 'button';
-          repeat.dataset.tutorialAction = 'repeat-step'; repeat.textContent = 'Repetir este paso';
-          body.appendChild(repeat);
-        }
-        repeat.hidden = !state.tutorialCanRepeat;
       } else if (isLog) {
         // Keep a stable reading position until the player reopens the register.
         if (!rebuild) return;
@@ -9537,7 +9534,7 @@
           button.title = button.getAttribute('aria-label');
           return;
         }
-        button.textContent = state.tutorialLesson ? 'Leer este paso' : button.closest('.top-menu') ? '¿Qué puedo hacer en esta jugada?' : 'Consultar ayuda';
+        button.textContent = state.tutorialLesson ? 'Ampliar' : button.closest('.top-menu') ? '¿Qué puedo hacer en esta jugada?' : 'Consultar ayuda';
       });
       document.querySelectorAll(".tab-sprite").forEach((button) => {
         button.classList.toggle("is-active", button.dataset.tab === state.activeTab);
@@ -9638,11 +9635,15 @@
       const tutorial = document.querySelector('[data-tutorial-message]');
       if(!tutorial || !tutorial.classList.contains('with-bot')) return;
       if(tutorial.parentElement !== shell) shell.appendChild(tutorial);
-      const top = document.querySelector('.status-strip').getBoundingClientRect().bottom + 8;
+      const landscape = isLandscapeLayout();
+      const board = document.querySelector('.board-drawer').getBoundingClientRect();
+      const top = landscape ? 12 : document.querySelector('.status-strip').getBoundingClientRect().bottom + 8;
       const handTop = document.querySelector('.hand-tray').getBoundingClientRect().top;
-      const available = isLandscapeLayout() ? innerHeight - top - 12 : handTop - top - 30;
+      const available = landscape ? innerHeight - top - 12 : handTop - top - 30;
+      tutorial.style.setProperty('--tutorial-left', landscape ? `${board.left}px` : '12px');
+      tutorial.style.setProperty('--tutorial-width', landscape ? `${board.width}px` : 'min(620px, calc(100vw - 24px))');
       tutorial.style.setProperty('--tutorial-top', `${top}px`);
-      tutorial.style.setProperty('--tutorial-height', `${Math.max(160, Math.min(available, innerHeight * .55))}px`);
+      tutorial.style.setProperty('--tutorial-height', `${Math.max(160, landscape ? available : Math.min(available, innerHeight * .55))}px`);
     }
 	    function render() {
 	      renderStats();

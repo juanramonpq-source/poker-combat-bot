@@ -17,23 +17,33 @@ async function game(engine,run){
  }finally{await browser.close();}
 }
 for(const engine of [chromium,webkit]){
- test(`${engine.name()} repeat restores defense and clears a staged build through touch`,()=>game(engine,async(page,hud)=>{
-  await page.evaluate(()=>{exercise('academy-2','academy-pilot-choice');setMobileSpriteDraftPlacement(TUTORIAL_CARD_IDS.p0Pilot,'pilot');render();});
-  const repeat=hud.locator('[data-tutorial-actions] button').filter({hasText:'Repetir este paso'});
-  await repeat.tap();
-  await page.waitForFunction(()=>mobileSpriteDraftPlacements.size===0);
-  assert.equal(await page.evaluate(()=>tutorialGetCurrentStep().id),'academy-pilot-choice');
-  assert.equal(await page.evaluate(()=>setMobileSpriteDraftPlacement(TUTORIAL_CARD_IDS.p0Pilot,'pilot')),true);
-  await page.evaluate(()=>exercise('academy-4','academy-active-defense'));
-  assert.equal(await page.evaluate(()=>canRepeatCurrentTutorialStep()),true,'Defense has a restorable checkpoint');
-  await page.evaluate(()=>{state.selected=[tutorialBuildSelectableCard(0,'hand',TUTORIAL_CARD_IDS.p0DefendDiamond)];render();});
-  // The full reading sheet also provides recovery when a combat panel hides TutoBOT.
-  await hud.locator('[data-panel-help]').tap();
-  await hud.locator('[data-reference-dialog] [data-tutorial-action="repeat-step"]').tap();
-  await page.waitForFunction(()=>state.selected.length===0);
-  assert.equal(await page.evaluate(()=>tutorialGetCurrentStep().id),'academy-active-defense');
-  assert.equal(await page.evaluate(()=>state.pendingDefense.defenderIndex),0);
-  assert.equal(await page.evaluate(()=>tutorialCanSelectCard(state.players[0].hand.find(c=>c.id===TUTORIAL_CARD_IDS.p0DefendDiamond))),true);
+ test(`${engine.name()} compact animated TutoBOT offers Ampliar without repeat controls`,()=>game(engine,async(page,hud)=>{
+  await page.evaluate(()=>{startTutorialMode();tutorialGoToStep('intro-attack-stat');});
+  const box=hud.locator('[data-tutorial-message]');
+  await box.locator('[data-reference="help"]').waitFor();
+  assert.equal(await box.locator('[data-reference="help"]').innerText(),'Ampliar');
+  assert.equal(await hud.getByRole('button',{name:'Repetir este paso',exact:true}).count(),0);
+  const layout=await box.evaluate(el=>{
+   const avatar=el.querySelector('.tutorial-bot-avatar'),img=avatar.querySelector('img'),body=el.querySelector('[data-tutorial-text]');
+   return {imageWidth:img.getBoundingClientRect().width,headerHeight:avatar.getBoundingClientRect().height,bodyGap:body.getBoundingClientRect().top-avatar.getBoundingClientRect().bottom};
+  });
+  assert.ok(layout.imageWidth>=72,JSON.stringify(layout));
+  assert.ok(layout.headerHeight<=72,JSON.stringify(layout));
+  assert.ok(layout.bodyGap<=12,JSON.stringify(layout));
+  const frames=await box.locator('img').evaluate(async img=>{
+   const seen=new Set();
+   for(let i=0;i<12;i++){if(img.complete&&img.naturalWidth)seen.add(img.currentSrc);await new Promise(r=>setTimeout(r,110));}
+   return seen.size;
+  });
+  assert.ok(frames>=3,'The visible robot cycles through loaded talking frames');
+  await box.locator('[data-reference="help"]').tap();
+  assert.equal(await hud.locator('[data-reference-dialog]').evaluate(el=>el.open),true);
+  assert.equal(await hud.getByRole('button',{name:'Repetir este paso',exact:true}).count(),0);
+  assert.equal(await page.evaluate(()=>tutorialGetCurrentStep().id),'intro-attack-stat');
+  await hud.locator('[data-reference-close]').tap();
+  await page.screenshot({path:`test-results/tutorial-guidance/${engine.name()}-compact-tutobot.png`});
+  await page.evaluate(()=>exercise('academy-2','academy-pilot-choice'));
+  assert.equal(await page.evaluate(()=>getResolvedTutorialPanelActions(tutorialGetCurrentStep()).some(a=>a.id==='repeat-step')),false);
  }));
  test(`${engine.name()} TutoBOT text and reading control fit without clipping`,()=>game(engine,async(page,hud)=>{
   await page.evaluate(()=>{startTutorialMode();tutorialGoToStep('combat-phases');});
