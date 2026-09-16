@@ -6196,6 +6196,23 @@
     .reference-body [data-lesson-objective] { color: #ffe09b; font-weight: bold; }
     .reference-body h3 { margin: 18px 0 8px; font-size: 17px; }
     .reference-body .register-entry { padding-bottom: 12px; border-bottom: 1px solid #58cddf33; }
+    /* Keep the secondary reset outside the radial attack controls. */
+    .hand-tray > .hand-clear-action {
+      display: none;
+      left: 12px;
+      top: auto;
+      bottom: 12px;
+      transform: none;
+      min-height: 36px;
+      z-index: 97;
+    }
+    .phone-shell.actions-open .hand-tray > .hand-clear-action {
+      display: block;
+      pointer-events: auto;
+    }
+    @media (orientation: landscape) and (max-height: 900px) {
+      .hand-tray > .hand-clear-action { top: 94px; bottom: auto; left: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -6352,14 +6369,14 @@
             <button class="wheel-action" style="--x:0px;--y:-51px" type="button" data-action="pass">Pasar</button>
             <button class="wheel-action projectile-action" style="--x:98px;--y:-28px" type="button" data-action="projectile" title="Modo Proyectil: añade una pica al ataque y la descarta">Modo Proyectil</button>
             <button class="wheel-action projectile-action" style="--x:98px;--y:7px" type="button" data-action="projectile-only" title="Solo Proyectil: ataca descartando una pica como proyectil">Solo Proyectil</button>
-            <button class="wheel-action primary" style="--x:-44px;--y:47px" type="button" data-action="attack-mode">Atacar</button>
+            <button class="wheel-action primary" style="--x:48px;--y:47px" type="button" data-action="attack-mode">Atacar</button>
             <button class="wheel-action primary attack-confirm-action" style="--x:48px;--y:47px" type="button" data-action="confirm">Confirmar</button>
-            <button class="wheel-action defense" style="--x:-102px;--y:30px" type="button" data-action="defend">Defender</button>
+            <button class="wheel-action defense" style="--x:14px;--y:47px" type="button" data-action="defend">Defender</button>
             <button class="wheel-action defense" style="--x:-112px;--y:-8px" type="button" data-action="skip-defense">No Def.</button>
-            <button class="wheel-action utility" style="--x:0px;--y:0px" type="button" data-action="clear">Limpiar</button>
           </div>
         </div>
       </header>
+      <button class="wheel-action utility hand-clear-action" type="button" data-action="clear">Limpiar</button>
       <strong class="hand-count-badge" data-hand-count>0/18</strong>
       <div class="hand-controls">
         <button class="hand-figures-button floating-figures-button" type="button" data-action="figures" data-figures-hand hidden>2 Figuras → 4 Cartas</button>

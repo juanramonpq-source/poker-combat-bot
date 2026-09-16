@@ -32837,7 +32837,7 @@ let mobileSpriteHudSyncTimer = null;
 let mobileSpriteDraftPlacements = new Map();
 let mobileSpriteDraftOwnerIdx = null;
 let mobileSpriteProjectileOnlyMode = false;
-const MOBILE_SPRITE_HUD_VERSION = '20260916-tutorial-drag-hide-1';
+const MOBILE_SPRITE_HUD_VERSION = '20260916-actions-clear-corner-1';
 let proPendingDrawBurst = null;
 let storyArgosHackUiBootTimer = null;
 let storyArgosHackGateActive = false;
@@ -42136,26 +42136,26 @@ function getTutorialBotPlacement(step = tutorialGetCurrentStep()){
 }
 
 const TUTORIAL_ROUTE_PROGRESS = {
-  'open-attack': [['Abrir', 'active'], ['Fuel', ''], ['Picas', ''], ['Confirmar', '']],
-  'first-attack-fuel': [['Abrir', 'done'], ['Fuel', 'active'], ['Picas', ''], ['Confirmar', '']],
-  'first-attack-spades': [['Abrir', 'done'], ['Fuel', 'done'], ['Picas', 'active'], ['Confirmar', '']],
-  'first-attack': [['Abrir', 'done'], ['Fuel', 'done'], ['Picas', 'done'], ['Confirmar', 'active']],
-  'academy-attack-open': [['Abrir', 'active'], ['Fuel', ''], ['Picas', ''], ['Confirmar', '']],
-  'academy-attack-fuel': [['Abrir', 'done'], ['Fuel', 'active'], ['Picas', ''], ['Confirmar', '']],
-  'academy-attack-spades': [['Abrir', 'done'], ['Fuel', 'done'], ['Picas', 'active'], ['Confirmar', '']],
-  'academy-fuel-attack': [['Abrir', 'done'], ['Fuel', 'done'], ['Picas', 'done'], ['Confirmar', 'active']],
-  'academy-armor-fuel-open': [['Abrir', 'active'], ['Armadura', ''], ['Picas', ''], ['Confirmar', '']],
-  'academy-armor-fuel-select': [['Abrir', 'done'], ['Armadura', 'active'], ['Picas', ''], ['Confirmar', '']],
-  'academy-armor-fuel-spades': [['Abrir', 'done'], ['Armadura', 'done'], ['Picas', 'active'], ['Confirmar', '']],
-  'academy-armor-fuel': [['Abrir', 'done'], ['Armadura', 'done'], ['Picas', 'done'], ['Confirmar', 'active']],
-  'academy-projectile-only-open': [['Abrir', 'active'], ['Pica', ''], ['Disparar', '']],
-  'academy-projectile-only': [['Abrir', 'done'], ['Pica', 'active'], ['Disparar', 'active']],
-  'academy-projectile-combo-open': [['Abrir', 'active'], ['Modo', ''], ['Fuel', ''], ['Picas', ''], ['Confirmar', '']],
-  'academy-projectile-combo-mode': [['Abrir', 'done'], ['Modo', 'active'], ['Fuel', ''], ['Picas', ''], ['Confirmar', '']],
-  'academy-projectile-combo-fuel': [['Abrir', 'done'], ['Modo', 'done'], ['Fuel', 'active'], ['Picas', ''], ['Confirmar', '']],
-  'academy-projectile-combo-main': [['Abrir', 'done'], ['Modo', 'done'], ['Fuel', 'done'], ['Picas', 'active'], ['Confirmar', '']],
-  'academy-projectile-combo-extra': [['Abrir', 'done'], ['Modo', 'done'], ['Fuel', 'done'], ['Picas', 'active'], ['Confirmar', '']],
-  'academy-projectile-combo': [['Abrir', 'done'], ['Modo', 'done'], ['Fuel', 'done'], ['Picas', 'done'], ['Confirmar', 'active']]
+  'open-attack': [['Panel', 'active'], ['Combustible', ''], ['Picas', ''], ['Confirmar', '']],
+  'first-attack-fuel': [['Panel', 'done'], ['Combustible', 'active'], ['Picas', ''], ['Confirmar', '']],
+  'first-attack-spades': [['Panel', 'done'], ['Combustible', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'first-attack': [['Panel', 'done'], ['Combustible', 'done'], ['Picas', 'done'], ['Confirmar', 'active']],
+  'academy-attack-open': [['Panel', 'active'], ['Combustible', ''], ['Picas', ''], ['Confirmar', '']],
+  'academy-attack-fuel': [['Panel', 'done'], ['Combustible', 'active'], ['Picas', ''], ['Confirmar', '']],
+  'academy-attack-spades': [['Panel', 'done'], ['Combustible', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'academy-fuel-attack': [['Panel', 'done'], ['Combustible', 'done'], ['Picas', 'done'], ['Confirmar', 'active']],
+  'academy-armor-fuel-open': [['Panel', 'active'], ['Armadura', ''], ['Picas', ''], ['Confirmar', '']],
+  'academy-armor-fuel-select': [['Panel', 'done'], ['Armadura', 'active'], ['Picas', ''], ['Confirmar', '']],
+  'academy-armor-fuel-spades': [['Panel', 'done'], ['Armadura', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'academy-armor-fuel': [['Panel', 'done'], ['Armadura', 'done'], ['Picas', 'done'], ['Confirmar', 'active']],
+  'academy-projectile-only-open': [['Panel', 'active'], ['Pica', ''], ['Disparar', '']],
+  'academy-projectile-only': [['Panel', 'done'], ['Pica', 'active'], ['Disparar', 'active']],
+  'academy-projectile-combo-open': [['Panel', 'active'], ['Modo', ''], ['Combustible', ''], ['Picas', ''], ['Confirmar', '']],
+  'academy-projectile-combo-mode': [['Panel', 'done'], ['Modo', 'active'], ['Combustible', ''], ['Picas', ''], ['Confirmar', '']],
+  'academy-projectile-combo-fuel': [['Panel', 'done'], ['Modo', 'done'], ['Combustible', 'active'], ['Picas', ''], ['Confirmar', '']],
+  'academy-projectile-combo-main': [['Panel', 'done'], ['Modo', 'done'], ['Combustible', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'academy-projectile-combo-extra': [['Panel', 'done'], ['Modo', 'done'], ['Combustible', 'done'], ['Picas', 'active'], ['Confirmar', '']],
+  'academy-projectile-combo': [['Panel', 'done'], ['Modo', 'done'], ['Combustible', 'done'], ['Picas', 'done'], ['Confirmar', 'active']]
 };
 
 function getTutorialRouteProgressHtml(step = tutorialGetCurrentStep()){
@@ -51887,7 +51887,7 @@ const ACADEMY_LESSONS = [
         highlightButtons: [],
         highlightZones: ['fuel-zone-0', 'module-box-attack-0'],
         panelActions: [
-          { label:'ACCIONES → Atacar → Fuel → Picas → Confirmar', kind:'primary', onClick:() => academyAnswerFinalCheck(true, 'academy-short-fight', 'Secuencia de ataque comprendida') },
+          { label:'ACCIONES → Atacar → Combustible → Picas → Confirmar', kind:'primary', onClick:() => academyAnswerFinalCheck(true, 'academy-short-fight', 'Secuencia de ataque comprendida') },
           { label:'Picas → PANEL → Pasar', kind:'secondary', onClick:() => academyAnswerFinalCheck(false) }
         ]
       },
