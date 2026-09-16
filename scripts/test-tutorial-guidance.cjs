@@ -4,12 +4,13 @@ const {chromium,webkit}=require('playwright');
 const fs=require('node:fs');
 fs.mkdirSync('test-results/tutorial-guidance',{recursive:true});
 const base=process.env.POCOBOT_TEST_URL||'http://localhost:8095';
-async function game(engine,run){
+async function game(engine,run,slowFrames=false){
  const browser=await engine.launch();
  try{
   const page=await browser.newPage({viewport:{width:393,height:790},hasTouch:true,isMobile:true,reducedMotion:'reduce'});
-  page.setDefaultTimeout(15000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(`${base}/poker_combat_bot_ONLINE.html`);await page.waitForFunction(()=>window.__pocobotDev);
+  if(slowFrames)await page.route('**/tutorial-robot-talk-*.png*',async route=>{await new Promise(resolve=>setTimeout(resolve,1200));await route.continue();});
+  page.setDefaultTimeout(30000);page.setDefaultNavigationTimeout(60000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(`${base}/poker_combat_bot_ONLINE.html`,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__pocobotDev);
   await page.evaluate(()=>{__pocobotDev.boot();__pocobotDev.setSoundEnabled(false);__pocobotDev.setViewportMode('mobile-vertical');
    window.exercise=(lessonId,stepId)=>{resetTutorialSession();const lesson=academyGetLessonById(lessonId);lesson.prepare();tutorialSystem.enabled=true;tutorialSystem.mode='academy';tutorialSystem.lessonId=lessonId;tutorialSystem.script=lesson.script;tutorialBotState.greetingDone=true;tutorialGoToStep(stepId);clearDefenseInteractionGuard();};
   });
@@ -30,6 +31,7 @@ for(const engine of [chromium,webkit]){
   assert.ok(layout.imageWidth>=72,JSON.stringify(layout));
   assert.ok(layout.headerHeight<=72,JSON.stringify(layout));
   assert.ok(layout.bodyGap<=12,JSON.stringify(layout));
+  await page.waitForFunction(()=>document.getElementById('mobileSpriteBridgeFrame').contentWindow.eval('tutorialBotReadyTalkFrames.size')>=3);
   const frames=await box.locator('img').evaluate(async img=>{
    const seen=new Set();
    for(let i=0;i<12;i++){if(img.complete&&img.naturalWidth)seen.add(img.currentSrc);await new Promise(r=>setTimeout(r,110));}
@@ -44,7 +46,7 @@ for(const engine of [chromium,webkit]){
   await page.screenshot({path:`test-results/tutorial-guidance/${engine.name()}-compact-tutobot.png`});
   await page.evaluate(()=>exercise('academy-2','academy-pilot-choice'));
   assert.equal(await page.evaluate(()=>getResolvedTutorialPanelActions(tutorialGetCurrentStep()).some(a=>a.id==='repeat-step')),false);
- }));
+ },true));
  test(`${engine.name()} TutoBOT text and reading control fit without clipping`,()=>game(engine,async(page,hud)=>{
   await page.evaluate(()=>{startTutorialMode();tutorialGoToStep('combat-phases');});
   await hud.locator('[data-tutorial-message] [data-reference="help"]').tap();

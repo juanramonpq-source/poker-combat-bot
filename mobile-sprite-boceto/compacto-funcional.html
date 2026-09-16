@@ -6543,6 +6543,29 @@
     const TUTORIAL_BOT_TALK_FRAME_DELAY = 140;
     let tutorialBotLocalFrameIndex = 0;
     let tutorialBotLocalFrameTimer = null;
+    let tutorialBotTalkImages = null;
+    const tutorialBotReadyTalkFrames = new Map();
+
+    function preloadTutorialTalkFrames() {
+      if (tutorialBotTalkImages) return;
+      tutorialBotTalkImages = TUTORIAL_BOT_TALK_FRAMES.map(async src => {
+        let localUrl;
+        try {
+          const response = await fetch(src);
+          if (!response.ok) return;
+          localUrl = URL.createObjectURL(await response.blob());
+          const img = new Image();
+          img.src = localUrl;
+          await img.decode();
+          // Keep decoded frames local: changing frames must never restart a download.
+          tutorialBotReadyTalkFrames.set(src, localUrl);
+          updateVisibleTutorialBotSprites();
+          return img;
+        } catch (_) {
+          if (localUrl) URL.revokeObjectURL(localUrl);
+        }
+      });
+    }
 
     function makeCard(rank, suit, idSuffix = "") {
       return {
@@ -8932,7 +8955,8 @@
 
     function getAnimatedTutorialBotSprite() {
       if (!shouldRunTutorialBotLocalTalkLoop()) return getTutorialBotSprite();
-      return TUTORIAL_BOT_TALK_FRAMES[tutorialBotLocalFrameIndex % TUTORIAL_BOT_TALK_FRAMES.length] || getTutorialBotSprite();
+      const readyFrames = TUTORIAL_BOT_TALK_FRAMES.map(src => tutorialBotReadyTalkFrames.get(src)).filter(Boolean);
+      return readyFrames[tutorialBotLocalFrameIndex % readyFrames.length] || TUTORIAL_BOT_TALK_FRAMES[0];
     }
 
     function updateVisibleTutorialBotSprites() {
@@ -8948,6 +8972,7 @@
 
     function syncTutorialBotLocalAnimation() {
       const shouldAnimate = shouldRunTutorialBotLocalTalkLoop();
+      if (shouldAnimate) preloadTutorialTalkFrames();
       if (shouldAnimate && !tutorialBotLocalFrameTimer) {
         tutorialBotLocalFrameTimer = window.setInterval(() => {
           tutorialBotLocalFrameIndex = (tutorialBotLocalFrameIndex + 1) % TUTORIAL_BOT_TALK_FRAMES.length;
