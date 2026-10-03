@@ -30,13 +30,13 @@ for (const engine of [chromium, webkit]) {
             const image = document.querySelector('#compactMechaImg-1');
             const bounds = image.getBoundingClientRect();
             const area = document.querySelector('#compactMechaStage-1').getBoundingClientRect();
-            const ring = image.parentElement.getBoundingClientRect();
-            return {image:bounds.toJSON(),area:area.toJSON(),ring:ring.toJSON()};
+            const playerImage = document.querySelector('#compactMechaImg-0').getBoundingClientRect();
+            return {image:bounds.toJSON(),area:area.toJSON(),playerImage:playerImage.toJSON()};
           });
-          const {image, area, ring} = result;
+          const {image, area, playerImage} = result;
           assert.ok(image.left >= area.left - 2 && image.right <= area.right + 2, `Phase ${phase} spills horizontally: ${JSON.stringify(result)}`);
-          assert.ok(image.top >= ring.top - 2 && image.bottom <= ring.bottom + 2, `Phase ${phase} is cropped vertically: ${JSON.stringify(result)}`);
-          assert.ok(image.width > 80 && image.height > 100, 'Sentry remains clearly visible');
+          assert.ok(image.top >= playerImage.top - 2 && image.bottom <= area.bottom + 2, `Phase ${phase} is cropped vertically: ${JSON.stringify(result)}`);
+          assert.ok(image.height >= playerImage.height, `Phase ${phase} must be at least as tall as the player: ${JSON.stringify(result)}`);
         }
         assert.deepEqual(errors, []);
       } finally { await browser.close(); }

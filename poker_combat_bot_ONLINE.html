@@ -30714,9 +30714,8 @@ body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobil
 #desktopTurnHelpDialog summary:focus-visible { outline: 3px solid #ffcf68; outline-offset: 3px; }
 #desktopTurnHelpDialog li { margin: 7px 0; }
 .desktop-help-target { outline: 4px solid #ffe078 !important; outline-offset: 4px; box-shadow: 0 0 22px #ffe078 !important; }
-/* Phase portraits have different intrinsic sizes; fit each inside its own ring. */
-body .app img.substation-combat-sprite,
-body .app #compactMechaStage-1 .compact-mecha-ring img.substation-combat-sprite{
+/* Default containment also protects the classic and mobile combat layouts. */
+body .app img.substation-combat-sprite{
   position:absolute !important;
   inset:0 !important;
   width:100% !important;
@@ -30728,6 +30727,22 @@ body .app #compactMechaStage-1 .compact-mecha-ring img.substation-combat-sprite{
   object-position:center !important;
   transform:none !important;
   animation:none !important;
+}
+/* On PC, match the player's visual scale while staying inside the rival column. */
+body.desktop-compact-mode .app #compactMechaStage-1 .compact-mecha-ring img.substation-combat-sprite{
+  inset:auto !important;
+  left:50% !important;
+  top:49% !important;
+  width:250px !important;
+  height:375px !important;
+  max-width:none !important;
+  max-height:none !important;
+  transform:translate(-50%, -50%) !important;
+}
+@media (max-width:1400px) and (min-width:900px){
+  body.desktop-compact-mode .app #compactMechaStage-1 .compact-mecha-ring img.substation-combat-sprite{
+    top:64% !important;
+  }
 }
 </style>
 </head>
