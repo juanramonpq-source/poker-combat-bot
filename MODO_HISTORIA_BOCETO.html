@@ -13094,6 +13094,9 @@
 
     function resumeMapMusicIfSafe() {
       if (!canResumeMapMusic()) return false;
+      // Standalone combat returns can leave the map parked while showing the outcome.
+      // Restore it when the last chapter surface closes, before resuming the map.
+      restoreStoryMapFrameAfterChapterSurface();
       resetStoryMapViewport();
       playMapMusic();
       return true;
