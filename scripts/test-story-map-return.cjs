@@ -43,7 +43,13 @@ for (const engine of [chromium, webkit]) {
       }
       assert.deepEqual(await page.evaluate(() => getCompletedStoryNodeIds()), ['hangar', 'patio']);
       // The newly unlocked destination must really open, and its map return must also work.
-      const destination = page.frameLocator('#storyMapFrame').locator('[data-id="mercado"]');
+      const destination = page.frameLocator('#storyMapFrame').locator('[data-id="mercado"][aria-disabled="false"]');
+      await destination.waitFor({ state: 'visible' });
+      // On a cold network the loader fallback can finish before the artwork positions the nodes.
+      await destination.evaluate(async () => {
+        await document.getElementById('mapImage').decode();
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      });
       // The current destination pulses continuously; click its visible center without waiting for animation stability.
       assert.equal(await destination.evaluate(button => {
         const rect = button.getBoundingClientRect();
