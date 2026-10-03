@@ -10193,7 +10193,7 @@
     }
 
     function closeStoryScene(options = {}) {
-      const resumeSubestacion = activeSceneNodeId === 'subestacion'
+      const resumeSubestacion = options.resumeSubestacion !== false && activeSceneNodeId === 'subestacion'
         && /^(subestacion_charge_|subestacion_aftermath)/.test(activeSceneScriptKey || '');
       const clearSurface = options.clearSurface !== false;
       activeSceneNodeId = null;
@@ -10219,7 +10219,7 @@
       window.setTimeout(() => {
         if (!storySceneStage.classList.contains('active')) {
           storySceneStage.hidden = true;
-          if (resumeSubestacion && !hasCompletedStoryNode('subestacion')) {
+          if (resumeSubestacion) {
             if (!hasLiveStoryExplorationFrame()) openStorySubestacionExploration('hub');
             else {
               storyExplorationFrame.contentWindow?.postMessage({ type: 'pocobot-story-subestacion-pause', paused: false }, window.location.origin);
@@ -10245,7 +10245,7 @@
       });
       markStoryNodeCompleted('subestacion', { selectedId: 'puente' });
       renderStoryNode('puente');
-      closeStoryScene();
+      closeStoryScene({ resumeSubestacion: false });
     }
 
     function getStoryMarketScrollContainer() {

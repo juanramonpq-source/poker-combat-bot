@@ -263,3 +263,43 @@ for (const engine of [chromium, webkit]) {
     });
   });
 }
+
+for (const engine of [chromium, webkit]) {
+  for (const exit of ['finish', 'close']) {
+    test(`${engine.name()}: replayed chapter resumes keyboard and pointer movement after beta (${exit})`, async () => {
+      await fixture(engine, async (page, frame) => {
+        await page.evaluate(() => markStoryNodeCompleted('subestacion'));
+        await frame.evaluate(() => {
+          loadScene('cruce');
+          player.x = 1186;
+          player.y = 180;
+          state.combatGraceUntil = performance.now() + 60000;
+        });
+        await page.evaluate(() => focusStoryExplorationFrame());
+        await page.keyboard.press('e');
+        await page.waitForFunction(() => activeSceneScriptKey === 'subestacion_charge_beta' && !storyTransitionBusy);
+        if (exit === 'finish') await finishDialogue(page);
+        else await page.locator('#storySceneCloseBtn').click();
+        await page.waitForFunction(() => document.querySelector('#storySceneStage').hidden);
+        await frame.waitForFunction(() => !state.paused, null, { timeout: 3000 });
+        const before = await frame.evaluate(() => ({ x: player.x, y: player.y }));
+        await page.keyboard.down('ArrowLeft');
+        await page.waitForTimeout(350);
+        await page.keyboard.up('ArrowLeft');
+        const keyboard = await frame.evaluate(() => ({ x: player.x, y: player.y }));
+        assert.ok(before.x - keyboard.x > 20, 'Keyboard must move the player after beta');
+        const target = await frame.evaluate(() => ({
+          x: (player.x + 100 - camera.x) * camera.zoom,
+          y: (player.y - camera.y) * camera.zoom
+        }));
+        const canvas = await frame.locator('canvas').boundingBox();
+        await page.mouse.move(canvas.x + target.x, canvas.y + target.y);
+        await page.mouse.down();
+        await page.waitForTimeout(350);
+        await page.mouse.up();
+        assert.ok(await frame.evaluate(x => player.x - x > 20, keyboard.x), 'Pointer must move the player after beta');
+        assert.equal(await frame.evaluate(() => state.chargesPlaced.beta), true);
+      });
+    });
+  }
+}

@@ -21,3 +21,13 @@ Instrucción de edición: retirar exclusivamente el fondo de damero, conservar l
 - `scripts/test-story-map-return.cjs`: regreso al mapa tras completar fases.
 
 Las pruebas usan `http://localhost:8095` por defecto; `POCOBOT_TEST_URL` permite comprobar la versión publicada. Requieren Playwright y sus navegadores instalados. No sustituyen una prueba en un dispositivo físico.
+
+### Retratos de combate (3 de octubre de 2026)
+
+Archivos finales: `MechaFase1-transparent.png`, `MechaFase2-transparent.png` y `MechaFase3-transparent.png`, en esta misma carpeta. Se conservan los originales. Edición realizada con la herramienta integrada ImageGen, con `transparent_background: true`, una llamada por fase.
+
+Prompt usado para cada fase (sustituyendo N por 1, 2 o 3):
+
+> Precise background removal edit for an existing game combat sprite phase N. Remove ONLY the baked white/gray checkerboard backdrop, replacing it with genuine transparent alpha including the gaps between limbs and weapons. Keep this exact robot design, pose, proportions, colors, armor, weaponry and lighting. Single full-body robot centered, all antennae weapons and feet visible, with a small transparent margin on all sides. No checkerboard, no ground, no added text, no redesign. Clean detailed edges suitable for an in-game combat area.
+
+Los retratos se ajustan al área del rival sin depender de su resolución original. `scripts/test-substation-combat.cjs` comprueba las tres fases a 1280×800, 1920×1080 y 2816×1744 en Chromium y WebKit, además del canal alfa. La prueba de beta verifica también teclado y ratón al repetir un capítulo ya completado: la reanudación depende de cerrar la conversación actual, no del historial de capítulos.

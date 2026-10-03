@@ -30714,6 +30714,21 @@ body.story-final-colossus-operational.story-final-colossus-mobile .app:is(.mobil
 #desktopTurnHelpDialog summary:focus-visible { outline: 3px solid #ffcf68; outline-offset: 3px; }
 #desktopTurnHelpDialog li { margin: 7px 0; }
 .desktop-help-target { outline: 4px solid #ffe078 !important; outline-offset: 4px; box-shadow: 0 0 22px #ffe078 !important; }
+/* Phase portraits have different intrinsic sizes; fit each inside its own ring. */
+body .app img.substation-combat-sprite,
+body .app #compactMechaStage-1 .compact-mecha-ring img.substation-combat-sprite{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  margin:0 !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  transform:none !important;
+  animation:none !important;
+}
 </style>
 </head>
 <body class="intro-active">
@@ -35890,7 +35905,7 @@ const DEV_STORY_CHARACTER_PRESETS = [
     key: 'subestacion-centinela',
     label: 'Centinela Ceniza',
     name: 'Centinela de Ceniza',
-    sprite: 'assets/Historia/subestacion-ceniza/MechaFase1.png',
+    sprite: 'assets/Historia/subestacion-ceniza/MechaFase1-transparent.png',
     description: 'Mecha patrulla de la Subestación de Ceniza; arranca en fase 1 y escala al cargar combustible y núcleo.'
   },
   {
@@ -44881,6 +44896,7 @@ function renderDesktopCompactHud(){
       const newSrc = getMechaPhaseImage(pilot, idx);
       if(mechaImg.getAttribute('src') !== newSrc) mechaImg.src = newSrc;
       mechaImg.classList.toggle('compact-story-combat-sprite', hasStoryCombatSprite);
+      mechaImg.classList.toggle('substation-combat-sprite', Object.values(STORY_SUBESTACION_MECHA_IMAGES).includes(newSrc));
       mechaImg.classList.toggle('compact-lake-drone-sprite', isLakeDroneSprite);
       mechaImg.alt = shouldHideStoryFinalColossusSprite(idx)
         ? 'Lectura rival vacia'
@@ -47484,9 +47500,9 @@ const MECHA_IMAGES = {
 };
 
 const STORY_SUBESTACION_MECHA_IMAGES = {
-  phase1: "assets/Historia/subestacion-ceniza/MechaFase1.png",
-  phase2: "assets/Historia/subestacion-ceniza/MechaFase2.png",
-  phase3: "assets/Historia/subestacion-ceniza/MechaFase3.png"
+  phase1: "assets/Historia/subestacion-ceniza/MechaFase1-transparent.png",
+  phase2: "assets/Historia/subestacion-ceniza/MechaFase2-transparent.png",
+  phase3: "assets/Historia/subestacion-ceniza/MechaFase3-transparent.png"
 };
 
 const EMPTY_COMBAT_SPRITE_URI = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22%3E%3C/svg%3E';
@@ -47576,6 +47592,7 @@ function renderRadarMecha(){
     if(img){
       const newSrc = getMechaPhaseImage(player, idx);
       if(img.getAttribute('src') !== newSrc) img.src = newSrc;
+      img.classList.toggle('substation-combat-sprite', Object.values(STORY_SUBESTACION_MECHA_IMAGES).includes(newSrc));
       img.alt = shouldHideStoryFinalColossusSprite(idx) ? 'Lectura rival vacia' : `Mecha de ${playerLabel}`;
     }
 
