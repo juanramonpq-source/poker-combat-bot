@@ -610,7 +610,9 @@ function isPortraitTouchViewport() {
 function getCameraZoom() {
   if (isPortraitTouchViewport()) return 0.72;
   if (window.matchMedia("(pointer: coarse)").matches) return 0.82;
-  return desktopCameraMedia.matches ? DESKTOP_CAMERA_ZOOM : 1;
+  if (!desktopCameraMedia.matches) return 1;
+  // Fill large/fullscreen viewports, with a small player-focused zoom margin.
+  return Math.max(DESKTOP_CAMERA_ZOOM, viewport.width / world.width, viewport.height / world.height) * 1.1;
 }
 
 function getVisibleWorldSize() {
