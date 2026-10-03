@@ -1378,6 +1378,7 @@
       font-size:.74rem;
       font-weight:800;
     }
+    .story-scene-stage.subestacion-overlay{ z-index:12; }
     .story-scene-stage{
       position:fixed;
       inset:0;
@@ -6475,8 +6476,10 @@
         localStorage.removeItem(STORY_PENDING_MISSION_RESULT_KEY);
         localStorage.removeItem(STORY_TOWER_CHAPTER_STATE_KEY);
         localStorage.removeItem(STORY_MAP_STANDALONE_PROGRESS_KEY);
+        localStorage.removeItem('pocobot-story-subestacion-ceniza-progress-v1');
       } catch (error) {}
       rememberStoryWorkspace(false);
+      clearStorySubestacionExplorationSession();
       rememberActiveStoryMission(null);
       rememberStorySurface(null);
       clearStoryTransitionState();
@@ -9016,7 +9019,7 @@
         mrWindLine('Mira alrededor. Estos no son guardianes improvisados: son mechas listos para entrar en servicio en cuanto Argós recupere masa crítica. La subestación no alimenta una ciudad: alimenta un regreso.', {
           figure: MR_WIND_POSE_WARNING
         }),
-        mrWindLine('Carga dos colocada. Ya has cortado redundancia y almacenamiento. Solo queda el transformador central: el nervio que convierte reserva en voluntad militar.', {
+        mrWindLine('Carga del banco de capacitores colocada. El almacenamiento queda marcado. Revisa los otros ramales antes de volver: necesitamos también el relé y el transformador central.', {
           figure: MR_WIND_POSE_TRUST
         })
       ]
@@ -9030,7 +9033,7 @@
       completeAction: 'subestacion-resume-exploration',
       completeActionLabel: 'Retirarte al hub',
       lines: [
-        mrWindLine('Último punto. Antes de tocarlo, decide qué clase de daño crees que estamos haciendo.', {
+        mrWindLine('Este es el transformador central. Antes de tocarlo, decide qué clase de daño crees que estamos haciendo.', {
           figure: MR_WIND_POSE_NEUTRAL,
           choices: [
             { id: 'collapse', label: '¿Vas a hundir todo el sector?', response: 'Tú: "Quiero saber el coste real. ¿Vas a derribar media red con esto?"' },
@@ -9056,7 +9059,7 @@
         mrWindLine('Fija la tercera carga y escucha el sistema. Lo que vibra bajo tus pies no es solo electricidad: es la vieja promesa de Argós intentando reconstruirse con nuevas víctimas.', {
           figure: MR_WIND_POSE_WARNING
         }),
-        mrWindLine('Tercera carga armada. Las tres líneas clave quedan marcadas. En cuanto salgamos, la subestación pasará de pulmón secreto a cicatriz inútil.', {
+        mrWindLine('Carga del transformador armada. Cuando las tres líneas clave estén marcadas, vuelve conmigo. En cuanto salgamos, la subestación pasará de pulmón secreto a cicatriz inútil.', {
           figure: MR_WIND_POSE_TRUST
         }),
         mrWindLine('Retirada silenciosa. Has visto lo que había detrás del cartel, detrás de la Ruta y detrás del mito.', {
@@ -10137,6 +10140,7 @@
       const resolvedSceneKey = resolveEntrySceneKey(nodeId, sceneKey);
       const scene = storySceneScripts[resolvedSceneKey];
       if (!localNode || !scene) return false;
+      storySceneStage.classList.toggle('subestacion-overlay', nodeId === 'subestacion');
       if (nodeId === 'mercado') {
         queueStoryMapTheme('market');
         playMapMusic();
@@ -10189,6 +10193,8 @@
     }
 
     function closeStoryScene(options = {}) {
+      const resumeSubestacion = activeSceneNodeId === 'subestacion'
+        && /^(subestacion_charge_|subestacion_aftermath)/.test(activeSceneScriptKey || '');
       const clearSurface = options.clearSurface !== false;
       activeSceneNodeId = null;
       activeSceneScriptKey = null;
@@ -10213,12 +10219,22 @@
       window.setTimeout(() => {
         if (!storySceneStage.classList.contains('active')) {
           storySceneStage.hidden = true;
+          if (resumeSubestacion && !hasCompletedStoryNode('subestacion')) {
+            if (!hasLiveStoryExplorationFrame()) openStorySubestacionExploration('hub');
+            else {
+              storyExplorationFrame.contentWindow?.postMessage({ type: 'pocobot-story-subestacion-pause', paused: false }, window.location.origin);
+              rememberStorySurface({ type: 'exploration', nodeId: 'subestacion', sceneKey: activeExplorationSceneKey || 'hub', loadId: ensureSubestacionExplorationLoadId() });
+              focusStoryExplorationFrame();
+            }
+          }
           resumeMapMusicIfSafe();
         }
       }, 260);
     }
 
     function completeStorySubestacionChapter() {
+      activeMissionNodeId = null;
+      rememberActiveStoryMission(null);
       queueStoryMapTheme('chapter_clear');
       clearStorySubestacionExplorationSession();
       closeStoryMarketExploration({
@@ -11229,6 +11245,12 @@
 
     function ensureSubestacionExplorationLoadId(preferredLoadId = '') {
       if (preferredLoadId) activeSubestacionExplorationLoadId = String(preferredLoadId);
+      if (!activeSubestacionExplorationLoadId && !hasCompletedStoryNode('subestacion')) {
+        try {
+          const saved = JSON.parse(localStorage.getItem('pocobot-story-subestacion-ceniza-progress-v1') || 'null');
+          if (typeof saved?.storyLoadId === 'string') activeSubestacionExplorationLoadId = saved.storyLoadId;
+        } catch (error) {}
+      }
       if (!activeSubestacionExplorationLoadId) activeSubestacionExplorationLoadId = `subestacion-${Date.now()}`;
       return activeSubestacionExplorationLoadId;
     }
@@ -11527,7 +11549,6 @@
       if (action === 'return-map') {
         activeMissionNodeId = null;
         rememberActiveStoryMission(null);
-        clearStorySubestacionExplorationSession();
         closeStoryMarketExploration({ exitThemeKey: 'exploration' });
         renderStoryNode('subestacion');
         return true;
@@ -11537,18 +11558,22 @@
         return true;
       }
       if (action === 'open-alpha-scene') {
+        storyExplorationFrame.contentWindow?.postMessage({ type: 'pocobot-story-subestacion-pause', paused: true }, window.location.origin);
         openStoryScene('subestacion', 'subestacion_charge_alpha');
         return true;
       }
       if (action === 'open-beta-scene') {
+        storyExplorationFrame.contentWindow?.postMessage({ type: 'pocobot-story-subestacion-pause', paused: true }, window.location.origin);
         openStoryScene('subestacion', 'subestacion_charge_beta');
         return true;
       }
       if (action === 'open-gamma-scene') {
+        storyExplorationFrame.contentWindow?.postMessage({ type: 'pocobot-story-subestacion-pause', paused: true }, window.location.origin);
         openStoryScene('subestacion', 'subestacion_charge_gamma');
         return true;
       }
       if (action === 'open-aftermath-scene') {
+        storyExplorationFrame.contentWindow?.postMessage({ type: 'pocobot-story-subestacion-pause', paused: true }, window.location.origin);
         openStoryScene('subestacion', 'subestacion_aftermath');
         return true;
       }
@@ -11625,6 +11650,7 @@
       const localNode = storyDraftNodes[nodeId];
       const scene = storySceneScripts[sceneKey];
       if (!localNode || !scene || !storySceneStage) return false;
+      storySceneStage.classList.toggle('subestacion-overlay', nodeId === 'subestacion');
       activeSceneNodeId = nodeId;
       activeSceneScriptKey = sceneKey;
       sceneLineIndex = Math.max(0, Math.min(Number(surface.lineIndex) || 0, Math.max(0, (scene.lines?.length || 1) - 1)));
@@ -13322,6 +13348,10 @@
     }
     if (storyExplorationMapBtn) {
       storyExplorationMapBtn.addEventListener('click', () => {
+        if (activeExplorationNodeId === 'subestacion') {
+          handleStorySubestacionAction({ action: 'return-map' });
+          return;
+        }
         closeStoryMarketExploration({
           exitThemeKey: activeExplorationNodeId === 'mercado'
             ? 'post_market'
@@ -13619,6 +13649,8 @@
         return;
       }
       if (data.type === 'pocobot-story-map-selection' && data.node && data.node.id) {
+        // A restored map must receive the parent's progress before choosing a node.
+        if (data.reason === 'initial') return;
         if (data.reason === 'user-select' && data.node.status !== 'locked') {
           enterStoryNode(data.node.id);
         } else {

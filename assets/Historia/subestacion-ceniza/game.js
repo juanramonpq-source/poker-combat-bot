@@ -27,7 +27,6 @@ const SUBESTACION_PROGRESS_KEY = "pocobot-story-subestacion-ceniza-progress-v1";
 const SUBESTACION_ACTION_TYPE = "pocobot-story-subestacion-action";
 const SUBESTACION_COMBAT_MISSION_ID = "subestacion_ceniza_patrol";
 const DETECTION_FOV_HALF = Math.PI * 0.28;
-const DETECTION_HARD_RADIUS_RATIO = 0.54;
 const PATROL_COMBAT_DELAY_MS = 720;
 const COMBAT_GRACE_MS = 2600;
 
@@ -101,6 +100,7 @@ const state = {
   combatGraceUntil: 0,
   alertLabel: "Sigilo",
   promptOverride: "",
+  paused: false,
 };
 
 function clamp(value, min, max) {
@@ -231,7 +231,7 @@ function isBlockedAt(x, y) {
 
 function hasLineOfSight(fromX, fromY, toX, toY) {
   const distance = Math.hypot(toX - fromX, toY - fromY);
-  const steps = Math.max(4, Math.ceil(distance / 28));
+  const steps = Math.max(4, Math.ceil(distance / 8));
   for (let index = 1; index < steps; index += 1) {
     const ratio = index / steps;
     const sampleX = fromX + (toX - fromX) * ratio;
@@ -239,6 +239,96 @@ function hasLineOfSight(fromX, fromY, toX, toY) {
     if (isBlockedAt(sampleX, sampleY)) return false;
   }
   return true;
+}
+
+function isPatrolPositionClear(x, y) {
+  const margin = 12;
+  return x >= 36 && y >= 36 && x <= world.width - 36 && y <= world.height - 36
+    && [[0, 0], [-margin, 0], [margin, 0], [0, -margin], [0, margin]]
+      .every(([dx, dy]) => !isBlockedAt(x + dx, y + dy));
+}
+
+// Check the whole swept segment, including narrow corners between frames.
+function isPatrolSegmentClear(a, b) {
+  if (!isPatrolPositionClear(a.x, a.y) || !isPatrolPositionClear(b.x, b.y)) return false;
+  const intersects = (from, to, zone) => {
+    if (zone.type === "ellipse" || zone.type === "circle") {
+      const rx = zone.type === "circle" ? zone.radius : zone.width / 2;
+      const ry = zone.type === "circle" ? zone.radius : zone.height / 2;
+      const cx = zone.type === "circle" ? zone.x : zone.x + rx;
+      const cy = zone.type === "circle" ? zone.y : zone.y + ry;
+      const x = (from.x - cx) / rx, y = (from.y - cy) / ry;
+      const dx = (to.x - from.x) / rx, dy = (to.y - from.y) / ry;
+      const t = clamp(-(x * dx + y * dy) / (dx * dx + dy * dy || 1), 0, 1);
+      return (x + dx * t) ** 2 + (y + dy * t) ** 2 <= 1;
+    }
+    const points = zone.type === "poly" ? zone.points : [
+      { x: zone.x, y: zone.y }, { x: zone.x + zone.width, y: zone.y },
+      { x: zone.x + zone.width, y: zone.y + zone.height }, { x: zone.x, y: zone.y + zone.height },
+    ];
+    if (!points?.length) return false;
+    const cross = (p, q, r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+    return points.some((p, i) => {
+      const q = points[(i + 1) % points.length];
+      if (Math.max(from.x, to.x) < Math.min(p.x, q.x) || Math.min(from.x, to.x) > Math.max(p.x, q.x)
+        || Math.max(from.y, to.y) < Math.min(p.y, q.y) || Math.min(from.y, to.y) > Math.max(p.y, q.y)) return false;
+      return cross(from, to, p) * cross(from, to, q) <= 0 && cross(p, q, from) * cross(p, q, to) <= 0;
+    });
+  };
+  return [[0, 0], [-12, 0], [12, 0], [0, -12], [0, 12]].every(([dx, dy]) =>
+    !currentCollisionZones.some(zone => intersects({ x: a.x + dx, y: a.y + dy }, { x: b.x + dx, y: b.y + dy }, zone)));
+}
+
+// Route patrol waypoints through the same physical scenery that blocks the player.
+// Calculate once per room, including collision-editor overrides, not every frame.
+function buildPatrolPath(waypoints) {
+  const step = 24;
+  const cols = Math.floor(world.width / step);
+  const rows = Math.floor(world.height / step);
+  const point = id => ({ x: (id % cols) * step + step / 2, y: Math.floor(id / cols) * step + step / 2 });
+  const open = Array.from({ length: cols * rows }, (_, id) => {
+    const p = point(id);
+    return isPatrolPositionClear(p.x, p.y);
+  });
+  const nearest = (p, connect = false) => {
+    let best = -1, distance = Infinity;
+    open.forEach((clear, id) => {
+      if (!clear) return;
+      const q = point(id), d = Math.hypot(q.x - p.x, q.y - p.y);
+      if (d < distance && (!connect || isPatrolSegmentClear(p, q))) { best = id; distance = d; }
+    });
+    return best;
+  };
+  const clearSegment = isPatrolSegmentClear;
+  const connectStart = isPatrolPositionClear(waypoints[0].x, waypoints[0].y);
+  let start = nearest(waypoints[0], connectStart);
+  if (start < 0) return [];
+  const route = connectStart ? [{ ...waypoints[0] }, point(start)] : [point(start)];
+  for (const target of waypoints.slice(1)) {
+    const goal = nearest(target), queue = [start], previous = new Map([[start, null]]);
+    for (let index = 0; index < queue.length && !previous.has(goal); index++) {
+      const id = queue[index];
+      for (const next of [id - 1, id + 1, id - cols, id + cols]) {
+        if (next < 0 || next >= open.length || Math.abs(next % cols - id % cols) > 1 || !open[next] || previous.has(next)) continue;
+        if (!clearSegment(point(id), point(next))) continue;
+        previous.set(next, id);
+        queue.push(next);
+      }
+    }
+    if (!previous.has(goal)) continue;
+    const segment = [];
+    for (let id = goal; id !== start; id = previous.get(id)) segment.push(point(id));
+    segment.reverse();
+    // Remove grid zigzags only when the entire shortcut is clear.
+    for (let i = 0; i < segment.length;) {
+      let last = i;
+      while (last + 1 < segment.length && clearSegment(route[route.length - 1], segment[last + 1])) last++;
+      route.push(segment[last]);
+      i = last + 1;
+    }
+    start = goal;
+  }
+  return route;
 }
 
 function getSceneCameraZoom(width, height) {
@@ -324,7 +414,7 @@ async function loadAssets() {
       ]
     : [];
 
-  const mechSheetPromise = loadImage(sceneApi.runtimeAsset("hoja_de_sprites_de_mech_industrial_web_1600.webp"));
+  const mechSheetPromise = loadImage(sceneApi.runtimeAsset("argos-sentry-walk-transparent.png"));
   await Promise.all(backgroundPromises);
   const [mechSheet, ...visualFrames] = await Promise.all([
     mechSheetPromise,
@@ -352,9 +442,10 @@ function getSceneWithOverrides(sceneKey) {
 }
 
 function buildEnemy(interaction) {
-  const path = Array.isArray(interaction.path) && interaction.path.length
+  const waypoints = Array.isArray(interaction.path) && interaction.path.length
     ? clone(interaction.path)
     : [{ x: interaction.x, y: interaction.y }];
+  const path = buildPatrolPath(waypoints);
   const startPoint = path[0] || { x: interaction.x, y: interaction.y };
   return {
     id: interaction.id,
@@ -367,7 +458,10 @@ function buildEnemy(interaction) {
     path,
     pathIndex: path.length > 1 ? 1 : 0,
     pathDirection: 1,
-    speed: 92 + Math.random() * 18,
+    speed: interaction.speed || 96,
+    mode: "patrol",
+    returnPath: [],
+    returnIndex: 0,
     walkTime: Math.random() * 2.8,
     facingX: 0,
     facingY: 1,
@@ -395,6 +489,12 @@ function updateObjectiveUi() {
     return;
   }
 
+  const charge = currentInteractions.find(interaction => interaction.kind === "charge");
+  if (charge && state.chargesPlaced[charge.chargeId]) {
+    objectiveTitle.textContent = "Carga colocada · Vuelve al nodo central";
+    objectiveCopy.textContent = `Sabotaje guardado (${countPlacedCharges()}/3). Regresa por el acceso del ramal y elige otro punto pendiente.`;
+    return;
+  }
   objectiveTitle.textContent = currentScene.objectiveTitle;
   objectiveCopy.textContent = currentScene.objectiveCopy;
 }
@@ -455,7 +555,7 @@ function restoreProgress() {
     gamma: !!saved.chargeScenesTriggered?.gamma,
   };
   state.aftermathTriggered = !!saved.aftermathTriggered;
-  state.combatGraceUntil = performance.now() + Math.max(0, Number(saved.combatGraceMs) || 0);
+  state.combatGraceUntil = performance.now() + Math.max(COMBAT_GRACE_MS, Number(saved.combatGraceMs) || 0);
 
   loadScene(saved.currentSceneKey || requestedSceneKey, "", {
     restorePlayer: true,
@@ -538,28 +638,39 @@ function movePlayer(dt) {
 }
 
 function updateEnemy(enemy, dt) {
-  const path = enemy.path || [];
+  const returning = enemy.mode === "return";
+  const path = (returning ? enemy.returnPath : enemy.path) || [];
   if (path.length > 1) {
-    const target = path[enemy.pathIndex] || path[0];
+    const target = path[returning ? enemy.returnIndex : enemy.pathIndex] || path[0];
     const dx = target.x - enemy.x;
     const dy = target.y - enemy.y;
-    const distance = Math.hypot(dx, dy) || 1;
+    const distance = Math.hypot(dx, dy);
     const step = Math.min(distance, enemy.speed * dt);
-    enemy.dirX = dx / distance;
-    enemy.dirY = dy / distance;
-    enemy.facingX = enemy.dirX;
-    enemy.facingY = enemy.dirY;
-    enemy.x += enemy.dirX * step;
-    enemy.y += enemy.dirY * step;
+    enemy.dirX = dx / (distance || 1);
+    enemy.dirY = dy / (distance || 1);
+    if (distance > 0) {
+      enemy.facingX = enemy.dirX;
+      enemy.facingY = enemy.dirY;
+    }
+    const nextX = enemy.x + enemy.dirX * step, nextY = enemy.y + enemy.dirY * step;
+    if (!isPatrolPositionClear(nextX, nextY)) return;
+    enemy.x = nextX;
+    enemy.y = nextY;
     enemy.walkTime += dt * 7.4;
 
-    if (distance <= 6) {
+    if (step >= distance) {
+      if (returning) {
+        enemy.returnIndex++;
+        if (enemy.returnIndex >= path.length) enemy.mode = "patrol";
+        return;
+      }
       if (enemy.pathIndex >= path.length - 1) enemy.pathDirection = -1;
       else if (enemy.pathIndex <= 0) enemy.pathDirection = 1;
       enemy.pathIndex += enemy.pathDirection;
       enemy.pathIndex = clamp(enemy.pathIndex, 0, path.length - 1);
     }
   } else {
+    if (returning) enemy.mode = "patrol";
     enemy.walkTime += dt * 1.8;
   }
 }
@@ -569,10 +680,10 @@ function enemyCanSeePlayer(enemy) {
   const dy = player.y - enemy.y;
   const distance = Math.hypot(dx, dy);
   if (distance > enemy.radius) return false;
-  if (distance <= enemy.radius * DETECTION_HARD_RADIUS_RATIO) return hasLineOfSight(enemy.x, enemy.y, player.x, player.y);
-  const facingLength = Math.hypot(enemy.facingX || enemy.dirX || 0, enemy.facingY || enemy.dirY || 1) || 1;
-  const facingX = (enemy.facingX || enemy.dirX || 0) / facingLength;
-  const facingY = (enemy.facingY || enemy.dirY || 1) / facingLength;
+  if (distance < 1) return hasLineOfSight(enemy.x, enemy.y, player.x, player.y);
+  const facingLength = Math.hypot(enemy.facingX ?? enemy.dirX ?? 0, enemy.facingY ?? enemy.dirY ?? 1) || 1;
+  const facingX = (enemy.facingX ?? enemy.dirX ?? 0) / facingLength;
+  const facingY = (enemy.facingY ?? enemy.dirY ?? 1) / facingLength;
   const dot = ((dx / Math.max(1, distance)) * facingX) + ((dy / Math.max(1, distance)) * facingY);
   if (dot < Math.cos(DETECTION_FOV_HALF)) return false;
   return hasLineOfSight(enemy.x, enemy.y, player.x, player.y);
@@ -584,7 +695,7 @@ function triggerPatrolCombat(enemy) {
   state.alertLabel = `Alerta ${enemy.label}`;
   updateStatusUi();
   alertBanner.hidden = false;
-  alertBanner.textContent = `${enemy.label} te ha fijado. Panel enemigo ya montado para combate.`;
+  alertBanner.textContent = `${enemy.label} te ha alcanzado. Preparando combate.`;
   state.combatGraceUntil = performance.now() + COMBAT_GRACE_MS;
   saveProgress();
   showToast("Deteccion confirmada. Mr. Wind te cubre la salida al duelo.", 1800);
@@ -597,11 +708,41 @@ function triggerPatrolCombat(enemy) {
 
 function updateEnemies(dt) {
   currentEnemies.forEach((enemy) => {
-    updateEnemy(enemy, dt);
-    if (performance.now() >= state.combatGraceUntil && enemyCanSeePlayer(enemy)) {
-      triggerPatrolCombat(enemy);
+    const seesPlayer = performance.now() >= state.combatGraceUntil && enemyCanSeePlayer(enemy);
+    if (seesPlayer) {
+      enemy.mode = "chase";
+      const dx = player.x - enemy.x, dy = player.y - enemy.y;
+      const distance = Math.hypot(dx, dy);
+      if (distance <= player.radius + 20) {
+        triggerPatrolCombat(enemy);
+        return;
+      }
+      enemy.dirX = enemy.facingX = dx / distance;
+      enemy.dirY = enemy.facingY = dy / distance;
+      const step = Math.min(distance, enemy.speed * 1.35 * dt);
+      const nextX = enemy.x + enemy.dirX * step, nextY = enemy.y + enemy.dirY * step;
+      if (isPatrolSegmentClear(enemy, { x: nextX, y: nextY })) {
+        enemy.x = nextX;
+        enemy.y = nextY;
+        enemy.walkTime += dt * 10;
+      }
+    } else {
+      if (enemy.mode === "chase") {
+        enemy.mode = "return";
+        enemy.returnPath = buildPatrolPath([{ x: enemy.x, y: enemy.y }, enemy.path[enemy.pathIndex] || enemy.path[0]]);
+        enemy.returnIndex = 0;
+        if (!enemy.returnPath.length) enemy.mode = "patrol";
+      }
+      updateEnemy(enemy, dt);
     }
   });
+  if (!state.combatPending) {
+    const chasing = currentEnemies.some(enemy => enemy.mode === "chase");
+    state.alertLabel = chasing ? "Persecución" : "Sigilo";
+    alertBanner.hidden = !chasing;
+    if (chasing) alertBanner.textContent = "Te han visto. Rompe la línea de visión tras una máquina o un muro.";
+    updateStatusUi();
+  }
 }
 
 function getActiveInteractables() {
@@ -623,7 +764,7 @@ function updateNearestInteractable() {
     if (!anchor) return;
     const distance = Math.hypot(player.x - anchor.x, player.y - anchor.y);
     const reach = interaction.kind === "enemy" ? Math.max(74, interaction.radius * 0.62) : interaction.radius;
-    if (distance <= reach && distance < bestDistance) {
+    if (distance <= reach && distance < bestDistance && hasLineOfSight(player.x, player.y, anchor.x, anchor.y)) {
       best = { ...interaction, x: anchor.x, y: anchor.y };
       bestDistance = distance;
     }
@@ -642,7 +783,7 @@ function updatePrompt() {
   if (activeInteractable.kind === "extract") message = hasAllChargesPlaced()
     ? "E · Confirmar sabotaje a Mr. Wind"
     : "Vuelve cuando las tres cargas esten plantadas";
-  if (activeInteractable.kind === "enemy") message = "Mecha patrulla ya montado. Si te ve, iras a combate.";
+  if (activeInteractable.kind === "enemy") message = "Si te ve, te perseguirá. Usa la cobertura antes de que te alcance.";
   interactPrompt.hidden = !message;
   interactPrompt.textContent = message;
 }
@@ -656,6 +797,7 @@ function handleChargeInteraction(interaction) {
   updateObjectiveUi();
   updateStatusUi();
   if (interaction.sceneAction) {
+    setStoryPaused(true);
     postSubestacionAction(interaction.sceneAction, {
       chargeId: interaction.chargeId,
     });
@@ -669,10 +811,11 @@ function handleDoorInteraction(interaction) {
 }
 
 function handleExtractInteraction() {
-  if (!hasAllChargesPlaced() || state.aftermathTriggered) return;
+  if (!hasAllChargesPlaced() || state.paused) return;
   state.aftermathTriggered = true;
   saveProgress();
   showToast("Baliza enviada. Mr. Wind entra por radio.", 1200);
+  setStoryPaused(true);
   postSubestacionAction("open-aftermath-scene");
 }
 
@@ -749,7 +892,7 @@ function drawExtract(interaction) {
 }
 
 function drawEnemyCone(enemy, engaged = false) {
-  const angle = Math.atan2(enemy.facingY || enemy.dirY || 1, enemy.facingX || enemy.dirX || 0);
+  const angle = Math.atan2(enemy.facingY ?? enemy.dirY ?? 1, enemy.facingX ?? enemy.dirX ?? 0);
   const radius = enemy.radius;
   const start = angle - DETECTION_FOV_HALF;
   const end = angle + DETECTION_FOV_HALF;
@@ -802,15 +945,15 @@ function drawEnemyStatusPanel(enemy) {
 }
 
 function drawEnemy(enemy) {
-  const engaged = !state.combatPending && performance.now() >= state.combatGraceUntil && enemyCanSeePlayer(enemy);
+  const engaged = enemy.mode === "chase" || state.combatPending;
   drawEnemyCone(enemy, engaged);
   drawSoftShadow(enemy.x, enemy.y + 30, 28, 12, 0.3);
 
   if (assets.mechSheet) {
     const frameIndex = Math.floor(enemy.walkTime) % 8;
     const columns = 4;
-    const frameWidth = 400;
-    const frameHeight = 400;
+    const frameWidth = assets.mechSheet.naturalWidth / columns;
+    const frameHeight = assets.mechSheet.naturalHeight / 2;
     const sourceX = (frameIndex % columns) * frameWidth;
     const sourceY = Math.floor(frameIndex / columns) * frameHeight;
     const size = 118 * (enemy.scale || 0.78);
@@ -843,7 +986,7 @@ function drawEnemy(enemy) {
     ctx.restore();
   }
 
-  drawEnemyStatusPanel(enemy);
+  if (enemy.mode === "chase") drawEnemyStatusPanel(enemy);
 }
 
 function drawPlayer() {
@@ -940,7 +1083,16 @@ function maybeStartMusic() {
   }
 }
 
+function setStoryPaused(paused) {
+  state.paused = !!paused;
+  clearPointerActive();
+  input.up = input.down = input.left = input.right = input.interactQueued = false;
+  player.vx = player.vy = 0;
+  if (!state.paused) state.combatGraceUntil = performance.now() + COMBAT_GRACE_MS;
+}
+
 function update(dt) {
+  if (state.paused) { render(); return; }
   if (!state.combatPending) {
     movePlayer(dt);
     updateEnemies(dt);
@@ -968,7 +1120,17 @@ function bindEvents() {
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("keydown", (event) => handleKey(event, true));
   window.addEventListener("keyup", (event) => handleKey(event, false));
-  window.addEventListener("blur", clearPointerActive, { passive: true });
+  window.addEventListener("blur", () => {
+    clearPointerActive();
+    input.up = input.down = input.left = input.right = input.interactQueued = false;
+  }, { passive: true });
+  window.addEventListener("message", event => {
+    if (event.source !== window.parent || event.origin !== window.location.origin) return;
+    if (event.data?.type === "pocobot-story-subestacion-pause") setStoryPaused(event.data.paused);
+    if (event.data?.type === "pocobot-story-exploration-key" && !state.paused) {
+      handleKey({ key: event.data.key }, event.data.phase === "down");
+    }
+  });
   window.addEventListener("beforeunload", saveProgress);
 
   canvas.addEventListener("pointerdown", (event) => {
@@ -986,6 +1148,9 @@ function bindEvents() {
   });
 
   mapButton.addEventListener("click", attemptReturnToMap);
+  interactPrompt.addEventListener("click", () => {
+    if (!state.paused) input.interactQueued = true;
+  });
   document.body.addEventListener("pointerdown", maybeStartMusic, { passive: true });
   window.addEventListener("keydown", maybeStartMusic, { passive: true });
 }

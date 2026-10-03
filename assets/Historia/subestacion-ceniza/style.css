@@ -102,7 +102,7 @@ canvas {
 }
 
 .top-right {
-  top: max(16px, env(safe-area-inset-top));
+  top: calc(max(16px, env(safe-area-inset-top)) + 72px);
   right: max(16px, env(safe-area-inset-right));
   display: grid;
   gap: 8px;
@@ -171,6 +171,8 @@ canvas {
 }
 
 .interact-prompt {
+  font-family: inherit;
+  cursor: pointer;
   bottom: calc(24px + env(safe-area-inset-bottom));
   border: 1px solid rgba(142, 225, 255, 0.36);
   color: #ecfbff;
@@ -218,7 +220,7 @@ canvas {
   }
 
   .top-left {
-    top: max(10px, env(safe-area-inset-top));
+    top: calc(max(10px, env(safe-area-inset-top)) + 64px);
     left: max(10px, env(safe-area-inset-left));
   }
 

@@ -100,7 +100,7 @@
           label: "Ramal sur · Fundicion",
           prompt: "Entrar a la fundicion",
           x: 768,
-          y: 950,
+          y: 892,
           radius: 79,
           scale: 0.72,
           targetScene: "fundicion",
@@ -212,10 +212,10 @@
           id: "charge-alpha",
           kind: "charge",
           chargeId: "alpha",
-          label: "Carga alpha · Nucleo del reactor",
+          label: "Carga alpha · Relé de arranque oeste",
           prompt: "Colocar carga alpha",
-          x: 772,
-          y: 152,
+          x: 930,
+          y: 246,
           radius: 98,
           scale: 0.9,
           sceneAction: "open-alpha-scene",
@@ -432,6 +432,34 @@
       ],
     },
   };
+
+  // Physical footprints of machinery and walls; streets remain navigable.
+  const polygon = points => ({ type: "poly", points: points.map(([x, y]) => ({ x, y })) });
+  sceneCatalog.cruce.zones.push(
+    polygon([[635,120],[870,62],[1040,205],[893,320],[697,277]]),
+    polygon([[1080,345],[1303,216],[1400,311],[1265,460],[1130,502]]),
+    polygon([[230,438],[375,365],[551,479],[525,578],[358,617]]),
+    polygon([[589,735],[744,619],[1005,787],[888,913],[676,829]]),
+    polygon([[894,494],[993,535],[986,587],[875,543]])
+  );
+  sceneCatalog.fundicion.zones.push(
+    polygon([[863,172],[1031,132],[1180,240],[1120,420],[1000,391],[905,326]]),
+    polygon([[530,181],[618,156],[716,219],[617,274],[530,237]]),
+    polygon([[579,478],[652,437],[743,499],[687,556]]),
+    polygon([[819,638],[959,554],[1008,593],[867,684]]),
+    polygon([[261,603],[351,551],[439,607],[368,676]]),
+    polygon([[696,671],[769,640],[823,694],[751,737]]),
+    polygon([[915,490],[971,444],[1003,470],[956,532]])
+  );
+  Object.assign(sceneCatalog.fundicion.spawnPoints.from_hub, { x: 1220, y: 824 });
+  Object.assign(sceneCatalog.fundicion.spawnPoints.after_combat, { x: 1220, y: 800 });
+  Object.assign(sceneCatalog.fundicion.interactions.find(i => i.kind === 'door'), { x: 1254, y: 857 });
+  Object.assign(sceneCatalog.fundicion.interactions.find(i => i.kind === 'charge'), { x: 1155, y: 455 });
+  sceneCatalog.reactor.objectiveTitle = 'Carga 1 · Relé de arranque oeste';
+  sceneCatalog.cruce.objectiveTitle = 'Carga 2 · Bancada de capacitores';
+  sceneCatalog.cruce.objectiveCopy = 'Cruza entre las bancadas y coloca la carga del ramal este. La maquinaria bloquea la visión: espera a que la patrulla mire hacia otro lado.';
+  sceneCatalog.fundicion.objectiveTitle = 'Carga 3 · Transformador central';
+  sceneCatalog.fundicion.objectiveCopy = 'Busca el panel al pie del transformador principal. Usa los muros y las máquinas para romper la línea de visión.';
 
   function getScene(sceneKey) {
     const key = SCENE_KEYS.includes(sceneKey) ? sceneKey : "hub";
